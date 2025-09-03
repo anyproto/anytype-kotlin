@@ -61,6 +61,7 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -92,7 +93,7 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfile
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
-import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
@@ -136,33 +137,11 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            runCatching {
-                WindowCompat
-                    .getInsetsController(
-                        requireActivity().window,
-                        requireActivity().window.decorView
-                    ).isAppearanceLightStatusBars = false
-            }.onFailure {
-                Timber.e(it, "Error while changing status bars in onCreate")
-            }
-        }
         injectDependencies()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)  {
-            runCatching {
-                WindowCompat
-                    .getInsetsController(
-                        requireActivity().window,
-                        requireActivity().window.decorView
-                    ).isAppearanceLightStatusBars = true
-            }.onFailure {
-                Timber.e(it, "Error while changing status bars in onDestroy")
-            }
-        }
         releaseDependencies()
     }
 
@@ -170,13 +149,8 @@ class OnboardingFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                OnboardingScreen()
-            }
-        }
+    ) = content {
+        OnboardingScreen()
     }
 
     @Composable
@@ -203,7 +177,7 @@ class OnboardingFragment : Fragment() {
                         )
                 ) {
                     val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                    BackgroundCircle()
+                    //BackgroundCircle()
                     Onboarding(
                         currentPage = currentPage,
                         navController = navController,
@@ -228,19 +202,6 @@ class OnboardingFragment : Fragment() {
                     signUpBackButtonCallback.value = null
                 }
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        onApplyWindowRootInsets(view)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            // Disabling workaround to prevent background circle with video shrinking.
-            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
     }
 
@@ -449,13 +410,21 @@ class OnboardingFragment : Fragment() {
                 vm.onGetEntropyFromQRCode(entropy = r.contents)
             }
         }
-        RecoveryScreenWrapper(
-            vm = vm,
+        RecoveryScreen(
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = {
+            onNextClicked = vm::onLoginClicked,
+            onActionDoneClicked = vm::onActionDone,
+            onScanQrClicked = {
                 isQrWarningDialogVisible.value = true
                 vm.onScanQrCodeClicked()
             },
+            state = vm.state.collectAsStateWithLifecycle().value,
+            onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
+            onDebugAccountTraceClicked = {
+                vm.onAccountThraceButtonClicked()
+            },
+            onRetryMigrationClicked = vm::onRetryMigrationClicked,
+            onStartMigrationClicked = vm::onStartMigrationClicked
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->

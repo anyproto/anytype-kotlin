@@ -5,7 +5,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Button
 import androidx.compose.material.ButtonDefaults
@@ -31,7 +31,6 @@ import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 fun ButtonOnboardingPrimaryLarge(
     text: String = "",
     modifierBox: Modifier = Modifier,
-    modifierButton: Modifier = Modifier,
     size: ButtonSize = ButtonSize.Large,
     onClick: () -> Unit = {},
     enabled: Boolean = true,
@@ -59,8 +58,7 @@ fun ButtonOnboardingPrimaryLarge(
                     disabledBackgroundColor = colorResource(id = R.color.control_tertiary),
                     disabledContentColor = colorResource(id = R.color.text_tertiary)
                 ),
-                modifier = modifierButton
-                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                modifier = Modifier.fillMaxWidth(),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 0.dp,
                     pressedElevation = 0.dp
@@ -90,7 +88,6 @@ fun ButtonOnboardingPrimaryLarge(
 fun ButtonOnboardingSecondaryLarge(
     text: String = "",
     modifierBox: Modifier = Modifier,
-    modifierButton: Modifier = Modifier,
     size: ButtonSize = ButtonSize.Large,
     onClick: () -> Unit = {},
     enabled: Boolean = true,
@@ -118,8 +115,7 @@ fun ButtonOnboardingSecondaryLarge(
                     disabledBackgroundColor = colorResource(id = R.color.shape_tertiary),
                     disabledContentColor = colorResource(id = R.color.text_tertiary)
                 ),
-                modifier = modifierButton
-                    .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
+                modifier = Modifier.fillMaxWidth(),
                 elevation = ButtonDefaults.elevation(
                     defaultElevation = 0.dp,
                     pressedElevation = 0.dp

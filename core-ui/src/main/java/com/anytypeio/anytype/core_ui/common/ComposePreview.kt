@@ -12,7 +12,9 @@ import androidx.compose.ui.tooling.preview.Wallpapers
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
     name = "Light Mode",
-    showSystemUi = true
+    showSystemUi = true,
+    apiLevel = 35,
+    wallpaper = Wallpapers.NONE
 )
 @Preview(
     backgroundColor = 0xFF121212,

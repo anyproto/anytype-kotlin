@@ -22,6 +22,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryActive
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactive
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryInactiveText
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryPressed
+import com.anytypeio.anytype.core_ui.ColorButtonPrimaryText
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryActive
 import com.anytypeio.anytype.core_ui.ColorButtonSecondaryBorder
@@ -32,6 +37,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 
+@Deprecated("Use OnBoardingButtonPrimary instead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingButtonPrimary(
@@ -45,9 +51,9 @@ fun OnBoardingButtonPrimary(
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
     val backgroundColor = if (isPressed.value) {
-        colorResource(id = R.color.control_accent_125)
+        ColorButtonPrimaryPressed
     } else {
-        colorResource(id = R.color.control_accent)
+        ColorButtonPrimaryActive
     }
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
@@ -55,12 +61,12 @@ fun OnBoardingButtonPrimary(
             onClick = onClick,
             interactionSource = interactionSource,
             enabled = enabled,
-            shape = RoundedCornerShape(100.dp),
+            shape = RoundedCornerShape(size.cornerSize),
             colors = ButtonDefaults.buttonColors(
                 backgroundColor = backgroundColor,
-                contentColor = colorResource(R.color.text_white),
-                disabledBackgroundColor = colorResource(R.color.control_accent_25),
-                disabledContentColor = colorResource(R.color.text_white)
+                contentColor = ColorButtonPrimaryText,
+                disabledBackgroundColor = ColorButtonPrimaryInactive,
+                disabledContentColor = ColorButtonPrimaryInactiveText
             ),
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
@@ -99,23 +105,42 @@ fun OnBoardingButtonSecondary(
     onClick: () -> Unit,
     enabled: Boolean = true,
     modifier: Modifier = Modifier,
-    size: ButtonSize
+    size: ButtonSize,
+    textColor: Color = ColorButtonSecondaryText,
+    disabledBackgroundColor: Color? = null
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor = if (isPressed.value) {
+        ColorButtonSecondaryPressed
+    } else {
+        ColorButtonSecondaryActive
+    }
+    val borderColor = if (isPressed.value) {
+        ColorButtonSecondaryBorderPressed
+    } else {
+        ColorButtonSecondaryBorder
+    }
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Button(
             onClick = onClick,
             interactionSource = interactionSource,
             enabled = enabled,
-            shape = RoundedCornerShape(100.dp),
-            colors = ButtonDefaults.buttonColors(
-                backgroundColor = colorResource(id = R.color.shape_primary),
-                contentColor = colorResource(id = R.color.text_primary),
-                disabledBackgroundColor = colorResource(id = R.color.control_tertiary),
-                disabledContentColor = colorResource(id = R.color.text_tertiary)
-            ),
+            shape = RoundedCornerShape(size.cornerSize),
+            border = BorderStroke(width = 1.dp, color = borderColor),
+            colors = if (disabledBackgroundColor != null) {
+                ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    disabledBackgroundColor = disabledBackgroundColor,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                )
+            } else {
+                ButtonDefaults.buttonColors(
+                    backgroundColor = backgroundColor,
+                    disabledContentColor = colorResource(id = R.color.text_tertiary)
+                )
+            },
             modifier = modifier
                 .defaultMinSize(minWidth = 1.dp, minHeight = 1.dp),
             elevation = ButtonDefaults.elevation(
@@ -126,7 +151,9 @@ fun OnBoardingButtonSecondary(
         ) {
             Text(
                 text = text,
-                style = ButtonRegular.copy(color = colorResource(R.color.text_primary))
+                style = size.textStyle.copy(
+                    color = if (enabled) textColor else colorResource(id = R.color.text_tertiary)
+                )
             )
         }
     }

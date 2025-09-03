@@ -30,9 +30,9 @@ import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingSecondaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
@@ -141,24 +141,24 @@ fun SignButtons(
     onLoginClicked: () -> Unit,
 ) {
     Column {
-        OnBoardingButtonPrimary(
+        ButtonOnboardingPrimaryLarge(
             text = stringResource(id = R.string.onboarding_new_vault_button_text),
             onClick = onJoinClicked,
             enabled = true,
-            isLoading = isLoading,
+            loading = isLoading,
             size = ButtonSize.Large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+            modifierBox = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth(),
         )
-        OnBoardingButtonSecondary(
+        ButtonOnboardingSecondaryLarge(
             text = stringResource(id = R.string.onboarding_have_key_button_text),
             onClick = onLoginClicked,
             size = ButtonSize.Large,
             enabled = isLoading.not(),
-            modifier = Modifier
+            modifierBox = Modifier
+                .padding(top = 12.dp, start = 20.dp, end = 20.dp)
                 .fillMaxWidth()
-                .padding(top = 12.dp, start = 20.dp, end = 20.dp),
         )
     }
 }

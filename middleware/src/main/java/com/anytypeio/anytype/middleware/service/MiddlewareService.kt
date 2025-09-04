@@ -664,4 +664,17 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun setSpaceMode(request: Rpc.PushNotification.SetSpaceMode.Request): Rpc.PushNotification.SetSpaceMode.Response
+
+    //region PUBLISHING
+
+    @Throws(Exception::class)
+    fun publishingGetStatus(request: Rpc.Publishing.GetStatus.Request): Rpc.Publishing.GetStatus.Response
+
+    @Throws(Exception::class)
+    fun publishingCreate(request: Rpc.Publishing.Create.Request): Rpc.Publishing.Create.Response
+
+    @Throws(Exception::class)
+    fun publishingRemove(request: Rpc.Publishing.Remove.Request): Rpc.Publishing.Remove.Response
+
+    //endregion
 }

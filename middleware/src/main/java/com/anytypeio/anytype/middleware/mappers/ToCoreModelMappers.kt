@@ -66,6 +66,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncStatus
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
+import com.anytypeio.anytype.core_models.publishing.Publishing
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
@@ -1241,3 +1242,18 @@ fun MLinkPreview.toCoreLinkPreview(): LinkPreview {
         title = title
     )
 }
+
+fun MPublishState.toCorePublishStatus(): Publishing.State = Publishing.State(
+    obj = objectId,
+    space = SpaceId(spaceId),
+    showJoinSpaceButton = joinSpace,
+    version = version,
+    timestamp = timestamp,
+    uri = uri,
+    size = size,
+    details = details.toCoreModel(),
+    status = when(status) {
+       MPublishStatus.PublishStatusCreated -> Publishing.Status.CREATED
+       MPublishStatus.PublishStatusPublished -> Publishing.Status.PUBLISHED
+    }
+)

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.onboarding.screens
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,126 +11,127 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.ClickableText
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.ColorButtonInversion
-import com.anytypeio.anytype.core_ui.OnBoardingTextSecondaryColor
-import com.anytypeio.anytype.core_ui.OnboardingSubtitleColor
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingSecondaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
-import com.anytypeio.anytype.core_ui.views.TextOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.core_ui.views.fontRiccioneRegular
-import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 
 @Composable
 fun AuthScreen(
-    vm: OnboardingStartViewModel
+    isLoading: Boolean,
+    onSettingsClicked: () -> Unit,
+    onJoinClicked: () -> Unit,
+    onLoginClicked: () -> Unit,
+    onPrivacyPolicyClicked: () -> Unit,
+    onTermsOfUseClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center) {
-            Title(modifier = Modifier.align(Alignment.CenterHorizontally))
-            Subtitle(modifier = Modifier)
-            //Description()
-            Spacer(modifier = Modifier.height(72.dp))
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+                .align(Alignment.TopCenter)
+        ) {
+            Box(
+                modifier = Modifier
+                    .width(56.dp)
+                    .height(48.dp)
+                    .align(Alignment.CenterEnd)
+                    .clickable { onSettingsClicked() },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_onboarding_settings),
+                    contentDescription = "Onboarding settings",
+                    modifier = Modifier.size(32.dp)
+                )
+            }
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
         }
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.align(Alignment.Center),
+            verticalArrangement = Arrangement.Center
+        ) {
+            Title(modifier = Modifier.fillMaxWidth())
+            Subtitle(modifier = Modifier.fillMaxWidth())
+        }
+        Column(
+            modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
             verticalArrangement = Arrangement.Bottom
         ) {
             SignButtons(
-                isLoading = vm.isLoadingState.collectAsStateWithLifecycle().value,
-                onJoinClicked = vm::onJoinClicked,
-                onLoginClicked = vm::onLoginClicked
+                isLoading = isLoading,
+                onJoinClicked = onJoinClicked,
+                onLoginClicked = onLoginClicked
             )
             TermsAndPolicy(
-                modifier = Modifier,
-                onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
-                onTermsOfUseClicked = vm::onTermsOfUseClicked
+                modifier = Modifier.fillMaxWidth(),
+                onPrivacyPolicyClicked = onPrivacyPolicyClicked,
+                onTermsOfUseClicked = onTermsOfUseClicked
             )
         }
-        Image(
-            painter = painterResource(id = R.drawable.ic_onboarding_settings),
-            contentDescription = "Onboarding settings",
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .padding(top = 8.dp, end = 16.dp)
-                .clickable { vm.onSettingsClicked() }
-        )
     }
 }
 
 @Composable
 fun Title(modifier: Modifier = Modifier) {
-    Image(
-        painter = painterResource(id = R.drawable.ic_local_first_internet),
-        contentDescription = "Everything app logo",
-        modifier = modifier
+    Text(
+        modifier = modifier,
+        textAlign = TextAlign.Center,
+        color = colorResource(R.color.text_primary),
+        text = stringResource(id = R.string.onboarding_auth_title),
+        style = TextStyle(
+            fontFamily = fontInterRegular,
+            fontWeight = FontWeight.W400,
+            fontSize = 40.sp,
+            lineHeight = 44.sp,
+            letterSpacing = (-0.05).em
+        )
     )
 }
 
 @Composable
 fun Subtitle(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(horizontal = 30.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.onboarding_auth_subtitle),
-            textAlign = TextAlign.Center,
-            color = OnboardingSubtitleColor,
-            style = TextStyle(
-                fontFamily = fontRiccioneRegular,
-                fontWeight = FontWeight.W400,
-                fontSize = 44.sp,
-                lineHeight = 44.sp,
-                letterSpacing = (-0.05).em
-            )
+    Text(
+        modifier = modifier,
+        text = stringResource(id = R.string.onboarding_auth_subtitle),
+        textAlign = TextAlign.Center,
+        color = colorResource(R.color.text_secondary),
+        style = TextStyle(
+            fontFamily = fontRiccioneRegular,
+            fontWeight = FontWeight.W400,
+            fontSize = 44.sp,
+            lineHeight = 44.sp,
+            letterSpacing = (-0.05).em
         )
-    }
-}
-
-
-@Composable
-fun Description(modifier: Modifier = Modifier) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .padding(top = 30.dp, start = 68.dp, end = 68.dp),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.onboarding_auth_description),
-            textAlign = TextAlign.Center,
-            style = HeadlineOnBoardingDescription.copy(color = OnBoardingTextSecondaryColor),
-        )
-    }
+    )
 }
 
 @Composable
@@ -139,26 +141,24 @@ fun SignButtons(
     onLoginClicked: () -> Unit,
 ) {
     Column {
-        OnBoardingButtonPrimary(
+        ButtonOnboardingPrimaryLarge(
             text = stringResource(id = R.string.onboarding_new_vault_button_text),
             onClick = onJoinClicked,
             enabled = true,
-            isLoading = isLoading,
+            loading = isLoading,
             size = ButtonSize.Large,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 20.dp, end = 20.dp)
+            modifierBox = Modifier
+                .padding(horizontal = 20.dp)
+                .fillMaxWidth(),
         )
-        OnBoardingButtonSecondary(
+        ButtonOnboardingSecondaryLarge(
             text = stringResource(id = R.string.onboarding_have_key_button_text),
             onClick = onLoginClicked,
             size = ButtonSize.Large,
             enabled = isLoading.not(),
-            disabledBackgroundColor = Color.Transparent,
-            modifier = Modifier
+            modifierBox = Modifier
+                .padding(top = 12.dp, start = 20.dp, end = 20.dp)
                 .fillMaxWidth()
-                .padding(top = 12.dp, start = 20.dp, end = 20.dp),
-            textColor = ColorButtonInversion
         )
     }
 }
@@ -170,40 +170,21 @@ fun TermsAndPolicy(
     onTermsOfUseClicked: () -> Unit
 ) {
     val annotatedString = buildAnnotatedString {
-        append(
-            stringResource(id = R.string.onboarding_terms_and_policy_prefix)
-        )
-
+        append(stringResource(id = R.string.onboarding_terms_and_policy_prefix))
         pushStringAnnotation(tag = TermsOfUseTag, annotation = "")
-        withStyle(
-            style = SpanStyle(
-                color = Color(0xFF797976)
-            )
-        ) {
-            append(stringResource(id = R.string.onboarding_terms_and_policy_terms))
-        }
+        append(stringResource(id = R.string.onboarding_terms_and_policy_terms))
         pop()
-
-        append(
-            stringResource(id = R.string.onboarding_terms_and_policy_infix)
-        )
-
+        append(stringResource(id = R.string.onboarding_terms_and_policy_infix))
         pushStringAnnotation(tag = PrivacyPolicyTag, annotation = "")
-        withStyle(
-            style = SpanStyle(
-                color = Color(0xFF797976)
-            )
-        ) {
-            append(stringResource(id = R.string.onboarding_terms_and_policy_privacy))
-        }
+        append(stringResource(id = R.string.onboarding_terms_and_policy_privacy))
         pop()
     }
 
     ClickableText(
-        modifier = modifier.padding(vertical = 16.dp, horizontal = 58.dp),
+        modifier = modifier.padding(vertical = 16.dp, horizontal = 20.dp),
         text = annotatedString,
-        style = TextOnBoardingDescription
-            .copy(color = Color(0xFF494843), textAlign = TextAlign.Center),
+        style = Relations3
+            .copy(color = colorResource(R.color.text_secondary), textAlign = TextAlign.Center),
         onClick = {
             annotatedString.getStringAnnotations(TermsOfUseTag, it, it)
                 .firstOrNull()?.let {
@@ -219,12 +200,22 @@ fun TermsAndPolicy(
 
 @DefaultPreviews
 @Composable
-fun PreviewSignButtons() {
-    SignButtons(
-        isLoading = true,
-        onJoinClicked = {},
-        onLoginClicked = {}
-    )
+fun PreviewAuthScreen() {
+    Column(
+        modifier = Modifier.fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
+
+    ) {
+        Spacer(modifier = Modifier.height(40.dp))
+        AuthScreen(
+            isLoading = false,
+            onSettingsClicked = {},
+            onJoinClicked = {},
+            onLoginClicked = {},
+            onPrivacyPolicyClicked = {},
+            onTermsOfUseClicked = {}
+        )
+    }
 }
 
 private const val PrivacyPolicyTag = "tag.privacy_policy"

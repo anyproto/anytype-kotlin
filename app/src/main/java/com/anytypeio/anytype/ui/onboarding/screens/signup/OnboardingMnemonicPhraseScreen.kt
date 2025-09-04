@@ -261,8 +261,7 @@ fun MnemonicButtons(
                     onClick = {
                         onCheckLaterClicked.invoke()
                     },
-                    size = ButtonSize.Large,
-                    textColor = ColorButtonRegular
+                    size = ButtonSize.Large
                 )
             }
         }

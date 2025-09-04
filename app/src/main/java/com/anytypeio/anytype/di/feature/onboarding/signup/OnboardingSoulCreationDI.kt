@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -45,6 +46,7 @@ interface OnboardingSoulCreationComponent {
     }
 
     fun getViewModel(): OnboardingSetProfileNameViewModel
+    fun getEmailAndSelectionViewModel(): OnboardingEmailAndSelectionViewModel
 }
 
 @Module
@@ -63,6 +65,10 @@ object OnboardingSoulCreationModule {
         @Binds
         @SoulCreationScreenScope
         fun bindViewModelFactory(factory: OnboardingSetProfileNameViewModel.Factory): ViewModelProvider.Factory
+        
+        @Binds
+        @SoulCreationScreenScope
+        fun bindEmailAndSelectionViewModelFactory(factory: OnboardingEmailAndSelectionViewModel.Factory): ViewModelProvider.Factory
     }
 }
 

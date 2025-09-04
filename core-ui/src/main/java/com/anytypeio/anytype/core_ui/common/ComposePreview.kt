@@ -12,16 +12,20 @@ import androidx.compose.ui.tooling.preview.Wallpapers
     showBackground = true,
     uiMode = UI_MODE_NIGHT_NO or Configuration.UI_MODE_TYPE_NORMAL,
     name = "Light Mode",
-    showSystemUi = true
+    showSystemUi = false,
+    apiLevel = 35,
+    wallpaper = Wallpapers.NONE,
+    device = Devices.PIXEL_7
 )
 @Preview(
     backgroundColor = 0xFF121212,
     showBackground = true,
     uiMode = UI_MODE_NIGHT_YES or Configuration.UI_MODE_TYPE_NORMAL,
     name = "Dark Mode",
-    showSystemUi = true,
+    showSystemUi = false,
     apiLevel = 35,
-    wallpaper = Wallpapers.NONE
+    wallpaper = Wallpapers.NONE,
+    device = Devices.PIXEL_7
 )
 annotation class DefaultPreviews
 

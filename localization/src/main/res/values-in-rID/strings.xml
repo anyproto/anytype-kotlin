@@ -50,6 +50,7 @@
     <string name="default_space">Ruang bawaan</string>
     <string name="space_settings_apply_random_gradient">Beri warna polos acak</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
+    <string name="space_settings_chage_space_icon_color">Ubah warna ikon</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Hapus gambar</string>
     <string name="delete_space">Hapus ruang</string>
@@ -1903,4 +1904,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
     <string name="private_local_yours_forever">Pribadi, lokal, milikmu selamanya</string>
+    <string name="wallpaper_item_space_icon_color">Warna ikon \nruang</string>
 </resources>

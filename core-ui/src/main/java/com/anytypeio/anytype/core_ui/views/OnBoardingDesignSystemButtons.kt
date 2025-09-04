@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 
+@Deprecated("Use OnBoardingButtonPrimary instead")
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun OnBoardingButtonPrimary(

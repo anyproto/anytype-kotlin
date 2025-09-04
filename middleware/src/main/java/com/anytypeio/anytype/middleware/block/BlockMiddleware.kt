@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.publishing.Publishing
 import com.anytypeio.anytype.data.auth.repo.block.BlockRemote
 import com.anytypeio.anytype.middleware.interactor.Middleware
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
@@ -1150,6 +1151,18 @@ class BlockMiddleware(
 
     override suspend fun debugStats(): String {
         return middleware.debugStats()
+    }
+
+    override suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
+        return middleware.publishingGetStatus(command)
+    }
+
+    override suspend fun publishingCreate(command: Command.Publishing.Create): String {
+        return middleware.publishingCreate(command)
+    }
+
+    override suspend fun publishingRemove(command: Command.Publishing.Remove) {
+        middleware.publishingRemove(command)
     }
 
     override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {

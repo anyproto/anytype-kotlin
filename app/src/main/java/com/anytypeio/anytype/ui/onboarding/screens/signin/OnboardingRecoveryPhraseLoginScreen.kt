@@ -4,23 +4,26 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -33,43 +36,20 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_ui.ColorButtonRegular
-import com.anytypeio.anytype.core_ui.OnBoardingTextPrimaryColor
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.ConditionLogin
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
-import com.anytypeio.anytype.core_ui.views.TitleLogin
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel.SetupState
 import com.anytypeio.anytype.ui.onboarding.OnboardingMnemonicInput
 import com.anytypeio.anytype.ui.update.MigrationFailedScreen
 import com.anytypeio.anytype.ui.update.MigrationInProgressScreen
 import com.anytypeio.anytype.ui.update.MigrationStartScreen
-import kotlin.Unit
 
-@Composable
-fun RecoveryScreenWrapper(
-    vm: OnboardingMnemonicLoginViewModel,
-    onBackClicked: () -> Unit,
-    onScanQrClick: () -> Unit
-) {
-    RecoveryScreen(
-        onBackClicked = onBackClicked,
-        onNextClicked = vm::onLoginClicked,
-        onActionDoneClicked = vm::onActionDone,
-        onScanQrClicked = onScanQrClick,
-        state = vm.state.collectAsState().value,
-        onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
-        onDebugAccountTraceClicked = {
-            vm.onAccountThraceButtonClicked()
-        },
-        onRetryMigrationClicked = vm::onRetryMigrationClicked,
-        onStartMigrationClicked = vm::onStartMigrationClicked
-    )
-}
 
 @Composable
 fun RecoveryScreen(
@@ -90,63 +70,60 @@ fun RecoveryScreen(
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
-        Image(
+        Box(
             modifier = Modifier
-                .padding(top = 12.dp, start = 9.dp)
-                .noRippleClickable {
-                    focus.clearFocus()
-                    onBackClicked()
-                },
-            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-            contentDescription = "Back button"
-        )
-        Text(
-            modifier = Modifier
-                .noRippleClickable { onEnterMyVaultClicked() }
-                .align(Alignment.TopCenter)
-                .padding(top = 17.dp, start = 18.dp, end = 18.dp)
-            ,
-            text = stringResource(id = R.string.onboarding_enter_my_vault),
-            style = TitleLogin.copy(
-                color = colorResource(id = R.color.text_white)
-            )
-        )
-        if (BuildConfig.DEBUG) {
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
             Image(
                 modifier = Modifier
-                    .wrapContentSize()
-                    .padding(top = 16.dp, end = 16.dp)
-                    .align(Alignment.TopEnd)
-                    .clickable {
-                        onDebugAccountTraceClicked()
+                    .padding(start = 8.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable {
+                        focus.clearFocus()
+                        onBackClicked()
                     },
-                painter = painterResource(R.drawable.ic_vault_settings),
-                contentDescription = "Debug account select command"
+                painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+                contentDescription = "Back button"
             )
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
+            if (BuildConfig.DEBUG) {
+                Image(
+                    modifier = Modifier
+                        .wrapContentSize()
+                        .padding(end = 16.dp)
+                        .align(Alignment.CenterEnd)
+                        .clickable {
+                            onDebugAccountTraceClicked()
+                        },
+                    painter = painterResource(R.drawable.ic_vault_settings),
+                    contentDescription = "Debug account select command"
+                )
+            }
         }
 
         val emptyRecoveryPhraseError = stringResource(R.string.onboarding_your_key_can_t_be_empty)
 
         LazyColumn(
-            modifier = Modifier.padding(top = 71.dp),
+            modifier = Modifier.padding(top = 72.dp),
             content = {
                 item {
                     OnboardingMnemonicInput(
                         modifier = Modifier
                             .padding(
-                                start = 18.dp,
-                                end = 18.dp,
-                                bottom = 18.dp
+                                start = 20.dp,
+                                end = 20.dp,
+                                bottom = 20.dp
                             )
-                            .height(165.dp)
+                            .height(106.dp)
                             .fillMaxWidth()
                             .background(
-                                color = Color(0x26DAD7CA),
-                                shape = RoundedCornerShape(24.dp)
-                            )
-                            .padding(
-                                horizontal = 8.dp,
-                                vertical = 4.dp
+                                color = colorResource(R.color.shape_transparent_secondary),
+                                shape = RoundedCornerShape(16.dp)
                             )
                         ,
                         text = text,
@@ -172,7 +149,7 @@ fun RecoveryScreen(
                     )
                 }
                 item {
-                    OnBoardingButtonPrimary(
+                    ButtonOnboardingPrimaryLarge(
                         text = stringResource(id = R.string.onboarding_enter_my_vault),
                         onClick = {
                             onNextClicked.invoke(text.value).also {
@@ -181,38 +158,59 @@ fun RecoveryScreen(
                         },
                         enabled = text.value.isNotEmpty(),
                         size = ButtonSize.Large,
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 18.dp),
-                        isLoading = state is SetupState.InProgress
+                        modifierBox = Modifier
+                            .padding(horizontal = 20.dp)
+                            .fillMaxWidth(),
+                        loading = state is SetupState.InProgress,
                     )
                 }
                 item {
                     Text(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(vertical = 12.dp),
+                            .padding(vertical = 24.dp),
                         textAlign = TextAlign.Center,
                         text = stringResource(id = R.string.onboarding_login_or),
-                        style = ConditionLogin.copy(
-                            color = OnBoardingTextPrimaryColor
+                        style = Caption1Regular.copy(
+                            color = colorResource(R.color.text_secondary)
                         )
                     )
                 }
                 item {
-                    OnBoardingButtonSecondary(
-                        text = stringResource(id = R.string.or_scan_qr_code),
-                        onClick = {
-                            onScanQrClicked.invoke()
-                        },
-                        enabled = state !is SetupState.InProgress,
-                        disabledBackgroundColor = Color.Transparent,
-                        size = ButtonSize.Large,
+                    Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(start = 18.dp, end = 18.dp, bottom = 24.dp),
-                        textColor = ColorButtonRegular
-                    )
+                            .wrapContentHeight(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    )  {
+                        Box(
+                            modifier = Modifier
+                                .size(56.dp)
+                                .background(
+                                    shape = CircleShape,
+                                    color = colorResource(id = R.color.shape_transparent_secondary)
+                                )
+                                .noRippleThrottledClickable {
+                                    if (state !is SetupState.InProgress) {
+                                        onScanQrClicked.invoke()
+                                    }
+                                },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Image(
+                                modifier = Modifier.size(24.dp),
+                                painter = painterResource(id = R.drawable.ic_qr_code_24),
+                                contentDescription = stringResource(R.string.content_description_qr_image)
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(8.dp))
+                        Text(
+                            modifier = Modifier,
+                            text = stringResource(R.string.onboarding_login_qr),
+                            style = Caption2Regular,
+                            color = colorResource(id = R.color.text_primary),
+                        )
+                    }
                 }
             }
         )
@@ -239,6 +237,25 @@ fun RecoveryScreen(
                 }
             }
         }
+    }
+}
+
+@DefaultPreviews
+@Composable
+fun PreviewRecoveryScreen() {
+    Column {
+        Spacer(modifier = Modifier.height(40.dp))
+        RecoveryScreen(
+            onBackClicked = {},
+            onNextClicked = {},
+            onActionDoneClicked = {},
+            onScanQrClicked = {},
+            state = SetupState.Idle,
+            onEnterMyVaultClicked = {},
+            onDebugAccountTraceClicked = {},
+            onRetryMigrationClicked = {},
+            onStartMigrationClicked = {}
+        )
     }
 }
 

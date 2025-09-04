@@ -36,6 +36,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplate
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -52,6 +53,7 @@ import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDo
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import javax.inject.Inject
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -111,6 +113,17 @@ class ObjectMenuViewModel(
     }
 
     private val objectRestrictions = storage.objectRestrictions.current()
+
+    val canBePublished = MutableStateFlow(false)
+
+    fun onResolveWebPublishPermission(space: SpaceId) {
+        viewModelScope.launch {
+            val permission = userPermissionProvider.get(space = space)
+            if (permission == SpaceMemberPermissions.OWNER) {
+                canBePublished.value = true
+            }
+        }
+    }
 
     override fun buildActions(
         ctx: Id,

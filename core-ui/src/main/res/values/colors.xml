@@ -67,6 +67,7 @@
     <color name="shape_transparent">#14535353</color>
     <color name="shape_transparent_primary">#1C000000</color>
     <color name="shape_transparent_secondary">#0D000000</color>
+    <color name="shape_transparent_tertiary">#08000000</color>
 
     <color name="glyph_active">#A7A7A7</color>
     <color name="glyph_selected">#252525</color>
@@ -159,6 +160,8 @@
     <color name="colorPrimary">#FF5722</color>
     <color name="colorPrimaryDark">#000000</color>
     <color name="colorAccent">#3F51B5</color>
+    <color name="color_accent_80">#699BFF</color>
+
     <color name="snackbar_background">#000000</color>
 
     <color name="widget_divider">#E3E3E3</color>

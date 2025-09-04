@@ -7,7 +7,9 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModel
@@ -27,7 +29,18 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
                     findNavController().popBackStack(R.id.pageScreen, true)
                 }
             }
+            subscribe(vm.canBePublished) { canBePublished ->
+                if (canBePublished) {
+                    binding.publishToWeb.visible()
+                    binding.publishToWebDivider.visible()
+                } else {
+                    binding.publishToWeb.gone()
+                    binding.publishToWebDivider.gone()
+                }
+            }
         }
+
+        vm.onResolveWebPublishPermission(space = SpaceId(space))
     }
 
     override fun injectDependencies() {
@@ -47,7 +60,6 @@ class ObjectMenuFragment : ObjectMenuBaseFragment() {
     }
 
     companion object {
-
         fun args(
             ctx: Id,
             space: Id,

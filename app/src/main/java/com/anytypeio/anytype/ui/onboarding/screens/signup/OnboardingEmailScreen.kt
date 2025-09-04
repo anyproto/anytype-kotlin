@@ -42,18 +42,18 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 
 @Composable
 fun SetEmailWrapper(
-    viewModel: OnboardingSetProfileNameViewModel,
+    viewModel: OnboardingEmailAndSelectionViewModel,
     startingObject: String?,
     space: Id,
     onBackClicked: () -> Unit,
@@ -64,27 +64,27 @@ fun SetEmailWrapper(
     
     OnboardingEmailScreen(
         onContinueClicked = { email ->
-            viewModel.onEmailContinueClicked(
+            viewModel.onEmailContinueButtonClicked(
                 space = space,
                 startingObject = startingObject,
                 email = email
             )
         },
         onSkipClicked = {
-            viewModel.onEmailSkippedClicked(
+            viewModel.onEmailSkippedButtonClicked(
                 space = space,
                 startingObject = startingObject
             )
         },
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
-            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading,
+            .value is OnboardingEmailAndSelectionViewModel.ScreenState.Loading,
         onBackClicked = onBackClicked
     )
 }
 
 @Composable
-fun OnboardingEmailScreen(
+private fun OnboardingEmailScreen(
     onContinueClicked: (String) -> Unit,
     onSkipClicked: () -> Unit,
     onBackClicked: () -> Unit,
@@ -128,7 +128,7 @@ fun OnboardingEmailScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 20.dp),
                 text = stringResource(R.string.onboarding_email_add_title),
-                color = colorResource(id = R.color.text_white),
+                color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitleSemibold,
                 textAlign = TextAlign.Center
             )
@@ -139,11 +139,12 @@ fun OnboardingEmailScreen(
                     .padding(horizontal = 20.dp),
                 text = stringResource(R.string.onboarding_email_add_description),
                 style = UXBody,
-                color = colorResource(id = R.color.text_white),
+                color = colorResource(id = R.color.text_secondary),
                 textAlign = TextAlign.Center
             )
             Spacer(modifier = Modifier.height(32.dp))
             OutlinedTextField(
+                enabled = !isLoading,
                 value = innerValue,
                 onValueChange = { input ->
                     innerValue = input
@@ -158,11 +159,11 @@ fun OnboardingEmailScreen(
                     Text(
                         text = stringResource(id = R.string.onboarding_enter_email),
                         style = PreviewTitle1Regular,
-                        color = Color(0xFF646464)
+                        color = colorResource(id = R.color.text_tertiary)
                     )
                 },
                 textStyle = PreviewTitle1Regular.copy(
-                    color = Color(0xFFC2C2C2)
+                    color = colorResource(id = R.color.text_primary)
                 ),
                 singleLine = true,
                 isError = isError,
@@ -177,10 +178,10 @@ fun OnboardingEmailScreen(
                 },
                 colors = TextFieldDefaults.colors(
                     disabledTextColor = colorResource(id = R.color.text_primary),
-                    cursorColor = Color(0xFFC2C2C2),
-                    focusedContainerColor = Color(0xFF212121),
-                    unfocusedContainerColor = Color(0xFF212121),
-                    errorContainerColor = Color(0xFF212121),
+                    cursorColor = colorResource(id = R.color.color_accent),
+                    focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
                     focusedIndicatorColor = Color.Transparent,
                     unfocusedIndicatorColor = Color.Transparent,
                     errorIndicatorColor = Color.Transparent
@@ -211,28 +212,28 @@ fun OnboardingEmailScreen(
                 )
                 .align(Alignment.BottomCenter)
         ) {
-            OnBoardingButtonPrimary(
+            ButtonOnboardingPrimaryLarge(
                 text = stringResource(id = R.string.onboarding_button_continue),
                 onClick = {
                     validateAndSubmit()
                 },
                 size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth(),
-                isLoading = isLoading,
+                modifierBox = Modifier.fillMaxWidth(),
+                loading = isLoading,
                 enabled = innerValue.text.isNotEmpty()
             )
             if (!BuildConfig.MANDATORY_EMAIL_COLLECTION) {
                 Spacer(modifier = Modifier.height(8.dp))
-                OnBoardingButtonSecondary(
+                ButtonOnboardingLinkLarge(
                     text = stringResource(id = R.string.onboarding_button_skip),
                     onClick = {
                         focusManager.clearFocus()
                         keyboardController?.hide()
                         onSkipClicked()
                     },
-                    textColor = colorResource(id = R.color.text_white),
+                    enabled = !isLoading,
                     size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifierBox = Modifier.fillMaxWidth(),
                 )
             }
         }
@@ -242,10 +243,13 @@ fun OnboardingEmailScreen(
 @DefaultPreviews
 @Composable
 private fun SetProfileNameScreenPreview() {
-    OnboardingEmailScreen(
-        onContinueClicked = {},
-        onBackClicked = {},
-        onSkipClicked = {},
-        isLoading = false
-    )
+    Column {
+        Spacer(modifier = Modifier.height(40.dp))
+        OnboardingEmailScreen(
+            onContinueClicked = {},
+            onBackClicked = {},
+            onSkipClicked = {},
+            isLoading = false
+        )
+    }
 }

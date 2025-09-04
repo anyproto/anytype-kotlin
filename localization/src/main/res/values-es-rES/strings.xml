@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Verde azulado</string>
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s de fondo</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Cuéntanos algo de ti</string>
+    <string name="onboarding_selection_description">Selecciona la ocupación o formación que más encaja contigo</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Arte / Creación de contenidos</string>
+    <string name="onboarding_selection_consultant">Asesoría</string>
+    <string name="onboarding_selection_designer">Diseño</string>
+    <string name="onboarding_selection_developer">Desarrollo de software</string>
+    <string name="onboarding_selection_entrepreneur">Inversión / Empresa</string>
+    <string name="onboarding_selection_manager">Gestión / Tecnología de la información</string>
+    <string name="onboarding_selection_marketer">Publicidad</string>
+    <string name="onboarding_selection_researcher">Investigación / Universidad</string>
+    <string name="onboarding_selection_student">Estudiante</string>
+    <string name="onboarding_selection_writer">Literatura / Periodismo</string>
+    <string name="onboarding_selection_other">Otros</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">¿Para qué quieres usar Anytype?</string>
+    <string name="onboarding_usecase_description">Elige el tipo de uso que más encaja contigo</string>
+    <string name="onboarding_usecase_habit_tracking">Seguimiento de hábitos</string>
+    <string name="onboarding_usecase_knowledge">Base de conocimientos personal / PKM</string>
+    <string name="onboarding_usecase_life_planning">Planificación personal</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Notas personales</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Otros</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Crear un widget</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Nombre del tipo</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">la aplicación para todo</string>
-    <string name="onboarding_auth_subtitle">Cifrado, sin conexión\ny abierto</string>
-    <string name="onboarding_auth_description">Crea y colabora en espacios de tu propiedad. Tecnología cifrada, sin conexión y de código abierto.</string>
+    <string name="onboarding_auth_title">Cifrada, local</string>
+    <string name="onboarding_auth_subtitle">tuya para siempre</string>
+    <string name="onboarding_auth_description">Cifrada, local</string>
     <string name="onboarding_terms_and_policy_prefix">"Al continuar, aceptas nuestros"</string>
     <string name="onboarding_terms_and_policy_terms">términos\u00A0de\u00A0uso</string>
     <string name="onboarding_terms_and_policy_infix">" y "</string>
     <string name="onboarding_terms_and_policy_privacy">nuestra\u00A0política de privacidad</string>
     <string name="onboarding_new_vault_button_text">Es mi primera vez</string>
-    <string name="onboarding_enter_my_vault">Siguiente</string>
+    <string name="onboarding_enter_my_vault">Entrar</string>
     <string name="onboarding_have_key_button_text">Ya tengo la clave</string>
     <string name="onboarding_get_my_key_button_text">Obtener mi clave</string>
     <string name="onboarding_invite_code_title">Introduce tu código de invitación</string>
@@ -1024,8 +1050,9 @@
     <string name="onboarding_key_copy">Copiar al portapapeles</string>
     <string name="onboarding_soul_creation_placeholder">Identidad de Anytype</string>
     <string name="onboarding_soul_creation">Creando tu identidad…</string>
-    <string name="onboarding_type_your_key">Escribe tu frase de recuperación</string>
-    <string name="onboarding_login_or">O</string>
+    <string name="onboarding_type_your_key">Escribe tu clave</string>
+    <string name="onboarding_login_or">o entrar con</string>
+    <string name="onboarding_login_qr">Código QR</string>
     <string name="onboarding_entering_void_title">Entrando a tu arca</string>
     <string name="onboarding_your_key_can_t_be_empty">La clave no puede estar vacía.</string>
     <string name="onboarding_your_name">Escribe tu nombre</string>

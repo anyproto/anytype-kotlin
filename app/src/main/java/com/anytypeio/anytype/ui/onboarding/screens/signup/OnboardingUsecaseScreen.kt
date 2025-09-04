@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -20,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,14 +29,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.foundation.layout.offset
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
@@ -42,11 +42,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.UXBody
-
-data class UsecaseItem(
-    val emoji: String,
-    val titleResId: Int
-)
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.UsecaseItem
 
 private val usecaseItems = listOf(
     UsecaseItem("📋", R.string.onboarding_usecase_habit_tracking),
@@ -61,11 +58,16 @@ private val usecaseItems = listOf(
 
 @Composable
 fun OnboardingUsecaseScreen(
+    vm: OnboardingEmailAndSelectionViewModel,
     isLoading: Boolean,
     onBackClicked: () -> Unit,
     onContinueClicked: (UsecaseItem) -> Unit = {},
     onSkipClicked: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        vm.sendAnalyticsOnboardingUseCaseScreen()
+    }
+
     var selectedUsecase by remember { mutableStateOf<UsecaseItem?>(null) }
     
     Box(
@@ -233,16 +235,5 @@ private fun UsecaseSelectionItem(
                     .offset(x = 8.dp, y = (-8).dp), // Offset to position outside the box
             )
         }
-    }
-}
-
-@DefaultPreviews
-@Composable
-private fun OnboardingUsecaseScreenPreview() {
-    Column {
-        OnboardingUsecaseScreen(
-            isLoading = false,
-            onBackClicked = {}
-        )
     }
 }

@@ -28,6 +28,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.foundation.layout.offset
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -42,11 +43,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.UXBody
-
-data class ProfessionItem(
-    val emoji: String,
-    val titleResId: Int
-)
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.ProfessionItem
 
 private val professionItems = listOf(
     ProfessionItem("✍️", R.string.onboarding_selection_writer),
@@ -64,11 +62,15 @@ private val professionItems = listOf(
 
 @Composable
 fun OnboardingSelectionScreen(
+    vm: OnboardingEmailAndSelectionViewModel,
     isLoading: Boolean,
     onBackClicked: () -> Unit,
     onContinueClicked: (ProfessionItem) -> Unit = {},
     onSkipClicked: () -> Unit = {}
 ) {
+    LaunchedEffect(Unit) {
+        vm.sendAnalyticsOnboardingSelectionScreen()
+    }
     var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
     
     Box(
@@ -236,17 +238,5 @@ private fun ProfessionSelectionItem(
                     .offset(x = 8.dp, y = (-8).dp), // Offset to position outside the box
             )
         }
-    }
-}
-
-@DefaultPreviews
-@Composable
-private fun OnboardingSelectionScreenPreview() {
-    Column {
-        //Spacer(modifier = Modifier.height(38.dp))
-        OnboardingSelectionScreen(
-            isLoading = false,
-            onBackClicked = {}
-        )
     }
 }

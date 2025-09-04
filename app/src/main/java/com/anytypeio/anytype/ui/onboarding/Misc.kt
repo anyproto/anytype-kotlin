@@ -233,7 +233,6 @@ fun OnboardingMnemonicInput(
             unfocusedBorderColor = Color.Transparent,
             cursorColor = colorResource(R.color.palette_system_blue),
             placeholderColor = colorResource(R.color.text_tertiary)
-
         ),
         placeholder = {
             Text(

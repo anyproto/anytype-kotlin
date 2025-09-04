@@ -42,18 +42,18 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
-import com.anytypeio.anytype.core_ui.views.OnBoardingButtonSecondary
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 
 @Composable
 fun SetEmailWrapper(
-    viewModel: OnboardingSetProfileNameViewModel,
+    viewModel: OnboardingEmailAndSelectionViewModel,
     startingObject: String?,
     space: Id,
     onBackClicked: () -> Unit,
@@ -64,21 +64,21 @@ fun SetEmailWrapper(
     
     OnboardingEmailScreen(
         onContinueClicked = { email ->
-            viewModel.onEmailContinueClicked(
+            viewModel.onEmailContinueButtonClicked(
                 space = space,
                 startingObject = startingObject,
                 email = email
             )
         },
         onSkipClicked = {
-            viewModel.onEmailSkippedClicked(
+            viewModel.onEmailSkippedButtonClicked(
                 space = space,
                 startingObject = startingObject
             )
         },
         isLoading = viewModel.state
             .collectAsStateWithLifecycle()
-            .value is OnboardingSetProfileNameViewModel.ScreenState.Loading,
+            .value is OnboardingEmailAndSelectionViewModel.ScreenState.Loading,
         onBackClicked = onBackClicked
     )
 }
@@ -144,6 +144,7 @@ private fun OnboardingEmailScreen(
             )
             Spacer(modifier = Modifier.height(32.dp))
             OutlinedTextField(
+                enabled = !isLoading,
                 value = innerValue,
                 onValueChange = { input ->
                     innerValue = input
@@ -223,15 +224,16 @@ private fun OnboardingEmailScreen(
             )
             if (!BuildConfig.MANDATORY_EMAIL_COLLECTION) {
                 Spacer(modifier = Modifier.height(8.dp))
-                OnBoardingButtonSecondary(
+                ButtonOnboardingLinkLarge(
                     text = stringResource(id = R.string.onboarding_button_skip),
                     onClick = {
                         focusManager.clearFocus()
                         keyboardController?.hide()
                         onSkipClicked()
                     },
+                    enabled = !isLoading,
                     size = ButtonSize.Large,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifierBox = Modifier.fillMaxWidth(),
                 )
             }
         }

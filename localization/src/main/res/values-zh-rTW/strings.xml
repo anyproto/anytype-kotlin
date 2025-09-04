@@ -947,6 +947,32 @@
     <string name="slash_widget_teal_color_title">青色</string>
     <string name="slash_widget_lime_color_title">綠色</string>
     <string name="slash_widget_background_item">%1$s 背景</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">其它</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">其它</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
@@ -998,15 +1024,15 @@
     <string name="type_creation_placeholder">類型名稱</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">一個充滿無限可能的筆記軟體</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
-    <string name="onboarding_auth_description">在您自己的空間中創建 &amp; 協作。加密、離線 &amp; 且開源。</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"繼續即表示您同意 "</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0 的 \u00A0 使用條款</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
     <string name="onboarding_terms_and_policy_privacy">隱私 \u00A0 政策</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
-    <string name="onboarding_enter_my_vault">繼續</string>
+    <string name="onboarding_enter_my_vault">輸入</string>
     <string name="onboarding_have_key_button_text">I already have the key</string>
     <string name="onboarding_get_my_key_button_text">獲取我的密鑰</string>
     <string name="onboarding_invite_code_title">輸入您的邀請碼</string>
@@ -1022,8 +1048,9 @@
     <string name="onboarding_key_copy">複製到剪貼簿</string>
     <string name="onboarding_soul_creation_placeholder">Anytype 身份識別</string>
     <string name="onboarding_soul_creation">建立您的身份…</string>
-    <string name="onboarding_type_your_key">輸入您的恢復短語</string>
-    <string name="onboarding_login_or">或</string>
+    <string name="onboarding_type_your_key">輸入您的密鑰</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR Code</string>
     <string name="onboarding_entering_void_title">正在進入 Void 身份集錦圖表</string>
     <string name="onboarding_your_key_can_t_be_empty">您的密鑰不能為空</string>
     <string name="onboarding_your_name">Type your name</string>

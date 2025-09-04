@@ -970,10 +970,10 @@
     <string name="onboarding_usecase_habit_tracking">Alışkanlık takibi</string>
     <string name="onboarding_usecase_knowledge">Kişisel bilgi bankası / KBY</string>
     <string name="onboarding_usecase_life_planning">Yaşam planlaması</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_messaging">Mesajlaşma &amp; grup sohbetleri</string>
     <string name="onboarding_usecase_notes">Kişisel not alma</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_projects">Projeler &amp; görev yönetimi</string>
+    <string name="onboarding_usecase_team_work">Takım çalışması &amp; paylaşılan belgeler</string>
     <string name="onboarding_usecase_other">Diğer</string>
     <!--endregion-->
     <!--region WIDGETS -->

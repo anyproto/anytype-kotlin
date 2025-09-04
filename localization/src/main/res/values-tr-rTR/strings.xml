@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Camgöbeği</string>
     <string name="slash_widget_lime_color_title">Yeşil</string>
     <string name="slash_widget_background_item">%1$s arkaplan</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Bize Kendinizden Bahsedin</string>
+    <string name="onboarding_selection_description">Size en uygun rolü veya arka planı seçin</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Sanatçı / İçerik Üreticisi</string>
+    <string name="onboarding_selection_consultant">Danışman</string>
+    <string name="onboarding_selection_designer">Tasarımcı</string>
+    <string name="onboarding_selection_developer">Yazılım Geliştiricisi</string>
+    <string name="onboarding_selection_entrepreneur">Kurucu / Girişimci</string>
+    <string name="onboarding_selection_manager">Yönetici / BT Uzmanı</string>
+    <string name="onboarding_selection_marketer">Pazarlamacı</string>
+    <string name="onboarding_selection_researcher">Araştırmacı / Akademisyen</string>
+    <string name="onboarding_selection_student">Öğrenci</string>
+    <string name="onboarding_selection_writer">Yazar / Gazeteci</string>
+    <string name="onboarding_selection_other">Diğer</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">Anytype\'ı ne için kullanmak istiyorsunuz?</string>
+    <string name="onboarding_usecase_description">Size en uygun kullanım durumunu seçin</string>
+    <string name="onboarding_usecase_habit_tracking">Alışkanlık takibi</string>
+    <string name="onboarding_usecase_knowledge">Kişisel bilgi bankası / KBY</string>
+    <string name="onboarding_usecase_life_planning">Yaşam planlaması</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Kişisel not alma</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Diğer</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Bir widget oluştur</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Tür ismi</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">her şeyin uygulaması</string>
-    <string name="onboarding_auth_subtitle">Şifreli, çevrimdışı\n&amp; açık</string>
-    <string name="onboarding_auth_description">Sahip olduğunuz alanlarda oluşturun &amp; işbirliği yapın. Şifreli, çevrimdışı &amp; açık.</string>
+    <string name="onboarding_auth_title">Şifreli, yerel,</string>
+    <string name="onboarding_auth_subtitle">sonsuza kadar sizin</string>
+    <string name="onboarding_auth_description">Şifreli, yerel,</string>
     <string name="onboarding_terms_and_policy_prefix">"Devam ederek şunları kabul etmiş olursunuz "</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0Kullanım\u00A0koşulları</string>
     <string name="onboarding_terms_and_policy_infix">" ve "</string>
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Burada yeniyim</string>
-    <string name="onboarding_enter_my_vault">Sonraki</string>
+    <string name="onboarding_enter_my_vault">Giriş</string>
     <string name="onboarding_have_key_button_text">Anahtara zaten sahibim</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
@@ -1024,8 +1050,9 @@
     <string name="onboarding_key_copy">Panoya kopyala</string>
     <string name="onboarding_soul_creation_placeholder">Anytype kimliği</string>
     <string name="onboarding_soul_creation">Kimliğiniz oluşturuluyor…</string>
-    <string name="onboarding_type_your_key">Kurtarma ifadenizi girin</string>
-    <string name="onboarding_login_or">YA DA</string>
+    <string name="onboarding_type_your_key">Anahtarınızı yazın</string>
+    <string name="onboarding_login_or">veya şununla girin</string>
+    <string name="onboarding_login_qr">Karekod</string>
     <string name="onboarding_entering_void_title">Void\'e giriliyor</string>
     <string name="onboarding_your_key_can_t_be_empty">Anahtar alanı boş olamaz</string>
     <string name="onboarding_your_name">Adınızı yazın</string>

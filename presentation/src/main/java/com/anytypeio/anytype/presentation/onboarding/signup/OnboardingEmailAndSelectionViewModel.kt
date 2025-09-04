@@ -273,14 +273,11 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
 }
 
 
-data class ProfessionItem(
+data class OnboardingSelectionItem(
     val emoji: String,
     val titleResId: Int,
     val prettyName: String
 )
 
-data class UsecaseItem(
-    val emoji: String,
-    val titleResId: Int,
-    val prettyName: String
-)
+typealias ProfessionItem = OnboardingSelectionItem
+typealias UsecaseItem = OnboardingSelectionItem

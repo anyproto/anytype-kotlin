@@ -183,7 +183,6 @@ class OnboardingStartViewModel @Inject constructor(
         importGetStartedUseCase.async(ImportGetStartedUseCase.Params(space = space)).fold(
             onFailure = {
                 Timber.e(it, "Error while setting up mobile use case")
-                isLoadingState.value = false
                 navigateTo(
                     AuthNavigation.ProceedWithSignUp(
                         spaceId = space,
@@ -194,7 +193,6 @@ class OnboardingStartViewModel @Inject constructor(
             },
             onSuccess = { result ->
                 Timber.d("Mobile use case setup successful: $result")
-                isLoadingState.value = false
                 navigateTo(
                     AuthNavigation.ProceedWithSignUp(
                         spaceId = space,
@@ -204,6 +202,10 @@ class OnboardingStartViewModel @Inject constructor(
                 )
             }
         )
+    }
+
+    fun cancelLoadingState() {
+        isLoadingState.value = false
     }
 
     private suspend fun createAccountAnalytics(startTime: Long) {

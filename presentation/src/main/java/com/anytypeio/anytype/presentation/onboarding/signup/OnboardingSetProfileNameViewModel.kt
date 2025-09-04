@@ -4,22 +4,15 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.payments.SetMembershipEmail
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
-import com.anytypeio.anytype.presentation.extension.sendOpenAccountEvent
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import javax.inject.Inject
@@ -125,109 +118,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
         }
     }
 
-    //region Email screen
-    fun sendAnalyticsOnboardingEmailScreen() {
-        viewModelScope.launch {
-            sendAnalyticsOnboardingScreenEvent(
-                analytics = analytics,
-                step = EventsDictionary.ScreenOnboardingStep.EMAIL
-            )
-        }
-    }
-
-    fun onEmailContinueClicked(
-        email: String,
-        space: Id,
-        startingObject: String?
-    ) {
-        if (state.value is ScreenState.Loading) {
-            sendToast(LOADING_MSG)
-            return
-        }
-        state.value = ScreenState.Loading
-        proceedWithSettingEmail(email = email)
-        proceedWithNavigation(space, startingObject)
-    }
-
-    fun onEmailSkippedClicked(
-        space: Id,
-        startingObject: String?
-    ) {
-        if (state.value is ScreenState.Loading) {
-            sendToast(LOADING_MSG)
-            return
-        }
-        viewModelScope.launch {
-            analytics.sendEvent(
-                eventName = EventsDictionary.screenOnboardingSkipEmail
-            )
-        }
-        state.value = ScreenState.Loading
-        proceedWithNavigation(space, startingObject)
-    }
-
-    private fun proceedWithNavigation(space: Id, startingObject: String?) {
-        viewModelScope.launch {
-            sendOpenAccountAnalytics()
-            navigateNextStep(
-                space = space,
-                startingObject = startingObject
-            )
-        }
-    }
-
-    private suspend fun navigateNextStep(space: Id, startingObject: Id?) {
-        delay(LOADING_AFTER_SUCCESS_DELAY)
-        val deeplink = pendingIntentStore.getDeepLinkInvite()
-        when {
-            !deeplink.isNullOrEmpty() -> navigation.emit(Navigation.OpenVault)
-            !startingObject.isNullOrEmpty() -> navigation.emit(
-                OpenStartingObject(
-                    space = SpaceId(space),
-                    startingObject = startingObject
-                )
-            )
-
-            else -> navigation.emit(Navigation.OpenVault)
-        }
-    }
-
-    private suspend fun sendOpenAccountAnalytics() {
-        val config = configStorage.getOrNull()
-        if (config != null) {
-            analytics.sendOpenAccountEvent(
-                analytics = config.analytics
-            )
-        } else {
-            Timber.w("config was missing before the end of onboarding")
-        }
-    }
-
-    private fun proceedWithSettingEmail(email: String) {
-        val params = SetMembershipEmail.Params(
-            email = email,
-            subscribeToNewsletter = false,
-            isFromOnboarding = true
-        )
-        viewModelScope.launch {
-            setMembershipEmail.async(params).fold(
-                onSuccess = { 
-                    Timber.d("Email set successfully")
-                    analytics.sendEvent(
-                        eventName = EventsDictionary.screenOnboardingEnterEmail
-                    )
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Error setting email")
-                    if (BuildConfig.DEBUG) {
-                        sendToast("Error setting email: ${error.message}")
-                    }
-                }
-            )
-        }
-    }
-    //endregion
-
     class Factory @Inject constructor(
         private val setObjectDetails: SetObjectDetails,
         private val configStorage: ConfigStorage,
@@ -260,14 +150,6 @@ class OnboardingSetProfileNameViewModel @Inject constructor(
             val startingObjectId: String?,
             val profileId: String
         ) : Navigation()
-
-        data object GoBack : Navigation()
-        data class OpenStartingObject(
-            val space: SpaceId,
-            val startingObject: Id
-        ) : Navigation()
-
-        data object OpenVault : Navigation()
     }
 
     sealed class ScreenState {

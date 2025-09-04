@@ -660,9 +660,6 @@ class OnboardingFragment : Fragment() {
                         )
                         navController.navigate(route)
                     }
-                    else -> {
-                        // do nothing
-                    }
                 }
             }
         }
@@ -952,6 +949,9 @@ class OnboardingFragment : Fragment() {
                     }
                 }
             }
+        }
+        DisposableEffect(Unit) {
+            onDispose { vm.cancelLoadingState() }
         }
         DisposableEffect(Unit) {
             onDispose { component.release() }

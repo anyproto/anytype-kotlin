@@ -45,19 +45,20 @@ import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.ProfessionItem
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSelectionItem
 
 private val professionItems = listOf(
     ProfessionItem("✍️", R.string.onboarding_selection_writer, "Writer"),
     ProfessionItem("💻", R.string.onboarding_selection_developer, "SoftwareDeveloper"),
     ProfessionItem("🎓", R.string.onboarding_selection_student, "Student"),
     ProfessionItem("📈", R.string.onboarding_selection_marketer, "Marketer"),
-    ProfessionItem("👔", R.string.onboarding_selection_manager, "Manager"),
+    ProfessionItem("✅", R.string.onboarding_selection_manager, "Manager"),
     ProfessionItem("🔬", R.string.onboarding_selection_researcher, "Researcher"),
     ProfessionItem("🎯", R.string.onboarding_selection_designer, "Designer"),
     ProfessionItem("🎨", R.string.onboarding_selection_artist, "Artist"),
-    ProfessionItem("🚀", R.string.onboarding_selection_entrepreneur, "Entrepreneur"),
+    ProfessionItem("💡", R.string.onboarding_selection_entrepreneur, "Entrepreneur"),
     ProfessionItem("💼", R.string.onboarding_selection_consultant, "Consultant"),
-    ProfessionItem("💼", R.string.onboarding_selection_other, "Other")
+    ProfessionItem("👻", R.string.onboarding_selection_other, "Other")
 )
 
 @Composable

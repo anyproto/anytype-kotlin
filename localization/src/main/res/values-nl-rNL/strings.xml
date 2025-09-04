@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Groenblauw</string>
     <string name="slash_widget_lime_color_title">Groen</string>
     <string name="slash_widget_background_item">%1$s achtergrond</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Andere</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Andere</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Maak een widget aan</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Naam type</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">de alles-app</string>
-    <string name="onboarding_auth_subtitle">Versleuteld, offline\n&amp; openen</string>
-    <string name="onboarding_auth_description">Maak &amp; werk samen in jouw ruimten. Versleuteld, offline &amp;  open.</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"Door verder te gaan, ga je akkoord met "</string>
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Beleid</string>
     <string name="onboarding_new_vault_button_text">Ik ben nieuw hier</string>
-    <string name="onboarding_enter_my_vault">Volgende</string>
+    <string name="onboarding_enter_my_vault">Voer in</string>
     <string name="onboarding_have_key_button_text">Ik heb de sleutel al</string>
     <string name="onboarding_get_my_key_button_text">Haal mijn herstelsleutel</string>
     <string name="onboarding_invite_code_title">Voer jouw uitnodigingscode in</string>
@@ -1024,8 +1050,9 @@
     <string name="onboarding_key_copy">Kopieer naar klembord</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Typ je herstelsleutel</string>
-    <string name="onboarding_login_or">OF</string>
+    <string name="onboarding_type_your_key">Voer je sleutel in</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR-code</string>
     <string name="onboarding_entering_void_title">De leegte betreden</string>
     <string name="onboarding_your_key_can_t_be_empty">Je herstelsleutel mag niet leeg zijn</string>
     <string name="onboarding_your_name">Type jouw naam</string>

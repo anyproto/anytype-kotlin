@@ -1912,5 +1912,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_unpublish">Batal publikasi</string>
     <string name="web_publishing_update">Perbarui</string>
     <string name="web_publishing_publish">Publish</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_failed_to_update">Gagal memperbarui: %1$s</string>
 </resources>

@@ -47,17 +47,17 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSe
 import com.anytypeio.anytype.presentation.onboarding.signup.ProfessionItem
 
 private val professionItems = listOf(
-    ProfessionItem("✍️", R.string.onboarding_selection_writer),
-    ProfessionItem("💻", R.string.onboarding_selection_developer),
-    ProfessionItem("🎓", R.string.onboarding_selection_student),
-    ProfessionItem("📈", R.string.onboarding_selection_marketer),
-    ProfessionItem("👔", R.string.onboarding_selection_manager),
-    ProfessionItem("🔬", R.string.onboarding_selection_researcher),
-    ProfessionItem("🎯", R.string.onboarding_selection_designer),
-    ProfessionItem("🎨", R.string.onboarding_selection_artist),
-    ProfessionItem("🚀", R.string.onboarding_selection_entrepreneur),
-    ProfessionItem("💼", R.string.onboarding_selection_consultant),
-    ProfessionItem("💼", R.string.onboarding_selection_other),
+    ProfessionItem("✍️", R.string.onboarding_selection_writer, "Writer"),
+    ProfessionItem("💻", R.string.onboarding_selection_developer, "SoftwareDeveloper"),
+    ProfessionItem("🎓", R.string.onboarding_selection_student, "Student"),
+    ProfessionItem("📈", R.string.onboarding_selection_marketer, "Marketer"),
+    ProfessionItem("👔", R.string.onboarding_selection_manager, "Manager"),
+    ProfessionItem("🔬", R.string.onboarding_selection_researcher, "Researcher"),
+    ProfessionItem("🎯", R.string.onboarding_selection_designer, "Designer"),
+    ProfessionItem("🎨", R.string.onboarding_selection_artist, "Artist"),
+    ProfessionItem("🚀", R.string.onboarding_selection_entrepreneur, "Entrepreneur"),
+    ProfessionItem("💼", R.string.onboarding_selection_consultant, "Consultant"),
+    ProfessionItem("💼", R.string.onboarding_selection_other, "Other")
 )
 
 @Composable

@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
@@ -127,7 +129,17 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
     }
 
     fun onSelectionContinueClicked(professionItem: ProfessionItem, spaceId: String, startingObjectId: String?) {
-        // TODO: Save selected profession
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickOnboarding,
+                props = Props(
+                    mapOf(
+                        EventsPropertiesKey.step to EventsDictionary.ScreenOnboardingStep.PERSONA,
+                        EventsPropertiesKey.type to professionItem.prettyName
+                    )
+                )
+            )
+        }
         viewModelScope.launch {
             navigation.emit(
                 Navigation.NavigateToUsecase(
@@ -140,10 +152,12 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
 
     fun onSelectionSkipClicked(spaceId: String, startingObjectId: String?) {
         viewModelScope.launch {
-            navigation.emit(Navigation.NavigateToUsecase(
-                spaceId = spaceId,
-                startingObjectId = startingObjectId
-            ))
+            navigation.emit(
+                Navigation.NavigateToUsecase(
+                    spaceId = spaceId,
+                    startingObjectId = startingObjectId
+                )
+            )
         }
     }
 
@@ -157,7 +171,17 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
     }
 
     fun onUsecaseContinueClicked(usecaseItem: UsecaseItem, space: Id, startingObject: String?) {
-        // TODO: Save selected usecase
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.clickOnboarding,
+                props = Props(
+                    mapOf(
+                        EventsPropertiesKey.step to EventsDictionary.ScreenOnboardingStep.USECASE,
+                        EventsPropertiesKey.type to usecaseItem.prettyName
+                    )
+                )
+            )
+        }
         viewModelScope.launch {
             navigateNextStep(space = space, startingObject = startingObject)
         }
@@ -251,10 +275,12 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
 
 data class ProfessionItem(
     val emoji: String,
-    val titleResId: Int
+    val titleResId: Int,
+    val prettyName: String
 )
 
 data class UsecaseItem(
     val emoji: String,
-    val titleResId: Int
+    val titleResId: Int,
+    val prettyName: String
 )

@@ -46,14 +46,14 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSe
 import com.anytypeio.anytype.presentation.onboarding.signup.UsecaseItem
 
 private val usecaseItems = listOf(
-    UsecaseItem("📋", R.string.onboarding_usecase_habit_tracking),
-    UsecaseItem("📚", R.string.onboarding_usecase_knowledge),
-    UsecaseItem("🗓️", R.string.onboarding_usecase_life_planning),
-    UsecaseItem("💬", R.string.onboarding_usecase_messaging),
-    UsecaseItem("📝", R.string.onboarding_usecase_notes),
-    UsecaseItem("✅", R.string.onboarding_usecase_projects),
-    UsecaseItem("👥", R.string.onboarding_usecase_team_work),
-    UsecaseItem("\uD83D\uDC7B", R.string.onboarding_usecase_other),
+    UsecaseItem("📋", R.string.onboarding_usecase_habit_tracking, "HabitTracking"),
+    UsecaseItem("📚", R.string.onboarding_usecase_knowledge, "Knowledge"),
+    UsecaseItem("🗓️", R.string.onboarding_usecase_life_planning, "LifePlanning"),
+    UsecaseItem("💬", R.string.onboarding_usecase_messaging, "Messaging"),
+    UsecaseItem("📝", R.string.onboarding_usecase_notes, "NoteTaking"),
+    UsecaseItem("✅", R.string.onboarding_usecase_projects, "Projects"),
+    UsecaseItem("👥", R.string.onboarding_usecase_team_work, "TeamWork"),
+    UsecaseItem("\uD83D\uDC7B", R.string.onboarding_usecase_other, "Other"),
 )
 
 @Composable

@@ -14,7 +14,8 @@ import androidx.compose.ui.tooling.preview.Wallpapers
     name = "Light Mode",
     showSystemUi = false,
     apiLevel = 35,
-    wallpaper = Wallpapers.NONE
+    wallpaper = Wallpapers.NONE,
+    device = Devices.PIXEL_7
 )
 @Preview(
     backgroundColor = 0xFF121212,
@@ -23,7 +24,8 @@ import androidx.compose.ui.tooling.preview.Wallpapers
     name = "Dark Mode",
     showSystemUi = false,
     apiLevel = 35,
-    wallpaper = Wallpapers.NONE
+    wallpaper = Wallpapers.NONE,
+    device = Devices.PIXEL_7
 )
 annotation class DefaultPreviews
 

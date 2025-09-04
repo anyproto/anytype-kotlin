@@ -50,6 +50,7 @@
     <string name="default_space">マイスペース</string>
     <string name="space_settings_apply_random_gradient">ランダムな単色を適用</string>
     <string name="space_settings_apply_upload_image">画像をアップロード</string>
+    <string name="space_settings_chage_space_icon_color">Change icon color</string>
     <string name="profile_settings_apply_upload_image">画像をアップロード</string>
     <string name="remove_image">画像を削除</string>
     <string name="delete_space">スペースを削除</string>
@@ -1905,4 +1906,5 @@
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
 </resources>

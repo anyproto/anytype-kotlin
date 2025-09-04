@@ -21,6 +21,7 @@ import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
+import com.anytypeio.anytype.di.feature.PublishToWebDependencies
 import com.anytypeio.anytype.di.feature.SpacePropertiesDependencies
 import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
@@ -142,7 +143,8 @@ interface MainComponent :
     CreateObjectTypeDependencies,
     SpaceTypesDependencies,
     SpacePropertiesDependencies,
-    PushContentDependencies
+    PushContentDependencies,
+    PublishToWebDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -412,4 +414,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(PushContentDependencies::class)
     abstract fun providePushContentDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(PublishToWebDependencies::class)
+    abstract fun providePublishToWebDependencies(component: MainComponent): ComponentDependencies
 }

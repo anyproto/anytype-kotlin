@@ -494,6 +494,17 @@ abstract class ObjectMenuViewModelBase(
         }
     }
 
+    fun onPublishToWebClicked(ctx: Id, space: Id) {
+        viewModelScope.launch {
+            commands.emit(
+                Command.PublishToWeb(
+                    ctx = ctx,
+                    space = space
+                )
+            )
+        }
+    }
+
     sealed class Command {
         data object OpenObjectIcons : Command()
         data object OpenSetIcons : Command()
@@ -507,6 +518,7 @@ abstract class ObjectMenuViewModelBase(
         data class ShareDebugTree(val uri: Uri) : Command()
         data class ShareDebugGoroutines(val path: String) : Command()
         data class OpenHistoryScreen(val objectId: Id, val spaceId: Id) : Command()
+        data class PublishToWeb(val ctx: Id, val space: Id) : Command()
         data class OpenSnackbar(
             val id: Id,
             val space: Id,

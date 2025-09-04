@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.publishing.Publishing
 import com.anytypeio.anytype.core_utils.tools.ThreadInfo
 import com.anytypeio.anytype.middleware.BuildConfig
 import com.anytypeio.anytype.middleware.auth.toAccountSetup
@@ -73,6 +74,7 @@ import com.anytypeio.anytype.middleware.mappers.toCoreLinkPreview
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
 import com.anytypeio.anytype.middleware.mappers.toCoreModelSearchResults
 import com.anytypeio.anytype.middleware.mappers.toCoreModels
+import com.anytypeio.anytype.middleware.mappers.toCorePublishStatus
 import com.anytypeio.anytype.middleware.mappers.toMiddleware
 import com.anytypeio.anytype.middleware.mappers.toMiddlewareModel
 import com.anytypeio.anytype.middleware.mappers.toMw
@@ -2446,7 +2448,7 @@ class Middleware @Inject constructor(
                 spaceId = space.id
             )
         }
-        
+
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceInviteGenerate(request) }
         logResponseIfDebug(response, time)
@@ -3121,6 +3123,43 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.setSpaceMode(request) }
         logResponseIfDebug(response, time)
         return response
+    }
+
+    @Throws(Exception::class)
+    fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
+        val request = Rpc.Publishing.GetStatus.Request(
+            objectId = command.objectId,
+            spaceId = command.space.id
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.publishingGetStatus(request) }
+        logResponseIfDebug(response, time)
+        return response.publish?.toCorePublishStatus()
+    }
+
+    @Throws(Exception::class)
+    fun publishingCreate(command: Command.Publishing.Create): String {
+        val request = Rpc.Publishing.Create.Request(
+            objectId = command.objectId,
+            spaceId = command.space.id,
+            uri = command.uri,
+            joinSpace = command.showJoinSpaceBanner
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.publishingCreate(request) }
+        logResponseIfDebug(response, time)
+        return response.uri
+    }
+
+    @Throws(Exception::class)
+    fun publishingRemove(command: Command.Publishing.Remove) {
+        val request = Rpc.Publishing.Remove.Request(
+            objectId = command.objectId,
+            spaceId = command.space.id
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.publishingRemove(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

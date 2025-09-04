@@ -722,4 +722,23 @@ sealed class Command {
     data class RegisterDeviceToken(
         val token: String
     ) : Command()
+
+    sealed class Publishing : Command() {
+        data class GetStatus(
+            val space: SpaceId,
+            val objectId: Id
+        ) : Publishing()
+
+        data class Create(
+            val space: SpaceId,
+            val objectId: Id,
+            val uri: String,
+            val showJoinSpaceBanner: Boolean = false
+        ) : Publishing()
+
+        data class Remove(
+            val space: SpaceId,
+            val objectId: Id
+        ) : Publishing()
+    }
 }

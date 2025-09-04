@@ -45,6 +45,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.publishing.Publishing
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.block.interactor.sets.CreateObjectSet
 import com.anytypeio.anytype.domain.page.Redo
@@ -544,4 +545,8 @@ interface BlockRepository {
     suspend fun debugStats(): String
 
     suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
+
+    suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State?
+    suspend fun publishingCreate(command: Command.Publishing.Create): String
+    suspend fun publishingRemove(command: Command.Publishing.Remove)
 }

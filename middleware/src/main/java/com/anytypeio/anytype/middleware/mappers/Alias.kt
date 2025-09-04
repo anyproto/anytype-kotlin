@@ -117,4 +117,7 @@ typealias MDeviceNetworkType = anytype.model.DeviceNetworkType
 
 typealias MLinkPreview = anytype.model.LinkPreview
 
+typealias MPublishState = anytype.Rpc.Publishing.PublishState
+typealias MPublishStatus = anytype.Rpc.Publishing.PublishStatus
+
 typealias MInviteType = anytype.model.InviteType

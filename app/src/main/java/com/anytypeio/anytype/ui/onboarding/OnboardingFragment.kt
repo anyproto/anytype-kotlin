@@ -44,22 +44,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
-import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
@@ -88,11 +87,14 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
-import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
+import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingSelectionScreen
+import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingUsecaseScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
 import com.anytypeio.anytype.ui.vault.VaultFragment
@@ -135,33 +137,11 @@ class OnboardingFragment : Fragment() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            runCatching {
-                WindowCompat
-                    .getInsetsController(
-                        requireActivity().window,
-                        requireActivity().window.decorView
-                    ).isAppearanceLightStatusBars = false
-            }.onFailure {
-                Timber.e(it, "Error while changing status bars in onCreate")
-            }
-        }
         injectDependencies()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)  {
-            runCatching {
-                WindowCompat
-                    .getInsetsController(
-                        requireActivity().window,
-                        requireActivity().window.decorView
-                    ).isAppearanceLightStatusBars = true
-            }.onFailure {
-                Timber.e(it, "Error while changing status bars in onDestroy")
-            }
-        }
         releaseDependencies()
     }
 
@@ -169,13 +149,8 @@ class OnboardingFragment : Fragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View {
-        return ComposeView(requireContext()).apply {
-            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-            setContent {
-                OnboardingScreen()
-            }
-        }
+    ) = content {
+        OnboardingScreen()
     }
 
     @Composable
@@ -189,7 +164,7 @@ class OnboardingFragment : Fragment() {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(Color.Black)
+                    .background(colorResource(R.color.background_primary))
             ) {
                 Box(
                     modifier = Modifier
@@ -202,7 +177,7 @@ class OnboardingFragment : Fragment() {
                         )
                 ) {
                     val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
-                    BackgroundCircle()
+                    //BackgroundCircle()
                     Onboarding(
                         currentPage = currentPage,
                         navController = navController,
@@ -227,19 +202,6 @@ class OnboardingFragment : Fragment() {
                     signUpBackButtonCallback.value = null
                 }
             }
-        }
-    }
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        onApplyWindowRootInsets(view)
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.R) {
-            // Disabling workaround to prevent background circle with video shrinking.
-            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_RESIZE)
         }
     }
 
@@ -411,6 +373,89 @@ class OnboardingFragment : Fragment() {
                 backButtonCallback.value = onBackClicked
                 if (!spaceId.isNullOrEmpty()) {
                     AddEmail(
+                        navController = navController,
+                        space = spaceId,
+                        startingObject = startingObjectId,
+                        onBackClicked = onBackClicked
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                BackHandler { onBackClicked() }
+            }
+            composable(
+                route = buildOnboardingRoute(OnboardingNavigation.selection),
+                arguments = onboardingArguments(),
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                currentPage.value = OnboardingPage.SELECTION
+                val (spaceId, startingObjectId, _) = it.arguments.extractOnboardingParams()
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.selection) == true) {
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                backButtonCallback.value = onBackClicked
+                if (!spaceId.isNullOrEmpty()) {
+                    Selection(
+                        navController = navController,
+                        spaceId = spaceId,
+                        startingObjectId = startingObjectId,
+                        onBackClicked = onBackClicked
+                    )
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Text(
+                            text = stringResource(R.string.onboarding_error_while_creating_account_space_is_missing),
+                            modifier = Modifier.align(Alignment.Center),
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+                BackHandler { onBackClicked() }
+            }
+            composable(
+                route = buildOnboardingRoute(OnboardingNavigation.usecase),
+                arguments = onboardingArguments(),
+                enterTransition = {
+                    fadeIn(tween(ANIMATION_LENGTH_FADE))
+                },
+                exitTransition = {
+                    fadeOut(tween(ANIMATION_LENGTH_FADE))
+                }
+            ) {
+                currentPage.value = OnboardingPage.USECASE
+                val (spaceId, startingObjectId, _) = it.arguments.extractOnboardingParams()
+                val onBackClicked : () -> Unit = {
+                    val lastDestination = navController.currentBackStackEntry
+                    if (lastDestination?.destination?.route?.startsWith(OnboardingNavigation.usecase) == true) {
+                        navController.popBackStack()
+                    } else {
+                        Timber.d("Skipping exit click...")
+                    }
+                }
+                backButtonCallback.value = onBackClicked
+                if (!spaceId.isNullOrEmpty()) {
+                    Usecase(
+                        navController = navController,
                         space = spaceId,
                         startingObject = startingObjectId,
                         onBackClicked = onBackClicked
@@ -448,13 +493,21 @@ class OnboardingFragment : Fragment() {
                 vm.onGetEntropyFromQRCode(entropy = r.contents)
             }
         }
-        RecoveryScreenWrapper(
-            vm = vm,
+        RecoveryScreen(
             onBackClicked = vm::onBackButtonPressed,
-            onScanQrClick = {
+            onNextClicked = vm::onLoginClicked,
+            onActionDoneClicked = vm::onActionDone,
+            onScanQrClicked = {
                 isQrWarningDialogVisible.value = true
                 vm.onScanQrCodeClicked()
             },
+            state = vm.state.collectAsStateWithLifecycle().value,
+            onEnterMyVaultClicked = vm::onEnterMyVaultClicked,
+            onDebugAccountTraceClicked = {
+                vm.onAccountThraceButtonClicked()
+            },
+            onRetryMigrationClicked = vm::onRetryMigrationClicked,
+            onStartMigrationClicked = vm::onStartMigrationClicked
         )
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
@@ -594,28 +647,18 @@ class OnboardingFragment : Fragment() {
 
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->
+                Timber.d("Navigation command: $command")
                 when (command) {
                     is OnboardingSetProfileNameViewModel.Navigation.NavigateToSetEmail -> {
                         if (keyboardInsets.getBottom(density) > 0) {
                             focusManager.clearFocus(force = true)
                             delay(KEYBOARD_HIDE_DELAY)
                         }
-                        val route = buildSetEmailRoute(
+                        val route = buildSelectProfessionRoute(
                             spaceId = command.spaceId,
                             startingObjectId = command.startingObjectId,
-                            profileId = command.profileId
                         )
                         navController.navigate(route)
-                    }
-                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
-                        // do nothing
-                    }
-
-                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
-                        //do nothing
-                    }
-                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
-                        //do nothing
                     }
                 }
             }
@@ -689,19 +732,18 @@ class OnboardingFragment : Fragment() {
                         }
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToSetProfileName -> {
-                        val route = buildSetProfileNameRoute(
+                        val route = buildSelectProfessionRoute(
                             spaceId = command.space,
-                            startingObjectId = command.startingObject,
-                            profileId = command.profileId
+                            startingObjectId = command.startingObject
                         )
                         navController.navigate(route)
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
-                        val startingObject = command.startingObject
-                        val space = command.space
-                        navController.navigate(
-                            route = "${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM=$space&$ONBOARDING_STARTING_OBJECT_PARAM=$startingObject"
+                        val route = buildSelectProfessionRoute(
+                            spaceId = command.space,
+                            startingObjectId = command.startingObject
                         )
+                        navController.navigate(route)
                     }
                 }
             }
@@ -729,10 +771,134 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
+    private fun Selection(
+        navController: NavHostController,
+        spaceId: String,
+        startingObjectId: String?,
+        onBackClicked: () -> Unit
+    ) {
+        val component = componentManager().onboardingSoulCreationComponent
+        val vm = daggerViewModel { component.get().getEmailAndSelectionViewModel() }
+
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { command ->
+                when (command){
+                    OnboardingEmailAndSelectionViewModel.Navigation.GoBack -> {
+                        navController.popBackStack()
+                    }
+                    is OnboardingEmailAndSelectionViewModel.Navigation.NavigateToUsecase -> {
+                        val route = buildUsecaseRoute(
+                            spaceId = command.spaceId,
+                            startingObjectId = command.startingObjectId
+                        )
+                        navController.navigate(route)
+                    }
+                    else -> {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
+        OnboardingSelectionScreen(
+            vm = vm,
+            isLoading = false,
+            onBackClicked = onBackClicked,
+            onContinueClicked = { selectedProfession ->
+                vm.onSelectionContinueClicked(
+                    professionItem = selectedProfession,
+                    spaceId = spaceId,
+                    startingObjectId = startingObjectId
+                )
+            },
+            onSkipClicked = {
+                vm.onSelectionSkipClicked(spaceId, startingObjectId)
+            }
+        )
+    }
+
+    @Composable
+    private fun Usecase(
+        navController: NavHostController,
+        space: Id,
+        startingObject: Id?,
+        onBackClicked: () -> Unit
+    ) {
+        val component = componentManager().onboardingSoulCreationComponent
+        val vm = daggerViewModel { component.get().getEmailAndSelectionViewModel() }
+
+        LaunchedEffect(Unit) {
+            vm.navigation.collect { command ->
+                when (command){
+                    OnboardingEmailAndSelectionViewModel.Navigation.GoBack -> {
+                        navController.popBackStack()
+                    }
+                    is OnboardingEmailAndSelectionViewModel.Navigation.OpenStartingObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                            findNavController().navigate(
+                                R.id.actionOpenSpaceFromVault,
+                                HomeScreenFragment.args(
+                                    space = command.space.id,
+                                    deeplink = null
+                                )
+                            )
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = command.startingObject,
+                                    space = command.space.id,
+                                )
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                    OnboardingEmailAndSelectionViewModel.Navigation.OpenVault -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.actionOpenVault,
+                                VaultFragment.args(deepLink)
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Error while navigation to vault")
+                        }
+                    }
+                    else -> {
+                        // do nothing
+                    }
+                }
+            }
+        }
+
+        OnboardingUsecaseScreen(
+            vm = vm,
+            isLoading = false,
+            onBackClicked = onBackClicked,
+            onContinueClicked = { selectedUsecase ->
+                vm.onUsecaseContinueClicked(selectedUsecase, space = space, startingObject = startingObject)
+            },
+            onSkipClicked = {
+                vm.onUsecaseSkipClicked(space = space, startingObject = startingObject)
+            }
+        )
+    }
+
+    @Composable
     private fun Auth(navController: NavHostController) {
         val component = componentManager().onboardingStartComponent
         val vm = daggerViewModel { component.get().getViewModel() }
-        AuthScreen(vm = vm)
+        AuthScreen(
+            isLoading = vm.isLoadingState.collectAsStateWithLifecycle().value,
+            onJoinClicked = vm::onJoinClicked,
+            onLoginClicked = vm::onLoginClicked,
+            onPrivacyPolicyClicked = vm::onPrivacyPolicyClicked,
+            onTermsOfUseClicked = vm::onTermsOfUseClicked,
+            onSettingsClicked = vm::onSettingsClicked
+        )
         ErrorScreen(vm = vm)
         LaunchedEffect(Unit) {
             vm.sideEffects.collect { effect ->
@@ -771,10 +937,9 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        val route = buildMnemonicRoute(
+                        val route = buildSetEmailRoute(
                             spaceId = navigation.spaceId,
-                            startingObjectId = navigation.startingObjectId,
-                            profileId = navigation.profileId
+                            startingObjectId = navigation.startingObjectId
                         )
                         navController.navigate(route)
                     }
@@ -784,6 +949,9 @@ class OnboardingFragment : Fragment() {
                     }
                 }
             }
+        }
+        DisposableEffect(Unit) {
+            onDispose { vm.cancelLoadingState() }
         }
         DisposableEffect(Unit) {
             onDispose { component.release() }
@@ -857,12 +1025,13 @@ class OnboardingFragment : Fragment() {
 
     @Composable
     private fun AddEmail(
+        navController: NavHostController,
         space: Id,
         startingObject: Id?,
         onBackClicked: () -> Unit
     ) {
         val component = componentManager().onboardingSoulCreationComponent
-        val vm = daggerViewModel { component.get().getViewModel() }
+        val vm = daggerViewModel { component.get().getEmailAndSelectionViewModel() }
 
         SetEmailWrapper(
             viewModel = vm,
@@ -874,14 +1043,11 @@ class OnboardingFragment : Fragment() {
         LaunchedEffect(Unit) {
             vm.navigation.collect { command ->
                 when (command) {
-                    is OnboardingSetProfileNameViewModel.Navigation.NavigateToSetEmail -> {
-                        //do nothing
-                    }
-                    is OnboardingSetProfileNameViewModel.Navigation.GoBack -> {
-                        //
+                    is OnboardingEmailAndSelectionViewModel.Navigation.GoBack -> {
+                        navController.popBackStack()
                     }
 
-                    is OnboardingSetProfileNameViewModel.Navigation.OpenStartingObject -> {
+                    is OnboardingEmailAndSelectionViewModel.Navigation.OpenStartingObject -> {
                         runCatching {
                             findNavController().navigate(
                                 R.id.actionOpenVault,
@@ -905,7 +1071,7 @@ class OnboardingFragment : Fragment() {
                             Timber.e(it, "Error while navigation to vault")
                         }
                     }
-                    OnboardingSetProfileNameViewModel.Navigation.OpenVault -> {
+                    OnboardingEmailAndSelectionViewModel.Navigation.OpenVault -> {
                         runCatching {
                             findNavController().navigate(
                                 R.id.actionOpenVault,
@@ -914,6 +1080,20 @@ class OnboardingFragment : Fragment() {
                         }.onFailure {
                             Timber.e(it, "Error while navigation to vault")
                         }
+                    }
+                    is OnboardingEmailAndSelectionViewModel.Navigation.NavigateToSelection -> {
+                        val route = buildSelectProfessionRoute(
+                            spaceId = command.spaceId,
+                            startingObjectId = command.startingObjectId
+                        )
+                        navController.navigate(route)
+                    }
+                    is OnboardingEmailAndSelectionViewModel.Navigation.NavigateToUsecase -> {
+                        val route = buildUsecaseRoute(
+                            spaceId = command.spaceId,
+                            startingObjectId = command.startingObjectId
+                        )
+                        navController.navigate(route)
                     }
                 }
             }
@@ -980,13 +1160,30 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    private fun buildSetEmailRoute(spaceId: String, startingObjectId: String?, profileId: String): String {
+    private fun buildSetEmailRoute(spaceId: String, startingObjectId: String?): String {
         return buildString {
             append("${OnboardingNavigation.setEmail}?$ONBOARDING_SPACE_PARAM=$spaceId")
             startingObjectId?.let { 
                 append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
             }
-            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
+        }
+    }
+
+    private fun buildSelectProfessionRoute(spaceId: String, startingObjectId: String?): String {
+        return buildString {
+            append("${OnboardingNavigation.selection}?$ONBOARDING_SPACE_PARAM=$spaceId")
+            startingObjectId?.let {
+                append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it")
+            }
+        }
+    }
+
+    private fun buildUsecaseRoute(spaceId: String, startingObjectId: String?): String {
+        return buildString {
+            append("${OnboardingNavigation.usecase}?$ONBOARDING_SPACE_PARAM=$spaceId")
+            startingObjectId?.let { 
+                append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
+            }
         }
     }
 
@@ -997,7 +1194,11 @@ class OnboardingFragment : Fragment() {
             nullable = true
             defaultValue = null
         },
-        navArgument(ONBOARDING_PROFILE_PARAM) { type = NavType.StringType }
+        navArgument(ONBOARDING_PROFILE_PARAM) { 
+            type = NavType.StringType
+            nullable = true
+            defaultValue = null
+        }
     )
     
     private fun buildOnboardingRoute(baseRoute: String): String {

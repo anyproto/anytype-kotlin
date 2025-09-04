@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_ui.ColorTextInputCursor
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.ui.onboarding.screens.signin.MnemonicPhraseFormatter
@@ -212,18 +213,15 @@ fun MnemonicPhraseWidgetPreview() {
 fun OnboardingMnemonicInput(
     modifier: Modifier = Modifier,
     text: MutableState<String>,
-    placeholder: String? = null,
+    placeholder: String,
     singleLine: Boolean = true,
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions()
 ) {
     TextField(
         modifier = modifier,
-        textStyle = UXBody
-            .copy(
-                lineHeight = 34.sp,
-                color = colorResource(R.color.palette_system_pink)
-            ),
+        textStyle = PreviewTitle1Medium
+            .copy(color = colorResource(R.color.text_primary)),
         value = text.value,
         onValueChange = {
             text.value = it
@@ -233,12 +231,15 @@ fun OnboardingMnemonicInput(
             errorBorderColor = Color.Transparent,
             focusedBorderColor = Color.Transparent,
             unfocusedBorderColor = Color.Transparent,
-            cursorColor = ColorTextInputCursor
+            cursorColor = colorResource(R.color.palette_system_blue),
+            placeholderColor = colorResource(R.color.text_tertiary)
         ),
         placeholder = {
-            placeholder?.let {
-                Text(text = it, style = UXBody.copy(color = ColorPlaceholderText))
-            }
+            Text(
+                text = placeholder,
+                style = PreviewTitle1Regular
+            )
+
         },
         singleLine = singleLine,
         keyboardActions = keyboardActions,

@@ -1058,6 +1058,34 @@
     <string name="slash_widget_lime_color_title">Green</string>
     <string name="slash_widget_background_item">%1$s background</string>
 
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Other</string>
+
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Other</string>
     <!--endregion-->
 
     <!--region WIDGETS -->
@@ -1119,16 +1147,16 @@
 
     <!--region ONBOARDING -->
 
-    <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
-    <string name="onboarding_auth_description">Create &amp; collaborate in spaces you own. Encrypted, offline &amp; open.</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">I am new here</string>
-    <string name="onboarding_enter_my_vault">Next</string>
-    <string name="onboarding_have_key_button_text">I already have the key</string>
+    <string name="onboarding_enter_my_vault">Enter</string>
+    <string name="onboarding_have_key_button_text">I already have a key</string>
     <string name="onboarding_get_my_key_button_text">Get my Key</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
     <string name="onboarding_invite_code_description">If you don\'t have one just go to anytype.io\nand sign up to the waiting list.</string>
@@ -1143,8 +1171,9 @@
     <string name="onboarding_key_copy">Copy to clipboard</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Type your recovery phrase</string>
-    <string name="onboarding_login_or">OR</string>
+    <string name="onboarding_type_your_key">Enter your key</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR Code</string>
     <string name="onboarding_entering_void_title">Entering the Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Your Key can\'t be empty</string>
     <string name="onboarding_your_name">Type your name</string>

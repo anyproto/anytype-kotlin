@@ -947,6 +947,32 @@
     <string name="slash_widget_teal_color_title">Biru-hijau</string>
     <string name="slash_widget_lime_color_title">Hijau</string>
     <string name="slash_widget_background_item">Latar belakang %1$s</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Perkenalkan Dirimu</string>
+    <string name="onboarding_selection_description">Pilih satu latar belakang yang paling cocok denganmu</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Seniman/Kreator Konten</string>
+    <string name="onboarding_selection_consultant">Konsultan</string>
+    <string name="onboarding_selection_designer">Desainer</string>
+    <string name="onboarding_selection_developer">Pengembang Perangkat Lunak</string>
+    <string name="onboarding_selection_entrepreneur">Wirausahawan</string>
+    <string name="onboarding_selection_manager">Manajer/Profesional IT</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Peneliti/Akademisi</string>
+    <string name="onboarding_selection_student">Pelajar</string>
+    <string name="onboarding_selection_writer">Penulis/Wartawan</string>
+    <string name="onboarding_selection_other">Lainnya</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">Untuk apa kamu ingin menggunakan Anytype?</string>
+    <string name="onboarding_usecase_description">Pilih satu penerapan yang paling cocok denganmu</string>
+    <string name="onboarding_usecase_habit_tracking">Mencatat kebiasaan</string>
+    <string name="onboarding_usecase_knowledge">Basis pengetahuan pribadi/PKM</string>
+    <string name="onboarding_usecase_life_planning">Perencanaan hidup</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Pencatatan pribadi</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Lainnya</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
@@ -998,15 +1024,15 @@
     <string name="type_creation_placeholder">Type name</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">Terenkripsi, luring\n&amp; terbuka</string>
-    <string name="onboarding_auth_description">Buat dan berkolaborasilah di ruang milikmu. Terenkripsi, offline, dan terbuka.</string>
+    <string name="onboarding_auth_title">Terenkripsi, lokal,</string>
+    <string name="onboarding_auth_subtitle">milikmu selamanya</string>
+    <string name="onboarding_auth_description">Terenkripsi, lokal,</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" dan "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Aku pengguna baru</string>
-    <string name="onboarding_enter_my_vault">Lanjut</string>
+    <string name="onboarding_enter_my_vault">Masukkan</string>
     <string name="onboarding_have_key_button_text">Aku sudah punya kunci</string>
     <string name="onboarding_get_my_key_button_text">Ambil Kunciku</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -1022,8 +1048,9 @@
     <string name="onboarding_key_copy">Salin ke papan klip</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Masukkan frasa pemulihanmu</string>
-    <string name="onboarding_login_or">ATAU</string>
+    <string name="onboarding_type_your_key">Masukkan kuncimu</string>
+    <string name="onboarding_login_or">atau masuk dengan</string>
+    <string name="onboarding_login_qr">Kode QR</string>
     <string name="onboarding_entering_void_title">Memasuki Void</string>
     <string name="onboarding_your_key_can_t_be_empty">Kunci tidak boleh kosong</string>
     <string name="onboarding_your_name">Masukkan namamu</string>

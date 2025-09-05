@@ -520,6 +520,7 @@ class ChatFragment : Fragment() {
         BackHandler {
             vm.onBackButtonPressed()
         }
+        //DROID-3943 Temporarily disabled
 //        LaunchedEffect(Unit) {
 //            vm.checkNotificationPermissionDialogState()
 //        }

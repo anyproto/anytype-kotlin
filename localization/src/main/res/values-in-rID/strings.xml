@@ -968,10 +968,10 @@
     <string name="onboarding_usecase_habit_tracking">Mencatat kebiasaan</string>
     <string name="onboarding_usecase_knowledge">Basis pengetahuan pribadi/PKM</string>
     <string name="onboarding_usecase_life_planning">Perencanaan hidup</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_messaging">Perpesanan dan obrolan grup</string>
     <string name="onboarding_usecase_notes">Pencatatan pribadi</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_projects">Manajemen proyek dan tugas</string>
+    <string name="onboarding_usecase_team_work">Kerja tim dan dokumen terbagi</string>
     <string name="onboarding_usecase_other">Lainnya</string>
     <!--endregion-->
     <!--region WIDGETS -->

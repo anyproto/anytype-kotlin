@@ -509,9 +509,9 @@ class ChatFragment : Fragment() {
         BackHandler {
             vm.onBackButtonPressed()
         }
-        LaunchedEffect(Unit) {
-            vm.checkNotificationPermissionDialogState()
-        }
+//        LaunchedEffect(Unit) {
+//            vm.checkNotificationPermissionDialogState()
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

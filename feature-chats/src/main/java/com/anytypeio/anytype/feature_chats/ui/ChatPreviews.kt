@@ -92,7 +92,7 @@ fun ChatPreview() {
         onMemberIconClicked = {},
         onMentionClicked = {},
         onScrollToReplyClicked = {},
-        onShareInviteClicked = {},
+        onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
         onHighlightMessage = {}
@@ -147,7 +147,7 @@ fun ChatPreview2() {
         onMemberIconClicked = {},
         onMentionClicked = {},
         onScrollToReplyClicked = {},
-        onShareInviteClicked = {},
+        onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
         onHighlightMessage = {}
@@ -216,7 +216,7 @@ fun ChatScreenPreview() {
         onVisibleRangeChanged = { _, _ -> },
         onUrlInserted = {},
         onGoToMentionClicked = {},
-        onShareInviteClicked = {},
+        onEmptyStateAction = {},
         onImageCaptured = {},
         onVideoCaptured = {},
         onCreateAndAttachObject = {}

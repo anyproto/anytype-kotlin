@@ -48,6 +48,7 @@ import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
+import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.core_utils.intents.SystemAction.OpenUrl
@@ -70,6 +71,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
+import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -503,15 +505,25 @@ class ChatFragment : Fragment() {
                             Timber.e(it, "Error while showing delete link warning")
                         }
                     }
+
+                    is ChatViewModel.ViewModelCommand.OpenSpaceMembers -> {
+                        findNavController().safeNavigate(
+                            currentDestinationId = R.id.chatScreen,
+                            id = R.id.shareSpaceScreen,
+                            args = ShareSpaceFragment.args(command.space),
+                            errorMessage = "Error while opening share screen"
+                        )
+                    }
                 }
             }
         }
         BackHandler {
             vm.onBackButtonPressed()
         }
-        LaunchedEffect(Unit) {
-            vm.checkNotificationPermissionDialogState()
-        }
+        //DROID-3943 Temporarily disabled
+//        LaunchedEffect(Unit) {
+//            vm.checkNotificationPermissionDialogState()
+//        }
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {

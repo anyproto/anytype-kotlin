@@ -128,7 +128,10 @@ fun ShareSpaceScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(color = colorResource(id = R.color.background_primary))
+            .background(
+                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                color = colorResource(id = R.color.background_primary),
+            )
             .nestedScroll(nestedScrollInteropConnection)
     ) {
         Column(

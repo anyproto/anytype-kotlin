@@ -231,7 +231,7 @@ fun ChatScreenWrapper(
             onVisibleRangeChanged = vm::onVisibleRangeChanged,
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
-            onShareInviteClicked = vm::onShareInviteLinkClicked,
+            onEmptyStateAction = vm::onEmptyStateAction,
             canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
@@ -392,7 +392,7 @@ fun ChatScreen(
     onVisibleRangeChanged: (Id, Id) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onGoToMentionClicked: () -> Unit,
-    onShareInviteClicked: () -> Unit,
+    onEmptyStateAction: () -> Unit,
     canCreateInviteLink: Boolean = false,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
@@ -634,7 +634,7 @@ fun ChatScreen(
                 onMentionClicked = onMentionClicked,
                 onScrollToReplyClicked = onScrollToReplyClicked,
                 isReadOnly = isReadOnly,
-                onShareInviteClicked = onShareInviteClicked,
+                onEmptyStateAction = onEmptyStateAction,
                 canCreateInviteLink = canCreateInviteLink,
                 onRequestVideoPlayer = onRequestVideoPlayer,
                 highlightedMessageId = highlightedMessageId,

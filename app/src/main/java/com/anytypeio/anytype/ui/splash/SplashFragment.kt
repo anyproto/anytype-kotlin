@@ -76,10 +76,6 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         super.onStart()
     }
 
-    override fun onStop() {
-        super.onStop()
-    }
-
     private fun handleState(state: SplashViewModel.State) = with(binding) {
         when (state) {
             is SplashViewModel.State.Init -> {

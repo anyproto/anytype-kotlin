@@ -207,32 +207,43 @@ class CreateSpaceViewModel(
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
         spaceManager.set(space = spaceId, withChat = vmParams.spaceUxType == SpaceUxType.CHAT).fold(
-            onSuccess = { config ->
+            onSuccess = { _ ->
                 if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-                    val config = spaceManager.getConfig(SpaceId(spaceId))
-                    val chatId = config?.spaceChatId
-                    if (chatId != null) {
-                        commands.emit(
-                            Command.SwitchSpaceChat(
-                                space = Space(spaceId),
-                                chatId = chatId
-                            )
-                        )
-                    } else {
-                        onError(
-                            IllegalStateException("Chat ID is null for created chat space: $spaceId")
-                        )
-                    }
+                    finishChatSpaceCreation(spaceId = spaceId)
                 } else {
-                    commands.emit(
-                        Command.SwitchSpace(
-                            space = Space(spaceId),
-                            startingObject = startingObject
-                        )
-                    )
+                    finishDataSpaceCreation(spaceId = spaceId, startingObject = startingObject)
                 }
             },
-            onFailure = { error -> Timber.e(error, "Error setting created space") }
+            onFailure = { error ->
+                Timber.e(error, "Error setting created space")
+                onError(error)
+            }
+        )
+    }
+
+    private suspend fun finishChatSpaceCreation(spaceId: Id) {
+        val spaceConfig = spaceManager.getConfig(SpaceId(spaceId))
+        val chatId = spaceConfig?.spaceChatId
+        if (chatId != null) {
+            commands.emit(
+                Command.SwitchSpaceChat(
+                    space = Space(spaceId),
+                    chatId = chatId
+                )
+            )
+        } else {
+            onError(
+                IllegalStateException("Chat ID is null for created chat space: $spaceId")
+            )
+        }
+    }
+
+    private suspend fun finishDataSpaceCreation(spaceId: Id, startingObject: Id?) {
+        commands.emit(
+            Command.SwitchSpace(
+                space = Space(spaceId),
+                startingObject = startingObject
+            )
         )
     }
 

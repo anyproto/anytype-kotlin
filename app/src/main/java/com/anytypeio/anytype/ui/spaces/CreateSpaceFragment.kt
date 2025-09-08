@@ -8,8 +8,10 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material.MaterialTheme
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.fragment.app.viewModels
@@ -17,6 +19,7 @@ import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
@@ -39,6 +42,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
     private val args by navArgs<CreateSpaceFragmentArgs>()
     val spaceUxType: SpaceUxType get() = args.spaceUxType
 
+    @OptIn(ExperimentalMaterial3Api::class)
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -75,6 +79,17 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     },
                     isLoading = vm.isInProgress.collectAsState()
                 )
+
+                // Error handling with BaseAlertDialog
+                val createSpaceError = vm.createSpaceError.collectAsStateWithLifecycle().value
+                createSpaceError?.let { error ->
+                    BaseAlertDialog(
+                        dialogText = error.msg,
+                        buttonText = getString(R.string.button_ok),
+                        onButtonClick = { vm.clearCreateSpaceError() },
+                        onDismissRequest = { vm.clearCreateSpaceError() }
+                    )
+                }
                 LaunchedEffect(Unit) { vm.toasts.collect { toast(it) } }
                 LaunchedEffect(Unit) {
                     vm.isDismissed.collect { isDismissed ->
@@ -83,6 +98,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
+                        Timber.d("Received command: $command")
                         when (command) {
                             is CreateSpaceViewModel.Command.SwitchSpace -> {
                                 runCatching {
@@ -120,7 +136,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                         R.id.actionOpenChatFromVault,
                                         ChatFragment.args(
                                             space = command.space.id,
-                                            ctx = command.space.id // Use space ID as chat context for new Chat spaces
+                                            ctx = command.chatId
                                         )
                                     )
                                 }.onFailure {

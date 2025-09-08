@@ -348,7 +348,7 @@ interface BlockRemote {
     suspend fun spaceUnsetOrder(spaceViewId: Id)
     suspend fun createWorkspace(command: Command.CreateSpace): Command.CreateSpace.Result
 
-    suspend fun getSpaceConfig(space: Id): Config
+    suspend fun spaceOpen(space: Id, withChat: Boolean): Config
 
     suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id>
     suspend fun addObjectToSpace(command: Command.AddObjectToSpace) : Pair<Id, Struct?>

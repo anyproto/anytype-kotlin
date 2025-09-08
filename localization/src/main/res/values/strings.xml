@@ -1951,7 +1951,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="chat_empty_state_title">This chat is empty.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_share_invite_button">Share invite link</string>
+    <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Write a message...</string>
 
     <string name="date_layout_mentioned_in">Mentions</string>

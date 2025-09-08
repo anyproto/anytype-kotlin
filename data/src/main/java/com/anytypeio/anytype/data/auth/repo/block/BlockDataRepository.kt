@@ -793,8 +793,9 @@ class BlockDataRepository(
         )
     }
 
-    override suspend fun getSpaceConfig(space: Id): Config = remote.getSpaceConfig(
-        space = space
+    override suspend fun spaceOpen(space: Id, withChat: Boolean): Config = remote.spaceOpen(
+        space = space,
+        withChat = withChat
     )
 
     override suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id> {

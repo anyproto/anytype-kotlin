@@ -51,14 +51,14 @@ class CreateSpaceViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     val spaceIconView: MutableStateFlow<SpaceIconView> = MutableStateFlow(
-        if (vmParams.spaceUxType == SpaceUxType.CHAT)
-            SpaceIconView.ChatSpace.Placeholder(
+        when (vmParams.spaceUxType) {
+            SpaceUxType.CHAT -> SpaceIconView.ChatSpace.Placeholder(
                 color = SystemColor.entries.random()
             )
-        else
-            SpaceIconView.DataSpace.Placeholder(
+            else -> SpaceIconView.DataSpace.Placeholder(
                 color = SystemColor.entries.random()
             )
+        }
     )
 
     init {
@@ -134,43 +134,24 @@ class CreateSpaceViewModel(
                 mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
             )
         )
-        if (isChatSpace) {
-            if (icon is SpaceIconView.ChatSpace.Image) {
-                uploadAndSetIcon(
-                    url = icon.url,
-                    spaceId = spaceId,
-                    onSuccess = {
-                        proceedWithMakeSpaceSharable(
-                            spaceId = SpaceId(spaceId),
-                            startingObject = response.startingObject
-                        )
-                    }
-                )
-            } else {
-                proceedWithMakeSpaceSharable(
+
+        val proceed: suspend () -> Unit = if (isChatSpace) {
+            {
+                proceedWithMakeChatSpaceSharable(
                     spaceId = SpaceId(spaceId),
                     startingObject = response.startingObject
                 )
             }
         } else {
-            if (icon is SpaceIconView.DataSpace.Image) {
-                uploadAndSetIcon(
-                    url = icon.url,
-                    spaceId = spaceId,
-                    onSuccess = {
-                        finishCreation(
-                            spaceId = spaceId,
-                            startingObject = response.startingObject
-                        )
-                    }
-                )
-            } else {
-                finishCreation(
+            {
+                finishSpaceCreation(
                     spaceId = spaceId,
                     startingObject = response.startingObject
                 )
             }
         }
+
+        maybeUploadIconAndProceed(icon = icon, spaceId = spaceId, onSuccess = proceed)
     }
 
     private suspend fun uploadAndSetIcon(
@@ -198,7 +179,31 @@ class CreateSpaceViewModel(
         )
     }
 
-    private suspend fun finishCreation(spaceId: Id, startingObject: Id?) {
+    private suspend fun maybeUploadIconAndProceed(
+        icon: SpaceIconView,
+        spaceId: Id,
+        onSuccess: suspend () -> Unit
+    ) {
+        when (icon) {
+            is SpaceIconView.ChatSpace.Image -> {
+                uploadAndSetIcon(
+                    url = icon.url,
+                    spaceId = spaceId,
+                    onSuccess = onSuccess
+                )
+            }
+            is SpaceIconView.DataSpace.Image -> {
+                uploadAndSetIcon(
+                    url = icon.url,
+                    spaceId = spaceId,
+                    onSuccess = onSuccess
+                )
+            }
+            else -> onSuccess()
+        }
+    }
+
+    private suspend fun finishSpaceCreation(spaceId: Id, startingObject: Id?) {
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
         spaceManager.set(space = spaceId, withChat = vmParams.spaceUxType == SpaceUxType.CHAT).fold(
@@ -251,19 +256,15 @@ class CreateSpaceViewModel(
     }
 
     //region Share and Create Chat Space Link
-    private suspend fun proceedWithMakeSpaceSharable(
+    private suspend fun proceedWithMakeChatSpaceSharable(
         spaceId: SpaceId,
-        startingObject: Id?,
-        inviteType: InviteType = InviteType.WITHOUT_APPROVE,
-        permissions: SpaceMemberPermissions = SpaceMemberPermissions.WRITER
+        startingObject: Id?
     ) {
         makeSpaceShareable.async(params = spaceId).fold(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
                 generateInviteLink(
                     spaceId = spaceId,
-                    inviteType = inviteType,
-                    permissions = permissions,
                     startingObject = startingObject
                 )
             },
@@ -276,20 +277,18 @@ class CreateSpaceViewModel(
 
     private suspend fun generateInviteLink(
         spaceId: SpaceId,
-        startingObject: Id?,
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
+        startingObject: Id?
     ) {
         generateSpaceInviteLink.async(
             params = GenerateSpaceInviteLink.Params(
                 space = spaceId,
-                inviteType = inviteType,
-                permissions = permissions
+                inviteType = CHAT_SPACE_INVITE_TYPE,
+                permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
             )
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
-                finishCreation(
+                finishSpaceCreation(
                     spaceId = spaceId.id,
                     startingObject = startingObject
                 )
@@ -348,5 +347,8 @@ class CreateSpaceViewModel(
 
     companion object {
         const val MAX_SPACE_COUNT = 50
+        
+        private val CHAT_SPACE_INVITE_TYPE = InviteType.WITHOUT_APPROVE
+        private val CHAT_SPACE_DEFAULT_PERMISSIONS = SpaceMemberPermissions.WRITER
     }
 }

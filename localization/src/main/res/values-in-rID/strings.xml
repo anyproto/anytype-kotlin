@@ -1666,7 +1666,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_empty_state_message">Belum ada pesan.\nJadilah yang memulai diskusi!</string>
     <string name="chat_empty_state_title">Obrolan ini kosong.</string>
     <string name="chat_empty_state_subtitle">Undang orang-orang dan mulai obrolannya!</string>
-    <string name="chat_empty_state_share_invite_button">Bagikan tautan undangan</string>
+    <string name="chat_empty_state_share_invite_button">Undang anggota</string>
     <string name="write_a_message">Tulis pesan …</string>
     <string name="date_layout_mentioned_in">Sebutan</string>
     <string name="date_layout_empty_items">Belum ada apa-apa untuk tanggal ini</string>

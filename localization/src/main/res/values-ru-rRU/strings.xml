@@ -1708,7 +1708,7 @@
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
     <string name="chat_empty_state_title">This chat is empty.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_share_invite_button">Поделится ссылкой на приглашение </string>
+    <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Напишите сообщение...</string>
     <string name="date_layout_mentioned_in">Упоминания</string>
     <string name="date_layout_empty_items">Здесь пока ничего нет для этой даты</string>

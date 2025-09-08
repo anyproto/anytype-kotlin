@@ -131,7 +131,8 @@ private fun AlertWithLoadingSecondButton() {
 fun GenericAlert(
     onFirstButtonClicked: () -> Unit = {},
     onSecondButtonClicked: () -> Unit = {},
-    config: AlertConfig
+    config: AlertConfig,
+    addBottomSpacer: Boolean = true
 ) {
     val icon = config.icon
     Column {
@@ -149,7 +150,9 @@ fun GenericAlert(
             onLeftButtonClicked = onFirstButtonClicked,
             onRightButtonClicked = onSecondButtonClicked
         )
-        Spacer(modifier = Modifier.height(16.dp))
+        if (addBottomSpacer) {
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 

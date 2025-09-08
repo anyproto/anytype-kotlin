@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -115,8 +116,10 @@ fun Bubble(
                 showDeleteMessageWarning = false
             },
             containerColor = colorResource(id = R.color.background_secondary),
-            shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-            dragHandle = null
+            shape = RoundedCornerShape(16.dp),
+            dragHandle = null,
+            modifier = Modifier
+                .padding(bottom = 32.dp, start = 12.dp, end = 12.dp)
         ) {
             GenericAlert(
                 config = AlertConfig.WithTwoButtons(
@@ -133,7 +136,8 @@ fun Bubble(
                 },
                 onSecondButtonClicked = {
                     onDeleteMessage()
-                }
+                },
+                addBottomSpacer = false
             )
         }
     }

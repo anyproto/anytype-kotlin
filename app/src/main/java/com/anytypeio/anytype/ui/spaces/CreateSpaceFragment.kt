@@ -83,6 +83,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                 }
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
+                        Timber.d("Received command: $command")
                         when (command) {
                             is CreateSpaceViewModel.Command.SwitchSpace -> {
                                 runCatching {
@@ -120,7 +121,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                         R.id.actionOpenChatFromVault,
                                         ChatFragment.args(
                                             space = command.space.id,
-                                            ctx = command.space.id // Use space ID as chat context for new Chat spaces
+                                            ctx = command.chatId
                                         )
                                     )
                                 }.onFailure {

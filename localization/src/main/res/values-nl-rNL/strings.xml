@@ -1679,7 +1679,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
     <string name="chat_empty_state_title">Deze chat is leeg.</string>
     <string name="chat_empty_state_subtitle">Nodig mensen uit en start het gesprek!</string>
-    <string name="chat_empty_state_share_invite_button">Deel uitnodigingslink</string>
+    <string name="chat_empty_state_share_invite_button">Nodig leden uit</string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>

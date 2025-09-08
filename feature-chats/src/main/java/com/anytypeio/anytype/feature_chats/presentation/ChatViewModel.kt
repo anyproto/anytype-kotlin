@@ -939,6 +939,11 @@ class ChatViewModel @Inject constructor(
                 val wrapper = ObjectWrapper.Basic(view.details[target].orEmpty())
                 Timber.e("DROID-2966 Fetched attach-to-chat target: $wrapper")
                 if (wrapper.isValid) {
+                    val typeName = storeOfObjectTypes.getTypeOfObject(wrapper)?.name.orEmpty()
+                    val icon = wrapper.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                    )
                     chatBoxAttachments.value += listOf(
                         ChatView.Message.ChatBoxAttachment.Link(
                             target = target,
@@ -946,10 +951,10 @@ class ChatViewModel @Inject constructor(
                                 id = target,
                                 obj = wrapper,
                                 title = wrapper.name.orEmpty(),
-                                icon = ObjectIcon.None,
+                                icon = icon,
                                 layout = wrapper.layout ?: ObjectType.Layout.BASIC,
                                 space = vmParams.space,
-                                type = wrapper.type.firstOrNull().orEmpty(),
+                                type = typeName,
                                 meta = GlobalSearchItemView.Meta.None
                             )
                         )

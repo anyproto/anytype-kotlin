@@ -190,31 +190,6 @@ class ChatViewModel @Inject constructor(
                 }
         }
 
-        // Check if we should show invite modal for newly created Chat spaces
-        viewModelScope.launch {
-
-            val inviteLink = getSpaceInviteLink
-                .async(vmParams.space)
-                .onFailure { Timber.e(it, "Error while getting space invite link") }
-                .getOrNull()
-
-            combine(
-                spaceViews.observe(vmParams.space),
-                canCreateInviteLink,
-                uiState
-            ) { spaceView, canCreateInvite, ui ->
-                spaceView.spaceUxType == SpaceUxType.CHAT
-                        && canCreateInvite
-                        && inviteLink == null
-                        && ui.messages.isEmpty()
-            }.collect { shouldShow ->
-                Timber.d("DROID-3626 Should show invite modal: $shouldShow")
-                if (shouldShow) {
-                    inviteModalState.value = InviteModalState.ShowGenerateCard
-                }
-            }
-        }
-
         viewModelScope.launch {
             visibleRangeUpdates
                 .distinctUntilChanged()
@@ -244,6 +219,7 @@ class ChatViewModel @Inject constructor(
         }
 
         proceedWithSpaceSubscription()
+        checkIfShouldCreateInviteLink()
     }
 
 
@@ -495,9 +471,11 @@ class ChatViewModel @Inject constructor(
                 ),
                 isLoading = false
             )
-        }.flowOn(dispatchers.io).distinctUntilChanged().collect {
-            uiState.value = it
-        }
+        }.flowOn(dispatchers.io)
+            .distinctUntilChanged()
+            .collect {
+                uiState.value = it
+            }
     }
 
     private suspend fun proceedWithObservingSyncStatus() {
@@ -1302,7 +1280,6 @@ class ChatViewModel @Inject constructor(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
                 isGeneratingInviteLink.value = false
-                inviteModalState.value = InviteModalState.ShowShareCard(inviteLink.scheme)
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
@@ -1315,24 +1292,9 @@ class ChatViewModel @Inject constructor(
         )
     }
 
-    fun onShareInviteLinkClicked() {
+    fun onEmptyStateAction() {
         viewModelScope.launch {
-            // Check if we already have a link, if so show share card, otherwise show generate card
-            when (val currentState = inviteModalState.value) {
-                is InviteModalState.ShowShareCard -> {
-                    // Already showing share card - do nothing or could toggle visibility
-                    return@launch
-                }
-                else -> {
-                    // Check if we have an existing link
-                    val existingLink = getSpaceInviteLink.async(vmParams.space)
-                    if (existingLink.isSuccess) {
-                        inviteModalState.value = InviteModalState.ShowShareCard(existingLink.getOrThrow().scheme)
-                    } else {
-                        inviteModalState.value = InviteModalState.ShowGenerateCard
-                    }
-                }
-            }
+            commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
         }
     }
 
@@ -1613,6 +1575,38 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    //region Invite Link Screen
+
+    // Check if we should create invite link
+    fun checkIfShouldCreateInviteLink() {
+        viewModelScope.launch {
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.space)
+                .onFailure { Timber.e(it, "Error while getting space invite link") }
+                .getOrNull()
+
+            combine(
+                spaceViews.observe(vmParams.space),
+                canCreateInviteLink,
+                uiState
+            ) { spaceView, canCreateInvite, ui ->
+                spaceView.spaceUxType == SpaceUxType.CHAT
+                        && canCreateInvite
+                        && inviteLink == null
+                        && ui.messages.isEmpty()
+            }.collect { shouldGenerate ->
+                Timber.d("DROID-3943, Should generate new Invite link without approve: $shouldGenerate")
+                if (shouldGenerate) {
+                    proceedWithGeneratingInviteLink(
+                        inviteType = InviteType.WITHOUT_APPROVE,
+                        permissions = SpaceMemberPermissions.WRITER
+                    )
+                }
+            }
+        }
+    }
+    //endregion
+
     sealed class InviteModalState {
         data object Hidden : InviteModalState()
         data object ShowGenerateCard : InviteModalState()
@@ -1628,6 +1622,7 @@ class ChatViewModel @Inject constructor(
     sealed class ViewModelCommand {
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
+        data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
         data class MediaPreview(val url: String) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
         data class PlayAudio(val url: String, val name: String) : ViewModelCommand()

@@ -752,8 +752,9 @@ class BlockMiddleware(
         command = command
     )
 
-    override suspend fun getSpaceConfig(space: Id): Config = middleware.workspaceOpen(
-        space = space
+    override suspend fun spaceOpen(space: Id, withChat: Boolean): Config = middleware.workspaceOpen(
+        space = space,
+        withChat = withChat
     )
 
     override suspend fun addObjectListToSpace(objects: List<Id>, space: Id): List<Id> {

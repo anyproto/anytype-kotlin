@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.feature_chats.R
@@ -26,7 +26,7 @@ import com.anytypeio.anytype.feature_chats.R
 internal fun EmptyState(
     modifier: Modifier,
     canCreateInviteLink: Boolean,
-    onShareInviteClicked: () -> Unit
+    onAction: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -55,15 +55,15 @@ internal fun EmptyState(
             Text(
                 text = stringResource(R.string.chat_empty_state_subtitle),
                 style = BodyRegular,
-                color = colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.control_transparent_secondary),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()
             )
             if (canCreateInviteLink) {
-                ButtonSecondary(
+                ButtonPrimary(
                     text = stringResource(R.string.chat_empty_state_share_invite_button),
-                    onClick = { onShareInviteClicked() },
+                    onClick = { onAction() },
                     size = ButtonSize.SmallSecondary,
                     modifier = Modifier.padding(top = 10.dp)
                 )

@@ -31,8 +31,6 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -136,36 +134,24 @@ class CreateSpaceViewModel(
                 mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
             )
         )
-        spaceManager.set(spaceId)
         if (isChatSpace) {
-            spaceViewContainer.observe(space = SpaceId(spaceId))
-                .distinctUntilChanged()
-                .catch {
-                    Timber.e(it, "Error observing space view updates for space: $spaceId")
-                    onError(it)
-                }
-                .collect { spaceView ->
-                    Timber.d("Space view updated: %s", spaceView)
-                    if (spaceView.chatId != null) {
-                        if (icon is SpaceIconView.ChatSpace.Image) {
-                            uploadAndSetIcon(
-                                url = icon.url,
-                                spaceId = spaceId,
-                                onSuccess = {
-                                    proceedWithMakeSpaceSharable(
-                                        spaceId = SpaceId(spaceId),
-                                        startingObject = response.startingObject
-                                    )
-                                }
-                            )
-                        } else {
-                            proceedWithMakeSpaceSharable(
-                                spaceId = SpaceId(spaceId),
-                                startingObject = response.startingObject
-                            )
-                        }
+            if (icon is SpaceIconView.ChatSpace.Image) {
+                uploadAndSetIcon(
+                    url = icon.url,
+                    spaceId = spaceId,
+                    onSuccess = {
+                        proceedWithMakeSpaceSharable(
+                            spaceId = SpaceId(spaceId),
+                            startingObject = response.startingObject
+                        )
                     }
-                }
+                )
+            } else {
+                proceedWithMakeSpaceSharable(
+                    spaceId = SpaceId(spaceId),
+                    startingObject = response.startingObject
+                )
+            }
         } else {
             if (icon is SpaceIconView.DataSpace.Image) {
                 uploadAndSetIcon(
@@ -215,21 +201,34 @@ class CreateSpaceViewModel(
     private suspend fun finishCreation(spaceId: Id, startingObject: Id?) {
         Timber.d("Space created: %s", spaceId)
         isInProgress.value = false
-        if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-            commands.emit(
-                Command.SwitchSpaceChat(
-                    space = Space(spaceId),
-                    startingObject = startingObject
-                )
-            )
-        } else {
-            commands.emit(
-                Command.SwitchSpace(
-                    space = Space(spaceId),
-                    startingObject = startingObject
-                )
-            )
-        }
+        spaceManager.set(space = spaceId, withChat = vmParams.spaceUxType == SpaceUxType.CHAT).fold(
+            onSuccess = { config ->
+                if (vmParams.spaceUxType == SpaceUxType.CHAT) {
+                    val config = spaceManager.getConfig(SpaceId(spaceId))
+                    val chatId = config?.spaceChatId
+                    if (chatId != null) {
+                        commands.emit(
+                            Command.SwitchSpaceChat(
+                                space = Space(spaceId),
+                                chatId = chatId
+                            )
+                        )
+                    } else {
+                        onError(
+                            IllegalStateException("Chat ID is null for created chat space: $spaceId")
+                        )
+                    }
+                } else {
+                    commands.emit(
+                        Command.SwitchSpace(
+                            space = Space(spaceId),
+                            startingObject = startingObject
+                        )
+                    )
+                }
+            },
+            onFailure = { error -> Timber.e(error, "Error setting created space") }
+        )
     }
 
     private fun onError(error: Throwable) {
@@ -339,7 +338,7 @@ class CreateSpaceViewModel(
 
         data class SwitchSpaceChat(
             val space: Space,
-            val startingObject: Id?
+            val chatId: Id
         ) : Command()
     }
 

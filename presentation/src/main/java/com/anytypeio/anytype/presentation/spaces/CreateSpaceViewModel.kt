@@ -23,8 +23,8 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.CreateSpace
+import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -43,7 +43,7 @@ class CreateSpaceViewModel(
     private val analytics: Analytics,
     private val uploadFile: UploadFile,
     private val setSpaceDetails: SetSpaceDetails,
-    private val spaceViewContainer: SpaceViewSubscriptionContainer,
+    private val saveCurrentSpace: SaveCurrentSpace,
     private val makeSpaceShareable: MakeSpaceShareable,
     private val generateSpaceInviteLink: GenerateSpaceInviteLink
 ) : BaseViewModel() {
@@ -230,6 +230,7 @@ class CreateSpaceViewModel(
         val spaceConfig = spaceManager.getConfig(SpaceId(spaceId))
         val chatId = spaceConfig?.spaceChatId
         if (chatId != null) {
+            saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
             commands.emit(
                 Command.SwitchSpaceChat(
                     space = Space(spaceId),
@@ -244,6 +245,7 @@ class CreateSpaceViewModel(
     }
 
     private suspend fun finishDataSpaceCreation(spaceId: Id, startingObject: Id?) {
+        saveCurrentSpace.async(params = SaveCurrentSpace.Params(SpaceId(spaceId)))
         commands.emit(
             Command.SwitchSpace(
                 space = Space(spaceId),
@@ -329,7 +331,7 @@ class CreateSpaceViewModel(
         private val analytics: Analytics,
         private val uploadFile: UploadFile,
         private val setSpaceDetails: SetSpaceDetails,
-        private val spaceViewContainer: SpaceViewSubscriptionContainer,
+        private val saveCurrentSpace: SaveCurrentSpace,
         private val makeSpaceShareable: MakeSpaceShareable,
         private val generateSpaceInviteLink: GenerateSpaceInviteLink
     ) : ViewModelProvider.Factory {
@@ -343,7 +345,7 @@ class CreateSpaceViewModel(
             uploadFile = uploadFile,
             setSpaceDetails = setSpaceDetails,
             vmParams = vmParams,
-            spaceViewContainer = spaceViewContainer,
+            saveCurrentSpace = saveCurrentSpace,
             makeSpaceShareable = makeSpaceShareable,
             generateSpaceInviteLink = generateSpaceInviteLink
         ) as T

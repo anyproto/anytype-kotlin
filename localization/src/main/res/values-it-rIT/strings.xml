@@ -1680,7 +1680,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="chat_empty_state_title">Questa chat è vuota.</string>
     <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
-    <string name="chat_empty_state_share_invite_button">Condividi il link di invito</string>
+    <string name="chat_empty_state_share_invite_button">Invita membri</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
     <string name="date_layout_mentioned_in">Menzioni</string>
     <string name="date_layout_empty_items">Non c\'è ancora nulla per questa data</string>

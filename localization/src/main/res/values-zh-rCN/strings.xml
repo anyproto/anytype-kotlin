@@ -1662,7 +1662,7 @@
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
     <string name="chat_empty_state_title">This chat is empty.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_share_invite_button">分享邀请链接</string>
+    <string name="chat_empty_state_share_invite_button">邀请成员</string>
     <string name="write_a_message">写点什么...</string>
     <string name="date_layout_mentioned_in">提及</string>
     <string name="date_layout_empty_items">此日期暂无任何内容</string>

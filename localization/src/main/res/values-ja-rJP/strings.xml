@@ -1667,7 +1667,7 @@
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
     <string name="chat_empty_state_title">まだメッセージがありません。</string>
     <string name="chat_empty_state_subtitle">招待して会話を始めましょう！</string>
-    <string name="chat_empty_state_share_invite_button">招待リンクを共有</string>
+    <string name="chat_empty_state_share_invite_button">メンバーを招待</string>
     <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>
     <string name="date_layout_empty_items">この日付にはまだ何もありません</string>

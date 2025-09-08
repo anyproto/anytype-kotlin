@@ -55,7 +55,7 @@ internal fun EmptyState(
             Text(
                 text = stringResource(R.string.chat_empty_state_subtitle),
                 style = BodyRegular,
-                color = colorResource(id = R.color.text_secondary),
+                color = colorResource(id = R.color.control_transparent_secondary),
                 textAlign = TextAlign.Center,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -31,6 +31,8 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -69,6 +71,9 @@ class CreateSpaceViewModel(
     }
 
     val isDismissed = MutableStateFlow(false)
+    
+    private val _createSpaceError = MutableStateFlow<CreateSpaceError?>(null)
+    val createSpaceError: StateFlow<CreateSpaceError?> = _createSpaceError.asStateFlow()
 
     fun onImageSelected(url: Url) {
         Timber.d("onImageSelected: $url")
@@ -249,8 +254,12 @@ class CreateSpaceViewModel(
 
     private fun onError(error: Throwable) {
         Timber.e(error, "Error creating space")
-        sendToast("Error while creating space, please try again.")
         isInProgress.value = false
+        _createSpaceError.value = CreateSpaceError(msg = error.message ?: "Unknown error")
+    }
+
+    fun clearCreateSpaceError() {
+        _createSpaceError.value = null
     }
 
     fun onSpaceIconRemovedClicked() {
@@ -355,6 +364,8 @@ class CreateSpaceViewModel(
     data class VmParams(
         val spaceUxType: SpaceUxType
     )
+
+    data class CreateSpaceError(val msg: String)
 
     companion object {
         const val MAX_SPACE_COUNT = 50

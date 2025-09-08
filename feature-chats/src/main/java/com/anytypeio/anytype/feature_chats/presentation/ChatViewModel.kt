@@ -471,10 +471,11 @@ class ChatViewModel @Inject constructor(
                 ),
                 isLoading = false
             )
-        }.flowOn(dispatchers.io).distinctUntilChanged().collect {
-            Timber.d("Emitting new Chat Screen ui state from chat container")
-            uiState.value = it
-        }
+        }.flowOn(dispatchers.io)
+            .distinctUntilChanged()
+            .collect {
+                uiState.value = it
+            }
     }
 
     private suspend fun proceedWithObservingSyncStatus() {

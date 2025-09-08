@@ -1134,6 +1134,7 @@ class ChatViewModel @Inject constructor(
     fun onExitEditMessageMode() {
         Timber.d("onExitEditMessageMode")
         viewModelScope.launch {
+            chatBoxAttachments.value = emptyList()
             chatBoxMode.value = ChatBoxMode.Default()
         }
     }

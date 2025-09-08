@@ -1679,7 +1679,7 @@ En concreto,
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
     <string name="chat_empty_state_title">Este chat está vacío.</string>
     <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
-    <string name="chat_empty_state_share_invite_button">Compartir enlace de invitación</string>
+    <string name="chat_empty_state_share_invite_button">Invitar a miembros</string>
     <string name="write_a_message">Escribir mensaje…</string>
     <string name="date_layout_mentioned_in">Menciones</string>
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>

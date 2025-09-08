@@ -124,43 +124,11 @@ class CreateSpaceViewModel(
         }
     }
 
-    fun onCreateChatSpace(name: String, iconView: SpaceIconView.ChatSpace) {
-        Timber.d("onCreateSpace, spaceUxType: %s, name: %s", vmParams.spaceUxType, name)
-        if (isDismissed.value) {
-            return
-        }
-        if (isInProgress.value) {
-            sendToast("Please wait...")
-            return
-        }
-        val (uxType, useCase) = SpaceUxType.CHAT to SpaceCreationUseCase.NONE
-
-        viewModelScope.launch {
-            val params = CreateSpace.Params(
-                details = mapOf(
-                    Relations.NAME to name.trim(),
-                    Relations.ICON_OPTION to when (iconView) {
-                        is SpaceIconView.ChatSpace.Placeholder -> iconView.color.index.toDouble()
-                        else -> SystemColor.SKY.index.toDouble()
-                    },
-                    Relations.SPACE_UX_TYPE to uxType.code.toDouble()
-                ),
-                useCase = useCase,
-                withChat = true
-            )
-            createSpace.stream(params = params).collect { result ->
-                result.fold(
-                    onLoading = { isInProgress.value = true },
-                    onSuccess = {
-                        proceedWithChatSpaceCreated(response = it)
-                    },
-                    onFailure = { onError(it) }
-                )
-            }
-        }
-    }
-
-    private suspend fun onSpaceCreated(response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result, isChatSpace: Boolean) {
+    private suspend fun onSpaceCreated(
+        response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result,
+        isChatSpace: Boolean
+    ) {
+        val icon = spaceIconView.value
         val spaceId = response.space.id
         analytics.sendEvent(
             eventName = EventsDictionary.createSpace,
@@ -179,77 +147,50 @@ class CreateSpaceViewModel(
                 .collect { spaceView ->
                     Timber.d("Space view updated: %s", spaceView)
                     if (spaceView.chatId != null) {
-                        when (val icon = spaceIconView.value) {
-                            is SpaceIconView.ChatSpace.Image -> uploadAndSetIcon(
+                        if (icon is SpaceIconView.ChatSpace.Image) {
+                            uploadAndSetIcon(
                                 url = icon.url,
                                 spaceId = spaceId,
+                                onSuccess = {
+                                    proceedWithMakeSpaceSharable(
+                                        spaceId = SpaceId(spaceId),
+                                        startingObject = response.startingObject
+                                    )
+                                }
+                            )
+                        } else {
+                            proceedWithMakeSpaceSharable(
+                                spaceId = SpaceId(spaceId),
                                 startingObject = response.startingObject
                             )
-
-                            is SpaceIconView.DataSpace.Image -> uploadAndSetIconForDataSpace(
-                                url = icon.url,
-                                spaceId = spaceId,
-                                startingObject = response.startingObject
-                            )
-
-                            else -> finishCreation(spaceId, response.startingObject)
                         }
                     }
                 }
         } else {
-            when (val icon = spaceIconView.value) {
-                is SpaceIconView.ChatSpace.Image -> uploadAndSetIcon(
+            if (icon is SpaceIconView.DataSpace.Image) {
+                uploadAndSetIcon(
                     url = icon.url,
+                    spaceId = spaceId,
+                    onSuccess = {
+                        finishCreation(
+                            spaceId = spaceId,
+                            startingObject = response.startingObject
+                        )
+                    }
+                )
+            } else {
+                finishCreation(
                     spaceId = spaceId,
                     startingObject = response.startingObject
                 )
-
-                is SpaceIconView.DataSpace.Image -> uploadAndSetIconForDataSpace(
-                    url = icon.url,
-                    spaceId = spaceId,
-                    startingObject = response.startingObject
-                )
-
-                else -> finishCreation(spaceId, response.startingObject)
             }
         }
-    }
-
-    private suspend fun proceedWithChatSpaceCreated(response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result, iconView: SpaceIconView.ChatSpace) {
-        val spaceId = response.space.id
-        analytics.sendEvent(
-            eventName = EventsDictionary.createSpace,
-            props = Props(
-                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
-            )
-        )
-        spaceManager.set(spaceId)
-        spaceViewContainer.observe(space = SpaceId(spaceId))
-            .distinctUntilChanged()
-            .catch {
-                Timber.e(it, "Error observing space view updates for space: $spaceId")
-                onError(it)
-            }
-            .collect { spaceView ->
-                Timber.d("Space view updated: %s", spaceView)
-                if (spaceView.chatId != null) {
-                    if (spaceIconView.value is SpaceIconView.ChatSpace.Image) {
-                        val icon = spaceIconView.value as SpaceIconView.ChatSpace.Image
-                        uploadAndSetIcon(
-                            url = icon.url,
-                            spaceId = spaceId,
-                        ) {
-
-                        }
-                    }
-                }
-            }
     }
 
     private suspend fun uploadAndSetIcon(
         url: Url,
         spaceId: Id,
-        onSuccess: () -> Unit
+        onSuccess: suspend () -> Unit
     ) {
         uploadFile.async(
             UploadFile.Params(
@@ -317,9 +258,7 @@ class CreateSpaceViewModel(
         inviteType: InviteType = InviteType.WITHOUT_APPROVE,
         permissions: SpaceMemberPermissions = SpaceMemberPermissions.WRITER
     ) {
-        makeSpaceShareable.async(
-            params = spaceId
-        ).fold(
+        makeSpaceShareable.async(params = spaceId).fold(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
                 generateInviteLink(
@@ -351,7 +290,10 @@ class CreateSpaceViewModel(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
-                finishCreation(spaceId.id, startingObject)
+                finishCreation(
+                    spaceId = spaceId.id,
+                    startingObject = startingObject
+                )
             },
             onFailure = { error ->
                 Timber.e(error, "Error while generating invite link")
@@ -394,6 +336,7 @@ class CreateSpaceViewModel(
             val space: Space,
             val startingObject: Id?
         ) : Command()
+
         data class SwitchSpaceChat(
             val space: Space,
             val startingObject: Id?

@@ -109,8 +109,7 @@ class CreateSpaceViewModel(
                     },
                     Relations.SPACE_UX_TYPE to uxType.code.toDouble()
                 ),
-                useCase = useCase,
-                withChat = vmParams.spaceUxType == SpaceUxType.CHAT
+                useCase = useCase
             )
             createSpace.stream(params = params).collect { result ->
                 result.fold(
@@ -370,8 +369,6 @@ class CreateSpaceViewModel(
     data class CreateSpaceError(val msg: String)
 
     companion object {
-        const val MAX_SPACE_COUNT = 50
-        
         private val CHAT_SPACE_INVITE_TYPE = InviteType.WITHOUT_APPROVE
         private val CHAT_SPACE_DEFAULT_PERMISSIONS = SpaceMemberPermissions.WRITER
     }

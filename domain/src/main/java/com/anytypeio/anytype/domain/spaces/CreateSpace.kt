@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.domain.spaces
 
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -17,14 +16,12 @@ class CreateSpace @Inject constructor(
     override suspend fun doWork(params: Params) = repo.createWorkspace(
         command = Command.CreateSpace(
             details = params.details,
-            withChat = params.withChat,
             useCase = params.useCase
         )
     )
 
     data class Params(
         val details: Struct,
-        val withChat: Boolean = false,
         val useCase: SpaceCreationUseCase = SpaceCreationUseCase.GET_STARTED_MOBILE
     )
 }

@@ -1983,4 +1983,10 @@
     <string name="web_publishing_update">Обновить</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="few">%d new messages</item>
+        <item quantity="many">%d new messages</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

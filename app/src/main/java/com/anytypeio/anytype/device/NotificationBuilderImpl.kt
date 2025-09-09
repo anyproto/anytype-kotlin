@@ -27,8 +27,9 @@ class NotificationBuilderImpl(
 
     private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
+    private val groupNotificationIds = mutableMapOf<String, MutableSet<Int>>()
 
-    override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id) {
+    override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id, groupId: String) {
         val channelId = "${spaceId}_${message.chatId}"
 
         ensureChannelExists(
@@ -47,6 +48,9 @@ class NotificationBuilderImpl(
         val bodyText = message.formatNotificationBody(attachmentText)
         val singleLine = "${message.senderName.trim()}: $bodyText"
 
+        // Generate unique notification ID based on message ID
+        val notificationId = message.msgId.hashCode()
+
         val notif = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
@@ -61,10 +65,43 @@ class NotificationBuilderImpl(
             .setFullScreenIntent(pending, true)
             .setLights(0xFF0000FF.toInt(), 300, 1000)
             .setVibrate(longArrayOf(0, 500, 200, 500))
+            .setGroup(groupId) // Group notifications by groupId
             .build()
 
-        // TODO maybe use message ID as notification ID?
-        notificationManager.notify(System.currentTimeMillis().toInt(), notif)
+        // Track notification ID for this group
+        groupNotificationIds.getOrPut(groupId) { mutableSetOf() }.add(notificationId)
+
+        // Show individual notification with groupId as tag
+        notificationManager.notify(groupId, notificationId, notif)
+
+        // Create or update summary notification for the group
+        updateSummaryNotification(groupId, message.spaceName)
+    }
+
+    /**
+     * Creates or updates the summary notification for a group of chat notifications.
+     */
+    private fun updateSummaryNotification(groupId: String, spaceName: String) {
+        val groupNotifications = groupNotificationIds[groupId] ?: return
+        if (groupNotifications.isEmpty()) return
+
+        val messageCount = groupNotifications.size
+        if (messageCount <= 1) return // Don't show summary for single notification
+
+        val summaryNotif = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
+            .setSmallIcon(R.drawable.ic_app_notification)
+            .setContentTitle(spaceName.trim())
+            .setContentText(resourceProvider.getMessagesCountText(messageCount))
+            .setGroup(groupId)
+            .setGroupSummary(true)
+            .setAutoCancel(true)
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .build()
+
+        // Use consistent ID for summary notification
+        val summaryId = "${groupId}_summary".hashCode()
+        notificationManager.notify(SUMMARY_TAG, summaryId, summaryNotif)
     }
 
     /**
@@ -72,6 +109,7 @@ class NotificationBuilderImpl(
      */
     private fun ensureChannelExists(channelId: String, channelName: String) {
         createChannelGroupIfNeeded()
+        ensureSummaryChannelExists()
         if (createdChannels.contains(channelId)) return
         val channel = NotificationChannel(
             channelId,
@@ -91,6 +129,32 @@ class NotificationBuilderImpl(
             notificationManager.createNotificationChannel(channel)
             val added = createdChannels.add(channelId)
             Timber.d("Notification channel created: $channelId, success: $added")
+        }
+    }
+
+    /**
+     * Ensures the summary notification channel exists.
+     */
+    private fun ensureSummaryChannelExists() {
+        if (createdChannels.contains(CHAT_SUMMARY_CHANNEL_ID)) return
+        val summaryChannel = NotificationChannel(
+            CHAT_SUMMARY_CHANNEL_ID,
+            "Chat Summary",
+            NotificationManager.IMPORTANCE_HIGH
+        ).apply {
+            description = "Summary notifications for chat groups"
+            enableLights(true)
+            enableVibration(true)
+            setShowBadge(true)
+            lockscreenVisibility = NotificationCompat.VISIBILITY_PUBLIC
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+                group = CHANNEL_GROUP_ID
+            }
+        }
+        runSafely("creating summary notification channel") {
+            notificationManager.createNotificationChannel(summaryChannel)
+            createdChannels.add(CHAT_SUMMARY_CHANNEL_ID)
+            Timber.d("Summary notification channel created")
         }
     }
 
@@ -162,6 +226,36 @@ class NotificationBuilderImpl(
         createdChannels.remove(channelId)
     }
 
+    /**
+     * Clears all notifications for a specific group ID (for silent push "read" events).
+     */
+    override fun clearNotificationsByGroupId(groupId: String) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // Use active notifications approach for reliable clearing
+            notificationManager.activeNotifications
+                .filter { sbn ->
+                    sbn.tag == groupId || sbn.notification.group == groupId
+                }
+                .forEach { sbn ->
+                    notificationManager.cancel(sbn.tag, sbn.id)
+                }
+        }
+        
+        // Also clear using tracked IDs as fallback
+        groupNotificationIds[groupId]?.forEach { notificationId ->
+            notificationManager.cancel(groupId, notificationId)
+        }
+        
+        // Clear summary notification
+        val summaryId = "${groupId}_summary".hashCode()
+        notificationManager.cancel(SUMMARY_TAG, summaryId)
+        
+        // Clean up local tracking
+        groupNotificationIds.remove(groupId)
+        
+        Timber.d("Cleared all notifications for groupId: $groupId")
+    }
+
     private fun sanitizeChannelName(name: String): String {
         return name.trim().replace(Regex("[^a-zA-Z0-9 _-]"), "_")
     }
@@ -169,5 +263,7 @@ class NotificationBuilderImpl(
     companion object {
         private const val CHANNEL_GROUP_ID = "chats_group"
         private const val CHANNEL_GROUP_NAME = "Chats"
+        private const val CHAT_SUMMARY_CHANNEL_ID = "chat_summary_channel"
+        private const val SUMMARY_TAG = "chat_summary"
     }
 }

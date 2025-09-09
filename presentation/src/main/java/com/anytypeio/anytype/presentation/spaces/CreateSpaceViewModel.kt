@@ -109,8 +109,7 @@ class CreateSpaceViewModel(
                     },
                     Relations.SPACE_UX_TYPE to uxType.code.toDouble()
                 ),
-                useCase = useCase,
-                withChat = vmParams.spaceUxType == SpaceUxType.CHAT
+                useCase = useCase
             )
             createSpace.stream(params = params).collect { result ->
                 result.fold(

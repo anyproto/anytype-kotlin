@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 
@@ -477,7 +478,6 @@ sealed class Command {
 
     data class CreateSpace(
         val details: Struct,
-        val withChat: Boolean,
         val useCase: SpaceCreationUseCase
     ) {
         data class Result(

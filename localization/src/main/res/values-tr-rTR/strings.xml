@@ -1954,4 +1954,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_update">Güncelle</string>
     <string name="web_publishing_publish">Yayınla</string>
     <string name="web_publishing_failed_to_update">Güncelleme başarısız oldu: %1$s</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

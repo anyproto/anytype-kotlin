@@ -45,6 +45,7 @@ class SpaceWidgetContainer @Inject constructor(
                             addAll(ObjectSearchConstants.defaultKeys)
                             add(Relations.CHAT_ID)
                             add(Relations.SPACE_ACCESS_TYPE)
+                            add(Relations.SPACE_UX_TYPE)
                             add(Relations.ICON_OPTION)
                         }
                     )

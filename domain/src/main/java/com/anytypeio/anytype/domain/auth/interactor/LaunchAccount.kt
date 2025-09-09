@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
 import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.BaseUseCase
@@ -26,7 +25,7 @@ class LaunchAccount @Inject constructor(
     private val settings: UserSettingsRepository,
     private val awaitAccountStartManager: AwaitAccountStartManager,
     context: CoroutineContext = Dispatchers.IO
-    ) : BaseUseCase<Id, BaseUseCase.None>(context) {
+    ) : BaseUseCase<Pair<String, String>, BaseUseCase.None>(context) {
 
     override suspend fun run(params: None) = safe {
         repository.setInitialParams(initialParamsProvider.toCommand())
@@ -48,7 +47,7 @@ class LaunchAccount @Inject constructor(
                 spaceManager.set(lastSessionSpace.id)
             }
             awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
-            setup.config.analytics
+            setup.config.analytics to setup.config.network
         }
     }
 }

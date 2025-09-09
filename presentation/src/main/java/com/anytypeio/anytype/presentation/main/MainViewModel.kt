@@ -234,18 +234,23 @@ class MainViewModel(
                 success = {
                     globalSubscriptionManager.onStart()
                     val analyticsID = configStorage.getOrNull()?.analytics
+                    val networkID = configStorage.getOrNull()?.network
                     if (analyticsID != null) {
                         updateUserProperties(
                             analytics = analytics,
                             userProperty = UserProperty.AccountId(analyticsID)
                         )
-                        localeProvider.language()?.let { lang ->
-                            updateUserProperties(
-                                analytics,
-                                userProperty = UserProperty.InterfaceLanguage(lang)
-                            )
-                        }
                     }
+                    if (networkID != null) {
+                        updateUserProperties(
+                            analytics = analytics,
+                            userProperty = UserProperty.NetworkId(networkID)
+                        )
+                    }
+                    updateUserProperties(
+                        analytics,
+                        userProperty = UserProperty.InterfaceLanguage(localeProvider.language())
+                    )
                     Timber.d("Restored account after activity recreation")
                 },
                 failure = { error ->

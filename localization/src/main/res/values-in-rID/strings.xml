@@ -1940,4 +1940,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_update">Perbarui</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Gagal memperbarui: %1$s</string>
+    <plurals name="notification_messages_count">
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

@@ -1,25 +1,19 @@
 package com.anytypeio.anytype.ui.vault
 
 import android.content.res.Configuration
-import android.os.Build
-import android.os.Build.VERSION.SDK_INT
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
@@ -42,11 +36,9 @@ import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.vault.VaultUiState
 
 @Composable
@@ -71,7 +63,6 @@ fun VaultScreenTopToolbar(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = false,
                     isLoading = true
                 )
                 Spacer(
@@ -93,7 +84,6 @@ fun VaultScreenTopToolbar(
                     showNotificationBadge = showNotificationBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
-                    spaceCountLimitReached = uiState.mainSpaces.size >= CreateSpaceViewModel.MAX_SPACE_COUNT,
                     isLoading = false
                 )
                 DefaultSearchBar(
@@ -111,7 +101,6 @@ fun VaultScreenTopToolbar(
 @Composable
 fun VaultScreenToolbar(
     profile: AccountProfile,
-    spaceCountLimitReached: Boolean = false,
     showNotificationBadge: Boolean = false,
     onPlusClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
@@ -176,25 +165,23 @@ fun VaultScreenToolbar(
                 }
             }
 
-            if (!spaceCountLimitReached) {
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .width(64.dp)
-                        .fillMaxHeight()
-                        .noRippleThrottledClickable {
-                            onPlusClicked()
-                        },
-                    contentAlignment = Alignment.Center
+            Box(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .width(64.dp)
+                    .fillMaxHeight()
+                    .noRippleThrottledClickable {
+                        onPlusClicked()
+                    },
+                contentAlignment = Alignment.Center
 
-                ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_plus_18),
-                        contentDescription = stringResource(R.string.content_description_plus_button),
-                        modifier = Modifier.size(28.dp),
-                        contentScale = ContentScale.Fit
-                    )
-                }
+            ) {
+                Image(
+                    painter = painterResource(id = R.drawable.ic_plus_18),
+                    contentDescription = stringResource(R.string.content_description_plus_button),
+                    modifier = Modifier.size(28.dp),
+                    contentScale = ContentScale.Fit
+                )
             }
         }
     }

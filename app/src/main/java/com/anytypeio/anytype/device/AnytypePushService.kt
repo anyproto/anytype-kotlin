@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.device
 
 import com.anytypeio.anytype.app.AndroidApplication
-import com.anytypeio.anytype.core_utils.ext.isAppInForeground
 import com.anytypeio.anytype.core_utils.ext.runSafely
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
@@ -51,12 +50,6 @@ class AnytypePushService : FirebaseMessagingService() {
     override fun onMessageReceived(message: RemoteMessage) {
         super.onMessageReceived(message)
         Timber.d("Received message: $message")
-        
-        // Skip showing notification if app is in foreground
-        if (isAppInForeground()) {
-            Timber.d("App is in foreground, skipping notification")
-            return
-        }
         checkAuthorizationStatus(message)
     }
 
@@ -78,7 +71,7 @@ class AnytypePushService : FirebaseMessagingService() {
 
     private fun proceedWithPushMessage(message: RemoteMessage) {
         runSafely("processing push message") {
-            processor.process(message.data)
+            processor.process(context = this, messageData = message.data)
         }
     }
 

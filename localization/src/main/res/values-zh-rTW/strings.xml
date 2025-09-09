@@ -1941,4 +1941,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_update">更新</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <plurals name="notification_messages_count">
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

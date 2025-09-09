@@ -213,7 +213,8 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             analytics.sendOpenAccountEvent(
-                analytics = config.analytics
+                analytics = config.analytics,
+                networkId = config.network
             )
         } else {
             Timber.w("config was missing before the end of onboarding")

@@ -54,7 +54,7 @@ class AmplitudeTracker(
         analytics.observeUserProperties().collect { prop: UserProperty ->
             Timber.d("Setting user property: $prop")
             if (BuildConfig.SEND_EVENTS) {
-                when(prop) {
+                when (prop) {
                     is UserProperty.AccountId -> {
                         tracker.setUserId(prop.id, true)
                     }
@@ -66,6 +66,12 @@ class AmplitudeTracker(
                     is UserProperty.Tier -> {
                         tracker.setUserProperties(
                             JSONObject(mapOf(UserProperty.TIER_KEY to prop.tier))
+                        )
+                    }
+
+                    is UserProperty.NetworkId -> {
+                        tracker.setUserProperties(
+                            JSONObject(mapOf(UserProperty.NETWORK_ID_KEY to prop.id))
                         )
                     }
                 }

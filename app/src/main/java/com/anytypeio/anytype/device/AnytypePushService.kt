@@ -2,6 +2,7 @@ package com.anytypeio.anytype.device
 
 import com.anytypeio.anytype.app.AndroidApplication
 import com.anytypeio.anytype.core_utils.ext.runSafely
+import com.anytypeio.anytype.core_utils.ext.isAppInForeground
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
@@ -71,7 +72,10 @@ class AnytypePushService : FirebaseMessagingService() {
 
     private fun proceedWithPushMessage(message: RemoteMessage) {
         runSafely("processing push message") {
-            processor.process(context = this, messageData = message.data)
+            processor.process(
+                messageData = message.data,
+                isAppInForeground = isAppInForeground()
+            )
         }
     }
 

@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.device
 
-import android.content.Context
 import android.util.Base64
-import com.anytypeio.anytype.core_utils.ext.isAppInForeground
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.presentation.notifications.DecryptionPushContentService
 import timber.log.Timber
@@ -12,7 +10,7 @@ interface PushMessageProcessor {
      * Returns `true` if the message was handled (e.g. decrypted & showed a notification),
      * or `false` if it should be ignored (e.g. missing payload/key or decryption failed).
      */
-    fun process(context: Context, messageData: Map<String, String>): Boolean
+    fun process(messageData: Map<String, String>, isAppInForeground: Boolean = false): Boolean
 }
 
 class DefaultPushMessageProcessor(
@@ -20,7 +18,7 @@ class DefaultPushMessageProcessor(
     private val notificationBuilder: NotificationBuilder
 ) : PushMessageProcessor {
 
-    override fun process(context: Context, messageData: Map<String, String>): Boolean {
+    override fun process(messageData: Map<String, String>, isAppInForeground: Boolean): Boolean {
 
         val type = messageData[PUSH_TYPE_KEY] ?: return false
         val groupId = messageData[GROUP_ID_KEY] ?: return false
@@ -35,7 +33,7 @@ class DefaultPushMessageProcessor(
         }
 
         // Skip showing notification if app is in foreground
-        if (context.isAppInForeground()) {
+        if (isAppInForeground) {
             Timber.d("App is in foreground, skipping notification")
             return true
         }

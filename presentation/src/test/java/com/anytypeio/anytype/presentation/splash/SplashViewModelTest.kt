@@ -425,7 +425,7 @@ class SplashViewModelTest {
 
     private fun stubLaunchAccount() {
         launchAccount.stub {
-            onBlocking { invoke(any()) } doReturn Either.Right("accountId")
+            onBlocking { invoke(any()) } doReturn Either.Right(Pair("accountId", ""))
         }
     }
 

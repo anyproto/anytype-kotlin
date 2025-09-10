@@ -1019,7 +1019,7 @@
     <string name="library_type_added">Tipo `%1$s` aggiunto alla tua libreria\"</string>
     <string name="library_type_removed">Tipo `%1$s` rimosso dalla tua libreria\"</string>
     <string name="library_relation_added">La proprietà `%1$s` è stata aggiunta alla tua libreria.</string>
-    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
+    <string name="library_relation_removed">La proprietà `%1$s` è stata rimossa dalla tua libreria.</string>
     <string name="library_something_went_wrong">Qualcosa è andato storto. Riprova nuovamente più tardi.</string>
     <string name="type_creation_new_type">New type</string>
     <string name="type_creation_done">Fatto</string>
@@ -1213,7 +1213,7 @@
     <string name="multiplayer_qr_invite_link_menu">Mostra codice QR</string>
     <string name="multiplayer_share_invite_link_description">Condividi questo link di invito in modo che altri possano unirsi al tuo Spazio. Una volta che cliccano sul tuo link e richiedono l\'accesso, puoi impostare i loro diritti di accesso.</string>
     <string name="multiplayer_invite_link">Link di invito</string>
-    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_invite_link_access">Indirizzo d\'invito per l\'accesso</string>
     <string name="multiplayer_link_disabled">Link disabilitato</string>
     <string name="multiplayer_link_disabled_desc">Solo i membri già invitati hanno accesso</string>
     <string name="multiplayer_editor_access">Accesso editor</string>
@@ -1490,7 +1490,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_wrong_format">L\'email ha un formato errato</string>
     <string name="membership_email_already_verified">Indirizzo email già verificato</string>
     <string name="membership_email_already_sent">Email già inviata, riprova dopo 1 minuto</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_failed_to_send">Invio e-mail non riuscito</string>
     <string name="membership_email_membership_already_exists">Membership already exists</string>
     <string name="membership_email_code_expired">Codice scaduto</string>
     <string name="membership_email_code_wrong">Il codice è errato</string>
@@ -1621,7 +1621,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">Vedi Cestino</string>
     <string name="all_content_title_tab_pages">Pagine</string>
     <string name="all_content_title_tab_lists">Liste</string>
     <string name="all_content_title_tab_media">Multimedia</string>

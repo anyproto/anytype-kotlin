@@ -23,7 +23,7 @@
     <string name="log_out">Disconnetti</string>
     <string name="pin_code">Codice PIN</string>
     <string name="access">Accesso</string>
-    <string name="wallpaper">Wallpaper</string>
+    <string name="wallpaper">Sfondo</string>
     <string name="tech_info">Informazioni tecniche</string>
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
@@ -55,7 +55,7 @@
     <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
-    <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
+    <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri.</string>
     <string name="manage_files">Gestione file</string>
     <string name="local_storage">Archiviazione locale</string>
     <string name="offload_files">Libera file</string>
@@ -80,7 +80,7 @@
     <string name="option_text_header_two">Titolo 2</string>
     <string name="option_text_header_three">Titolo 3</string>
     <string name="option_text_highlighted">Evidenziato</string>
-    <string name="option_list_checkbox">Casella di scelta</string>
+    <string name="option_list_checkbox">Casella di spunta</string>
     <string name="option_list_bulleted_list">Elenco puntato</string>
     <string name="option_list_numbered_list">Elenco numerato</string>
     <string name="option_list_toggle_list">Lista di caselle di controllo</string>
@@ -147,7 +147,7 @@
     <string name="detail_multiple">Selezione multipla</string>
     <string name="detail_date">Data</string>
     <string name="detail_file">File e Media</string>
-    <string name="detail_checkbox">Casella di scelta</string>
+    <string name="detail_checkbox">Casella di spunta</string>
     <string name="detail_url">URL</string>
     <string name="detail_phone">Telefono</string>
     <string name="add_new">Aggiungi nuovo</string>
@@ -168,7 +168,7 @@
     <string name="hint_quote">Citazione</string>
     <string name="hint_header_two">Titolo</string>
     <string name="hint_header_three">Sottotitolo</string>
-    <string name="hint_checkbox">Casella di scelta</string>
+    <string name="hint_checkbox">Casella di spunta</string>
     <string name="hint_upload_video">Carica un video</string>
     <string name="hint_upload_image">Carica una foto</string>
     <string name="hint_upload_file">Carica un file</string>
@@ -290,7 +290,7 @@
     <string name="relation_format_date">Data</string>
     <string name="relation_format_status">Seleziona</string>
     <string name="relation_format_file">File &amp; Media</string>
-    <string name="relation_format_checkbox">Casella di scelta</string>
+    <string name="relation_format_checkbox">Casella di spunta</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Email</string>
     <string name="relation_format_phone">Numero di telefono</string>
@@ -639,7 +639,7 @@
     <string name="pickit_file_selected">File was selected from unknown provider</string>
     <string name="pickit_local_file">Local file was selected</string>
     <string name="pickit_waiting">Waiting to receive file…</string>
-    <string name="profile_wallpaper">Wallpaper</string>
+    <string name="profile_wallpaper">Sfondo</string>
     <string name="content_desc_wallpaper">Wallpaper icon</string>
     <string name="content_desc_key">Keychain icon</string>
     <string name="content_desc_pin">Pin icon</string>
@@ -893,7 +893,7 @@
     <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
     <string name="slash_widget_style_callout">Richiamo</string>
     <string name="slash_widget_style_callout_subtitle">Testo bordato con icona</string>
-    <string name="slash_widget_style_checkbox">Casella di scelta</string>
+    <string name="slash_widget_style_checkbox">Casella di spunta</string>
     <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
     <string name="slash_widget_style_bulleted">Elenco puntato</string>
     <string name="slash_widget_style_bulleted_subtitle">Inizia a scrivere con un testo semplice</string>
@@ -1005,9 +1005,9 @@
     <string name="library_title_types">Types</string>
     <string name="library_title_relations">Proprietà</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
+    <string name="library_description_relations">Tutti gli oggetti sono connessi. Usa le proprietà per creare connessioni tra gli oggetti.</string>
     <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">Crea una proprietà</string>
     <string name="library_subtitle_types">I miei tipi</string>
     <string name="library_subtitle_relations">Le mie proprietà</string>
     <string name="library_subtitle_library">Libreria</string>
@@ -1018,7 +1018,7 @@
     <string name="library_relations_empty">There are no types named \'%1$s\'</string>
     <string name="library_type_added">Tipo `%1$s` aggiunto alla tua libreria\"</string>
     <string name="library_type_removed">Tipo `%1$s` rimosso dalla tua libreria\"</string>
-    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
+    <string name="library_relation_added">La proprietà `%1$s` è stata aggiunta alla tua libreria.</string>
     <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
     <string name="library_something_went_wrong">Qualcosa è andato storto. Riprova nuovamente più tardi.</string>
     <string name="type_creation_new_type">New type</string>
@@ -1808,7 +1808,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_members_button_members">Membri</string>
     <string name="space_settings_types_button">Tipi di Oggetto</string>
     <string name="space_settings_default_type_button">Tipo di Oggetto predefinito</string>
-    <string name="space_settings_wallpaper_button">Wallpaper</string>
+    <string name="space_settings_wallpaper_button">Sfondo</string>
     <string name="space_settings_storage_button">Spazio di archiviazione remoto</string>
     <string name="space_settings_space_info_button">Informazioni sullo spazio</string>
     <string name="space_settings_delete_space_button">Elimina Spazio</string>

@@ -75,13 +75,17 @@ class NotificationBuilderImpl(
         notificationManager.notify(groupId, notificationId, notif)
 
         // Create or update summary notification for the group
-        updateSummaryNotification(groupId, message.spaceName)
+        updateSummaryNotification(
+            groupId = groupId,
+            spaceName = message.spaceName,
+            chatPendingIntent = pending
+        )
     }
 
     /**
      * Creates or updates the summary notification for a group of chat notifications.
      */
-    private fun updateSummaryNotification(groupId: String, spaceName: String) {
+    private fun updateSummaryNotification(groupId: String, spaceName: String, chatPendingIntent: PendingIntent) {
         val groupNotifications = groupNotificationIds[groupId] ?: return
         if (groupNotifications.isEmpty()) return
 
@@ -97,6 +101,7 @@ class NotificationBuilderImpl(
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+            .setContentIntent(chatPendingIntent)
             .build()
 
         // Use consistent ID for summary notification

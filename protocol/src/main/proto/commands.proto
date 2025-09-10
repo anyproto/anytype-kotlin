@@ -3054,6 +3054,7 @@ message Rpc {
                     repeated string path = 1;
                     bool createDirectoryPages = 2;
                     bool includePropertiesAsBlock = 3;
+                    bool noCollection = 4;
                 }
 
                 message BookmarksParams {
@@ -3224,6 +3225,7 @@ message Rpc {
                 string url = 2;
                 string title = 3;
                 bool isNewSpace = 4;
+                bool isAi = 5;
             }
 
             message Response {

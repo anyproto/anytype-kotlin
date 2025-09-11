@@ -35,22 +35,24 @@ class SpaceTypesViewModel(
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiItemsState =
-        MutableStateFlow<UiSpaceTypesScreenState>(UiSpaceTypesScreenState(emptyList()))
+        MutableStateFlow(UiSpaceTypesScreenState(emptyList()))
     val commands = MutableSharedFlow<Command>()
 
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
-    val notAllowedTypesLayouts = listOf(
-        ObjectType.Layout.RELATION,
-        ObjectType.Layout.RELATION_OPTION,
-        ObjectType.Layout.DASHBOARD,
-        ObjectType.Layout.SPACE,
-        ObjectType.Layout.SPACE_VIEW,
-        ObjectType.Layout.TAG,
-        ObjectType.Layout.CHAT_DERIVED,
-        ObjectType.Layout.DATE,
-        ObjectType.Layout.OBJECT_TYPE,
-    )
+    companion object {
+        val notAllowedTypesLayouts = listOf(
+            ObjectType.Layout.RELATION,
+            ObjectType.Layout.RELATION_OPTION,
+            ObjectType.Layout.DASHBOARD,
+            ObjectType.Layout.SPACE,
+            ObjectType.Layout.SPACE_VIEW,
+            ObjectType.Layout.TAG,
+            ObjectType.Layout.CHAT_DERIVED,
+            ObjectType.Layout.DATE,
+            ObjectType.Layout.OBJECT_TYPE,
+        )
+    }
 
     init {
         Timber.d("Space Types ViewModel init")

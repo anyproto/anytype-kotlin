@@ -5,7 +5,6 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
@@ -41,7 +40,7 @@ interface StoreOfObjectTypes {
     }
 }
 
-class DefaultStoreOfObjectTypes(private val logger: Logger) : StoreOfObjectTypes {
+class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
 
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Type>()
@@ -78,7 +77,6 @@ class DefaultStoreOfObjectTypes(private val logger: Logger) : StoreOfObjectTypes
     override suspend fun merge(types: List<ObjectWrapper.Type>) {
         var changed = false
         mutex.withLock {
-            logger.logInfo("Merging object types: ${types.size}")
             types.forEach { o ->
                 val current = store[o.id]
                 store[o.id] = if (current == null) {

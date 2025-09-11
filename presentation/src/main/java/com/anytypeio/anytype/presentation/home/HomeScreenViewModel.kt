@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -464,21 +465,44 @@ class HomeScreenViewModel(
                             }
                         }
 
+                    // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
+                    val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
+                        !objectType.restrictions.contains(ObjectRestriction.DELETE)
+                    }
+                    
                     val systemTypeViews: List<SystemTypeView> = buildList {
-                        for (objectType in filteredObjectTypes) {
+                        // Add user-created types first (deletable)
+                        for (objectType in myTypes) {
                             add(
                                 SystemTypeView(
                                     id = objectType.id,
                                     name = fieldParser.getObjectPluralName(objectType),
                                     icon = objectType.objectIcon(),
                                     isCreateObjectAllowed = isCreateObjectAllowedForType(
-                                        objectType,
-                                        isOwnerOrEditor
-                                    )
+                                        objectType = objectType,
+                                        isOwnerOrEditor = isOwnerOrEditor
+                                    ),
+                                    isDeletable = true
                                 )
                             )
                         }
-                    }.sortedBy { it.name }
+                        
+                        // Add system types (not deletable)
+                        for (objectType in systemTypes) {
+                            add(
+                                SystemTypeView(
+                                    id = objectType.id,
+                                    name = fieldParser.getObjectPluralName(objectType),
+                                    icon = objectType.objectIcon(),
+                                    isCreateObjectAllowed = isCreateObjectAllowedForType(
+                                        objectType = objectType,
+                                        isOwnerOrEditor = isOwnerOrEditor
+                                    ),
+                                    isDeletable = false
+                                )
+                            )
+                        }
+                    }
 
                     _systemTypes.value = systemTypeViews
                 }
@@ -3218,7 +3242,8 @@ data class SystemTypeView(
     val id: Id,
     val name: String,
     val icon: ObjectIcon.TypeIcon,
-    val isCreateObjectAllowed: Boolean = true
+    val isCreateObjectAllowed: Boolean = true,
+    val isDeletable: Boolean = false
 )
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4

@@ -15,9 +15,7 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -27,25 +25,23 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -54,6 +50,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
@@ -75,9 +72,9 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.home.SystemTypeView
+import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
-import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -967,12 +964,12 @@ private fun SystemTypesSectionHeader(
             color = colorResource(id = R.color.control_transparent_secondary)
         )
         Image(
-            painter = painterResource(id = R.drawable.ic_plus_18),
+            painter = painterResource(id = R.drawable.ic_default_plus),
             contentDescription = "Create new type",
             modifier = Modifier
                 .align(Alignment.BottomEnd)
-                .width(58.dp)
-                .height(42.dp)
+                .padding(end = 20.dp, bottom = 12.dp)
+                .size(18.dp)
                 .noRippleClickable { onCreateNewTypeClicked() },
             contentScale = ContentScale.Inside
         )
@@ -1050,7 +1047,8 @@ private fun LazyItemScope.SystemTypeItem(
                 onDeleteTypeClicked(systemType)
                 showMenu = false
             },
-            isCreateObjectAllowed = isCreateObjectAllowed
+            isCreateObjectAllowed = isCreateObjectAllowed,
+            isDeletable = systemType.isDeletable
         )
     }
     Spacer(modifier = Modifier.height(10.dp))
@@ -1062,11 +1060,12 @@ private fun SystemTypeItemMenu(
     onDismiss: () -> Unit,
     onNewObjectClicked: () -> Unit,
     onDeleteTypeClicked: () -> Unit,
-    isCreateObjectAllowed: Boolean
+    isCreateObjectAllowed: Boolean,
+    isDeletable: Boolean
 ) {
     DropdownMenu(
         modifier = Modifier.width(254.dp),
-        expanded = expanded,
+        expanded = (isCreateObjectAllowed || isDeletable) && expanded,
         onDismissRequest = onDismiss,
         containerColor = colorResource(R.color.background_secondary),
         shape = RoundedCornerShape(12.dp),
@@ -1103,35 +1102,36 @@ private fun SystemTypeItemMenu(
                     }
                 }
             )
-
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
         }
         
-        // Delete Type menu item
-        DropdownMenuItem(
-            onClick = onDeleteTypeClicked,
-            text = {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Text(
-                        modifier = Modifier.weight(1f),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.palette_system_red),
-                        text = stringResource(R.string.widgets_menu_delete_object_type)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_menu_item_delete_type),
-                        contentDescription = "Delete type icon",
-                        modifier = Modifier.wrapContentSize(),
-                        colorFilter = ColorFilter.tint(
-                            colorResource(id = R.color.palette_system_red)
+        // Delete Type menu item - only show if deletable (user-created types)
+        if (isDeletable) {
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+            DropdownMenuItem(
+                onClick = onDeleteTypeClicked,
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.palette_system_red),
+                            text = stringResource(R.string.widgets_menu_delete_object_type)
                         )
-                    )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_menu_item_delete_type),
+                            contentDescription = "Delete type icon",
+                            modifier = Modifier.wrapContentSize(),
+                            colorFilter = ColorFilter.tint(
+                                colorResource(id = R.color.palette_system_red)
+                            )
+                        )
+                    }
                 }
-            }
-        )
+            )
+        }
     }
 }
 

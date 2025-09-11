@@ -453,10 +453,10 @@ class HomeScreenViewModel(
             combine(
                 storeOfObjectTypes.trackChanges(),
                 hasEditAccess
-            ) { _, isOwnerOrEditor -> isOwnerOrEditor }
-                .collectLatest { isOwnerOrEditor ->
-                    val filteredObjectTypes = storeOfObjectTypes
-                        .getAll()
+            ) { typesChange, isOwnerOrEditor -> typesChange to isOwnerOrEditor }
+                .collect { (_, isOwnerOrEditor) ->
+                    val allTypes = storeOfObjectTypes.getAll()
+                    val filteredObjectTypes = allTypes
                         .mapNotNull { objectType ->
                             val resolvedLayout =
                                 objectType.recommendedLayout ?: return@mapNotNull null
@@ -469,6 +469,8 @@ class HomeScreenViewModel(
                                 objectType
                             }
                         }
+
+                    Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
                     // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
                     val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->

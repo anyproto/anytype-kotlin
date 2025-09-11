@@ -5,24 +5,24 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
+import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
 interface StoreOfObjectTypes {
-    val size: Int
 
-    suspend fun observe(id: Id) : Flow<ObjectWrapper.Type>
+    fun observe(id: Id) : Flow<ObjectWrapper.Type>
     suspend fun get(id: Id): ObjectWrapper.Type?
     suspend fun getByKey(key: Key): ObjectWrapper.Type?
     suspend fun getAll(): List<ObjectWrapper.Type>
@@ -41,16 +41,18 @@ interface StoreOfObjectTypes {
     }
 }
 
-class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
+class DefaultStoreOfObjectTypes(private val logger: Logger) : StoreOfObjectTypes {
 
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Type>()
 
-    private val updates = MutableSharedFlow<TrackedEvent>()
+    private val updates = MutableSharedFlow<TrackedEvent>(
+        replay = 1,
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-    override val size: Int get() = store.size
-
-    override suspend fun observe(id: Id): Flow<ObjectWrapper.Type> = flow {
+    override fun observe(id: Id): Flow<ObjectWrapper.Type> = flow {
         val init = get(id)
         if (init != null && init.isValid) {
             emit(init)
@@ -70,61 +72,83 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
         store.values.toList()
     }
 
-    override suspend fun getByKey(key: Key): ObjectWrapper.Type? {
-        return store.values.firstOrNull { it.uniqueKey == key }
-    }
+    override suspend fun getByKey(key: Key): ObjectWrapper.Type? =
+        mutex.withLock { store.values.firstOrNull { it.uniqueKey == key } }
 
-    override suspend fun merge(types: List<ObjectWrapper.Type>): Unit = mutex.withLock {
-        types.forEach { o ->
-            val current = store[o.id]
-            if (current == null) {
-                store[o.id] = o
-            } else {
-                store[o.id] = current.amend(o.map)
+    override suspend fun merge(types: List<ObjectWrapper.Type>) {
+        var changed = false
+        mutex.withLock {
+            logger.logInfo("Merging object types: ${types.size}")
+            types.forEach { o ->
+                val current = store[o.id]
+                store[o.id] = if (current == null) {
+                    changed = true
+                    o
+                } else {
+                    val amended = current.amend(o.map)
+                    if (amended !== current) changed = true
+                    amended
+                }
             }
         }
-        updates.emit(TrackedEvent.Change)
+        if (changed) {
+            updates.tryEmit(TrackedEvent.Change)
+        }
     }
 
-    override suspend fun amend(target: Id, diff: Map<Id, Any?>): Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            store[target] = current.amend(diff)
-        } else {
-            store[target] = ObjectWrapper.Type(diff)
+    override suspend fun amend(target: Id, diff: Map<Id, Any?>) {
+        var changed = false
+        mutex.withLock {
+            val current = store[target]
+            val amended = current?.amend(diff) ?: ObjectWrapper.Type(diff)
+            if (amended !== current) {
+                store[target] = amended
+                changed = true
+            }
         }
-        updates.emit(TrackedEvent.Change)
+        if (changed) updates.tryEmit(TrackedEvent.Change)
     }
 
     override suspend fun set(
         target: Id,
-        data: Map<String, Any?>
-    ): Unit = mutex.withLock {
-        store[target] = ObjectWrapper.Type(data)
-        updates.emit(TrackedEvent.Change)
+        data: Struct
+    ) {
+        mutex.withLock {
+            store[target] = ObjectWrapper.Type(data)
+        }
+        updates.tryEmit(TrackedEvent.Change)
     }
 
     override suspend fun unset(
         target: Id,
-        keys: List<Id>
-    ): Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            store[target] = current.unset(keys)
+        keys: List<Key>
+    ): Unit {
+        var changed = false
+        mutex.withLock {
+            val current = store[target]
+            if (current != null) {
+                store[target] = current.unset(keys)
+                changed = true
+            }
         }
-        updates.emit(TrackedEvent.Change)
+        if (changed) updates.tryEmit(TrackedEvent.Change)
     }
 
-    override suspend fun remove(target: Id) : Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            store.remove(target)
+    override suspend fun remove(target: Id) {
+        var removed = false
+        mutex.withLock {
+            removed = store.remove(target) != null
         }
-        updates.emit(TrackedEvent.Change)
+        if (removed) updates.tryEmit(TrackedEvent.Change)
     }
 
-    override suspend fun clear(): Unit = mutex.withLock {
-        store.clear()
+    override suspend fun clear() {
+        val hadItems: Boolean
+        mutex.withLock {
+            hadItems = store.isNotEmpty()
+            store.clear()
+        }
+        if (hadItems) updates.tryEmit(TrackedEvent.Change)
     }
 
     override fun trackChanges(): Flow<TrackedEvent> = updates.onStart {

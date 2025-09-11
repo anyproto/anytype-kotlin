@@ -61,6 +61,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
@@ -77,7 +78,10 @@ import kotlinx.coroutines.Dispatchers
 interface HomeScreenComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: HomeScreenDependencies): HomeScreenComponent
+        fun create(
+            @BindsInstance vmParams: HomeScreenViewModel.VmParams,
+            dependencies: HomeScreenDependencies
+        ): HomeScreenComponent
     }
 
     fun inject(fragment: HomeScreenFragment)

@@ -194,6 +194,7 @@ import timber.log.Timber
  * Change subscription IDs for bundled widgets?
  */
 class HomeScreenViewModel(
+    private val vmParams: VmParams,
     private val openObject: OpenObject,
     private val closeObject: CloseObject,
     private val createWidget: CreateWidget,
@@ -261,6 +262,10 @@ class HomeScreenViewModel(
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     ExitToVaultDelegate by exitToVaultDelegate
 {
+
+    data class VmParams(
+        val spaceId: SpaceId
+    )
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -354,7 +359,7 @@ class HomeScreenViewModel(
                 OpenObject.Params(
                     obj = config.widgets,
                     saveAsLastOpened = false,
-                    spaceId = SpaceId(config.space)
+                    spaceId = vmParams.spaceId
                 )
             ).onEach { result ->
                 result.fold(
@@ -427,7 +432,7 @@ class HomeScreenViewModel(
                 spaceAccessType,
                 userPermissions
             ) { type, permission ->
-                val spaceId = spaceManager.get()
+                val spaceId = vmParams.spaceId.id
                 val spaceUxType =
                     spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
                         ?: SpaceUxType.DATA
@@ -1050,7 +1055,7 @@ class HomeScreenViewModel(
                     Command.SelectWidgetSource(
                         ctx = config.widgets,
                         isInEditMode = isInEditMode(),
-                        space = spaceManager.get()
+                        space = vmParams.spaceId.id
                     )
                 )
             }
@@ -1102,12 +1107,12 @@ class HomeScreenViewModel(
             }
             proceedWithNavigation(OpenObjectNavigation.OpenType(
                 target = systemType.id,
-                space = spaceManager.get()
+                space = vmParams.spaceId.id
             ))
 //            commands.emit(
 //                Command.(
 //                    objectType = systemType.id,
-//                    space = spaceManager.get()
+//                    space = vmParams.spaceId.id
 //                )
 //            )
         }
@@ -1115,9 +1120,9 @@ class HomeScreenViewModel(
 
     fun onCreateNewTypeClicked() {
         viewModelScope.launch {
-            val permission = userPermissionProvider.get(SpaceId(spaceManager.get()))
+            val permission = userPermissionProvider.get(vmParams.spaceId)
             if (permission?.isOwnerOrEditor() == true) {
-                commands.emit(Command.CreateNewType(spaceManager.get()))
+                commands.emit(Command.CreateNewType(vmParams.spaceId.id))
             } else {
                 sendToast("You don't have permission to create new type")
             }
@@ -1129,7 +1134,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val obj = storeOfObjectTypes.get(systemType.id)
             if (obj == null) {
-                Timber.e("Object type not found: ${systemType.id}")
+                Timber.w("Object type not found: ${systemType.id}")
                 sendToast("Type not found")
                 return@launch
             }
@@ -1218,7 +1223,7 @@ class HomeScreenViewModel(
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Favorites,
-                            space = spaceManager.get()
+                            space = vmParams.spaceId.id
                         )
                     )
                 }
@@ -1234,7 +1239,7 @@ class HomeScreenViewModel(
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Recent,
-                            space = spaceManager.get()
+                            space = vmParams.spaceId.id
                         )
                     )
                 }
@@ -1250,7 +1255,7 @@ class HomeScreenViewModel(
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.RecentLocal,
-                            space = spaceManager.get()
+                            space = vmParams.spaceId.id
                         )
                     )
                 }
@@ -1271,7 +1276,7 @@ class HomeScreenViewModel(
                     navigation(
                         Navigation.ExpandWidget(
                             subscription = Subscription.Bin,
-                            space = spaceManager.get()
+                            space = vmParams.spaceId.id
                         )
                     )
                 }
@@ -1283,7 +1288,7 @@ class HomeScreenViewModel(
                     }
                     navigation(
                         Navigation.OpenAllContent(
-                            space = spaceManager.get()
+                            space = vmParams.spaceId.id
                         )
                     )
                 }
@@ -1293,7 +1298,7 @@ class HomeScreenViewModel(
                     if (mode.value == InteractionMode.Edit) {
                         return@launch
                     }
-                    val space = spaceManager.get()
+                    val space = vmParams.spaceId.id
                     val view = spaceViewSubscriptionContainer.get(SpaceId(space))
                     val chat = view?.chatId
                     if (chat != null) {
@@ -1338,7 +1343,7 @@ class HomeScreenViewModel(
         Timber.d("onBundledWidgetClicked: $widget")
         viewModelScope.launch {
             // TODO DROID-2341 get space from widget views for better consistency
-            val space = spaceManager.get()
+            val space = vmParams.spaceId.id
             when (widget) {
                 Subscriptions.SUBSCRIPTION_SETS -> {
                     navigation(
@@ -1419,7 +1424,7 @@ class HomeScreenViewModel(
                         ctx = config.widgets,
                         target = widget,
                         isInEditMode = isInEditMode(),
-                        space = spaceManager.get()
+                        space = vmParams.spaceId.id
                     )
                 )
             }
@@ -1623,7 +1628,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             clearLastOpenedObject.run(
                 ClearLastOpenedObject.Params(
-                    SpaceId(spaceManager.get())
+                    vmParams.spaceId
                 )
             )
         }
@@ -1793,13 +1798,13 @@ class HomeScreenViewModel(
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = objType?.uniqueKey.getCreateObjectParams(
-                space = SpaceId(spaceManager.get()),
-                objType?.defaultTemplateId
+                space = vmParams.spaceId,
+                defaultTemplate = objType?.defaultTemplateId
             )
             createObject.stream(params).collect { createObjectResponse ->
                 createObjectResponse.fold(
                     onSuccess = { result ->
-                        val spaceParams = provideParams(spaceManager.get())
+                        val spaceParams = provideParams(vmParams.spaceId.id)
                         sendAnalyticsObjectCreateEvent(
                             analytics = analytics,
                             route = EventsDictionary.Routes.navigation,
@@ -1831,7 +1836,7 @@ class HomeScreenViewModel(
 
     fun onCreateNewObjectLongClicked() {
         viewModelScope.launch {
-            val space = spaceManager.get()
+            val space = vmParams.spaceId.id
             if (space.isNotEmpty()) {
                 commands.emit(Command.OpenObjectCreateDialog(SpaceId(space)))
             }
@@ -2104,7 +2109,7 @@ class HomeScreenViewModel(
             navPanelState.value.leftButtonClickAnalytics(analytics)
         }
         viewModelScope.launch {
-            commands.emit(Command.ShareSpace(SpaceId(spaceManager.get())))
+            commands.emit(Command.ShareSpace(vmParams.spaceId))
         }
     }
 
@@ -2116,7 +2121,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             commands.emit(
                 Command.OpenSpaceSettings(
-                    spaceId = SpaceId(spaceManager.get())
+                    spaceId = vmParams.spaceId
                 )
             )
         }
@@ -2178,7 +2183,7 @@ class HomeScreenViewModel(
     fun onSearchIconClicked() {
         viewModelScope.launch {
             commands.emit(
-                Command.OpenGlobalSearchScreen(space = spaceManager.get())
+                Command.OpenGlobalSearchScreen(space = vmParams.spaceId.id)
             )
         }
         viewModelScope.sendEvent(
@@ -2214,7 +2219,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
-                    space = SpaceId(spaceManager.get()),
+                    space = vmParams.spaceId,
                     type = TypeKey(type.uniqueKey)
                 )
             ).fold(
@@ -2245,7 +2250,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             createObject.async(
                 params = CreateObject.Param(
-                    space = SpaceId(spaceManager.get()),
+                    space = vmParams.spaceId,
                     type = TypeKey(type.uniqueKey)
                 )
             ).fold(
@@ -2422,7 +2427,7 @@ class HomeScreenViewModel(
             dataViewRelationLinks = dv.relationLinks,
             objSetByRelation = ObjectWrapper.Relation(dataViewSourceObj.map)
         )
-        val space = spaceManager.get()
+        val space = vmParams.spaceId.id
         val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByRelation(
@@ -2475,7 +2480,7 @@ class HomeScreenViewModel(
             dateProvider = dateProvider
         )
         val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
-        val space = spaceManager.get()
+        val space = vmParams.spaceId.id
         val startTime = System.currentTimeMillis()
         createDataViewObject.async(
             params = CreateDataViewObject.Params.SetByType(
@@ -2535,7 +2540,7 @@ class HomeScreenViewModel(
             prefilled = prefilled
         )
 
-        val space = spaceManager.get()
+        val space = vmParams.spaceId.id
         val startTime = System.currentTimeMillis()
 
         createDataViewObject.async(params = createObjectParams).fold(
@@ -2708,7 +2713,7 @@ class HomeScreenViewModel(
             is WidgetView.ListOfObjects -> {
                 if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
                     viewModelScope.launch {
-                        val space = SpaceId(spaceManager.get())
+                        val space = vmParams.spaceId
                         val type = getDefaultObjectType.async(space)
                             .getOrNull()
                             ?.type ?: TypeKey(ObjectTypeIds.PAGE)
@@ -2747,7 +2752,7 @@ class HomeScreenViewModel(
                         when (source.obj.layout) {
                             ObjectType.Layout.OBJECT_TYPE -> {
                                 val wrapper = ObjectWrapper.Type(source.obj.map)
-                                val space = SpaceId(spaceManager.get())
+                                val space = vmParams.spaceId
                                 val startTime = System.currentTimeMillis()
                                 createObject.async(
                                     params = CreateObject.Param(
@@ -2796,7 +2801,7 @@ class HomeScreenViewModel(
                         when (source.obj.layout) {
                             ObjectType.Layout.OBJECT_TYPE -> {
                                 val wrapper = ObjectWrapper.Type(source.obj.map)
-                                val space = SpaceId(spaceManager.get())
+                                val space = vmParams.spaceId
                                 val startTime = System.currentTimeMillis()
                                 createObject.async(
                                     params = CreateObject.Param(
@@ -2876,6 +2881,7 @@ class HomeScreenViewModel(
     }
 
     class Factory @Inject constructor(
+        private val vmParams: VmParams,
         private val openObject: OpenObject,
         private val closeObject: CloseObject,
         private val createObject: CreateObject,
@@ -2937,6 +2943,7 @@ class HomeScreenViewModel(
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
+            vmParams = vmParams,
             openObject = openObject,
             closeObject = closeObject,
             createObject = createObject,

@@ -147,6 +147,9 @@ import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.forceChatPosition
 import com.anytypeio.anytype.presentation.widgets.hasValidLayout
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel.Companion.notAllowedTypesLayouts
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
@@ -157,8 +160,11 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
@@ -286,6 +292,9 @@ class HomeScreenViewModel(
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
+    private val _systemTypes = MutableStateFlow<List<SystemTypeView>>(emptyList())
+    val systemTypes: StateFlow<List<SystemTypeView>> = _systemTypes.asStateFlow()
+
     private val widgetObjectPipeline = spaceManager
         .observe()
         .distinctUntilChanged()
@@ -397,6 +406,7 @@ class HomeScreenViewModel(
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
         proceedWithNavPanelState()
+        proceedWithSystemTypesPipeline()
     }
 
     private fun proceedWithNavPanelState() {
@@ -429,6 +439,39 @@ class HomeScreenViewModel(
             }.collect {
                 navPanelState.value = it
             }
+        }
+    }
+
+    private fun proceedWithSystemTypesPipeline() {
+        viewModelScope.launch {
+            storeOfObjectTypes.trackChanges()
+                .collectLatest {
+                    val systemTypeViews =
+                        storeOfObjectTypes
+                            .getAll()
+                            .mapNotNull { objectType ->
+                            val resolvedLayout =
+                                objectType.recommendedLayout ?: return@mapNotNull null
+                            if (!objectType.isValid || notAllowedTypesLayouts.contains(
+                                    resolvedLayout
+                                ) || objectType.isArchived == true || objectType.isDeleted == true
+                            ) {
+                                return@mapNotNull null
+                            } else {
+                                objectType
+                            }
+                        }.map { objectType ->
+                            SystemTypeView(
+                                id = objectType.id,
+                                name = fieldParser.getObjectPluralName(objectType),
+                                icon = objectType.objectIcon(),
+                                isCreateObjectAllowed = isCreateObjectAllowedForType(objectType)
+                            )
+                        }
+                            .sortedBy { it.name }
+
+                    _systemTypes.value = systemTypeViews
+                }
         }
     }
 
@@ -508,7 +551,7 @@ class HomeScreenViewModel(
             if (hasEditAccess) {
                 // >1, and not >0, because space widget view is always there.
                 if (widgets.size > 1) {
-                    addAll(actions)
+                    //addAll(actions)
                 } else {
                     add(WidgetView.EmptyState)
                 }
@@ -1011,6 +1054,81 @@ class HomeScreenViewModel(
             sendToast("Open bin to restore your archived object")
         }
     }
+
+    fun onSystemTypeClicked(systemType: SystemTypeView) {
+        Timber.d("System type clicked: ${systemType.name} with id: ${systemType.id}")
+        viewModelScope.launch {
+            // For now, create a simple navigation to the object type
+            // The actual implementation will depend on the UI navigation patterns
+            val obj = storeOfObjectTypes.get(systemType.id)
+            if (obj == null)  {
+                Timber.e("Object type not found: ${systemType.id}")
+                sendToast("Type not found")
+                return@launch
+            }
+            proceedWithNavigation(OpenObjectNavigation.OpenType(
+                target = systemType.id,
+                space = spaceManager.get()
+            ))
+//            commands.emit(
+//                Command.(
+//                    objectType = systemType.id,
+//                    space = spaceManager.get()
+//                )
+//            )
+        }
+    }
+
+    fun onCreateNewTypeClicked() {
+        viewModelScope.launch {
+            val permission = userPermissionProvider.get(SpaceId(spaceManager.get()))
+            if (permission?.isOwnerOrEditor() == true) {
+                commands.emit(Command.CreateNewType(spaceManager.get()))
+            } else {
+                sendToast("You don't have permission to create new type")
+            }
+        }
+    }
+
+    fun onCreateNewObjectOfTypeClicked(systemType: SystemTypeView) {
+        Timber.d("Create new object of type clicked: ${systemType.name} with id: ${systemType.id}")
+        viewModelScope.launch {
+            val obj = storeOfObjectTypes.get(systemType.id)
+            if (obj == null) {
+                Timber.e("Object type not found: ${systemType.id}")
+                sendToast("Type not found")
+                return@launch
+            }
+            onCreateNewObjectClicked(obj)
+        }
+    }
+
+    fun onDeleteSystemTypeClicked(systemType: SystemTypeView) {
+        Timber.d("Delete system type clicked: ${systemType.name} with id: ${systemType.id}")
+        // TODO: Implement system type deletion logic
+        // This would typically involve calling a use case to delete the type
+        // For now, we'll just show a placeholder message
+        sendToast("Delete type functionality not yet implemented")
+    }
+
+    /**
+     * Determines if object creation is allowed for a given object type.
+     * Follows the same logic as ObjectState.DataView.isCreateObjectAllowed
+     */
+    private fun isCreateObjectAllowedForType(objectType: ObjectWrapper.Type): Boolean {
+        // Templates cannot be used to create objects
+        if (objectType.uniqueKey == ObjectTypeIds.TEMPLATE) {
+            return false
+        }
+        
+        // Skip layouts that don't support object creation
+        val skipLayouts = SupportedLayouts.fileLayouts + 
+                         SupportedLayouts.systemLayouts + 
+                         listOf(ObjectType.Layout.PARTICIPANT)
+        
+        return !skipLayouts.contains(objectType.recommendedLayout)
+    }
+
 
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
@@ -2951,6 +3069,7 @@ sealed class Command {
     data object HandleChatSpaceBackNavigation : Command()
 
     data class ShareInviteLink(val link: String) : Command()
+    data class CreateNewType(val space: Id) : Command()
 }
 
 /**
@@ -3079,6 +3198,13 @@ fun ObjectWrapper.Basic.navigation(
         }
     }
 }
+
+data class SystemTypeView(
+    val id: Id,
+    val name: String,
+    val icon: ObjectIcon.TypeIcon,
+    val isCreateObjectAllowed: Boolean = true
+)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

@@ -96,7 +96,10 @@ class HomeScreenFragment : Fragment(),
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        componentManager().homeScreenComponent.get().inject(this)
+        val vmParams = HomeScreenViewModel.VmParams(
+            spaceId = SpaceId(space),
+        )
+        componentManager().homeScreenComponent.get(vmParams).inject(this)
         super.onCreate(savedInstanceState)
     }
 

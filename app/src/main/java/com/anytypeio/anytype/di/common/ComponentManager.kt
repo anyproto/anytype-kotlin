@@ -124,6 +124,7 @@ import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -174,10 +175,12 @@ class ComponentManager(
             .build()
     }
 
-    val homeScreenComponent = Component {
+    val homeScreenComponent = ComponentWithParams { vmParams: HomeScreenViewModel.VmParams ->
         DaggerHomeScreenComponent
             .factory()
-            .create(findComponentDependencies())
+            .create(
+                vmParams = vmParams, dependencies = findComponentDependencies()
+            )
     }
 
     val collectionComponent = ComponentWithParams { vmParams: CollectionViewModel.VmParams ->

@@ -198,6 +198,7 @@ class HomeScreenFragment : Fragment(),
         HomeScreen(
             modifier = modifier,
             widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
+            systemTypes = vm.systemTypes.collectAsStateWithLifecycle().value,
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,
@@ -231,7 +232,15 @@ class HomeScreenFragment : Fragment(),
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
             onCreateElement = vm::onCreateWidgetElementClicked,
-            onWidgetMenuTriggered = vm::onWidgetMenuTriggered
+            onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
+            onSystemTypeClicked = vm::onSystemTypeClicked,
+            onCreateNewTypeClicked = vm::onCreateNewTypeClicked,
+            onCreateNewObjectOfTypeClicked = { systemType ->
+                vm.onCreateNewObjectOfTypeClicked(systemType)
+            },
+            onDeleteSystemTypeClicked = { systemType ->
+                vm.onDeleteSystemTypeClicked(systemType)
+            }
         )
     }
 
@@ -467,6 +476,13 @@ class HomeScreenFragment : Fragment(),
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+            is Command.CreateNewType -> {
+                runCatching {
+                    navigation().openCreateObjectTypeScreen(spaceId = command.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening create new type screen")
+                }
             }
         }
     }

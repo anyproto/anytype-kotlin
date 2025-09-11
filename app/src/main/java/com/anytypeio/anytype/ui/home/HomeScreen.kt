@@ -15,29 +15,45 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
@@ -46,11 +62,20 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.home.SystemTypeView
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
@@ -80,6 +105,7 @@ fun HomeScreen(
     modifier: Modifier,
     mode: InteractionMode,
     widgets: List<WidgetView>,
+    systemTypes: List<SystemTypeView>,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
@@ -103,12 +129,17 @@ fun HomeScreen(
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    onSystemTypeClicked: (SystemTypeView) -> Unit,
+    onCreateNewTypeClicked: () -> Unit,
+    onCreateNewObjectOfTypeClicked: (SystemTypeView) -> Unit,
+    onDeleteSystemTypeClicked: (SystemTypeView) -> Unit
 ) {
 
     Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
             widgets = widgets,
+            systemTypes = systemTypes,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
@@ -127,7 +158,11 @@ fun HomeScreen(
             onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onWidgetMenuTriggered = onWidgetMenuTriggered,
+            onSystemTypeClicked = onSystemTypeClicked,
+            onCreateNewTypeClicked = onCreateNewTypeClicked,
+            onCreateNewObjectOfTypeClicked = onCreateNewObjectOfTypeClicked,
+            onDeleteSystemTypeClicked = onDeleteSystemTypeClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -182,6 +217,7 @@ fun HomeScreen(
 @Composable
 private fun WidgetList(
     widgets: List<WidgetView>,
+    systemTypes: List<SystemTypeView>,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -200,7 +236,11 @@ private fun WidgetList(
     onCreateWidget: () -> Unit,
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    onSystemTypeClicked: (SystemTypeView) -> Unit,
+    onCreateNewTypeClicked: () -> Unit,
+    onCreateNewObjectOfTypeClicked: (SystemTypeView) -> Unit,
+    onDeleteSystemTypeClicked: (SystemTypeView) -> Unit
 ) {
 
     val view = LocalView.current
@@ -559,6 +599,31 @@ private fun WidgetList(
                 }
             }
         }
+        
+        // Object Types Section
+        item {
+            SystemTypesSectionHeader(
+                onCreateNewTypeClicked = onCreateNewTypeClicked
+            )
+        }
+
+        // Individual system type items
+        itemsIndexed(
+            items = systemTypes,
+            key = { _, systemType -> "systemType_${systemType.id}" }
+        ) { index, systemType ->
+            SystemTypeItem(
+                systemType = systemType,
+                onClicked = { onSystemTypeClicked(systemType) },
+                onNewObjectClicked = onCreateNewObjectOfTypeClicked,
+                onDeleteTypeClicked = onDeleteSystemTypeClicked,
+                isCreateObjectAllowed = systemType.isCreateObjectAllowed
+            )
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(100.dp))
+        }
     }
 }
 
@@ -880,5 +945,296 @@ fun WidgetEditModeButton(
             style = UXBody,
             color = colorResource(id = R.color.text_white)
         )
+    }
+}
+
+@Composable
+private fun SystemTypesSectionHeader(
+    onCreateNewTypeClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_object_types),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_plus_18),
+            contentDescription = "Create new type",
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .width(58.dp)
+                .height(42.dp)
+                .noRippleClickable { onCreateNewTypeClicked() },
+            contentScale = ContentScale.Inside
+        )
+    }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun LazyItemScope.SystemTypeItem(
+    systemType: SystemTypeView,
+    onClicked: () -> Unit,
+    onNewObjectClicked: (SystemTypeView) -> Unit,
+    onDeleteTypeClicked: (SystemTypeView) -> Unit,
+    isCreateObjectAllowed: Boolean
+) {
+    var showMenu by remember { mutableStateOf(false) }
+    val haptic = LocalHapticFeedback.current
+    
+    Box {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(51.dp)
+                .padding(start = 20.dp, end = 20.dp)
+                .background(
+                    color = colorResource(id = R.color.background_primary),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(horizontal = 16.dp)
+                .animateItem()
+                .noRippleCombinedClickable(
+                    onClick = {
+                        haptic.performHapticFeedback(HapticFeedbackType.ContextClick)
+                        onClicked()
+                    },
+                    onLongClicked = {
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        showMenu = true
+                    }
+                ),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+        ListWidgetObjectIcon(
+            icon = systemType.icon,
+            modifier = Modifier.size(18.dp),
+            iconSize = 18.dp
+        )
+        Spacer(modifier = Modifier.width(8.dp))
+        Text(
+            modifier = Modifier.weight(1.0f),
+            text = systemType.name,
+            style = Title1,
+            color = colorResource(id = R.color.text_primary)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_arrow_right_18),
+            contentDescription = "Go to type",
+            modifier = Modifier
+                .size(18.dp),
+            contentScale = ContentScale.Inside
+        )
+        }
+        
+        // Context menu
+        SystemTypeItemMenu(
+            expanded = showMenu,
+            onDismiss = { showMenu = false },
+            onNewObjectClicked = {
+                onNewObjectClicked(systemType)
+                showMenu = false
+            },
+            onDeleteTypeClicked = {
+                onDeleteTypeClicked(systemType)
+                showMenu = false
+            },
+            isCreateObjectAllowed = isCreateObjectAllowed
+        )
+    }
+    Spacer(modifier = Modifier.height(10.dp))
+}
+
+@Composable
+private fun SystemTypeItemMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    onNewObjectClicked: () -> Unit,
+    onDeleteTypeClicked: () -> Unit,
+    isCreateObjectAllowed: Boolean
+) {
+    DropdownMenu(
+        modifier = Modifier.width(254.dp),
+        expanded = expanded,
+        onDismissRequest = onDismiss,
+        containerColor = colorResource(R.color.background_secondary),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = 16.dp,
+            y = 8.dp
+        )
+    ) {
+        // New Object menu item - only show if creation is allowed
+        if (isCreateObjectAllowed) {
+            DropdownMenuItem(
+                onClick = onNewObjectClicked,
+                text = {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            modifier = Modifier.weight(1f),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            text = stringResource(R.string.widgets_menu_new_object_type)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_menu_item_create),
+                            contentDescription = "New object icon",
+                            modifier = Modifier
+                                .wrapContentSize(),
+                            colorFilter = ColorFilter.tint(
+                                colorResource(id = R.color.text_primary)
+                            )
+                        )
+                    }
+                }
+            )
+
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+        }
+        
+        // Delete Type menu item
+        DropdownMenuItem(
+            onClick = onDeleteTypeClicked,
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.palette_system_red),
+                        text = stringResource(R.string.widgets_menu_delete_object_type)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_menu_item_delete_type),
+                        contentDescription = "Delete type icon",
+                        modifier = Modifier.wrapContentSize(),
+                        colorFilter = ColorFilter.tint(
+                            colorResource(id = R.color.palette_system_red)
+                        )
+                    )
+                }
+            }
+        )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SystemTypesSectionHeaderPreview() {
+    SystemTypesSectionHeader(
+        onCreateNewTypeClicked = { }
+    )
+}
+
+@Preview(showBackground = true)
+@Composable 
+private fun SystemTypeItemPreview() {
+    val sampleSystemType = SystemTypeView(
+        id = "sample-id",
+        name = "Note",
+        icon = ObjectIcon.TypeIcon.Emoji(
+            unicode = "📝",
+            rawValue = "document",
+            color = CustomIconColor.DEFAULT
+        )
+    )
+    
+    LazyColumn {
+        item {
+            SystemTypeItem(
+                systemType = sampleSystemType,
+                onClicked = { },
+                onNewObjectClicked = { },
+                onDeleteTypeClicked = { },
+                isCreateObjectAllowed = true
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SystemTypeItemWithFallbackIconPreview() {
+    val sampleSystemType = SystemTypeView(
+        id = "sample-id-2", 
+        name = "Task",
+        icon = ObjectIcon.TypeIcon.Fallback("task")
+    )
+    
+    LazyColumn {
+        item {
+            SystemTypeItem(
+                systemType = sampleSystemType,
+                onClicked = { },
+                onNewObjectClicked = { },
+                onDeleteTypeClicked = { },
+                isCreateObjectAllowed = true
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+private fun SystemTypesSectionPreview() {
+    val sampleTypes = listOf(
+        SystemTypeView(
+            id = "note-id",
+            name = "Note", 
+            icon = ObjectIcon.TypeIcon.Emoji(
+                unicode = "📝",
+                rawValue = "document",
+                color = CustomIconColor.DEFAULT
+            )
+        ),
+        SystemTypeView(
+            id = "task-id",
+            name = "Task",
+            icon = ObjectIcon.TypeIcon.Fallback("task")
+        ),
+        SystemTypeView(
+            id = "book-id",
+            name = "Book",
+            icon = ObjectIcon.TypeIcon.Emoji(
+                unicode = "📚", 
+                rawValue = "book",
+                color = CustomIconColor.Blue
+            )
+        )
+    )
+    
+    LazyColumn {
+        item {
+            SystemTypesSectionHeader(
+                onCreateNewTypeClicked = { }
+            )
+        }
+        
+        itemsIndexed(
+            items = sampleTypes,
+            key = { _, systemType -> "systemType_${systemType.id}" }
+        ) { _, systemType ->
+            SystemTypeItem(
+                systemType = systemType,
+                onClicked = { },
+                onNewObjectClicked = { },
+                onDeleteTypeClicked = { },
+                isCreateObjectAllowed = true
+            )
+        }
     }
 }

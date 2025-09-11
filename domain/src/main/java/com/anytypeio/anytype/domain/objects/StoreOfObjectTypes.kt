@@ -46,7 +46,7 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Type>()
 
-    private val updates = MutableSharedFlow<TrackedEvent>()
+    private val updates = MutableSharedFlow<TrackedEvent>(replay = 1)
 
     override val size: Int get() = store.size
 

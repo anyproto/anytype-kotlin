@@ -42,7 +42,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
     private val store = mutableMapOf<Id, ObjectWrapper.Relation>()
     private val keysToIds = mutableMapOf<Key, Id>()
 
-    private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>()
+    private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>(replay = 1)
 
     override val size: Int get() = store.size
 

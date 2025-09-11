@@ -444,12 +444,14 @@ class HomeScreenViewModel(
 
     private fun proceedWithSystemTypesPipeline() {
         viewModelScope.launch {
-            storeOfObjectTypes.trackChanges()
-                .collectLatest {
-                    val systemTypeViews =
-                        storeOfObjectTypes
-                            .getAll()
-                            .mapNotNull { objectType ->
+            combine(
+                storeOfObjectTypes.trackChanges(),
+                hasEditAccess
+            ) { _, isOwnerOrEditor -> isOwnerOrEditor }
+                .collectLatest { isOwnerOrEditor ->
+                    val filteredObjectTypes = storeOfObjectTypes
+                        .getAll()
+                        .mapNotNull { objectType ->
                             val resolvedLayout =
                                 objectType.recommendedLayout ?: return@mapNotNull null
                             if (!objectType.isValid || notAllowedTypesLayouts.contains(
@@ -460,15 +462,23 @@ class HomeScreenViewModel(
                             } else {
                                 objectType
                             }
-                        }.map { objectType ->
-                            SystemTypeView(
-                                id = objectType.id,
-                                name = fieldParser.getObjectPluralName(objectType),
-                                icon = objectType.objectIcon(),
-                                isCreateObjectAllowed = isCreateObjectAllowedForType(objectType)
+                        }
+
+                    val systemTypeViews: List<SystemTypeView> = buildList {
+                        for (objectType in filteredObjectTypes) {
+                            add(
+                                SystemTypeView(
+                                    id = objectType.id,
+                                    name = fieldParser.getObjectPluralName(objectType),
+                                    icon = objectType.objectIcon(),
+                                    isCreateObjectAllowed = isCreateObjectAllowedForType(
+                                        objectType,
+                                        isOwnerOrEditor
+                                    )
+                                )
                             )
                         }
-                            .sortedBy { it.name }
+                    }.sortedBy { it.name }
 
                     _systemTypes.value = systemTypeViews
                 }
@@ -1114,8 +1124,13 @@ class HomeScreenViewModel(
     /**
      * Determines if object creation is allowed for a given object type.
      * Follows the same logic as ObjectState.DataView.isCreateObjectAllowed
+     * and includes user permission checks.
      */
-    private fun isCreateObjectAllowedForType(objectType: ObjectWrapper.Type): Boolean {
+    private fun isCreateObjectAllowedForType(objectType: ObjectWrapper.Type, isOwnerOrEditor: Boolean): Boolean {
+        if (!isOwnerOrEditor) {
+            return false
+        }
+        
         // Templates cannot be used to create objects
         if (objectType.uniqueKey == ObjectTypeIds.TEMPLATE) {
             return false

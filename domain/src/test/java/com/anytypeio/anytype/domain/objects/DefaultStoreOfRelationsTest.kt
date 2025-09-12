@@ -18,13 +18,10 @@ class DefaultStoreOfRelationsTest {
     private fun newStore(): StoreOfRelations = DefaultStoreOfRelations()
 
     private fun structFor(id: Id): Struct = mapOf(
-        // Keep generic; Relation constructor can derive fields it needs from this map.
         Relations.ID to id,
-        Relations.NAME to "rel-$id",
-        Relations.RELATION_KEY to "rel-key-$id",
+        Relations.NAME to "relation-name-$id",
+        Relations.RELATION_KEY to "relation-key-$id",
     )
-
-    // ---- trackChanges semantics ----
 
     @Test
     fun `trackChanges emits Init on subscribe`() = runTest {
@@ -48,6 +45,31 @@ class DefaultStoreOfRelationsTest {
         store.trackChanges().test {
             assertEquals(TrackedEvent.Init, awaitItem())
             assertEquals(TrackedEvent.Change, awaitItem())
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+
+    @Test
+    fun `trackChanges replays only latest Change when multiple changes occur before subscription`() = runTest {
+        val store = newStore()
+        val id1: Id = "t1"
+        val id2: Id = "t2"
+
+        // Make multiple changes BEFORE anyone subscribes
+        store.set(id1, structFor(id1))  // First change
+        store.set(id2, structFor(id2))  // Second change (should be the replayed one)
+
+        // Because replay=1, only the LATEST Change should be replayed
+        store.trackChanges().test {
+            assertEquals(TrackedEvent.Init, awaitItem())
+            assertEquals(TrackedEvent.Change, awaitItem())  // Only latest change replayed
+
+            // Verify the store actually contains both items
+            assertEquals(2, store.getAll().size)
+            assertEquals(id1, store.getById(id1)?.id)
+            assertEquals(id2, store.getById(id2)?.id)
+
             cancelAndIgnoreRemainingEvents()
         }
     }
@@ -192,6 +214,29 @@ class DefaultStoreOfRelationsTest {
             val afterRemove = awaitItem()
             assertEquals(0, afterRemove.size)
 
+            cancelAndIgnoreRemainingEvents()
+        }
+    }
+
+    // If ObjectWrapper.Relation.isValid requires specific fields, adjust structOfId accordingly
+    // and uncomment these tests.
+
+    @Test
+    fun `observe emits current value immediately if valid and then reacts to changes`() = runTest {
+        val store = newStore()
+        val id: Id = "o1"
+
+        // Pre-populate
+        store.set(id, structFor(id))
+
+        store.observe().test {
+            // gets initial value
+            val first = awaitItem()
+            // your assertions about first.id / validity here, if accessible
+
+            // and reacts to next change
+            store.set(id, structFor(id))
+            val second = awaitItem()
             cancelAndIgnoreRemainingEvents()
         }
     }

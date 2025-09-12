@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.channels.BufferOverflow
 
 interface StoreOfRelations {
     val size: Int
@@ -47,7 +48,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
     private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>(
         replay = 1,
         extraBufferCapacity = 64,
-        onBufferOverflow = kotlinx.coroutines.channels.BufferOverflow.DROP_OLDEST
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
     override val size: Int get() = sizeAtomic.get()

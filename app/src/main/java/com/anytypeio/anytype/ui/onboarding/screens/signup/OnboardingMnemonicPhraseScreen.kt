@@ -61,7 +61,8 @@ fun MnemonicPhraseScreenWrapper(
     startingObject: Id?,
     copyMnemonicToClipboard: (String) -> Unit,
     vm: OnboardingMnemonicViewModel,
-    mnemonicColorPalette: List<Color>
+    mnemonicColorPalette: List<Color>,
+    onBackClicked: () -> Unit
 ) {
     val state = vm.state.collectAsStateWithLifecycle().value
     MnemonicPhraseScreen(
@@ -80,7 +81,8 @@ fun MnemonicPhraseScreenWrapper(
                 space = space,
                 startingObject = startingObject,
             )
-        }
+        },
+        onBackClicked = onBackClicked
     )
 }
 
@@ -95,7 +97,8 @@ fun PreviewMnemonicPhraseScreen() {
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
         mnemonicColorPalette = emptyList(),
-        onGoToAppClicked = {}
+        onGoToAppClicked = {},
+        onBackClicked = { /*TODO*/ }
     )
 }
 
@@ -109,7 +112,8 @@ fun PreviewMnemonicPhraseScreen2() {
         onCheckLaterClicked = { /*TODO*/ },
         copyMnemonicToClipboard = {},
         mnemonicColorPalette = emptyList(),
-        onGoToAppClicked = {}
+        onGoToAppClicked = {},
+        onBackClicked = { /*TODO*/ }
     )
 }
 
@@ -121,28 +125,53 @@ fun MnemonicPhraseScreen(
     onCheckLaterClicked: () -> Unit,
     onGoToAppClicked: () -> Unit,
     copyMnemonicToClipboard: (String) -> Unit,
-    mnemonicColorPalette: List<Color>
+    mnemonicColorPalette: List<Color>,
+    onBackClicked: () -> Unit
 ) {
     val showWhatIsRecoveryPhraseDialog = remember { mutableStateOf(false) }
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 20.dp),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Top,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.height(148.dp))
-            MnemonicTitle()
-            MnemonicDescription()
-            Spacer(modifier = Modifier.height(31.dp))
-            MnemonicPhrase(
-                state = state,
-                copyMnemonicToClipboard = copyMnemonicToClipboard,
-                mnemonicColorPalette = mnemonicColorPalette,
-                reviewMnemonic = reviewMnemonic
-            )
-            ReadMoreButton(showWhatIsRecoveryPhraseDialog)
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .align(Alignment.CenterStart)
+                        .noRippleClickable {
+                            onBackClicked()
+                        },
+                    painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+                    contentDescription = stringResource(R.string.content_description_back_button_icon)
+                )
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(id = R.drawable.ic_anytype_logo),
+                    contentDescription = "Anytype logo",
+                )
+            }
+            Spacer(modifier = Modifier.height(84.dp))
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                MnemonicTitle()
+                MnemonicDescription()
+                Spacer(modifier = Modifier.height(31.dp))
+                MnemonicPhrase(
+                    state = state,
+                    copyMnemonicToClipboard = copyMnemonicToClipboard,
+                    mnemonicColorPalette = mnemonicColorPalette,
+                    reviewMnemonic = reviewMnemonic
+                )
+                ReadMoreButton(showWhatIsRecoveryPhraseDialog)
+            }
         }
         MnemonicButtons(
             modifier = Modifier.align(Alignment.BottomCenter),

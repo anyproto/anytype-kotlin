@@ -686,7 +686,8 @@ class OnboardingFragment : Fragment() {
             startingObject = startingObject,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
-            mnemonicColorPalette = mnemonicColorPalette
+            mnemonicColorPalette = mnemonicColorPalette,
+            onBackClicked = { navController.popBackStack() }
         )
         DisposableEffect(Unit) {
             onDispose { component.release() }

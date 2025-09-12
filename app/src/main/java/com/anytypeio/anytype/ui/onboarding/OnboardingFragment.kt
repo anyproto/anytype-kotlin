@@ -183,13 +183,6 @@ class OnboardingFragment : Fragment() {
                         navController = navController,
                         backButtonCallback = signUpBackButtonCallback
                     )
-                    PagerIndicator(
-                        pageCount = OnboardingPage.entries.filter { it.visible }.size,
-                        page = currentPage,
-                        onBackClick = {
-                            signUpBackButtonCallback.value?.invoke()
-                        }
-                    )
                 }
             }
             LaunchedEffect(Unit) {

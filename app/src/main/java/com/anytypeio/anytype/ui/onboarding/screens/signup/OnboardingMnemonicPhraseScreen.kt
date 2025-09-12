@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
@@ -43,10 +44,13 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.ColorBackgroundField
 import com.anytypeio.anytype.core_ui.ColorButtonRegular
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.conditional
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonMedium
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.OnBoardingButtonPrimary
@@ -89,12 +93,7 @@ fun MnemonicPhraseScreenWrapper(
 }
 
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    showSystemUi = true,
-    device = PIXEL_7
-)
+@DefaultPreviews
 @Composable
 fun PreviewMnemonicPhraseScreen() {
     val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
@@ -108,12 +107,7 @@ fun PreviewMnemonicPhraseScreen() {
     )
 }
 
-@Preview(
-    showBackground = true,
-    backgroundColor = 0xFF000000,
-    showSystemUi = true,
-    device = PIXEL_7
-)
+@DefaultPreviews
 @Composable
 fun PreviewMnemonicPhraseScreen2() {
     val fakeMnemonic = "One Two Three Four Five Six Seven Eight Nine Ten Eleven Twelve"
@@ -205,7 +199,7 @@ private fun ColumnScope.ReadMoreButton(showWhatIsRecoveryPhraseDialog: MutableSt
         Text(
             text = stringResource(id = R.string.onboarding_mnemonic_read_more),
             style = ButtonMedium,
-            color = Color(0xFF909090),
+            color = colorResource(id = R.color.text_secondary),
             modifier = Modifier.padding(start = 8.dp),
         )
     }
@@ -223,45 +217,42 @@ fun MnemonicButtons(
     Column(modifier.wrapContentHeight()) {
         when (state) {
             is OnboardingMnemonicViewModel.State.MnemonicOpened -> {
-                OnBoardingButtonPrimary(
+                ButtonOnboardingPrimaryLarge(
                     text = stringResource(id = R.string.onboarding_enter_my_vault),
-                    modifier = Modifier
+                    modifierBox = Modifier
                         .fillMaxWidth()
-                        .padding(start = 16.dp, end = 16.dp, bottom = 24.dp),
+                        .padding(start = 20.dp, end = 20.dp, bottom = 24.dp),
                     onClick = { onGoToAppClicked() },
-                    size = ButtonSize.Large
                 )
             }
 
             else -> {
-                OnBoardingButtonPrimary(
+                ButtonOnboardingPrimaryLarge(
                     text = stringResource(id = R.string.onboarding_tap_to_reveal),
-                    modifier = Modifier
+                    modifierBox = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp),
+                        .padding(horizontal = 20.dp),
                     onClick = {
                         reviewMnemonic.invoke().also {
                             if (state is OnboardingMnemonicViewModel.State.Mnemonic) {
                                 copyMnemonicToClipboard.invoke(state.mnemonicPhrase)
                             }
                         }
-                    },
-                    size = ButtonSize.Large
+                    }
                 )
-                OnBoardingButtonSecondary(
+                ButtonOnboardingLinkLarge(
                     text = stringResource(id = R.string.onboarding_key_not_now),
-                    modifier = Modifier
+                    modifierBox = Modifier
                         .fillMaxWidth()
                         .padding(
-                            start = 16.dp,
-                            top = 14.dp,
-                            end = 16.dp,
+                            start = 20.dp,
+                            top = 8.dp,
+                            end = 20.dp,
                             bottom = 24.dp
                         ),
                     onClick = {
                         onCheckLaterClicked.invoke()
-                    },
-                    size = ButtonSize.Large
+                    }
                 )
             }
         }

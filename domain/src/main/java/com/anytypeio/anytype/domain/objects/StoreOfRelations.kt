@@ -43,7 +43,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Relation>()
     private val keysToIds = mutableMapOf<Key, Id>()
-    private val sizeAtomic = AtomicInteger(0)
+    private val atomicSize = AtomicInteger(0)
 
     private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>(
         replay = 1,
@@ -51,7 +51,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
 
-    override val size: Int get() = sizeAtomic.get()
+    override val size: Int get() = atomicSize.get()
 
     override suspend fun getByKey(key: Key): ObjectWrapper.Relation? = mutex.withLock {
         val id = keysToIds[key]
@@ -95,7 +95,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
                     }
                 }
             }
-            if (added > 0) sizeAtomic.addAndGet(added)
+            if (added > 0) atomicSize.addAndGet(added)
         }
         if (changed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
@@ -112,7 +112,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
             if (amended !== current) {
                 store[target] = amended
                 changed = true
-                if (inserted) sizeAtomic.incrementAndGet()
+                if (inserted) atomicSize.incrementAndGet()
             }
         }
         if (changed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
@@ -127,7 +127,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
             val existed = store.containsKey(target)
             store[target] = ObjectWrapper.Relation(data).also { keysToIds[it.key] = target }
             wasAbsent = !existed
-            if (wasAbsent) sizeAtomic.incrementAndGet()
+            if (wasAbsent) atomicSize.incrementAndGet()
         }
         updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
@@ -157,7 +157,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
             if (current != null) {
                 keysToIds.remove(current.key)
                 removed = true
-                sizeAtomic.decrementAndGet()
+                atomicSize.decrementAndGet()
             }
         }
         if (removed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
@@ -170,7 +170,7 @@ class DefaultStoreOfRelations : StoreOfRelations {
             if (hadItems) {
                 keysToIds.clear()
                 store.clear()
-                sizeAtomic.set(0)
+                atomicSize.set(0)
             }
         }
         if (hadItems) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)

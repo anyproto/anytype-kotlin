@@ -64,11 +64,11 @@ class DefaultObjectStore : ObjectStore {
 
     private val mutex = Mutex()
 
-    override val size: Int get() = sizeAtomic.get()
+    override val size: Int get() = atomicSize.get()
 
     val map = mutableMapOf<Id, Holder>()
 
-    private val sizeAtomic = AtomicInteger(0)
+    private val atomicSize = AtomicInteger(0)
 
     override suspend fun get(target: Id): ObjectWrapper.Basic? = mutex.withLock {
         return map[target]?.obj
@@ -124,7 +124,7 @@ class DefaultObjectStore : ObjectStore {
                     )
                 }
             }
-            if (added > 0) sizeAtomic.addAndGet(added)
+            if (added > 0) atomicSize.addAndGet(added)
         }
     }
 
@@ -145,7 +145,7 @@ class DefaultObjectStore : ObjectStore {
                     obj = ObjectWrapper.Basic(diff),
                     subscriptions = subscriptions.distinct()
                 )
-                sizeAtomic.incrementAndGet()
+                atomicSize.incrementAndGet()
             }
         }
     }
@@ -176,7 +176,7 @@ class DefaultObjectStore : ObjectStore {
                     obj = ObjectWrapper.Basic(data),
                     subscriptions = subscriptions.distinct()
                 )
-                sizeAtomic.incrementAndGet()
+                atomicSize.incrementAndGet()
             } else {
                 map[target] = current.copy(
                     obj = ObjectWrapper.Basic(data),
@@ -212,7 +212,7 @@ class DefaultObjectStore : ObjectStore {
         }
         unsubscribed.forEach { id ->
             if (map.remove(id) != null) {
-                sizeAtomic.decrementAndGet()
+                atomicSize.decrementAndGet()
             }
         }
     }
@@ -221,7 +221,7 @@ class DefaultObjectStore : ObjectStore {
         val current = map[target]
         if (current != null) {
             if (current.subscriptions.firstOrNull() == subscription) {
-                if (map.remove(target) != null) sizeAtomic.decrementAndGet()
+                if (map.remove(target) != null) atomicSize.decrementAndGet()
             } else {
                 map[target] = current.copy(
                     subscriptions = current.subscriptions.filter { id ->

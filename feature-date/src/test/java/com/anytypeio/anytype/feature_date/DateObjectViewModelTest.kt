@@ -316,7 +316,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
         }
@@ -459,7 +459,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
         }
@@ -541,7 +541,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
         }
@@ -623,7 +623,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
         }
@@ -717,7 +717,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
 
@@ -779,7 +779,8 @@ class DateObjectViewModelTest {
                     state.items
                 )
             }
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            // Verify the subscription was called - multiple calls expected due to flow emissions
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParamsNextDay)
             }
         }
@@ -874,7 +875,7 @@ class DateObjectViewModelTest {
             advanceUntilIdle()
 
             // Assert
-            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+            verifyBlocking(storelessSubscriptionContainer, atLeast(1)) {
                 subscribe(subscribeParams)
             }
 

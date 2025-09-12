@@ -50,7 +50,7 @@
     <string name="default_space">Espacio inicial</string>
     <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Cambiar color del icono</string>
     <string name="profile_settings_apply_upload_image">Cargar una imagen</string>
     <string name="remove_image">Eliminar imagen</string>
     <string name="delete_space">Eliminar espacio</string>
@@ -970,10 +970,10 @@
     <string name="onboarding_usecase_habit_tracking">Seguimiento de hábitos</string>
     <string name="onboarding_usecase_knowledge">Base de conocimientos personal / PKM</string>
     <string name="onboarding_usecase_life_planning">Planificación personal</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_messaging">Mensajes y chats de grupo</string>
     <string name="onboarding_usecase_notes">Notas personales</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_projects">Gestión de proyectos y tareas</string>
+    <string name="onboarding_usecase_team_work">Trabajo en equipo y documentos compartidos</string>
     <string name="onboarding_usecase_other">Otros</string>
     <!--endregion-->
     <!--region WIDGETS -->
@@ -1034,7 +1034,7 @@
     <string name="onboarding_terms_and_policy_infix">" y "</string>
     <string name="onboarding_terms_and_policy_privacy">nuestra\u00A0política de privacidad</string>
     <string name="onboarding_new_vault_button_text">Es mi primera vez</string>
-    <string name="onboarding_enter_my_vault">Entrar</string>
+    <string name="onboarding_enter_my_vault">Continuar</string>
     <string name="onboarding_have_key_button_text">Ya tengo la clave</string>
     <string name="onboarding_get_my_key_button_text">Obtener mi clave</string>
     <string name="onboarding_invite_code_title">Introduce tu código de invitación</string>
@@ -1042,11 +1042,11 @@
     <string name="onboarding_void_title">Esta es tu arca</string>
     <string name="onboarding_void_description">Se trata de una ubicación cifrada para toda tu creación. Todo se guarda en tu dispositivo y se respalda en la red distribuida.</string>
     <string name="onboarding_this_is_your_key_title">Esta es tu clave</string>
-    <string name="onboarding_key_description">Es lo que usamos en lugar de usuario y contraseña. Guárdala bien; tus datos están bajo tu control. Podrás volver a ver esta clave en los ajustes de la aplicación.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Ver mi clave</string>
-    <string name="onboarding_tap_to_reveal">Mostrar y copiar</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Omitir</string>
-    <string name="onboarding_key_not_now">Ahora no</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">Copiar al portapapeles</string>
     <string name="onboarding_soul_creation_placeholder">Identidad de Anytype</string>
     <string name="onboarding_soul_creation">Creando tu identidad…</string>
@@ -1058,10 +1058,13 @@
     <string name="onboarding_your_name">Escribe tu nombre</string>
     <string name="onboarding_mnemonic_read_more">Más información</string>
     <string name="onboarding_key_additional_info">Puedes ver esta clave más adelante en los ajustes de la aplicación.</string>
-    <string name="onboarding_what_is_the_key">¿Qué es una clave?</string>
-    <string name="onboarding_recovery_phrase_description">Consiste en una frase de recuperación de 12 palabras aleatorias con las que se genera mágicamente tu arca en este dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Quien conozca esta combinación de palabras tendrá la propiedad de tu arca.</string>
-    <string name="onboarding_recovery_phrase_description_3">En este momento, tú eres la única persona del mundo que la conoce.</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si la pierdes, es imposible recuperarla. ¡Guárdala en un lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">¿Cómo guardo mi clave?</string>
     <string name="onboarding_how_to_save_my_phrase_2">La forma más fácil de preservar tu clave es guardarla en un gestor de contraseñas.</string>
@@ -1212,7 +1215,7 @@
     <string name="multiplayer_qr_invite_link_menu">Mostrar el código QR</string>
     <string name="multiplayer_share_invite_link_description">Comparte este enlace con quien quieras que acceda a tu espacio. Cuando haga clic en el enlace y envíe su solicitud, podrás definir sus derechos de acceso.</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
-    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_invite_link_access">Acceso con enlace de invitación</string>
     <string name="multiplayer_link_disabled">Enlace desactivado</string>
     <string name="multiplayer_link_disabled_desc">Solo tendrán acceso los miembros que ya se hayan incorporado.</string>
     <string name="multiplayer_editor_access">Acceso como editor</string>
@@ -1222,8 +1225,8 @@
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
     <string name="multiplayer_qr_code">Código QR</string>
-    <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_change_access_title">¿Cambiar tipo de acceso del enlace de invitación?</string>
+    <string name="multiplayer_link_will_be_invalidated">El enlace actual dejará de funcionar.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
     <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>

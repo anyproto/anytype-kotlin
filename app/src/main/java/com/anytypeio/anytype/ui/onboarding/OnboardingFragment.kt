@@ -281,12 +281,11 @@ class OnboardingFragment : Fragment() {
                     // Do nothing
                 }
                 val (spaceId, startingObjectId, profileId) = it.arguments.extractOnboardingParams()
-                if (!spaceId.isNullOrEmpty() && !profileId.isNullOrEmpty()) {
+                if (!spaceId.isNullOrEmpty()) {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
                         space = spaceId,
                         startingObject = startingObjectId,
-                        profileId = profileId,
                         navController = navController
                     )
                 } else {
@@ -678,7 +677,6 @@ class OnboardingFragment : Fragment() {
         mnemonicColorPalette: List<Color>,
         space: Id,
         startingObject: Id?,
-        profileId: Id,
         navController: NavHostController
     ) {
         val component = componentManager().onboardingMnemonicComponent
@@ -686,7 +684,6 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             space = space,
             startingObject = startingObject,
-            profileId = profileId,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
             mnemonicColorPalette = mnemonicColorPalette
@@ -937,7 +934,7 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        val route = buildSetEmailRoute(
+                        val route = buildMnemonicRoute(
                             spaceId = navigation.spaceId,
                             startingObjectId = navigation.startingObjectId
                         )
@@ -1140,13 +1137,12 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    private fun buildMnemonicRoute(spaceId: Id, startingObjectId: Id?, profileId: Id): String {
+    private fun buildMnemonicRoute(spaceId: Id, startingObjectId: Id?): String {
         return buildString {
             append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=$spaceId")
             startingObjectId?.let { 
                 append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
             }
-            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
         }
     }
 

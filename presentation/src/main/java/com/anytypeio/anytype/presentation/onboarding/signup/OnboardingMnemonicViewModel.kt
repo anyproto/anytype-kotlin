@@ -46,20 +46,20 @@ class OnboardingMnemonicViewModel @Inject constructor(
         sendClickAnalytics(ClickOnboardingButton.SHOW_AND_COPY)
     }
 
-    fun onCheckLaterClicked(space: Id, startingObject: Id?, profileId: Id) {
+    fun onCheckLaterClicked(space: Id, startingObject: Id?) {
         sendClickAnalytics(ClickOnboardingButton.CHECK_LATER)
         viewModelScope.launch {
-            navigateNextStep(space, startingObject, profileId)
+            navigateNextStep(space, startingObject)
         }
     }
 
-    fun handleAppEntryClick(space: Id, startingObject: Id?, profileId: Id) {
+    fun handleAppEntryClick(space: Id, startingObject: Id?) {
         viewModelScope.launch {
-            navigateNextStep(space, startingObject, profileId)
+            navigateNextStep(space, startingObject)
         }
     }
 
-    private suspend fun navigateNextStep(space: Id, startingObject: Id?, profileId: Id) {
+    private suspend fun navigateNextStep(space: Id, startingObject: Id?) {
         viewModelScope.launch {
             sendAnalyticsOnboardingScreenEvent(
                 analytics,
@@ -70,7 +70,6 @@ class OnboardingMnemonicViewModel @Inject constructor(
             Command.NavigateToSetProfileName(
                 space = space,
                 startingObject = startingObject,
-                profileId = profileId
             )
         )
     }
@@ -149,7 +148,7 @@ class OnboardingMnemonicViewModel @Inject constructor(
         data class NavigateToSetProfileName(
             val space: String,
             val startingObject: String?,
-            val profileId: String
+            val profileId: String? = null
         ) : Command()
 
         data class NavigateToAddEmailScreen(

@@ -129,7 +129,7 @@ fun MnemonicPhraseWidget(
             horizontalArrangement = Arrangement.Center
         ) {
             words.forEachIndexed { idx, word ->
-                val color = colorResource(R.color.text_white)
+                val color = colorResource(R.color.text_primary)
                 Text(
                     modifier = Modifier
                         .padding(
@@ -137,7 +137,7 @@ fun MnemonicPhraseWidget(
                             vertical = 6.dp
                         ),
                     text = word.lowercase(),
-                    style = PreviewTitle1Regular.copy(
+                    style = PreviewTitle1Medium.copy(
                         color = color
                     )
                 )

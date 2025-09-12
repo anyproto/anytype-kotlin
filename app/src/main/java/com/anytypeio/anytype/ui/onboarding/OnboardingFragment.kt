@@ -730,14 +730,9 @@ class OnboardingFragment : Fragment() {
                         }
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToSetProfileName -> {
-                        val route = buildSelectProfessionRoute(
-                            spaceId = command.space,
-                            startingObjectId = command.startingObject
-                        )
-                        navController.navigate(route)
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
-                        val route = buildSelectProfessionRoute(
+                        val route = buildSetEmailRoute(
                             spaceId = command.space,
                             startingObjectId = command.startingObject
                         )

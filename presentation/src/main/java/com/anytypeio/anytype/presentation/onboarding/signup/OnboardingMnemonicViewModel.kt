@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.onboarding.signup
 
+import android.os.Build
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,6 +14,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.auth.interactor.GetMnemonic
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.network.NetworkModeProvider
+import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingClickEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOnboardingScreenEvent
 import javax.inject.Inject
@@ -63,11 +65,11 @@ class OnboardingMnemonicViewModel @Inject constructor(
         viewModelScope.launch {
             sendAnalyticsOnboardingScreenEvent(
                 analytics,
-                EventsDictionary.ScreenOnboardingStep.SOUL
+                EventsDictionary.ScreenOnboardingStep.EMAIL
             )
         }
         emitCommand(
-            Command.NavigateToSetProfileName(
+            Command.NavigateToAddEmailScreen(
                 space = space,
                 startingObject = startingObject,
             )

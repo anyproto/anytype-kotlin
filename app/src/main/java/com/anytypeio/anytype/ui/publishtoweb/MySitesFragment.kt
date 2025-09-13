@@ -28,8 +28,6 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
 
     private val vm by viewModels<MySitesViewModel> { factory }
 
-    private val space get() = arg<Id>(SPACE_KEY)
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -62,23 +60,11 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
     override fun injectDependencies() {
         componentManager()
             .mySitesComponent
-            .get(
-                params = MySitesViewModel.Params(
-                    space = SpaceId(space)
-                )
-            )
+            .get(params = MySitesViewModel.VmParams)
             .inject(this)
     }
 
     override fun releaseDependencies() {
         componentManager().mySitesComponent.release()
-    }
-
-    companion object {
-        fun args(space: String) = bundleOf(
-            SPACE_KEY to space
-        )
-
-        private const val SPACE_KEY = "arg.my-sites.space"
     }
 }

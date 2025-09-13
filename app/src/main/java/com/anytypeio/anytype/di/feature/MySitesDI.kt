@@ -25,7 +25,7 @@ interface MySitesComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: MySitesViewModel.Params,
+            @BindsInstance vmParams: MySitesViewModel.VmParams,
             dependency: MySitesDependencies
         ): MySitesComponent
     }

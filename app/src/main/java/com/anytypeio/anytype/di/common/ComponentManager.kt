@@ -1140,7 +1140,7 @@ class ComponentManager(
             .create(params, findComponentDependencies())
     }
 
-    val mySitesComponent = ComponentWithParams { params: MySitesViewModel.Params ->
+    val mySitesComponent = ComponentWithParams { params: MySitesViewModel.VmParams ->
         DaggerMySitesComponent
             .factory()
             .create(params, findComponentDependencies())

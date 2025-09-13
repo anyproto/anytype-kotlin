@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.publishtoweb
 
+import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,36 +10,35 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.foundation.text.input.TextFieldState
-import androidx.compose.foundation.text.input.rememberTextFieldState
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.platform.LocalFocusManager
-import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -47,6 +47,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.Section
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
@@ -55,8 +56,13 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
+import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceNameInputField
+import timber.log.Timber
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PublishToWebScreen(
     viewState: PublishToWebViewState,
@@ -66,15 +72,12 @@ fun PublishToWebScreen(
     onPreviewClicked: () -> Unit = {}
 ) {
 
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
+    var showEditUrl by remember { mutableStateOf(false) }
 
     var showJoinSpaceBannerChecked by remember { mutableStateOf(true) }
 
-    val textFieldState = if (viewState !is PublishToWebViewState.Init)
-        rememberTextFieldState(initialText = "/" + viewState.uri)
-    else
-        TextFieldState()
+    val initialUrl = if (viewState is PublishToWebViewState.Init) "" else "/${viewState.uri}"
+    var url by rememberSaveable(viewState.uri) { mutableStateOf(initialUrl) }
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -125,25 +128,21 @@ fun PublishToWebScreen(
                         width = 0.5.dp,
                         color = colorResource(R.color.shape_primary),
                         shape = RoundedCornerShape(12.dp)
-                    ),
+                    )
+                    .noRippleClickable {
+                        showEditUrl = true
+                    }
+                ,
                 contentAlignment = Alignment.Center
             ) {
-                BasicTextField(
+                Text(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(horizontal = 12.dp),
-                    state = textFieldState,
-                    textStyle = BodyRegular.copy(
+                    style = BodyRegular.copy(
                         color = colorResource(R.color.text_primary)
                     ),
-                    keyboardOptions = KeyboardOptions(
-                        keyboardType = KeyboardType.Text,
-                        imeAction = ImeAction.Done
-                    ),
-                    onKeyboardAction = {
-                        keyboardController?.hide()
-                        focusManager.clearFocus()
-                    },
+                    text = url
                 )
             }
             Section(
@@ -207,7 +206,7 @@ fun PublishToWebScreen(
                                 .fillMaxWidth(),
                             onClick = {
                                 onPublishClicked(
-                                    textFieldState.text.toString(),
+                                    url,
                                     showJoinSpaceBannerChecked
                                 )
                             },
@@ -224,7 +223,7 @@ fun PublishToWebScreen(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
                                     onUnpublishClicked(
-                                        textFieldState.text.toString(),
+                                        url,
                                         showJoinSpaceBannerChecked
                                     )
                                 },
@@ -236,7 +235,7 @@ fun PublishToWebScreen(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
                                     onUpdateClicked(
-                                        textFieldState.text.toString(), showJoinSpaceBannerChecked
+                                        url, showJoinSpaceBannerChecked
                                     )
                                 },
                                 text = stringResource(R.string.web_publishing_update),
@@ -262,7 +261,7 @@ fun PublishToWebScreen(
                                 .fillMaxWidth(),
                             onClick = {
                                 onPublishClicked(
-                                    textFieldState.text.toString(),
+                                    url,
                                     showJoinSpaceBannerChecked
                                 )
                             },
@@ -288,7 +287,7 @@ fun PublishToWebScreen(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
                                     onUnpublishClicked(
-                                        textFieldState.text.toString(),
+                                        url,
                                         showJoinSpaceBannerChecked
                                     )
                                 },
@@ -300,7 +299,7 @@ fun PublishToWebScreen(
                                 modifier = Modifier.weight(1f),
                                 onClick = {
                                     onUpdateClicked(
-                                        textFieldState.text.toString(),
+                                        url,
                                         showJoinSpaceBannerChecked
                                     )
                                 },
@@ -328,6 +327,31 @@ fun PublishToWebScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+
+        if (showEditUrl) {
+            ModalBottomSheet(
+                sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+                modifier = Modifier.padding(top = 48.dp),
+                containerColor = colorResource(R.color.background_secondary),
+                onDismissRequest = {
+                    showEditUrl = false
+                },
+                dragHandle = {
+                    Dragger(
+                        modifier = Modifier.padding(vertical = 6.dp)
+                    )
+                }
+            ) {
+                EditUrlField(
+                    initialInput = url,
+                    onSaveFieldValueClicked = { value ->
+                        Timber.d("DROID-3786 SAVING VALUE: $value")
+                        url = value
+                        showEditUrl = false
+                    }
+                )
             }
         }
     }
@@ -464,7 +488,7 @@ private fun PreviewCard(
                 ) {
                     Text(
                         modifier = Modifier.padding(vertical = 2.dp, horizontal = 6.dp),
-                        text = "Join",
+                        text = stringResource(R.string.web_publishing_join),
                         style = Caption2Medium,
                         color = colorResource(R.color.text_label_inversion)
                     )
@@ -516,5 +540,77 @@ private fun PreviewCardPreview() {
         spaceName = "Anytype Design",
         onPreviewClicked = {},
         showSpaceHeader = false
+    )
+}
+
+@Composable
+private fun EditUrlField(
+    initialInput: String,
+    onSaveFieldValueClicked: (String) -> Unit
+) {
+
+    var fieldInput by remember { mutableStateOf(initialInput) }
+
+    Scaffold(
+        modifier = Modifier.fillMaxWidth(),
+        containerColor = colorResource(id = R.color.background_secondary),
+        topBar = {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            ) {
+                Text(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(horizontal = 16.dp)
+                        .noRippleClickable {
+                            onSaveFieldValueClicked(fieldInput)
+                        },
+                    text = stringResource(R.string.done),
+                    style = PreviewTitle1Medium,
+                    color = if (fieldInput != initialInput) {
+                        colorResource(id = R.color.text_primary)
+                    } else {
+                        colorResource(id = R.color.text_tertiary)
+                    }
+                )
+            }
+        },
+        content = { paddingValues ->
+            val contentModifier =
+                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
+                    Modifier
+                        .padding(top = paddingValues.calculateTopPadding())
+                        .windowInsetsPadding(WindowInsets.navigationBars)
+                        .fillMaxSize()
+                else
+                    Modifier
+                        .fillMaxSize()
+                        .padding(paddingValues)
+
+            Box(
+                modifier = contentModifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            ) {
+                NewSpaceNameInputField(
+                    fieldTitle = stringResource(R.string.web_publishing_customize_url),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            shape = RoundedCornerShape(16.dp),
+                            width = 2.dp,
+                            color = colorResource(id = R.color.palette_system_amber_50)
+                        )
+                        .padding(vertical = 12.dp, horizontal = 16.dp),
+                    name = fieldInput,
+                    onNameSet = { newName ->
+                        fieldInput = newName
+                    },
+                    isEditEnabled = true
+                )
+            }
+        }
     )
 }

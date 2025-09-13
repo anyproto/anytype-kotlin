@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.sets
 
+import android.os.Bundle
+import android.view.View
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
@@ -27,6 +29,12 @@ class ObjectSetMenuFragment : ObjectMenuBaseFragment() {
                 }
             }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        binding.publishToWeb.visibility = View.GONE
+        binding.publishToWebDivider.visibility = View.GONE
     }
 
     override fun injectDependencies() {

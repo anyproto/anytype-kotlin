@@ -29,7 +29,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.ime
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material.MaterialTheme
@@ -43,17 +42,12 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -71,7 +65,6 @@ import androidx.navigation.navArgument
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
-import com.anytypeio.anytype.core_ui.BuildConfig.LIBRARY_PACKAGE_NAME
 import com.anytypeio.anytype.core_ui.MNEMONIC_WORD_COUNT
 import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
@@ -86,9 +79,9 @@ import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel.SideEffect
 import com.anytypeio.anytype.presentation.onboarding.OnboardingViewModel
 import com.anytypeio.anytype.presentation.onboarding.login.OnboardingMnemonicLoginViewModel
+import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
-import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
@@ -98,17 +91,8 @@ import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingSelectionScr
 import com.anytypeio.anytype.ui.onboarding.screens.signup.OnboardingUsecaseScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetEmailWrapper
 import com.anytypeio.anytype.ui.onboarding.screens.signup.SetProfileNameWrapper
-import com.anytypeio.anytype.ui.vault.VaultFragment
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.Player
-import com.google.android.exoplayer2.source.ProgressiveMediaSource
-import com.google.android.exoplayer2.ui.PlayerView
-import com.google.android.exoplayer2.upstream.DefaultDataSource
-import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
-import com.google.android.exoplayer2.upstream.RawResourceDataSource
-import com.google.android.exoplayer2.util.Util
 import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -474,7 +458,6 @@ class OnboardingFragment : Fragment() {
     private fun Recovery(navController: NavHostController) {
         val component = componentManager().onboardingMnemonicLoginComponent
         val vm = daggerViewModel { component.get().getViewModel() }
-        val isQrWarningDialogVisible = remember { mutableStateOf(false) }
         val errorText = remember { mutableStateOf(NO_VALUE) }
         val isErrorDialogVisible = remember { mutableStateOf(false) }
 
@@ -493,7 +476,7 @@ class OnboardingFragment : Fragment() {
             onNextClicked = vm::onLoginClicked,
             onActionDoneClicked = vm::onActionDone,
             onScanQrClicked = {
-                isQrWarningDialogVisible.value = true
+                proceedWithQrCodeActivity(launcher)
                 vm.onScanQrCodeClicked()
             },
             state = vm.state.collectAsStateWithLifecycle().value,
@@ -572,19 +555,6 @@ class OnboardingFragment : Fragment() {
                     }
                 }
             }
-        }
-        if (isQrWarningDialogVisible.value) {
-            val context = LocalContext.current
-            BaseAlertDialog(
-                dialogText = stringResource(id = R.string.alert_qr_camera),
-                buttonText = stringResource(id = R.string.alert_qr_camera_ok),
-                onButtonClick = {
-                    isQrWarningDialogVisible.value = false
-                    // Google Code Scanner doesn't require camera permission
-                    proceedWithQrCodeActivity(launcher)
-                },
-                onDismissRequest = { isQrWarningDialogVisible.value = false }
-            )
         }
         if (isErrorDialogVisible.value) {
             BaseAlertDialog(
@@ -979,39 +949,6 @@ class OnboardingFragment : Fragment() {
     }
 
     @Composable
-    fun BackgroundCircle() {
-        val context = LocalContext.current
-        val videoPath = RawResourceDataSource.buildRawResourceUri(R.raw.shader)
-
-        val paddingTop = LocalConfiguration.current.screenHeightDp / 5
-        val padding = remember {
-            paddingTop
-        }
-
-        val exoPlayer = remember { getVideoPlayer(context, videoPath) }
-        Box(modifier = Modifier.fillMaxSize()) {
-            DisposableEffect(
-                AndroidView(
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = padding.dp)
-                        .scale(1.7f),
-                    factory = {
-                        PlayerView(context).apply {
-                            player = exoPlayer
-                            useController = false
-                        }
-                    }
-                )
-            ) {
-                onDispose {
-                    exoPlayer.release()
-                }
-            }
-        }
-    }
-
-    @Composable
     private fun AddEmail(
         navController: NavHostController,
         space: Id,
@@ -1094,25 +1031,6 @@ class OnboardingFragment : Fragment() {
         DisposableEffect(Unit) {
             onDispose { component.release() }
         }
-    }
-
-    private fun getVideoPlayer(context: Context, videoPath: Uri): Player {
-        val player = ExoPlayer.Builder(context).build()
-        val source = DefaultDataSource.Factory(
-            context,
-            DefaultHttpDataSource.Factory().setUserAgent(
-                Util.getUserAgent(context, LIBRARY_PACKAGE_NAME)
-            )
-        )
-        val mediaSource = ProgressiveMediaSource
-            .Factory(source)
-            .createMediaSource(MediaItem.fromUri(videoPath))
-        player.seekTo(0)
-        player.setMediaSource(mediaSource)
-        player.playWhenReady = true
-        player.repeatMode = Player.REPEAT_MODE_ALL
-        player.prepare()
-        return player
     }
 
     fun injectDependencies() {

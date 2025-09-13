@@ -5,31 +5,8 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.R
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -46,79 +23,36 @@ class QrScannerActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        val options = GmsBarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .enableAutoZoom()
-            .build()
-
+        val options = createScannerOptions()
         scanner = GmsBarcodeScanning.getClient(this, options)
 
         setContent {
             QrScannerScreen(
                 onStartScan = { startScanning() },
-                onCancel = { finish() }
             )
         }
     }
 
+    private fun createScannerOptions(): GmsBarcodeScannerOptions =
+        GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
+
     @Composable
     private fun QrScannerScreen(
         onStartScan: () -> Unit,
-        onCancel: () -> Unit
     ) {
-        var isLoading by remember { mutableStateOf(false) }
-        var hasModuleInstalled by remember { mutableStateOf(false) }
-
         LaunchedEffect(Unit) {
-            checkAndInstallModule { installed ->
-                hasModuleInstalled = installed
+            installScannerModule { installed ->
                 if (installed) {
                     onStartScan()
                 }
             }
         }
-
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black)
-                .padding(32.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
-        ) {
-            if (isLoading || !hasModuleInstalled) {
-                CircularProgressIndicator(
-                    modifier = Modifier.size(48.dp),
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Text(
-                    text = stringResource(R.string.qr_scanner_preparing),
-                    color = Color.White,
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-            } else {
-                Text(
-                    text = stringResource(R.string.qr_scanner_ready),
-                    color = Color.White,
-                    style = MaterialTheme.typography.headlineSmall,
-                    textAlign = TextAlign.Center
-                )
-                Spacer(modifier = Modifier.height(24.dp))
-                Button(onClick = onStartScan) {
-                    Text(stringResource(R.string.qr_scanner_scan_button))
-                }
-            }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            Button(onClick = onCancel) {
-                Text(stringResource(R.string.cancel))
-            }
-        }
     }
 
-    private fun checkAndInstallModule(onComplete: (Boolean) -> Unit) {
+    private fun installScannerModule(onComplete: (Boolean) -> Unit) {
         val moduleInstall = ModuleInstall.getClient(this)
         val moduleInstallRequest = ModuleInstallRequest.newBuilder()
             .addApi(scanner)
@@ -139,26 +73,27 @@ class QrScannerActivity : ComponentActivity() {
 
     private fun startScanning() {
         if (!scanningEnabled) return
+        scanningEnabled = false
 
         scanner.startScan()
             .addOnSuccessListener { barcode ->
-                if (scanningEnabled) {
-                    scanningEnabled = false
-                    val rawValue = barcode.rawValue
-                    if (!rawValue.isNullOrBlank()) {
-                        returnResult(rawValue)
-                    } else {
-                        Timber.w("QR code scan failed: empty barcode")
-                        finish()
-                    }
+                val rawValue = barcode.rawValue
+                if (!rawValue.isNullOrBlank()) {
+                    returnResult(rawValue)
+                } else {
+                    Timber.w("QR code scan failed: empty barcode")
+                    scanningEnabled = true
+                    finish()
                 }
             }
             .addOnCanceledListener {
                 Timber.d("QR code scan cancelled by user")
+                scanningEnabled = true
                 finish()
             }
             .addOnFailureListener { e ->
                 Timber.e(e, "QR code scan failed")
+                scanningEnabled = true
                 finish()
             }
     }

@@ -497,8 +497,9 @@ class OnboardingFragment : Fragment() {
             if (isGranted) {
                 proceedWithQrCodeActivity(launcher)
             } else {
-                // Permission denied, the QrScannerActivity will handle showing appropriate message
-                proceedWithQrCodeActivity(launcher)
+                // Permission denied, show error message instead of launching QR scanner
+                errorText.value = getString(R.string.camera_permission_settings_message)
+                isErrorDialogVisible.value = true
             }
         }
         RecoveryScreen(

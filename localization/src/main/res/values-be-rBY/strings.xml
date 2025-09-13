@@ -1983,6 +1983,7 @@
     <string name="web_publishing_update">Абнавіць</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Далучыцца</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="few">%d new messages</item>

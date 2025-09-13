@@ -1958,6 +1958,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_update">Aggiorna</string>
     <string name="web_publishing_publish">Pubblica</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Unisciti</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

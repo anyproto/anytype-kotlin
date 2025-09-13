@@ -119,7 +119,7 @@ class ObjectMenuViewModel(
     fun onResolveWebPublishPermission(space: SpaceId) {
         viewModelScope.launch {
             val permission = userPermissionProvider.get(space = space)
-            if (permission == SpaceMemberPermissions.OWNER) {
+            if (permission?.isOwnerOrEditor() == true) {
                 canBePublished.value = true
             }
         }

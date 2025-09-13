@@ -1442,6 +1442,7 @@ message ChatMessage {
     Reactions reactions = 8;  // Reactions to the message
     bool read = 10; // Message read status
     bool mentionRead = 12;
+    bool hasMention = 14;
     bool synced = 13;
     message MessageContent {
         string text = 1;      // The text content of the message part

@@ -1158,6 +1158,10 @@ class BlockMiddleware(
         return middleware.publishingGetStatus(command)
     }
 
+    override suspend fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State> {
+        return middleware.publishingGetList(command)
+    }
+
     override suspend fun publishingCreate(command: Command.Publishing.Create): String {
         return middleware.publishingCreate(command)
     }

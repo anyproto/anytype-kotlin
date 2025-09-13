@@ -84,7 +84,7 @@ fun PulsatingCircleScreen() {
         modifier = Modifier
             .fillMaxSize()
             .windowInsetsPadding(WindowInsets.systemBars)
-            .padding(bottom = 26.dp)
+            .padding(bottom = 32.dp)
     ) {
         SimpleCircleShape(
             modifier = Modifier

@@ -19,7 +19,7 @@ import kotlinx.coroutines.withContext
 interface SpaceManager {
 
     suspend fun get(): Id
-    suspend fun set(space: Id): Result<Config>
+    suspend fun set(space: Id, withChat: Boolean = false): Result<Config>
 
     fun getConfig(): Config?
     fun getConfig(space: SpaceId) : Config?
@@ -60,8 +60,8 @@ interface SpaceManager {
             return info[space.id]
         }
 
-        override suspend fun set(space: Id) : Result<Config> = withContext(dispatchers.io) {
-            runCatching { repo.getSpaceConfig(space) }.also { result ->
+        override suspend fun set(space: Id, withChat: Boolean) : Result<Config> = withContext(dispatchers.io) {
+            runCatching { repo.spaceOpen(space, withChat) }.also { result ->
                 result.fold(
                     onSuccess = { config ->
                         info[space] = config

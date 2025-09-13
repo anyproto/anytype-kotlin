@@ -174,12 +174,12 @@ private fun SetProfileNameScreen(
         Image(
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 16.dp, start = 9.dp)
+                .padding(top = 16.dp, start = 16.dp)
                 .noRippleClickable {
                     focusManager.clearFocus()
                     onBackClicked()
                 },
-            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
+            painter = painterResource(id = R.drawable.ic_back_24),
             contentDescription = stringResource(R.string.content_description_back_button_icon)
         )
         OnBoardingButtonPrimary(

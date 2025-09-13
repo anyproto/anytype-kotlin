@@ -16,4 +16,5 @@ interface StringResourceProvider {
     fun getYesterday(): String
     fun getInitialSpaceName(): String
     fun getUntitledCreatorName(): String
+    fun getMessagesCountText(count: Int): String
 }

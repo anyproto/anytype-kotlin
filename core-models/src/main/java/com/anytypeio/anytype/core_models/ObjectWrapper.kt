@@ -374,6 +374,10 @@ sealed class ObjectWrapper {
                     || spaceAccessType == SpaceAccessType.SHARED
         }
 
+        val isShared: Boolean get() {
+            return spaceAccessType == SpaceAccessType.SHARED
+        }
+
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
                 ?.let { code ->

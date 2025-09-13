@@ -2008,8 +2008,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
-            useCase = command.useCase.toMiddlewareModel(),
-            withChat = command.withChat
+            useCase = command.useCase.toMiddlewareModel()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
@@ -2021,10 +2020,10 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun workspaceOpen(space: Id): Config {
+    fun workspaceOpen(space: Id, withChat: Boolean): Config {
         val request = Rpc.Workspace.Open.Request(
             spaceId = space,
-            withChat = false
+            withChat = withChat
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceOpen(request) }

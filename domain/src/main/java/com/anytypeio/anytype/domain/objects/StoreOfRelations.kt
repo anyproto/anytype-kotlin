@@ -12,6 +12,8 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicInteger
+import kotlinx.coroutines.channels.BufferOverflow
 
 interface StoreOfRelations {
     val size: Int
@@ -41,10 +43,15 @@ class DefaultStoreOfRelations : StoreOfRelations {
     private val mutex = Mutex()
     private val store = mutableMapOf<Id, ObjectWrapper.Relation>()
     private val keysToIds = mutableMapOf<Key, Id>()
+    private val atomicSize = AtomicInteger(0)
 
-    private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>()
+    private val updates = MutableSharedFlow<StoreOfRelations.TrackedEvent>(
+        replay = 1,
+        extraBufferCapacity = 64,
+        onBufferOverflow = BufferOverflow.DROP_OLDEST
+    )
 
-    override val size: Int get() = store.size
+    override val size: Int get() = atomicSize.get()
 
     override suspend fun getByKey(key: Key): ObjectWrapper.Relation? = mutex.withLock {
         val id = keysToIds[key]
@@ -70,59 +77,103 @@ class DefaultStoreOfRelations : StoreOfRelations {
         store.values.toList()
     }
 
-    override suspend fun merge(relations: List<ObjectWrapper.Relation>): Unit = mutex.withLock {
-        relations.forEach { o ->
-            val current = store[o.id]
-            if (current == null) {
-                store[o.id] = o.also { keysToIds[it.key] = o.id }
-            } else {
-                store[o.id] = current.amend(o.map)
+    override suspend fun merge(relations: List<ObjectWrapper.Relation>) {
+        var changed = false
+        var added = 0
+        mutex.withLock {
+            relations.forEach { o ->
+                val current = store[o.id]
+                if (current == null) {
+                    store[o.id] = o.also { keysToIds[it.key] = o.id }
+                    added++
+                    changed = true
+                } else {
+                    val amended = current.amend(o.map)
+                    if (amended !== current) {
+                        store[o.id] = amended
+                        changed = true
+                    }
+                }
             }
+            if (added > 0) atomicSize.addAndGet(added)
         }
-        updates.emit(StoreOfRelations.TrackedEvent.Change)
+        if (changed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
-    override suspend fun amend(target: Id, diff: Map<Id, Any?>): Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            store[target] = current.amend(diff)
-        } else {
-            store[target] = ObjectWrapper.Relation(diff).also { keysToIds[it.key] = target }
+    override suspend fun amend(target: Id, diff: Map<Id, Any?>) {
+        var changed = false
+        var inserted = false
+        mutex.withLock {
+            val current = store[target]
+            val amended = current?.amend(diff) ?: ObjectWrapper.Relation(diff).also {
+                keysToIds[it.key] = target
+                inserted = true
+            }
+            if (amended !== current) {
+                store[target] = amended
+                changed = true
+                if (inserted) atomicSize.incrementAndGet()
+            }
         }
-        updates.emit(StoreOfRelations.TrackedEvent.Change)
+        if (changed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun set(
         target: Id,
-        data: Map<String, Any?>
-    ): Unit = mutex.withLock {
-        store[target] = ObjectWrapper.Relation(data).also { keysToIds[it.key] = target }
-        updates.emit(StoreOfRelations.TrackedEvent.Change)
+        data: Struct
+    ) {
+        var wasAbsent = false
+        mutex.withLock {
+            val existed = store.containsKey(target)
+            store[target] = ObjectWrapper.Relation(data).also { keysToIds[it.key] = target }
+            wasAbsent = !existed
+            if (wasAbsent) atomicSize.incrementAndGet()
+        }
+        updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override suspend fun unset(
         target: Id,
-        keys: List<Id>
-    ): Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            store[target] = current.unset(keys)
+        keys: List<Key>
+    ) {
+        var changed = false
+        mutex.withLock {
+            val current = store[target]
+            if (current != null) {
+                val next = current.unset(keys)
+                if (next !== current) {
+                    store[target] = next
+                    changed = true
+                }
+            }
         }
-        updates.emit(StoreOfRelations.TrackedEvent.Change)
+        if (changed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
-    override suspend fun remove(target: Id) : Unit = mutex.withLock {
-        val current = store[target]
-        if (current != null) {
-            keysToIds.remove(current.key)
-            store.remove(target)
+    override suspend fun remove(target: Id) {
+        var removed = false
+        mutex.withLock {
+            val current = store.remove(target)
+            if (current != null) {
+                keysToIds.remove(current.key)
+                removed = true
+                atomicSize.decrementAndGet()
+            }
         }
-        updates.emit(StoreOfRelations.TrackedEvent.Change)
+        if (removed) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
-    override suspend fun clear(): Unit = mutex.withLock {
-        keysToIds.clear()
-        store.clear()
+    override suspend fun clear() {
+        var hadItems = false
+        mutex.withLock {
+            hadItems = store.isNotEmpty()
+            if (hadItems) {
+                keysToIds.clear()
+                store.clear()
+                atomicSize.set(0)
+            }
+        }
+        if (hadItems) updates.tryEmit(StoreOfRelations.TrackedEvent.Change)
     }
 
     override fun trackChanges(): Flow<StoreOfRelations.TrackedEvent> = updates.onStart {
@@ -130,7 +181,9 @@ class DefaultStoreOfRelations : StoreOfRelations {
     }
 
     override suspend fun observe(): Flow<Map<Id, ObjectWrapper.Relation>> {
-        return trackChanges().map { store }
+        return trackChanges().map {
+            mutex.withLock { store.toMap() }
+        }
     }
 }
 

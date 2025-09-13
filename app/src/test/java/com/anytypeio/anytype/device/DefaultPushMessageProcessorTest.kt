@@ -36,15 +36,18 @@ class DefaultPushMessageProcessorTest {
         )
     }
 
+
     @Test
     fun `process should return false when payload is missing`() {
         // Given
         val messageData = mapOf(
+            "x-any-type" to "normal",
+            "x-any-group-id" to "test-group",
             "x-any-key-id" to "test-key-id"
         )
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertFalse(result)
@@ -56,11 +59,13 @@ class DefaultPushMessageProcessorTest {
     fun `process should return false when key id is missing`() {
         // Given
         val messageData = mapOf(
+            "x-any-type" to "normal",
+            "x-any-group-id" to "test-group",
             "x-any-payload" to "test-payload"
         )
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertFalse(result)
@@ -78,7 +83,7 @@ class DefaultPushMessageProcessorTest {
         whenever(decryptionService.decryptAndVerifySignature(any(), any(), any())).thenReturn(null)
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertFalse(result)
@@ -91,6 +96,8 @@ class DefaultPushMessageProcessorTest {
         val payload = "test-payload"
         val keyId = "test-key-id"
         val messageData = mapOf(
+            "x-any-type" to "normal",
+            "x-any-group-id" to "test-group",
             "x-any-payload" to payload,
             "x-any-key-id" to keyId
         )
@@ -113,13 +120,14 @@ class DefaultPushMessageProcessorTest {
             .thenReturn(decryptedContent)
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertTrue(result)
         verify(notificationBuilder).buildAndNotify(
             message = decryptedContent.newMessage,
-            spaceId = decryptedContent.spaceId
+            spaceId = decryptedContent.spaceId,
+            groupId = "test-group"
         )
     }
 
@@ -130,6 +138,8 @@ class DefaultPushMessageProcessorTest {
         val keyId = "test-key-id"
         val signature = "test-signature"
         val messageData = mapOf(
+            "x-any-type" to "normal",
+            "x-any-group-id" to "test-group",
             "x-any-payload" to payload,
             "x-any-key-id" to keyId,
             "x-any-signature" to signature
@@ -153,13 +163,14 @@ class DefaultPushMessageProcessorTest {
             .thenReturn(decryptedContent)
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertTrue(result)
         verify(notificationBuilder).buildAndNotify(
             message = decryptedContent.newMessage,
-            spaceId = decryptedContent.spaceId
+            spaceId = decryptedContent.spaceId,
+            groupId = "test-group"
         )
     }
 
@@ -170,6 +181,8 @@ class DefaultPushMessageProcessorTest {
         val keyId = "test-key-id"
         val signature = "invalid-signature"
         val messageData = mapOf(
+            "x-any-type" to "normal",
+            "x-any-group-id" to "test-group",
             "x-any-payload" to payload,
             "x-any-key-id" to keyId,
             "x-any-signature" to signature
@@ -179,10 +192,59 @@ class DefaultPushMessageProcessorTest {
             .thenReturn(null)
 
         // When
-        val result = processor.process(messageData)
+        val result = processor.process(messageData, isAppInForeground = false)
 
         // Then
         assertFalse(result)
         verifyNoInteractions(notificationBuilder)
+    }
+
+    @Test
+    fun `process should return true and clear notifications for silent push`() {
+        // Given
+        val messageData = mapOf(
+            "x-any-type" to "silent",
+            "x-any-group-id" to "test-group"
+        )
+
+        // When
+        val result = processor.process(messageData, isAppInForeground = false)
+
+        // Then
+        assertTrue(result)
+        verify(notificationBuilder).clearNotificationsByGroupId("test-group")
+        verifyNoInteractions(decryptionService)
+    }
+
+    @Test
+    fun `process should return false when type is missing`() {
+        // Given
+        val messageData = mapOf(
+            "x-any-group-id" to "test-group"
+        )
+
+        // When
+        val result = processor.process(messageData, isAppInForeground = false)
+
+        // Then
+        assertFalse(result)
+        verifyNoInteractions(notificationBuilder)
+        verifyNoInteractions(decryptionService)
+    }
+
+    @Test
+    fun `process should return false when group id is missing`() {
+        // Given
+        val messageData = mapOf(
+            "x-any-type" to "normal"
+        )
+
+        // When
+        val result = processor.process(messageData, isAppInForeground = false)
+
+        // Then
+        assertFalse(result)
+        verifyNoInteractions(notificationBuilder)
+        verifyNoInteractions(decryptionService)
     }
 } 

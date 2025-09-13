@@ -2531,7 +2531,7 @@ class HomeScreenViewModel(
     fun onLeaveSpaceAcceptedClicked(space: SpaceId) {
         viewModelScope.launch {
             val permission = userPermissionProvider.get(space)
-            if (permission != null && permission != SpaceMemberPermissions.OWNER) {
+            if (permission != SpaceMemberPermissions.OWNER) {
                 deleteSpace
                     .async(space)
                     .onFailure { Timber.e(it, "Error while leaving space") }

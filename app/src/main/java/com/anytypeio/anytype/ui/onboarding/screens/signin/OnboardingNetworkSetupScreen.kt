@@ -28,9 +28,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.NetworkModeConfig
-import com.anytypeio.anytype.core_ui.NetworkSettingCardColor
 import com.anytypeio.anytype.core_ui.NetworkSettingDescriptionColor
-import com.anytypeio.anytype.core_ui.NetworkSettingTitleColor
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
@@ -162,7 +160,7 @@ private fun ExportLogs(onExportLogsClick: () -> Unit) {
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
-            .background(color = NetworkSettingCardColor)
+            .background(color = colorResource(R.color.shape_tertiary))
             .noRippleClickable { onExportLogsClick() }
     ) {
         Row(
@@ -175,7 +173,7 @@ private fun ExportLogs(onExportLogsClick: () -> Unit) {
             Text(
                 text = stringResource(id = R.string.settings_share_local_logs),
                 style = BodyCalloutRegular,
-                color = NetworkSettingTitleColor,
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
         }
@@ -188,7 +186,7 @@ private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Uni
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .fillMaxWidth()
-            .background(color = NetworkSettingCardColor)
+            .background(color = colorResource(R.color.shape_tertiary))
             .noRippleClickable { onUseYamuxToggled() }
     ) {
         Row(
@@ -201,7 +199,7 @@ private fun UseYamuxCard(config: NetworkModeConfig, onUseYamuxToggled: () -> Uni
             Text(
                 text = stringResource(id = R.string.settings_use_yamux),
                 style = BodyCalloutRegular,
-                color = NetworkSettingTitleColor,
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
             if (!config.useReserveMultiplexLib) {
@@ -225,7 +223,7 @@ private fun LocalOnlyCard(
         modifier = Modifier
             .clip(RoundedCornerShape(bottomStart = 16.dp, bottomEnd = 16.dp))
             .fillMaxWidth()
-            .background(color = NetworkSettingCardColor)
+            .background(color = colorResource(R.color.shape_tertiary))
             .clickable { onLocalOnlyClicked() }
     ) {
         Spacer(modifier = Modifier.height(14.dp))
@@ -236,7 +234,7 @@ private fun LocalOnlyCard(
             Text(
                 text = stringResource(id = R.string.network_settings_local_only),
                 style = BodyCalloutRegular,
-                color = NetworkSettingTitleColor,
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
             if (config.networkMode == NetworkMode.LOCAL) {
@@ -252,7 +250,7 @@ private fun LocalOnlyCard(
         Text(
             text = stringResource(id = R.string.network_settings_local_only_description),
             style = BodyCalloutRegular,
-            color = NetworkSettingDescriptionColor,
+            color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(horizontal = 20.dp)
         )
         Spacer(modifier = Modifier.height(14.dp))
@@ -269,7 +267,7 @@ private fun SelfHostCard(
         modifier = Modifier
             .clip(RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp))
             .fillMaxWidth()
-            .background(color = NetworkSettingCardColor)
+            .background(color = colorResource(R.color.shape_tertiary))
             .clickable { onSelfHostNetworkClicked() }
     ) {
         Spacer(modifier = Modifier.height(14.dp))
@@ -280,7 +278,7 @@ private fun SelfHostCard(
             Text(
                 text = stringResource(id = R.string.network_settings_self_host),
                 style = BodyCalloutRegular,
-                color = NetworkSettingTitleColor,
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
             if (config.networkMode == NetworkMode.CUSTOM) {
@@ -296,7 +294,7 @@ private fun SelfHostCard(
         Text(
             text = stringResource(id = R.string.network_settings_self_host_description),
             style = BodyCalloutRegular,
-            color = NetworkSettingDescriptionColor,
+            color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(horizontal = 20.dp)
         )
         if (config.networkMode == NetworkMode.CUSTOM) {
@@ -319,7 +317,7 @@ private fun SelfHostCard(
                         configName
                     ),
                     style = Caption1Medium,
-                    color = colorResource(id = R.color.palette_system_green),
+                    color = colorResource(id = R.color.palette_system_teal),
                     modifier = Modifier
                         .padding(horizontal = 20.dp)
                         .fillMaxWidth()
@@ -346,7 +344,7 @@ private fun AnytypeNetworkCard(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
             .clickable { onAnytypeNetworkClicked() }
-            .background(color = NetworkSettingCardColor)
+            .background(color = colorResource(R.color.shape_tertiary))
             .fillMaxWidth()
             .padding(horizontal = 20.dp)
     ) {
@@ -358,7 +356,7 @@ private fun AnytypeNetworkCard(
             Text(
                 text = stringResource(id = R.string.network_settings_anytype_network),
                 style = BodyCalloutRegular,
-                color = NetworkSettingTitleColor,
+                color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1.0f)
             )
             if (config.networkMode == NetworkMode.DEFAULT) {
@@ -374,7 +372,7 @@ private fun AnytypeNetworkCard(
         Text(
             text = stringResource(id = R.string.network_settings_anytype_network_description),
             style = BodyCalloutRegular,
-            color = NetworkSettingDescriptionColor
+            color = colorResource(R.color.text_primary)
         )
         Spacer(modifier = Modifier.height(14.dp))
     }

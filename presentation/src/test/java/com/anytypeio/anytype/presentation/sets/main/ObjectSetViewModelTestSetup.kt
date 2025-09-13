@@ -399,7 +399,7 @@ open class ObjectSetViewModelTestSetup {
 
     suspend fun stubSpaceManager(space: Id) {
         repo.stub {
-            onBlocking { getSpaceConfig(space) } doReturn spaceConfig.copy(
+            onBlocking { spaceOpen(space, false) } doReturn spaceConfig.copy(
                 space = space
             )
             spaceManager.set(space)

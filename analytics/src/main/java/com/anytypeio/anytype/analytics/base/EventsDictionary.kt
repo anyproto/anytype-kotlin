@@ -306,7 +306,9 @@ object EventsDictionary {
     enum class ScreenOnboardingStep(val value: String) {
         SOUL("Soul"),
         PHRASE("Phrase"),
-        EMAIL("Email")
+        EMAIL("Email"),
+        PERSONA("Persona"),
+        USECASE("Usecase"),
     }
 
     enum class ClickOnboardingButton(val value: String) {

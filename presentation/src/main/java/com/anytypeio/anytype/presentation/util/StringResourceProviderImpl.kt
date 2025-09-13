@@ -83,4 +83,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getUntitledCreatorName(): String {
         return context.getString(R.string.unknown)
     }
+
+    override fun getMessagesCountText(count: Int): String {
+        return context.resources.getQuantityString(R.plurals.notification_messages_count, count, count)
+    }
 }

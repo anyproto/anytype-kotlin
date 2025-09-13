@@ -6,18 +6,19 @@ import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import java.util.concurrent.atomic.AtomicInteger
 
 interface ObjectStore {
 
-    val size : Int
+    val size: Int
 
-    suspend fun get(target: Id) : ObjectWrapper.Basic?
+    suspend fun get(target: Id): ObjectWrapper.Basic?
 
-    suspend fun getAll() : List<ObjectWrapper.Basic>
-    suspend fun getAllAsRelations() : List<ObjectWrapper.Relation>
+    suspend fun getAll(): List<ObjectWrapper.Basic>
+    suspend fun getAllAsRelations(): List<ObjectWrapper.Relation>
 
     // Temporary API until we introduce proper interface for relations store
-    suspend fun getRelationById(id: Id) : ObjectWrapper.Relation?
+    suspend fun getRelationById(id: Id): ObjectWrapper.Relation?
 
     suspend fun amend(
         target: Id,
@@ -63,62 +64,67 @@ class DefaultObjectStore : ObjectStore {
 
     private val mutex = Mutex()
 
-    override val size: Int get() = map.size
+    override val size: Int get() = atomicSize.get()
 
     val map = mutableMapOf<Id, Holder>()
+
+    private val atomicSize = AtomicInteger(0)
 
     override suspend fun get(target: Id): ObjectWrapper.Basic? = mutex.withLock {
         return map[target]?.obj
     }
 
     override suspend fun getAll(): List<ObjectWrapper.Basic> {
-        return map.values.map { it.obj }
+        return mutex.withLock { map.values.map { it.obj }.toList() }
     }
 
     override suspend fun getAllAsRelations(): List<ObjectWrapper.Relation> {
-        return map.values.map { ObjectWrapper.Relation(it.obj.map) }
+        return mutex.withLock { map.values.map { ObjectWrapper.Relation(it.obj.map) }.toList() }
     }
 
     override suspend fun getRelationById(id: Id): ObjectWrapper.Relation? {
-        return map[id]?.obj?.map?.let { ObjectWrapper.Relation(it) }
+        return mutex.withLock { map[id]?.obj?.map?.let { ObjectWrapper.Relation(it) } }
     }
 
     override suspend fun merge(
         objects: List<ObjectWrapper.Basic>,
         dependencies: List<ObjectWrapper.Basic>,
         subscriptions: List<Id>
-    ) = mutex.withLock {
-        objects.forEach { o ->
-            val current = map[o.id]
-            if (current == null) {
-                map[o.id] = Holder(
-                    obj = o,
-                    subscriptions = subscriptions
-                )
-            } else {
-                map[o.id] = current.copy(
-                    obj = current.obj.amend(o.map),
-                    subscriptions = current.subscriptions + subscriptions
-                )
+    ) {
+        mutex.withLock {
+            var added = 0
+            objects.forEach { o ->
+                val current = map[o.id]
+                if (current == null) {
+                    map[o.id] = Holder(
+                        obj = o,
+                        subscriptions = subscriptions.distinct()
+                    )
+                    added++
+                } else {
+                    map[o.id] = current.copy(
+                        obj = current.obj.amend(o.map),
+                        subscriptions = (current.subscriptions + subscriptions).distinct()
+                    )
+                }
             }
-        }
-        dependencies.forEach { d ->
-            val current = map[d.id]
-            if (current == null) {
-                map[d.id] = Holder(
-                    obj = d,
-                    subscriptions = subscriptions.map {
-                        it + DEPENDENT_SUBSCRIPTION_POSTFIX
-                    }
-                )
-            } else {
-                map[d.id] = current.copy(
-                    obj = current.obj.amend(d.map),
-                    subscriptions = current.subscriptions + subscriptions.map {
-                        it + DEPENDENT_SUBSCRIPTION_POSTFIX
-                    }
-                )
+            dependencies.forEach { d ->
+                val depSubs = subscriptions.map { it + DEPENDENT_SUBSCRIPTION_POSTFIX }
+                val current = map[d.id]
+                if (current == null) {
+                    map[d.id] = Holder(
+                        obj = d,
+                        subscriptions = depSubs.distinct()
+                    )
+                    added++
+                } else {
+                    map[d.id] = current.copy(
+                        obj = current.obj.amend(d.map),
+                        subscriptions = (current.subscriptions + depSubs).distinct()
+                    )
+                }
             }
+            if (added > 0) atomicSize.addAndGet(added)
         }
     }
 
@@ -126,18 +132,21 @@ class DefaultObjectStore : ObjectStore {
         target: Id,
         diff: Map<Id, Any?>,
         subscriptions: List<Id>
-    ) = mutex.withLock {
-        val current = map[target]
-        if (current != null) {
-            map[target] = current.copy(
-                obj = current.obj.amend(diff),
-                subscriptions = subscriptions
-            )
-        } else {
-            map[target] = Holder(
-                obj = ObjectWrapper.Basic(diff),
-                subscriptions = subscriptions
-            )
+    ) {
+        mutex.withLock {
+            val current = map[target]
+            if (current != null) {
+                map[target] = current.copy(
+                    obj = current.obj.amend(diff),
+                    subscriptions = (current.subscriptions + subscriptions).distinct()
+                )
+            } else {
+                map[target] = Holder(
+                    obj = ObjectWrapper.Basic(diff),
+                    subscriptions = subscriptions.distinct()
+                )
+                atomicSize.incrementAndGet()
+            }
         }
     }
 
@@ -150,7 +159,7 @@ class DefaultObjectStore : ObjectStore {
         if (current != null) {
             map[target] = current.copy(
                 obj = current.obj.unset(keys),
-                subscriptions = subscriptions
+                subscriptions = (current.subscriptions + subscriptions).distinct()
             )
         }
     }
@@ -159,11 +168,22 @@ class DefaultObjectStore : ObjectStore {
         target: Id,
         data: Map<String, Any?>,
         subscriptions: List<Id>
-    ) = mutex.withLock {
-        map[target] = Holder(
-            obj = ObjectWrapper.Basic(data),
-            subscriptions = subscriptions
-        )
+    ) {
+        mutex.withLock {
+            val current = map[target]
+            if (current == null) {
+                map[target] = Holder(
+                    obj = ObjectWrapper.Basic(data),
+                    subscriptions = subscriptions.distinct()
+                )
+                atomicSize.incrementAndGet()
+            } else {
+                map[target] = current.copy(
+                    obj = ObjectWrapper.Basic(data),
+                    subscriptions = (current.subscriptions + subscriptions).distinct()
+                )
+            }
+        }
     }
 
     override suspend fun subscribe(subscription: Id, target: Id) = mutex.withLock {
@@ -191,7 +211,9 @@ class DefaultObjectStore : ObjectStore {
             }
         }
         unsubscribed.forEach { id ->
-            map.remove(id)
+            if (map.remove(id) != null) {
+                atomicSize.decrementAndGet()
+            }
         }
     }
 
@@ -199,7 +221,7 @@ class DefaultObjectStore : ObjectStore {
         val current = map[target]
         if (current != null) {
             if (current.subscriptions.firstOrNull() == subscription) {
-                map.remove(target)
+                if (map.remove(target) != null) atomicSize.decrementAndGet()
             } else {
                 map[target] = current.copy(
                     subscriptions = current.subscriptions.filter { id ->

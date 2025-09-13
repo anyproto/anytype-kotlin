@@ -183,13 +183,6 @@ class OnboardingFragment : Fragment() {
                         navController = navController,
                         backButtonCallback = signUpBackButtonCallback
                     )
-                    PagerIndicator(
-                        pageCount = OnboardingPage.entries.filter { it.visible }.size,
-                        page = currentPage,
-                        onBackClick = {
-                            signUpBackButtonCallback.value?.invoke()
-                        }
-                    )
                 }
             }
             LaunchedEffect(Unit) {
@@ -281,12 +274,11 @@ class OnboardingFragment : Fragment() {
                     // Do nothing
                 }
                 val (spaceId, startingObjectId, profileId) = it.arguments.extractOnboardingParams()
-                if (!spaceId.isNullOrEmpty() && !profileId.isNullOrEmpty()) {
+                if (!spaceId.isNullOrEmpty()) {
                     Mnemonic(
                         mnemonicColorPalette = mnemonicColorPalette,
                         space = spaceId,
                         startingObject = startingObjectId,
-                        profileId = profileId,
                         navController = navController
                     )
                 } else {
@@ -678,7 +670,6 @@ class OnboardingFragment : Fragment() {
         mnemonicColorPalette: List<Color>,
         space: Id,
         startingObject: Id?,
-        profileId: Id,
         navController: NavHostController
     ) {
         val component = componentManager().onboardingMnemonicComponent
@@ -686,10 +677,10 @@ class OnboardingFragment : Fragment() {
         MnemonicPhraseScreenWrapper(
             space = space,
             startingObject = startingObject,
-            profileId = profileId,
             copyMnemonicToClipboard = ::copyMnemonicToClipboard,
             vm = vm,
-            mnemonicColorPalette = mnemonicColorPalette
+            mnemonicColorPalette = mnemonicColorPalette,
+            onBackClicked = { navController.popBackStack() }
         )
         DisposableEffect(Unit) {
             onDispose { component.release() }
@@ -732,14 +723,9 @@ class OnboardingFragment : Fragment() {
                         }
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToSetProfileName -> {
-                        val route = buildSelectProfessionRoute(
-                            spaceId = command.space,
-                            startingObjectId = command.startingObject
-                        )
-                        navController.navigate(route)
                     }
                     is OnboardingMnemonicViewModel.Command.NavigateToAddEmailScreen -> {
-                        val route = buildSelectProfessionRoute(
+                        val route = buildSetEmailRoute(
                             spaceId = command.space,
                             startingObjectId = command.startingObject
                         )
@@ -937,7 +923,7 @@ class OnboardingFragment : Fragment() {
             vm.navigation.collect { navigation ->
                 when (navigation) {
                     is OnboardingStartViewModel.AuthNavigation.ProceedWithSignUp -> {
-                        val route = buildSetEmailRoute(
+                        val route = buildMnemonicRoute(
                             spaceId = navigation.spaceId,
                             startingObjectId = navigation.startingObjectId
                         )
@@ -1140,13 +1126,12 @@ class OnboardingFragment : Fragment() {
         }
     }
 
-    private fun buildMnemonicRoute(spaceId: Id, startingObjectId: Id?, profileId: Id): String {
+    private fun buildMnemonicRoute(spaceId: Id, startingObjectId: Id?): String {
         return buildString {
             append("${OnboardingNavigation.mnemonic}?$ONBOARDING_SPACE_PARAM=$spaceId")
             startingObjectId?.let { 
                 append("&$ONBOARDING_STARTING_OBJECT_PARAM=$it") 
             }
-            append("&$ONBOARDING_PROFILE_PARAM=$profileId")
         }
     }
 

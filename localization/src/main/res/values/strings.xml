@@ -2268,4 +2268,9 @@ Please provide specific details of your needs here.</string>
         <item quantity="other">%d new messages</item>
     </plurals>
 
+    <!-- QR Scanner -->
+    <string name="qr_scanner_preparing">Preparing scanner…</string>
+    <string name="qr_scanner_ready">Ready to scan QR code</string>
+    <string name="qr_scanner_scan_button">Scan QR Code</string>
+
 </resources>

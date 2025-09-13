@@ -1957,6 +1957,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="web_publishing_update">Updaten</string>
     <string name="web_publishing_publish">Publiceer</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Deelnemen</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

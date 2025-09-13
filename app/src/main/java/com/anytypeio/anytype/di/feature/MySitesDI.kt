@@ -22,6 +22,7 @@ import dagger.Module
 )
 @PerDialog
 interface MySitesComponent {
+
     @Component.Factory
     interface Factory {
         fun create(

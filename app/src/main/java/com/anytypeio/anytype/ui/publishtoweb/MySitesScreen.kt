@@ -189,6 +189,13 @@ fun MySitesScreen(
                             }
                         }
                     }
+
+                    if (index < viewState.items.size - 1) {
+                        Divider(
+                            paddingStart = 16.dp,
+                            paddingEnd = 16.dp
+                        )
+                    }
                 }
             }
         }

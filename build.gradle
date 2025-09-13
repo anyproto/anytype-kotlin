@@ -112,9 +112,6 @@ subprojects { sub ->
                     allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") {
                         because("Facebook Shimmer is BSD-licensed")
                     }
-                    allowUrl("https://github.com/journeyapps/zxing-android-embedded/blob/master/COPYING") {
-                        because("ZXing Android Embedded is Apache-2.0 licensed")
-                    }
                     allowUrl("https://www.bouncycastle.org/licence.html") {
                         because("BouncyCastle is MIT-licensed")
                     }

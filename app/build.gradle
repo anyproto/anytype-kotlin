@@ -247,7 +247,13 @@ dependencies {
     implementation libs.shimmerLayout
     implementation libs.photoView
     implementation libs.composeQrCode
-    implementation libs.zxing
+    // CameraX dependencies
+    implementation libs.camerax.core
+    implementation libs.camerax.camera2
+    implementation libs.camerax.lifecycle
+    implementation libs.camerax.view
+    // ML Kit barcode scanning
+    implementation libs.mlkit.barcode
 
     implementation libs.androidxSecurityCrypto
     implementation libs.middleware

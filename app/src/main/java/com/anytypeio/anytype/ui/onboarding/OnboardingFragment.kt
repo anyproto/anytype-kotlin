@@ -1,10 +1,13 @@
 package com.anytypeio.anytype.ui.onboarding
 
+import android.Manifest
+import android.app.Activity
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -53,6 +56,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -107,7 +111,7 @@ import com.google.android.exoplayer2.upstream.DefaultDataSource
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSource
 import com.google.android.exoplayer2.upstream.RawResourceDataSource
 import com.google.android.exoplayer2.util.Util
-import com.google.zxing.integration.android.IntentIntegrator
+import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import timber.log.Timber
@@ -480,9 +484,21 @@ class OnboardingFragment : Fragment() {
         val launcher = rememberLauncherForActivityResult(
             contract = ActivityResultContracts.StartActivityForResult()
         ) { result ->
-            val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
-            if (r != null && r.contents != null) {
-                vm.onGetEntropyFromQRCode(entropy = r.contents)
+            if (result.resultCode == Activity.RESULT_OK) {
+                result.data?.getStringExtra(QrScannerActivity.SCAN_RESULT)?.let { qrCode ->
+                    vm.onGetEntropyFromQRCode(entropy = qrCode)
+                }
+            }
+        }
+
+        val cameraPermissionLauncher = rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { isGranted ->
+            if (isGranted) {
+                proceedWithQrCodeActivity(launcher)
+            } else {
+                // Permission denied, the QrScannerActivity will handle showing appropriate message
+                proceedWithQrCodeActivity(launcher)
             }
         }
         RecoveryScreen(
@@ -571,12 +587,23 @@ class OnboardingFragment : Fragment() {
             }
         }
         if (isQrWarningDialogVisible.value) {
+            val context = LocalContext.current
             BaseAlertDialog(
                 dialogText = stringResource(id = R.string.alert_qr_camera),
                 buttonText = stringResource(id = R.string.alert_qr_camera_ok),
                 onButtonClick = {
                     isQrWarningDialogVisible.value = false
-                    proceedWithQrCodeActivity(launcher)
+                    when {
+                        ContextCompat.checkSelfPermission(
+                            context,
+                            Manifest.permission.CAMERA
+                        ) == PackageManager.PERMISSION_GRANTED -> {
+                            proceedWithQrCodeActivity(launcher)
+                        }
+                        else -> {
+                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
+                        }
+                    }
                 },
                 onDismissRequest = { isQrWarningDialogVisible.value = false }
             )
@@ -603,10 +630,7 @@ class OnboardingFragment : Fragment() {
     private fun proceedWithQrCodeActivity(launcher: ManagedActivityResultLauncher<Intent, ActivityResult>) {
         try {
             launcher.launch(
-                IntentIntegrator
-                    .forSupportFragment(this)
-                    .setBeepEnabled(false)
-                    .createScanIntent()
+                Intent(requireContext(), QrScannerActivity::class.java)
             )
         } catch (e: Exception) {
             toast("Error while scanning QR code")

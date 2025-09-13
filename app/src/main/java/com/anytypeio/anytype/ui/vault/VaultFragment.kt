@@ -46,7 +46,9 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.google.zxing.integration.android.IntentIntegrator
+import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import android.app.Activity
+import android.content.Intent
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -62,15 +64,15 @@ class VaultFragment : BaseComposeFragment() {
     private val qrCodeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
-        if (r != null && r.contents != null) {
-            vm.onQrCodeScanned(qrCode = r.contents)
-        } else {
-            if (r == null) {
-                Timber.w("QR code scan cancelled by user")
-            } else {
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.getStringExtra(QrScannerActivity.SCAN_RESULT)?.let { qrCode ->
+                vm.onQrCodeScanned(qrCode = qrCode)
+            } ?: run {
                 Timber.w("QR code scan failed: no contents found")
+                vm.onQrScannerError()
             }
+        } else {
+            Timber.w("QR code scan cancelled by user")
             vm.onQrScannerError()
         }
     }
@@ -506,10 +508,7 @@ class VaultFragment : BaseComposeFragment() {
     
     private fun launchQrScanner() {
         qrCodeLauncher.launch(
-            IntentIntegrator
-                .forSupportFragment(this)
-                .setBeepEnabled(false)
-                .createScanIntent()
+            Intent(requireContext(), QrScannerActivity::class.java)
         )
     }
 

@@ -46,7 +46,9 @@ javaxInjectVersion = '1'
 gsonVersion = '2.11.0'
 betterLinkMethodVersion = '2.2.0'
 picktVersion = '2.0.5'
-zxingVersion = '4.3.0'
+# CameraX versions
+cameraxVersion = '1.4.1'
+mlkitBarcodeVersion = '17.3.0'
 urlcleanerVersion = '0.4.0'
 katexVersion = '1.0.2'
 robolectricLatestVersion = '4.11.1'
@@ -131,7 +133,13 @@ javaxInject = { module = "javax.inject:javax.inject", version.ref = "javaxInject
 gson = { module = "com.google.code.gson:gson", version.ref = "gsonVersion" }
 timber = { module = "com.jakewharton.timber:timber", version.ref = "timberVersion" }
 pickT = { module = "com.github.HBiSoft:PickiT", version.ref = "picktVersion" }
-zxing = { module = "com.journeyapps:zxing-android-embedded", version.ref = "zxingVersion" }
+# CameraX dependencies
+camerax-core = { module = "androidx.camera:camera-core", version.ref = "cameraxVersion" }
+camerax-camera2 = { module = "androidx.camera:camera-camera2", version.ref = "cameraxVersion" }
+camerax-lifecycle = { module = "androidx.camera:camera-lifecycle", version.ref = "cameraxVersion" }
+camerax-view = { module = "androidx.camera:camera-view", version.ref = "cameraxVersion" }
+# ML Kit barcode scanning
+mlkit-barcode = { module = "com.google.mlkit:barcode-scanning", version.ref = "mlkitBarcodeVersion" }
 urlcleaner = { module = "com.shekhargulati.urlcleaner:urlcleaner", version.ref = "urlcleanerVersion" }
 shimmerLayout = { module = "com.facebook.shimmer:shimmer", version.ref = "shimmerLayoutVersion" }
 archCoreTesting = { module = "androidx.arch.core:core-testing", version.ref = "androidxCoreTestingVersion" }

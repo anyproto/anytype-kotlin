@@ -1,13 +1,11 @@
 package com.anytypeio.anytype.ui.onboarding
 
-import android.Manifest
 import android.app.Activity
 import android.content.ClipData
 import android.content.ClipDescription
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
-import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -56,7 +54,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
@@ -491,17 +488,6 @@ class OnboardingFragment : Fragment() {
             }
         }
 
-        val cameraPermissionLauncher = rememberLauncherForActivityResult(
-            contract = ActivityResultContracts.RequestPermission()
-        ) { isGranted ->
-            if (isGranted) {
-                proceedWithQrCodeActivity(launcher)
-            } else {
-                // Permission denied, show error message instead of launching QR scanner
-                errorText.value = getString(R.string.camera_permission_settings_message)
-                isErrorDialogVisible.value = true
-            }
-        }
         RecoveryScreen(
             onBackClicked = vm::onBackButtonPressed,
             onNextClicked = vm::onLoginClicked,
@@ -594,17 +580,8 @@ class OnboardingFragment : Fragment() {
                 buttonText = stringResource(id = R.string.alert_qr_camera_ok),
                 onButtonClick = {
                     isQrWarningDialogVisible.value = false
-                    when {
-                        ContextCompat.checkSelfPermission(
-                            context,
-                            Manifest.permission.CAMERA
-                        ) == PackageManager.PERMISSION_GRANTED -> {
-                            proceedWithQrCodeActivity(launcher)
-                        }
-                        else -> {
-                            cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-                        }
-                    }
+                    // Google Code Scanner doesn't require camera permission
+                    proceedWithQrCodeActivity(launcher)
                 },
                 onDismissRequest = { isQrWarningDialogVisible.value = false }
             )

@@ -1,95 +1,166 @@
 package com.anytypeio.anytype.ui.qrcode
 
-import android.Manifest
 import android.app.Activity
 import android.content.Intent
-import android.content.pm.PackageManager
-import android.net.Uri
 import android.os.Bundle
-import android.provider.Settings
-import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.appcompat.app.AlertDialog
-import androidx.camera.core.CameraSelector
-import androidx.camera.core.ImageAnalysis
-import androidx.camera.core.ImageProxy
-import androidx.camera.core.Preview
-import androidx.camera.lifecycle.ProcessCameraProvider
-import androidx.camera.view.PreviewView
-import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Button
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalLifecycleOwner
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.core.content.ContextCompat
-import com.google.mlkit.vision.barcode.BarcodeScanner
-import com.google.mlkit.vision.barcode.BarcodeScannerOptions
-import com.google.mlkit.vision.barcode.BarcodeScanning
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.R
+import com.google.android.gms.common.moduleinstall.ModuleInstall
+import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.barcode.common.Barcode
-import com.google.mlkit.vision.common.InputImage
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanner
+import com.google.mlkit.vision.codescanner.GmsBarcodeScannerOptions
+import com.google.mlkit.vision.codescanner.GmsBarcodeScanning
 import timber.log.Timber
 
-@androidx.camera.core.ExperimentalGetImage
 class QrScannerActivity : ComponentActivity() {
 
+    private lateinit var scanner: GmsBarcodeScanner
     private var scanningEnabled = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        if (hasCameraPermission()) {
-            startCamera()
-        } else {
-            // Permission should have been handled by caller, but show fallback
-            showPermissionDeniedDialog()
-        }
-    }
+        val options = GmsBarcodeScannerOptions.Builder()
+            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
+            .enableAutoZoom()
+            .build()
 
-    @androidx.camera.core.ExperimentalGetImage
-    private fun startCamera() {
+        scanner = GmsBarcodeScanning.getClient(this, options)
+
         setContent {
-            CameraPreview(
-                onQrCodeScanned = { value ->
-                    if (scanningEnabled) {
-                        scanningEnabled = false
-                        returnResult(value)
-                    }
-                }
+            QrScannerScreen(
+                onStartScan = { startScanning() },
+                onCancel = { finish() }
             )
         }
     }
 
-    private fun hasCameraPermission() =
-        ContextCompat.checkSelfPermission(
-            this,
-            Manifest.permission.CAMERA
-        ) == PackageManager.PERMISSION_GRANTED
+    @Composable
+    private fun QrScannerScreen(
+        onStartScan: () -> Unit,
+        onCancel: () -> Unit
+    ) {
+        var isLoading by remember { mutableStateOf(false) }
+        var hasModuleInstalled by remember { mutableStateOf(false) }
 
+        LaunchedEffect(Unit) {
+            checkAndInstallModule { installed ->
+                hasModuleInstalled = installed
+                if (installed) {
+                    onStartScan()
+                }
+            }
+        }
 
-    private fun showPermissionDeniedDialog() {
-        AlertDialog.Builder(this)
-            .setTitle("Camera Permission Required")
-            .setMessage("Camera permission is required to scan QR codes. Please enable it in the app settings.")
-            .setPositiveButton("Open Settings") { _, _ ->
-                openAppSettings()
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.Black)
+                .padding(32.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            if (isLoading || !hasModuleInstalled) {
+                CircularProgressIndicator(
+                    modifier = Modifier.size(48.dp),
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Text(
+                    text = stringResource(R.string.qr_scanner_preparing),
+                    color = Color.White,
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
+                )
+            } else {
+                Text(
+                    text = stringResource(R.string.qr_scanner_ready),
+                    color = Color.White,
+                    style = MaterialTheme.typography.headlineSmall,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(onClick = onStartScan) {
+                    Text(stringResource(R.string.qr_scanner_scan_button))
+                }
             }
-            .setNegativeButton("Cancel") { _, _ ->
-                finish()
+
+            Spacer(modifier = Modifier.height(32.dp))
+            Button(onClick = onCancel) {
+                Text(stringResource(R.string.cancel))
             }
-            .setCancelable(false)
-            .show()
+        }
     }
 
-    private fun openAppSettings() {
-        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
-            data = Uri.fromParts("package", packageName, null)
-        }
-        startActivity(intent)
-        finish()
+    private fun checkAndInstallModule(onComplete: (Boolean) -> Unit) {
+        val moduleInstall = ModuleInstall.getClient(this)
+        val moduleInstallRequest = ModuleInstallRequest.newBuilder()
+            .addApi(scanner)
+            .build()
+
+        moduleInstall
+            .installModules(moduleInstallRequest)
+            .addOnSuccessListener {
+                Timber.d("Code scanner module installed successfully")
+                onComplete(true)
+            }
+            .addOnFailureListener { e ->
+                Timber.e(e, "Failed to install code scanner module")
+                onComplete(false)
+                finish()
+            }
+    }
+
+    private fun startScanning() {
+        if (!scanningEnabled) return
+
+        scanner.startScan()
+            .addOnSuccessListener { barcode ->
+                if (scanningEnabled) {
+                    scanningEnabled = false
+                    val rawValue = barcode.rawValue
+                    if (!rawValue.isNullOrBlank()) {
+                        returnResult(rawValue)
+                    } else {
+                        Timber.w("QR code scan failed: empty barcode")
+                        finish()
+                    }
+                }
+            }
+            .addOnCanceledListener {
+                Timber.d("QR code scan cancelled by user")
+                finish()
+            }
+            .addOnFailureListener { e ->
+                Timber.e(e, "QR code scan failed")
+                finish()
+            }
     }
 
     private fun returnResult(qrCode: String) {
@@ -98,111 +169,6 @@ class QrScannerActivity : ComponentActivity() {
         }
         setResult(Activity.RESULT_OK, resultIntent)
         finish()
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        // ML Kit scanner cleanup happens automatically
-    }
-
-    @androidx.camera.core.ExperimentalGetImage
-    @Composable
-    fun CameraPreview(
-        onQrCodeScanned: (String) -> Unit
-    ) {
-        val context = LocalContext.current
-        val lifecycleOwner = LocalLifecycleOwner.current
-
-        DisposableEffect(Unit) {
-            onDispose {
-                // Cleanup if needed
-            }
-        }
-
-        Box(modifier = Modifier.fillMaxSize()) {
-            AndroidView(
-                factory = { ctx ->
-                    PreviewView(ctx).also { pv ->
-                        val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
-                        cameraProviderFuture.addListener({
-                            val cameraProvider = cameraProviderFuture.get()
-
-                            val preview = Preview.Builder().build().also {
-                                it.surfaceProvider = pv.surfaceProvider
-                            }
-
-                            val imageAnalysis = ImageAnalysis.Builder()
-                                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                                .build()
-                                .also {
-                                    it.setAnalyzer(
-                                        ContextCompat.getMainExecutor(ctx), QrAnalyzer(
-                                        onQr = onQrCodeScanned,
-                                        onError = { e ->
-                                            Timber.e(e, "QR analysis error")
-                                        }
-                                    ))
-                                }
-
-                            try {
-                                cameraProvider.unbindAll()
-                                cameraProvider.bindToLifecycle(
-                                    lifecycleOwner,
-                                    CameraSelector.DEFAULT_BACK_CAMERA,
-                                    preview,
-                                    imageAnalysis
-                                )
-                            } catch (exc: Exception) {
-                                Toast.makeText(
-                                    context,
-                                    "Camera initialization error",
-                                    Toast.LENGTH_SHORT
-                                ).show()
-                            }
-                        }, ContextCompat.getMainExecutor(ctx))
-                    }
-                },
-                modifier = Modifier.fillMaxSize()
-            )
-        }
-    }
-
-    @androidx.camera.core.ExperimentalGetImage
-    private class QrAnalyzer(
-        private val onQr: (String) -> Unit,
-        private val onError: (Throwable) -> Unit
-    ) : ImageAnalysis.Analyzer {
-
-        private val options = BarcodeScannerOptions.Builder()
-            .setBarcodeFormats(Barcode.FORMAT_QR_CODE)
-            .build()
-
-        private val scanner: BarcodeScanner = BarcodeScanning.getClient(options)
-
-        @androidx.camera.core.ExperimentalGetImage
-        override fun analyze(imageProxy: ImageProxy) {
-            val mediaImage = imageProxy.image
-            if (mediaImage == null) {
-                imageProxy.close()
-                return
-            }
-
-            val inputImage =
-                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
-
-            scanner.process(inputImage)
-                .addOnSuccessListener { barcodes ->
-                    for (barcode in barcodes) {
-                        val rawValue = barcode.rawValue
-                        if (!rawValue.isNullOrBlank()) {
-                            onQr(rawValue)
-                            break
-                        }
-                    }
-                }
-                .addOnFailureListener { e -> onError(e) }
-                .addOnCompleteListener { imageProxy.close() }
-        }
     }
 
     companion object {

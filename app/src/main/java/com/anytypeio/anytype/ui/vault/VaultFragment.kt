@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.ui.vault
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +10,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -77,15 +74,6 @@ class VaultFragment : BaseComposeFragment() {
         }
     }
     
-    private val cameraPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            launchQrScanner()
-        } else {
-            vm.onShowCameraPermissionSettingsDialog()
-        }
-    }
 
     val onMuteSpace: (String) -> Unit = { spaceTargetId ->
         vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
@@ -493,17 +481,8 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     private fun handleCameraPermissionAndScan() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchQrScanner()
-            }
-            else -> {
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }
+        // Google Code Scanner doesn't require camera permission
+        launchQrScanner()
     }
     
     private fun launchQrScanner() {

@@ -36,13 +36,10 @@ import com.google.mlkit.vision.barcode.BarcodeScannerOptions
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
 
 @androidx.camera.core.ExperimentalGetImage
 class QrScannerActivity : ComponentActivity() {
 
-    private lateinit var cameraExecutor: ExecutorService
     private var scanningEnabled = true
     private var hasRequestedPermission = false
 
@@ -58,15 +55,16 @@ class QrScannerActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        cameraExecutor = Executors.newSingleThreadExecutor()
 
         when {
             hasCameraPermission() -> {
                 startCamera()
             }
+
             shouldShowRequestPermissionRationale(Manifest.permission.CAMERA) -> {
                 showPermissionRationale()
             }
+
             else -> {
                 if (!hasRequestedPermission) {
                     hasRequestedPermission = true
@@ -93,7 +91,10 @@ class QrScannerActivity : ComponentActivity() {
     }
 
     private fun hasCameraPermission() =
-        ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED
+        ContextCompat.checkSelfPermission(
+            this,
+            Manifest.permission.CAMERA
+        ) == PackageManager.PERMISSION_GRANTED
 
     private fun handlePermissionDenied() {
         if (shouldShowRequestPermissionRationale(Manifest.permission.CAMERA)) {
@@ -149,7 +150,6 @@ class QrScannerActivity : ComponentActivity() {
 
     override fun onDestroy() {
         super.onDestroy()
-        cameraExecutor.shutdown()
         // ML Kit scanner cleanup happens automatically
     }
 
@@ -185,7 +185,8 @@ class QrScannerActivity : ComponentActivity() {
                                 .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
                                 .build()
                                 .also {
-                                    it.setAnalyzer(cameraExecutor, QrAnalyzer(
+                                    it.setAnalyzer(
+                                        ContextCompat.getMainExecutor(ctx), QrAnalyzer(
                                         onQr = onQrCodeScanned,
                                         onError = { e ->
                                             // Log error silently
@@ -202,7 +203,11 @@ class QrScannerActivity : ComponentActivity() {
                                     imageAnalysis
                                 )
                             } catch (exc: Exception) {
-                                Toast.makeText(context, "Camera initialization error", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(
+                                    context,
+                                    "Camera initialization error",
+                                    Toast.LENGTH_SHORT
+                                ).show()
                             }
                         }, ContextCompat.getMainExecutor(ctx))
                     }
@@ -232,7 +237,8 @@ class QrScannerActivity : ComponentActivity() {
                 return
             }
 
-            val inputImage = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+            val inputImage =
+                InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
 
             scanner.process(inputImage)
                 .addOnSuccessListener { barcodes ->

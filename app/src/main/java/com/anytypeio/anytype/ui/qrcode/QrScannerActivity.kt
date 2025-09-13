@@ -7,6 +7,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import com.anytypeio.anytype.core_ui.extensions.toast
 import com.google.android.gms.common.moduleinstall.ModuleInstall
 import com.google.android.gms.common.moduleinstall.ModuleInstallRequest
 import com.google.mlkit.vision.barcode.common.Barcode
@@ -66,6 +67,7 @@ class QrScannerActivity : ComponentActivity() {
             }
             .addOnFailureListener { e ->
                 Timber.e(e, "Failed to install code scanner module")
+                toast("Failed to install code scanner module")
                 onComplete(false)
                 finish()
             }
@@ -88,11 +90,13 @@ class QrScannerActivity : ComponentActivity() {
             }
             .addOnCanceledListener {
                 Timber.d("QR code scan cancelled by user")
+                toast("QR code scan cancelled")
                 scanningEnabled = true
                 finish()
             }
             .addOnFailureListener { e ->
                 Timber.e(e, "QR code scan failed")
+                toast("QR code scan failed: ${e.message}")
                 scanningEnabled = true
                 finish()
             }

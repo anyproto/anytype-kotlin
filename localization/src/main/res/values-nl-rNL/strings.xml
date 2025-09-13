@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Groenblauw</string>
     <string name="slash_widget_lime_color_title">Groen</string>
     <string name="slash_widget_background_item">%1$s achtergrond</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Andere</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Andere</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Maak een widget aan</string>
@@ -1000,9 +1026,9 @@
     <string name="type_creation_placeholder">Naam type</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">de alles-app</string>
-    <string name="onboarding_auth_subtitle">Versleuteld, offline\n&amp; openen</string>
-    <string name="onboarding_auth_description">Maak &amp; werk samen in jouw ruimten. Versleuteld, offline &amp;  open.</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"Door verder te gaan, ga je akkoord met "</string>
     <string name="onboarding_terms_and_policy_terms">Voorwaarden\u00A0van\u00A0gebruik</string>
     <string name="onboarding_terms_and_policy_infix">" en "</string>
@@ -1016,25 +1042,29 @@
     <string name="onboarding_void_title">Dit is jouw ruimte</string>
     <string name="onboarding_void_description">Het is een versleutelde locatie voor alles wat je aanmaakt. Alles wordt opgeslagen op jouw apparaat en opgeslagen op het gedistribueerde netwerk.</string>
     <string name="onboarding_this_is_your_key_title">Dit is je herstelsleutel</string>
-    <string name="onboarding_key_description">Het vervangt login en wachtwoord. Houd het veilig - jij beheert jouw gegevens. Je kunt deze sleutel later vinden in de app instellingen.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Toon mijn herstelsleutel</string>
-    <string name="onboarding_tap_to_reveal">Onthul en kopieer</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Overslaan</string>
-    <string name="onboarding_key_not_now">Niet nu</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">Kopieer naar klembord</string>
     <string name="onboarding_soul_creation_placeholder">Anytype identiteit</string>
     <string name="onboarding_soul_creation">Jouw identiteit aan het aanmaken…</string>
-    <string name="onboarding_type_your_key">Typ je herstelsleutel</string>
-    <string name="onboarding_login_or">OF</string>
+    <string name="onboarding_type_your_key">Voer je sleutel in</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR-code</string>
     <string name="onboarding_entering_void_title">De leegte betreden</string>
     <string name="onboarding_your_key_can_t_be_empty">Je herstelsleutel mag niet leeg zijn</string>
     <string name="onboarding_your_name">Type jouw naam</string>
-    <string name="onboarding_mnemonic_read_more">Lees meer</string>
+    <string name="onboarding_mnemonic_read_more">Ontdek meer</string>
     <string name="onboarding_key_additional_info">Je kunt deze herstelsleutel later terugvinden in de app instellingen</string>
-    <string name="onboarding_what_is_the_key">Wat is de herstelsleutel?</string>
-    <string name="onboarding_recovery_phrase_description">Het wordt weergegeven door een herstelzin – 12 willekeurige woorden waarmee je kluis magisch wordt gegenereerd op dit apparaat.</string>
-    <string name="onboarding_recovery_phrase_description_2">Wie de combinatie van deze woorden kent, bezit je kluis.</string>
-    <string name="onboarding_recovery_phrase_description_3">Op dit moment ben jij de enige persoon ter wereld die het weet.</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle computercapaciteit op aarde is niet genoeg om in te breken. Als je het verliest, kan het niet worden hersteld. Bewaar het dus op een veilige plek!</string>
     <string name="onboarding_how_to_save_my_phrase">Hoe bewaar ik mijn herstelsleutel?</string>
     <string name="onboarding_how_to_save_my_phrase_2">De gemakkelijkste manier om je herstelsleutel op te slaan, is door het in je wachtwoordmanager te bewaren.</string>
@@ -1652,7 +1682,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
     <string name="chat_empty_state_title">Deze chat is leeg.</string>
     <string name="chat_empty_state_subtitle">Nodig mensen uit en start het gesprek!</string>
-    <string name="chat_empty_state_share_invite_button">Deel uitnodigingslink</string>
+    <string name="chat_empty_state_share_invite_button">Nodig leden uit</string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>
     <string name="date_layout_empty_items">Er is hier nog niets voor deze datum</string>
@@ -1919,4 +1949,17 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publiceer op het internet</string>
+    <string name="preferences">Voorkeuren</string>
+    <string name="web_publishing_customize_url">Pas URL aan</string>
+    <string name="web_publishing_join_space_button">Neem deel aan ruimte knop</string>
+    <string name="web_publishing_unpublish">Depubliceer</string>
+    <string name="web_publishing_update">Updaten</string>
+    <string name="web_publishing_publish">Publiceer</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Deelnemen</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

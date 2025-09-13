@@ -947,6 +947,32 @@
     <string name="slash_widget_teal_color_title">青緑色</string>
     <string name="slash_widget_lime_color_title">緑色</string>
     <string name="slash_widget_background_item">%1$sの背景</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">その他</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">その他</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">ウィジェットを作成</string>
@@ -998,15 +1024,15 @@
     <string name="type_creation_placeholder">タイプ名</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">あらゆる情報をここに</string>
-    <string name="onboarding_auth_subtitle">暗号化、オフライン、\nそしてオープンに。</string>
-    <string name="onboarding_auth_description">自分だけのデジタル空間で、創作と共同編集を。暗号化、オフライン、そして[オープン](%@)に。</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"続行することで同意したものとみなします。 "</string>
     <string name="onboarding_terms_and_policy_terms">利用規約</string>
     <string name="onboarding_terms_and_policy_infix">"および"</string>
     <string name="onboarding_terms_and_policy_privacy">プライバシーポリシー</string>
     <string name="onboarding_new_vault_button_text">初めて利用する</string>
-    <string name="onboarding_enter_my_vault">次へ</string>
+    <string name="onboarding_enter_my_vault">続行</string>
     <string name="onboarding_have_key_button_text">すでに鍵を持っています</string>
     <string name="onboarding_get_my_key_button_text">自分の鍵を表示する</string>
     <string name="onboarding_invite_code_title">招待コードを入力</string>
@@ -1014,25 +1040,29 @@
     <string name="onboarding_void_title">これは保管庫です。</string>
     <string name="onboarding_void_description">作成したデータはすべて暗号化され、安全に保管されます。データはお使いのデバイス内に保存され、分散ネットワークにバックアップされます。</string>
     <string name="onboarding_this_is_your_key_title">これがあなたの鍵です</string>
-    <string name="onboarding_key_description">これがログインIDとパスワードの代わりとなります。紛失しないよう、ご自身で大切に保管してください。あとでアプリの設定画面から確認できます。</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">鍵を表示</string>
-    <string name="onboarding_tap_to_reveal">鍵を表示してコピー</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">あとで</string>
-    <string name="onboarding_key_not_now">あとで</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">クリップボードにコピー</string>
     <string name="onboarding_soul_creation_placeholder">Anytype ID</string>
     <string name="onboarding_soul_creation">アカウントを作成中…</string>
     <string name="onboarding_type_your_key">鍵を入力してください</string>
-    <string name="onboarding_login_or">または</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QRコード</string>
     <string name="onboarding_entering_void_title">保管庫にログイン中</string>
     <string name="onboarding_your_key_can_t_be_empty">鍵を入力してください</string>
     <string name="onboarding_your_name">表示名を入力</string>
     <string name="onboarding_mnemonic_read_more">さらに詳しく</string>
     <string name="onboarding_key_additional_info">あとでアプリの設定画面から確認できます。</string>
-    <string name="onboarding_what_is_the_key">この鍵とは？</string>
-    <string name="onboarding_recovery_phrase_description">これはリカバリーフレーズと呼ばれるものです。このデバイス上で魔法のように作られた12個のランダムな単語の組み合わせです。</string>
-    <string name="onboarding_recovery_phrase_description_2">この単語の組み合わせを知っている人だけが、保管庫にアクセスすることができます。</string>
-    <string name="onboarding_recovery_phrase_description_3">そして今、この組み合わせを知っているのは世界であなただけです。</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">たとえ地球上のすべての計算リソースを使ったとしてもアクセスできません。もし鍵を紛失した場合、二度と復元することはできません。そのため、絶対に紛失しないようにしてください！</string>
     <string name="onboarding_how_to_save_my_phrase">おすすめの保管方法は？</string>
     <string name="onboarding_how_to_save_my_phrase_2">最も簡単な方法は、パスワードマネージャーを使うことです。</string>
@@ -1640,7 +1670,7 @@
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
     <string name="chat_empty_state_title">まだメッセージがありません。</string>
     <string name="chat_empty_state_subtitle">招待して会話を始めましょう！</string>
-    <string name="chat_empty_state_share_invite_button">招待リンクを共有</string>
+    <string name="chat_empty_state_share_invite_button">メンバーを招待</string>
     <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>
     <string name="date_layout_empty_items">この日付にはまだ何もありません</string>
@@ -1907,4 +1937,16 @@
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Web公開</string>
+    <string name="preferences">環境設定</string>
+    <string name="web_publishing_customize_url">URLをカスタマイズ</string>
+    <string name="web_publishing_join_space_button">スペースへの参加リンク</string>
+    <string name="web_publishing_unpublish">公開停止</string>
+    <string name="web_publishing_update">更新</string>
+    <string name="web_publishing_publish">公開</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">参加</string>
+    <plurals name="notification_messages_count">
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

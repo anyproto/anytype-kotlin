@@ -403,6 +403,7 @@ private fun BaseButtonMembersPreview() {
 @OptIn(FlowPreview::class)
 @Composable
 fun NewSpaceNameInputField(
+    fieldTitle: String = stringResource(id = R.string.name),
     modifier: Modifier = Modifier,
     name: String,
     isEditEnabled: Boolean,
@@ -429,7 +430,7 @@ fun NewSpaceNameInputField(
 
     Column(modifier = modifier) {
         Text(
-            text = stringResource(id = R.string.name),
+            text = fieldTitle,
             style = Caption1Regular.copy(color = colorResource(id = R.color.text_primary)),
             color = colorResource(id = R.color.text_secondary)
         )

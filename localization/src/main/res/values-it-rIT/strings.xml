@@ -23,7 +23,7 @@
     <string name="log_out">Disconnetti</string>
     <string name="pin_code">Codice PIN</string>
     <string name="access">Accesso</string>
-    <string name="wallpaper">Wallpaper</string>
+    <string name="wallpaper">Sfondo</string>
     <string name="tech_info">Informazioni tecniche</string>
     <string name="light">Chiaro</string>
     <string name="dark">Scuro</string>
@@ -55,7 +55,7 @@
     <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
     <string name="you_can_store">Puoi archiviare gratuitamente fino a %1$s di file personali sul nostro nodo di backup crittografato. Se raggiungi il limite, i file verranno archiviati solo localmente.</string>
-    <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri</string>
+    <string name="in_order_to_save">Per risparmiare spazio sul tuo dispositivo locale, puoi liberare tutti i tuoi file trasferendoli al nostro nodo di backup criptato. I file verranno ricaricati quando li apri.</string>
     <string name="manage_files">Gestione file</string>
     <string name="local_storage">Archiviazione locale</string>
     <string name="offload_files">Libera file</string>
@@ -80,7 +80,7 @@
     <string name="option_text_header_two">Titolo 2</string>
     <string name="option_text_header_three">Titolo 3</string>
     <string name="option_text_highlighted">Evidenziato</string>
-    <string name="option_list_checkbox">Casella di scelta</string>
+    <string name="option_list_checkbox">Casella di spunta</string>
     <string name="option_list_bulleted_list">Elenco puntato</string>
     <string name="option_list_numbered_list">Elenco numerato</string>
     <string name="option_list_toggle_list">Lista di caselle di controllo</string>
@@ -147,7 +147,7 @@
     <string name="detail_multiple">Selezione multipla</string>
     <string name="detail_date">Data</string>
     <string name="detail_file">File e Media</string>
-    <string name="detail_checkbox">Casella di scelta</string>
+    <string name="detail_checkbox">Casella di spunta</string>
     <string name="detail_url">URL</string>
     <string name="detail_phone">Telefono</string>
     <string name="add_new">Aggiungi nuovo</string>
@@ -168,7 +168,7 @@
     <string name="hint_quote">Citazione</string>
     <string name="hint_header_two">Titolo</string>
     <string name="hint_header_three">Sottotitolo</string>
-    <string name="hint_checkbox">Casella di scelta</string>
+    <string name="hint_checkbox">Casella di spunta</string>
     <string name="hint_upload_video">Carica un video</string>
     <string name="hint_upload_image">Carica una foto</string>
     <string name="hint_upload_file">Carica un file</string>
@@ -290,7 +290,7 @@
     <string name="relation_format_date">Data</string>
     <string name="relation_format_status">Seleziona</string>
     <string name="relation_format_file">File &amp; Media</string>
-    <string name="relation_format_checkbox">Casella di scelta</string>
+    <string name="relation_format_checkbox">Casella di spunta</string>
     <string name="relation_format_url">URL</string>
     <string name="relation_format_email">Email</string>
     <string name="relation_format_phone">Numero di telefono</string>
@@ -639,7 +639,7 @@
     <string name="pickit_file_selected">File was selected from unknown provider</string>
     <string name="pickit_local_file">Local file was selected</string>
     <string name="pickit_waiting">Waiting to receive file…</string>
-    <string name="profile_wallpaper">Wallpaper</string>
+    <string name="profile_wallpaper">Sfondo</string>
     <string name="content_desc_wallpaper">Wallpaper icon</string>
     <string name="content_desc_key">Keychain icon</string>
     <string name="content_desc_pin">Pin icon</string>
@@ -893,7 +893,7 @@
     <string name="slash_widget_style_highlighted_subtitle">Small section heading</string>
     <string name="slash_widget_style_callout">Richiamo</string>
     <string name="slash_widget_style_callout_subtitle">Testo bordato con icona</string>
-    <string name="slash_widget_style_checkbox">Casella di scelta</string>
+    <string name="slash_widget_style_checkbox">Casella di spunta</string>
     <string name="slash_widget_style_checkbox_subtitle">Create and track task with to-do lsit</string>
     <string name="slash_widget_style_bulleted">Elenco puntato</string>
     <string name="slash_widget_style_bulleted_subtitle">Inizia a scrivere con un testo semplice</string>
@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Ottanio</string>
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s background</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Altro</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Altro</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
@@ -979,9 +1005,9 @@
     <string name="library_title_types">Types</string>
     <string name="library_title_relations">Proprietà</string>
     <string name="library_description_types">Types are like categories that help you group and manage your objects.</string>
-    <string name="library_description_relations">All objects are connected. Use properties to build connections between objects.</string>
+    <string name="library_description_relations">Tutti gli oggetti sono connessi. Usa le proprietà per creare connessioni tra gli oggetti.</string>
     <string name="library_button_create_type">Create a type</string>
-    <string name="library_button_create_relation">Create a property</string>
+    <string name="library_button_create_relation">Crea una proprietà</string>
     <string name="library_subtitle_types">I miei tipi</string>
     <string name="library_subtitle_relations">Le mie proprietà</string>
     <string name="library_subtitle_library">Libreria</string>
@@ -992,23 +1018,23 @@
     <string name="library_relations_empty">There are no types named \'%1$s\'</string>
     <string name="library_type_added">Tipo `%1$s` aggiunto alla tua libreria\"</string>
     <string name="library_type_removed">Tipo `%1$s` rimosso dalla tua libreria\"</string>
-    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">La proprietà `%1$s` è stata aggiunta alla tua libreria.</string>
+    <string name="library_relation_removed">La proprietà `%1$s` è stata rimossa dalla tua libreria.</string>
     <string name="library_something_went_wrong">Qualcosa è andato storto. Riprova nuovamente più tardi.</string>
     <string name="type_creation_new_type">New type</string>
     <string name="type_creation_done">Fatto</string>
     <string name="type_creation_placeholder">Type name</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">Cifrato, offline\n&amp; aperto</string>
-    <string name="onboarding_auth_description">Crea &amp; collabora negli spazi che possiedi. Crittografati, offline &amp; open source.</string>
+    <string name="onboarding_auth_title">Crittografato, locale,</string>
+    <string name="onboarding_auth_subtitle">tuo per sempre</string>
+    <string name="onboarding_auth_description">Crittografato, locale,</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Sono nuovo qui</string>
-    <string name="onboarding_enter_my_vault">Avanti</string>
+    <string name="onboarding_enter_my_vault">Continua</string>
     <string name="onboarding_have_key_button_text">Ho già la chiave</string>
     <string name="onboarding_get_my_key_button_text">Ottieni la mia Chiave</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -1016,25 +1042,29 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Questa è la tua Chiave</string>
-    <string name="onboarding_key_description">Sostituisce login e password. Tienila al sicuro: sei tu a controllare i tuoi dati. Questa chiave è disponibile nelle impostazioni dell\'app.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Mostra la mia Chiave</string>
-    <string name="onboarding_tap_to_reveal">Mostra e copia</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Salta</string>
-    <string name="onboarding_key_not_now">Non ora</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">Copia negli appunti</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Digita la frase di recupero</string>
-    <string name="onboarding_login_or">O</string>
+    <string name="onboarding_type_your_key">Digita la tua chiave</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">Codice QR</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_your_key_can_t_be_empty">La tua Chiave non può essere vuota</string>
     <string name="onboarding_your_name">Scrivi il tuo nome</string>
-    <string name="onboarding_mnemonic_read_more">Leggi altro</string>
+    <string name="onboarding_mnemonic_read_more">Per saperne di più</string>
     <string name="onboarding_key_additional_info">È possibile trovare questa chiave in un secondo momento nelle impostazioni dell\'applicazione</string>
-    <string name="onboarding_what_is_the_key">Cos\'è una Chiave?</string>
-    <string name="onboarding_recovery_phrase_description">È rappresentata da una frase di recupero – 12 parole casuali da cui la tua cassaforte viene magicamente generata su questo dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca la combinazione di queste parole possiede la tua cassaforte.</string>
-    <string name="onboarding_recovery_phrase_description_3">In questo momento, sei l\'unica persona al mondo a conoscerla.</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">Tutte le risorse di calcolo presenti sulla Terra non sono sufficienti per irrompere. Se la perdi, non può essere recuperata. Quindi, conservala in un posto sicuro!</string>
     <string name="onboarding_how_to_save_my_phrase">Come salvare la mia Chiave?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per conservare la tua Chiave è salvarla nel tuo gestore di password.</string>
@@ -1186,7 +1216,7 @@
     <string name="multiplayer_qr_invite_link_menu">Mostra codice QR</string>
     <string name="multiplayer_share_invite_link_description">Condividi questo link di invito in modo che altri possano unirsi al tuo Spazio. Una volta che cliccano sul tuo link e richiedono l\'accesso, puoi impostare i loro diritti di accesso.</string>
     <string name="multiplayer_invite_link">Link di invito</string>
-    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_invite_link_access">Indirizzo d\'invito per l\'accesso</string>
     <string name="multiplayer_link_disabled">Link disabilitato</string>
     <string name="multiplayer_link_disabled_desc">Solo i membri già invitati hanno accesso</string>
     <string name="multiplayer_editor_access">Accesso editor</string>
@@ -1196,13 +1226,13 @@
     <string name="multiplayer_request_access">Richiesta di accesso</string>
     <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
     <string name="multiplayer_qr_code">Codice QR</string>
-    <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
-    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
-    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
-    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
-    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
-    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_change_access_title">Modificare l\'accesso al link di invito?</string>
+    <string name="multiplayer_link_will_be_invalidated">Il link attuale smetterà di funzionare.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">Se si disattiva la condivisione o si passa all\'approvazione manuale, il link esistente viene disattivato. Se lo si riattiva, ne verrà creato uno nuovo.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Chiunque abbia il link potrà modificare il contenuto dello spazio.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Chiunque abbia il link potrà solo visualizzare il contenuto dello spazio.</string>
+    <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
+    <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
@@ -1463,7 +1493,7 @@ Please provide specific details of your needs here.</string>
     <string name="membership_email_wrong_format">L\'email ha un formato errato</string>
     <string name="membership_email_already_verified">Indirizzo email già verificato</string>
     <string name="membership_email_already_sent">Email già inviata, riprova dopo 1 minuto</string>
-    <string name="membership_email_failed_to_send">Email failed to send</string>
+    <string name="membership_email_failed_to_send">Invio e-mail non riuscito</string>
     <string name="membership_email_membership_already_exists">Membership already exists</string>
     <string name="membership_email_code_expired">Codice scaduto</string>
     <string name="membership_email_code_wrong">Il codice è errato</string>
@@ -1594,7 +1624,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_title_all_content">Tutti gli Oggetti</string>
     <string name="all_content_title_only_unlinked">Solo non collegati</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
-    <string name="all_content_view_bin">View Bin</string>
+    <string name="all_content_view_bin">Vedi Cestino</string>
     <string name="all_content_title_tab_pages">Pagine</string>
     <string name="all_content_title_tab_lists">Liste</string>
     <string name="all_content_title_tab_media">Multimedia</string>
@@ -1653,7 +1683,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
     <string name="chat_empty_state_title">Questa chat è vuota.</string>
     <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
-    <string name="chat_empty_state_share_invite_button">Condividi il link di invito</string>
+    <string name="chat_empty_state_share_invite_button">Invita membri</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
     <string name="date_layout_mentioned_in">Menzioni</string>
     <string name="date_layout_empty_items">Non c\'è ancora nulla per questa data</string>
@@ -1781,7 +1811,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_members_button_members">Membri</string>
     <string name="space_settings_types_button">Tipi di Oggetto</string>
     <string name="space_settings_default_type_button">Tipo di Oggetto predefinito</string>
-    <string name="space_settings_wallpaper_button">Wallpaper</string>
+    <string name="space_settings_wallpaper_button">Sfondo</string>
     <string name="space_settings_storage_button">Spazio di archiviazione remoto</string>
     <string name="space_settings_space_info_button">Informazioni sullo spazio</string>
     <string name="space_settings_delete_space_button">Elimina Spazio</string>
@@ -1831,7 +1861,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_conflict_menu_item_title">Risolvi il conflitto di layout</string>
     <string name="widget_source_suggested">Suggerito</string>
     <string name="widgets_empty_state_message">Non ci sono ancora widget</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
+    <string name="space_settings_auto_create_widgets">Creazione Automatica Widgets</string>
     <string name="space_types_screen_title">Object types</string>
     <string name="space_types_screen_section_my_types">I miei Tipi</string>
     <string name="space_types_screen_section_system_types">Tipi Di Sistema</string>
@@ -1914,10 +1944,23 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_not_shareable">Sembra che lo spazio non sia più condiviso. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
     <string name="share_space_error_request_failed">Ops! La richiesta è fallita. Controlla la tua connessione Internet e prova di nuovo.</string>
     <string name="share_space_error_space_deleted">Sembra che lo spazio sia stato eliminato. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
-    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
-    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_generic">Si è verificato un errore inatteso: %1$s. Riprovare più tardi.</string>
+    <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
+    <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Pubblica sul Web</string>
+    <string name="preferences">Preferenze</string>
+    <string name="web_publishing_customize_url">Personalizza URL</string>
+    <string name="web_publishing_join_space_button">Pulsante Unisciti allo Spazio</string>
+    <string name="web_publishing_unpublish">Annulla pubblicazione</string>
+    <string name="web_publishing_update">Aggiorna</string>
+    <string name="web_publishing_publish">Pubblica</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Unisciti</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

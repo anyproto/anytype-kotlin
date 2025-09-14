@@ -21,7 +21,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -59,22 +62,98 @@ import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
+import timber.log.Timber
 
 @Composable
-private fun ImageViewer(
-    url: String,
-    showToolbar: Boolean = true,
+fun ImageGallery(
+    urls: List<String>,
+    initialPage: Int = 0,
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
+) {
+    val pagerState = rememberPagerState(initialPage = initialPage) { urls.size }
+    var chromeVisible by remember { mutableStateOf(true) }
+
+    // Reset chrome on page change if you like (optional)
+    LaunchedEffect(pagerState.settledPage) {
+        chromeVisible = true
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+
+            val url = urls[page]
+
+            ImageViewer(
+                url = url,
+                onClick = {
+                    chromeVisible = !chromeVisible
+                    Timber.d("onClick, chrome visible: $chromeVisible")
+                },
+            )
+        }
+
+        // Page counter chip (top-center)
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit = fadeOut(),
+            modifier = Modifier.align(Alignment.TopCenter)
+        ) {
+            Box(
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.navigation_panel),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+            ) {
+                Text(
+                    text = "${pagerState.settledPage + 1}/${urls.size}",
+                    style = Caption1Medium,
+                    color = Color.White
+                )
+            }
+        }
+
+        if (chromeVisible) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp)
+            ) {
+                MediaActionToolbar(
+                    modifier = Modifier.padding(bottom = 32.dp),
+                    onBackClick = onBackClick,
+                    onDownloadClick = onDownloadClick,
+                    onOpenClick = onOpenClick,
+                    onDeleteClick = onDeleteClick
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun ImageViewer(
+    url: String,
+    onClick: () -> Unit = {}
 ) {
 
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         ZoomableAsyncImage(
             model = ImageRequest.Builder(context)
                 .data(url)
@@ -95,8 +174,12 @@ private fun ImageViewer(
                 )
                 .build(),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize(),
+            onClick = {
+                onClick()
+            }
         )
 
         when {
@@ -119,25 +202,8 @@ private fun ImageViewer(
                 )
             }
         }
-
-        if (showToolbar && !hasError) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp) // or .systemBarsPadding() if you prefer
-            ) {
-                MediaActionToolbar(
-                    modifier = Modifier.padding(bottom = 32.dp),
-                    onBackClick = onBackClick,
-                    onDownloadClick = onDownloadClick,
-                    onOpenClick = onOpenClick,
-                    onDeleteClick = onDeleteClick
-                )
-            }
-        }
     }
 }
-
 
 @Composable
 fun AudioPlayerBox(
@@ -165,11 +231,18 @@ fun VideoPlayerBox(
 
 @Composable
 fun ImageBox(
-    url: String
+    url: String,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onOpenClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ImageViewer(
-            url = url
+//        ImageViewer(
+//            url = url
+//        )
+        ImageGallery(
+            urls = listOf(url, url, url)
         )
     }
 }

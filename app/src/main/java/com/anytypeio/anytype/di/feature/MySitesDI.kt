@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
 import com.anytypeio.anytype.ui.publishtoweb.MySitesFragment
 import dagger.Binds
@@ -51,4 +52,5 @@ interface MySitesDependencies : ComponentDependencies {
     fun auth(): AuthRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun urlBuilder(): UrlBuilder
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

@@ -6,10 +6,12 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.publishing.GetWebPublishingList
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
@@ -17,11 +19,18 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.splash.SplashViewModel.Companion.SPACE_LOADING_TIMEOUT
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import javax.inject.Inject
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.firstOrNull
+import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 import timber.log.Timber
 
 class MySitesViewModel(
@@ -29,7 +38,7 @@ class MySitesViewModel(
     private val getWebPublishingList: GetWebPublishingList,
     private val getPublishingDomain: GetPublishingDomain,
     private val removePublishing: RemovePublishing,
-    private val searchObjects: SearchObjects,
+    private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
     private val _viewState = MutableStateFlow<MySitesViewState>(MySitesViewState.Init)
@@ -108,7 +117,20 @@ class MySitesViewModel(
     fun onOpenObject(item: MySitesViewState.Item) {
         Timber.d("MySites onOpenObject: ${item.name}")
         viewModelScope.launch {
-            commands.emit(Command.OpenObject(objectId = item.obj, spaceId = item.space))
+            val target = item.obj
+            val view = awaitActiveSpaceView(item.space)
+            if (view != null) {
+                val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                commands.emit(
+                    Command.OpenObject(
+                        objectId = item.obj,
+                        spaceId = item.space,
+                        chatId = chatId
+                    )
+                )
+            } else {
+
+            }
         }
     }
 
@@ -129,12 +151,30 @@ class MySitesViewModel(
         }
     }
 
+    private suspend fun awaitActiveSpaceView(space: SpaceId) = withTimeoutOrNull(
+        SPACE_LOADING_TIMEOUT
+    ) {
+        spaceViews
+            .observe(space)
+            .onEach { view ->
+                Timber.i(
+                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}"
+                )
+            }
+            .filter { view -> view.isActive }
+            .take(1)
+            .catch {
+                Timber.w(it, "Error while observing space view for ${space.id}")
+            }
+            .firstOrNull()
+    }
+
     class Factory @Inject constructor(
         private val params: VmParams,
         private val getWebPublishingList: GetWebPublishingList,
         private val getPublishingDomain: GetPublishingDomain,
         private val removePublishing: RemovePublishing,
-        private val searchObjects: SearchObjects,
+        private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -144,7 +184,7 @@ class MySitesViewModel(
                 getWebPublishingList = getWebPublishingList,
                 getPublishingDomain = getPublishingDomain,
                 removePublishing = removePublishing,
-                searchObjects = searchObjects,
+                spaceViews = spaceViews,
                 urlBuilder = urlBuilder
             ) as T
         }
@@ -154,7 +194,7 @@ class MySitesViewModel(
 
     sealed class Command {
         data class Browse(val url: String) : Command()
-        data class OpenObject(val objectId: Id, val spaceId: SpaceId) : Command()
+        data class OpenObject(val objectId: Id, val spaceId: SpaceId, val chatId: Id?) : Command()
         data class ShowToast(val message: String) : Command()
         data class CopyToClipboard(val text: String) : Command()
     }

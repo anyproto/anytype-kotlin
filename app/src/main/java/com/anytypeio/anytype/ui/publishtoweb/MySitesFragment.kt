@@ -16,6 +16,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.arg
+import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
@@ -53,16 +55,16 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
                             Timber.d("MySites New command: $command")
                             when (command) {
                                 is MySitesViewModel.Command.ShowToast -> {
-                                    // TODO: Show toast message
-                                    Timber.d("ShowToast: ${command.message}")
+                                    context.toast(command.message)
                                 }
                                 is MySitesViewModel.Command.CopyToClipboard -> {
                                     clipboardManager.setText(AnnotatedString(command.text))
-                                    Timber.d("CopyToClipboard: ${command.text}")
                                 }
                                 is MySitesViewModel.Command.Browse -> {
-                                    // TODO: Open browser with URL
-                                    Timber.d("Browse: ${command.url}")
+                                    ActivityCustomTabsHelper.openUrl(
+                                        activity = requireActivity(),
+                                        url = command.url
+                                    )
                                 }
                                 is MySitesViewModel.Command.OpenObject -> {
                                     // TODO: Open object editor

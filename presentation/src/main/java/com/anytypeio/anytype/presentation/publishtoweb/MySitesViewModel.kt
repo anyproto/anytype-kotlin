@@ -80,7 +80,6 @@ class MySitesViewModel(
                 if (domain != null) {
                     val fullUrl = buildUrl(domain = domain, uri = item.uri)
                     commands.emit(Command.CopyToClipboard(fullUrl))
-                    commands.emit(Command.ShowToast("Web link copied to clipboard"))
                 }
             }
         }

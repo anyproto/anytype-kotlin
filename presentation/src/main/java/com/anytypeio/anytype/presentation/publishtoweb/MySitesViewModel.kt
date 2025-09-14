@@ -128,7 +128,7 @@ class MySitesViewModel(
                     )
                 )
             } else {
-                // TODO in the next PR
+                commands.emit(Command.ShowToast("Failed to find space for this object"))
             }
         }
     }

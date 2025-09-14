@@ -13,24 +13,28 @@ import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
 import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
+import java.util.ArrayList
 import timber.log.Timber
 
 class MediaActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        
-        val url = intent.getStringExtra(EXTRA_URL)
+        val urls = intent
+            .getStringArrayListExtra(EXTRA_URL)
+            ?.toList()
+            .orEmpty()
         val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
         
-        if (url == null || mediaType == TYPE_UNKNOWN) {
+        if (urls.isEmpty() || mediaType == TYPE_UNKNOWN) {
+            Timber.e("Invalid intent, urls: $urls")
             finish()
             return
         }
 
         if (BuildConfig.DEBUG) {
-            Timber.d("Media player for url: $url")
+            Timber.d("Media player for urls: $urls")
         }
 
         setContent {
@@ -39,9 +43,9 @@ class MediaActivity : ComponentActivity() {
                 color = Color.Black
             ) {
                 when(mediaType) {
-                    TYPE_VIDEO -> VideoPlayerBox(url = url)
+                    TYPE_VIDEO -> VideoPlayerBox(url = urls.first())
                     TYPE_IMAGE -> ImageGalleryBox(
-                        urls = listOf(url),
+                        urls = urls.toList(),
                         onBackClick = {
                             finish()
                         },
@@ -58,7 +62,7 @@ class MediaActivity : ComponentActivity() {
                     TYPE_AUDIO -> {
                         AudioPlayerBox(
                             name = name.orEmpty(),
-                            url = url
+                            url = urls.first()
                         )
                     }
                 }
@@ -83,7 +87,22 @@ class MediaActivity : ComponentActivity() {
             name: String? = null
         ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
-                putExtra(EXTRA_URL, url)
+                putStringArrayListExtra(EXTRA_URL, arrayListOf(url))
+                putExtra(EXTRA_MEDIA_TYPE, mediaType)
+                putExtra(EXTRA_MEDIA_NAME, name)
+                addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
+            }
+            context.startActivity(intent)
+        }
+
+        fun start(
+            context: Context,
+            urls: List<String>,
+            mediaType: Int,
+            name: String? = null
+        ) {
+            val intent = Intent(context, MediaActivity::class.java).apply {
+                putStringArrayListExtra(EXTRA_URL, ArrayList(urls))
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)

@@ -56,7 +56,7 @@ class MySitesViewModel(
         getWebPublishingList.async(
             params = GetWebPublishingList.Params(space = null)
         ).onFailure {
-
+            Timber.e(it, "Failed to load web publishing list")
         }.onSuccess { result ->
             _viewState.value = MySitesViewState.Content(
                 result.map { data ->

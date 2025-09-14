@@ -83,7 +83,7 @@ class MySitesViewModel(
             getPublishingDomain.async(
                 params = GetPublishingDomain.Params(space = item.space)
             ).onFailure { error ->
-                Timber.e(error, "Failed to get publishing domain for: ${item.name}")
+                Timber.e(error, "Failed to get publishing domain for: ${item.obj}")
                 commands.emit(Command.ShowToast("Failed to copy link: ${error.message}"))
             }.onSuccess { domain ->
                 if (domain != null) {
@@ -95,7 +95,7 @@ class MySitesViewModel(
     }
 
     fun onUnpublishClicked(item: MySitesViewState.Item) {
-        Timber.d("MySites onUnpublishClicked: ${item.name}")
+        Timber.d("MySites onUnpublishClicked: ${item.obj}")
         viewModelScope.launch {
             removePublishing.async(
                 params = RemovePublishing.Params(
@@ -115,9 +115,8 @@ class MySitesViewModel(
     }
 
     fun onOpenObject(item: MySitesViewState.Item) {
-        Timber.d("MySites onOpenObject: ${item.name}")
+        Timber.d("MySites onOpenObject: ${item.obj}")
         viewModelScope.launch {
-            val target = item.obj
             val view = awaitActiveSpaceView(item.space)
             if (view != null) {
                 val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
@@ -129,18 +128,18 @@ class MySitesViewModel(
                     )
                 )
             } else {
-
+                // TODO in the next PR
             }
         }
     }
 
     fun onOpenInBrowser(item: MySitesViewState.Item) {
-        Timber.d("MySites onOpenInBrowser: ${item.name}")
+        Timber.d("MySites onOpenInBrowser: ${item.obj}")
         viewModelScope.launch {
             getPublishingDomain.async(
                 params = GetPublishingDomain.Params(space = item.space)
             ).onFailure { error ->
-                Timber.e(error, "Failed to get publishing domain for: ${item.name}")
+                Timber.e(error, "Failed to get publishing domain for: ${item.obj}")
                 commands.emit(Command.ShowToast("Failed to open in browser: ${error.message}"))
             }.onSuccess { domain ->
                 if (domain != null) {

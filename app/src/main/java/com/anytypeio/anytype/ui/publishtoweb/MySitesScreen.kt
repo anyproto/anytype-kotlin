@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.publishtoweb
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -71,11 +72,23 @@ fun MySitesScreen(
                     items = viewState.items,
                     key = { _, item -> item.timestamp },
                 ) { index, item ->
+
+                    var showDropdownMenu by remember { mutableStateOf(false) }
+
                     Row(
                         modifier = Modifier
+                            .combinedClickable(
+                                onClick = {
+                                    onOpenInBrowserClicked(item)
+                                },
+                                onLongClick = {
+                                    showDropdownMenu = true
+                                }
+                            )
                             .padding(horizontal = 16.dp)
                             .fillMaxWidth()
-                            .height(72.dp),
+                            .height(72.dp)
+                        ,
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         ListWidgetObjectIcon(
@@ -103,8 +116,6 @@ fun MySitesScreen(
                         }
 
                         Spacer(modifier = Modifier.width(12.dp))
-
-                        var showDropdownMenu by remember { mutableStateOf(false) }
 
                         Box {
                             Image(

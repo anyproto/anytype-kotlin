@@ -149,7 +149,7 @@ fun MySitesScreen(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                text = "View Object",
+                                                text = stringResource(R.string.web_publishing_view_object),
                                                 color = colorResource(id = R.color.text_primary),
                                                 modifier = Modifier.padding(end = 64.dp)
                                             )
@@ -163,7 +163,7 @@ fun MySitesScreen(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                text = "Open in Browser",
+                                                text = stringResource(R.string.web_publishing_open_in_browser),
                                                 color = colorResource(id = R.color.text_primary),
                                                 modifier = Modifier.padding(end = 64.dp)
                                             )
@@ -177,7 +177,7 @@ fun MySitesScreen(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                text = "Copy Web Link",
+                                                text = stringResource(R.string.web_publishing_copy_web_link),
                                                 color = colorResource(id = R.color.text_primary),
                                                 modifier = Modifier.padding(end = 64.dp)
                                             )
@@ -191,7 +191,7 @@ fun MySitesScreen(
                                     DropdownMenuItem(
                                         text = {
                                             Text(
-                                                text = "Unpublish",
+                                                text = stringResource(R.string.web_publishing_unpublish),
                                                 color = colorResource(id = R.color.palette_system_red),
                                                 modifier = Modifier.padding(end = 64.dp)
                                             )

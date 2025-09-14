@@ -100,7 +100,7 @@ fun ImageGallery(
 
         // Page counter chip (top-center)
         AnimatedVisibility(
-            visible = chromeVisible,
+            visible = true,
             enter = fadeIn(),
             exit = fadeOut(),
             modifier = Modifier.align(Alignment.TopCenter)

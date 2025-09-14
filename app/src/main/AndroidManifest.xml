@@ -131,10 +131,10 @@
             android:windowSoftInputMode="adjustResize">
         </activity>
         <activity
-            android:name="com.journeyapps.barcodescanner.CaptureActivity"
+            android:name=".ui.qrcode.QrScannerActivity"
             android:exported="false"
-            android:screenOrientation="fullSensor"
-            tools:replace="screenOrientation" />
+            android:screenOrientation="portrait"
+            android:theme="@style/AppTheme" />
         <activity
             android:name=".ui.media.MediaActivity"
             android:configChanges="orientation|screenSize"

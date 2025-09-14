@@ -1,7 +1,5 @@
 package com.anytypeio.anytype.ui.vault
 
-import android.Manifest
-import android.content.pm.PackageManager
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -12,7 +10,6 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.res.stringResource
-import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -46,7 +43,9 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.google.zxing.integration.android.IntentIntegrator
+import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
+import android.app.Activity
+import android.content.Intent
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -62,28 +61,19 @@ class VaultFragment : BaseComposeFragment() {
     private val qrCodeLauncher = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult()
     ) { result ->
-        val r = IntentIntegrator.parseActivityResult(result.resultCode, result.data)
-        if (r != null && r.contents != null) {
-            vm.onQrCodeScanned(qrCode = r.contents)
-        } else {
-            if (r == null) {
-                Timber.w("QR code scan cancelled by user")
-            } else {
+        if (result.resultCode == Activity.RESULT_OK) {
+            result.data?.getStringExtra(QrScannerActivity.SCAN_RESULT)?.let { qrCode ->
+                vm.onQrCodeScanned(qrCode = qrCode)
+            } ?: run {
                 Timber.w("QR code scan failed: no contents found")
+                vm.onQrScannerError()
             }
+        } else {
+            Timber.w("QR code scan cancelled by user")
             vm.onQrScannerError()
         }
     }
     
-    private val cameraPermissionLauncher = registerForActivityResult(
-        ActivityResultContracts.RequestPermission()
-    ) { isGranted: Boolean ->
-        if (isGranted) {
-            launchQrScanner()
-        } else {
-            vm.onShowCameraPermissionSettingsDialog()
-        }
-    }
 
     val onMuteSpace: (String) -> Unit = { spaceTargetId ->
         vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
@@ -491,25 +481,13 @@ class VaultFragment : BaseComposeFragment() {
     }
 
     private fun handleCameraPermissionAndScan() {
-        when {
-            ContextCompat.checkSelfPermission(
-                requireContext(),
-                Manifest.permission.CAMERA
-            ) == PackageManager.PERMISSION_GRANTED -> {
-                launchQrScanner()
-            }
-            else -> {
-                cameraPermissionLauncher.launch(Manifest.permission.CAMERA)
-            }
-        }
+        // Google Code Scanner doesn't require camera permission
+        launchQrScanner()
     }
     
     private fun launchQrScanner() {
         qrCodeLauncher.launch(
-            IntentIntegrator
-                .forSupportFragment(this)
-                .setBeepEnabled(false)
-                .createScanIntent()
+            Intent(requireContext(), QrScannerActivity::class.java)
         )
     }
 

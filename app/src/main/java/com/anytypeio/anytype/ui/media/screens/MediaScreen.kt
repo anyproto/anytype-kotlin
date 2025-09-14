@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -76,7 +77,6 @@ fun ImageGallery(
     val pagerState = rememberPagerState(initialPage = initialPage) { urls.size }
     var chromeVisible by remember { mutableStateOf(true) }
 
-    // Reset chrome on page change if you like (optional)
     LaunchedEffect(pagerState.settledPage) {
         chromeVisible = true
     }
@@ -99,43 +99,46 @@ fun ImageGallery(
         }
 
         // Page counter chip (top-center)
-        AnimatedVisibility(
-            visible = true,
-            enter = fadeIn(),
-            exit = fadeOut(),
-            modifier = Modifier.align(Alignment.TopCenter)
-        ) {
-            Box(
-                modifier = Modifier
-                    .padding(top = 16.dp)
-                    .background(
-                        color = colorResource(R.color.navigation_panel),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(horizontal = 12.dp, vertical = 6.dp)
+
+        if (urls.size > 1) {
+            AnimatedVisibility(
+                visible = chromeVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.TopCenter)
             ) {
-                Text(
-                    text = "${pagerState.settledPage + 1}/${urls.size}",
-                    style = Caption1Medium,
-                    color = Color.White
-                )
+                Box(
+                    modifier = Modifier
+                        .systemBarsPadding()
+                        .padding(top = 48.dp)
+                        .background(
+                            color = colorResource(R.color.home_screen_toolbar_button),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "${pagerState.settledPage + 1}/${urls.size}",
+                        style = Caption1Medium,
+                        color = colorResource(R.color.glyph_active)
+                    )
+                }
             }
         }
 
-        if (chromeVisible) {
-            Box(
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .padding(bottom = 24.dp)
-            ) {
-                MediaActionToolbar(
-                    modifier = Modifier.padding(bottom = 32.dp),
-                    onBackClick = onBackClick,
-                    onDownloadClick = onDownloadClick,
-                    onOpenClick = onOpenClick,
-                    onDeleteClick = onDeleteClick
-                )
-            }
+        // Toolbar
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit  = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+        ) {
+            MediaActionToolbar(
+                modifier = Modifier.padding(bottom = 32.dp),
+                onBackClick = onBackClick
+            )
         }
     }
 }
@@ -230,19 +233,20 @@ fun VideoPlayerBox(
 }
 
 @Composable
-fun ImageBox(
-    url: String,
+fun ImageGalleryBox(
+    urls: List<String> =  emptyList(),
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-//        ImageViewer(
-//            url = url
-//        )
         ImageGallery(
-            urls = listOf(url, url, url)
+            urls = urls,
+            onBackClick = onBackClick,
+            onDownloadClick = onDownloadClick,
+            onDeleteClick = onDeleteClick,
+            onOpenClick = onOpenClick
         )
     }
 }

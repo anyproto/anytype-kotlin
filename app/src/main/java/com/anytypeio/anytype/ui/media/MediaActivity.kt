@@ -2,7 +2,6 @@ package com.anytypeio.anytype.ui.media
 
 import android.content.Context
 import android.content.Intent
-import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -12,7 +11,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
-import com.anytypeio.anytype.ui.media.screens.ImageBox
+import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
 import timber.log.Timber
 
@@ -41,7 +40,21 @@ class MediaActivity : ComponentActivity() {
             ) {
                 when(mediaType) {
                     TYPE_VIDEO -> VideoPlayerBox(url = url)
-                    TYPE_IMAGE -> ImageBox(url = url)
+                    TYPE_IMAGE -> ImageGalleryBox(
+                        urls = listOf(url),
+                        onBackClick = {
+                            finish()
+                        },
+                        onOpenClick = {
+                            // TODO
+                        },
+                        onDownloadClick = {
+                            // TODO
+                        },
+                        onDeleteClick = {
+                            // TODO
+                        }
+                    )
                     TYPE_AUDIO -> {
                         AudioPlayerBox(
                             name = name.orEmpty(),

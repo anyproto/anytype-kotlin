@@ -1186,6 +1186,10 @@ class BlockDataRepository(
         return remote.publishingGetStatus(command)
     }
 
+    override suspend fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State> {
+        return remote.publishingGetList(command)
+    }
+
     override suspend fun publishingCreate(command: Command.Publishing.Create): String {
         return remote.publishingCreate(command)
     }

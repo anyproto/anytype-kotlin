@@ -34,6 +34,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -213,7 +214,10 @@ fun MySitesScreenPreview() {
                         name = "Name",
                         size = "Size",
                         timestamp = "Timestamp",
-                        icon = ObjectIcon.None
+                        icon = ObjectIcon.None,
+                        space = SpaceId(""),
+                        obj = "",
+                        uri = "some uri"
                     )
                 )
             )

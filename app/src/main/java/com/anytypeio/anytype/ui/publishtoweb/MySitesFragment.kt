@@ -8,6 +8,8 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.platform.LocalClipboardManager
+import androidx.compose.ui.text.AnnotatedString
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -37,13 +39,36 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 MaterialTheme(typography = typography) {
+                    val clipboardManager = LocalClipboardManager.current
+                    
                     MySitesScreen(
-                        viewState = vm.viewState.collectAsStateWithLifecycle().value
+                        viewState = vm.viewState.collectAsStateWithLifecycle().value,
+                        onViewObjectClicked = vm::onOpenObject,
+                        onOpenInBrowserClicked = vm::onOpenInBrowser,
+                        onCopyWebLinkClicked = vm::onCopyWebLink,
+                        onUnpublishClicked = vm::onUnpublishClicked
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->
                             Timber.d("MySites New command: $command")
-                            // TODO: Handle commands when needed
+                            when (command) {
+                                is MySitesViewModel.Command.ShowToast -> {
+                                    // TODO: Show toast message
+                                    Timber.d("ShowToast: ${command.message}")
+                                }
+                                is MySitesViewModel.Command.CopyToClipboard -> {
+                                    clipboardManager.setText(AnnotatedString(command.text))
+                                    Timber.d("CopyToClipboard: ${command.text}")
+                                }
+                                is MySitesViewModel.Command.Browse -> {
+                                    // TODO: Open browser with URL
+                                    Timber.d("Browse: ${command.url}")
+                                }
+                                is MySitesViewModel.Command.OpenObject -> {
+                                    // TODO: Open object editor
+                                    Timber.d("OpenObject: ${command.objectId} in space ${command.spaceId}")
+                                }
+                            }
                         }
                     }
                 }

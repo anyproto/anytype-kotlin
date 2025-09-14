@@ -61,7 +61,14 @@ import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 
 @Composable
-private fun ImageViewer(url: String) {
+private fun ImageViewer(
+    url: String,
+    showToolbar: Boolean = true,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: () -> Unit = {},
+    onOpenClick: () -> Unit = {},
+    onDeleteClick: () -> Unit = {}
+) {
 
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }
@@ -109,6 +116,22 @@ private fun ImageViewer(url: String) {
                     color = colorResource(R.color.palette_system_red),
                     modifier = Modifier.align(Alignment.Center),
                     style = Caption1Medium
+                )
+            }
+        }
+
+        if (showToolbar && !hasError) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 24.dp) // or .systemBarsPadding() if you prefer
+            ) {
+                MediaActionToolbar(
+                    modifier = Modifier.padding(bottom = 32.dp),
+                    onBackClick = onBackClick,
+                    onDownloadClick = onDownloadClick,
+                    onOpenClick = onOpenClick,
+                    onDeleteClick = onDeleteClick
                 )
             }
         }

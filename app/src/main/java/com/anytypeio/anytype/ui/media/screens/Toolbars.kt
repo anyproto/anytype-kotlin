@@ -21,16 +21,17 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 
 @Composable
 fun MediaActionToolbar(
+    modifier: Modifier = Modifier,
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
     Row(
-        modifier = Modifier
+        modifier = modifier
             .height(52.dp)
             .background(
-                color = colorResource(R.color.navigation_panel),
+                color = colorResource(id = R.color.home_screen_toolbar_button),
                 shape = RoundedCornerShape(16.dp)
             )
         ,

@@ -27,6 +27,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -55,6 +57,7 @@ fun MySitesScreen(
     onCopyWebLinkClicked: (MySitesViewState.Item) -> Unit = {},
     onUnpublishClicked: (MySitesViewState.Item) -> Unit = {}
 ) {
+    val haptic = LocalHapticFeedback.current
     Column {
         Dragger(
             modifier = Modifier
@@ -82,6 +85,7 @@ fun MySitesScreen(
                                     onOpenInBrowserClicked(item)
                                 },
                                 onLongClick = {
+                                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                                     showDropdownMenu = true
                                 }
                             )

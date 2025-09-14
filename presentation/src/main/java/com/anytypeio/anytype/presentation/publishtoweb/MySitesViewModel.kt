@@ -3,8 +3,10 @@ package com.anytypeio.anytype.presentation.publishtoweb
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -40,6 +42,8 @@ class MySitesViewModel(
                     result.map { data ->
                         val wrapper = ObjectWrapper.Basic(data.details)
                         MySitesViewState.Item(
+                            obj = data.obj,
+                            space = data.space,
                             name = wrapper.name.orEmpty(),
                             size = data.size.toString(),
                             icon = wrapper.objectIcon(
@@ -52,6 +56,25 @@ class MySitesViewModel(
                 )
             }
         }
+    }
+
+    fun onCopyWebLink(item: MySitesViewState.Item) {
+        viewModelScope.launch {
+            // What space
+
+        }
+    }
+
+    fun onUnpublish(item: MySitesViewState.Item) {
+
+    }
+
+    fun onOpenObject(item: MySitesViewState.Item) {
+
+    }
+
+    fun onOpenInBrowser(item: MySitesViewState.Item) {
+
     }
 
     class Factory @Inject constructor(
@@ -72,7 +95,7 @@ class MySitesViewModel(
     data object VmParams
 
     sealed class Command {
-        // TODO: Add commands when needed
+        data class CopyWebLink(val link: String): Command()
     }
 }
 
@@ -84,6 +107,8 @@ sealed class MySitesViewState {
     ) : MySitesViewState()
 
     data class Item(
+        val obj: Id,
+        val space: SpaceId,
         val name: String,
         val size: String,
         val icon: ObjectIcon,

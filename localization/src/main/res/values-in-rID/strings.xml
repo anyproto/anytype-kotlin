@@ -1944,10 +1944,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Gagal memperbarui: %1$s</string>
     <string name="web_publishing_join">Gabung</string>
-    <string name="settings_my_sites">My sites</string>
-    <string name="web_publishing_view_object">View Object</string>
-    <string name="web_publishing_open_in_browser">Open in Browser</string>
-    <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="settings_my_sites">Situsku</string>
+    <string name="web_publishing_view_object">Lihat Objek</string>
+    <string name="web_publishing_open_in_browser">Buka di Peramban</string>
+    <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>

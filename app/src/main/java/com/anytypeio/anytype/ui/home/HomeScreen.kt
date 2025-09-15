@@ -280,6 +280,11 @@ private fun WidgetList(
         modifier = Modifier
             .fillMaxSize()
     ) {
+        // Object Types Section
+        item {
+            PinnedSectionHeader()
+        }
+
         itemsIndexed(
             items = views.value,
             key = { _, item -> item.id }
@@ -972,6 +977,24 @@ private fun SystemTypesSectionHeader(
                 .size(18.dp)
                 .noRippleClickable { onCreateNewTypeClicked() },
             contentScale = ContentScale.Inside
+        )
+    }
+}
+
+@Composable
+private fun PinnedSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_pinned),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
         )
     }
 }

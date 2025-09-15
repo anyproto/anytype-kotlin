@@ -500,7 +500,10 @@ class HomeScreenViewModel(
                                         objectType = objectType,
                                         isOwnerOrEditor = isOwnerOrEditor
                                     ),
-                                    isDeletable = true
+                                    isDeletable = true,
+                                    widgetLayout = objectType.widgetLayout,
+                                    widgetLimit = objectType.widgetLimit,
+                                    widgetViewId = objectType.widgetViewId
                                 )
                             )
                         }
@@ -516,7 +519,10 @@ class HomeScreenViewModel(
                                         objectType = objectType,
                                         isOwnerOrEditor = isOwnerOrEditor
                                     ),
-                                    isDeletable = false
+                                    isDeletable = false,
+                                    widgetLayout = objectType.widgetLayout,
+                                    widgetLimit = objectType.widgetLimit,
+                                    widgetViewId = objectType.widgetViewId
                                 )
                             )
                         }
@@ -3263,7 +3269,10 @@ data class SystemTypeView(
     val name: String,
     val icon: ObjectIcon.TypeIcon,
     val isCreateObjectAllowed: Boolean = true,
-    val isDeletable: Boolean = false
+    val isDeletable: Boolean = false,
+    val widgetLayout: Block.Content.Widget.Layout? = null,
+    val widgetLimit: Int? = null,
+    val widgetViewId: String? = null
 )
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4

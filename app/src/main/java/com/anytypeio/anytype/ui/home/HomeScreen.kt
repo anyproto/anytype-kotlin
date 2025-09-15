@@ -621,6 +621,10 @@ private fun WidgetList(
             key = { _, systemType -> "systemType_${systemType.id}" }
         ) { index, systemType ->
             SystemTypeItem(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 6.dp)
+                    .animateItem(),
                 systemType = systemType,
                 onClicked = { onSystemTypeClicked(systemType) },
                 onNewObjectClicked = onCreateNewObjectOfTypeClicked,
@@ -1007,6 +1011,7 @@ private fun PinnedSectionHeader() {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun LazyItemScope.SystemTypeItem(
+    modifier: Modifier,
     systemType: SystemTypeView,
     onClicked: () -> Unit,
     onNewObjectClicked: (SystemTypeView) -> Unit,
@@ -1017,12 +1022,7 @@ private fun LazyItemScope.SystemTypeItem(
     when (systemType.widgetLayout) {
         Block.Content.Widget.Layout.TREE -> {
             val widgetView = systemType.toTreeWidgetView()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .animateItem()
-            ) {
+            Box(modifier = modifier) {
                 TreeWidgetCard(
                     item = widgetView,
                     mode = InteractionMode.Default,
@@ -1047,12 +1047,7 @@ private fun LazyItemScope.SystemTypeItem(
         }
         Block.Content.Widget.Layout.LIST -> {
             val widgetView = systemType.toListWidgetView(isCompact = false)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .animateItem()
-            ) {
+            Box(modifier = modifier) {
                 ListWidgetCard(
                     item = widgetView,
                     mode = InteractionMode.Default,
@@ -1076,12 +1071,7 @@ private fun LazyItemScope.SystemTypeItem(
         }
         Block.Content.Widget.Layout.COMPACT_LIST -> {
             val widgetView = systemType.toListWidgetView(isCompact = true)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .animateItem()
-            ) {
+            Box(modifier = modifier) {
                 ListWidgetCard(
                     item = widgetView,
                     mode = InteractionMode.Default,
@@ -1105,12 +1095,7 @@ private fun LazyItemScope.SystemTypeItem(
         }
         Block.Content.Widget.Layout.VIEW -> {
             val widgetView = systemType.toSetOfObjectsWidgetView()
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .animateItem()
-            ) {
+            Box(modifier = modifier) {
                 DataViewListWidgetCard(
                     item = widgetView,
                     onWidgetObjectClicked = { onClicked() },

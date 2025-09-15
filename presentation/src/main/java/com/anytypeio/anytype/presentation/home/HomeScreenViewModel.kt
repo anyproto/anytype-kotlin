@@ -501,9 +501,7 @@ class HomeScreenViewModel(
                                         isOwnerOrEditor = isOwnerOrEditor
                                     ),
                                     isDeletable = true,
-                                    widgetLayout = objectType.widgetLayout,
-                                    widgetLimit = objectType.widgetLimit,
-                                    widgetViewId = objectType.widgetViewId
+                                    widgetView = createWidgetViewFromType(objectType)
                                 )
                             )
                         }
@@ -520,9 +518,7 @@ class HomeScreenViewModel(
                                         isOwnerOrEditor = isOwnerOrEditor
                                     ),
                                     isDeletable = false,
-                                    widgetLayout = objectType.widgetLayout,
-                                    widgetLimit = objectType.widgetLimit,
-                                    widgetViewId = objectType.widgetViewId
+                                    widgetView = createWidgetViewFromType(objectType)
                                 )
                             )
                         }
@@ -1192,6 +1188,78 @@ class HomeScreenViewModel(
         return !skipLayouts.contains(objectType.recommendedLayout)
     }
 
+    /**
+     * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
+     */
+    private fun createWidgetViewFromType(objectType: ObjectWrapper.Type): WidgetView {
+        val typeName = fieldParser.getObjectPluralName(objectType)
+        val widgetSource = Widget.Source.Default(
+            obj = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to objectType.id,
+                    Relations.NAME to typeName,
+                    Relations.TYPE to listOf(objectType.id),
+                    Relations.LAYOUT to 0.0
+                )
+            )
+        )
+
+        return when (objectType.widgetLayout) {
+            Block.Content.Widget.Layout.TREE -> {
+                WidgetView.Tree(
+                    id = objectType.id,
+                    isLoading = false,
+                    name = WidgetView.Name.Default(typeName),
+                    source = widgetSource,
+                    elements = emptyList(),
+                    isExpanded = false,
+                    isEditable = false
+                )
+            }
+            Block.Content.Widget.Layout.LIST -> {
+                WidgetView.ListOfObjects(
+                    id = objectType.id,
+                    isLoading = false,
+                    source = widgetSource,
+                    type = WidgetView.ListOfObjects.Type.Favorites,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    isCompact = false
+                )
+            }
+            Block.Content.Widget.Layout.COMPACT_LIST -> {
+                WidgetView.ListOfObjects(
+                    id = objectType.id,
+                    isLoading = false,
+                    source = widgetSource,
+                    type = WidgetView.ListOfObjects.Type.Favorites,
+                    elements = emptyList(),
+                    isExpanded = true,
+                    isCompact = true
+                )
+            }
+            Block.Content.Widget.Layout.VIEW -> {
+                WidgetView.SetOfObjects(
+                    id = objectType.id,
+                    isLoading = false,
+                    source = widgetSource,
+                    tabs = emptyList(),
+                    elements = emptyList(),
+                    isExpanded = true,
+                    name = WidgetView.Name.Default(typeName)
+                )
+            }
+            Block.Content.Widget.Layout.LINK,
+            null -> {
+                WidgetView.Link(
+                    id = objectType.id,
+                    isLoading = false,
+                    name = WidgetView.Name.Default(typeName),
+                    source = widgetSource
+                )
+            }
+        }
+    }
 
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
@@ -3270,9 +3338,7 @@ data class SystemTypeView(
     val icon: ObjectIcon.TypeIcon,
     val isCreateObjectAllowed: Boolean = true,
     val isDeletable: Boolean = false,
-    val widgetLayout: Block.Content.Widget.Layout? = null,
-    val widgetLimit: Int? = null,
-    val widgetViewId: String? = null
+    val widgetView: WidgetView
 )
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4

@@ -63,6 +63,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -1017,12 +1018,11 @@ private fun LazyItemScope.SystemTypeItem(
     onDeleteTypeClicked: (SystemTypeView) -> Unit,
     isCreateObjectAllowed: Boolean
 ) {
-    // Choose rendering based on widget layout, reusing existing widget cards
-    val mapper = ObjectTypesToWidgetsMapping.instance
+    // Use the embedded WidgetView directly from SystemTypeView
+    val widgetView = systemType.widgetView
 
-    when (systemType.widgetLayout) {
-        Block.Content.Widget.Layout.TREE -> {
-            val widgetView = with(mapper) { systemType.toTreeWidgetView() }
+    when (widgetView) {
+        is WidgetView.Tree -> {
             Box(modifier = modifier) {
                 TreeWidgetCard(
                     item = widgetView,
@@ -1046,8 +1046,7 @@ private fun LazyItemScope.SystemTypeItem(
                 )
             }
         }
-        Block.Content.Widget.Layout.LIST -> {
-            val widgetView = with(mapper) { systemType.toListWidgetView(isCompact = false) }
+        is WidgetView.ListOfObjects -> {
             Box(modifier = modifier) {
                 ListWidgetCard(
                     item = widgetView,
@@ -1070,32 +1069,7 @@ private fun LazyItemScope.SystemTypeItem(
                 )
             }
         }
-        Block.Content.Widget.Layout.COMPACT_LIST -> {
-            val widgetView = with(mapper) { systemType.toListWidgetView(isCompact = true) }
-            Box(modifier = modifier) {
-                ListWidgetCard(
-                    item = widgetView,
-                    mode = InteractionMode.Default,
-                    onWidgetObjectClicked = { onClicked() },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    onWidgetMenuTriggered = { /* Handled by custom menu */ },
-                    onDropDownMenuAction = { /* No-op */ },
-                    onToggleExpandedWidgetState = { /* No-op */ },
-                    onObjectCheckboxClicked = { _, _ -> /* No-op */ },
-                    onCreateElement = { onNewObjectClicked(systemType) }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-        Block.Content.Widget.Layout.VIEW -> {
-            val widgetView = with(mapper) { systemType.toSetOfObjectsWidgetView() }
+        is WidgetView.SetOfObjects -> {
             Box(modifier = modifier) {
                 DataViewListWidgetCard(
                     item = widgetView,
@@ -1120,17 +1094,43 @@ private fun LazyItemScope.SystemTypeItem(
                 )
             }
         }
-        Block.Content.Widget.Layout.LINK,
-        null -> {
-            val widgetView = with(mapper) { systemType.toLinkWidgetView() }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(start = 20.dp, end = 20.dp, top = 6.dp)
-                    .animateItem()
-            ) {
+        is WidgetView.Link -> {
+            Box(modifier = modifier) {
                 LinkWidgetCard(
                     item = widgetView,
+                    onDropDownMenuAction = { /* No-op */ },
+                    onWidgetSourceClicked = { _, _ -> onClicked() },
+                    isInEditMode = false,
+                    hasReadOnlyAccess = false,
+                    onWidgetMenuTriggered = { /* Handled by custom menu */ }
+                )
+
+                // Custom menu for system type
+                SystemTypeOverlayMenu(
+                    systemType = systemType,
+                    onNewObjectClicked = onNewObjectClicked,
+                    onDeleteTypeClicked = onDeleteTypeClicked,
+                    isCreateObjectAllowed = isCreateObjectAllowed
+                )
+            }
+        }
+        else -> {
+            // Fallback to Link widget for any other WidgetView types
+            Box(modifier = modifier) {
+                LinkWidgetCard(
+                    item = WidgetView.Link(
+                        id = systemType.id,
+                        isLoading = false,
+                        name = WidgetView.Name.Default(systemType.name),
+                        source = Widget.Source.Default(
+                            obj = ObjectWrapper.Basic(
+                                mapOf(
+                                    Relations.ID to systemType.id,
+                                    Relations.NAME to systemType.name
+                                )
+                            )
+                        )
+                    ),
                     onDropDownMenuAction = { /* No-op */ },
                     onWidgetSourceClicked = { _, _ -> onClicked() },
                     isInEditMode = false,
@@ -1289,6 +1289,19 @@ private fun SystemTypeItemPreview() {
             unicode = "📝",
             rawValue = "document",
             color = CustomIconColor.DEFAULT
+        ),
+        widgetView = WidgetView.Link(
+            id = "sample-id",
+            isLoading = false,
+            name = WidgetView.Name.Default("Note"),
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(
+                    mapOf(
+                        Relations.ID to "sample-id",
+                        Relations.NAME to "Note"
+                    )
+                )
+            )
         )
     )
     
@@ -1310,9 +1323,25 @@ private fun SystemTypeItemPreview() {
 @Composable
 private fun SystemTypeItemWithFallbackIconPreview() {
     val sampleSystemType = SystemTypeView(
-        id = "sample-id-2", 
+        id = "sample-id-2",
         name = "Task",
-        icon = ObjectIcon.TypeIcon.Fallback("task")
+        icon = ObjectIcon.TypeIcon.Fallback("task"),
+        widgetView = WidgetView.Tree(
+            id = "sample-id-2",
+            isLoading = false,
+            name = WidgetView.Name.Default("Task"),
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(
+                    mapOf(
+                        Relations.ID to "sample-id-2",
+                        Relations.NAME to "Task"
+                    )
+                )
+            ),
+            elements = emptyList(),
+            isExpanded = false,
+            isEditable = false
+        )
     )
     
     LazyColumn {
@@ -1335,25 +1364,67 @@ private fun SystemTypesSectionPreview() {
     val sampleTypes = listOf(
         SystemTypeView(
             id = "note-id",
-            name = "Note", 
+            name = "Note",
             icon = ObjectIcon.TypeIcon.Emoji(
                 unicode = "📝",
                 rawValue = "document",
                 color = CustomIconColor.DEFAULT
+            ),
+            widgetView = WidgetView.ListOfObjects(
+                id = "note-id",
+                source = Widget.Source.Default(
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "note-id",
+                            Relations.NAME to "Note"
+                        )
+                    )
+                ),
+                type = WidgetView.ListOfObjects.Type.Favorites,
+                elements = emptyList(),
+                isExpanded = true
             )
         ),
         SystemTypeView(
             id = "task-id",
             name = "Task",
-            icon = ObjectIcon.TypeIcon.Fallback("task")
+            icon = ObjectIcon.TypeIcon.Fallback("task"),
+            widgetView = WidgetView.ListOfObjects(
+                id = "task-id",
+                source = Widget.Source.Default(
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "task-id",
+                            Relations.NAME to "Task"
+                        )
+                    )
+                ),
+                type = WidgetView.ListOfObjects.Type.Favorites,
+                elements = emptyList(),
+                isExpanded = true
+            )
         ),
         SystemTypeView(
             id = "book-id",
             name = "Book",
             icon = ObjectIcon.TypeIcon.Emoji(
-                unicode = "📚", 
+                unicode = "📚",
                 rawValue = "book",
                 color = CustomIconColor.Blue
+            ),
+            widgetView = WidgetView.ListOfObjects(
+                id = "book-id",
+                source = Widget.Source.Default(
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "book-id",
+                            Relations.NAME to "Book"
+                        )
+                    )
+                ),
+                type = WidgetView.ListOfObjects.Type.Favorites,
+                elements = emptyList(),
+                isExpanded = true
             )
         )
     )

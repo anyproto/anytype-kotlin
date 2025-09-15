@@ -1955,6 +1955,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
     <string name="web_publishing_join">Junte-se</string>
+    <string name="settings_my_sites">My sites</string>
+    <string name="web_publishing_view_object">View Object</string>
+    <string name="web_publishing_open_in_browser">Open in Browser</string>
+    <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

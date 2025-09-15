@@ -50,7 +50,7 @@
     <string name="default_space">Spazio d\'ingresso</string>
     <string name="space_settings_apply_random_gradient">Applica colore tinta unita casuale</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Cambia colore icona</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Rimuovi immagine</string>
     <string name="delete_space">Elimina spazio</string>
@@ -950,30 +950,30 @@
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s background</string>
     <!-- Onboarding: persona selection & use cases (iOS parity) -->
-    <string name="onboarding_selection_title">Tell Us About Yourself</string>
-    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <string name="onboarding_selection_title">Raccontaci di te</string>
+    <string name="onboarding_selection_description">Seleziona un ruolo o uno sfondo più adatto a te</string>
     <!-- Persona options -->
-    <string name="onboarding_selection_artist">Artist / Content Creator</string>
-    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_artist">Artista / Creatore di contenuti</string>
+    <string name="onboarding_selection_consultant">Consulente</string>
     <string name="onboarding_selection_designer">Designer</string>
-    <string name="onboarding_selection_developer">Software Developer</string>
-    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
-    <string name="onboarding_selection_manager">Manager / IT Professional</string>
-    <string name="onboarding_selection_marketer">Marketer</string>
-    <string name="onboarding_selection_researcher">Researcher / Academic</string>
-    <string name="onboarding_selection_student">Student</string>
-    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_developer">Sviluppatore Software</string>
+    <string name="onboarding_selection_entrepreneur">Fondatore / Imprenditore</string>
+    <string name="onboarding_selection_manager">Manager / Professionista IT</string>
+    <string name="onboarding_selection_marketer">Specialista di Marketing</string>
+    <string name="onboarding_selection_researcher">Ricercatore / Accademico</string>
+    <string name="onboarding_selection_student">Studente</string>
+    <string name="onboarding_selection_writer">Scrittore / Giornalista</string>
     <string name="onboarding_selection_other">Altro</string>
     <!-- Use case options -->
-    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
-    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
-    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
-    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
-    <string name="onboarding_usecase_life_planning">Life planning</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
-    <string name="onboarding_usecase_notes">Personal note-taking</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_title">Per cosa vuoi utilizzare Anytype?</string>
+    <string name="onboarding_usecase_description">Scegli il caso d\'uso più adatto alle tue esigenze</string>
+    <string name="onboarding_usecase_habit_tracking">Monitoraggio delle abitudini</string>
+    <string name="onboarding_usecase_knowledge">Base di conoscenze personali / PKM</string>
+    <string name="onboarding_usecase_life_planning">Pianificazione della vita</string>
+    <string name="onboarding_usecase_messaging">Messaggistica &amp; chat di gruppo</string>
+    <string name="onboarding_usecase_notes">Appunti personali</string>
+    <string name="onboarding_usecase_projects">Gestione dei progetti &amp; delle attività</string>
+    <string name="onboarding_usecase_team_work">Lavoro di squadra &amp; documenti condivisi</string>
     <string name="onboarding_usecase_other">Altro</string>
     <!--endregion-->
     <!--region WIDGETS -->
@@ -1042,29 +1042,29 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Questa è la tua Chiave</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Sostituisce login e password. Conservala con cura: solo tu sei responsabile dei tuoi dati. Puoi trovare questa chiave in seguito nelle impostazioni dell\'app.</string>
     <string name="onboarding_show_my_key">Mostra la mia Chiave</string>
-    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
+    <string name="onboarding_tap_to_reveal">Mostra e copia</string>
     <string name="onboarding_key_skip">Salta</string>
-    <string name="onboarding_key_not_now">I’ll save it later</string>
+    <string name="onboarding_key_not_now">Lo salverò più tardi</string>
     <string name="onboarding_key_copy">Copia negli appunti</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Digita la tua chiave</string>
-    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_type_your_key">Inserisci la tua chiave</string>
+    <string name="onboarding_login_or">o inserisci con</string>
     <string name="onboarding_login_qr">Codice QR</string>
     <string name="onboarding_entering_void_title">Entrando nel Void</string>
     <string name="onboarding_your_key_can_t_be_empty">La tua Chiave non può essere vuota</string>
     <string name="onboarding_your_name">Scrivi il tuo nome</string>
     <string name="onboarding_mnemonic_read_more">Per saperne di più</string>
     <string name="onboarding_key_additional_info">È possibile trovare questa chiave in un secondo momento nelle impostazioni dell\'applicazione</string>
-    <string name="onboarding_what_is_the_key">How the Key works?</string>
-    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
-    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
-    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
-    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
+    <string name="onboarding_what_is_the_key">Come funziona la Chiave?</string>
+    <string name="onboarding_recovery_phrase_description_title">È il tuo login e password</string>
+    <string name="onboarding_recovery_phrase_description">La tua chiave è rappresentata da una frase di recupero — 12 parole casuali che generano la tua cassaforte su questo dispositivo.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Chi ha la chiave, ha accesso</string>
+    <string name="onboarding_recovery_phrase_description_2">Chiunque conosca queste parole può accedere al tuo archivio. Al momento, sei l\'unica persona al mondo a conoscerle.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Solo tu ne sei responsabile</string>
+    <string name="onboarding_recovery_phrase_description_3">Tutte le risorse computazionali sulla Terra non sono sufficienti per romperla. Se perdi la tua chiave, non potrà essere recuperata. Conservala in un luogo sicuro, in un gestore di password o scritta su carta.</string>
     <string name="onboarding_recovery_phrase_description_4">Tutte le risorse di calcolo presenti sulla Terra non sono sufficienti per irrompere. Se la perdi, non può essere recuperata. Quindi, conservala in un posto sicuro!</string>
     <string name="onboarding_how_to_save_my_phrase">Come salvare la mia Chiave?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Il modo più semplice per conservare la tua Chiave è salvarla nel tuo gestore di password.</string>
@@ -1948,8 +1948,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="private_local_yours_forever">Privato, locale, tuo per sempre</string>
+    <string name="wallpaper_item_space_icon_color">Icona spazio \ncolore</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>
     <string name="web_publishing_customize_url">Personalizza URL</string>
@@ -1957,10 +1957,14 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_unpublish">Annulla pubblicazione</string>
     <string name="web_publishing_update">Aggiorna</string>
     <string name="web_publishing_publish">Pubblica</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_failed_to_update">Aggiornamento non riuscito: %1$s</string>
     <string name="web_publishing_join">Unisciti</string>
+    <string name="settings_my_sites">I miei siti</string>
+    <string name="web_publishing_view_object">Visualizza Oggetto</string>
+    <string name="web_publishing_open_in_browser">Apri nel Browser</string>
+    <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <plurals name="notification_messages_count">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
+        <item quantity="one">%d nuovo messaggio</item>
+        <item quantity="other">%d nuovi messaggi</item>
     </plurals>
 </resources>

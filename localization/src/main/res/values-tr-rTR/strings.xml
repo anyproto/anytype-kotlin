@@ -1958,6 +1958,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_publish">Yayınla</string>
     <string name="web_publishing_failed_to_update">Güncelleme başarısız oldu: %1$s</string>
     <string name="web_publishing_join">Katıl</string>
+    <string name="settings_my_sites">Sitelerim</string>
+    <string name="web_publishing_view_object">Nesneyi Görüntüle</string>
+    <string name="web_publishing_open_in_browser">Tarayıcıda Aç</string>
+    <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>

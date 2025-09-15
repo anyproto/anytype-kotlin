@@ -116,6 +116,10 @@ object Relations {
     const val SPACE_PUSH_NOTIFICATION_MODE = "spacePushNotificationMode"
     const val SPACE_ORDER = "spaceOrder"
 
+    const val WIDGET_LAYOUT = "widgetLayout"
+    const val WIDGET_LIMIT = "widgetLimit"
+    const val WIDGET_VIEW_ID = "widgetViewId"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

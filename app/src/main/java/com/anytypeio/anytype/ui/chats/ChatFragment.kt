@@ -390,7 +390,7 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
-                                url = command.url
+                                urls = command.urls
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching media image viewer")

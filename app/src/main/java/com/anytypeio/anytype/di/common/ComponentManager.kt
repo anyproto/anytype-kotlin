@@ -14,6 +14,7 @@ import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
+import com.anytypeio.anytype.di.feature.DaggerMySitesComponent
 import com.anytypeio.anytype.di.feature.DaggerPublishToWebComponent
 import com.anytypeio.anytype.di.feature.DaggerSpacePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerSpaceTypesComponent
@@ -124,6 +125,7 @@ import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
+import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -1134,6 +1136,12 @@ class ComponentManager(
 
     val publishToWebComponent = ComponentWithParams { params: PublishToWebViewModel.Params ->
         DaggerPublishToWebComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val mySitesComponent = ComponentWithParams { params: MySitesViewModel.VmParams ->
+        DaggerMySitesComponent
             .factory()
             .create(params, findComponentDependencies())
     }

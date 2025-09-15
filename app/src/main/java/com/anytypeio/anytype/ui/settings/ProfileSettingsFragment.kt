@@ -132,7 +132,12 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
                         onHeaderTitleClicked = vm::onHeaderTitleClicked,
                         notificationsDisabled = notificationsDisabled,
-                        onOpenNotificationSettings = { showNotificationSettingsModal = true }
+                        onOpenNotificationSettings = { showNotificationSettingsModal = true },
+                        onMySitesClicked = {
+                            runCatching {
+                                findNavController().navigate(R.id.mySitesScreen)
+                            }
+                        }
                     )
                     if (showNotificationSettingsModal) {
                         NotificationSettingsScreen(

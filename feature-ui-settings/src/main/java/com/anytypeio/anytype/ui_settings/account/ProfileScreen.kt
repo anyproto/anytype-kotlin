@@ -81,6 +81,7 @@ fun ProfileSettingsScreen(
     account: AccountProfile,
     onAppearanceClicked: () -> Unit,
     onDataManagementClicked: () -> Unit,
+    onMySitesClicked: () -> Unit,
     onAboutClicked: () -> Unit,
     onSpacesClicked: () -> Unit,
     onMembershipClicked: () -> Unit,
@@ -160,6 +161,16 @@ fun ProfileSettingsScreen(
                 image = R.drawable.ic_file_storage,
                 text = stringResource(R.string.data_management),
                 onClick = onDataManagementClicked
+            )
+        }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        item {
+            Option(
+                image = R.drawable.ic_file_storage,
+                text = stringResource(R.string.settings_my_sites),
+                onClick = onMySitesClicked
             )
         }
         item {
@@ -561,7 +572,8 @@ private fun ProfileSettingPreview() {
         isDebugEnabled = true,
         onHeaderTitleClicked = {},
         notificationsDisabled = true,
-        onOpenNotificationSettings = {}
+        onOpenNotificationSettings = {},
+        onMySitesClicked = {}
     )
 }
 

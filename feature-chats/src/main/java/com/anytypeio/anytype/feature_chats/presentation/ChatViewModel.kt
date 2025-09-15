@@ -1181,7 +1181,7 @@ class ChatViewModel @Inject constructor(
         Timber.d("onMediaPreview, url: $url")
         viewModelScope.launch {
             commands.emit(
-                ViewModelCommand.MediaPreview(url = url)
+                ViewModelCommand.MediaPreview(urls = listOf(url))
             )
         }
     }
@@ -1630,7 +1630,7 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
-        data class MediaPreview(val url: String) : ViewModelCommand()
+        data class MediaPreview(val urls: List<String>) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
         data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()

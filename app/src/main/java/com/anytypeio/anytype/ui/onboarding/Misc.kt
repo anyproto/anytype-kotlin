@@ -1,9 +1,5 @@
 package com.anytypeio.anytype.ui.onboarding
 
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,13 +7,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -31,88 +24,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.ColorMnemonicStub
-import com.anytypeio.anytype.core_ui.ColorPagerIndicator
-import com.anytypeio.anytype.core_ui.ColorPagerIndicatorCurrent
-import com.anytypeio.anytype.core_ui.ColorPagerIndicatorText
 import com.anytypeio.anytype.core_ui.ColorPlaceholderText
 import com.anytypeio.anytype.core_ui.ColorTextInput
 import com.anytypeio.anytype.core_ui.ColorTextInputCursor
-import com.anytypeio.anytype.core_ui.MnemonicPhrasePaletteColors
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.HeadlineOnBoardingDescription
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.ui.onboarding.screens.signin.MnemonicPhraseFormatter
-
-@Composable
-fun PagerIndicator(
-    modifier: Modifier = Modifier,
-    pageCount: Int,
-    page: MutableState<OnboardingPage>,
-    onBackClick: () -> Unit
-) {
-    val currentPage = remember { page }
-    val screenWidth = LocalConfiguration.current.screenWidthDp.minus(32)
-
-    if (currentPage.value.visible) {
-        Column(modifier = modifier) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 4.dp, start = 16.dp, end = 16.dp)
-                    .height(2.dp)
-                    .background(
-                        ColorPagerIndicator, RoundedCornerShape(1.dp)
-                    ), contentAlignment = Alignment.CenterStart
-            ) {
-                val width = (currentPage.value.num * screenWidth / pageCount).dp
-                Box(
-                    modifier = Modifier
-                        .animateContentSize(
-                            animationSpec = tween(durationMillis = 300, easing = LinearEasing)
-                        )
-                        .width(width)
-                        .height(2.dp)
-                        .background(
-                            ColorPagerIndicatorCurrent, RoundedCornerShape(1.dp)
-                        )
-                )
-            }
-            Row {
-                Image(
-                    modifier = Modifier
-                        .padding(start = 9.dp, top = 16.dp)
-                        .noRippleClickable {
-                            onBackClick.invoke()
-                        },
-                    painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-                    contentDescription = "back"
-                )
-                Spacer(modifier = Modifier.weight(1f))
-                Text(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .padding(top = 21.dp, end = 16.dp),
-                    text = "${currentPage.value.num} / $pageCount",
-                    style = HeadlineOnBoardingDescription.copy(
-                        color = ColorPagerIndicatorText, textAlign = TextAlign.End
-                    )
-                )
-            }
-        }
-    }
-}
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
@@ -129,7 +52,7 @@ fun MnemonicPhraseWidget(
             horizontalArrangement = Arrangement.Center
         ) {
             words.forEachIndexed { idx, word ->
-                val color = colorResource(R.color.text_white)
+                val color = colorResource(R.color.text_primary)
                 Text(
                     modifier = Modifier
                         .padding(
@@ -137,7 +60,7 @@ fun MnemonicPhraseWidget(
                             vertical = 6.dp
                         ),
                     text = word.lowercase(),
-                    style = PreviewTitle1Regular.copy(
+                    style = PreviewTitle1Medium.copy(
                         color = color
                     )
                 )

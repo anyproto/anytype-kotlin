@@ -50,7 +50,7 @@
     <string name="default_space">Espacio inicial</string>
     <string name="space_settings_apply_random_gradient">Aplicar color sólido aleatorio</string>
     <string name="space_settings_apply_upload_image">Cargar una imagen</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Cambiar color del icono</string>
     <string name="profile_settings_apply_upload_image">Cargar una imagen</string>
     <string name="remove_image">Eliminar imagen</string>
     <string name="delete_space">Eliminar espacio</string>
@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Verde azulado</string>
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">%1$s de fondo</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Cuéntanos algo de ti</string>
+    <string name="onboarding_selection_description">Selecciona la ocupación o formación que más encaja contigo</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Arte / Creación de contenidos</string>
+    <string name="onboarding_selection_consultant">Asesoría</string>
+    <string name="onboarding_selection_designer">Diseño</string>
+    <string name="onboarding_selection_developer">Desarrollo de software</string>
+    <string name="onboarding_selection_entrepreneur">Inversión / Empresa</string>
+    <string name="onboarding_selection_manager">Gestión / Tecnología de la información</string>
+    <string name="onboarding_selection_marketer">Publicidad</string>
+    <string name="onboarding_selection_researcher">Investigación / Universidad</string>
+    <string name="onboarding_selection_student">Estudiante</string>
+    <string name="onboarding_selection_writer">Literatura / Periodismo</string>
+    <string name="onboarding_selection_other">Otros</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">¿Para qué quieres usar Anytype?</string>
+    <string name="onboarding_usecase_description">Elige el tipo de uso que más encaja contigo</string>
+    <string name="onboarding_usecase_habit_tracking">Seguimiento de hábitos</string>
+    <string name="onboarding_usecase_knowledge">Base de conocimientos personal / PKM</string>
+    <string name="onboarding_usecase_life_planning">Planificación personal</string>
+    <string name="onboarding_usecase_messaging">Mensajes y chats de grupo</string>
+    <string name="onboarding_usecase_notes">Notas personales</string>
+    <string name="onboarding_usecase_projects">Gestión de proyectos y tareas</string>
+    <string name="onboarding_usecase_team_work">Trabajo en equipo y documentos compartidos</string>
+    <string name="onboarding_usecase_other">Otros</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Crear un widget</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Nombre del tipo</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">la aplicación para todo</string>
-    <string name="onboarding_auth_subtitle">Cifrado, sin conexión\ny abierto</string>
-    <string name="onboarding_auth_description">Crea y colabora en espacios de tu propiedad. Tecnología cifrada, sin conexión y de código abierto.</string>
+    <string name="onboarding_auth_title">Cifrada, local</string>
+    <string name="onboarding_auth_subtitle">tuya para siempre</string>
+    <string name="onboarding_auth_description">Cifrada, local</string>
     <string name="onboarding_terms_and_policy_prefix">"Al continuar, aceptas nuestros"</string>
     <string name="onboarding_terms_and_policy_terms">términos\u00A0de\u00A0uso</string>
     <string name="onboarding_terms_and_policy_infix">" y "</string>
     <string name="onboarding_terms_and_policy_privacy">nuestra\u00A0política de privacidad</string>
     <string name="onboarding_new_vault_button_text">Es mi primera vez</string>
-    <string name="onboarding_enter_my_vault">Siguiente</string>
+    <string name="onboarding_enter_my_vault">Continuar</string>
     <string name="onboarding_have_key_button_text">Ya tengo la clave</string>
     <string name="onboarding_get_my_key_button_text">Obtener mi clave</string>
     <string name="onboarding_invite_code_title">Introduce tu código de invitación</string>
@@ -1016,25 +1042,29 @@
     <string name="onboarding_void_title">Esta es tu arca</string>
     <string name="onboarding_void_description">Se trata de una ubicación cifrada para toda tu creación. Todo se guarda en tu dispositivo y se respalda en la red distribuida.</string>
     <string name="onboarding_this_is_your_key_title">Esta es tu clave</string>
-    <string name="onboarding_key_description">Es lo que usamos en lugar de usuario y contraseña. Guárdala bien; tus datos están bajo tu control. Podrás volver a ver esta clave en los ajustes de la aplicación.</string>
+    <string name="onboarding_key_description">Es lo que usamos en lugar de usuario y contraseña. Guárdala bien; la responsabilidad sobre tus datos es solo tuya. Podrás volver a ver esta clave en los ajustes de la aplicación.</string>
     <string name="onboarding_show_my_key">Ver mi clave</string>
     <string name="onboarding_tap_to_reveal">Mostrar y copiar</string>
     <string name="onboarding_key_skip">Omitir</string>
-    <string name="onboarding_key_not_now">Ahora no</string>
+    <string name="onboarding_key_not_now">La guardaré más tarde</string>
     <string name="onboarding_key_copy">Copiar al portapapeles</string>
     <string name="onboarding_soul_creation_placeholder">Identidad de Anytype</string>
     <string name="onboarding_soul_creation">Creando tu identidad…</string>
-    <string name="onboarding_type_your_key">Escribe tu frase de recuperación</string>
-    <string name="onboarding_login_or">O</string>
+    <string name="onboarding_type_your_key">Escribe tu clave</string>
+    <string name="onboarding_login_or">o entrar con</string>
+    <string name="onboarding_login_qr">Código QR</string>
     <string name="onboarding_entering_void_title">Entrando a tu arca</string>
     <string name="onboarding_your_key_can_t_be_empty">La clave no puede estar vacía.</string>
     <string name="onboarding_your_name">Escribe tu nombre</string>
     <string name="onboarding_mnemonic_read_more">Más información</string>
     <string name="onboarding_key_additional_info">Puedes ver esta clave más adelante en los ajustes de la aplicación.</string>
-    <string name="onboarding_what_is_the_key">¿Qué es una clave?</string>
-    <string name="onboarding_recovery_phrase_description">Consiste en una frase de recuperación de 12 palabras aleatorias con las que se genera mágicamente tu arca en este dispositivo.</string>
-    <string name="onboarding_recovery_phrase_description_2">Quien conozca esta combinación de palabras tendrá la propiedad de tu arca.</string>
-    <string name="onboarding_recovery_phrase_description_3">En este momento, tú eres la única persona del mundo que la conoce.</string>
+    <string name="onboarding_what_is_the_key">¿Cómo funciona la clave?</string>
+    <string name="onboarding_recovery_phrase_description_title">Equivale a tu usuario y contraseña</string>
+    <string name="onboarding_recovery_phrase_description">Tu clave está representada por una frase de recuperación compuesta con 12 palabras aleatorias que generan tu arca en este dispositivo.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Quien tiene la clave, tiene el acceso</string>
+    <string name="onboarding_recovery_phrase_description_2">Cualquiera que conozca esas palabras puede acceder a tu arca. Ahora mismo, tú eres la única persona del mundo que las conoce.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Solo tú eres responsable de ella</string>
+    <string name="onboarding_recovery_phrase_description_3">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si pierdes tu clave, es imposible recuperarla. Guárdala en un lugar seguro: en un gestor de contraseñas o escrita en un papel.</string>
     <string name="onboarding_recovery_phrase_description_4">No hay recursos computacionales en la Tierra suficientes para descifrarla. Si la pierdes, es imposible recuperarla. ¡Guárdala en un lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">¿Cómo guardo mi clave?</string>
     <string name="onboarding_how_to_save_my_phrase_2">La forma más fácil de preservar tu clave es guardarla en un gestor de contraseñas.</string>
@@ -1185,7 +1215,7 @@
     <string name="multiplayer_qr_invite_link_menu">Mostrar el código QR</string>
     <string name="multiplayer_share_invite_link_description">Comparte este enlace con quien quieras que acceda a tu espacio. Cuando haga clic en el enlace y envíe su solicitud, podrás definir sus derechos de acceso.</string>
     <string name="multiplayer_invite_link">Enlace de invitación</string>
-    <string name="multiplayer_invite_link_access">Invite link access</string>
+    <string name="multiplayer_invite_link_access">Acceso con enlace de invitación</string>
     <string name="multiplayer_link_disabled">Enlace desactivado</string>
     <string name="multiplayer_link_disabled_desc">Solo tendrán acceso los miembros que ya se hayan incorporado.</string>
     <string name="multiplayer_editor_access">Acceso como editor</string>
@@ -1195,13 +1225,13 @@
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
     <string name="multiplayer_qr_code">Código QR</string>
-    <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
-    <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
-    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
-    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
-    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
-    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_change_access_title">¿Cambiar tipo de acceso del enlace de invitación?</string>
+    <string name="multiplayer_link_will_be_invalidated">El enlace actual dejará de funcionar.</string>
+    <string name="multiplayer_link_will_be_invalidated_desc">Si dejas de compartir el espacio o cambias a aprobación manual, el enlace actual se desactivará. Si vuelves a compartir el espacio, se creará un enlace nuevo.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Quien tenga el enlace podrá editar el contenido del espacio.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Quien tenga el enlace solo podra ver el contenido del espacio.</string>
+    <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
+    <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
@@ -1652,7 +1682,7 @@ En concreto,
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
     <string name="chat_empty_state_title">Este chat está vacío.</string>
     <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
-    <string name="chat_empty_state_share_invite_button">Compartir enlace de invitación</string>
+    <string name="chat_empty_state_share_invite_button">Invitar a miembros</string>
     <string name="write_a_message">Escribir mensaje…</string>
     <string name="date_layout_mentioned_in">Menciones</string>
     <string name="date_layout_empty_items">Aún no hay nada aquí para esta fecha</string>
@@ -1830,7 +1860,7 @@ En concreto,
     <string name="object_conflict_menu_item_title">Resolver conflicto de diseño</string>
     <string name="widget_source_suggested">Sugerencia</string>
     <string name="widgets_empty_state_message">Aún no hay ningún widget</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
+    <string name="space_settings_auto_create_widgets">Crear widgets automáticamente</string>
     <string name="space_types_screen_title">Tipos de objeto</string>
     <string name="space_types_screen_section_my_types">Mis tipos</string>
     <string name="space_types_screen_section_system_types">Tipos del sistema</string>
@@ -1844,13 +1874,13 @@ En concreto,
     <string name="onboarding_error_offline_device">Tu dispositivo parece estar desconectado. Comprueba tu conexión e inténtalo de nuevo.</string>
     <string name="onboarding_error_account_created_but_failed_to_start_node">Se ha creado la cuenta, pero no se ha podido iniciar el nodo. Intenta iniciar sesión.</string>
     <string name="onboarding_error_account_created_but_failed_to_set_name">Se ha creado la cuenta, pero no se pudo establecer el nombre. Podrás hacerlo después en los ajustes.</string>
-    <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
-    <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
-    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
-    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
+    <string name="onboarding_error_failed_to_stop_running_node">Error al detener el nodo en ejecución. Reinicia la aplicación e inténtalo de nuevo.</string>
+    <string name="onboarding_error_failed_to_write_config">Error al guardar la configuración. Comprueba los permisos de almacenamiento.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Error al crear el repositorio local. Comprueba el espacio de almacenamiento disponible.</string>
+    <string name="onboarding_error_account_creation_canceled">Se ha cancelado la creación de la cuenta.</string>
+    <string name="onboarding_error_config_file_not_found">No se encuentra el archivo de configuración. Reinstala la aplicación.</string>
+    <string name="onboarding_error_config_file_invalid">El archivo de configuración no es válido. Reinstala la aplicación.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">La configuración de red no coincide. Compureba tus ajustes de red.</string>
     <string name="onboarding_set_your_name_title">Añade tu nombre</string>
     <string name="onboarding_soul_creation_description">Solo lo verán las personas con las que compartas algo. No existe un registro central de estos nombres.</string>
     <string name="onboarding_email_add_title">Sigue en contacto</string>
@@ -1864,9 +1894,9 @@ En concreto,
     <string name="notifications_modal_description">Recibe notificaciones al instante cuando te envíen un mensaje o te mencionen en tus espacios.</string>
     <string name="notifications_modal_success_button">Activar notificaciones</string>
     <string name="notifications_modal_cancel_button">Ahora no</string>
-    <string name="vault_create_chat">New Chat</string>
+    <string name="vault_create_chat">Nuevo chat</string>
     <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
-    <string name="vault_create_space">New Space</string>
+    <string name="vault_create_space">Nuevo espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
     <string name="vault_empty_search_state_text">No hay coincidencias</string>
@@ -1897,14 +1927,14 @@ En concreto,
     <string name="failed_to_load_image">Error al cargar la imagen</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unirse con código QR</string>
-    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
-    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
-    <string name="vault_qr_invalid_title">Invalid QR code</string>
-    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_scan_error_title">No se ha podido escanear el código QR</string>
+    <string name="vault_qr_scan_error_description">Procura que se vea con claridad e inténtalo de nuevo.</string>
+    <string name="vault_qr_invalid_title">Código QR no válido</string>
+    <string name="vault_qr_invalid_description">El código QR escaneado no corresponde a una invitación válida. Compruébalo e inténtalo de nuevo.</string>
     <string name="vault_qr_try_again">Inténtalo de nuevo</string>
-    <string name="camera_permission_required_title">Camera permission required</string>
-    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
-    <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
+    <string name="camera_permission_required_title">Se requiere permiso de cámara</string>
+    <string name="camera_permission_rationale_message">Para escanear códigos QR, Anytype necesita acceder a la cámara. Este permiso solo se utiliza para escanear códigos QR.</string>
+    <string name="camera_permission_settings_message">Para escanear códigos QR, debes permitir acceso a la cámara en los ajustes del dispositivo.</string>
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Attachment image</string>
@@ -1919,4 +1949,17 @@ En concreto,
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publicar en la web</string>
+    <string name="preferences">Preferencias</string>
+    <string name="web_publishing_customize_url">Personalizar URL</string>
+    <string name="web_publishing_join_space_button">Botón para unirse al espacio</string>
+    <string name="web_publishing_unpublish">No publicar</string>
+    <string name="web_publishing_update">Actualizar</string>
+    <string name="web_publishing_publish">Publicar</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Unirte</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

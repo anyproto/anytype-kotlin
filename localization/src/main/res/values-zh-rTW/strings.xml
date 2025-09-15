@@ -947,6 +947,32 @@
     <string name="slash_widget_teal_color_title">青色</string>
     <string name="slash_widget_lime_color_title">綠色</string>
     <string name="slash_widget_background_item">%1$s 背景</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">其它</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">其它</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">建立一個小工具</string>
@@ -998,9 +1024,9 @@
     <string name="type_creation_placeholder">類型名稱</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">一個充滿無限可能的筆記軟體</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
-    <string name="onboarding_auth_description">在您自己的空間中創建 &amp; 協作。加密、離線 &amp; 且開源。</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"繼續即表示您同意 "</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0 的 \u00A0 使用條款</string>
     <string name="onboarding_terms_and_policy_infix">" 和 "</string>
@@ -1014,25 +1040,29 @@
     <string name="onboarding_void_title">這是您的 Void 身份集錦圖表</string>
     <string name="onboarding_void_description">這是您建立所有內容的加密位置。所有內容都儲存在您的裝置上，並備份到分散式網路上。</string>
     <string name="onboarding_this_is_your_key_title">這是您的密鑰</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">顯示我的密鑰</string>
-    <string name="onboarding_tap_to_reveal">Reveal and copy</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">略過</string>
-    <string name="onboarding_key_not_now">稍後</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">複製到剪貼簿</string>
     <string name="onboarding_soul_creation_placeholder">Anytype 身份識別</string>
     <string name="onboarding_soul_creation">建立您的身份…</string>
-    <string name="onboarding_type_your_key">輸入您的恢復短語</string>
-    <string name="onboarding_login_or">或</string>
+    <string name="onboarding_type_your_key">輸入您的密鑰</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">QR Code</string>
     <string name="onboarding_entering_void_title">正在進入 Void 身份集錦圖表</string>
     <string name="onboarding_your_key_can_t_be_empty">您的密鑰不能為空</string>
     <string name="onboarding_your_name">Type your name</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
+    <string name="onboarding_mnemonic_read_more">了解更多</string>
     <string name="onboarding_key_additional_info">You can find this key later in app settings</string>
-    <string name="onboarding_what_is_the_key">什麼是密鑰？</string>
-    <string name="onboarding_recovery_phrase_description">密鑰是由 12 個隨機單詞產生的助記詞，您的帳戶將在此裝置上神奇地產生。</string>
-    <string name="onboarding_recovery_phrase_description_2">不論是誰知道了這些單詞的組合，誰就能擁有您的筆記庫。 </string>
-    <string name="onboarding_recovery_phrase_description_3">此時此刻，您是世界上唯一知道它的人。</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">地球上的所有電腦資源都不足以破解。 但如果您丟失了密鑰，它將無法復原，所以請將它保存在安全的地方！</string>
     <string name="onboarding_how_to_save_my_phrase">如何保存我的密鑰？</string>
     <string name="onboarding_how_to_save_my_phrase_2">保存密鑰的最簡單方式是將其保存在您的密碼管理器中。</string>
@@ -1639,7 +1669,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="chat_empty_state_title">This chat is empty.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_share_invite_button">分享邀請連結</string>
+    <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Write a message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">There is nothing here for this date yet</string>
@@ -1906,4 +1936,16 @@ Please provide specific details of your needs here.</string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publish to Web</string>
+    <string name="preferences">Preferences</string>
+    <string name="web_publishing_customize_url">Customize URL</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
+    <string name="web_publishing_unpublish">Unpublish</string>
+    <string name="web_publishing_update">更新</string>
+    <string name="web_publishing_publish">Publish</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">加入</string>
+    <plurals name="notification_messages_count">
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

@@ -676,5 +676,8 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun publishingRemove(request: Rpc.Publishing.Remove.Request): Rpc.Publishing.Remove.Response
 
+    @Throws(Exception::class)
+    fun publishingList(request: Rpc.Publishing.List.Request): Rpc.Publishing.List.Response
+
     //endregion
 }

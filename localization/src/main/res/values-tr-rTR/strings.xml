@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Camgöbeği</string>
     <string name="slash_widget_lime_color_title">Yeşil</string>
     <string name="slash_widget_background_item">%1$s arkaplan</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Bize Kendinizden Bahsedin</string>
+    <string name="onboarding_selection_description">Size en uygun rolü veya arka planı seçin</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Sanatçı / İçerik Üreticisi</string>
+    <string name="onboarding_selection_consultant">Danışman</string>
+    <string name="onboarding_selection_designer">Tasarımcı</string>
+    <string name="onboarding_selection_developer">Yazılım Geliştiricisi</string>
+    <string name="onboarding_selection_entrepreneur">Kurucu / Girişimci</string>
+    <string name="onboarding_selection_manager">Yönetici / BT Uzmanı</string>
+    <string name="onboarding_selection_marketer">Pazarlamacı</string>
+    <string name="onboarding_selection_researcher">Araştırmacı / Akademisyen</string>
+    <string name="onboarding_selection_student">Öğrenci</string>
+    <string name="onboarding_selection_writer">Yazar / Gazeteci</string>
+    <string name="onboarding_selection_other">Diğer</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">Anytype\'ı ne için kullanmak istiyorsunuz?</string>
+    <string name="onboarding_usecase_description">Size en uygun kullanım durumunu seçin</string>
+    <string name="onboarding_usecase_habit_tracking">Alışkanlık takibi</string>
+    <string name="onboarding_usecase_knowledge">Kişisel bilgi bankası / KBY</string>
+    <string name="onboarding_usecase_life_planning">Yaşam planlaması</string>
+    <string name="onboarding_usecase_messaging">Mesajlaşma &amp; grup sohbetleri</string>
+    <string name="onboarding_usecase_notes">Kişisel not alma</string>
+    <string name="onboarding_usecase_projects">Projeler &amp; görev yönetimi</string>
+    <string name="onboarding_usecase_team_work">Takım çalışması &amp; paylaşılan belgeler</string>
+    <string name="onboarding_usecase_other">Diğer</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Bir widget oluştur</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Tür ismi</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">her şeyin uygulaması</string>
-    <string name="onboarding_auth_subtitle">Şifreli, çevrimdışı\n&amp; açık</string>
-    <string name="onboarding_auth_description">Sahip olduğunuz alanlarda oluşturun &amp; işbirliği yapın. Şifreli, çevrimdışı &amp; açık.</string>
+    <string name="onboarding_auth_title">Şifreli, yerel,</string>
+    <string name="onboarding_auth_subtitle">sonsuza kadar sizin</string>
+    <string name="onboarding_auth_description">Şifreli, yerel,</string>
     <string name="onboarding_terms_and_policy_prefix">"Devam ederek şunları kabul etmiş olursunuz "</string>
     <string name="onboarding_terms_and_policy_terms">\u00A0Kullanım\u00A0koşulları</string>
     <string name="onboarding_terms_and_policy_infix">" ve "</string>
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Burada yeniyim</string>
-    <string name="onboarding_enter_my_vault">Sonraki</string>
+    <string name="onboarding_enter_my_vault">Devam et</string>
     <string name="onboarding_have_key_button_text">Anahtara zaten sahibim</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
@@ -1016,25 +1042,29 @@
     <string name="onboarding_void_title">Bu senin boşluğun</string>
     <string name="onboarding_void_description">Oluşturduğunuz her şey için şifrelenmiş bir konumdur. Her şey cihazınızda saklanır ve dağıtılmış ağda yedeklenir.</string>
     <string name="onboarding_this_is_your_key_title">Bu senin anahtarın</string>
-    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Onu güvende tutmalısınız. Verilerinizin kontrolü sizde olur. Daha sonra uygulama ayarlarında bulabilirsiniz.</string>
+    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde saklayın. Verilerinizden yalnızca siz sorumlusunuz. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsiniz.</string>
     <string name="onboarding_show_my_key">Anahtarımı Göster</string>
-    <string name="onboarding_tap_to_reveal">Göster ve kopyala</string>
+    <string name="onboarding_tap_to_reveal">Göster ve Kopyala</string>
     <string name="onboarding_key_skip">Atla</string>
-    <string name="onboarding_key_not_now">Şimdi değil</string>
+    <string name="onboarding_key_not_now">Daha sonra kaydedeceğim</string>
     <string name="onboarding_key_copy">Panoya kopyala</string>
     <string name="onboarding_soul_creation_placeholder">Anytype kimliği</string>
     <string name="onboarding_soul_creation">Kimliğiniz oluşturuluyor…</string>
-    <string name="onboarding_type_your_key">Kurtarma ifadenizi girin</string>
-    <string name="onboarding_login_or">YA DA</string>
+    <string name="onboarding_type_your_key">Anahtarınızı yazın</string>
+    <string name="onboarding_login_or">veya şununla girin</string>
+    <string name="onboarding_login_qr">Karekod</string>
     <string name="onboarding_entering_void_title">Void\'e giriliyor</string>
     <string name="onboarding_your_key_can_t_be_empty">Anahtar alanı boş olamaz</string>
     <string name="onboarding_your_name">Adınızı yazın</string>
-    <string name="onboarding_mnemonic_read_more">Daha fazlasını oku</string>
+    <string name="onboarding_mnemonic_read_more">Daha fazla bilgi edinin</string>
     <string name="onboarding_key_additional_info">Bu anahtarı daha sonra uygulama ayarlarında bulabilirsiniz.</string>
-    <string name="onboarding_what_is_the_key">Anahtar nedir?</string>
-    <string name="onboarding_recovery_phrase_description">Kurtarma anahtarınız bu cihazda sadece sizin için oluşturulan 12 rastgele kelimeden oluşur.</string>
-    <string name="onboarding_recovery_phrase_description_2">Bu kelimelerin kombinasyonunu bilen kişi kasanızın sahibidir. </string>
-    <string name="onboarding_recovery_phrase_description_3">Şu anda dünyada bunu bilen tek kişi sizsiniz.</string>
+    <string name="onboarding_what_is_the_key">Anahtar nasıl çalışır?</string>
+    <string name="onboarding_recovery_phrase_description_title">Bu sizin kullanıcı adınız ve şifrenizdir</string>
+    <string name="onboarding_recovery_phrase_description">Anahtarınız, bu cihazda kasayı oluşturan 12 rastgele kelimeden oluşan bir kurtarma cümlesi ile temsil edilir.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Anahtara kim sahip olursa erişim hakkı elde eder</string>
+    <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasanıza erişebilir. Şu anda bunları bilen tek kişi sizsiniz.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Bundan sadece siz sorumlusunuz</string>
+    <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarınızı kaybederseniz verilerinize erişemezsiniz. Anahtarınızı güvenli bir yerde saklayın. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsiniz.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Anahtarınızı saklamanın en kolay yolu onu şifre yöneticinize kaydetmektir.</string>
@@ -1652,7 +1682,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
     <string name="chat_empty_state_title">Bu sohbet boş.</string>
     <string name="chat_empty_state_subtitle">İnsanları davet edin ve sohbete başlayın!</string>
-    <string name="chat_empty_state_share_invite_button">Davet bağlantısını paylaş</string>
+    <string name="chat_empty_state_share_invite_button">Üyeleri davet edin</string>
     <string name="write_a_message">Bir mesaj yazın...</string>
     <string name="date_layout_mentioned_in">Bahsetmeler</string>
     <string name="date_layout_empty_items">Bu tarih için henüz bir şey yok</string>
@@ -1919,4 +1949,17 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     </string>
     <string name="private_local_yours_forever">Gizli, yerel, sonsuza kadar sizin</string>
     <string name="wallpaper_item_space_icon_color">Alan simgesi \nrengi</string>
+    <string name="publish_to_web">Web\'de Yayınla</string>
+    <string name="preferences">Tercihler</string>
+    <string name="web_publishing_customize_url">URL\'yi özelleştir</string>
+    <string name="web_publishing_join_space_button">Alana Katıl Butonu</string>
+    <string name="web_publishing_unpublish">Yayından kaldır</string>
+    <string name="web_publishing_update">Güncelle</string>
+    <string name="web_publishing_publish">Yayınla</string>
+    <string name="web_publishing_failed_to_update">Güncelleme başarısız oldu: %1$s</string>
+    <string name="web_publishing_join">Katıl</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d yeni mesaj</item>
+        <item quantity="other">%d yeni mesaj</item>
+    </plurals>
 </resources>

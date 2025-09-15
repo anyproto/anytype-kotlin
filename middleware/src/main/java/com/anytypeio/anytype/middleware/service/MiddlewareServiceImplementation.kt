@@ -2820,4 +2820,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun publishingList(request: Rpc.Publishing.List.Request): Rpc.Publishing.List.Response {
+        val encoded = Service.publishingList(
+            Rpc.Publishing.List.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Publishing.List.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Publishing.List.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

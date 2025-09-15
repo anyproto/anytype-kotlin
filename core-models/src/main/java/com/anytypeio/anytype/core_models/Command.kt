@@ -729,6 +729,10 @@ sealed class Command {
             val objectId: Id
         ) : Publishing()
 
+        data class GetList(
+            val space: SpaceId?
+        ) : Publishing()
+
         data class Create(
             val space: SpaceId,
             val objectId: Id,

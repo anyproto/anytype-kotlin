@@ -2,6 +2,7 @@ package com.anytypeio.anytype.ui.onboarding.screens.signup
 
 import android.util.Patterns
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -121,40 +122,63 @@ private fun OnboardingEmailScreen(
             .imePadding()
     ) {
         Column(
-            modifier = Modifier.align(Alignment.Center),
+            modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.Top,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Text(
+            Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                text = stringResource(R.string.onboarding_email_add_title),
-                color = colorResource(id = R.color.text_primary),
-                style = HeadlineTitleSemibold,
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp),
-                text = stringResource(R.string.onboarding_email_add_description),
-                style = UXBody,
-                color = colorResource(id = R.color.text_secondary),
-                textAlign = TextAlign.Center
-            )
-            Spacer(modifier = Modifier.height(32.dp))
-            OutlinedTextField(
-                enabled = !isLoading,
-                value = innerValue,
-                onValueChange = { input ->
-                    innerValue = input
-                    isError = false
-                },
-                shape = RoundedCornerShape(size = 16.dp),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
-                    .focusRequester(focusRequester),
+                    .height(48.dp)
+            ) {
+                Image(
+                    modifier = Modifier
+                        .padding(start = 16.dp)
+                        .align(Alignment.CenterStart)
+                        .noRippleClickable {
+                            onBackClicked()
+                        },
+                    painter = painterResource(id = R.drawable.ic_back_24),
+                    contentDescription = stringResource(R.string.content_description_back_button_icon)
+                )
+                Image(
+                    modifier = Modifier.align(Alignment.Center),
+                    painter = painterResource(id = R.drawable.ic_anytype_logo),
+                    contentDescription = "Anytype logo",
+                )
+            }
+            Spacer(modifier = Modifier.height(84.dp))
+            Column(
+                modifier = Modifier.padding(horizontal = 20.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.onboarding_email_add_title),
+                    color = colorResource(id = R.color.text_primary),
+                    style = HeadlineTitleSemibold,
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    modifier = Modifier.fillMaxWidth(),
+                    text = stringResource(R.string.onboarding_email_add_description),
+                    style = UXBody,
+                    color = colorResource(id = R.color.text_secondary),
+                    textAlign = TextAlign.Center
+                )
+                Spacer(modifier = Modifier.height(32.dp))
+                OutlinedTextField(
+                    enabled = !isLoading,
+                    value = innerValue,
+                    onValueChange = { input ->
+                        innerValue = input
+                        isError = false
+                    },
+                    shape = RoundedCornerShape(size = 16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
                 placeholder = {
                     Text(
                         text = stringResource(id = R.string.onboarding_enter_email),
@@ -189,19 +213,10 @@ private fun OnboardingEmailScreen(
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                 keyboardActions = KeyboardActions {
                     validateAndSubmit()
-                }
-            )
+                    }
+                )
+            }
         }
-        Image(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(top = 16.dp, start = 9.dp)
-                .noRippleClickable {
-                    onBackClicked()
-                },
-            painter = painterResource(id = R.drawable.ic_back_onboarding_32),
-            contentDescription = stringResource(R.string.content_description_back_button_icon)
-        )
         Column(
             modifier = Modifier
                 .fillMaxWidth()

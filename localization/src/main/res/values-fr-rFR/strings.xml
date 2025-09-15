@@ -949,6 +949,32 @@
     <string name="slash_widget_teal_color_title">Turquoise</string>
     <string name="slash_widget_lime_color_title">Vert</string>
     <string name="slash_widget_background_item">%1$s background</string>
+    <!-- Onboarding: persona selection & use cases (iOS parity) -->
+    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <!-- Persona options -->
+    <string name="onboarding_selection_artist">Artist / Content Creator</string>
+    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_designer">Designer</string>
+    <string name="onboarding_selection_developer">Software Developer</string>
+    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
+    <string name="onboarding_selection_manager">Manager / IT Professional</string>
+    <string name="onboarding_selection_marketer">Marketer</string>
+    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_student">Student</string>
+    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_other">Autre</string>
+    <!-- Use case options -->
+    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
+    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
+    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_notes">Personal note-taking</string>
+    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
+    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_other">Autre</string>
     <!--endregion-->
     <!--region WIDGETS -->
     <string name="create_widget">Create a widget</string>
@@ -1000,15 +1026,15 @@
     <string name="type_creation_placeholder">Type name</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">the everything app</string>
-    <string name="onboarding_auth_subtitle">Encrypted, offline\n&amp; open</string>
-    <string name="onboarding_auth_description">Créez et collaborez dans des espaces qui vous appartiennent. Chiffrés, hors ligne et ouverts.</string>
+    <string name="onboarding_auth_title">Encrypted, local,</string>
+    <string name="onboarding_auth_subtitle">yours forever</string>
+    <string name="onboarding_auth_description">Encrypted, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"By continuing you agree to "</string>
     <string name="onboarding_terms_and_policy_terms">Terms\u00A0of\u00A0Use</string>
     <string name="onboarding_terms_and_policy_infix">" and "</string>
     <string name="onboarding_terms_and_policy_privacy">Privacy\u00A0Policy</string>
     <string name="onboarding_new_vault_button_text">Je suis nouveau ici</string>
-    <string name="onboarding_enter_my_vault">Suivant</string>
+    <string name="onboarding_enter_my_vault">Continuer</string>
     <string name="onboarding_have_key_button_text">J\'ai déjà la clé</string>
     <string name="onboarding_get_my_key_button_text">Obtenir ma Clé</string>
     <string name="onboarding_invite_code_title">Enter your invite code</string>
@@ -1016,25 +1042,29 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ceci est votre clé</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — you control your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Afficher ma clé</string>
-    <string name="onboarding_tap_to_reveal">Révéler et copier</string>
+    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
     <string name="onboarding_key_skip">Ignorer</string>
-    <string name="onboarding_key_not_now">Plus tard</string>
+    <string name="onboarding_key_not_now">I’ll save it later</string>
     <string name="onboarding_key_copy">Copier dans le presse-papier</string>
     <string name="onboarding_soul_creation_placeholder">Anytype Identity</string>
     <string name="onboarding_soul_creation">Creating your Identity…</string>
-    <string name="onboarding_type_your_key">Saisissez votre phrase de récupération</string>
-    <string name="onboarding_login_or">OU</string>
+    <string name="onboarding_type_your_key">Tapez votre clé</string>
+    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_qr">Code QR</string>
     <string name="onboarding_entering_void_title">Entrer dans le Vide</string>
     <string name="onboarding_your_key_can_t_be_empty">Votre Clé ne peut pas être vide</string>
     <string name="onboarding_your_name">Type your name</string>
-    <string name="onboarding_mnemonic_read_more">Read more</string>
+    <string name="onboarding_mnemonic_read_more">En savoir plus</string>
     <string name="onboarding_key_additional_info">Vous pourrez trouver cette clé plus tard dans les paramètres de l\'application</string>
-    <string name="onboarding_what_is_the_key">Qu\'est-ce que la Clé ?</string>
-    <string name="onboarding_recovery_phrase_description">La phrase de récupération est une combinaison aléatoire de 12 mots à partir desquels votre compte est généré comme par magie sur cet appareil.</string>
-    <string name="onboarding_recovery_phrase_description_2">Quiconque connaît cette séquence de mots possède votre coffre.</string>
-    <string name="onboarding_recovery_phrase_description_3">En ce moment, vous êtes la seule personne au monde à la connaître.</string>
+    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">Toutes les ressources de calcul du monde ne suffiront pas à la briser. Si vous la perdez, elle ne pourra pas être récupérée. Alors, stockez-la dans un endroit sûr !</string>
     <string name="onboarding_how_to_save_my_phrase">Comment sauvegarder ma Clé ?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Le moyen le plus simple de stocker votre Clé est de l’enregistrer dans votre gestionnaire de mots de passe.</string>
@@ -1649,7 +1679,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="chat_empty_state_message">Il n\'y a pas encore de messages.\nSoyez le premier à lancer une discussion.</string>
     <string name="chat_empty_state_title">This chat is empty.</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_share_invite_button">Partager le lien d\'invitation</string>
+    <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Ecrire un message...</string>
     <string name="date_layout_mentioned_in">Mentions</string>
     <string name="date_layout_empty_items">Il n\'y a encore rien ici pour cette date</string>
@@ -1916,4 +1946,17 @@ Merci de décrire ici vos besoins spécifiques.</string>
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="publish_to_web">Publish to Web</string>
+    <string name="preferences">Préférences</string>
+    <string name="web_publishing_customize_url">Customize URL</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
+    <string name="web_publishing_unpublish">Unpublish</string>
+    <string name="web_publishing_update">Mettre à jour</string>
+    <string name="web_publishing_publish">Publish</string>
+    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_join">Rejoindre</string>
+    <plurals name="notification_messages_count">
+        <item quantity="one">%d new message</item>
+        <item quantity="other">%d new messages</item>
+    </plurals>
 </resources>

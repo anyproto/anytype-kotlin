@@ -3137,6 +3137,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State> {
+        val request = Rpc.Publishing.List.Request(
+            spaceId = command.space?.id ?: ""
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.publishingList(request) }
+        logResponseIfDebug(response, time)
+        return response.publishes.map { it.toCorePublishStatus() }
+    }
+
+    @Throws(Exception::class)
     fun publishingCreate(command: Command.Publishing.Create): String {
         val request = Rpc.Publishing.Create.Request(
             objectId = command.objectId,

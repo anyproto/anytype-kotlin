@@ -63,7 +63,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
@@ -1019,9 +1018,11 @@ private fun LazyItemScope.SystemTypeItem(
     isCreateObjectAllowed: Boolean
 ) {
     // Choose rendering based on widget layout, reusing existing widget cards
+    val mapper = ObjectTypesToWidgetsMapping.instance
+
     when (systemType.widgetLayout) {
         Block.Content.Widget.Layout.TREE -> {
-            val widgetView = systemType.toTreeWidgetView()
+            val widgetView = with(mapper) { systemType.toTreeWidgetView() }
             Box(modifier = modifier) {
                 TreeWidgetCard(
                     item = widgetView,
@@ -1046,7 +1047,7 @@ private fun LazyItemScope.SystemTypeItem(
             }
         }
         Block.Content.Widget.Layout.LIST -> {
-            val widgetView = systemType.toListWidgetView(isCompact = false)
+            val widgetView = with(mapper) { systemType.toListWidgetView(isCompact = false) }
             Box(modifier = modifier) {
                 ListWidgetCard(
                     item = widgetView,
@@ -1070,7 +1071,7 @@ private fun LazyItemScope.SystemTypeItem(
             }
         }
         Block.Content.Widget.Layout.COMPACT_LIST -> {
-            val widgetView = systemType.toListWidgetView(isCompact = true)
+            val widgetView = with(mapper) { systemType.toListWidgetView(isCompact = true) }
             Box(modifier = modifier) {
                 ListWidgetCard(
                     item = widgetView,
@@ -1094,7 +1095,7 @@ private fun LazyItemScope.SystemTypeItem(
             }
         }
         Block.Content.Widget.Layout.VIEW -> {
-            val widgetView = systemType.toSetOfObjectsWidgetView()
+            val widgetView = with(mapper) { systemType.toSetOfObjectsWidgetView() }
             Box(modifier = modifier) {
                 DataViewListWidgetCard(
                     item = widgetView,
@@ -1121,7 +1122,7 @@ private fun LazyItemScope.SystemTypeItem(
         }
         Block.Content.Widget.Layout.LINK,
         null -> {
-            val widgetView = systemType.toLinkWidgetView()
+            val widgetView = with(mapper) { systemType.toLinkWidgetView() }
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -1147,65 +1148,6 @@ private fun LazyItemScope.SystemTypeItem(
             }
         }
     }
-}
-
-// Extension functions to convert SystemTypeView to WidgetView types
-private fun SystemTypeView.toTreeWidgetView(): WidgetView.Tree {
-    return WidgetView.Tree(
-        id = id,
-        isLoading = false,
-        name = WidgetView.Name.Default(name),
-        source = toWidgetSource(),
-        elements = emptyList(), // System types don't have tree elements
-        isExpanded = false,
-        isEditable = false
-    )
-}
-
-private fun SystemTypeView.toListWidgetView(isCompact: Boolean): WidgetView.ListOfObjects {
-    return WidgetView.ListOfObjects(
-        id = id,
-        isLoading = false,
-        source = toWidgetSource(),
-        type = WidgetView.ListOfObjects.Type.Favorites, // Default type for system types
-        elements = emptyList(), // System types don't have list elements
-        isExpanded = true,
-        isCompact = isCompact
-    )
-}
-
-private fun SystemTypeView.toSetOfObjectsWidgetView(): WidgetView.SetOfObjects {
-    return WidgetView.SetOfObjects(
-        id = id,
-        isLoading = false,
-        source = toWidgetSource(),
-        tabs = emptyList(), // System types don't have tabs
-        elements = emptyList(), // System types don't have elements
-        isExpanded = true,
-        name = WidgetView.Name.Default(name)
-    )
-}
-
-private fun SystemTypeView.toLinkWidgetView(): WidgetView.Link {
-    return WidgetView.Link(
-        id = id,
-        isLoading = false,
-        name = WidgetView.Name.Default(name),
-        source = toWidgetSource()
-    )
-}
-
-private fun SystemTypeView.toWidgetSource(): Widget.Source {
-    return Widget.Source.Default(
-        obj = ObjectWrapper.Basic(
-            mapOf(
-                Relations.ID to id,
-                Relations.NAME to name,
-                Relations.TYPE to listOf(id), // System type references itself
-                Relations.LAYOUT to 0.0 // Basic layout
-            )
-        )
-    )
 }
 
 @Composable
@@ -1353,6 +1295,7 @@ private fun SystemTypeItemPreview() {
     LazyColumn {
         item {
             SystemTypeItem(
+                modifier = Modifier.fillMaxWidth(),
                 systemType = sampleSystemType,
                 onClicked = { },
                 onNewObjectClicked = { },
@@ -1375,6 +1318,7 @@ private fun SystemTypeItemWithFallbackIconPreview() {
     LazyColumn {
         item {
             SystemTypeItem(
+                modifier = Modifier.fillMaxWidth(),
                 systemType = sampleSystemType,
                 onClicked = { },
                 onNewObjectClicked = { },
@@ -1426,6 +1370,7 @@ private fun SystemTypesSectionPreview() {
             key = { _, systemType -> "systemType_${systemType.id}" }
         ) { _, systemType ->
             SystemTypeItem(
+                modifier = Modifier.fillMaxWidth(),
                 systemType = systemType,
                 onClicked = { },
                 onNewObjectClicked = { },

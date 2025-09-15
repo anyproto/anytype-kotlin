@@ -460,9 +460,20 @@ class HomeScreenViewModel(
                         .mapNotNull { objectType ->
                             val resolvedLayout =
                                 objectType.recommendedLayout ?: return@mapNotNull null
-                            if (!objectType.isValid || notAllowedTypesLayouts.contains(
+                            if (!objectType.isValid || listOf(
+                                    ObjectType.Layout.RELATION,
+                                    ObjectType.Layout.RELATION_OPTION,
+                                    ObjectType.Layout.DASHBOARD,
+                                    ObjectType.Layout.SPACE,
+                                    ObjectType.Layout.SPACE_VIEW,
+                                    ObjectType.Layout.TAG,
+                                    ObjectType.Layout.CHAT_DERIVED,
+                                    ObjectType.Layout.DATE,
+                                    ObjectType.Layout.OBJECT_TYPE,
+                                    ObjectType.Layout.PARTICIPANT
+                                ).contains(
                                     resolvedLayout
-                                ) || objectType.isArchived == true || objectType.isDeleted == true
+                                ) || objectType.isArchived == true || objectType.isDeleted == true || objectType.uniqueKey == ObjectTypeIds.TEMPLATE
                             ) {
                                 return@mapNotNull null
                             } else {

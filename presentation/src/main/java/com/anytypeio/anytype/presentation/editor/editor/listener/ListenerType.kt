@@ -29,14 +29,14 @@ sealed interface ListenerType {
 
     sealed class Picture: ListenerType {
         data class TitleView(val item: BlockView.Title.Basic) : Picture()
-        data class View(val target: String) : Picture()
+        data class View(val obj: Id, val target: String) : Picture()
         data class Placeholder(val target: String) : Picture()
         data class Upload(val target: String) : Picture()
         data class Error(val target: String) : Picture()
     }
 
     sealed class Video : ListenerType {
-        data class View(val target: String, val url: String) : Video()
+        data class View(val obj: Id, val target: String, val url: String) : Video()
         data class Placeholder(val target: String) : Video()
         data class Upload(val target: String) : Video()
         data class Error(val target: String) : Video()

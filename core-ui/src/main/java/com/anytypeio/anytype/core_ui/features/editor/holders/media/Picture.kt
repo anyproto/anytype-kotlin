@@ -49,7 +49,12 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
     }
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {
-        clicked(ListenerType.Picture.View(item.id))
+        clicked(
+            ListenerType.Picture.View(
+                target = item.id,
+                obj = item.id
+            )
+        )
     }
 
     @Deprecated("Pre-nested-styling legacy.")

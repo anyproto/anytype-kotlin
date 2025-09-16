@@ -25,7 +25,6 @@ import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -1084,10 +1083,10 @@ class ChatViewModel @Inject constructor(
                     val index = images.indexOfFirst {
                         it.target == attachment.target
                     }
-                    val urls = images.map { item -> urlBuilder.original(item.target) }
+                    val targets = images.map { item -> item.target }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
-                            urls = urls,
+                            objects = targets,
                             msg = msg,
                             idx = index
                         )
@@ -1115,10 +1114,9 @@ class ChatViewModel @Inject constructor(
                                 navigation.emit(wrapper.navigation())
                             }
                         } else if (wrapper.layout == ObjectType.Layout.AUDIO) {
-                            val hash = urlBuilder.original(wrapper.id)
                             commands.emit(
                                 ViewModelCommand.PlayAudio(
-                                    url = hash,
+                                    obj = wrapper.id,
                                     name = wrapper.name.orEmpty()
                                 )
                             )
@@ -1195,11 +1193,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onMediaPreview(msg: Id, urls: List<String>, index: Int) {
-        Timber.d("onMediaPreview, urls: $urls")
+    fun onMediaPreview(objects: List<Id>, index: Int) {
+        Timber.d("onMediaPreview, objects: $objects")
         viewModelScope.launch {
             commands.emit(
-                ViewModelCommand.MediaPreview(index = index, urls = urls)
+                ViewModelCommand.MediaPreview(
+                    index = index,
+                    targets = objects
+                )
             )
         }
     }
@@ -1648,9 +1649,9 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
-        data class MediaPreview(val index: Int, val urls: List<String>) : ViewModelCommand()
+        data class MediaPreview(val index: Int, val targets: List<Id>) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
-        data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
+        data class PlayAudio(val obj: Id, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
@@ -1664,7 +1665,7 @@ class ChatViewModel @Inject constructor(
         data class SetChatBoxInput(val input: String) : UXCommand()
         data class OpenFullScreenImage(
             val msg: ChatView.Message,
-            val urls: List<String>,
+            val objects: List<Id>,
             val idx: Int = 0
         ) : UXCommand()
         data object ShowRateLimitWarning: UXCommand()

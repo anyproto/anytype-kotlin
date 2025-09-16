@@ -13,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
@@ -89,8 +90,8 @@ class MediaActivity : ComponentActivity() {
     }
 
     private fun processIntentData() {
-        val urls = intent
-            .getStringArrayListExtra(EXTRA_URL)
+        val objects = intent
+            .getStringArrayListExtra(EXTRA_OBJECTS)
             ?.toList()
             .orEmpty()
         val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
@@ -98,9 +99,9 @@ class MediaActivity : ComponentActivity() {
         val index = intent.getIntExtra(EXTRA_IMAGE_INDEX, 0)
         
         when (mediaType) {
-            TYPE_IMAGE -> vm.processImage(urls, index)
-            TYPE_VIDEO -> vm.processVideo(urls.firstOrNull().orEmpty())
-            TYPE_AUDIO -> vm.processAudio(urls.firstOrNull().orEmpty(), name.orEmpty())
+            TYPE_IMAGE -> vm.processImage(objects, index)
+            TYPE_VIDEO -> vm.processVideo(objects.firstOrNull().orEmpty())
+            TYPE_AUDIO -> vm.processAudio(objects.firstOrNull().orEmpty(), name.orEmpty())
             else -> {
                 Timber.e("Invalid media type: $mediaType")
                 finish()
@@ -123,19 +124,19 @@ class MediaActivity : ComponentActivity() {
         const val TYPE_AUDIO = 3
         private const val TYPE_UNKNOWN = 0
 
-        private const val EXTRA_URL = "extra_url"
+        private const val EXTRA_OBJECTS = "extra_object_ids"
         private const val EXTRA_IMAGE_INDEX = "extra_image_index"
         private const val EXTRA_MEDIA_TYPE = "extra_media_type"
         private const val EXTRA_MEDIA_NAME = "extra_media_name"
 
         fun start(
             context: Context,
-            url: String,
+            obj: Id,
             mediaType: Int,
             name: String? = null
         ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
-                putStringArrayListExtra(EXTRA_URL, arrayListOf(url))
+                putStringArrayListExtra(EXTRA_OBJECTS, arrayListOf(obj))
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
@@ -148,13 +149,13 @@ class MediaActivity : ComponentActivity() {
          */
         fun start(
             context: Context,
-            urls: List<String>,
+            objects: List<Id>,
             mediaType: Int,
             name: String? = null,
             index: Int = 0
         ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
-                putStringArrayListExtra(EXTRA_URL, ArrayList(urls))
+                putStringArrayListExtra(EXTRA_OBJECTS, ArrayList(objects))
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
                 putExtra(EXTRA_IMAGE_INDEX, index)

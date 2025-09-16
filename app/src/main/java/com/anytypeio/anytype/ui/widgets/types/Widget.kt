@@ -80,6 +80,7 @@ fun WidgetView.Name.getPrettyName(): String {
     return when (this) {
         is WidgetView.Name.Bundled -> stringResource(id = source.res())
         is WidgetView.Name.Default -> prettyPrintName.ifEmpty { stringResource(id = R.string.untitled) }
+        WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
     }
 }
 

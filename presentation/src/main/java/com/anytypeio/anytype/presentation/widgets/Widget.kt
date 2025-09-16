@@ -101,7 +101,7 @@ sealed class Widget {
         data class Pinned(
             override val id: Id = SECTION_PINNED,
             override val source: Source = Source.Other,
-            override val config: Config = Config.EMPTY,
+            override val config: Config,
             override val isAutoCreated: Boolean = false,
             override val icon: ObjectIcon = ObjectIcon.None
         ) : Section()
@@ -109,7 +109,7 @@ sealed class Widget {
         data class ObjectType(
             override val id: Id = SECTION_OBJECT_TYPE,
             override val source: Source = Source.Other,
-            override val config: Config = Config.EMPTY,
+            override val config: Config,
             override val isAutoCreated: Boolean = false,
             override val icon: ObjectIcon = ObjectIcon.None
         ) : Section()

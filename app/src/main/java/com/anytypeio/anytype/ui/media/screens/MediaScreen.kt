@@ -137,7 +137,10 @@ fun ImageGallery(
         ) {
             MediaActionToolbar(
                 modifier = Modifier.padding(bottom = 32.dp),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                onDownloadClick = onDownloadClick,
+                onDeleteClick = onDeleteClick,
+                onOpenClick = onOpenClick
             )
         }
     }

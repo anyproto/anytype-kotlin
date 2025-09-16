@@ -68,13 +68,13 @@ import timber.log.Timber
 @Composable
 fun ImageGallery(
     urls: List<String>,
-    initialPage: Int = 0,
+    index: Int = 0,
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
     onDeleteClick: () -> Unit = {}
 ) {
-    val pagerState = rememberPagerState(initialPage = initialPage) { urls.size }
+    val pagerState = rememberPagerState(initialPage = index) { urls.size }
     var chromeVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(pagerState.settledPage) {
@@ -235,6 +235,7 @@ fun VideoPlayerBox(
 @Composable
 fun ImageGalleryBox(
     urls: List<String> =  emptyList(),
+    index: Int = 0,
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
@@ -243,6 +244,7 @@ fun ImageGalleryBox(
     Box(modifier = Modifier.fillMaxSize()) {
         ImageGallery(
             urls = urls,
+            index = index,
             onBackClick = onBackClick,
             onDownloadClick = onDownloadClick,
             onDeleteClick = onDeleteClick,

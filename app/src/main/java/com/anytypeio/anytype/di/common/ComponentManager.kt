@@ -14,6 +14,7 @@ import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
+import com.anytypeio.anytype.di.feature.DaggerMediaComponent
 import com.anytypeio.anytype.di.feature.DaggerMySitesComponent
 import com.anytypeio.anytype.di.feature.DaggerPublishToWebComponent
 import com.anytypeio.anytype.di.feature.DaggerSpacePropertiesComponent
@@ -1144,6 +1145,12 @@ class ComponentManager(
         DaggerMySitesComponent
             .factory()
             .create(params, findComponentDependencies())
+    }
+
+    val mediaComponent = Component {
+        DaggerMediaComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

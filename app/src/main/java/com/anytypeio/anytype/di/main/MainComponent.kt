@@ -16,6 +16,7 @@ import com.anytypeio.anytype.di.feature.EditorSubComponent
 import com.anytypeio.anytype.di.feature.KeychainPhraseSubComponent
 import com.anytypeio.anytype.di.feature.LinkToObjectDependencies
 import com.anytypeio.anytype.di.feature.MainEntrySubComponent
+import com.anytypeio.anytype.di.feature.MediaDependencies
 import com.anytypeio.anytype.di.feature.MoveToDependencies
 import com.anytypeio.anytype.di.feature.MySitesDependencies
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
@@ -146,7 +147,8 @@ interface MainComponent :
     SpacePropertiesDependencies,
     PushContentDependencies,
     PublishToWebDependencies,
-    MySitesDependencies
+    MySitesDependencies,
+    MediaDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -426,4 +428,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MySitesDependencies::class)
     abstract fun mySitesDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(MediaDependencies::class)
+    abstract fun mediaDependencies(component: MainComponent): ComponentDependencies
 }

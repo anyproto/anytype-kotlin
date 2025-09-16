@@ -1064,14 +1064,32 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: ChatView.Message.Attachment) {
-        Timber.d("onAttachmentClicked")
+    fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
+        Timber.d("onAttachmentClicked: m")
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
+                    val images = msg.attachments
+                        .flatMap { a ->
+                            when (a) {
+                                is ChatView.Message.Attachment.Image -> {
+                                    listOf(a)
+                                }
+                                is ChatView.Message.Attachment.Gallery -> {
+                                    a.images
+                                }
+                                else -> { emptyList() }
+                            }
+                        }
+                    val index = images.indexOfFirst {
+                        it.target == attachment.target
+                    }
+                    val urls = images.map { item -> urlBuilder.original(item.target) }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
-                            url = urlBuilder.original(attachment.target)
+                            urls = urls,
+                            msg = msg,
+                            idx = index
                         )
                     )
                 }
@@ -1177,11 +1195,11 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onMediaPreview(url: String) {
-        Timber.d("onMediaPreview, url: $url")
+    fun onMediaPreview(msg: Id, urls: List<String>, index: Int) {
+        Timber.d("onMediaPreview, urls: $urls")
         viewModelScope.launch {
             commands.emit(
-                ViewModelCommand.MediaPreview(urls = listOf(url))
+                ViewModelCommand.MediaPreview(index = index, urls = urls)
             )
         }
     }
@@ -1630,7 +1648,7 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
-        data class MediaPreview(val urls: List<String>) : ViewModelCommand()
+        data class MediaPreview(val index: Int, val urls: List<String>) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
         data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
@@ -1644,7 +1662,11 @@ class ChatViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
-        data class OpenFullScreenImage(val url: String) : UXCommand()
+        data class OpenFullScreenImage(
+            val msg: ChatView.Message,
+            val urls: List<String>,
+            val idx: Int = 0
+        ) : UXCommand()
         data object ShowRateLimitWarning: UXCommand()
     }
 

@@ -68,14 +68,12 @@ class MediaActivity : ComponentActivity() {
                                 finish()
                             },
                             onOpenClick = {
-                                // TODO
+                                // TODO Will be implemented later due to navigational architecture concerns. Currently hidden.
                             },
                             onDownloadClick = {
                                 // TODO
                             },
-                            onDeleteClick = {
-                                // TODO
-                            }
+                            onDeleteClick = vm::onDeleteObject
                         )
                     }
                     is MediaViewState.AudioContent -> {

@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ import javax.inject.Inject
 
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
-    private val deleteObjects: DeleteObjects,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow<MediaViewState>(MediaViewState.Loading)
@@ -69,9 +70,10 @@ class MediaViewModel(
 
     fun onDeleteObject(id: Id) {
         viewModelScope.launch {
-            deleteObjects.async(
-                params = DeleteObjects.Params(
-                    targets = listOf(id)
+            setObjectListIsArchived.async(
+                params = SetObjectListIsArchived.Params(
+                    targets = listOf(id),
+                    isArchived = true
                 )
             )
         }
@@ -102,13 +104,13 @@ class MediaViewModel(
 
     class Factory @Inject constructor(
         private val urlBuilder: UrlBuilder,
-        private val deleteObjects: DeleteObjects
+        private val setObjectListIsArchived: SetObjectListIsArchived
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MediaViewModel(
                 urlBuilder = urlBuilder,
-                deleteObjects = deleteObjects
+                setObjectListIsArchived = setObjectListIsArchived
             ) as T
         }
     }

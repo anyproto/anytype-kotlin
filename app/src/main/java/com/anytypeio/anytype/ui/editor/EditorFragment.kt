@@ -1149,7 +1149,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_IMAGE,
-                            obj = command.target
+                            obj = command.obj
                         )
                     }.onFailure {
                         Timber.e(it, "Error while launching media image viewer")

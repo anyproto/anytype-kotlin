@@ -311,15 +311,15 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.onClickListener(
             clicked = ListenerType.Picture.View(
-                obj = fileBlock.id,
-                target = fileObject.id
+                obj = fileObject.id,
+                target = fileBlock.id
             )
         )
         advanceUntilIdle()
 
         vm.commands.test().assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
-                target = fileBlock.id,
+                obj = fileObject.id,
                 url = builder.large(fileObject.id)
             )
         }

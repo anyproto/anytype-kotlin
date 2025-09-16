@@ -81,7 +81,7 @@ sealed class Command {
     data object AlertDialog : Command()
 
     data class OpenFullScreenImage(
-        val target: Id,
+        val obj: Id,
         val url: Url
     ) : Command()
 

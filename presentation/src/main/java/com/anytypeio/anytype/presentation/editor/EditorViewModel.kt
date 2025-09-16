@@ -3963,7 +3963,7 @@ class EditorViewModel(
                         if (!clicked.item.image.isNullOrEmpty()){
                             dispatch(
                                 Command.OpenFullScreenImage(
-                                    target = vmParams.ctx,
+                                    obj = vmParams.ctx,
                                     url = clicked.item.image
                                 )
                             )
@@ -3986,7 +3986,7 @@ class EditorViewModel(
                         if (url != null ) {
                             dispatch(
                                 Command.OpenFullScreenImage(
-                                    target = clicked.target,
+                                    obj = clicked.obj,
                                     url = url
                                 )
                             )
@@ -4348,7 +4348,7 @@ class EditorViewModel(
                 dispatch(
                     Command.OpenFullScreenImage(
                         url = urlBuilder.original(vmParams.ctx),
-                        target = vmParams.ctx
+                        obj = vmParams.ctx
                     )
                 )
             }

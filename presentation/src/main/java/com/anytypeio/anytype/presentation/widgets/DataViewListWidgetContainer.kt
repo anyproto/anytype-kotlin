@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.`object`.GetObject.*
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -25,6 +26,9 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.widgets.WidgetView.*
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.*
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -58,43 +62,45 @@ class DataViewListWidgetContainer(
         }
     }
 
-    override val view : Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val loadingStateView = when(widget) {
+                    val loadingStateView = when (widget) {
                         is Widget.List -> {
-                            WidgetView.SetOfObjects(
+                            SetOfObjects(
                                 id = widget.id,
                                 source = widget.source,
                                 tabs = emptyList(),
                                 elements = emptyList(),
                                 isExpanded = !isCollapsed,
+                                icon = widget.icon,
                                 isCompact = widget.isCompact,
                                 isLoading = true,
-                                name = when(val source = widget.source) {
-                                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                                    is Widget.Source.Default ->  WidgetView.Name.Default(
-                                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                                    )
-                                }
+                                name = widget.source.getPrettyName(fieldParser)
                             )
                         }
                         is Widget.View -> {
-                            WidgetView.Gallery(
+                            Gallery(
                                 id = widget.id,
                                 source = widget.source,
                                 tabs = emptyList(),
                                 elements = emptyList(),
                                 isExpanded = !isCollapsed,
                                 isLoading = true,
-                                name =  WidgetView.Name.Default(
-                                    prettyPrintName = fieldParser.getObjectPluralName(widget.source.obj)
-                                )
+                                icon = widget.icon,
+                                name = widget.source.getPrettyName(fieldParser)
                             )
                         }
                         is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
                             throw IllegalStateException("Incompatible widget type.")
+                        }
+                        is Widget.Section.ObjectType -> {
+                            Section.ObjectTypes
+                        }
+                        is Widget.Section.Pinned -> {
+                            Section.Pinned
                         }
                     }
                     if (isCollapsed) {
@@ -108,6 +114,7 @@ class DataViewListWidgetContainer(
             emptyFlow()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow() : Flow<WidgetView> = combine(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
@@ -120,38 +127,41 @@ class DataViewListWidgetContainer(
                     when(widget) {
                         is Widget.List -> {
                             flowOf(
-                                WidgetView.SetOfObjects(
+                                SetOfObjects(
                                     id = widget.id,
                                     source = widget.source,
+                                    icon = widget.icon,
                                     tabs = emptyList(),
                                     elements = emptyList(),
                                     isExpanded = false,
                                     isCompact = isCompact,
-                                    name = when(val source = widget.source) {
-                                        is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                                        is Widget.Source.Default ->  WidgetView.Name.Default(
-                                            prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                                        )
-                                    }
+                                    name = widget.source.getPrettyName(fieldParser)
                                 )
                             )
                         }
+
                         is Widget.View -> {
                             flowOf(
-                                WidgetView.Gallery(
+                                Gallery(
                                     id = widget.id,
                                     source = widget.source,
+                                    icon = widget.icon,
                                     tabs = emptyList(),
                                     elements = emptyList(),
                                     isExpanded = false,
-                                    name =  WidgetView.Name.Default(
-                                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                                    )
+                                    name = widget.source.getPrettyName(fieldParser)
                                 )
                             )
                         }
+
                         is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat -> {
                             throw IllegalStateException("Incompatible widget type.")
+                        }
+                        is Widget.Section.ObjectType -> {
+                            flowOf(Section.ObjectTypes)
+                        }
+                        is Widget.Section.Pinned -> {
+                            flowOf(Section.Pinned)
                         }
                     }
                 } else {
@@ -159,7 +169,7 @@ class DataViewListWidgetContainer(
                         flowOf(defaultEmptyState())
                     } else {
                         val obj = getObject.run(
-                            GetObject.Params(
+                            Params(
                                 target = widget.source.id,
                                 space = SpaceId(widget.config.space)
                             )
@@ -181,7 +191,7 @@ class DataViewListWidgetContainer(
                                 limit = when (widget) {
                                     is Widget.List -> widget.limit
                                     is Widget.View -> widget.limit
-                                    is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat -> {
+                                    is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
                                         throw IllegalStateException("Incompatible widget type.")
                                     }
                                 }
@@ -210,6 +220,62 @@ class DataViewListWidgetContainer(
                         }
                     }
                 }
+            }
+            is Widget.Source.ObjectType -> {
+                val isCompact = widget is Widget.List && widget.isCompact
+                val obj = getObject.run(
+                    Params(
+                        target = widget.source.id,
+                        space = SpaceId(widget.config.space)
+                    )
+                )
+                val dv = obj.blocks.find { it.content is DV }?.content
+                val target = if (dv is DV) {
+                    dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
+                } else {
+                    null
+                }
+                val params = obj.parseDataViewStoreSearchParams(
+                    subscription = widget.id,
+                    viewer = view,
+                    source = source.obj,
+                    config = widget.config,
+                    limit = WidgetConfig.resolveListWidgetLimit(
+                        isCompact = isCompact,
+                        isGallery = target?.type == DVViewerType.GALLERY,
+                        limit = when (widget) {
+                            is Widget.List -> widget.limit
+                            is Widget.View -> widget.limit
+                            is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+                                throw IllegalStateException("Incompatible widget type.")
+                            }
+                        }
+                    )
+                )
+                if (params != null) {
+                    if (widget is Widget.View && target?.type == DVViewerType.GALLERY) {
+                        galleryWidgetSubscribe(
+                            obj = obj,
+                            activeView = view,
+                            params = params,
+                            target = target,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
+                    } else {
+                        defaultWidgetSubscribe(
+                            obj = obj,
+                            activeView = view,
+                            params = params,
+                            isCompact = isCompact,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
+                    }
+                } else {
+                    flowOf(defaultEmptyState())
+                }
+            }
+            Widget.Source.Other -> {
+                flowOf(defaultEmptyState())
             }
         }
     }.catch { e ->
@@ -269,20 +335,14 @@ class DataViewListWidgetContainer(
                         } else {
                             null
                         },
-                        name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectPluralName(obj)
-                        )
+                        name = Default(prettyPrintName = fieldParser.getObjectPluralName(obj))
                     )
                 },
                 isExpanded = true,
                 showIcon = withIcon,
                 showCover = withCover,
-                name = when(val source = widget.source) {
-                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                    is Widget.Source.Default -> WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                    )
-                }
+                icon = widget.icon,
+                name = widget.source.getPrettyName(fieldParser)
             )
         }
     }
@@ -318,46 +378,38 @@ class DataViewListWidgetContainer(
                 },
                 isExpanded = true,
                 isCompact = isCompact,
-                name = when(val source = widget.source) {
-                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                    is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                    )
-                }
+                icon = widget.icon,
+                name = widget.source.getPrettyName(fieldParser)
             )
         }
     }
 
     private fun defaultEmptyState() : WidgetView {
         return when(widget) {
-            is Widget.List -> WidgetView.SetOfObjects(
+            is Widget.List -> SetOfObjects(
                 id = widget.id,
                 source = widget.source,
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = true,
                 isCompact = widget.isCompact,
-                name = when(val source = widget.source) {
-                    is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                    is Widget.Source.Default ->  WidgetView.Name.Default(
-                        prettyPrintName = fieldParser.getObjectPluralName(source.obj)
-                    )
-                }
+                icon = widget.icon,
+                name = widget.source.getPrettyName(fieldParser)
             )
-            is Widget.View -> WidgetView.Gallery(
+            is Widget.View -> Gallery(
                 id = widget.id,
                 source = widget.source,
+                icon = widget.icon,
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = true,
                 view = null,
-                name =  WidgetView.Name.Default(
-                    prettyPrintName = fieldParser.getObjectPluralName(widget.source.obj)
-                )
+                name = widget.source.getPrettyName(fieldParser)
             )
-            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
+            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
+            is Widget.Section.ObjectType -> TODO()
         }
     }
 }
@@ -397,6 +449,43 @@ fun ObjectView.parseDataViewStoreSearchParams(
         },
         limit = limit,
         source = source.setOf,
+        collection = if (isCollection())
+            root
+        else
+            null
+    )
+}
+
+fun ObjectView.parseDataViewStoreSearchParams(
+    subscription: Id,
+    limit: Int,
+    config: Config,
+    source: ObjectWrapper.Type,
+    viewer: Id?
+): StoreSearchParams? {
+    if (source.isArchived == true || source.isDeleted == true) return null
+    val block = blocks.find { it.content is DV } ?: return null
+    val dv = block.content<DV>()
+    val view = dv.viewers.find { it.id == viewer } ?: dv.viewers.firstOrNull() ?: return null
+    val dataViewKeys = dv.relationLinks.map { it.key }
+    val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
+    return StoreSearchParams(
+        space = SpaceId(config.space),
+        subscription =subscription,
+        sorts = view.sorts,
+        keys = buildList {
+            addAll(defaultKeys)
+            addAll(dataViewKeys)
+            add(Relations.DESCRIPTION)
+        }.distinct(),
+        filters = buildList {
+            addAll(view.filters)
+            addAll(
+                ObjectSearchConstants.defaultDataViewFilters()
+            )
+        },
+        limit = limit,
+        source = listOf(source.id),
         collection = if (isCollection())
             root
         else

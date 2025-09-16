@@ -3,6 +3,8 @@ package com.anytypeio.anytype.di.feature
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -41,4 +43,6 @@ object MediaModule {
 
 interface MediaDependencies : ComponentDependencies {
     fun urlBuilder(): UrlBuilder
+    fun repo(): BlockRepository
+    fun dispatchers(): AppCoroutineDispatchers
 }

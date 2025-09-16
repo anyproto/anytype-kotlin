@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -12,7 +13,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class MediaViewModel(
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val deleteObjects: DeleteObjects,
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow<MediaViewState>(MediaViewState.Loading)
@@ -26,7 +28,12 @@ class MediaViewModel(
             }
 
             _viewState.value = MediaViewState.ImageContent(
-                urls = objects.map { urlBuilder.large(it) },
+                images = objects.map {
+                    MediaViewState.ImageContent.Image(
+                        obj = it,
+                        url = urlBuilder.large(it)
+                    )
+                },
                 currentIndex = index
             )
         }
@@ -60,13 +67,28 @@ class MediaViewModel(
         }
     }
 
+    fun onDeleteObject(id: Id) {
+        viewModelScope.launch {
+            deleteObjects.async(
+                params = DeleteObjects.Params(
+                    targets = listOf(id)
+                )
+            )
+        }
+    }
+
     sealed class MediaViewState {
         data object Loading : MediaViewState()
         data class Error(val message: String) : MediaViewState()
         data class ImageContent(
-            val urls: List<String>,
+            val images: List<Image>,
             val currentIndex: Int
-        ) : MediaViewState()
+        ) : MediaViewState() {
+            data class Image(
+                val obj: Id,
+                val url: String
+            )
+        }
 
         data class VideoContent(
             val url: String
@@ -79,12 +101,14 @@ class MediaViewModel(
     }
 
     class Factory @Inject constructor(
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val deleteObjects: DeleteObjects
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MediaViewModel(
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                deleteObjects = deleteObjects
             ) as T
         }
     }

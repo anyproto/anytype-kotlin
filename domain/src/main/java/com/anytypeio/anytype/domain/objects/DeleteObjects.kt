@@ -4,12 +4,13 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import javax.inject.Inject
 
 /**
  * Use-case for deleting objects.
  * @see SetObjectListIsArchived
  */
-class DeleteObjects(
+class DeleteObjects @Inject constructor(
     private val repo: BlockRepository,
     dispatchers: AppCoroutineDispatchers
 ) : ResultInteractor<DeleteObjects.Params, Unit>(dispatchers.io) {

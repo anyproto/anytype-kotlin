@@ -62,7 +62,7 @@ class MediaActivity : ComponentActivity() {
                     }
                     is MediaViewState.ImageContent -> {
                         ImageGalleryBox(
-                            urls = state.urls,
+                            images = state.images,
                             index = state.currentIndex,
                             onBackClick = {
                                 finish()

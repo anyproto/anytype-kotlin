@@ -49,7 +49,7 @@ fun MediaActionToolbar(
         )
 
         Image(
-            modifier = Modifier.clickable { onDownloadClick() },
+            modifier = Modifier.noRippleClickable { onDownloadClick() },
             painter = painterResource(R.drawable.ic_object_action_download),
             contentDescription = null
         )
@@ -65,7 +65,7 @@ fun MediaActionToolbar(
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 20.dp)
-                .clickable { onDeleteClick() }
+                .noRippleClickable { onDeleteClick() }
         )
     }
 }

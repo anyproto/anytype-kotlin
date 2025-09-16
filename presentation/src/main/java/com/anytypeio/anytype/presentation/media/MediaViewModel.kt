@@ -4,19 +4,27 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlinx.coroutines.flow.SharedFlow
+import timber.log.Timber
 
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived
 ) : BaseViewModel() {
+
+    private val _commands = MutableSharedFlow<Command>()
+    val commands: SharedFlow<Command> = _commands
 
     private val _viewState = MutableStateFlow<MediaViewState>(MediaViewState.Loading)
     val viewState = _viewState.asStateFlow()
@@ -75,7 +83,11 @@ class MediaViewModel(
                     targets = listOf(id),
                     isArchived = true
                 )
-            )
+            ).onFailure {
+                Timber.e(it, "Error while archiving media object")
+            }.onSuccess {
+                _commands.emit(Command.Dismiss)
+            }
         }
     }
 
@@ -100,6 +112,10 @@ class MediaViewModel(
             val url: String,
             val name: String
         ) : MediaViewState()
+    }
+
+    sealed class Command {
+        data object Dismiss : Command()
     }
 
     class Factory @Inject constructor(

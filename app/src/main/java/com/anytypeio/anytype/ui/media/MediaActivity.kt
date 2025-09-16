@@ -11,9 +11,13 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
@@ -22,6 +26,7 @@ import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
 import java.util.ArrayList
 import javax.inject.Inject
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class MediaActivity : ComponentActivity() {
@@ -40,6 +45,8 @@ class MediaActivity : ComponentActivity() {
         if (BuildConfig.DEBUG) {
             Timber.d("MediaActivity created")
         }
+
+        proceedWithCommands()
 
         setContent {
 
@@ -81,6 +88,22 @@ class MediaActivity : ComponentActivity() {
                             name = state.name,
                             url = state.url
                         )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithCommands() {
+        lifecycleScope.launch {
+            repeatOnLifecycle(Lifecycle.State.STARTED) {
+                launch {
+                    vm.commands.collect { command ->
+                        when (command) {
+                            MediaViewModel.Command.Dismiss -> {
+                                finish()
+                            }
+                        }
                     }
                 }
             }

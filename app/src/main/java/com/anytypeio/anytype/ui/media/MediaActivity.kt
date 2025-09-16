@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
@@ -92,8 +93,11 @@ class MediaActivity : ComponentActivity() {
                 launch {
                     vm.commands.collect { command ->
                         when (command) {
-                            MediaViewModel.Command.Dismiss -> {
+                            is MediaViewModel.Command.Dismiss -> {
                                 finish()
+                            }
+                            is MediaViewModel.Command.ShowToast -> {
+                                toast(command.message)
                             }
                         }
                     }

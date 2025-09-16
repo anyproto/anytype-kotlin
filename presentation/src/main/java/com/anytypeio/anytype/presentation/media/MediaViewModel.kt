@@ -105,6 +105,9 @@ class MediaViewModel(
             ).proceed(
                 failure = {
                     Timber.e(it, "Error while downloading media object")
+                    _commands.emit(
+                        Command.ShowToast("Error while downloading media object: ${it.message}")
+                    )
                 },
                 success = {
                     // TODO emit toast.
@@ -138,6 +141,7 @@ class MediaViewModel(
 
     sealed class Command {
         data object Dismiss : Command()
+        data class ShowToast(val message: String) : Command()
     }
 
     class Factory @Inject constructor(

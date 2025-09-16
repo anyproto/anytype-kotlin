@@ -184,8 +184,8 @@ class ChatFragment : Fragment() {
                             )
                         }
                     },
-                    onRequestOpenFullScreenImageGallery = { id, url, index ->
-                        vm.onMediaPreview(id, url, index)
+                    onRequestOpenFullScreenImageGallery = { id, urls, index ->
+                        vm.onMediaPreview(id, urls, index)
                                                           },
                     onSelectChatReaction = vm::onSelectChatReaction,
                     onViewChatReaction = { msg, emoji ->

@@ -1065,12 +1065,22 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
-        Timber.d("onAttachmentClicked")
+        Timber.d("onAttachmentClicked: m")
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
                     val images = msg.attachments
-                        .filterIsInstance<ChatView.Message.Attachment.Image>()
+                        .flatMap { a ->
+                            when (a) {
+                                is ChatView.Message.Attachment.Image -> {
+                                    listOf(a)
+                                }
+                                is ChatView.Message.Attachment.Gallery -> {
+                                    a.images
+                                }
+                                else -> { emptyList() }
+                            }
+                        }
                     val index = images.indexOfFirst {
                         it.target == attachment.target
                     }

@@ -5,20 +5,30 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.anytypeio.anytype.BuildConfig
+import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
 import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
 import java.util.ArrayList
+import javax.inject.Inject
 import timber.log.Timber
 
 class MediaActivity : ComponentActivity() {
 
+    @Inject
+    lateinit var factory: MediaViewModel.Factory
+
+    private val vm by viewModels<MediaViewModel> { factory }
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        inject()
         super.onCreate(savedInstanceState)
         val urls = intent
             .getStringArrayListExtra(EXTRA_URL)
@@ -70,6 +80,15 @@ class MediaActivity : ComponentActivity() {
                 }
             }
         }
+    }
+
+    private fun inject() {
+        componentManager().mediaComponent.get().inject(this)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        componentManager().mediaComponent.release()
     }
 
     companion object {

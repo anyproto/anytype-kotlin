@@ -311,7 +311,8 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.onClickListener(
             clicked = ListenerType.Picture.View(
-                target = fileBlock.id
+                obj = fileBlock.id,
+                target = fileObject.id
             )
         )
         advanceUntilIdle()

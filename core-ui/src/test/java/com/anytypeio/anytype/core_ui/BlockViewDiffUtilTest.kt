@@ -722,6 +722,7 @@ class BlockViewDiffUtilTest {
 
         val oldBlock = BlockView.Media.Bookmark(
             id = id,
+            targetObjectId = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             faviconUrl = MockDataFactory.randomString(),
             imageUrl = MockDataFactory.randomString(),

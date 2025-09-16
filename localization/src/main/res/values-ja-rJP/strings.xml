@@ -1946,6 +1946,10 @@
     <string name="web_publishing_publish">公開</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
     <string name="web_publishing_join">参加</string>
+    <string name="settings_my_sites">My sites</string>
+    <string name="web_publishing_view_object">View Object</string>
+    <string name="web_publishing_open_in_browser">Open in Browser</string>
+    <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

@@ -52,7 +52,7 @@ class Picture(val binding: ItemBlockPictureBinding) : Media(binding.root), Decor
         clicked(
             ListenerType.Picture.View(
                 target = item.id,
-                obj = item.id
+                obj = item.targetObjectId
             )
         )
     }

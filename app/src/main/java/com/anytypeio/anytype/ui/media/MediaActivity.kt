@@ -17,7 +17,6 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
@@ -71,15 +70,8 @@ class MediaActivity : ComponentActivity() {
                         ImageGalleryBox(
                             images = state.images,
                             index = state.currentIndex,
-                            onBackClick = {
-                                finish()
-                            },
-                            onOpenClick = {
-                                // TODO Will be implemented later due to navigational architecture concerns. Currently hidden.
-                            },
-                            onDownloadClick = {
-                                // TODO
-                            },
+                            onBackClick = { finish() },
+                            onDownloadClick = vm::onDownloadObject,
                             onDeleteClick = vm::onDeleteObject
                         )
                     }

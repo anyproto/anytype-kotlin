@@ -6,8 +6,8 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -20,7 +20,8 @@ import timber.log.Timber
 
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val downloadFile: DownloadFile
 ) : BaseViewModel() {
 
     private val _commands = MutableSharedFlow<Command>()
@@ -77,6 +78,7 @@ class MediaViewModel(
     }
 
     fun onDeleteObject(id: Id) {
+        Timber.d("onDeleteObject: $id")
         viewModelScope.launch {
             setObjectListIsArchived.async(
                 params = SetObjectListIsArchived.Params(
@@ -88,6 +90,26 @@ class MediaViewModel(
             }.onSuccess {
                 _commands.emit(Command.Dismiss)
             }
+        }
+    }
+
+    fun onDownloadObject(id: Id) {
+        Timber.d("onDownload: $id")
+        viewModelScope.launch {
+            downloadFile.run(
+                DownloadFile.Params(
+                    url = urlBuilder.original(id),
+                    // TODO add name
+                    name = ""
+                )
+            ).proceed(
+                failure = {
+                    Timber.e(it, "Error while downloading media object")
+                },
+                success = {
+                    // TODO emit toast.
+                }
+            )
         }
     }
 
@@ -120,13 +142,15 @@ class MediaViewModel(
 
     class Factory @Inject constructor(
         private val urlBuilder: UrlBuilder,
-        private val setObjectListIsArchived: SetObjectListIsArchived
+        private val setObjectListIsArchived: SetObjectListIsArchived,
+        private val downloadFile: DownloadFile
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MediaViewModel(
                 urlBuilder = urlBuilder,
-                setObjectListIsArchived = setObjectListIsArchived
+                setObjectListIsArchived = setObjectListIsArchived,
+                downloadFile = downloadFile
             ) as T
         }
     }

@@ -54,11 +54,11 @@ fun MediaActionToolbar(
             contentDescription = null
         )
 
-        Image(
-            modifier = Modifier.clickable { onOpenClick() },
-            painter = painterResource(R.drawable.ic_open_as_object),
-            contentDescription = null
-        )
+//        Image(
+//            modifier = Modifier.clickable { onOpenClick() },
+//            painter = painterResource(R.drawable.ic_open_as_object),
+//            contentDescription = null
+//        )
 
         Image(
             painter = painterResource(R.drawable.icon_delete_red),

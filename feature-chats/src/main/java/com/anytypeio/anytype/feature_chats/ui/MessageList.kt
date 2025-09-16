@@ -39,7 +39,7 @@ fun Messages(
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
-    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
@@ -135,7 +135,9 @@ fun Messages(
                         onCopyMessage = {
                             onCopyMessage(msg)
                         },
-                        onAttachmentClicked = onAttachmentClicked,
+                        onAttachmentClicked = {
+                            onAttachmentClicked(msg, it)
+                        },
                         onEditMessage = {
                             onEditMessage(msg)
                         },

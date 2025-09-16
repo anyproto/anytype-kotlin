@@ -1064,14 +1064,22 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: ChatView.Message.Attachment) {
+    fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
         Timber.d("onAttachmentClicked")
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
+                    val images = msg.attachments
+                        .filterIsInstance<ChatView.Message.Attachment.Image>()
+                    val index = images.indexOfFirst {
+                        it.target == attachment.target
+                    }
+                    val urls = images.map { item -> urlBuilder.original(item.target) }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
-                            url = urlBuilder.original(attachment.target)
+                            urls = urls,
+                            msg = msg,
+                            idx = index
                         )
                     )
                 }
@@ -1177,7 +1185,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onMediaPreview(url: String) {
+    fun onMediaPreview(msg: Id, url: String) {
         Timber.d("onMediaPreview, url: $url")
         viewModelScope.launch {
             commands.emit(
@@ -1644,7 +1652,11 @@ class ChatViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
-        data class OpenFullScreenImage(val url: String) : UXCommand()
+        data class OpenFullScreenImage(
+            val msg: ChatView.Message,
+            val urls: List<String>,
+            val idx: Int = 0
+        ) : UXCommand()
         data object ShowRateLimitWarning: UXCommand()
     }
 

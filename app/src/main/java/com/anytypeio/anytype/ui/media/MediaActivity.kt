@@ -8,11 +8,14 @@ import androidx.activity.compose.setContent
 import androidx.activity.viewModels
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
+import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
 import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
@@ -30,6 +33,62 @@ class MediaActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
         super.onCreate(savedInstanceState)
+        
+        processIntentData()
+        
+        if (BuildConfig.DEBUG) {
+            Timber.d("MediaActivity created")
+        }
+
+        setContent {
+
+            val viewState by vm.viewState.collectAsStateWithLifecycle()
+            
+            Surface(
+                modifier = Modifier.fillMaxSize(),
+                color = Color.Black
+            ) {
+                when (val state = viewState) {
+                    is MediaViewState.Loading -> {
+                        // Show loading or nothing
+                    }
+                    is MediaViewState.Error -> {
+                        Timber.e("Media error: ${state.message}")
+                        finish()
+                    }
+                    is MediaViewState.VideoContent -> {
+                        VideoPlayerBox(url = state.url)
+                    }
+                    is MediaViewState.ImageContent -> {
+                        ImageGalleryBox(
+                            urls = state.urls,
+                            index = state.currentIndex,
+                            onBackClick = {
+                                finish()
+                            },
+                            onOpenClick = {
+                                // TODO
+                            },
+                            onDownloadClick = {
+                                // TODO
+                            },
+                            onDeleteClick = {
+                                // TODO
+                            }
+                        )
+                    }
+                    is MediaViewState.AudioContent -> {
+                        AudioPlayerBox(
+                            name = state.name,
+                            url = state.url
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    private fun processIntentData() {
         val urls = intent
             .getStringArrayListExtra(EXTRA_URL)
             ?.toList()
@@ -38,46 +97,13 @@ class MediaActivity : ComponentActivity() {
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
         val index = intent.getIntExtra(EXTRA_IMAGE_INDEX, 0)
         
-        if (urls.isEmpty() || mediaType == TYPE_UNKNOWN) {
-            Timber.e("Invalid intent, urls: $urls")
-            finish()
-            return
-        }
-
-        if (BuildConfig.DEBUG) {
-            Timber.d("Media player for urls: $urls")
-        }
-
-        setContent {
-            Surface(
-                modifier = Modifier.fillMaxSize(),
-                color = Color.Black
-            ) {
-                when(mediaType) {
-                    TYPE_VIDEO -> VideoPlayerBox(url = urls.first())
-                    TYPE_IMAGE -> ImageGalleryBox(
-                        urls = urls.toList(),
-                        index = index,
-                        onBackClick = {
-                            finish()
-                        },
-                        onOpenClick = {
-                            // TODO
-                        },
-                        onDownloadClick = {
-                            // TODO
-                        },
-                        onDeleteClick = {
-                            // TODO
-                        }
-                    )
-                    TYPE_AUDIO -> {
-                        AudioPlayerBox(
-                            name = name.orEmpty(),
-                            url = urls.first()
-                        )
-                    }
-                }
+        when (mediaType) {
+            TYPE_IMAGE -> vm.processImage(urls, index)
+            TYPE_VIDEO -> vm.processVideo(urls.firstOrNull().orEmpty())
+            TYPE_AUDIO -> vm.processAudio(urls.firstOrNull().orEmpty(), name.orEmpty())
+            else -> {
+                Timber.e("Invalid media type: $mediaType")
+                finish()
             }
         }
     }

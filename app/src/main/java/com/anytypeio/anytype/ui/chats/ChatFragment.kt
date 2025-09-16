@@ -184,7 +184,9 @@ class ChatFragment : Fragment() {
                             )
                         }
                     },
-                    onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
+                    onRequestOpenFullScreenImageGallery = { id, url, index ->
+                        vm.onMediaPreview(id, url, index)
+                                                          },
                     onSelectChatReaction = vm::onSelectChatReaction,
                     onViewChatReaction = { msg, emoji ->
                         vm.onViewChatReaction(msg = msg, emoji = emoji)
@@ -390,7 +392,8 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
-                                urls = command.urls
+                                urls = command.urls,
+                                index
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching media image viewer")

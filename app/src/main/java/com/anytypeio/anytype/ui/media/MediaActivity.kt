@@ -26,6 +26,7 @@ class MediaActivity : ComponentActivity() {
             .orEmpty()
         val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
+        val index = intent.getIntExtra(EXTRA_IMAGE_INDEX, 0)
         
         if (urls.isEmpty() || mediaType == TYPE_UNKNOWN) {
             Timber.e("Invalid intent, urls: $urls")
@@ -46,6 +47,7 @@ class MediaActivity : ComponentActivity() {
                     TYPE_VIDEO -> VideoPlayerBox(url = urls.first())
                     TYPE_IMAGE -> ImageGalleryBox(
                         urls = urls.toList(),
+                        index = index,
                         onBackClick = {
                             finish()
                         },
@@ -77,6 +79,7 @@ class MediaActivity : ComponentActivity() {
         private const val TYPE_UNKNOWN = 0
 
         private const val EXTRA_URL = "extra_url"
+        private const val EXTRA_IMAGE_INDEX = "extra_image_index"
         private const val EXTRA_MEDIA_TYPE = "extra_media_type"
         private const val EXTRA_MEDIA_NAME = "extra_media_name"
 
@@ -99,12 +102,14 @@ class MediaActivity : ComponentActivity() {
             context: Context,
             urls: List<String>,
             mediaType: Int,
-            name: String? = null
+            name: String? = null,
+            index: Int = 0
         ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
                 putStringArrayListExtra(EXTRA_URL, ArrayList(urls))
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
+                putExtra(EXTRA_IMAGE_INDEX, index)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             context.startActivity(intent)

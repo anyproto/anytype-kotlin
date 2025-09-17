@@ -222,8 +222,7 @@ class DataViewListWidgetContainer(
 
     private fun buildViewerContextCommon(
         obj: ObjectView,
-        sourceBasic: ObjectWrapper.Basic?,
-        sourceType: ObjectWrapper.Type?,
+        sourceParams: WidgetSourceParams,
         activeViewerId: Id?,
         isCompact: Boolean
     ): ViewerContext {
@@ -242,25 +241,14 @@ class DataViewListWidgetContainer(
             }
         )
 
-        val params = when {
-            sourceBasic != null -> obj.parseDataViewStoreSearchParams(
-                subscription = widget.id,
-                viewer = activeViewerId,
-                sourceParams = sourceBasic.toWidgetSourceParams(),
-                config = widget.config,
-                limit = limit
-            )
+        val params = obj.parseDataViewStoreSearchParams(
+            subscription = widget.id,
+            viewer = activeViewerId,
+            sourceParams = sourceParams,
+            config = widget.config,
+            limit = limit
+        )
 
-            sourceType != null -> obj.parseDataViewStoreSearchParams(
-                subscription = widget.id,
-                viewer = activeViewerId,
-                sourceParams = sourceType.toWidgetSourceParams(),
-                config = widget.config,
-                limit = limit
-            )
-
-            else -> null
-        }
         return ViewerContext(obj = obj, target = target, params = params)
     }
 
@@ -278,8 +266,7 @@ class DataViewListWidgetContainer(
         val obj = getObjectViewOrEmpty()
         val result = buildViewerContextCommon(
             obj = obj,
-            sourceBasic = source,
-            sourceType = null,
+            sourceParams = source.toWidgetSourceParams(),
             activeViewerId = activeViewerId,
             isCompact = isCompact
         )
@@ -302,8 +289,7 @@ class DataViewListWidgetContainer(
         val obj = getObjectViewOrEmpty()
         val result = buildViewerContextCommon(
             obj = obj,
-            sourceBasic = null,
-            sourceType = source,
+            sourceParams = source.toWidgetSourceParams(),
             activeViewerId = activeViewerId,
             isCompact = isCompact
         )
@@ -458,13 +444,13 @@ data class WidgetSourceParams(
     val sourceIds: List<Id>
 )
 
-private fun ObjectWrapper.Basic.toWidgetSourceParams() = WidgetSourceParams(
+fun ObjectWrapper.Basic.toWidgetSourceParams() = WidgetSourceParams(
     isArchived = isArchived,
     isDeleted = isDeleted,
     sourceIds = setOf
 )
 
-private fun ObjectWrapper.Type.toWidgetSourceParams() = WidgetSourceParams(
+fun ObjectWrapper.Type.toWidgetSourceParams() = WidgetSourceParams(
     isArchived = isArchived,
     isDeleted = isDeleted,
     sourceIds = listOf(id)

@@ -47,7 +47,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_utils.ext.orNull
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -104,6 +103,7 @@ fun DataViewListWidgetCard(
         ) {
             WidgetHeader(
                 title = item.getPrettyName(),
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
@@ -116,7 +116,7 @@ fun DataViewListWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
-                canCreate = mode is InteractionMode.Default && item.canCreateObjectOfType,
+                canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
@@ -195,6 +195,7 @@ fun DataViewListWidgetCard(
             }
         }
         WidgetMenu(
+            canCreateObjectOfType = item.canCreateObjectOfType,
             isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction,
             canEditWidgets = mode is InteractionMode.Default
@@ -247,6 +248,7 @@ fun GalleryWidgetCard(
         ) {
             WidgetHeader(
                 title = item.getPrettyName(),
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
@@ -260,7 +262,7 @@ fun GalleryWidgetCard(
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) },
-                canCreate = mode is InteractionMode.Default && item.canCreateObjectOfType,
+                canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
             )
             if (item.tabs.size > 1 && item.isExpanded) {
@@ -342,6 +344,7 @@ fun GalleryWidgetCard(
             }
         }
         WidgetMenu(
+            canCreateObjectOfType = item.canCreateObjectOfType,
             isExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction,
             canEditWidgets = mode is InteractionMode.Default

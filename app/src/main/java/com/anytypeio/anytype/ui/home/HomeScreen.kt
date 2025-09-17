@@ -16,7 +16,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -25,61 +24,38 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyItemScope
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.foundation.noRippleCombinedClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.UXBody
-import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.home.SystemTypeView
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
 import com.anytypeio.anytype.presentation.widgets.ToIndex
@@ -108,7 +84,6 @@ fun HomeScreen(
     modifier: Modifier,
     mode: InteractionMode,
     widgets: List<WidgetView>,
-    systemTypes: List<SystemTypeView>,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
@@ -133,16 +108,12 @@ fun HomeScreen(
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
-    onSystemTypeClicked: (SystemTypeView) -> Unit,
-    onCreateNewTypeClicked: () -> Unit,
-    onCreateNewObjectOfTypeClicked: (SystemTypeView) -> Unit,
-    onDeleteSystemTypeClicked: (SystemTypeView) -> Unit
-) {
+    onCreateNewTypeClicked: () -> Unit
+    ) {
 
     Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
             widgets = widgets,
-            systemTypes = systemTypes,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
@@ -162,11 +133,8 @@ fun HomeScreen(
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onSystemTypeClicked = onSystemTypeClicked,
-            onCreateNewTypeClicked = onCreateNewTypeClicked,
-            onCreateNewObjectOfTypeClicked = onCreateNewObjectOfTypeClicked,
-            onDeleteSystemTypeClicked = onDeleteSystemTypeClicked
-        )
+            onCreateNewTypeClicked = onCreateNewTypeClicked
+            )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
             modifier = Modifier
@@ -220,7 +188,6 @@ fun HomeScreen(
 @Composable
 private fun WidgetList(
     widgets: List<WidgetView>,
-    systemTypes: List<SystemTypeView>,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -240,10 +207,7 @@ private fun WidgetList(
     onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
-    onSystemTypeClicked: (SystemTypeView) -> Unit,
-    onCreateNewTypeClicked: () -> Unit,
-    onCreateNewObjectOfTypeClicked: (SystemTypeView) -> Unit,
-    onDeleteSystemTypeClicked: (SystemTypeView) -> Unit
+    onCreateNewTypeClicked: () -> Unit
 ) {
 
     val view = LocalView.current
@@ -285,11 +249,6 @@ private fun WidgetList(
         modifier = Modifier
             .fillMaxSize()
     ) {
-        // Object Types Section
-        item {
-            PinnedSectionHeader()
-        }
-
         itemsIndexed(
             items = views.value,
             key = { _, item -> item.id }
@@ -605,36 +564,16 @@ private fun WidgetList(
                         )
                     }
                 }
+
+                WidgetView.Section.ObjectTypes -> {
+                    SystemTypesSectionHeader(
+                        onCreateNewTypeClicked = onCreateNewTypeClicked
+                    )
+                }
+                WidgetView.Section.Pinned -> {
+                    PinnedSectionHeader()
+                }
             }
-        }
-        
-        // Object Types Section
-        item {
-            SystemTypesSectionHeader(
-                onCreateNewTypeClicked = onCreateNewTypeClicked
-            )
-        }
-
-        // Individual system type items
-        itemsIndexed(
-            items = systemTypes,
-            key = { _, systemType -> "systemType_${systemType.id}" }
-        ) { index, systemType ->
-            SystemTypeItem(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 6.dp)
-                    .animateItem(),
-                systemType = systemType,
-                onClicked = { onSystemTypeClicked(systemType) },
-                onNewObjectClicked = onCreateNewObjectOfTypeClicked,
-                onDeleteTypeClicked = onDeleteSystemTypeClicked,
-                isCreateObjectAllowed = systemType.isCreateObjectAllowed
-            )
-        }
-
-        item {
-            Spacer(modifier = Modifier.height(100.dp))
         }
     }
 }
@@ -1005,449 +944,5 @@ private fun PinnedSectionHeader() {
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
-    }
-}
-
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-private fun LazyItemScope.SystemTypeItem(
-    modifier: Modifier,
-    systemType: SystemTypeView,
-    onClicked: () -> Unit,
-    onNewObjectClicked: (SystemTypeView) -> Unit,
-    onDeleteTypeClicked: (SystemTypeView) -> Unit,
-    isCreateObjectAllowed: Boolean
-) {
-    // Use the embedded WidgetView directly from SystemTypeView
-    val widgetView = systemType.widgetView
-
-    when (widgetView) {
-        is WidgetView.Tree -> {
-            Box(modifier = modifier) {
-                TreeWidgetCard(
-                    item = widgetView,
-                    mode = InteractionMode.Default,
-                    onExpandElement = { /* No-op for system types */ },
-                    onWidgetElementClicked = { onClicked() },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    onWidgetMenuClicked = { /* Handled by custom menu */ },
-                    onDropDownMenuAction = { /* No-op */ },
-                    onToggleExpandedWidgetState = { /* No-op */ },
-                    onObjectCheckboxClicked = { _, _ -> /* No-op */ },
-                    onCreateObjectInsideWidget = { onNewObjectClicked(systemType) }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-        is WidgetView.ListOfObjects -> {
-            Box(modifier = modifier) {
-                ListWidgetCard(
-                    item = widgetView,
-                    mode = InteractionMode.Default,
-                    onWidgetObjectClicked = { onClicked() },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    onWidgetMenuTriggered = { /* Handled by custom menu */ },
-                    onDropDownMenuAction = { /* No-op */ },
-                    onToggleExpandedWidgetState = { /* No-op */ },
-                    onObjectCheckboxClicked = { _, _ -> /* No-op */ },
-                    onCreateElement = { onNewObjectClicked(systemType) }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-        is WidgetView.SetOfObjects -> {
-            Box(modifier = modifier) {
-                DataViewListWidgetCard(
-                    item = widgetView,
-                    onWidgetObjectClicked = { onClicked() },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    onWidgetMenuTriggered = { /* Handled by custom menu */ },
-                    onDropDownMenuAction = { /* No-op */ },
-                    onChangeWidgetView = { _, _ -> /* No-op */ },
-                    onToggleExpandedWidgetState = { /* No-op */ },
-                    mode = InteractionMode.Default,
-                    onObjectCheckboxClicked = { _, _ -> /* No-op */ },
-                    onCreateDataViewObject = { _, _ -> onNewObjectClicked(systemType) },
-                    onCreateElement = { onNewObjectClicked(systemType) }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-        is WidgetView.Link -> {
-            Box(modifier = modifier) {
-                LinkWidgetCard(
-                    item = widgetView,
-                    onDropDownMenuAction = { /* No-op */ },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    isInEditMode = false,
-                    hasReadOnlyAccess = false,
-                    onWidgetMenuTriggered = { /* Handled by custom menu */ }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-        else -> {
-            // Fallback to Link widget for any other WidgetView types
-            Box(modifier = modifier) {
-                LinkWidgetCard(
-                    item = WidgetView.Link(
-                        id = systemType.id,
-                        isLoading = false,
-                        name = WidgetView.Name.Default(systemType.name),
-                        source = Widget.Source.Default(
-                            obj = ObjectWrapper.Basic(
-                                mapOf(
-                                    Relations.ID to systemType.id,
-                                    Relations.NAME to systemType.name
-                                )
-                            )
-                        )
-                    ),
-                    onDropDownMenuAction = { /* No-op */ },
-                    onWidgetSourceClicked = { _, _ -> onClicked() },
-                    isInEditMode = false,
-                    hasReadOnlyAccess = false,
-                    onWidgetMenuTriggered = { /* Handled by custom menu */ }
-                )
-
-                // Custom menu for system type
-                SystemTypeOverlayMenu(
-                    systemType = systemType,
-                    onNewObjectClicked = onNewObjectClicked,
-                    onDeleteTypeClicked = onDeleteTypeClicked,
-                    isCreateObjectAllowed = isCreateObjectAllowed
-                )
-            }
-        }
-    }
-}
-
-@Composable
-private fun SystemTypeOverlayMenu(
-    systemType: SystemTypeView,
-    onNewObjectClicked: (SystemTypeView) -> Unit,
-    onDeleteTypeClicked: (SystemTypeView) -> Unit,
-    isCreateObjectAllowed: Boolean
-) {
-    var showMenu by remember { mutableStateOf(false) }
-    val haptic = LocalHapticFeedback.current
-
-    // Transparent overlay for capturing long press
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .noRippleCombinedClickable(
-                onClick = { /* Click handled by widget card */ },
-                onLongClicked = {
-                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    showMenu = true
-                }
-            )
-    )
-
-    // Context menu
-    SystemTypeItemMenu(
-        expanded = showMenu,
-        onDismiss = { showMenu = false },
-        onNewObjectClicked = {
-            onNewObjectClicked(systemType)
-            showMenu = false
-        },
-        onDeleteTypeClicked = {
-            onDeleteTypeClicked(systemType)
-            showMenu = false
-        },
-        isCreateObjectAllowed = isCreateObjectAllowed,
-        isDeletable = systemType.isDeletable
-    )
-}
-
-@Composable
-private fun SystemTypeItemMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    onNewObjectClicked: () -> Unit,
-    onDeleteTypeClicked: () -> Unit,
-    isCreateObjectAllowed: Boolean,
-    isDeletable: Boolean
-) {
-    DropdownMenu(
-        modifier = Modifier.width(254.dp),
-        expanded = (isCreateObjectAllowed || isDeletable) && expanded,
-        onDismissRequest = onDismiss,
-        containerColor = colorResource(R.color.background_secondary),
-        shape = RoundedCornerShape(12.dp),
-        tonalElevation = 8.dp,
-        offset = DpOffset(
-            x = 16.dp,
-            y = 8.dp
-        )
-    ) {
-        // New Object menu item - only show if creation is allowed
-        if (isCreateObjectAllowed) {
-            DropdownMenuItem(
-                onClick = onNewObjectClicked,
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            text = stringResource(R.string.widgets_menu_new_object_type)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_menu_item_create),
-                            contentDescription = "New object icon",
-                            modifier = Modifier
-                                .wrapContentSize(),
-                            colorFilter = ColorFilter.tint(
-                                colorResource(id = R.color.text_primary)
-                            )
-                        )
-                    }
-                }
-            )
-        }
-        
-        // Delete Type menu item - only show if deletable (user-created types)
-        if (isDeletable) {
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
-            DropdownMenuItem(
-                onClick = onDeleteTypeClicked,
-                text = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            modifier = Modifier.weight(1f),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_system_red),
-                            text = stringResource(R.string.widgets_menu_delete_object_type)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_menu_item_delete_type),
-                            contentDescription = "Delete type icon",
-                            modifier = Modifier.wrapContentSize(),
-                            colorFilter = ColorFilter.tint(
-                                colorResource(id = R.color.palette_system_red)
-                            )
-                        )
-                    }
-                }
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SystemTypesSectionHeaderPreview() {
-    SystemTypesSectionHeader(
-        onCreateNewTypeClicked = { }
-    )
-}
-
-@Preview(showBackground = true)
-@Composable 
-private fun SystemTypeItemPreview() {
-    val sampleSystemType = SystemTypeView(
-        id = "sample-id",
-        name = "Note",
-        icon = ObjectIcon.TypeIcon.Emoji(
-            unicode = "📝",
-            rawValue = "document",
-            color = CustomIconColor.DEFAULT
-        ),
-        widgetView = WidgetView.Link(
-            id = "sample-id",
-            isLoading = false,
-            name = WidgetView.Name.Default("Note"),
-            source = Widget.Source.Default(
-                obj = ObjectWrapper.Basic(
-                    mapOf(
-                        Relations.ID to "sample-id",
-                        Relations.NAME to "Note"
-                    )
-                )
-            )
-        )
-    )
-    
-    LazyColumn {
-        item {
-            SystemTypeItem(
-                modifier = Modifier.fillMaxWidth(),
-                systemType = sampleSystemType,
-                onClicked = { },
-                onNewObjectClicked = { },
-                onDeleteTypeClicked = { },
-                isCreateObjectAllowed = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SystemTypeItemWithFallbackIconPreview() {
-    val sampleSystemType = SystemTypeView(
-        id = "sample-id-2",
-        name = "Task",
-        icon = ObjectIcon.TypeIcon.Fallback("task"),
-        widgetView = WidgetView.Tree(
-            id = "sample-id-2",
-            isLoading = false,
-            name = WidgetView.Name.Default("Task"),
-            source = Widget.Source.Default(
-                obj = ObjectWrapper.Basic(
-                    mapOf(
-                        Relations.ID to "sample-id-2",
-                        Relations.NAME to "Task"
-                    )
-                )
-            ),
-            elements = emptyList(),
-            isExpanded = false,
-            isEditable = false
-        )
-    )
-    
-    LazyColumn {
-        item {
-            SystemTypeItem(
-                modifier = Modifier.fillMaxWidth(),
-                systemType = sampleSystemType,
-                onClicked = { },
-                onNewObjectClicked = { },
-                onDeleteTypeClicked = { },
-                isCreateObjectAllowed = true
-            )
-        }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-private fun SystemTypesSectionPreview() {
-    val sampleTypes = listOf(
-        SystemTypeView(
-            id = "note-id",
-            name = "Note",
-            icon = ObjectIcon.TypeIcon.Emoji(
-                unicode = "📝",
-                rawValue = "document",
-                color = CustomIconColor.DEFAULT
-            ),
-            widgetView = WidgetView.ListOfObjects(
-                id = "note-id",
-                source = Widget.Source.Default(
-                    obj = ObjectWrapper.Basic(
-                        mapOf(
-                            Relations.ID to "note-id",
-                            Relations.NAME to "Note"
-                        )
-                    )
-                ),
-                type = WidgetView.ListOfObjects.Type.Favorites,
-                elements = emptyList(),
-                isExpanded = true
-            )
-        ),
-        SystemTypeView(
-            id = "task-id",
-            name = "Task",
-            icon = ObjectIcon.TypeIcon.Fallback("task"),
-            widgetView = WidgetView.ListOfObjects(
-                id = "task-id",
-                source = Widget.Source.Default(
-                    obj = ObjectWrapper.Basic(
-                        mapOf(
-                            Relations.ID to "task-id",
-                            Relations.NAME to "Task"
-                        )
-                    )
-                ),
-                type = WidgetView.ListOfObjects.Type.Favorites,
-                elements = emptyList(),
-                isExpanded = true
-            )
-        ),
-        SystemTypeView(
-            id = "book-id",
-            name = "Book",
-            icon = ObjectIcon.TypeIcon.Emoji(
-                unicode = "📚",
-                rawValue = "book",
-                color = CustomIconColor.Blue
-            ),
-            widgetView = WidgetView.ListOfObjects(
-                id = "book-id",
-                source = Widget.Source.Default(
-                    obj = ObjectWrapper.Basic(
-                        mapOf(
-                            Relations.ID to "book-id",
-                            Relations.NAME to "Book"
-                        )
-                    )
-                ),
-                type = WidgetView.ListOfObjects.Type.Favorites,
-                elements = emptyList(),
-                isExpanded = true
-            )
-        )
-    )
-    
-    LazyColumn {
-        item {
-            SystemTypesSectionHeader(
-                onCreateNewTypeClicked = { }
-            )
-        }
-        
-        itemsIndexed(
-            items = sampleTypes,
-            key = { _, systemType -> "systemType_${systemType.id}" }
-        ) { _, systemType ->
-            SystemTypeItem(
-                modifier = Modifier.fillMaxWidth(),
-                systemType = systemType,
-                onClicked = { },
-                onNewObjectClicked = { },
-                onDeleteTypeClicked = { },
-                isCreateObjectAllowed = true
-            )
-        }
     }
 }

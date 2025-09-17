@@ -41,16 +41,19 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -104,6 +107,7 @@ fun TreeWidgetCard(
         ) {
             WidgetHeader(
                 title = item.getPrettyName(),
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
@@ -112,7 +116,8 @@ fun TreeWidgetCard(
                 onDropDownMenuAction = onDropDownMenuAction,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode == InteractionMode.ReadOnly,
-                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) }
+                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) },
+                canCreateObject = item.canCreateObjectOfType
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -259,6 +264,7 @@ private fun TreeWidgetTreeItems(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun WidgetHeader(
+    icon: ObjectIcon,
     title: String,
     isCardMenuExpanded: MutableState<Boolean>,
     isHeaderMenuExpanded: MutableState<Boolean>,
@@ -270,7 +276,7 @@ fun WidgetHeader(
     isExpanded: Boolean = false,
     isInEditMode: Boolean = true,
     hasReadOnlyAccess: Boolean = false,
-    canCreate: Boolean = false
+    canCreateObject: Boolean
 ) {
     val haptic = LocalHapticFeedback.current
     Box(
@@ -278,19 +284,34 @@ fun WidgetHeader(
             .fillMaxWidth()
             .height(40.dp)
     ) {
+        ListWidgetObjectIcon(
+            iconSize = 18.dp,
+            icon = icon,
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 16.dp),
+            onTaskIconClicked = {}
+        )
+
+        val titleModifier = if (icon != ObjectIcon.None) {
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterStart)
+                .padding(start = 46.dp, end = if (isInEditMode) 76.dp else 32.dp)
+        } else {
+            Modifier
+                .fillMaxWidth()
+                .align(Alignment.CenterStart)
+                .padding(start = 0.dp, end = if (isInEditMode) 76.dp else 32.dp)
+        }
+
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
             style = HeadlineSubheading,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = if (isInEditMode) 76.dp else 32.dp
-                )
-                .align(Alignment.CenterStart)
+            modifier = titleModifier
                 .then(
                     if (isInEditMode)
                         Modifier
@@ -314,7 +335,7 @@ fun WidgetHeader(
                 )
         )
 
-        if (canCreate) {
+        if (canCreateObject) {
             Box(
                 Modifier
                     .align(Alignment.CenterEnd)

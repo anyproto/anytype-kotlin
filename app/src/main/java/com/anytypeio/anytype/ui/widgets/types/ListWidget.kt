@@ -20,15 +20,18 @@ import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_ui.extensions.getPrettyName
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
@@ -57,7 +60,7 @@ fun ListWidgetCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp)
             .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
@@ -84,6 +87,7 @@ fun ListWidgetCard(
                     Type.RecentLocal -> stringResource(id = R.string.recently_opened)
                     Type.Bin -> stringResource(R.string.bin)
                 },
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
@@ -92,7 +96,7 @@ fun ListWidgetCard(
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 onDropDownMenuAction = onDropDownMenuAction,
-                canCreate = (item.type is Type.Favorites && mode is InteractionMode.Default),
+                canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )

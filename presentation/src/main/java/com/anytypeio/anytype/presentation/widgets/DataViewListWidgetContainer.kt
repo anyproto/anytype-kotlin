@@ -280,12 +280,23 @@ class DataViewListWidgetContainer(
         }
 
         Timber.d("Computing fresh ViewerContext for widget ${widget.id} with source ${widget.source::class.simpleName}")
-        val obj = getObject.run(
+        val objResult = getObject.async(
             Params(
                 target = widget.source.id,
                 space = SpaceId(widget.config.space)
             )
         )
+        val obj = objResult.getOrNull() ?: run {
+            Timber.e(objResult.exceptionOrNull(), "Failed to get object for widget ${widget.id}")
+            // Return an empty ObjectView with minimal required fields
+            ObjectView(
+                root = "",
+                blocks = emptyList(),
+                details = emptyMap(),
+                objectRestrictions = emptyList(),
+                dataViewRestrictions = emptyList()
+            )
+        }
         val dv = obj.blocks.find { it.content is DV }?.content
         val target = if (dv is DV) {
             dv.viewers.find { it.id == activeViewerId } ?: dv.viewers.firstOrNull()
@@ -332,12 +343,23 @@ class DataViewListWidgetContainer(
         }
 
         Timber.d("Computing fresh ViewerContext for ObjectType widget ${widget.id}")
-        val obj = getObject.run(
+        val objResult = getObject.async(
             Params(
                 target = widget.source.id,
                 space = SpaceId(widget.config.space)
             )
         )
+        val obj = objResult.getOrNull() ?: run {
+            Timber.e(objResult.exceptionOrNull(), "Failed to get object for widget ${widget.id}")
+            // Return an empty ObjectView with minimal required fields
+            ObjectView(
+                root = "",
+                blocks = emptyList(),
+                details = emptyMap(),
+                objectRestrictions = emptyList(),
+                dataViewRestrictions = emptyList()
+            )
+        }
         val dv = obj.blocks.find { it.content is DV }?.content
         val target = if (dv is DV) {
             dv.viewers.find { it.id == activeViewerId } ?: dv.viewers.firstOrNull()

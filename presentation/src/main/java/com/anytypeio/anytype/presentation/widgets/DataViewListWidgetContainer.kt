@@ -69,46 +69,10 @@ class DataViewListWidgetContainer(
         if (isActive)
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val loadingStateView = when (widget) {
-                        is Widget.List -> {
-                            SetOfObjects(
-                                id = widget.id,
-                                source = widget.source,
-                                tabs = emptyList(),
-                                elements = emptyList(),
-                                isExpanded = !isCollapsed,
-                                icon = widget.icon,
-                                isCompact = widget.isCompact,
-                                isLoading = true,
-                                name = widget.source.getPrettyName(fieldParser)
-                            )
-                        }
-
-                        is Widget.View -> {
-                            Gallery(
-                                id = widget.id,
-                                source = widget.source,
-                                tabs = emptyList(),
-                                elements = emptyList(),
-                                isExpanded = !isCollapsed,
-                                isLoading = true,
-                                icon = widget.icon,
-                                name = widget.source.getPrettyName(fieldParser)
-                            )
-                        }
-
-                        is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
-                            throw IllegalStateException("Incompatible widget type.")
-                        }
-
-                        is Widget.Section.ObjectType -> {
-                            Section.ObjectTypes
-                        }
-
-                        is Widget.Section.Pinned -> {
-                            Section.Pinned
-                        }
-                    }
+                    val loadingStateView = createWidgetView(
+                        isCollapsed = isCollapsed,
+                        isLoading = true
+                    )
                     if (isCollapsed) {
                         emit(loadingStateView)
                     } else {
@@ -132,48 +96,7 @@ class DataViewListWidgetContainer(
                 Timber.d("Processing Widget.Source.Default for widget ${widget.id}")
                 val isCompact = widget is Widget.List && widget.isCompact
                 if (isCollapsed) {
-                    when (widget) {
-                        is Widget.List -> {
-                            flowOf(
-                                SetOfObjects(
-                                    id = widget.id,
-                                    source = widget.source,
-                                    icon = widget.icon,
-                                    tabs = emptyList(),
-                                    elements = emptyList(),
-                                    isExpanded = false,
-                                    isCompact = isCompact,
-                                    name = widget.source.getPrettyName(fieldParser)
-                                )
-                            )
-                        }
-
-                        is Widget.View -> {
-                            flowOf(
-                                Gallery(
-                                    id = widget.id,
-                                    source = widget.source,
-                                    icon = widget.icon,
-                                    tabs = emptyList(),
-                                    elements = emptyList(),
-                                    isExpanded = false,
-                                    name = widget.source.getPrettyName(fieldParser)
-                                )
-                            )
-                        }
-
-                        is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat -> {
-                            throw IllegalStateException("Incompatible widget type.")
-                        }
-
-                        is Widget.Section.ObjectType -> {
-                            flowOf(Section.ObjectTypes)
-                        }
-
-                        is Widget.Section.Pinned -> {
-                            flowOf(Section.Pinned)
-                        }
-                    }
+                    flowOf(createWidgetView(isCollapsed = true, isLoading = false))
                 } else {
                     if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
                         flowOf(defaultEmptyState(isCollapsed))
@@ -481,7 +404,10 @@ class DataViewListWidgetContainer(
         }
     }
 
-    private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
+    private fun createWidgetView(
+        isCollapsed: Boolean = false,
+        isLoading: Boolean = false
+    ): WidgetView {
         return when (widget) {
             is Widget.List -> SetOfObjects(
                 id = widget.id,
@@ -491,6 +417,7 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isCompact = widget.isCompact,
                 icon = widget.icon,
+                isLoading = isLoading,
                 name = widget.source.getPrettyName(fieldParser)
             )
 
@@ -501,14 +428,22 @@ class DataViewListWidgetContainer(
                 tabs = emptyList(),
                 elements = emptyList(),
                 isExpanded = !isCollapsed,
+                isLoading = isLoading,
                 view = null,
                 name = widget.source.getPrettyName(fieldParser)
             )
 
-            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+            is Widget.Section.ObjectType -> Section.ObjectTypes
+            is Widget.Section.Pinned -> Section.Pinned
+
+            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
         }
+    }
+
+    private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
+        return createWidgetView(isCollapsed = isCollapsed, isLoading = false)
     }
 }
 

@@ -20,7 +20,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -41,6 +40,10 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
 
+/**
+ * Container for data view widgets (List and View) that handles async data loading,
+ * collapsed state management, and caching to optimize performance.
+ */
 class DataViewListWidgetContainer(
     private val widget: Widget,
     private val getObject: GetObject,
@@ -52,7 +55,7 @@ class DataViewListWidgetContainer(
     private val storeOfRelations: StoreOfRelations,
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    isSessionActive: Flow<Boolean>,
+    isSessionActiveFlow: Flow<Boolean>,
     onRequestCache: () -> WidgetView.SetOfObjects? = { null },
 ) : WidgetContainer {
 
@@ -64,142 +67,164 @@ class DataViewListWidgetContainer(
         Timber.d("Creating DataViewListWidgetContainer for widget with id ${widget.id}")
     }
 
+    /**
+     * Reactive flow that emits widget view states based on session activity and collapsed state.
+     * Provides loading states initially, then switches to actual data when available.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
-    override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
-        if (isActive)
-            buildViewFlow().onStart {
-                isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    val loadingStateView = createWidgetView(
-                        isCollapsed = isCollapsed,
-                        isLoading = true
-                    )
-                    if (isCollapsed) {
-                        emit(loadingStateView)
-                    } else {
-                        emit(onRequestCache() ?: loadingStateView)
-                    }
-                }
-            }
-        else
-            emptyFlow()
-    }
-
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun buildViewFlow(): Flow<WidgetView> = combine(
-        activeView.distinctUntilChanged(),
-        isWidgetCollapsed
-    ) { view, isCollapsed -> view to isCollapsed }.flatMapLatest { (view, isCollapsed) ->
-        Timber.d("Subscribing to data view widget with id ${widget.id} with view $view (collapsed = $isCollapsed)")
-        when (val source = widget.source) {
-            is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
-            is Widget.Source.Default -> {
-                Timber.d("Processing Widget.Source.Default for widget ${widget.id}")
-                val isCompact = widget is Widget.List && widget.isCompact
-                if (isCollapsed) {
-                    flowOf(createWidgetView(isCollapsed = true, isLoading = false))
-                } else {
-                    if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
-                        flowOf(defaultEmptyState(isCollapsed))
-                    } else {
-                        val ctx = computeViewerContext(
-                            source = source.obj,
-                            activeViewerId = view,
-                            isCompact = isCompact
-                        )
-                        if (ctx.params != null) {
-                            if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                galleryWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    target = ctx.target,
-                                    storeOfObjectTypes = storeOfObjectTypes
+    override val view: Flow<WidgetView> =
+        isSessionActiveFlow
+            .flatMapLatest { isActive ->
+                if (isActive)
+                    buildViewFlow().onStart {
+                        isWidgetCollapsed
+                            .take(1)
+                            .collect { isCollapsed ->
+                                val loadingStateView = createWidgetView(
+                                    isCollapsed = isCollapsed,
+                                    isLoading = true
                                 )
-                            } else {
-                                defaultWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    isCompact = isCompact,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
+                                if (isCollapsed) {
+                                    emit(loadingStateView)
+                                } else {
+                                    emit(onRequestCache() ?: loadingStateView)
+                                }
                             }
-                        } else {
-                            flowOf(defaultEmptyState(isCollapsed))
-                        }
                     }
-                }
+                else
+                    emptyFlow()
             }
 
-            is Widget.Source.ObjectType -> {
-                Timber.d("Processing Widget.Source.ObjectType for widget ${widget.id}")
-                isWidgetCollapsed.flatMapLatest { isCollapsed ->
-                    if (isCollapsed) {
-                        // When collapsed, don't subscribe to data - just show empty collapsed state
-                        flowOf(defaultEmptyState(isCollapsed = true))
-                    } else {
+    /**
+     * Builds the main widget view flow combining active view and collapsed state.
+     * Handles different widget source types and optimizes by skipping data subscriptions when collapsed.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun buildViewFlow(): Flow<WidgetView> =
+        combine(
+            activeView.distinctUntilChanged(),
+            isWidgetCollapsed
+        ) { view, isCollapsed -> view to isCollapsed }
+            .flatMapLatest { (view, isCollapsed) ->
+                Timber.d("Subscribing to data view widget with id ${widget.id} with view $view (collapsed = $isCollapsed)")
+                when (val source = widget.source) {
+                    is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
+                    is Widget.Source.Default -> {
+                        Timber.d("Processing Widget.Source.Default for widget ${widget.id}")
                         val isCompact = widget is Widget.List && widget.isCompact
-                        val ctx = computeViewerContext(
-                            source = source.obj,
-                            activeViewerId = view,
-                            isCompact = isCompact
-                        )
-                        if (ctx.params != null) {
-                            if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                galleryWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    target = ctx.target,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
-                            } else {
-                                defaultWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    isCompact = isCompact,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
-                            }
+                        if (isCollapsed) {
+                            flowOf(createWidgetView(isCollapsed = true, isLoading = false))
                         } else {
-                            flowOf(defaultEmptyState(isCollapsed = false))
+                            if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
+                                flowOf(defaultEmptyState(isCollapsed))
+                            } else {
+                                val ctx = computeViewerContext(
+                                    sourceParams = source.obj.toWidgetSourceParams(),
+                                    activeViewerId = view,
+                                    isCompact = isCompact
+                                )
+                                if (ctx.params != null) {
+                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                        galleryWidgetSubscribe(
+                                            obj = ctx.obj,
+                                            activeView = view,
+                                            params = ctx.params,
+                                            target = ctx.target,
+                                            storeOfObjectTypes = storeOfObjectTypes
+                                        )
+                                    } else {
+                                        defaultWidgetSubscribe(
+                                            obj = ctx.obj,
+                                            activeView = view,
+                                            params = ctx.params,
+                                            isCompact = isCompact,
+                                            storeOfObjectTypes = storeOfObjectTypes
+                                        )
+                                    }
+                                } else {
+                                    flowOf(defaultEmptyState(isCollapsed))
+                                }
+                            }
                         }
+                    }
+
+                    is Widget.Source.ObjectType -> {
+                        Timber.d("Processing Widget.Source.ObjectType for widget ${widget.id}")
+                        isWidgetCollapsed.flatMapLatest { isCollapsed ->
+                            if (isCollapsed) {
+                                // When collapsed, don't subscribe to data - just show empty collapsed state
+                                flowOf(defaultEmptyState(isCollapsed = true))
+                            } else {
+                                val isCompact = widget is Widget.List && widget.isCompact
+                                val ctx = computeViewerContext(
+                                    sourceParams = source.obj.toWidgetSourceParams(),
+                                    activeViewerId = view,
+                                    isCompact = isCompact
+                                )
+                                if (ctx.params != null) {
+                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                        galleryWidgetSubscribe(
+                                            obj = ctx.obj,
+                                            activeView = view,
+                                            params = ctx.params,
+                                            target = ctx.target,
+                                            storeOfObjectTypes = storeOfObjectTypes
+                                        )
+                                    } else {
+                                        defaultWidgetSubscribe(
+                                            obj = ctx.obj,
+                                            activeView = view,
+                                            params = ctx.params,
+                                            isCompact = isCompact,
+                                            storeOfObjectTypes = storeOfObjectTypes
+                                        )
+                                    }
+                                } else {
+                                    flowOf(defaultEmptyState(isCollapsed = false))
+                                }
+                            }
+                        }
+                    }
+
+                    Widget.Source.Other -> {
+                        flowOf(defaultEmptyState(isCollapsed))
+                    }
+                }
+            }.catch { e ->
+                Timber.e(e, "Error in data view container flow")
+                when (widget) {
+                    is Widget.List -> {
+                        isWidgetCollapsed.take(1).collect { isCollapsed ->
+                            emit(defaultEmptyState(isCollapsed))
+                        }
+                    }
+
+                    is Widget.View -> {
+                        isWidgetCollapsed.take(1).collect { isCollapsed ->
+                            emit(defaultEmptyState(isCollapsed))
+                        }
+                    }
+
+                    else -> {
+                        Timber.e(e, "Error in data view container flow")
                     }
                 }
             }
 
-            Widget.Source.Other -> {
-                flowOf(defaultEmptyState(isCollapsed))
-            }
-        }
-    }.catch { e ->
-        Timber.e(e, "Error in data view container flow")
-        when (widget) {
-            is Widget.List -> {
-                isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(defaultEmptyState(isCollapsed))
-                }
-            }
-
-            is Widget.View -> {
-                isWidgetCollapsed.take(1).collect { isCollapsed ->
-                    emit(defaultEmptyState(isCollapsed))
-                }
-            }
-
-            else -> {
-                Timber.e(e, "Error in data view container flow")
-            }
-        }
-    }
-
+    /**
+     * Internal data class containing viewer context information for widget data subscription.
+     * Bundles object data, data view configuration, and search parameters together.
+     */
     private data class ViewerContext(
         val obj: ObjectView,
         val target: Block.Content.DataView.Viewer?,
         val params: StoreSearchParams?
     )
 
+    /**
+     * Asynchronously fetches the object view for the widget's source.
+     * Returns an empty ObjectView if the fetch fails to prevent crashes.
+     */
     private suspend fun getObjectViewOrEmpty(): ObjectView {
         Timber.d("Fetching object for widget ${widget.id}")
         val objResult = getObject.async(
@@ -220,6 +245,10 @@ class DataViewListWidgetContainer(
         }
     }
 
+    /**
+     * Builds a ViewerContext containing object data, data view configuration, and search parameters.
+     * Handles viewer selection, limit resolution, and parameter parsing for widget data subscription.
+     */
     private fun buildViewerContextCommon(
         obj: ObjectView,
         sourceParams: WidgetSourceParams,
@@ -252,8 +281,12 @@ class DataViewListWidgetContainer(
         return ViewerContext(obj = obj, target = target, params = params)
     }
 
+    /**
+     * Computes and caches ViewerContext to avoid duplicate object fetches and processing.
+     * Uses caching based on source ID, active viewer, and compact state to optimize performance.
+     */
     private suspend fun computeViewerContext(
-        source: ObjectWrapper.Basic,
+        sourceParams: WidgetSourceParams,
         activeViewerId: Id?,
         isCompact: Boolean
     ): ViewerContext {
@@ -262,11 +295,11 @@ class DataViewListWidgetContainer(
             Timber.d("Using cached ViewerContext for widget ${widget.id}")
             return cachedContext!!
         }
-        Timber.d("Computing ViewerContext (Basic) for widget ${widget.id}")
+        Timber.d("Computing ViewerContext for widget ${widget.id}")
         val obj = getObjectViewOrEmpty()
         val result = buildViewerContextCommon(
             obj = obj,
-            sourceParams = source.toWidgetSourceParams(),
+            sourceParams = sourceParams,
             activeViewerId = activeViewerId,
             isCompact = isCompact
         )
@@ -275,29 +308,10 @@ class DataViewListWidgetContainer(
         return result
     }
 
-    private suspend fun computeViewerContext(
-        source: ObjectWrapper.Type,
-        activeViewerId: Id?,
-        isCompact: Boolean
-    ): ViewerContext {
-        val contextKey = Triple(widget.source.id, activeViewerId, isCompact)
-        if (cachedContextKey == contextKey && cachedContext != null) {
-            Timber.d("Using cached ViewerContext for ObjectType widget ${widget.id}")
-            return cachedContext!!
-        }
-        Timber.d("Computing ViewerContext (ObjectType) for widget ${widget.id}")
-        val obj = getObjectViewOrEmpty()
-        val result = buildViewerContextCommon(
-            obj = obj,
-            sourceParams = source.toWidgetSourceParams(),
-            activeViewerId = activeViewerId,
-            isCompact = isCompact
-        )
-        cachedContext = result
-        cachedContextKey = contextKey
-        return result
-    }
-
+    /**
+     * Creates a reactive flow for gallery widget views with dependency tracking.
+     * Handles cover images, icons, and object ordering for gallery-style data display.
+     */
     private fun galleryWidgetSubscribe(
         obj: ObjectView,
         activeView: Id?,
@@ -353,6 +367,10 @@ class DataViewListWidgetContainer(
         }
     }
 
+    /**
+     * Creates a reactive flow for standard list widget views.
+     * Subscribes to object data and transforms it into widget elements with icons and names.
+     */
     private fun defaultWidgetSubscribe(
         obj: ObjectView,
         activeView: Id?,
@@ -390,6 +408,10 @@ class DataViewListWidgetContainer(
         }
     }
 
+    /**
+     * Factory method to create appropriate WidgetView instances based on widget type.
+     * Handles collapsed and loading states for List, View, and Section widgets.
+     */
     private fun createWidgetView(
         isCollapsed: Boolean = false,
         isLoading: Boolean = false
@@ -428,35 +450,58 @@ class DataViewListWidgetContainer(
         }
     }
 
+    /**
+     * Returns a default empty widget view state for error handling and initial states.
+     */
     private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
         return createWidgetView(isCollapsed = isCollapsed, isLoading = false)
     }
 }
 
+/**
+ * Extension function to check if an ObjectView represents a collection.
+ * Collections have special ordering behavior in data views.
+ */
 fun ObjectView.isCollection(): Boolean {
     val wrapper = ObjectWrapper.Basic(details.getOrDefault(root, emptyMap()))
     return wrapper.layout == ObjectType.Layout.COLLECTION
 }
 
+/**
+ * Data class representing common parameters extracted from widget sources.
+ * Used to unify parameter handling across different source types.
+ */
 data class WidgetSourceParams(
     val isArchived: Boolean?,
     val isDeleted: Boolean?,
     val sourceIds: List<Id>
 )
 
+/**
+ * Extension function to convert ObjectWrapper.Basic to WidgetSourceParams.
+ * Extracts common filtering parameters for widget data subscriptions.
+ */
 fun ObjectWrapper.Basic.toWidgetSourceParams() = WidgetSourceParams(
     isArchived = isArchived,
     isDeleted = isDeleted,
     sourceIds = setOf
 )
 
+/**
+ * Extension function to convert ObjectWrapper.Type to WidgetSourceParams.
+ * Extracts common filtering parameters for object type widgets.
+ */
 fun ObjectWrapper.Type.toWidgetSourceParams() = WidgetSourceParams(
     isArchived = isArchived,
     isDeleted = isDeleted,
     sourceIds = listOf(id)
 )
 
-fun ObjectView.parseDataViewStoreSearchParams(
+/**
+ * Extension function to parse ObjectView data into StoreSearchParams for widget subscriptions.
+ * Extracts data view configuration, filters, sorts, and keys for database queries.
+ */
+private fun ObjectView.parseDataViewStoreSearchParams(
     subscription: Id,
     limit: Int,
     config: Config,
@@ -493,7 +538,11 @@ fun ObjectView.parseDataViewStoreSearchParams(
     )
 }
 
-fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
+/**
+ * Extension function to extract tabs from ObjectView data view configuration.
+ * Creates tab list for multi-view widgets with selection state.
+ */
+private fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList {
     val block = blocks.find { it.content is DV }
     block?.content<DV>()?.viewers?.forEachIndexed { idx, view ->
         add(
@@ -506,7 +555,11 @@ fun ObjectView.tabs(viewer: Id?): List<WidgetView.SetOfObjects.Tab> = buildList 
     }
 }
 
-fun resolveObjectOrder(
+/**
+ * Helper function to resolve object ordering for collection-based widgets.
+ * Applies custom ordering from data view configuration if available.
+ */
+private fun resolveObjectOrder(
     searchResults: List<ObjectWrapper.Basic>,
     obj: ObjectView,
     activeView: Id?

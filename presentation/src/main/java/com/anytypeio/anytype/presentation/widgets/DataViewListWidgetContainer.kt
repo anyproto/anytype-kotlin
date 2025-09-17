@@ -56,10 +56,12 @@ class DataViewListWidgetContainer(
     onRequestCache: () -> WidgetView.SetOfObjects? = { null },
 ) : WidgetContainer {
 
+    // Cache to prevent duplicate computeViewerContext calls
+    private var cachedContext: ViewerContext? = null
+    private var cachedContextKey: Triple<String, Id?, Boolean>? = null
+
     init {
-        if (BuildConfig.DEBUG) {
-            assert(widget is Widget.List || widget is Widget.View) { "Incompatible container." }
-        }
+        Timber.d("Creating DataViewListWidgetContainer for widget with id ${widget.id}")
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -119,9 +121,11 @@ class DataViewListWidgetContainer(
         activeView.distinctUntilChanged(),
         isWidgetCollapsed
     ) { view, isCollapsed -> view to isCollapsed }.flatMapLatest { (view, isCollapsed) ->
+        Timber.d("Subscribing to data view widget with id ${widget.id} with view $view (collapsed = $isCollapsed)")
         when (val source = widget.source) {
             is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
             is Widget.Source.Default -> {
+                Timber.d("Processing Widget.Source.Default for widget ${widget.id}")
                 val isCompact = widget is Widget.List && widget.isCompact
                 if (isCollapsed) {
                     when(widget) {
@@ -166,130 +170,204 @@ class DataViewListWidgetContainer(
                     }
                 } else {
                     if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
-                        flowOf(defaultEmptyState())
+                        flowOf(defaultEmptyState(isCollapsed))
                     } else {
-                        val obj = getObject.run(
-                            Params(
-                                target = widget.source.id,
-                                space = SpaceId(widget.config.space)
-                            )
-                        )
-                        val dv = obj.blocks.find { it.content is DV }?.content
-                        val target = if (dv is DV) {
-                            dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
-                        } else {
-                            null
-                        }
-                        val params = obj.parseDataViewStoreSearchParams(
-                            subscription = widget.id,
-                            viewer = view,
+                        val ctx = computeViewerContext(
                             source = source.obj,
-                            config = widget.config,
-                            limit = WidgetConfig.resolveListWidgetLimit(
-                                isCompact = isCompact,
-                                isGallery = target?.type == DVViewerType.GALLERY,
-                                limit = when (widget) {
-                                    is Widget.List -> widget.limit
-                                    is Widget.View -> widget.limit
-                                    is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
-                                        throw IllegalStateException("Incompatible widget type.")
-                                    }
-                                }
-                            )
+                            activeViewerId = view,
+                            isCompact = isCompact
                         )
-                        if (params != null) {
-                            if (widget is Widget.View && target?.type == DVViewerType.GALLERY) {
+                        if (ctx.params != null) {
+                            if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
                                 galleryWidgetSubscribe(
-                                    obj = obj,
+                                    obj = ctx.obj,
                                     activeView = view,
-                                    params = params,
-                                    target = target,
+                                    params = ctx.params,
+                                    target = ctx.target,
                                     storeOfObjectTypes = storeOfObjectTypes
                                 )
                             } else {
                                 defaultWidgetSubscribe(
-                                    obj = obj,
+                                    obj = ctx.obj,
                                     activeView = view,
-                                    params = params,
+                                    params = ctx.params,
                                     isCompact = isCompact,
                                     storeOfObjectTypes = storeOfObjectTypes
                                 )
                             }
                         } else {
-                            flowOf(defaultEmptyState())
+                            flowOf(defaultEmptyState(isCollapsed))
                         }
                     }
                 }
             }
             is Widget.Source.ObjectType -> {
-                val isCompact = widget is Widget.List && widget.isCompact
-                val obj = getObject.run(
-                    Params(
-                        target = widget.source.id,
-                        space = SpaceId(widget.config.space)
-                    )
-                )
-                val dv = obj.blocks.find { it.content is DV }?.content
-                val target = if (dv is DV) {
-                    dv.viewers.find { it.id == view } ?: dv.viewers.firstOrNull()
-                } else {
-                    null
-                }
-                val params = obj.parseDataViewStoreSearchParams(
-                    subscription = widget.id,
-                    viewer = view,
-                    source = source.obj,
-                    config = widget.config,
-                    limit = WidgetConfig.resolveListWidgetLimit(
-                        isCompact = isCompact,
-                        isGallery = target?.type == DVViewerType.GALLERY,
-                        limit = when (widget) {
-                            is Widget.List -> widget.limit
-                            is Widget.View -> widget.limit
-                            is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
-                                throw IllegalStateException("Incompatible widget type.")
-                            }
-                        }
-                    )
-                )
-                if (params != null) {
-                    if (widget is Widget.View && target?.type == DVViewerType.GALLERY) {
-                        galleryWidgetSubscribe(
-                            obj = obj,
-                            activeView = view,
-                            params = params,
-                            target = target,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
+                Timber.d("Processing Widget.Source.ObjectType for widget ${widget.id}")
+                isWidgetCollapsed.flatMapLatest { isCollapsed ->
+                    if (isCollapsed) {
+                        // When collapsed, don't subscribe to data - just show empty collapsed state
+                        flowOf(defaultEmptyState(isCollapsed = true))
                     } else {
-                        defaultWidgetSubscribe(
-                            obj = obj,
-                            activeView = view,
-                            params = params,
-                            isCompact = isCompact,
-                            storeOfObjectTypes = storeOfObjectTypes
+                        val isCompact = widget is Widget.List && widget.isCompact
+                        val ctx = computeViewerContext(
+                            source = source.obj,
+                            activeViewerId = view,
+                            isCompact = isCompact
                         )
+                        if (ctx.params != null) {
+                            if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                galleryWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    target = ctx.target,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            } else {
+                                defaultWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    isCompact = isCompact,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            }
+                        } else {
+                            flowOf(defaultEmptyState(isCollapsed = false))
+                        }
                     }
-                } else {
-                    flowOf(defaultEmptyState())
                 }
             }
             Widget.Source.Other -> {
-                flowOf(defaultEmptyState())
+                flowOf(defaultEmptyState(isCollapsed))
             }
         }
     }.catch { e ->
+        Timber.e(e, "Error in data view container flow")
         when(widget) {
             is Widget.List -> {
-                emit(defaultEmptyState())
+                isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    emit(defaultEmptyState(isCollapsed))
+                }
             }
             is Widget.View -> {
-                emit(defaultEmptyState())
+                isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    emit(defaultEmptyState(isCollapsed))
+                }
             }
             else -> {
                 Timber.e(e, "Error in data view container flow")
             }
         }
+    }
+    private data class ViewerContext(
+        val obj: ObjectView,
+        val target: Block.Content.DataView.Viewer?,
+        val params: StoreSearchParams?
+    )
+
+    private suspend fun computeViewerContext(
+        source: ObjectWrapper.Basic,
+        activeViewerId: Id?,
+        isCompact: Boolean
+    ): ViewerContext {
+        val contextKey = Triple(widget.source.id, activeViewerId, isCompact)
+
+        // Check if we have a cached result for the same parameters
+        if (cachedContextKey == contextKey && cachedContext != null) {
+            Timber.d("Using cached ViewerContext for widget ${widget.id}")
+            return cachedContext!!
+        }
+
+        Timber.d("Computing fresh ViewerContext for widget ${widget.id} with source ${widget.source::class.simpleName}")
+        val obj = getObject.run(
+            Params(
+                target = widget.source.id,
+                space = SpaceId(widget.config.space)
+            )
+        )
+        val dv = obj.blocks.find { it.content is DV }?.content
+        val target = if (dv is DV) {
+            dv.viewers.find { it.id == activeViewerId } ?: dv.viewers.firstOrNull()
+        } else {
+            null
+        }
+        val params = obj.parseDataViewStoreSearchParams(
+            subscription = widget.id,
+            viewer = activeViewerId,
+            source = source,
+            config = widget.config,
+            limit = WidgetConfig.resolveListWidgetLimit(
+                isCompact = isCompact,
+                isGallery = target?.type == DVViewerType.GALLERY,
+                limit = when (widget) {
+                    is Widget.List -> widget.limit
+                    is Widget.View -> widget.limit
+                    is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+                        throw IllegalStateException("Incompatible widget type.")
+                    }
+                }
+            )
+        )
+        val result = ViewerContext(obj = obj, target = target, params = params)
+
+        // Cache the result
+        cachedContext = result
+        cachedContextKey = contextKey
+
+        return result
+    }
+
+    private suspend fun computeViewerContext(
+        source: ObjectWrapper.Type,
+        activeViewerId: Id?,
+        isCompact: Boolean
+    ): ViewerContext {
+        val contextKey = Triple(widget.source.id, activeViewerId, isCompact)
+
+        // Check if we have a cached result for the same parameters
+        if (cachedContextKey == contextKey && cachedContext != null) {
+            Timber.d("Using cached ViewerContext for ObjectType widget ${widget.id}")
+            return cachedContext!!
+        }
+
+        Timber.d("Computing fresh ViewerContext for ObjectType widget ${widget.id}")
+        val obj = getObject.run(
+            Params(
+                target = widget.source.id,
+                space = SpaceId(widget.config.space)
+            )
+        )
+        val dv = obj.blocks.find { it.content is DV }?.content
+        val target = if (dv is DV) {
+            dv.viewers.find { it.id == activeViewerId } ?: dv.viewers.firstOrNull()
+        } else {
+            null
+        }
+        val params = obj.parseDataViewStoreSearchParams(
+            subscription = widget.id,
+            viewer = activeViewerId,
+            source = source,
+            config = widget.config,
+            limit = WidgetConfig.resolveListWidgetLimit(
+                isCompact = isCompact,
+                isGallery = target?.type == DVViewerType.GALLERY,
+                limit = when (widget) {
+                    is Widget.List -> widget.limit
+                    is Widget.View -> widget.limit
+                    is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+                        throw IllegalStateException("Incompatible widget type.")
+                    }
+                }
+            )
+        )
+        val result = ViewerContext(obj = obj, target = target, params = params)
+
+        // Cache the result
+        cachedContext = result
+        cachedContextKey = contextKey
+
+        return result
     }
 
     private fun galleryWidgetSubscribe(
@@ -384,14 +462,14 @@ class DataViewListWidgetContainer(
         }
     }
 
-    private fun defaultEmptyState() : WidgetView {
+    private fun defaultEmptyState(isCollapsed: Boolean = false) : WidgetView {
         return when(widget) {
             is Widget.List -> SetOfObjects(
                 id = widget.id,
                 source = widget.source,
                 tabs = emptyList(),
                 elements = emptyList(),
-                isExpanded = true,
+                isExpanded = !isCollapsed,
                 isCompact = widget.isCompact,
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser)
@@ -402,14 +480,13 @@ class DataViewListWidgetContainer(
                 icon = widget.icon,
                 tabs = emptyList(),
                 elements = emptyList(),
-                isExpanded = true,
+                isExpanded = !isCollapsed,
                 view = null,
                 name = widget.source.getPrettyName(fieldParser)
             )
             is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
-            is Widget.Section.ObjectType -> TODO()
         }
     }
 }

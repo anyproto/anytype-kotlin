@@ -33,7 +33,7 @@ class MediaViewModel(
     fun processImage(objects: List<String>, index: Int = 0) {
         viewModelScope.launch {
             if (objects.isEmpty()) {
-                _viewState.value = MediaViewState.Error("No image URLs provided")
+                _viewState.value = MediaViewState.Error("No image object IDs provided")
                 return@launch
             }
 
@@ -52,7 +52,7 @@ class MediaViewModel(
     fun processVideo(obj: Id) {
         viewModelScope.launch {
             if (obj.isBlank()) {
-                _viewState.value = MediaViewState.Error("No video URL provided")
+                _viewState.value = MediaViewState.Error("No video object ID provided")
                 return@launch
             }
 
@@ -66,7 +66,7 @@ class MediaViewModel(
         viewModelScope.launch {
             val hash = urlBuilder.original(obj)
             if (hash.isBlank()) {
-                _viewState.value = MediaViewState.Error("No audio URL provided")
+                _viewState.value = MediaViewState.Error("No audio object ID provided")
                 return@launch
             }
 

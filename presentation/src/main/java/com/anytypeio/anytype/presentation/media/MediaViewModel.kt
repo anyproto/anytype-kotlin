@@ -110,7 +110,9 @@ class MediaViewModel(
                     )
                 },
                 success = {
-                    // TODO emit toast.
+                    _commands.emit(
+                        Command.ShowToast("Download completed successfully.")
+                    )
                 }
             )
         }

@@ -355,7 +355,7 @@ class DataViewListWidgetContainer(
                         } else {
                             null
                         },
-                        name = Default(prettyPrintName = fieldParser.getObjectPluralName(obj))
+                        name = Default(prettyPrintName = fieldParser.getObjectPluralName(obj, false))
                     )
                 },
                 isExpanded = true,
@@ -396,7 +396,7 @@ class DataViewListWidgetContainer(
                             objType = storeOfObjectTypes.getTypeOfObject(obj)
                         ),
                         name = WidgetView.Name.Default(
-                            prettyPrintName = fieldParser.getObjectPluralName(obj)
+                            prettyPrintName = fieldParser.getObjectPluralName(obj, false)
                         )
                     )
                 },

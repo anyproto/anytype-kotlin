@@ -58,23 +58,25 @@ import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.presentation.media.MediaViewModel
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
 import timber.log.Timber
 
 @Composable
 fun ImageGallery(
-    urls: List<String>,
+    images: List<MediaViewModel.MediaViewState.ImageContent.Image> = emptyList(),
     index: Int = 0,
     onBackClick: () -> Unit = {},
-    onDownloadClick: () -> Unit = {},
-    onOpenClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+    onDownloadClick: (Id) -> Unit = {},
+    onOpenClick: (Id) -> Unit = {},
+    onDeleteClick: (Id) -> Unit = {}
 ) {
-    val pagerState = rememberPagerState(initialPage = index) { urls.size }
+    val pagerState = rememberPagerState(initialPage = index) { images.size }
     var chromeVisible by remember { mutableStateOf(true) }
 
     LaunchedEffect(pagerState.settledPage) {
@@ -87,7 +89,8 @@ fun ImageGallery(
             modifier = Modifier.fillMaxSize()
         ) { page ->
 
-            val url = urls[page]
+            val image = images[page]
+            val url = image.url
 
             ImageViewer(
                 url = url,
@@ -100,7 +103,7 @@ fun ImageGallery(
 
         // Page counter chip (top-center)
 
-        if (urls.size > 1) {
+        if (images.size > 1) {
             AnimatedVisibility(
                 visible = chromeVisible,
                 enter = fadeIn(),
@@ -118,7 +121,7 @@ fun ImageGallery(
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
-                        text = "${pagerState.settledPage + 1}/${urls.size}",
+                        text = "${pagerState.settledPage + 1}/${images.size}",
                         style = Caption1Medium,
                         color = colorResource(R.color.glyph_active)
                     )
@@ -137,7 +140,16 @@ fun ImageGallery(
         ) {
             MediaActionToolbar(
                 modifier = Modifier.padding(bottom = 32.dp),
-                onBackClick = onBackClick
+                onBackClick = onBackClick,
+                onDownloadClick = {
+                    onDownloadClick(images[pagerState.settledPage].obj)
+                },
+                onDeleteClick = {
+                    onDeleteClick(images[pagerState.settledPage].obj)
+                },
+                onOpenClick = {
+                    onOpenClick(images[pagerState.settledPage].obj)
+                }
             )
         }
     }
@@ -234,16 +246,16 @@ fun VideoPlayerBox(
 
 @Composable
 fun ImageGalleryBox(
-    urls: List<String> =  emptyList(),
+    images: List<MediaViewModel.MediaViewState.ImageContent.Image> =  emptyList(),
     index: Int = 0,
     onBackClick: () -> Unit = {},
-    onDownloadClick: () -> Unit = {},
-    onOpenClick: () -> Unit = {},
-    onDeleteClick: () -> Unit = {}
+    onDownloadClick: (Id) -> Unit = {},
+    onOpenClick: (Id) -> Unit = {},
+    onDeleteClick: (Id) -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ImageGallery(
-            urls = urls,
+            images = images,
             index = index,
             onBackClick = onBackClick,
             onDownloadClick = onDownloadClick,

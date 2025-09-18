@@ -48,25 +48,25 @@ fun MediaActionToolbar(
                 .noRippleClickable { onBackClick() }
         )
 
-//        Image(
-//            modifier = Modifier.clickable { onDownloadClick() },
-//            painter = painterResource(R.drawable.ic_object_action_download),
-//            contentDescription = null
-//        )
-//
+        Image(
+            modifier = Modifier.noRippleClickable { onDownloadClick() },
+            painter = painterResource(R.drawable.ic_object_action_download),
+            contentDescription = null
+        )
+
 //        Image(
 //            modifier = Modifier.clickable { onOpenClick() },
 //            painter = painterResource(R.drawable.ic_open_as_object),
 //            contentDescription = null
 //        )
-//
-//        Image(
-//            painter = painterResource(R.drawable.icon_delete_red),
-//            contentDescription = null,
-//            modifier = Modifier
-//                .padding(end = 20.dp)
-//                .clickable { onDeleteClick() }
-//        )
+
+        Image(
+            painter = painterResource(R.drawable.icon_delete_red),
+            contentDescription = null,
+            modifier = Modifier
+                .padding(end = 20.dp)
+                .noRippleClickable { onDeleteClick() }
+        )
     }
 }
 

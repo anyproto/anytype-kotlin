@@ -45,7 +45,7 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
         super.bind(item, clicked)
         setupPreview(
             onPlayClicked = {
-                clicked(ListenerType.Video.View(target = item.id, url = item.url))
+                clicked(ListenerType.Video.View(obj = item.targetObjectId, target = item.id, url = item.url))
             },
             url = item.url
         )
@@ -92,7 +92,7 @@ class Video(val binding: ItemBlockVideoBinding) : Media(binding.root) {
 
     override fun onMediaBlockClicked(item: BlockView.Media, clicked: (ListenerType) -> Unit) {
         if (item is BlockView.Media.Video) {
-            clicked(ListenerType.Video.View(target = item.id, url = item.url))
+            clicked(ListenerType.Video.View(obj = item.targetObjectId, target = item.id, url = item.url))
         }
     }
 

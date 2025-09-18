@@ -148,6 +148,8 @@ sealed class ObjectWrapper {
      * Wrapper for bookmark objects
      */
     data class Bookmark(override val map: Struct) : ObjectWrapper() {
+        private val default = map.withDefault { null }
+        val id: Id by default
         val name: String? get() = getSingleValue(Relations.NAME)
         val description: String? get() = getSingleValue(Relations.DESCRIPTION)
         val source: String? get() = getSingleValue(Relations.SOURCE)

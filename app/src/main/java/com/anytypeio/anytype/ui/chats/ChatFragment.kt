@@ -184,8 +184,8 @@ class ChatFragment : Fragment() {
                             )
                         }
                     },
-                    onRequestOpenFullScreenImageGallery = { id, urls, index ->
-                        vm.onMediaPreview(id, urls, index)
+                    onRequestOpenFullScreenImageGallery = { objects, index ->
+                        vm.onMediaPreview(objects, index)
                                                           },
                     onSelectChatReaction = vm::onSelectChatReaction,
                     onViewChatReaction = { msg, emoji ->
@@ -195,7 +195,7 @@ class ChatFragment : Fragment() {
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            url = attachment.url
+                            obj = attachment.obj
                         )
                     }
                 )
@@ -392,7 +392,7 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
-                                urls = command.urls,
+                                objects = command.objects,
                                 index = command.index
                             )
                         }.onFailure {
@@ -462,7 +462,7 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_AUDIO,
-                                url = command.url,
+                                obj = command.obj,
                                 name = command.name
                             )
                         }.onFailure {

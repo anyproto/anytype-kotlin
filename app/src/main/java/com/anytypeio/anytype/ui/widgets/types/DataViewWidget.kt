@@ -9,12 +9,12 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -37,6 +38,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -56,7 +58,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import coil3.compose.AsyncImage
+import com.anytypeio.anytype.ui.widgets.menu.WidgetObjectTypeMenu
 
 @Composable
 fun DataViewListWidgetCard(
@@ -69,7 +71,6 @@ fun DataViewListWidgetCard(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {}
 ) {
     val isCardMenuExpanded = remember {
@@ -105,7 +106,6 @@ fun DataViewListWidgetCard(
                 title = item.getPrettyName(),
                 icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
                         onWidgetSourceClicked(item.id, item.source)
@@ -115,7 +115,6 @@ fun DataViewListWidgetCard(
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction,
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
@@ -162,44 +161,56 @@ fun DataViewListWidgetCard(
                 if (item.isExpanded) {
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
-                    } else if (item.canCreateObjectOfType) {
-                        if (mode !is InteractionMode.ReadOnly) {
-                            if (item.tabs.isNotEmpty()) {
-                                EmptyWidgetPlaceholderWithCreateButton(
-                                    R.string.empty_list_widget,
-                                    onCreateClicked = {
-                                        onCreateDataViewObject(
-                                            item.id, item.tabs.find { it.isSelected }?.id
-                                        )
-                                    }
-                                )
-                            } else {
-                                EmptyWidgetPlaceholderWithCreateButton(
-                                    text = R.string.empty_list_widget_no_view,
-                                    onCreateClicked = {
-                                        onCreateDataViewObject(
-                                            item.id, item.tabs.find { it.isSelected }?.id
-                                        )
-                                    }
-                                )
-                            }
-                        } else {
-                            EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
-                        }
                     } else {
-                        // Cannot create an object of the given type.
                         EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
         }
-        WidgetMenu(
-            canCreateObjectOfType = item.canCreateObjectOfType,
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode is InteractionMode.Default
+
+        WidgetLongClickMenu(
+            source = item.source,
+            isCardMenuExpanded = isCardMenuExpanded,
+            item = item,
+            mode = mode,
+            onDropDownMenuAction = onDropDownMenuAction
         )
+    }
+}
+
+@Composable
+private fun WidgetLongClickMenu(
+    source: Widget.Source,
+    isCardMenuExpanded: MutableState<Boolean>,
+    item: WidgetView,
+    mode: InteractionMode,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
+) {
+    when (source) {
+        is Widget.Source.Default -> {
+            WidgetMenu(
+                isExpanded = isCardMenuExpanded,
+                onDropDownMenuAction = onDropDownMenuAction,
+                canEditWidgets = mode is InteractionMode.Default
+            )
+        }
+
+        is Widget.Source.ObjectType -> {
+            if (item.canCreateObjectOfType) {
+                WidgetObjectTypeMenu(
+                    isExpanded = isCardMenuExpanded,
+                    canCreateObjectOfType = item.canCreateObjectOfType,
+                    onCreateObjectOfTypeClicked = {
+                        onDropDownMenuAction.invoke(DropDownMenuAction.CreateObjectOfType(source))
+                    }
+                )
+            }
+        }
+
+        else -> {
+            // no op
+        }
     }
 }
 
@@ -250,7 +261,6 @@ fun GalleryWidgetCard(
                 title = item.getPrettyName(),
                 icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
                         onWidgetSourceClicked(item.id, item.source)
@@ -260,7 +270,6 @@ fun GalleryWidgetCard(
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction,
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) },
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
@@ -274,8 +283,6 @@ fun GalleryWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                val withCover = item.showCover && item.elements.any { it.cover != null }
-                val withIcon = item.showIcon
                 LazyRow(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -293,17 +300,14 @@ fun GalleryWidgetCard(
                                 item = element,
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
-                                },
-                                withCover = withCover,
-                                withIcon = withIcon
+                                }
                             )
                         }
                         if (idx == item.elements.lastIndex) {
                             item {
                                 Box(
                                     modifier = Modifier
-                                        .width(136.dp)
-                                        .height(if (withCover) 136.dp else 56.dp)
+                                        .size(136.dp)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_transparent_primary),
@@ -335,7 +339,7 @@ fun GalleryWidgetCard(
                 if (item.isExpanded) {
                     when {
                         item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
-                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget)
+                        item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                         else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
                     }
 
@@ -343,11 +347,12 @@ fun GalleryWidgetCard(
                 }
             }
         }
-        WidgetMenu(
-            canCreateObjectOfType = item.canCreateObjectOfType,
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode is InteractionMode.Default
+        WidgetLongClickMenu(
+            source = item.source,
+            isCardMenuExpanded = isCardMenuExpanded,
+            item = item,
+            mode = mode,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
 }
@@ -467,14 +472,11 @@ fun ListWidgetElement(
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
-    onItemClicked: () -> Unit,
-    withCover: Boolean = false,
-    withIcon: Boolean = false
+    onItemClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .width(136.dp)
-            .height(if (withCover) 136.dp else 56.dp)
+            .size(136.dp)
             .clip(RoundedCornerShape(8.dp))
             .clickable {
                 onItemClicked()
@@ -489,107 +491,45 @@ private fun GalleryWidgetItemCard(
                     shape = RoundedCornerShape(8.dp)
                 )
         )
-        if (withCover) {
-            when (val cover = item.cover) {
-                is CoverView.Color -> {
-                    Box(
-                        modifier = Modifier
-                            .width(136.dp)
-                            .height(80.dp)
-                            .background(
-                                color = Color(cover.coverColor.color),
-                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                            )
-                    )
-                }
-
-                is CoverView.Gradient -> {
-                    Box(
-                        modifier = Modifier
-                            .width(136.dp)
-                            .height(80.dp)
-                            .background(
-                                Brush.horizontalGradient(
-                                    colors = gradient(cover.gradient)
-                                ),
-                                shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
-                            )
-                    )
-                }
-
-                is CoverView.Image -> {
-                    AsyncImage(
-                        model = cover.url,
-                        contentDescription = "Cover image",
-                        modifier = Modifier
-                            .width(136.dp)
-                            .height(80.dp)
-                            .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                        contentScale = ContentScale.Crop,
-                    )
-                }
-
-                else -> {
-                    // Draw nothing.
-                }
-            }
-        }
-        if (withIcon && item.objectIcon != ObjectIcon.None) {
-            Row(
-                modifier = Modifier.align(
-                    if (item.cover != null) {
-                        Alignment.BottomStart
-                    } else {
-                        Alignment.TopStart
-                    }
-                )
-            ) {
-                ListWidgetObjectIcon(
-                    iconSize = 18.dp,
-                    icon = item.objectIcon,
+        when (val cover = item.cover) {
+            is CoverView.Color -> {
+                Box(
                     modifier = Modifier
-                        .padding(start = 12.dp, top = 9.dp),
-                    onTaskIconClicked = {
-                        // Do nothing.
-                    }
-                )
-                Text(
-                    text = item.getPrettyName(),
-                    maxLines = 2,
-                    overflow = TextOverflow.Ellipsis,
-                    style = Caption1Medium,
-                    color = colorResource(id = R.color.text_primary),
-                    modifier = Modifier
-                        .padding(
-                            start = 6.dp,
-                            end = 10.dp,
-                            top = 9.dp,
-                            bottom = 11.dp
+                        .fillMaxSize()
+                        .background(
+                            color = Color(cover.coverColor.color),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
                         )
                 )
             }
-        } else {
-            Text(
-                text =  item.getPrettyName(),
-                maxLines = 2,
-                overflow = TextOverflow.Ellipsis,
-                style = Caption1Medium,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier
-                    .align(
-                        if (item.cover != null) {
-                            Alignment.BottomStart
-                        } else {
-                            Alignment.TopStart
-                        }
-                    )
-                    .padding(
-                        start = 12.dp,
-                        end = 10.dp,
-                        top = 9.dp,
-                        bottom = 11.dp
-                    )
-            )
+
+            is CoverView.Gradient -> {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(
+                            Brush.horizontalGradient(
+                                colors = gradient(cover.gradient)
+                            ),
+                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                        )
+                )
+            }
+
+            is CoverView.Image -> {
+                AsyncImage(
+                    model = cover.url,
+                    contentDescription = "Cover image",
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                    contentScale = ContentScale.Crop,
+                )
+            }
+
+            else -> {
+                // Draw nothing.
+            }
         }
     }
 }

@@ -221,6 +221,20 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
     }
 }
 
+fun List<Block>.parseActiveViews() : WidgetToActiveView {
+    val result = mutableMapOf<WidgetId, WidgetActiveViewId>()
+    forEach { block ->
+        val content = block.content
+        if (content is Block.Content.Widget) {
+            val view = content.activeView
+            if (!view.isNullOrEmpty()) {
+                result[block.id] = view
+            }
+        }
+    }
+    return result
+}
+
 fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
@@ -362,7 +376,7 @@ fun buildWidgetName(
     obj: ObjectWrapper.Basic,
     fieldParser: FieldParser
 ): Name {
-    val prettyPrintName = fieldParser.getObjectPluralName(obj)
+    val prettyPrintName = fieldParser.getObjectPluralName(obj, false)
     return Name.Default(prettyPrintName = prettyPrintName)
 }
 

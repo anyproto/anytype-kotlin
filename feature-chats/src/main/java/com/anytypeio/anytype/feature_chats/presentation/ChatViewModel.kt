@@ -1083,10 +1083,10 @@ class ChatViewModel @Inject constructor(
                     val index = images.indexOfFirst {
                         it.target == attachment.target
                     }
-                    val targets = images.map { item -> item.target }
+                    val objects = images.map { item -> item.target }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
-                            objects = targets,
+                            objects = objects,
                             msg = msg,
                             idx = index
                         )

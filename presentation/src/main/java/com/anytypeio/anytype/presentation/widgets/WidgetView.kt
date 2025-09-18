@@ -31,7 +31,7 @@ sealed class WidgetView {
         override val id: Id,
         override val isLoading: Boolean = false,
         val name: Name,
-        val icon: ObjectIcon,
+        val icon: ObjectIcon = ObjectIcon.None,
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
@@ -65,7 +65,7 @@ sealed class WidgetView {
     data class Link(
         override val id: Id,
         override val isLoading: Boolean = false,
-        val icon: ObjectIcon,
+        val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
     ) : WidgetView(), Draggable {
@@ -76,7 +76,7 @@ sealed class WidgetView {
     data class SetOfObjects(
         override val id: Id,
         override val isLoading: Boolean = false,
-        val icon: ObjectIcon,
+        val icon: ObjectIcon = ObjectIcon.None,
         val source: Widget.Source,
         val tabs: List<Tab>,
         val elements: List<Element>,

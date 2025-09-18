@@ -29,8 +29,8 @@
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
     <string name="settings">Настройки</string>
-    <string name="app_preferences">App Preferences</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="app_preferences">Настройки приложения</string>
+    <string name="vault_key">Хранилище и ключ</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашего ключа?</string>
     <string name="you_will_need_to_sign_in">Он необходим для входа в хранилище. Храните его в безопасном месте. Если Вы его потеряете - больше не сможете войти в своё хранилище.</string>
     <string name="about_help_and_community">Помощь и сообщество</string>

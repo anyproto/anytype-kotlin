@@ -45,6 +45,7 @@ import timber.log.Timber
  * collapsed state management, and caching to optimize performance.
  */
 class DataViewListWidgetContainer(
+    private val space: SpaceId,
     private val widget: Widget,
     private val getObject: GetObject,
     private val storage: StorelessSubscriptionContainer,
@@ -115,35 +116,44 @@ class DataViewListWidgetContainer(
                         if (isCollapsed) {
                             flowOf(createWidgetView(isCollapsed = true, isLoading = false))
                         } else {
-                            if (source.obj.layout == ObjectType.Layout.SET && source.obj.setOf.isEmpty()) {
-                                flowOf(defaultEmptyState(isCollapsed))
-                            } else {
-                                val ctx = computeViewerContext(
-                                    sourceParams = source.obj.toWidgetSourceParams(),
-                                    activeViewerId = view,
-                                    isCompact = isCompact
-                                )
-                                if (ctx.params != null) {
-                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                        galleryWidgetSubscribe(
-                                            obj = ctx.obj,
-                                            activeView = view,
-                                            params = ctx.params,
-                                            target = ctx.target,
-                                            storeOfObjectTypes = storeOfObjectTypes
-                                        )
-                                    } else {
-                                        defaultWidgetSubscribe(
-                                            obj = ctx.obj,
-                                            activeView = view,
-                                            params = ctx.params,
-                                            isCompact = isCompact,
-                                            storeOfObjectTypes = storeOfObjectTypes
-                                        )
-                                    }
+
+                            val setOf = source.obj.setOf.firstOrNull()
+
+                            if (setOf == null) {
+                                Timber.w("Widget source setOf is empty for widget ${widget.id}")
+                                return@flatMapLatest flowOf(defaultEmptyState(isCollapsed))
+                            }
+
+                            val ctx = computeViewerContext(
+                                sourceParams = WidgetSourceParams(
+                                    sourceId = source.obj.id,
+                                    isArchived = source.obj.isArchived,
+                                    isDeleted = source.obj.isDeleted
+                                ),
+                                activeViewerId = view,
+                                isCompact = isCompact
+                            )
+
+                            if (ctx.params != null) {
+                                if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                    galleryWidgetSubscribe(
+                                        obj = ctx.obj,
+                                        activeView = view,
+                                        params = ctx.params,
+                                        target = ctx.target,
+                                        storeOfObjectTypes = storeOfObjectTypes
+                                    )
                                 } else {
-                                    flowOf(defaultEmptyState(isCollapsed))
+                                    defaultWidgetSubscribe(
+                                        obj = ctx.obj,
+                                        activeView = view,
+                                        params = ctx.params,
+                                        isCompact = isCompact,
+                                        storeOfObjectTypes = storeOfObjectTypes
+                                    )
                                 }
+                            } else {
+                                flowOf(defaultEmptyState(isCollapsed))
                             }
                         }
                     }
@@ -157,7 +167,11 @@ class DataViewListWidgetContainer(
                             } else {
                                 val isCompact = widget is Widget.List && widget.isCompact
                                 val ctx = computeViewerContext(
-                                    sourceParams = source.obj.toWidgetSourceParams(),
+                                    sourceParams = WidgetSourceParams(
+                                        sourceId = source.obj.id,
+                                        isArchived = source.obj.isArchived,
+                                        isDeleted = source.obj.isDeleted
+                                    ),
                                     activeViewerId = view,
                                     isCompact = isCompact
                                 )
@@ -225,16 +239,16 @@ class DataViewListWidgetContainer(
      * Asynchronously fetches the object view for the widget's source.
      * Returns an empty ObjectView if the fetch fails to prevent crashes.
      */
-    private suspend fun getObjectViewOrEmpty(): ObjectView {
-        Timber.d("Fetching object for widget ${widget.id}")
+    private suspend fun getObjectViewOrEmpty(objectId: Id, spaceId: SpaceId): ObjectView {
+        Timber.d("Fetching object by id:${objectId} for widget")
         val objResult = getObject.async(
             Params(
-                target = widget.source.id,
-                space = SpaceId(widget.config.space)
+                target = objectId,
+                space = spaceId
             )
         )
         return objResult.getOrNull() ?: run {
-            Timber.e(objResult.exceptionOrNull(), "Failed to get object for widget ${widget.id}")
+            Timber.e(objResult.exceptionOrNull(), "Failed to get object $objectId for widget")
             ObjectView(
                 root = "",
                 blocks = emptyList(),
@@ -271,10 +285,10 @@ class DataViewListWidgetContainer(
         )
 
         val params = obj.parseDataViewStoreSearchParams(
-            subscription = widget.id,
+            space = space,
+            subscription = obj.root,
             viewer = activeViewerId,
             sourceParams = sourceParams,
-            config = widget.config,
             limit = limit
         )
 
@@ -296,7 +310,7 @@ class DataViewListWidgetContainer(
             return cachedContext!!
         }
         Timber.d("Computing ViewerContext for widget ${widget.id}")
-        val obj = getObjectViewOrEmpty()
+        val obj = getObjectViewOrEmpty(objectId = sourceParams.sourceId, spaceId = space)
         val result = buildViewerContextCommon(
             obj = obj,
             sourceParams = sourceParams,
@@ -474,27 +488,7 @@ fun ObjectView.isCollection(): Boolean {
 data class WidgetSourceParams(
     val isArchived: Boolean?,
     val isDeleted: Boolean?,
-    val sourceIds: List<Id>
-)
-
-/**
- * Extension function to convert ObjectWrapper.Basic to WidgetSourceParams.
- * Extracts common filtering parameters for widget data subscriptions.
- */
-fun ObjectWrapper.Basic.toWidgetSourceParams() = WidgetSourceParams(
-    isArchived = isArchived,
-    isDeleted = isDeleted,
-    sourceIds = setOf
-)
-
-/**
- * Extension function to convert ObjectWrapper.Type to WidgetSourceParams.
- * Extracts common filtering parameters for object type widgets.
- */
-fun ObjectWrapper.Type.toWidgetSourceParams() = WidgetSourceParams(
-    isArchived = isArchived,
-    isDeleted = isDeleted,
-    sourceIds = listOf(id)
+    val sourceId: Id
 )
 
 /**
@@ -502,9 +496,9 @@ fun ObjectWrapper.Type.toWidgetSourceParams() = WidgetSourceParams(
  * Extracts data view configuration, filters, sorts, and keys for database queries.
  */
 private fun ObjectView.parseDataViewStoreSearchParams(
+    space: SpaceId,
     subscription: Id,
     limit: Int,
-    config: Config,
     sourceParams: WidgetSourceParams,
     viewer: Id?
 ): StoreSearchParams? {
@@ -515,7 +509,7 @@ private fun ObjectView.parseDataViewStoreSearchParams(
     val dataViewKeys = dv.relationLinks.map { it.key }
     val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
     return StoreSearchParams(
-        space = SpaceId(config.space),
+        space = space,
         subscription = subscription,
         sorts = view.sorts,
         keys = buildList {
@@ -530,7 +524,7 @@ private fun ObjectView.parseDataViewStoreSearchParams(
             )
         },
         limit = limit,
-        source = sourceParams.sourceIds,
+        source = listOf(sourceParams.sourceId),
         collection = if (isCollection())
             root
         else

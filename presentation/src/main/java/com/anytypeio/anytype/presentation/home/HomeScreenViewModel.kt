@@ -154,7 +154,6 @@ import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlin.collections.orEmpty
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -284,6 +283,9 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
+    // Store widget object ID to use during cleanup when spaceManager might be empty
+    private var cachedWidgetObjectId: String? = null
+
     private val openWidgetObjectsHistory : MutableSet<OpenObjectHistoryItem> = LinkedHashSet()
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
@@ -303,6 +305,8 @@ class HomeScreenViewModel(
         .observe()
         .distinctUntilChanged()
         .onEach { newConfig ->
+            // Cache widget object ID for cleanup when spaceManager might be empty
+            cachedWidgetObjectId = newConfig.widgets
             viewModelScope.launch {
                 val openObjectState = objectViewState.value
                 if (openObjectState is ObjectViewState.Success) {
@@ -651,6 +655,7 @@ class HomeScreenViewModel(
                             )
                         } else {
                             DataViewListWidgetContainer(
+                                space = vmParams.spaceId,
                                 widget = widget,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
@@ -673,6 +678,7 @@ class HomeScreenViewModel(
                         }
                         is Widget.View -> {
                             DataViewListWidgetContainer(
+                                space = vmParams.spaceId,
                                 widget = widget,
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
@@ -764,9 +770,6 @@ class HomeScreenViewModel(
                                     config = state.config,
                                     urlBuilder = urlBuilder
                                 )
-                                    .also {
-                                        widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
-                                    }
                             )
                             add(Widget.Section.ObjectType(config = state.config))
                             val types = mapSpaceTypesToWidgets(
@@ -774,6 +777,23 @@ class HomeScreenViewModel(
                                 config = state.config
                             )
                             addAll(types)
+                        }.also { allWidgets ->
+                            // Initialize active views for all widgets
+                            // First get active views from bundled widgets (parsed from blocks)
+                            val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
+
+                            // For ObjectType widgets, preserve any existing active view state
+                            // since they don't have persistent storage in blocks
+                            val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                            val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
+                                allWidgets.any { widget ->
+                                    widget.id == widgetId && widget.source is Widget.Source.ObjectType
+                                }
+                            }
+
+                            // Combine bundled widget active views with preserved ObjectType active views
+                            val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
+                            widgetActiveViewStateHolder.init(combinedActiveViews)
                         }
                     } else {
                         emptyList()
@@ -810,18 +830,22 @@ class HomeScreenViewModel(
                 )
             )
         )
-        val subscriptions = buildList {
+        val subscriptionIds = buildList {
             addAll(
-                widgets.value.orEmpty().map { widget ->
-                    if (widget.source is Widget.Source.Bundled)
-                        widget.source.id
-                    else
-                        widget.id
+                widgets.value.orEmpty().mapNotNull { widget ->
+                    when (widget.source) {
+                        is Widget.Source.Bundled -> widget.source.id
+                        is Widget.Source.Default -> widget.source.id
+                        is Widget.Source.ObjectType -> widget.source.id
+                        Widget.Source.Other -> null
+                    }
                 }
             )
             add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
         }
-        if (subscriptions.isNotEmpty()) unsubscribe(subscriptions)
+        if (subscriptionIds.isNotEmpty()) {
+            storelessSubscriptionContainer.unsubscribe(subscriptionIds)
+        }
 
         closeObject.stream(
             CloseObject.Params(
@@ -2179,24 +2203,31 @@ class HomeScreenViewModel(
     }
 
     override fun onCleared() {
-        super.onCleared()
         Timber.d("onCleared")
         try {
-            GlobalScope.launch(appCoroutineDispatchers.io) {
-                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
-                val config = spaceManager.getConfig()
-                if (config != null) {
-                    proceedWithClosingWidgetObject(
-                        widgetObject = config.widgets,
-                        space = SpaceId(config.space)
-                    )
+            // Ensure cleanup actually runs even as the ViewModel is being cleared.
+            kotlinx.coroutines.runBlocking(appCoroutineDispatchers.io + kotlinx.coroutines.NonCancellable) {
+                // Best-effort: never throw past this boundary
+                kotlin.runCatching {
+                    unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+                }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
+
+                val widgetObjectId = cachedWidgetObjectId
+                if (widgetObjectId != null) {
+                    kotlin.runCatching {
+                        proceedWithClosingWidgetObject(
+                            widgetObject = widgetObjectId,
+                            space = vmParams.spaceId
+                        )
+                    }.onFailure { Timber.e(it, "Error while closing widget object") }
                 }
-                jobs.cancel()
-                widgetObjectPipelineJobs.cancel()
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error while closing widget object")
+            Timber.e(e, "Error during onCleared cleanup")
         }
+        jobs.cancel()
+        widgetObjectPipelineJobs.cancel()
+        super.onCleared()
     }
 
     fun onSearchIconClicked() {

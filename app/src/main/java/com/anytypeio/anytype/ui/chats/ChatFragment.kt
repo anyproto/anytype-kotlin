@@ -392,7 +392,7 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
-                                objects = command.targets,
+                                objects = command.objects,
                                 index = command.index
                             )
                         }.onFailure {

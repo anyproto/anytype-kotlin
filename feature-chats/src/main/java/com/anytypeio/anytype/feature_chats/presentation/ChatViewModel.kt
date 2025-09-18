@@ -1199,7 +1199,7 @@ class ChatViewModel @Inject constructor(
             commands.emit(
                 ViewModelCommand.MediaPreview(
                     index = index,
-                    targets = objects
+                    objects = objects
                 )
             )
         }
@@ -1649,7 +1649,7 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
-        data class MediaPreview(val index: Int, val targets: List<Id>) : ViewModelCommand()
+        data class MediaPreview(val index: Int, val objects: List<Id>) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
         data class PlayAudio(val obj: Id, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()

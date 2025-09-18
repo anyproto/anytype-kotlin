@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -35,7 +36,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -104,6 +104,7 @@ import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
 import com.anytypeio.anytype.presentation.home.Command.*
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.*
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
@@ -112,7 +113,6 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
-import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -141,20 +141,19 @@ import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
-import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.forceChatPosition
-import com.anytypeio.anytype.presentation.widgets.hasValidLayout
-import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel.Companion.notAllowedTypesLayouts
+import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlin.collections.orEmpty
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -165,10 +164,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
@@ -301,6 +298,7 @@ class HomeScreenViewModel(
     private val _systemTypes = MutableStateFlow<List<SystemTypeView>>(emptyList())
     val systemTypes: StateFlow<List<SystemTypeView>> = _systemTypes.asStateFlow()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
         .observe()
         .distinctUntilChanged()
@@ -412,7 +410,6 @@ class HomeScreenViewModel(
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
         proceedWithNavPanelState()
-        proceedWithSystemTypesPipeline()
     }
 
     private fun proceedWithNavPanelState() {
@@ -448,85 +445,66 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithSystemTypesPipeline() {
-        viewModelScope.launch {
-            combine(
-                storeOfObjectTypes.trackChanges(),
-                hasEditAccess
-            ) { typesChange, isOwnerOrEditor -> typesChange to isOwnerOrEditor }
-                .collect { (_, isOwnerOrEditor) ->
-                    val allTypes = storeOfObjectTypes.getAll()
-                    val filteredObjectTypes = allTypes
-                        .mapNotNull { objectType ->
-                            val resolvedLayout =
-                                objectType.recommendedLayout ?: return@mapNotNull null
-                            if (!objectType.isValid || listOf(
-                                    ObjectType.Layout.RELATION,
-                                    ObjectType.Layout.RELATION_OPTION,
-                                    ObjectType.Layout.DASHBOARD,
-                                    ObjectType.Layout.SPACE,
-                                    ObjectType.Layout.SPACE_VIEW,
-                                    ObjectType.Layout.TAG,
-                                    ObjectType.Layout.CHAT_DERIVED,
-                                    ObjectType.Layout.DATE,
-                                    ObjectType.Layout.OBJECT_TYPE,
-                                    ObjectType.Layout.PARTICIPANT
-                                ).contains(
-                                    resolvedLayout
-                                ) || objectType.isArchived == true || objectType.isDeleted == true || objectType.uniqueKey == ObjectTypeIds.TEMPLATE
-                            ) {
-                                return@mapNotNull null
-                            } else {
-                                objectType
-                            }
-                        }
-
-                    Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
-
-                    // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
-                    val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
-                        !objectType.restrictions.contains(ObjectRestriction.DELETE)
-                    }
-                    
-                    val systemTypeViews: List<SystemTypeView> = buildList {
-                        // Add user-created types first (deletable)
-                        for (objectType in myTypes) {
-                            add(
-                                SystemTypeView(
-                                    id = objectType.id,
-                                    name = fieldParser.getObjectPluralName(objectType),
-                                    icon = objectType.objectIcon(),
-                                    isCreateObjectAllowed = isCreateObjectAllowedForType(
-                                        objectType = objectType,
-                                        isOwnerOrEditor = isOwnerOrEditor
-                                    ),
-                                    isDeletable = true,
-                                    widgetView = createWidgetViewFromType(objectType)
-                                )
-                            )
-                        }
-                        
-                        // Add system types (not deletable)
-                        for (objectType in systemTypes) {
-                            add(
-                                SystemTypeView(
-                                    id = objectType.id,
-                                    name = fieldParser.getObjectPluralName(objectType),
-                                    icon = objectType.objectIcon(),
-                                    isCreateObjectAllowed = isCreateObjectAllowedForType(
-                                        objectType = objectType,
-                                        isOwnerOrEditor = isOwnerOrEditor
-                                    ),
-                                    isDeletable = false,
-                                    widgetView = createWidgetViewFromType(objectType)
-                                )
-                            )
-                        }
-                    }
-
-                    _systemTypes.value = systemTypeViews
+    private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config): List<Widget> {
+        val allTypes = storeOfObjectTypes.getAll()
+        val filteredObjectTypes = allTypes
+            .mapNotNull { objectType ->
+                if (!objectType.isValid || listOf(
+                        ObjectType.Layout.RELATION,
+                        ObjectType.Layout.RELATION_OPTION,
+                        ObjectType.Layout.DASHBOARD,
+                        ObjectType.Layout.SPACE,
+                        ObjectType.Layout.SPACE_VIEW,
+                        ObjectType.Layout.TAG,
+                        ObjectType.Layout.CHAT_DERIVED,
+                        ObjectType.Layout.DATE,
+                        ObjectType.Layout.OBJECT_TYPE,
+                        ObjectType.Layout.PARTICIPANT
+                    ).contains(
+                        objectType.recommendedLayout
+                    ) || objectType.isArchived == true || objectType.isDeleted == true || objectType.uniqueKey == ObjectTypeIds.TEMPLATE
+                ) {
+                    return@mapNotNull null
+                } else {
+                    objectType
                 }
+            }
+
+        Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
+
+        // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
+        val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
+            !objectType.restrictions.contains(ObjectRestriction.DELETE)
         }
+
+        val allTypeWidgetIds = mutableListOf<Id>()
+
+        val widgetList = buildList {
+            // Add user-created types first (deletable)
+            for (objectType in myTypes) {
+                val widget = createWidgetViewFromType(objectType, config)
+                add(widget)
+                // Track all type widgets for initial collapsed state
+                allTypeWidgetIds.add(widget.id)
+            }
+
+            // Add system types (not deletable)
+            for (objectType in systemTypes) {
+                val widget = createWidgetViewFromType(objectType, config)
+                add(widget)
+                // Track all type widgets for initial collapsed state
+                allTypeWidgetIds.add(widget.id)
+            }
+        }
+
+        // Set all type widgets to collapsed state initially
+        if (allTypeWidgetIds.isNotEmpty()) {
+            val currentCollapsed = collapsedWidgetStateHolder.get()
+            val newCollapsed = (currentCollapsed + allTypeWidgetIds).distinct()
+            collapsedWidgetStateHolder.set(newCollapsed)
+        }
+
+        return widgetList
     }
 
     private fun proceedWithViewStatePipeline() {
@@ -545,6 +523,7 @@ class HomeScreenViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithUserPermissions() {
         viewModelScope.launch {
             spaceManager
@@ -572,6 +551,7 @@ class HomeScreenViewModel(
         viewModelScope.launch { unsubscriber.start() }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithRenderingPipeline() {
         viewModelScope.launch {
             containers.filterNotNull().flatMapLatest { list ->
@@ -617,8 +597,8 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             widgets.filterNotNull().map { widgets ->
                 val currentlyDisplayedViews = views.value
-
-                widgets.forceChatPosition().filter { widget -> widget.hasValidLayout() }.map { widget ->
+                widgets.forceChatPosition().map { widget ->
+                    Timber.d("Creating container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(
                             widget = widget,
@@ -676,7 +656,7 @@ class HomeScreenViewModel(
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
-                                isSessionActive = isSessionActive,
+                                isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
                                 onRequestCache = {
@@ -698,7 +678,7 @@ class HomeScreenViewModel(
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
                                 isWidgetCollapsed = isCollapsed(widget.id),
-                                isSessionActive = isSessionActive,
+                                isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
                                 // TODO handle cached item type.
@@ -719,6 +699,12 @@ class HomeScreenViewModel(
                                 widget = widget
                             )
                         }
+                        is Widget.Section.ObjectType -> {
+                            SectionWidgetContainer.ObjectTypes
+                        }
+                        is Widget.Section.Pinned -> {
+                            SectionWidgetContainer.Pinned
+                        }
                     }
                 }
             }.collect {
@@ -728,6 +714,7 @@ class HomeScreenViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithObjectViewStatePipeline() {
         val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
             merge(
@@ -749,26 +736,52 @@ class HomeScreenViewModel(
         val payloads = merge(externalChannelEvents, internalChannelEvents)
 
         viewModelScope.launch {
-            objectViewState.flatMapLatest { state ->
-                when (state) {
+            combine(
+                storeOfObjectTypes.trackChanges(),
+                objectViewState,
+                hasEditAccess
+            ) { _, state, isOwnerOrEditor ->
+                val s = when (state) {
                     is ObjectViewState.Idle -> flowOf(state)
                     is ObjectViewState.Failure -> flowOf(state)
                     is ObjectViewState.Loading -> flowOf(state)
                     is ObjectViewState.Success -> {
-                        payloads.scan(state) { s, p -> s.copy(obj = reduce(s.obj, p)) }
+                        payloads.scan(state) { s, p ->
+                            s.copy(obj = reduce(state = s.obj, event = p))
+                        }
                     }
                 }
-            }.filterIsInstance<ObjectViewState.Success>().map { state ->
-                state.obj.blocks.parseWidgets(
-                    root = state.obj.root,
-                    details = state.obj.details,
-                    config = state.config
-                ).also {
-                    widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
+                s to isOwnerOrEditor
+            }.flatMapLatest { (stateFlow, isOwnerOrEditor) ->
+                stateFlow.map { state ->
+                    if (state is ObjectViewState.Success) {
+                        buildList {
+                            add(Widget.Section.Pinned(config = state.config))
+                            addAll(
+                                state.obj.blocks.parseWidgets(
+                                    root = state.obj.root,
+                                    details = state.obj.details,
+                                    config = state.config,
+                                    urlBuilder = urlBuilder
+                                )
+                                    .also {
+                                        widgetActiveViewStateHolder.init(state.obj.blocks.parseActiveViews())
+                                    }
+                            )
+                            add(Widget.Section.ObjectType(config = state.config))
+                            val types = mapSpaceTypesToWidgets(
+                                isOwnerOrEditor = isOwnerOrEditor,
+                                config = state.config
+                            )
+                            addAll(types)
+                        }
+                    } else {
+                        emptyList()
+                    }
                 }
-            }.collect {
-                Timber.d("Emitting list of widgets: ${it.size}")
-                widgets.value = it
+            }.collect { widgetList ->
+                Timber.d("Emitting list of widgets: ${widgetList.size}")
+                widgets.value = widgetList
             }
         }
 
@@ -1109,30 +1122,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSystemTypeClicked(systemType: SystemTypeView) {
-        Timber.d("System type clicked: ${systemType.name} with id: ${systemType.id}")
-        viewModelScope.launch {
-            // For now, create a simple navigation to the object type
-            // The actual implementation will depend on the UI navigation patterns
-            val obj = storeOfObjectTypes.get(systemType.id)
-            if (obj == null)  {
-                Timber.e("Object type not found: ${systemType.id}")
-                sendToast("Type not found")
-                return@launch
-            }
-            proceedWithNavigation(OpenObjectNavigation.OpenType(
-                target = systemType.id,
-                space = vmParams.spaceId.id
-            ))
-//            commands.emit(
-//                Command.(
-//                    objectType = systemType.id,
-//                    space = vmParams.spaceId.id
-//                )
-//            )
-        }
-    }
-
     fun onCreateNewTypeClicked() {
         viewModelScope.launch {
             val permission = userPermissionProvider.get(vmParams.spaceId)
@@ -1144,119 +1133,81 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateNewObjectOfTypeClicked(systemType: SystemTypeView) {
-        Timber.d("Create new object of type clicked: ${systemType.name} with id: ${systemType.id}")
-        viewModelScope.launch {
-            val obj = storeOfObjectTypes.get(systemType.id)
-            if (obj == null) {
-                Timber.w("Object type not found: ${systemType.id}")
-                sendToast("Type not found")
-                return@launch
-            }
-            onCreateNewObjectClicked(obj)
-        }
-    }
-
-    fun onDeleteSystemTypeClicked(systemType: SystemTypeView) {
-        Timber.d("Delete system type clicked: ${systemType.name} with id: ${systemType.id}")
-        // TODO: Implement system type deletion logic
-        // This would typically involve calling a use case to delete the type
-        // For now, we'll just show a placeholder message
-        sendToast("Delete type functionality not yet implemented")
-    }
-
-    /**
-     * Determines if object creation is allowed for a given object type.
-     * Follows the same logic as ObjectState.DataView.isCreateObjectAllowed
-     * and includes user permission checks.
-     */
-    private fun isCreateObjectAllowedForType(objectType: ObjectWrapper.Type, isOwnerOrEditor: Boolean): Boolean {
-        if (!isOwnerOrEditor) {
-            return false
-        }
-        
-        // Templates cannot be used to create objects
-        if (objectType.uniqueKey == ObjectTypeIds.TEMPLATE) {
-            return false
-        }
-        
-        // Skip layouts that don't support object creation
-        val skipLayouts = SupportedLayouts.fileLayouts + 
-                         SupportedLayouts.systemLayouts + 
-                         listOf(ObjectType.Layout.PARTICIPANT)
-        
-        return !skipLayouts.contains(objectType.recommendedLayout)
-    }
-
     /**
      * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
      */
-    private fun createWidgetViewFromType(objectType: ObjectWrapper.Type): WidgetView {
-        val typeName = fieldParser.getObjectPluralName(objectType)
-        val widgetSource = Widget.Source.Default(
-            obj = ObjectWrapper.Basic(
-                mapOf(
-                    Relations.ID to objectType.id,
-                    Relations.NAME to typeName,
-                    Relations.TYPE to listOf(objectType.id),
-                    Relations.LAYOUT to 0.0
-                )
-            )
-        )
+    private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
+        val widgetSource = Widget.Source.ObjectType(obj = objectType)
+        val icon = objectType.objectIcon()
+        val widgetLimit = objectType.widgetLimit ?: 0
 
         return when (objectType.widgetLayout) {
             Block.Content.Widget.Layout.TREE -> {
-                WidgetView.Tree(
+                Widget.Tree(
                     id = objectType.id,
-                    isLoading = false,
-                    name = WidgetView.Name.Default(typeName),
                     source = widgetSource,
-                    elements = emptyList(),
-                    isExpanded = false,
-                    isEditable = false
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit,
                 )
             }
             Block.Content.Widget.Layout.LIST -> {
-                WidgetView.ListOfObjects(
+                Widget.List(
                     id = objectType.id,
-                    isLoading = false,
                     source = widgetSource,
-                    type = WidgetView.ListOfObjects.Type.Favorites,
-                    elements = emptyList(),
-                    isExpanded = true,
-                    isCompact = false
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit
                 )
             }
             Block.Content.Widget.Layout.COMPACT_LIST -> {
-                WidgetView.ListOfObjects(
+                Widget.List(
                     id = objectType.id,
-                    isLoading = false,
                     source = widgetSource,
-                    type = WidgetView.ListOfObjects.Type.Favorites,
-                    elements = emptyList(),
-                    isExpanded = true,
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit,
                     isCompact = true
                 )
             }
             Block.Content.Widget.Layout.VIEW -> {
-                WidgetView.SetOfObjects(
+                Widget.View(
                     id = objectType.id,
-                    isLoading = false,
                     source = widgetSource,
-                    tabs = emptyList(),
-                    elements = emptyList(),
-                    isExpanded = true,
-                    name = WidgetView.Name.Default(typeName)
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit
                 )
             }
-            Block.Content.Widget.Layout.LINK,
-            null -> {
-                WidgetView.Link(
+            Block.Content.Widget.Layout.LINK -> {
+                Widget.Link(
                     id = objectType.id,
-                    isLoading = false,
-                    name = WidgetView.Name.Default(typeName),
-                    source = widgetSource
+                    source = widgetSource,
+                    config = config,
+                    icon = icon
                 )
+            }
+            null -> {
+                if (objectType.uniqueKey == ObjectTypeIds.IMAGE) {
+                    // Image type widgets default to gallery view
+                    Widget.View(
+                        id = objectType.id,
+                        source = widgetSource,
+                        config = config,
+                        icon = icon,
+                        limit = widgetLimit
+                    )
+                } else {
+                    // Default to compact list for other types
+                    Widget.List(
+                        id = objectType.id,
+                        source = widgetSource,
+                        config = config,
+                        icon = icon,
+                        limit = widgetLimit,
+                        isCompact = true
+                    )
+                }
             }
         }
     }
@@ -1272,6 +1223,7 @@ class HomeScreenViewModel(
     }
 
     fun onObjectCheckboxClicked(id: Id, isChecked: Boolean) {
+        Timber.d("onObjectCheckboxClicked: $id to $isChecked")
         proceedWithTogglingObjectCheckboxState(id = id, isChecked = isChecked)
     }
 
@@ -1308,7 +1260,7 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
                     navigation(
-                        Navigation.ExpandWidget(
+                        ExpandWidget(
                             subscription = Subscription.Favorites,
                             space = vmParams.spaceId.id
                         )
@@ -1324,7 +1276,7 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
                     navigation(
-                        Navigation.ExpandWidget(
+                        ExpandWidget(
                             subscription = Subscription.Recent,
                             space = vmParams.spaceId.id
                         )
@@ -1340,7 +1292,7 @@ class HomeScreenViewModel(
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
                     navigation(
-                        Navigation.ExpandWidget(
+                        ExpandWidget(
                             subscription = Subscription.RecentLocal,
                             space = vmParams.spaceId.id
                         )
@@ -1361,7 +1313,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Bin -> {
                 viewModelScope.launch {
                     navigation(
-                        Navigation.ExpandWidget(
+                        ExpandWidget(
                             subscription = Subscription.Bin,
                             space = vmParams.spaceId.id
                         )
@@ -1374,7 +1326,7 @@ class HomeScreenViewModel(
                         return@launch
                     }
                     navigation(
-                        Navigation.OpenAllContent(
+                        OpenAllContent(
                             space = vmParams.spaceId.id
                         )
                     )
@@ -1390,7 +1342,7 @@ class HomeScreenViewModel(
                     val chat = view?.chatId
                     if (chat != null) {
                         navigation(
-                            Navigation.OpenChat(
+                            OpenChat(
                                 ctx = chat,
                                 space = space
                             )
@@ -1399,6 +1351,18 @@ class HomeScreenViewModel(
                         Timber.w("Failed to open chat from widget: chat not found")
                     }
                 }
+            }
+
+            is Widget.Source.ObjectType -> {
+                proceedWithNavigation(
+                    OpenObjectNavigation.OpenType(
+                        target = source.obj.id,
+                        space = vmParams.spaceId.id
+                    )
+                )
+            }
+            Widget.Source.Other -> {
+                Timber.w("Skipping click on 'other' widget source")
             }
         }
     }
@@ -1422,6 +1386,11 @@ class HomeScreenViewModel(
             }
             DropDownMenuAction.AddBelow -> {
                 proceedWithAddingWidgetBelow(widget)
+            }
+            is DropDownMenuAction.CreateObjectOfType -> {
+                onCreateNewObjectClicked(
+                    objType = action.source.obj
+                )
             }
         }
     }
@@ -1537,6 +1506,8 @@ class HomeScreenViewModel(
                                 is Widget.Source.Default -> {
                                     source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                                 }
+                                is Widget.Source.ObjectType -> UNDEFINED_LAYOUT_CODE
+                                Widget.Source.Other -> UNDEFINED_LAYOUT_CODE
                             },
                             isInEditMode = isInEditMode()
                         )
@@ -1588,6 +1559,8 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> Command.ChangeWidgetType.TYPE_LINK
+        is Widget.Section.ObjectType -> ChangeWidgetType.TYPE_LINK
+        is Widget.Section.Pinned -> ChangeWidgetType.TYPE_LINK
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -1875,47 +1848,6 @@ class HomeScreenViewModel(
                     Navigation.OpenBookmarkUrl(
                         url = navigation.url
                     )
-                )
-            }
-        }
-    }
-
-    fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
-        Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
-        val startTime = System.currentTimeMillis()
-        viewModelScope.launch {
-            val params = objType?.uniqueKey.getCreateObjectParams(
-                space = vmParams.spaceId,
-                defaultTemplate = objType?.defaultTemplateId
-            )
-            createObject.stream(params).collect { createObjectResponse ->
-                createObjectResponse.fold(
-                    onSuccess = { result ->
-                        val spaceParams = provideParams(vmParams.spaceId.id)
-                        sendAnalyticsObjectCreateEvent(
-                            analytics = analytics,
-                            route = EventsDictionary.Routes.navigation,
-                            startTime = startTime,
-                            view = EventsDictionary.View.viewHome,
-                            objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
-                            spaceParams = spaceParams
-                        )
-                        if (objType != null) {
-                            sendAnalyticsObjectTypeSelectOrChangeEvent(
-                                analytics = analytics,
-                                startTime = startTime,
-                                sourceObject = objType.sourceObject,
-                                containsFlagType = true,
-                                route = EventsDictionary.Routes.longTap,
-                                spaceParams = spaceParams
-                            )
-                        }
-                        proceedWithOpeningObject(result.obj)
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while creating object")
-                        sendToast("Error while creating object. Please, try again later")
-                    }
                 )
             }
         }
@@ -2281,20 +2213,17 @@ class HomeScreenViewModel(
     }
 
     fun onSeeAllObjectsClicked(gallery: WidgetView.Gallery) {
+        Timber.d("onSeeAllObjectsClicked, gallery: $gallery")
         val source = gallery.source
-        val view = gallery.view
-        if (view != null && source is Widget.Source.Default) {
-            val space = source.obj.spaceId
-            if (space != null) {
-                navigate(
-                    Navigation.OpenSet(
-                        ctx = gallery.source.id,
-                        space = space,
-                        view = view
-                    )
-                )
-            } else {
-                Timber.e("Missing space ID")
+        when (source) {
+            is Widget.Source.Default -> {
+                proceedWithNavigation(source.obj.navigation())
+            }
+            is Widget.Source.ObjectType -> {
+                proceedWithNavigation(source.obj.navigation(vmParams.spaceId.id))
+            }
+            else -> {
+                Timber.w("Unsupported source for gallery widget: $source")
             }
         }
     }
@@ -2328,343 +2257,6 @@ class HomeScreenViewModel(
                 }
             )
         }
-    }
-
-    fun onCreateObjectForWidget(
-        type: ObjectWrapper.Type,
-        source: Id
-    ) {
-        viewModelScope.launch {
-            createObject.async(
-                params = CreateObject.Param(
-                    space = vmParams.spaceId,
-                    type = TypeKey(type.uniqueKey)
-                )
-            ).fold(
-                onSuccess = { result ->
-                    proceedWithCreatingLinkToNewObject(source, result)
-                    proceedWithNavigation(result.obj.navigation())
-                },
-                onFailure = {
-                    Timber.e(it, "Error while creating object")
-                }
-            )
-        }
-    }
-
-    private suspend fun proceedWithCreatingLinkToNewObject(
-        source: Id,
-        result: CreateObject.Result
-    ) {
-        createBlock.async(
-            params = CreateBlock.Params(
-                context = source,
-                target = "",
-                position = Position.NONE,
-                prototype = Block.Prototype.Link(
-                    target = result.objectId
-                )
-            )
-        ).fold(
-            onSuccess = {
-                Timber.d("Link to new object inside widget's source has been created successfully")
-            },
-            onFailure = {
-                Timber.e(it, "Error while creating block")
-            }
-        )
-    }
-
-    fun onCreateObjectInsideWidget(widget: Id) {
-        Timber.d("onCreateObjectInsideWidget: ${widget}")
-        when(val target = widgets.value.orEmpty().find { it.id == widget }) {
-            is Widget.Tree -> {
-                val source = target.source
-                if (source is Widget.Source.Default) {
-                    if (!source.obj.layout.isDataView()) {
-                        viewModelScope.launch {
-                            createObject.async(
-                                params = CreateObject.Param(
-                                    space = SpaceId(target.config.space),
-                                    type = TypeKey(ObjectTypeUniqueKeys.PAGE)
-                                )
-                            ).fold(
-                                onSuccess = { result ->
-                                    proceedWithCreatingLinkToNewObject(source.id, result)
-                                    proceedWithNavigation(result.obj.navigation())
-                                },
-                                onFailure = {
-                                    Timber.e(it, "Error while creating object")
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-            is Widget.List -> {
-                // TODO
-            }
-            is Widget.View -> {
-                // TODO
-            }
-            is Widget.Link -> {
-                // Do nothing.
-            }
-            else -> {
-                Timber.e("Could not found widget.")
-            }
-        }
-    }
-
-    fun onCreateDataViewObject(
-        widget: WidgetId,
-        view: ViewId?,
-        navigate: Boolean = true
-    ) {
-        Timber.d("onCreateDataViewObject, widget: $widget, view: $view, navigate: $navigate")
-        viewModelScope.launch {
-            val target = widgets.value.orEmpty().find { it.id == widget }
-            if (target != null) {
-                val widgetSource = target.source
-                if (widgetSource is Widget.Source.Default) {
-                    getObject.async(
-                        params = GetObject.Params(
-                            target = target.source.id,
-                            space = SpaceId(target.config.space)
-                        )
-                    ).fold(
-                        onSuccess = { obj ->
-                            Timber.d("onCreateDataViewObject:gotDataViewPreview")
-                            val dv = obj.blocks.find { it.content is DV }?.content as? DV
-                            val viewer = if (view.isNullOrEmpty())
-                                dv?.viewers?.firstOrNull()
-                            else
-                                dv?.viewers?.find { it.id == view }
-
-                            if (widgetSource.obj.layout == ObjectType.Layout.COLLECTION) {
-                                Timber.d("onCreateDataViewObject:source is collection")
-                                if (dv != null && viewer != null) {
-                                    proceedWithAddingObjectToCollection(
-                                        viewer = viewer,
-                                        dv = dv,
-                                        collection = widgetSource.obj.id
-                                    )
-                                }
-                            } else if (widgetSource.obj.layout == ObjectType.Layout.SET || widgetSource.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
-                                Timber.d("onCreateDataViewObject:source is set")
-                                val dataViewSource = widgetSource.obj.setOf.firstOrNull()
-                                if (dataViewSource != null) {
-                                    val dataViewSourceObj = ObjectWrapper.Basic(
-                                        obj.details[dataViewSource].orEmpty()
-                                    )
-                                    if (dv != null && viewer != null) {
-                                        Timber.d("onCreateDataViewObject:found dv and view")
-                                        when (val layout = dataViewSourceObj.layout) {
-                                            ObjectType.Layout.OBJECT_TYPE -> {
-                                                proceedWithCreatingDataViewObject(
-                                                    dataViewSourceObj,
-                                                    viewer,
-                                                    dv,
-                                                    navigate = navigate
-                                                )
-                                            }
-                                            ObjectType.Layout.RELATION -> {
-                                                proceedWithCreatingDataViewObject(
-                                                    viewer,
-                                                    dv,
-                                                    dataViewSourceObj,
-                                                    navigate = navigate
-                                                )
-                                            }
-
-                                            else -> {
-                                                Timber.w("Unexpected layout of data view source: $layout")
-                                            }
-                                        }
-                                    } else {
-                                        Timber.w("Could not found data view or target view inside this data view")
-                                    }
-                                } else {
-                                    Timber.w("Missing data view source")
-                                }
-                            }
-                        }
-                    )
-                }
-            } else {
-                Timber.w("onCreateDataViewObject's target not found")
-            }
-        }
-    }
-
-    private suspend fun proceedWithCreatingDataViewObject(
-        viewer: Block.Content.DataView.Viewer,
-        dv: DV,
-        dataViewSourceObj: ObjectWrapper.Basic,
-        navigate: Boolean = false
-    ) {
-        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
-        )
-        val type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
-        val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
-            storeOfRelations = storeOfRelations,
-            dateProvider = dateProvider,
-            dataViewRelationLinks = dv.relationLinks,
-            objSetByRelation = ObjectWrapper.Relation(dataViewSourceObj.map)
-        )
-        val space = vmParams.spaceId.id
-        val startTime = System.currentTimeMillis()
-        createDataViewObject.async(
-            params = CreateDataViewObject.Params.SetByRelation(
-                filters = viewer.filters,
-                template = defaultTemplate,
-                type = type,
-                prefilled = prefilled
-            ).also {
-                Timber.d("Calling with params: $it")
-            }
-        ).fold(
-            onSuccess = { result ->
-                Timber.d("Successfully created object with id: ${result.objectId}")
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    route = EventsDictionary.Routes.widget,
-                    startTime = startTime,
-                    view = null,
-                    objType = type.key,
-                    spaceParams = provideParams(space)
-                )
-                if (navigate) {
-                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
-                    if (wrapper.isValid) {
-                        proceedWithNavigation(wrapper.navigation())
-                    }
-                }
-            },
-            onFailure = {
-                Timber.e(it, "Error while creating data view object for widget")
-            }
-        )
-    }
-
-    private suspend fun proceedWithCreatingDataViewObject(
-        dataViewSourceObj: ObjectWrapper.Basic,
-        viewer: Block.Content.DataView.Viewer,
-        dv: DV,
-        navigate: Boolean = false
-    ) {
-        Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
-        val dataViewSourceType = dataViewSourceObj.uniqueKey
-        val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
-        )
-        val prefilled = viewer.prefillNewObjectDetails(
-            storeOfRelations = storeOfRelations,
-            dataViewRelationLinks = dv.relationLinks,
-            dateProvider = dateProvider
-        )
-        val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
-        val space = vmParams.spaceId.id
-        val startTime = System.currentTimeMillis()
-        createDataViewObject.async(
-            params = CreateDataViewObject.Params.SetByType(
-                type = type,
-                filters = viewer.filters,
-                template = defaultTemplate,
-                prefilled = prefilled
-            ).also {
-                Timber.d("Calling with params: $it")
-            }
-        ).fold(
-            onSuccess = { result ->
-                Timber.d("Successfully created object with id: ${result.objectId}")
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    route = EventsDictionary.Routes.widget,
-                    startTime = startTime,
-                    view = null,
-                    objType = type.key,
-                    spaceParams = provideParams(space)
-                )
-                if (navigate) {
-                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
-                    if (wrapper.isValid) {
-                        proceedWithNavigation(wrapper.navigation())
-                    }
-                }
-            },
-            onFailure = {
-                Timber.e(it, "Error while creating data view object for widget")
-            }
-        )
-    }
-
-    private suspend fun proceedWithAddingObjectToCollection(
-        viewer: Block.Content.DataView.Viewer,
-        dv: DV,
-        collection: Id,
-    ) {
-        val prefilled = viewer.prefillNewObjectDetails(
-            storeOfRelations = storeOfRelations,
-            dateProvider = dateProvider,
-            dataViewRelationLinks = dv.relationLinks
-        )
-
-        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
-        )
-
-        val defaultObjectTypeUniqueKey = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
-
-        val createObjectParams = CreateDataViewObject.Params.Collection(
-            template = defaultTemplate,
-            type = defaultObjectTypeUniqueKey,
-            filters = viewer.filters,
-            prefilled = prefilled
-        )
-
-        val space = vmParams.spaceId.id
-        val startTime = System.currentTimeMillis()
-
-        createDataViewObject.async(params = createObjectParams).fold(
-            onFailure = {
-                Timber.e("Error creating object for collection")
-            },
-            onSuccess = { result ->
-                Timber.d("Successfully created object with id: ${result.objectId}")
-
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    route = EventsDictionary.Routes.widget,
-                    startTime = startTime,
-                    view = null,
-                    objType = defaultObjectTypeUniqueKey.key,
-                    spaceParams = provideParams(space)
-                )
-
-                addObjectToCollection.async(
-                    AddObjectToCollection.Params(
-                        ctx = collection,
-                        targets = listOf(result.objectId)
-                    )
-                ).fold(
-                    onSuccess = {
-                        Timber.d("Successfully added object to collection")
-                    },
-                    onFailure = {
-                        Timber.e(it, "Error while adding object to collection")
-                    }
-                )
-                val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
-                if (wrapper.isValid) {
-                    proceedWithNavigation(wrapper.navigation())
-                }
-            }
-        )
     }
 
     fun onSpaceSettingsClicked(space: SpaceId) {
@@ -2794,147 +2386,392 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onCreateWidgetElementClicked(view: WidgetView) {
-        Timber.d("onCreateWidgetElementClicked, widget: $view")
-        when(view) {
-            is WidgetView.ListOfObjects -> {
-                if (view.type == WidgetView.ListOfObjects.Type.Favorites) {
-                    viewModelScope.launch {
-                        val space = vmParams.spaceId
-                        val type = getDefaultObjectType.async(space)
-                            .getOrNull()
-                            ?.type ?: TypeKey(ObjectTypeIds.PAGE)
-                        val startTime = System.currentTimeMillis()
-                        createObject.async(
-                            params = CreateObject.Param(
-                                space = space,
-                                type = type
-                            )
-                        ).onSuccess { result ->
-                            sendAnalyticsObjectCreateEvent(
-                                objType = type.key,
-                                analytics = analytics,
-                                route = EventsDictionary.Routes.widget,
-                                startTime = startTime,
-                                view = null,
-                                spaceParams = provideParams(space.id)
-                            )
-                            proceedWithNavigation(result.obj.navigation())
-                            setAsFavourite.async(
-                                params = SetObjectListIsFavorite.Params(
-                                    objectIds = listOf(result.obj.id),
-                                    isFavorite = true
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while creating object")
+    //region OBJECT CREATION
+    fun onCreateWidgetElementClicked(widget: WidgetView) {
+        Timber.d("onCreateWidgetElementClicked, widget: ${widget::class.java.simpleName}")
+        viewModelScope.launch {
+            when (widget) {
+                is WidgetView.ListOfObjects -> {
+                    if (widget.type == WidgetView.ListOfObjects.Type.Favorites) {
+                        proceedWithCreatingFavoriteObject()
+                    } else {
+                        Timber.w("Creating object inside ListOfObjects widget is not supported yet for type: ${widget.type}")
+                    }
+                }
+                is WidgetView.SetOfObjects -> {
+                    handleDefaultWidgetSource(
+                        dataViewObjectId = widget.source.id,
+                        viewId = widget.tabs.find { it.isSelected }?.id,
+                        navigate = true
+                    )
+                }
+                is WidgetView.Gallery -> {
+                    handleDefaultWidgetSource(
+                        dataViewObjectId = widget.source.id,
+                        viewId = widget.tabs.find { it.isSelected }?.id,
+                        navigate = true
+                    )
+                }
+                is WidgetView.Tree -> {
+                    getDefaultObjectType.async(vmParams.spaceId).getOrNull()?.type?.let { typeKey ->
+                        storeOfObjectTypes.getByKey(key = typeKey.key)?.let {
+                            onCreateObjectForWidget(type = it, source = widget.source.id)
                         }
                     }
                 }
-            }
-            is WidgetView.SetOfObjects -> {
-                viewModelScope.launch {
-                    val source = view.source
-                    if (source is Widget.Source.Default) {
-                        when (source.obj.layout) {
-                            ObjectType.Layout.OBJECT_TYPE -> {
-                                val wrapper = ObjectWrapper.Type(source.obj.map)
-                                val space = vmParams.spaceId
-                                val startTime = System.currentTimeMillis()
-                                createObject.async(
-                                    params = CreateObject.Param(
-                                        space = space,
-                                        type = TypeKey(wrapper.uniqueKey),
-                                        prefilled = mapOf(Relations.IS_FAVORITE to true)
-                                    )
-                                ).onSuccess { result ->
-                                    sendAnalyticsObjectCreateEvent(
-                                        objType = wrapper.uniqueKey,
-                                        analytics = analytics,
-                                        route = EventsDictionary.Routes.widget,
-                                        startTime = startTime,
-                                        view = null,
-                                        spaceParams = provideParams(space.id)
-                                    )
-                                    proceedWithNavigation(result.obj.navigation())
-                                }
-                            }
-                            ObjectType.Layout.COLLECTION -> {
-                                onCreateDataViewObject(
-                                    widget = view.id,
-                                    view = null,
-                                    navigate = true
-                                )
-                            }
-                            ObjectType.Layout.SET -> {
-                                onCreateDataViewObject(
-                                    widget = view.id,
-                                    view = null,
-                                    navigate = true
-                                )
-                            }
-                            else -> {
-                                Timber.w("Unexpected source layout: ${source.obj.layout}")
-                            }
-                        }
-                    }
+                else -> {
+                    Timber.w("Unexpected widget type: ${widget::class.java.simpleName}")
                 }
-
-            }
-            is WidgetView.Gallery -> {
-                viewModelScope.launch {
-                    val source = view.source
-                    if (source is Widget.Source.Default) {
-                        when (source.obj.layout) {
-                            ObjectType.Layout.OBJECT_TYPE -> {
-                                val wrapper = ObjectWrapper.Type(source.obj.map)
-                                val space = vmParams.spaceId
-                                val startTime = System.currentTimeMillis()
-                                createObject.async(
-                                    params = CreateObject.Param(
-                                        space = space,
-                                        type = TypeKey(wrapper.uniqueKey),
-                                        prefilled = mapOf(Relations.IS_FAVORITE to true)
-                                    )
-                                ).onSuccess { result ->
-                                    sendAnalyticsObjectCreateEvent(
-                                        objType = wrapper.uniqueKey,
-                                        analytics = analytics,
-                                        route = EventsDictionary.Routes.widget,
-                                        startTime = startTime,
-                                        view = null,
-                                        spaceParams = provideParams(space.id)
-                                    )
-                                    proceedWithNavigation(result.obj.navigation())
-                                }
-                            }
-                            ObjectType.Layout.COLLECTION -> {
-                                onCreateDataViewObject(
-                                    widget = view.id,
-                                    view = null,
-                                    navigate = true
-                                )
-                            }
-                            ObjectType.Layout.SET -> {
-                                onCreateDataViewObject(
-                                    widget = view.id,
-                                    view = null,
-                                    navigate = true
-                                )
-                            }
-                            else -> {
-                                Timber.w("Unexpected source layout: ${source.obj.layout}")
-                            }
-                        }
-                    }
-                }
-
-            }
-            else -> {
-                Timber.w("Unexpected widget type: ${view::class.java.simpleName}")
             }
         }
     }
+
+    private suspend fun proceedWithCreatingFavoriteObject() {
+        val type = getDefaultObjectType.async(vmParams.spaceId)
+            .getOrNull()
+            ?.type ?: TypeKey(ObjectTypeIds.PAGE)
+
+        proceedWithCreatingObject(
+            space = vmParams.spaceId,
+            type = type,
+            markAsFavorite = true
+        )
+    }
+
+    private suspend fun proceedWithCreatingObject(
+        space: SpaceId,
+        type: TypeKey,
+        templateId: Id? = null,
+        prefilled: Struct = mapOf(),
+        markAsFavorite: Boolean = false
+    ) {
+        val startTime = System.currentTimeMillis()
+
+        createObject.async(
+            params = CreateObject.Param(
+                space = space,
+                type = type,
+                template = templateId,
+                prefilled = prefilled
+            )
+        ).fold(
+            onSuccess = { result ->
+
+                viewModelScope.launch {
+                    sendAnalyticsObjectCreateEvent(
+                        objType = type.key,
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.widget,
+                        startTime = startTime,
+                        view = null,
+                        spaceParams = provideParams(space.id)
+                    )
+                }
+
+                proceedWithNavigation(result.obj.navigation())
+
+                if (markAsFavorite) {
+                    setAsFavourite.async(
+                        params = SetObjectListIsFavorite.Params(
+                            objectIds = listOf(result.obj.id),
+                            isFavorite = true
+                        )
+                    )
+                }
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating object")
+            }
+        )
+    }
+
+    private suspend fun proceedWithCreatingDataViewObject(
+        dataViewSourceObj: ObjectWrapper.Basic,
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        navigate: Boolean = false
+    ) {
+        Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
+        val dataViewSourceType = dataViewSourceObj.uniqueKey
+        val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            viewer,
+            storeOfObjectTypes
+        )
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dataViewRelationLinks = dv.relationLinks,
+            dateProvider = dateProvider
+        )
+        val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val space = vmParams.spaceId.id
+        val startTime = System.currentTimeMillis()
+        createDataViewObject.async(
+            params = CreateDataViewObject.Params.SetByType(
+                type = type,
+                filters = viewer.filters,
+                template = defaultTemplate,
+                prefilled = prefilled
+            ).also {
+                Timber.d("Calling with params: $it")
+            }
+        ).fold(
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
+                if (navigate) {
+                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                    if (wrapper.isValid) {
+                        proceedWithNavigation(wrapper.navigation())
+                    }
+                }
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating data view object for widget")
+            }
+        )
+    }
+
+    private suspend fun proceedWithAddingObjectToCollection(
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        collection: Id,
+    ) {
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            dataViewRelationLinks = dv.relationLinks
+        )
+
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            viewer,
+            storeOfObjectTypes
+        )
+
+        val defaultObjectTypeUniqueKey = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+
+        val createObjectParams = CreateDataViewObject.Params.Collection(
+            template = defaultTemplate,
+            type = defaultObjectTypeUniqueKey,
+            filters = viewer.filters,
+            prefilled = prefilled
+        )
+
+        val space = vmParams.spaceId.id
+        val startTime = System.currentTimeMillis()
+
+        createDataViewObject.async(params = createObjectParams).fold(
+            onFailure = {
+                Timber.e("Error creating object for collection")
+            },
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = defaultObjectTypeUniqueKey.key,
+                    spaceParams = provideParams(space)
+                )
+
+                addObjectToCollection.async(
+                    AddObjectToCollection.Params(
+                        ctx = collection,
+                        targets = listOf(result.objectId)
+                    )
+                ).fold(
+                    onSuccess = {
+                        Timber.d("Successfully added object to collection")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while adding object to collection")
+                    }
+                )
+                val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                if (wrapper.isValid) {
+                    proceedWithNavigation(wrapper.navigation())
+                }
+            }
+        )
+    }
+
+    private suspend fun handleDefaultWidgetSource(
+        dataViewObjectId: Id,
+        viewId: ViewId?,
+        navigate: Boolean
+    ) {
+        getObject.async(
+            params = GetObject.Params(
+                target = dataViewObjectId,
+                space = vmParams.spaceId
+            )
+        ).fold(
+            onSuccess = { objView ->
+                Timber.d("onCreateDataViewObject:gotDataViewPreview")
+                val dv = objView.blocks.find { it.content is DV }?.content as? DV
+                val viewer = if (viewId.isNullOrEmpty())
+                    dv?.viewers?.firstOrNull()
+                else
+                    dv?.viewers?.find { it.id == viewId }
+
+                if (dv == null) {
+                    Timber.w("Data view not found inside the object")
+                    return@fold
+                }
+
+                if (viewer == null) {
+                    Timber.w("Viewer not found inside the data view")
+                    return@fold
+                }
+
+                val dataViewObject = ObjectWrapper.Basic(objView.details[objView.root].orEmpty())
+
+                if (!dataViewObject.isValid) {
+                    Timber.w("Data view object is not valid")
+                    return@fold
+                }
+
+                when (dataViewObject.layout) {
+                    ObjectType.Layout.COLLECTION -> {
+                        proceedWithAddingObjectToCollection(
+                            viewer = viewer,
+                            dv = dv,
+                            collection = dataViewObjectId
+                        )
+                    }
+                    ObjectType.Layout.SET -> {
+                        val dataViewSourceId = dataViewObject.setOf.firstOrNull()
+                        val dataViewSourceObj = if (dataViewSourceId != null)
+                            ObjectWrapper.Basic(
+                                objView.details[dataViewSourceId].orEmpty()
+                            )
+                        else
+                            null
+                        if (dataViewSourceObj == null || !dataViewSourceObj.isValid) {
+                            Timber.w("Data view source is missing or not valid")
+                            return@fold
+                        }
+                        proceedWithCreatingDataViewObject(
+                            dataViewSourceObj = dataViewSourceObj,
+                            viewer = viewer,
+                            dv = dv,
+                            navigate = navigate
+                        )
+                    }
+                    ObjectType.Layout.OBJECT_TYPE -> {
+                        if (!dataViewObject.isValid) {
+                            Timber.w("Data view object is not valid")
+                            return@fold
+                        }
+                        proceedWithCreatingDataViewObject(
+                            dataViewSourceObj = dataViewObject,
+                            viewer = viewer,
+                            dv = dv,
+                            navigate = navigate
+                        )
+                    }
+                    else -> {
+                        Timber.w("Unsupported layout of data view object: ${dataViewObject.layout}")
+                    }
+                }
+            }
+        )
+    }
+
+    fun onCreateObjectForWidget(
+        type: ObjectWrapper.Type,
+        source: Id
+    ) {
+        viewModelScope.launch {
+            createObject.async(
+                params = CreateObject.Param(
+                    space = vmParams.spaceId,
+                    type = TypeKey(type.uniqueKey)
+                )
+            ).fold(
+                onSuccess = { result ->
+                    proceedWithCreatingLinkToNewObject(source, result)
+                    proceedWithNavigation(result.obj.navigation())
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating object")
+                }
+            )
+        }
+    }
+
+    private suspend fun proceedWithCreatingLinkToNewObject(
+        source: Id,
+        result: CreateObject.Result
+    ) {
+        createBlock.async(
+            params = CreateBlock.Params(
+                context = source,
+                target = "",
+                position = Position.NONE,
+                prototype = Block.Prototype.Link(
+                    target = result.objectId
+                )
+            )
+        ).fold(
+            onSuccess = {
+                Timber.d("Link to new object inside widget's source has been created successfully")
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating block")
+            }
+        )
+    }
+
+    fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
+        Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
+        val startTime = System.currentTimeMillis()
+        viewModelScope.launch {
+            val params = objType?.uniqueKey.getCreateObjectParams(
+                space = vmParams.spaceId,
+                defaultTemplate = objType?.defaultTemplateId
+            )
+            createObject.stream(params).collect { createObjectResponse ->
+                createObjectResponse.fold(
+                    onSuccess = { result ->
+                        val spaceParams = provideParams(vmParams.spaceId.id)
+                        sendAnalyticsObjectCreateEvent(
+                            analytics = analytics,
+                            route = EventsDictionary.Routes.navigation,
+                            startTime = startTime,
+                            view = EventsDictionary.View.viewHome,
+                            objType = objType ?: storeOfObjectTypes.getByKey(result.typeKey.key),
+                            spaceParams = spaceParams
+                        )
+                        if (objType != null) {
+                            sendAnalyticsObjectTypeSelectOrChangeEvent(
+                                analytics = analytics,
+                                startTime = startTime,
+                                sourceObject = objType.sourceObject,
+                                containsFlagType = true,
+                                route = EventsDictionary.Routes.longTap,
+                                spaceParams = spaceParams
+                            )
+                        }
+                        proceedWithOpeningObject(result.obj)
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while creating object")
+                        sendToast("Error while creating object. Please, try again later")
+                    }
+                )
+            }
+        }
+    }
+    //endregion
 
     fun proceedWithExitingToVault() {
         viewModelScope.launch {
@@ -3231,6 +3068,16 @@ sealed class OpenObjectNavigation {
         data object None: SideEffect()
         data class AttachToChat(val chat: Id, val space: Id): SideEffect()
     }
+}
+
+fun ObjectWrapper.Type.navigation(
+    spaceId: Id,
+): OpenObjectNavigation {
+    if (!isValid) return OpenObjectNavigation.NonValidObject
+    return OpenObjectNavigation.OpenType(
+        target = id,
+        space = spaceId
+    )
 }
 
 /**

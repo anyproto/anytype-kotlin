@@ -195,7 +195,7 @@ class ChatFragment : Fragment() {
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            obj = attachment.target
+                            obj = attachment.obj
                         )
                     }
                 )

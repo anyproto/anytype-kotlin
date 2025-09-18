@@ -302,7 +302,7 @@ fun BubbleWithAttachmentPreview() {
         attachments = buildList {
             add(
                 ChatView.Message.Attachment.Link(
-                    target = "ID",
+                    obj = "ID",
                     wrapper = null,
                     typeName = "Page"
                 )

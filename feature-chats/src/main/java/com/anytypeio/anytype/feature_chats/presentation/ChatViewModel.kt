@@ -358,7 +358,7 @@ class ChatViewModel @Inject constructor(
                                 Chat.Message.Attachment.Type.Image -> {
                                     val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
-                                        target = attachment.target,
+                                        obj = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
                                         ext = wrapper?.fileExt.orEmpty(),
@@ -372,7 +372,7 @@ class ChatViewModel @Inject constructor(
                                     when (wrapper?.layout) {
                                         ObjectType.Layout.IMAGE -> {
                                             ChatView.Message.Attachment.Image(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
                                                 ext = wrapper.fileExt.orEmpty(),
@@ -381,7 +381,7 @@ class ChatViewModel @Inject constructor(
                                         }
                                         ObjectType.Layout.VIDEO -> {
                                             ChatView.Message.Attachment.Video(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
                                                 ext = wrapper.fileExt.orEmpty(),
@@ -405,7 +405,7 @@ class ChatViewModel @Inject constructor(
                                         else -> {
                                             val type = wrapper?.type?.firstOrNull()
                                             ChatView.Message.Attachment.Link(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 wrapper = wrapper,
                                                 icon = wrapper?.objectIcon(
                                                     builder = urlBuilder,
@@ -857,7 +857,7 @@ class ChatViewModel @Inject constructor(
                         is ChatView.Message.Attachment.Image -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Image(
-                                    target = a.target,
+                                    target = a.obj,
                                     url = a.url
                                 )
                             )
@@ -865,7 +865,7 @@ class ChatViewModel @Inject constructor(
                         is ChatView.Message.Attachment.Video -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Video(
-                                    target = a.target,
+                                    target = a.obj,
                                     url = a.url
                                 )
                             )
@@ -884,7 +884,7 @@ class ChatViewModel @Inject constructor(
                             a.images.forEach { image ->
                                 add(
                                     ChatView.Message.ChatBoxAttachment.Existing.Image(
-                                        target = image.target,
+                                        target = image.obj,
                                         url = image.url
                                     )
                                 )
@@ -1081,9 +1081,9 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                     val index = images.indexOfFirst {
-                        it.target == attachment.target
+                        it.obj == attachment.obj
                     }
-                    val objects = images.map { item -> item.target }
+                    val objects = images.map { item -> item.obj }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
                             objects = objects,

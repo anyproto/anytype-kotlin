@@ -54,7 +54,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
-import com.anytypeio.anytype.presentation.home.SystemTypeView
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
@@ -105,7 +104,6 @@ fun HomeScreen(
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit
@@ -129,12 +127,11 @@ fun HomeScreen(
             onSpaceWidgetShareIconClicked = onSpaceWidgetShareIconClicked,
             onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onCreateWidget = onCreateWidget,
-            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateNewTypeClicked = onCreateNewTypeClicked
-            )
+        )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
             modifier = Modifier
@@ -204,7 +201,6 @@ private fun WidgetList(
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateWidget: () -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit
@@ -283,8 +279,8 @@ private fun WidgetList(
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onCreateObjectInsideWidget = onCreateObjectInsideWidget,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                onCreateElement = onCreateElement
                             )
                         }
                     } else {
@@ -301,8 +297,8 @@ private fun WidgetList(
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onCreateElement = onCreateElement
                         )
                     }
                 }
@@ -318,7 +314,7 @@ private fun WidgetList(
                                 item = item,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
+                                onObjectCheckboxClicked = onObjectCheckboxClicked
                             )
                         }
                     } else {
@@ -329,7 +325,7 @@ private fun WidgetList(
                             item = item,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
                         )
                     }
                 }
@@ -677,7 +673,6 @@ private fun SetOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement
         )
         AnimatedVisibility(
@@ -776,7 +771,7 @@ private fun LinkWidgetItem(
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -792,7 +787,7 @@ private fun LinkWidgetItem(
             onWidgetSourceClicked = onWidgetSourceClicked,
             isInEditMode = mode is InteractionMode.Edit,
             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onObjectCheckboxClicked = onObjectCheckboxClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -832,7 +827,7 @@ private fun TreeWidgetItem(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit
+    onCreateElement: (WidgetView) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -851,8 +846,8 @@ private fun TreeWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+            onCreateElement = onCreateElement,
             mode = mode,
-            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onWidgetMenuClicked = onWidgetMenuTriggered
         )
         AnimatedVisibility(

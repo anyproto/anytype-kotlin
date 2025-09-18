@@ -226,4 +226,5 @@ sealed class DropDownMenuAction {
     data object AddBelow : DropDownMenuAction()
     data object EditWidgets : DropDownMenuAction()
     data object EmptyBin : DropDownMenuAction()
+    data class CreateObjectOfType(val source: Widget.Source.ObjectType) : DropDownMenuAction()
 }

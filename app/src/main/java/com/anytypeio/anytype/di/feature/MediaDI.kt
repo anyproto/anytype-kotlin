@@ -51,7 +51,7 @@ object MediaModule {
         downloader: Downloader
     ): DownloadFile = DownloadFile(
         downloader = downloader,
-        context = Dispatchers.Main
+        context = Dispatchers.IO
     )
 }
 

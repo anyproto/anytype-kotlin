@@ -168,7 +168,7 @@ class DataViewListWidgetContainer(
                         dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
                             flow {
                                 val ctx = computeViewerContext(
-                                    widgetSourceObj = widgetSourceObj,
+                                    widgetSourceObjId = widgetSourceObj.id,
                                     activeView = activeView,
                                     isCompact = isCompact
                                 )
@@ -217,7 +217,7 @@ class DataViewListWidgetContainer(
                         dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
                             flow {
                                 val ctx = computeViewerContext(
-                                    widgetSourceObj = source.obj,
+                                    widgetSourceObjId = source.obj.id,
                                     activeView = activeView,
                                     isCompact = isCompact
                                 )
@@ -411,53 +411,16 @@ class DataViewListWidgetContainer(
      * Uses caching based on source ID, active viewer, compact state, and a DV fingerprint to optimize performance.
      */
     private suspend fun computeViewerContext(
-        widgetSourceObj: ObjectWrapper.Basic,
+        widgetSourceObjId: Id,
         activeView: Id?,
         isCompact: Boolean
     ): ViewerContext {
         return ctxMutex.withLock {
             // Always fetch the ObjectView inside the lock to ensure sequential cache updates
-            val obj = getObjectViewOrEmpty(objectId = widgetSourceObj.id, spaceId = space)
+            val obj = getObjectViewOrEmpty(objectId = widgetSourceObjId, spaceId = space)
             val fp = obj.dataViewFingerprint()
             val key = ContextKey(
-                widgetSourceId = widgetSourceObj.id,
-                activeViewerId = activeView,
-                isCompact = isCompact,
-                dvFingerprint = fp
-            )
-
-            if (cachedContextKey == key && cachedContext != null) {
-                Timber.d("Using cached ViewerContext for widget ${widget.id}")
-                return@withLock cachedContext!!
-            }
-
-            Timber.d("Computing ViewerContext for widget ${widget.id} (cache miss or DV changed)")
-            val result = buildViewerContextCommon(
-                obj = obj,
-                activeViewerId = activeView,
-                isCompact = isCompact
-            )
-            cachedContext = result
-            cachedContextKey = key
-            result
-        }
-    }
-
-    /**
-     * Computes and caches ViewerContext to avoid duplicate object fetches and processing.
-     * Uses caching based on source ID, active viewer, compact state, and a DV fingerprint to optimize performance.
-     */
-    private suspend fun computeViewerContext(
-        widgetSourceObj: ObjectWrapper.Type,
-        activeView: Id?,
-        isCompact: Boolean
-    ): ViewerContext {
-        return ctxMutex.withLock {
-            // Always fetch the ObjectView inside the lock to ensure sequential cache updates
-            val obj = getObjectViewOrEmpty(objectId = widgetSourceObj.id, spaceId = space)
-            val fp = obj.dataViewFingerprint()
-            val key = ContextKey(
-                widgetSourceId = widgetSourceObj.id,
+                widgetSourceId = widgetSourceObjId,
                 activeViewerId = activeView,
                 isCompact = isCompact,
                 dvFingerprint = fp

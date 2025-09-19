@@ -99,109 +99,120 @@ class DataViewListWidgetContainer(
     /**
      * Builds the main widget view flow combining active view and collapsed state.
      * Handles different widget source types and optimizes by skipping data subscriptions when collapsed.
+     *
+     * Uses switchMap strategy to avoid re-subscriptions when only collapsed state changes.
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow(): Flow<WidgetView> =
-        combine(
-            activeView.distinctUntilChanged(),
-            isWidgetCollapsed
-        ) { view, isCollapsed -> view to isCollapsed }
-            .flatMapLatest { (view, isCollapsed) ->
-                Timber.d("Subscribing to data view widget with id ${widget.id} with view $view (collapsed = $isCollapsed)")
+        activeView.distinctUntilChanged()
+            .flatMapLatest { view ->
                 when (val source = widget.source) {
                     is Widget.Source.Bundled -> throw IllegalStateException("Bundled widgets do not support data view layout")
                     is Widget.Source.Default -> {
-                        Timber.d("Processing Widget.Source.Default for widget ${widget.id}")
                         val isCompact = widget is Widget.List && widget.isCompact
-                        if (isCollapsed) {
-                            flowOf(createWidgetView(isCollapsed = true, isLoading = false))
-                        } else {
 
-                            val setOf = source.obj.setOf.firstOrNull()
+                        val setOf = source.obj.setOf.firstOrNull()
+                        if (setOf == null) {
+                            Timber.w("Widget source setOf is empty for widget ${widget.id}")
+                            return@flatMapLatest isWidgetCollapsed.map { isCollapsed ->
+                                defaultEmptyState(isCollapsed)
+                            }
+                        }
 
-                            if (setOf == null) {
-                                Timber.w("Widget source setOf is empty for widget ${widget.id}")
-                                return@flatMapLatest flowOf(defaultEmptyState(isCollapsed))
+                        val ctx = computeViewerContext(
+                            sourceParams = WidgetSourceParams(
+                                sourceId = source.obj.id,
+                                isArchived = source.obj.isArchived,
+                                isDeleted = source.obj.isDeleted
+                            ),
+                            activeViewerId = view,
+                            isCompact = isCompact
+                        )
+
+                        if (ctx.params != null) {
+                            val dataFlow = if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                galleryWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    target = ctx.target,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            } else {
+                                defaultWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    isCompact = isCompact,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
                             }
 
-                            val ctx = computeViewerContext(
-                                sourceParams = WidgetSourceParams(
-                                    sourceId = source.obj.id,
-                                    isArchived = source.obj.isArchived,
-                                    isDeleted = source.obj.isDeleted
-                                ),
-                                activeViewerId = view,
-                                isCompact = isCompact
-                            )
-
-                            if (ctx.params != null) {
-                                if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                    galleryWidgetSubscribe(
-                                        obj = ctx.obj,
-                                        activeView = view,
-                                        params = ctx.params,
-                                        target = ctx.target,
-                                        storeOfObjectTypes = storeOfObjectTypes
-                                    )
+                            // Combine data flow with collapsed state without re-subscribing to data
+                            combine(dataFlow, isWidgetCollapsed) { widgetView, isCollapsed ->
+                                if (isCollapsed) {
+                                    createWidgetView(isCollapsed = true, isLoading = false)
                                 } else {
-                                    defaultWidgetSubscribe(
-                                        obj = ctx.obj,
-                                        activeView = view,
-                                        params = ctx.params,
-                                        isCompact = isCompact,
-                                        storeOfObjectTypes = storeOfObjectTypes
-                                    )
+                                    widgetView
                                 }
-                            } else {
-                                flowOf(defaultEmptyState(isCollapsed))
+                            }
+                        } else {
+                            isWidgetCollapsed.map { isCollapsed ->
+                                defaultEmptyState(isCollapsed)
                             }
                         }
                     }
 
                     is Widget.Source.ObjectType -> {
-                        Timber.d("Processing Widget.Source.ObjectType for widget ${widget.id}")
-                        isWidgetCollapsed.flatMapLatest { isCollapsed ->
-                            if (isCollapsed) {
-                                // When collapsed, don't subscribe to data - just show empty collapsed state
-                                flowOf(defaultEmptyState(isCollapsed = true))
-                            } else {
-                                val isCompact = widget is Widget.List && widget.isCompact
-                                val ctx = computeViewerContext(
-                                    sourceParams = WidgetSourceParams(
-                                        sourceId = source.obj.id,
-                                        isArchived = source.obj.isArchived,
-                                        isDeleted = source.obj.isDeleted
-                                    ),
-                                    activeViewerId = view,
-                                    isCompact = isCompact
+                        val isCompact = widget is Widget.List && widget.isCompact
+                        val ctx = computeViewerContext(
+                            sourceParams = WidgetSourceParams(
+                                sourceId = source.obj.id,
+                                isArchived = source.obj.isArchived,
+                                isDeleted = source.obj.isDeleted
+                            ),
+                            activeViewerId = view,
+                            isCompact = isCompact
+                        )
+
+                        if (ctx.params != null) {
+                            val dataFlow = if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                galleryWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    target = ctx.target,
+                                    storeOfObjectTypes = storeOfObjectTypes
                                 )
-                                if (ctx.params != null) {
-                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                        galleryWidgetSubscribe(
-                                            obj = ctx.obj,
-                                            activeView = view,
-                                            params = ctx.params,
-                                            target = ctx.target,
-                                            storeOfObjectTypes = storeOfObjectTypes
-                                        )
-                                    } else {
-                                        defaultWidgetSubscribe(
-                                            obj = ctx.obj,
-                                            activeView = view,
-                                            params = ctx.params,
-                                            isCompact = isCompact,
-                                            storeOfObjectTypes = storeOfObjectTypes
-                                        )
-                                    }
+                            } else {
+                                defaultWidgetSubscribe(
+                                    obj = ctx.obj,
+                                    activeView = view,
+                                    params = ctx.params,
+                                    isCompact = isCompact,
+                                    storeOfObjectTypes = storeOfObjectTypes
+                                )
+                            }
+
+                            // Combine data flow with collapsed state without re-subscribing to data
+                            combine(dataFlow, isWidgetCollapsed) { widgetView, isCollapsed ->
+                                if (isCollapsed) {
+                                    defaultEmptyState(isCollapsed = true)
                                 } else {
-                                    flowOf(defaultEmptyState(isCollapsed = false))
+                                    widgetView
                                 }
+                            }
+                        } else {
+                            isWidgetCollapsed.map { isCollapsed ->
+                                defaultEmptyState(isCollapsed = false)
                             }
                         }
                     }
 
                     Widget.Source.Other -> {
-                        flowOf(defaultEmptyState(isCollapsed))
+                        isWidgetCollapsed.map { isCollapsed ->
+                            defaultEmptyState(isCollapsed)
+                        }
                     }
                 }
             }.catch { e ->

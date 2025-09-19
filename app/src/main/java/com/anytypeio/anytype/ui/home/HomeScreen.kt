@@ -103,7 +103,6 @@ fun HomeScreen(
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit
@@ -125,7 +124,6 @@ fun HomeScreen(
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSpaceWidgetShareIconClicked = onSpaceWidgetShareIconClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onCreateWidget = onCreateWidget,
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
@@ -199,7 +197,6 @@ private fun WidgetList(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateWidget: () -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
@@ -390,7 +387,6 @@ private fun WidgetList(
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onSeeAllObjectsClicked = onSeeAllObjectsClicked,
                                 onWidgetMenuTriggered = onWidgetMenuTriggered
                             )
                         }
@@ -408,7 +404,6 @@ private fun WidgetList(
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
                             onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onCreateElement = onCreateElement
                         )
@@ -713,7 +708,6 @@ private fun GalleryWidgetItem(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
@@ -734,7 +728,6 @@ private fun GalleryWidgetItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateElement = onCreateElement
         )

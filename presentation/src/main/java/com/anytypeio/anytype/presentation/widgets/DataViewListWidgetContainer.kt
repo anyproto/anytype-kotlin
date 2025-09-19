@@ -11,7 +11,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.getSingleValue
-import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -158,13 +157,6 @@ class DataViewListWidgetContainer(
                             }
                         }
 
-                        if (!widgetSourceObj.layout.isDataView()) {
-                            Timber.w("Widget source object has unsupported layout ${widgetSourceObj.layout} for widget ${widget.id}")
-                            return@flatMapLatest isWidgetCollapsed.map { isCollapsed ->
-                                defaultEmptyState(isCollapsed)
-                            }
-                        }
-
                         dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
                             flow {
                                 val ctx = computeViewerContext(
@@ -202,53 +194,6 @@ class DataViewListWidgetContainer(
                         }
                     }
 
-                    is Widget.Source.ObjectType -> {
-                        val isCompact = widget is Widget.List && widget.isCompact
-
-                        val widgetSourceObj = source.obj
-
-                        if (!widgetSourceObj.isValid) {
-                            Timber.w("Widget source object is invalid for widget ${widget.id}")
-                            return@flatMapLatest isWidgetCollapsed.map { isCollapsed ->
-                                defaultEmptyState(isCollapsed)
-                            }
-                        }
-
-                        dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
-                            flow {
-                                val ctx = computeViewerContext(
-                                    widgetSourceObjId = source.obj.id,
-                                    activeView = activeView,
-                                    isCompact = isCompact
-                                )
-                                if (ctx.params != null) {
-                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                        emitAll(
-                                            galleryWidgetSubscribe(
-                                                obj = ctx.obj,
-                                                activeView = activeView,
-                                                params = ctx.params,
-                                                target = ctx.target,
-                                                storeOfObjectTypes = storeOfObjectTypes
-                                            )
-                                        )
-                                    } else {
-                                        emitAll(
-                                            defaultWidgetSubscribe(
-                                                obj = ctx.obj,
-                                                activeView = activeView,
-                                                params = ctx.params,
-                                                isCompact = isCompact,
-                                                storeOfObjectTypes = storeOfObjectTypes
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    emit(defaultEmptyState(isCollapsed = false))
-                                }
-                            }
-                        }
-                    }
 
                     Widget.Source.Other -> {
                         isWidgetCollapsed.map { isCollapsed ->

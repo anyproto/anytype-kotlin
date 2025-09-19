@@ -150,6 +150,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
+import com.anytypeio.anytype.presentation.widgets.toBasic
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlin.collections.orEmpty
@@ -787,7 +788,8 @@ class HomeScreenViewModel(
                             val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
                             val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
                                 allWidgets.any { widget ->
-                                    widget.id == widgetId && widget.source is Widget.Source.ObjectType
+                                    widget.id == widgetId && widget.source is Widget.Source.Default &&
+                                    (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
                                 }
                             }
 
@@ -836,7 +838,6 @@ class HomeScreenViewModel(
                     when (widget.source) {
                         is Widget.Source.Bundled -> widget.source.id
                         is Widget.Source.Default -> widget.source.id
-                        is Widget.Source.ObjectType -> widget.source.id
                         Widget.Source.Other -> null
                     }
                 }
@@ -1161,7 +1162,7 @@ class HomeScreenViewModel(
      * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
      */
     private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
-        val widgetSource = Widget.Source.ObjectType(obj = objectType)
+        val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
         val icon = objectType.objectIcon()
         val widgetLimit = objectType.widgetLimit ?: 0
 
@@ -1376,15 +1377,6 @@ class HomeScreenViewModel(
                     }
                 }
             }
-
-            is Widget.Source.ObjectType -> {
-                proceedWithNavigation(
-                    OpenObjectNavigation.OpenType(
-                        target = source.obj.id,
-                        space = vmParams.spaceId.id
-                    )
-                )
-            }
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
@@ -1412,8 +1404,10 @@ class HomeScreenViewModel(
                 proceedWithAddingWidgetBelow(widget)
             }
             is DropDownMenuAction.CreateObjectOfType -> {
+                // Convert Basic wrapper to Type wrapper for ObjectType objects
+                val typeWrapper = ObjectWrapper.Type(action.source.obj.map)
                 onCreateNewObjectClicked(
-                    objType = action.source.obj
+                    objType = typeWrapper
                 )
             }
         }
@@ -1528,9 +1522,12 @@ class HomeScreenViewModel(
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
                                 is Widget.Source.Default -> {
-                                    source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
+                                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                                        UNDEFINED_LAYOUT_CODE
+                                    } else {
+                                        source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
+                                    }
                                 }
-                                is Widget.Source.ObjectType -> UNDEFINED_LAYOUT_CODE
                                 Widget.Source.Other -> UNDEFINED_LAYOUT_CODE
                             },
                             isInEditMode = isInEditMode()
@@ -2241,22 +2238,6 @@ class HomeScreenViewModel(
             eventName = EventsDictionary.searchScreenShow,
             props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
         )
-    }
-
-    fun onSeeAllObjectsClicked(gallery: WidgetView.Gallery) {
-        Timber.d("onSeeAllObjectsClicked, gallery: $gallery")
-        val source = gallery.source
-        when (source) {
-            is Widget.Source.Default -> {
-                proceedWithNavigation(source.obj.navigation())
-            }
-            is Widget.Source.ObjectType -> {
-                proceedWithNavigation(source.obj.navigation(vmParams.spaceId.id))
-            }
-            else -> {
-                Timber.w("Unsupported source for gallery widget: $source")
-            }
-        }
     }
 
     fun onNewWidgetSourceTypeSelected(

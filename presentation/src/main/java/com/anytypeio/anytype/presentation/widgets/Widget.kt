@@ -20,7 +20,6 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
-import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Empty
 
 sealed class Widget {
@@ -122,12 +121,8 @@ sealed class Widget {
 
         data class Default(val obj: ObjectWrapper.Basic) : Source() {
             override val id: Id = obj.id
-            override val type: Id? = obj.type.firstOrNull()
-        }
-
-        data class ObjectType(val obj: ObjectWrapper.Type) : Source() {
-            override val id: Id = obj.id
-            override val type: Id? = obj.uniqueKey
+            // For ObjectType objects, use uniqueKey as type; for regular objects, use type field
+            override val type: Id? = obj.uniqueKey ?: obj.type.firstOrNull()
         }
 
         sealed class Bundled : Source() {
@@ -182,7 +177,6 @@ fun Widget.Source.getPrettyName(fieldParser: FieldParser): Name {
     return when (this) {
         is Widget.Source.Bundled -> Bundled(source = this)
         is Widget.Source.Default -> buildWidgetName(obj, fieldParser)
-        is Widget.Source.ObjectType -> Default(fieldParser.getObjectPluralName(obj))
         Widget.Source.Other -> Empty
     }
 }
@@ -199,7 +193,6 @@ fun List<Widget>.forceChatPosition(): List<Widget> {
 fun Widget.Source.hasValidSource(): Boolean = when (this) {
     is Widget.Source.Bundled -> true
     is Widget.Source.Default -> obj.isValid && obj.notDeletedNorArchived
-    is Widget.Source.ObjectType -> obj.isValid && obj.isArchived != true && obj.isDeleted != true
     Widget.Source.Other -> false
 }
 
@@ -213,9 +206,6 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
             } else {
                 true
             }
-        }
-        is Widget.Source.ObjectType -> {
-            SupportedLayouts.createObjectLayouts.contains(obj.recommendedLayout)
         }
         else -> false
     }
@@ -379,6 +369,12 @@ fun buildWidgetName(
     val prettyPrintName = fieldParser.getObjectPluralName(obj, false)
     return Name.Default(prettyPrintName = prettyPrintName)
 }
+
+/**
+ * Extension to convert ObjectWrapper.Type to ObjectWrapper.Basic
+ * This allows us to use a unified Widget.Source.Default for both regular objects and type objects
+ */
+fun ObjectWrapper.Type.toBasic(): ObjectWrapper.Basic = ObjectWrapper.Basic(this.map)
 
 typealias WidgetId = Id
 typealias ViewId = Id

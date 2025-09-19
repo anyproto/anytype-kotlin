@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
@@ -189,21 +190,20 @@ private fun WidgetLongClickMenu(
 ) {
     when (source) {
         is Widget.Source.Default -> {
-            WidgetMenu(
-                isExpanded = isCardMenuExpanded,
-                onDropDownMenuAction = onDropDownMenuAction,
-                canEditWidgets = mode is InteractionMode.Default
-            )
-        }
-
-        is Widget.Source.ObjectType -> {
-            if (item.canCreateObjectOfType) {
+            if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE && item.canCreateObjectOfType) {
                 WidgetObjectTypeMenu(
                     isExpanded = isCardMenuExpanded,
                     canCreateObjectOfType = item.canCreateObjectOfType,
                     onCreateObjectOfTypeClicked = {
                         onDropDownMenuAction.invoke(DropDownMenuAction.CreateObjectOfType(source))
                     }
+                )
+            } else {
+                // Handle regular Default sources - show standard menu
+                WidgetMenu(
+                    isExpanded = isCardMenuExpanded,
+                    onDropDownMenuAction = onDropDownMenuAction,
+                    canEditWidgets = mode is InteractionMode.Default
                 )
             }
         }
@@ -225,7 +225,6 @@ fun GalleryWidgetCard(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateElement: (WidgetView) -> Unit
 ) {
     val isCardMenuExpanded = remember {
@@ -315,7 +314,7 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onSeeAllObjectsClicked(item)
+                                            onWidgetSourceClicked(item.id, item.source)
                                         }
                                 ) {
                                     Text(

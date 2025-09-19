@@ -97,6 +97,22 @@ class DataViewListWidgetContainer(
             }
 
     /**
+     * Helper function that emits an empty or loading WidgetView when collapsed,
+     * or subscribes to the actual data flow when expanded.
+     */
+    private fun dataOrEmptyWhenCollapsed(
+        isCollapsedFlow: Flow<Boolean>,
+        buildData: () -> Flow<WidgetView>
+    ): Flow<WidgetView> =
+        isCollapsedFlow.distinctUntilChanged().flatMapLatest { isCollapsed ->
+            if (isCollapsed) {
+                flowOf(createWidgetView(isCollapsed = true, isLoading = false))
+            } else {
+                buildData()
+            }
+        }
+
+    /**
      * Builds the main widget view flow combining active view and collapsed state.
      * Handles different widget source types and optimizes by skipping data subscriptions when collapsed.
      *
@@ -148,14 +164,8 @@ class DataViewListWidgetContainer(
                                 )
                             }
 
-                            // Combine data flow with collapsed state without re-subscribing to data
-                            combine(dataFlow, isWidgetCollapsed) { widgetView, isCollapsed ->
-                                if (isCollapsed) {
-                                    createWidgetView(isCollapsed = true, isLoading = false)
-                                } else {
-                                    widgetView
-                                }
-                            }
+                            // Skip data subscription when collapsed
+                            dataOrEmptyWhenCollapsed(isWidgetCollapsed) { dataFlow }
                         } else {
                             isWidgetCollapsed.map { isCollapsed ->
                                 defaultEmptyState(isCollapsed)
@@ -194,17 +204,11 @@ class DataViewListWidgetContainer(
                                 )
                             }
 
-                            // Combine data flow with collapsed state without re-subscribing to data
-                            combine(dataFlow, isWidgetCollapsed) { widgetView, isCollapsed ->
-                                if (isCollapsed) {
-                                    defaultEmptyState(isCollapsed = true)
-                                } else {
-                                    widgetView
-                                }
-                            }
+                            // Skip data subscription when collapsed
+                            dataOrEmptyWhenCollapsed(isWidgetCollapsed) { dataFlow }
                         } else {
                             isWidgetCollapsed.map { isCollapsed ->
-                                defaultEmptyState(isCollapsed = false)
+                                defaultEmptyState(isCollapsed)
                             }
                         }
                     }
@@ -576,7 +580,8 @@ private fun resolveObjectOrder(
         val targetView = activeView ?: content.viewers.firstOrNull()?.id
         val order = content.objectOrders.find { order -> order.view == targetView }
         if (order != null && order.ids.isNotEmpty()) {
-            objects = objects.sortedBy { order.ids.indexOf(it.id) }
+            val indexMap = order.ids.withIndex().associate { it.value to it.index }
+            objects = objects.sortedBy { obj -> indexMap[obj.id] ?: Int.MAX_VALUE }
         }
     }
     return objects

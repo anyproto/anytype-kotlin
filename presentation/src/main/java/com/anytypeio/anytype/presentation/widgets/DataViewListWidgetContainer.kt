@@ -83,14 +83,22 @@ class DataViewListWidgetContainer(
                         isWidgetCollapsed
                             .take(1)
                             .collect { isCollapsed ->
-                                val loadingStateView = createWidgetView(
-                                    isCollapsed = isCollapsed,
-                                    isLoading = true
-                                )
-                                if (isCollapsed) {
-                                    emit(loadingStateView)
+                                val cached = onRequestCache()
+                                if (cached != null) {
+                                    // Adjust cached state to reflect current collapsed flag
+                                    emit(
+                                        cached.copy(
+                                            isExpanded = !isCollapsed,
+                                            isLoading = false
+                                        )
+                                    )
                                 } else {
-                                    emit(onRequestCache() ?: loadingStateView)
+                                    emit(
+                                        createWidgetView(
+                                            isCollapsed = isCollapsed,
+                                            isLoading = true
+                                        )
+                                    )
                                 }
                             }
                     }

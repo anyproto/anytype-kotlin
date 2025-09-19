@@ -32,8 +32,10 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
@@ -100,6 +102,7 @@ class DataViewListWidgetContainer(
      * Helper function that emits an empty or loading WidgetView when collapsed,
      * or subscribes to the actual data flow when expanded.
      */
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun dataOrEmptyWhenCollapsed(
         isCollapsedFlow: Flow<Boolean>,
         buildData: () -> Flow<WidgetView>
@@ -135,80 +138,85 @@ class DataViewListWidgetContainer(
                             }
                         }
 
-                        val ctx = computeViewerContext(
-                            sourceParams = WidgetSourceParams(
-                                sourceId = source.obj.id,
-                                isArchived = source.obj.isArchived,
-                                isDeleted = source.obj.isDeleted
-                            ),
-                            activeViewerId = view,
-                            isCompact = isCompact
-                        )
-
-                        if (ctx.params != null) {
-                            val dataFlow = if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                galleryWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    target = ctx.target,
-                                    storeOfObjectTypes = storeOfObjectTypes
+                        dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
+                            flow {
+                                val ctx = computeViewerContext(
+                                    sourceParams = WidgetSourceParams(
+                                        sourceId = source.obj.id,
+                                        isArchived = source.obj.isArchived,
+                                        isDeleted = source.obj.isDeleted
+                                    ),
+                                    activeViewerId = view,
+                                    isCompact = isCompact
                                 )
-                            } else {
-                                defaultWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    isCompact = isCompact,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
-                            }
 
-                            // Skip data subscription when collapsed
-                            dataOrEmptyWhenCollapsed(isWidgetCollapsed) { dataFlow }
-                        } else {
-                            isWidgetCollapsed.map { isCollapsed ->
-                                defaultEmptyState(isCollapsed)
+                                if (ctx.params != null) {
+                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                        emitAll(
+                                            galleryWidgetSubscribe(
+                                                obj = ctx.obj,
+                                                activeView = view,
+                                                params = ctx.params,
+                                                target = ctx.target,
+                                                storeOfObjectTypes = storeOfObjectTypes
+                                            )
+                                        )
+                                    } else {
+                                        emitAll(
+                                            defaultWidgetSubscribe(
+                                                obj = ctx.obj,
+                                                activeView = view,
+                                                params = ctx.params,
+                                                isCompact = isCompact,
+                                                storeOfObjectTypes = storeOfObjectTypes
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    emit(defaultEmptyState(isCollapsed = false))
+                                }
                             }
                         }
                     }
 
                     is Widget.Source.ObjectType -> {
                         val isCompact = widget is Widget.List && widget.isCompact
-                        val ctx = computeViewerContext(
-                            sourceParams = WidgetSourceParams(
-                                sourceId = source.obj.id,
-                                isArchived = source.obj.isArchived,
-                                isDeleted = source.obj.isDeleted
-                            ),
-                            activeViewerId = view,
-                            isCompact = isCompact
-                        )
-
-                        if (ctx.params != null) {
-                            val dataFlow = if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
-                                galleryWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    target = ctx.target,
-                                    storeOfObjectTypes = storeOfObjectTypes
+                        dataOrEmptyWhenCollapsed(isWidgetCollapsed) {
+                            flow {
+                                val ctx = computeViewerContext(
+                                    sourceParams = WidgetSourceParams(
+                                        sourceId = source.obj.id,
+                                        isArchived = source.obj.isArchived,
+                                        isDeleted = source.obj.isDeleted
+                                    ),
+                                    activeViewerId = view,
+                                    isCompact = isCompact
                                 )
-                            } else {
-                                defaultWidgetSubscribe(
-                                    obj = ctx.obj,
-                                    activeView = view,
-                                    params = ctx.params,
-                                    isCompact = isCompact,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
-                            }
-
-                            // Skip data subscription when collapsed
-                            dataOrEmptyWhenCollapsed(isWidgetCollapsed) { dataFlow }
-                        } else {
-                            isWidgetCollapsed.map { isCollapsed ->
-                                defaultEmptyState(isCollapsed)
+                                if (ctx.params != null) {
+                                    if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
+                                        emitAll(
+                                            galleryWidgetSubscribe(
+                                                obj = ctx.obj,
+                                                activeView = view,
+                                                params = ctx.params,
+                                                target = ctx.target,
+                                                storeOfObjectTypes = storeOfObjectTypes
+                                            )
+                                        )
+                                    } else {
+                                        emitAll(
+                                            defaultWidgetSubscribe(
+                                                obj = ctx.obj,
+                                                activeView = view,
+                                                params = ctx.params,
+                                                isCompact = isCompact,
+                                                storeOfObjectTypes = storeOfObjectTypes
+                                            )
+                                        )
+                                    }
+                                } else {
+                                    emit(defaultEmptyState(isCollapsed = false))
+                                }
                             }
                         }
                     }

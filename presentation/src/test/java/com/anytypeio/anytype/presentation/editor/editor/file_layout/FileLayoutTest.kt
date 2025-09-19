@@ -311,6 +311,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.onClickListener(
             clicked = ListenerType.Picture.View(
+                obj = fileObject.id,
                 target = fileBlock.id
             )
         )
@@ -318,7 +319,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.commands.test().assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
-                target = fileBlock.id,
+                obj = fileObject.id,
                 url = builder.large(fileObject.id)
             )
         }

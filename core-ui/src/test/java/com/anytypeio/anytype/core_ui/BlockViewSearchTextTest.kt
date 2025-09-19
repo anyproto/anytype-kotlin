@@ -78,6 +78,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -218,6 +219,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomUuid().take(3),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString().take(2),
             description = MockDataFactory.randomString().take(2),
             searchFields = listOf(field1),
@@ -260,6 +262,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -300,6 +303,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -346,6 +350,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2, field3),
@@ -385,6 +390,7 @@ class BlockViewSearchTextTest {
 
         val title = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2, field3),
@@ -788,6 +794,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomString(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -838,6 +845,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomUuid(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -908,6 +916,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomUuid(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -983,6 +992,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomUuid(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(field1, field2),
@@ -1049,6 +1059,7 @@ class BlockViewSearchTextTest {
 
         val bookmark = BlockView.Media.Bookmark(
             id = MockDataFactory.randomUuid(),
+            targetObjectId = MockDataFactory.randomString(),
             title = MockDataFactory.randomString(),
             description = MockDataFactory.randomString(),
             searchFields = listOf(bField1, bField2),

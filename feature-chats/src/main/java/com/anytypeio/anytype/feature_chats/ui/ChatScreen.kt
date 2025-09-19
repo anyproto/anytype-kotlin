@@ -91,7 +91,7 @@ fun ChatScreenWrapper(
     vm: ChatViewModel,
     onAttachObjectClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onRequestOpenFullScreenImage: (String) -> Unit,
+    onRequestOpenFullScreenImageGallery: (List<Id>, Int) -> Unit,
     onSelectChatReaction: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
@@ -272,7 +272,10 @@ fun ChatScreenWrapper(
                         // TODO
                     }
                     is UXCommand.OpenFullScreenImage -> {
-                        onRequestOpenFullScreenImage(command.url)
+                        onRequestOpenFullScreenImageGallery(
+                            command.objects,
+                            command.idx
+                        )
                     }
                     is UXCommand.ShowRateLimitWarning -> {
                         showSendRateLimitWarning = true
@@ -371,7 +374,7 @@ fun ChatScreen(
     onCopyMessage: (ChatView.Message) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
-    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,

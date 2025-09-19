@@ -188,7 +188,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content.asText().text,
                     mode = BlockView.Mode.READ,
-                    icon = ObjectIcon.None
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.ButtonOpenFile.ImageButton(
                     id = fileBlock.id,

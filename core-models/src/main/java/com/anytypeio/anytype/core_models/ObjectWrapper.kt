@@ -216,7 +216,7 @@ sealed class ObjectWrapper {
         val widgetLayout: Block.Content.Widget.Layout?
             get() = when (val value = map[Relations.WIDGET_LAYOUT]) {
                 is Double -> Block.Content.Widget.Layout.entries.singleOrNull { layout ->
-                    layout.ordinal == value.toInt()
+                    layout.code == value.toInt()
                 }
                 else -> null
             }

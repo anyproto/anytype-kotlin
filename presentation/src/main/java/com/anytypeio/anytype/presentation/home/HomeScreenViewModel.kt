@@ -787,10 +787,12 @@ class HomeScreenViewModel(
                             // since they don't have persistent storage in blocks
                             val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
                             val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
-                                allWidgets.any { widget ->
-                                    widget.id == widgetId && widget.source is Widget.Source.Default &&
-                                    (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
-                                }
+                                allWidgets
+                                    .filter { it !is Widget.Section }
+                                    .any { widget ->
+                                        widget.id == widgetId && widget.source is Widget.Source.Default &&
+                                                (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
+                                    }
                             }
 
                             // Combine bundled widget active views with preserved ObjectType active views

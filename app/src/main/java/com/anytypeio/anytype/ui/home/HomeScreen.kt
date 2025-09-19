@@ -557,7 +557,7 @@ private fun WidgetList(
                 }
 
                 WidgetView.Section.ObjectTypes -> {
-                    SystemTypesSectionHeader(
+                    SpaceObjectTypesSectionHeader(
                         onCreateNewTypeClicked = onCreateNewTypeClicked
                     )
                 }
@@ -892,7 +892,7 @@ fun WidgetEditModeButton(
 }
 
 @Composable
-private fun SystemTypesSectionHeader(
+private fun SpaceObjectTypesSectionHeader(
     onCreateNewTypeClicked: () -> Unit
 ) {
     Box(

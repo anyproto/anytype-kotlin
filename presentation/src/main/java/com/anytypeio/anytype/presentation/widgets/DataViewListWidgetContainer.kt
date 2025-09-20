@@ -361,7 +361,7 @@ class DataViewListWidgetContainer(
         isCompact: Boolean
     ): ViewerContext {
         return ctxMutex.withLock {
-            // Always fetch the ObjectView inside the lock to ensure sequential cache updates
+            // Fetch ObjectView (command getObject) to compute fingerprint and create cache key
             val obj = getObjectViewOrEmpty(objectId = widgetSourceObjId, spaceId = space)
             val fp = obj.dataViewFingerprint()
             val key = ContextKey(
@@ -376,7 +376,7 @@ class DataViewListWidgetContainer(
                 return@withLock cachedContext!!
             }
 
-            Timber.d("Computing ViewerContext for widget ${widget.id} (cache miss or DV changed)")
+            Timber.d("Computing ViewerContext for widget ${widget.id} (cache miss or data changed)")
             val result = buildViewerContextCommon(
                 obj = obj,
                 activeViewerId = activeView,

@@ -108,7 +108,6 @@ message Event {
       Membership.Update membershipUpdate = 117;
 
       Space.SyncStatus.Update spaceSyncStatusUpdate = 119;
-      Space.AutoWidgetAdded spaceAutoWidgetAdded = 122;
 
       P2PStatus.Update p2pStatusUpdate = 120;
 
@@ -1026,13 +1025,6 @@ message Event {
       StorageLimitExceed = 1;
       IncompatibleVersion = 2;
       NetworkError = 3;
-    }
-
-    message AutoWidgetAdded {
-      string targetId = 1;
-      string targetName = 2; // pluralName (if exists) for types, fallback to
-                             // name. Special cases for "bin" and "favorites"
-      string widgetBlockId = 3;
     }
   }
   message P2PStatus {

@@ -801,18 +801,6 @@ class HomeScreenViewModel(
                 widgets.value = widgetList
             }
         }
-
-        viewModelScope.launch {
-            payloads.collect { payload ->
-                payload.events.forEach { e ->
-                    if (e is Event.Command.Widgets.AutoWidgetAdded) {
-                        commands.emit(
-                            Command.ShowWidgetAutoCreatedToast(name = e.targetName)
-                        )
-                    }
-                }
-            }
-        }
     }
 
     private suspend fun proceedWithClosingWidgetObject(
@@ -2979,8 +2967,6 @@ sealed class Command {
         val isInEditMode: Boolean,
         val space: Id
     ) : Command()
-
-    data class ShowWidgetAutoCreatedToast(val name: String) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 

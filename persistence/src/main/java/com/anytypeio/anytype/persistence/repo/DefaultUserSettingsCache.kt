@@ -572,6 +572,35 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun setExpandedWidgetIds(space: SpaceId, widgetIds: List<Id>) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                expandedWidgetIds = widgetIds
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.expandedWidgetIds
+                    ?: emptyList()
+            }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"

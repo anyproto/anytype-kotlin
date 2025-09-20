@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -65,6 +66,8 @@ import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 @Component(
@@ -89,6 +92,11 @@ interface HomeScreenComponent {
 
 @Module
 object HomeScreenModule {
+
+    @Provides
+    fun provideUnqualifiedScope(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): CoroutineScope = scope
 
     @JvmStatic
     @Provides
@@ -311,4 +319,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun provideChatEventChannel(): ChatEventChannel
     fun provideChatPreviewContainer(): ChatPreviewContainer
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

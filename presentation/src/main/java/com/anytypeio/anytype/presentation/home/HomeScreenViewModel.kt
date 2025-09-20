@@ -789,15 +789,18 @@ class HomeScreenViewModel(
 
                             // Add object type widgets only if object type section is not collapsed
                             val isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+                            val pinnedSectionStateDesc = if (isPinnedSectionCollapsed) "collapsed" else "expanded"
+                            val objectTypeSectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+
                             if (!isObjectTypeSectionCollapsed) {
                                 val types = mapSpaceTypesToWidgets(
                                     isOwnerOrEditor = isOwnerOrEditor,
                                     config = state.config
                                 )
                                 addAll(types)
-                                Timber.d("Section states - Pinned: ${if (isPinnedSectionCollapsed) "collapsed" else "expanded"}, ObjectType widgets added: ${types.size}")
+                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
                             } else {
-                                Timber.d("Section states - Pinned: ${if (isPinnedSectionCollapsed) "collapsed" else "expanded"}, ObjectType: collapsed, ObjectType widgets: 0 (section collapsed)")
+                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
                             }
                         }.also { allWidgets ->
                             // Initialize active views for all widgets

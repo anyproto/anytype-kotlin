@@ -48,6 +48,7 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -81,7 +82,7 @@ interface HomeScreenComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: HomeScreenViewModel.VmParams,
+            @BindsInstance vmParams: HomeScreenVmParams,
             dependencies: HomeScreenDependencies
         ): HomeScreenComponent
     }

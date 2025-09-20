@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -96,7 +97,7 @@ class HomeScreenFragment : Fragment(),
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        val vmParams = HomeScreenViewModel.VmParams(
+        val vmParams = HomeScreenVmParams(
             spaceId = SpaceId(space),
         )
         componentManager().homeScreenComponent.get(vmParams).inject(this)
@@ -233,7 +234,8 @@ class HomeScreenFragment : Fragment(),
             onHomeButtonClicked = vm::onHomeButtonClicked,
             onCreateElement = vm::onCreateWidgetElementClicked,
             onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
-            onCreateNewTypeClicked = vm::onCreateNewTypeClicked
+            onCreateNewTypeClicked = vm::onCreateNewTypeClicked,
+            onSectionClicked = vm::onSectionClicked
         )
     }
 

@@ -803,10 +803,8 @@
     <string name="type_editing_title">Paramètres de type</string>
     <string name="relation_editing_title">Paramètres de la propriété</string>
     <string name="type_editing_uninstall">Supprimer</string>
-    <string name="empty_tree_widget">Cet objet n\'a pas de liens vers d\'autres objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="empty_tree_widget_reader_access">Cet objet n\'a pas de liens vers d\'autres objets.</string>
-    <string name="empty_list_widget">Cette vue n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
-    <string name="empty_list_widget_no_objects">Il n\'y a pas encore d\'objets dans ce widget.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">Cette vue de données n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
     <string name="this_widget_has_no_object">Ce widget n\'a pas d\'objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="emoji">Emoji</string>
@@ -1959,6 +1957,10 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Épinglé</string>
+    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_menu_new_object_type">Nouveau</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

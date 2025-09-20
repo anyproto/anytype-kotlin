@@ -803,10 +803,8 @@
     <string name="type_editing_title">Ajustes de tipo</string>
     <string name="relation_editing_title">Ajustes de la propiedad</string>
     <string name="type_editing_uninstall">Borrar</string>
-    <string name="empty_tree_widget">Este objeto no tiene enlaces a otros objetos.\nPrueba a crear alguno.</string>
     <string name="empty_tree_widget_reader_access">Este objeto no tiene enlaces a otros objetos.</string>
-    <string name="empty_list_widget">Esta vista no tiene objetos.\nPrueba a crear alguno.</string>
-    <string name="empty_list_widget_no_objects">Aún no hay objetos en este widget.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">Esta vista de datos no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="this_widget_has_no_object">Este widget no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="emoji">Emoji</string>
@@ -1962,6 +1960,10 @@ En concreto,
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Anclado</string>
+    <string name="widgets_section_object_types">Tipos de objeto</string>
+    <string name="widgets_menu_new_object_type">Nuevo</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

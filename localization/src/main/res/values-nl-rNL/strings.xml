@@ -803,10 +803,8 @@
     <string name="type_editing_title">Type instellingen</string>
     <string name="relation_editing_title">Eigenschap instellingen</string>
     <string name="type_editing_uninstall">Verwijder</string>
-    <string name="empty_tree_widget">Dit object heeft geen links naar andere objecten.\nProbeer een nieuwe te maken.</string>
     <string name="empty_tree_widget_reader_access">Dit object heeft geen koppelingen naar andere objecten.</string>
-    <string name="empty_list_widget">Deze weergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
-    <string name="empty_list_widget_no_objects">Er zijn nog geen objecten binnen deze widget.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">Deze gegevensweergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="this_widget_has_no_object">Deze widget heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="emoji">Emoji</string>
@@ -1962,6 +1960,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Vastgezet</string>
+    <string name="widgets_section_object_types">Objecttypes</string>
+    <string name="widgets_menu_new_object_type">Nieuw</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

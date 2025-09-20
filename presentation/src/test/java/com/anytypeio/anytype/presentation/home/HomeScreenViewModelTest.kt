@@ -118,6 +118,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emptyFlow
@@ -3048,7 +3049,8 @@ class HomeScreenViewModelTest {
         setAsFavourite = setObjectListIsFavorite,
         chatPreviews = chacPreviewContainer,
         notificationPermissionManager = notificationPermissionManager,
-        copyInviteLinkToClipboard = copyInviteLinkToClipboard
+        copyInviteLinkToClipboard = copyInviteLinkToClipboard,
+        scope = GlobalScope // Using GlobalScope to avoid cancellation of flows
     )
 
     companion object {

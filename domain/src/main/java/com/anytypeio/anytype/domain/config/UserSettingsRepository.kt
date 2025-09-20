@@ -58,4 +58,7 @@ interface UserSettingsRepository {
 
     suspend fun setExpandedWidgetIds(space: SpaceId, widgetIds: List<Id>)
     fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>>
+
+    suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>)
+    fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>>
 }

@@ -605,6 +605,38 @@ class DefaultUserSettingsCache(
             }
     }
 
+    override suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                collapsedSectionIds = sectionIds
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.collapsedSectionIds
+                    ?: emptyList()
+            }.catch {
+                Timber.e("Error fetching collapsed section ids for space ${space.id}: $this")
+                emit(emptyList())
+            }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"

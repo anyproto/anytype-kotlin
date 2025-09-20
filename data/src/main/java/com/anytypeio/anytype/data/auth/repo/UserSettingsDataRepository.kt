@@ -140,4 +140,15 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>> {
         return cache.getExpandedWidgetIds(space)
     }
+
+    override suspend fun setCollapsedSectionIds(
+        space: SpaceId,
+        sectionIds: List<Id>
+    ) {
+        return cache.setCollapsedSectionIds(space, sectionIds)
+    }
+
+    override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
+        return cache.getCollapsedSectionIds(space)
+    }
 }

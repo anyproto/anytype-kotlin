@@ -15,7 +15,6 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -36,6 +35,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -52,6 +52,7 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -102,14 +103,18 @@ import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
-import com.anytypeio.anytype.presentation.home.Command.*
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.*
+import com.anytypeio.anytype.presentation.home.Command.ShareSpace
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.ExpandWidget
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -119,16 +124,16 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
@@ -145,15 +150,11 @@ import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.forceChatPosition
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
-import com.anytypeio.anytype.presentation.widgets.toBasic
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
+import com.anytypeio.anytype.presentation.widgets.toBasic
 import javax.inject.Inject
-import kotlin.collections.orEmpty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -161,8 +162,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -206,7 +205,6 @@ class HomeScreenViewModel(
     private val interceptEvents: InterceptEvents,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
-    private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
     private val urlBuilder: UrlBuilder,
     private val createObject: CreateObject,
     private val createDataViewObject: CreateDataViewObject,
@@ -250,21 +248,17 @@ class HomeScreenViewModel(
     private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
+    private val userSettingsRepository: UserSettingsRepository,
     private val scope: CoroutineScope
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
     WidgetSessionStateHolder by widgetSessionStateHolder,
-    CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
     Unsubscriber by unsubscriber,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     ExitToVaultDelegate by exitToVaultDelegate
 {
-
-    data class VmParams(
-        val spaceId: SpaceId
-    )
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -295,13 +289,13 @@ class HomeScreenViewModel(
 
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
 
+    // Expanded widget IDs for persistence across app restarts
+    private val expandedWidgetIds = MutableStateFlow<Set<Id>>(emptySet())
+
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
-
-    private val _systemTypes = MutableStateFlow<List<SystemTypeView>>(emptyList())
-    val systemTypes: StateFlow<List<SystemTypeView>> = _systemTypes.asStateFlow()
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -419,6 +413,7 @@ class HomeScreenViewModel(
         proceedWithNavPanelState()
     }
 
+
     private fun proceedWithNavPanelState() {
         viewModelScope.launch {
             val spaceAccessType = views
@@ -495,26 +490,11 @@ class HomeScreenViewModel(
             }
         }
 
-        // Set all type widgets to collapsed state initially
-        if (allTypeWidgetIds.isNotEmpty()) {
-            val currentCollapsed = collapsedWidgetStateHolder.get()
-            val newCollapsed = (currentCollapsed + allTypeWidgetIds).distinct()
-            collapsedWidgetStateHolder.set(newCollapsed)
-        }
-
         return widgetList
     }
 
     private fun proceedWithViewStatePipeline() {
         widgetObjectPipelineJobs += viewModelScope.launch {
-            if (!isWidgetSessionRestored) {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-            }
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }
@@ -612,7 +592,7 @@ class HomeScreenViewModel(
                             widget = widget,
                             container = storelessSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = isCollapsed(widget.id),
+                            isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
                             objectWatcher = objectWatcher,
@@ -632,7 +612,7 @@ class HomeScreenViewModel(
                                 widget = widget,
                                 subscription = widget.source.id,
                                 storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
                                 urlBuilder = urlBuilder,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
@@ -654,7 +634,7 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -677,7 +657,7 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -739,8 +719,9 @@ class HomeScreenViewModel(
             combine(
                 storeOfObjectTypes.trackChanges(),
                 objectViewState,
-                hasEditAccess
-            ) { _, state, isOwnerOrEditor ->
+                hasEditAccess,
+                userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
+            ) { _, state, isOwnerOrEditor, savedExpandedIds ->
                 val s = when (state) {
                     is ObjectViewState.Idle -> flowOf(state)
                     is ObjectViewState.Failure -> flowOf(state)
@@ -751,8 +732,8 @@ class HomeScreenViewModel(
                         }
                     }
                 }
-                s to isOwnerOrEditor
-            }.flatMapLatest { (stateFlow, isOwnerOrEditor) ->
+                Triple(s, isOwnerOrEditor, savedExpandedIds)
+            }.flatMapLatest { (stateFlow, isOwnerOrEditor, savedExpandedIds) ->
                 stateFlow.map { state ->
                     if (state is ObjectViewState.Success) {
                         buildList {
@@ -791,6 +772,11 @@ class HomeScreenViewModel(
                             // Combine bundled widget active views with preserved ObjectType active views
                             val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
                             widgetActiveViewStateHolder.init(combinedActiveViews)
+
+                            // Update collapsed widget state based on persisted expanded IDs
+                            // Update expanded widget state from persistence
+                            // When savedExpandedIds is empty (no cache), all widgets will be collapsed
+                            expandedWidgetIds.value = savedExpandedIds.toSet()
                         }
                     } else {
                         emptyList()
@@ -810,7 +796,6 @@ class HomeScreenViewModel(
         saveWidgetSession.async(
             SaveWidgetSession.Params(
                 WidgetSession(
-                    collapsed = collapsedWidgetStateHolder.get(),
                     widgetsToActiveViews = emptyMap()
                 )
             )
@@ -1671,9 +1656,10 @@ class HomeScreenViewModel(
         }
         if (deletedWidgets.isNotEmpty()) {
             viewModelScope.launch {
-                collapsedWidgetStateHolder.onWidgetDeleted(
-                    widgets = deletedWidgets.map { it.id }
-                )
+                // Update expanded state when widgets are deleted
+                val deletedIds = deletedWidgets.map { it.id }.toSet()
+                expandedWidgetIds.value = expandedWidgetIds.value - deletedIds
+                saveExpandedWidgetState()
                 unsubscriber.unsubscribe(expiredSubscriptions)
             }
         }
@@ -1770,7 +1756,7 @@ class HomeScreenViewModel(
             saveWidgetSession.async(
                 SaveWidgetSession.Params(
                     WidgetSession(
-                        collapsed = collapsedWidgetStateHolder.get(),
+                        collapsed = emptyList(),  // No longer using session for collapsed state
                         widgetsToActiveViews = emptyMap()
                     )
                 )
@@ -2769,6 +2755,33 @@ class HomeScreenViewModel(
     }
     //endregion
 
+    //region Expanded Widgets
+    /**
+     * Toggles widget collapse state and persists to preferences
+     */
+    fun onToggleWidgetExpandedState(widgetId: Id) {
+        viewModelScope.launch {
+            val currentExpanded = expandedWidgetIds.value
+            val newExpanded = if (currentExpanded.contains(widgetId)) {
+                currentExpanded - widgetId
+            } else {
+                currentExpanded + widgetId
+            }
+            expandedWidgetIds.value = newExpanded
+            saveExpandedWidgetState()
+        }
+    }
+
+    /**
+     * Saves current expanded widget state to preferences
+     */
+    private suspend fun saveExpandedWidgetState() {
+        val expandedIds = expandedWidgetIds.value.toList()
+        userSettingsRepository.setExpandedWidgetIds(vmParams.spaceId, expandedIds)
+        Timber.d("Saved expanded widget state: ${expandedIds.size} expanded widgets")
+    }
+    //endregion
+
     fun proceedWithExitingToVault() {
         viewModelScope.launch {
             proceedWithClearingSpaceBeforeExitingToVault()
@@ -2816,7 +2829,6 @@ class HomeScreenViewModel(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
-        private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
         private val move: Move,
@@ -2860,6 +2872,7 @@ class HomeScreenViewModel(
         private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
+        private val userRepo: UserSettingsRepository,
         private val scope: CoroutineScope
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -2879,7 +2892,6 @@ class HomeScreenViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
-            collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject,
             urlBuilder = urlBuilder,
             move = move,
@@ -2922,6 +2934,7 @@ class HomeScreenViewModel(
             chatPreviews = chatPreviews,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
+            userSettingsRepository = userRepo,
             scope = scope
         ) as T
     }
@@ -3176,14 +3189,7 @@ fun ObjectWrapper.Basic.navigation(
     }
 }
 
-data class SystemTypeView(
-    val id: Id,
-    val name: String,
-    val icon: ObjectIcon.TypeIcon,
-    val isCreateObjectAllowed: Boolean = true,
-    val isDeletable: Boolean = false,
-    val widgetView: WidgetView
-)
+data class VmParams(val spaceId: SpaceId)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

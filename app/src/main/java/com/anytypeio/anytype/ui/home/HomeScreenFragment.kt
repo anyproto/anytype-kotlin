@@ -212,7 +212,7 @@ class HomeScreenFragment : Fragment(),
             onWidgetElementClicked = vm::onWidgetElementClicked,
             onWidgetSourceClicked = vm::onWidgetSourceClicked,
             onChangeWidgetView = vm::onChangeCurrentWidgetView,
-            onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+            onToggleExpandedWidgetState = vm::onToggleWidgetExpandedState,
             onSearchClicked = vm::onSearchIconClicked,
             onCreateNewObjectClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectClicked() }

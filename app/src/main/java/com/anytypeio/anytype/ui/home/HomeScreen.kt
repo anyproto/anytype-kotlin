@@ -61,6 +61,8 @@ import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
@@ -105,7 +107,8 @@ fun HomeScreen(
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
-    onCreateNewTypeClicked: () -> Unit
+    onCreateNewTypeClicked: () -> Unit,
+    onSectionClicked: (Id) -> Unit = {}
     ) {
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -128,7 +131,8 @@ fun HomeScreen(
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onCreateNewTypeClicked = onCreateNewTypeClicked
+            onCreateNewTypeClicked = onCreateNewTypeClicked,
+            onSectionClicked = onSectionClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -200,7 +204,8 @@ private fun WidgetList(
     onCreateWidget: () -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
-    onCreateNewTypeClicked: () -> Unit
+    onCreateNewTypeClicked: () -> Unit,
+    onSectionClicked: (Id) -> Unit = {}
 ) {
 
     val view = LocalView.current
@@ -558,11 +563,14 @@ private fun WidgetList(
 
                 WidgetView.Section.ObjectTypes -> {
                     SpaceObjectTypesSectionHeader(
-                        onCreateNewTypeClicked = onCreateNewTypeClicked
+                        onCreateNewTypeClicked = onCreateNewTypeClicked,
+                        onSectionClicked = { onSectionClicked(SECTION_OBJECT_TYPE) }
                     )
                 }
                 WidgetView.Section.Pinned -> {
-                    PinnedSectionHeader()
+                    PinnedSectionHeader(
+                        onSectionClicked = { onSectionClicked(SECTION_PINNED) }
+                    )
                 }
             }
         }
@@ -893,12 +901,14 @@ fun WidgetEditModeButton(
 
 @Composable
 private fun SpaceObjectTypesSectionHeader(
+    onSectionClicked: () -> Unit,
     onCreateNewTypeClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
     ) {
         Text(
             modifier = Modifier
@@ -922,11 +932,14 @@ private fun SpaceObjectTypesSectionHeader(
 }
 
 @Composable
-private fun PinnedSectionHeader() {
+private fun PinnedSectionHeader(
+    onSectionClicked: () -> Unit,
+) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
     ) {
         Text(
             modifier = Modifier

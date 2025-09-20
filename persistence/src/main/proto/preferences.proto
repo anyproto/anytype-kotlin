@@ -28,6 +28,8 @@ message SpacePreference {
   optional GlobalSearchHistoryProto globalSearchHistory = 5;
   optional AllContentSettings allContent = 6;
   optional WallpaperSetting wallpaperSetting = 7;
+  repeated string expandedWidgetIds = 8;
+  repeated string collapsedSectionIds = 9;
 }
 
 message GlobalSearchHistoryProto {

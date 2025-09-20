@@ -55,4 +55,10 @@ interface UserSettingsRepository {
 
     suspend fun setRecentlyUsedChatReactions(account: Account, emojis: Set<String>)
     fun observeRecentlyUsedChatReactions(account: Account): Flow<List<String>>
+
+    suspend fun setExpandedWidgetIds(space: SpaceId, widgetIds: List<Id>)
+    fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>>
+
+    suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>)
+    fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>>
 }

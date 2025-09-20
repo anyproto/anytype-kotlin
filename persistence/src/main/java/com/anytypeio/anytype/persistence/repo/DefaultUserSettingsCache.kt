@@ -35,6 +35,7 @@ import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import com.anytypeio.anytype.persistence.preferences.WallpaperMigration
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -570,6 +571,70 @@ class DefaultUserSettingsCache(
             }
             SpacePreferences(preferences = result)
         }
+    }
+
+    override suspend fun setExpandedWidgetIds(space: SpaceId, widgetIds: List<Id>) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                expandedWidgetIds = widgetIds
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.expandedWidgetIds
+                    ?: emptyList()
+            }.catch {
+                Timber.e("Error fetching expanded widget ids for space ${space.id}: $this")
+                emit(emptyList())
+            }
+    }
+
+    override suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                collapsedSectionIds = sectionIds
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.collapsedSectionIds
+                    ?: emptyList()
+            }.catch {
+                Timber.e("Error fetching collapsed section ids for space ${space.id}: $this")
+                emit(emptyList())
+            }
     }
 
     companion object {

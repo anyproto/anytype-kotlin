@@ -83,7 +83,7 @@ fun ChatPreview() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ -> },
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReplyMessage = {},
@@ -138,7 +138,7 @@ fun ChatPreview2() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ ->},
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReplyMessage = {},
@@ -192,7 +192,7 @@ fun ChatScreenPreview() {
         onReacted = { a, b -> },
         onCopyMessage = {},
         onDeleteMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ ->},
         onEditMessage = {},
         onExitEditMessageMode = {},
         onMarkupLinkClicked = {},
@@ -302,7 +302,7 @@ fun BubbleWithAttachmentPreview() {
         attachments = buildList {
             add(
                 ChatView.Message.Attachment.Link(
-                    target = "ID",
+                    obj = "ID",
                     wrapper = null,
                     typeName = "Page"
                 )

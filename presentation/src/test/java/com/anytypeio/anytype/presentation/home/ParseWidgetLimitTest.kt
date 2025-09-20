@@ -5,15 +5,18 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 class ParseWidgetLimitTest {
 
     val source = StubObject()
+    var urlBuilder: UrlBuilder = mock()
 
     @Test
     fun `should parse widget limit for widget with tree layout`() {
@@ -44,7 +47,8 @@ class ParseWidgetLimitTest {
             details = buildMap {
                 put(source.id, source.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {
@@ -82,7 +86,8 @@ class ParseWidgetLimitTest {
             details = buildMap {
                 put(source.id, source.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {
@@ -120,7 +125,8 @@ class ParseWidgetLimitTest {
             details = buildMap {
                 put(source.id, source.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {

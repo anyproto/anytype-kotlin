@@ -382,8 +382,8 @@ data class Block(
             val activeView: Id? = null,
             val isAutoAdded: Boolean = false
         ) : Content() {
-            enum class Layout {
-                TREE, LINK, LIST, COMPACT_LIST, VIEW
+            enum class Layout(val code: Int) {
+                TREE(1), LINK(0), LIST(2), COMPACT_LIST(3), VIEW(4)
             }
         }
     }

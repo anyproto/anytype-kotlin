@@ -17,6 +17,7 @@ import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
@@ -81,6 +82,19 @@ fun ObjectWrapper.Type.isTemplatesAllowed(): Boolean {
     return showTemplates && allowedObject
 }
 
+/**
+ * Determines if objects of the given type can be created based on the object type's layout.
+ *
+ * @param objectType The object type to check for creation eligibility
+ * @return true if objects of this type can be created, false otherwise
+ */
+fun canCreateObjectOfType(objectType: ObjectWrapper.Type?): Boolean {
+    if (objectType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+        return false
+    }
+    return createObjectLayouts.contains(objectType?.recommendedLayout)
+}
+
 fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? = null): Boolean {
     val dataViewRestrictions = dataViewRestrictions.firstOrNull()?.restrictions
     if (dataViewRestrictions?.contains(DataViewRestriction.CREATE_OBJECT) == true) {
@@ -91,12 +105,7 @@ fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? =
         return true
     }
 
-    if (objectType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
-        return false
-    }
-
-    val skipLayouts = fileLayouts + systemLayouts + listOf(ObjectType.Layout.PARTICIPANT)
-    return !skipLayouts.contains(objectType?.recommendedLayout)
+    return canCreateObjectOfType(objectType)
 }
 
 /**

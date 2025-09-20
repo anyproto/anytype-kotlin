@@ -1323,7 +1323,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_IMAGE,
-                            url = command.url
+                            obj = command.obj
                         )
                     }.onFailure {
                         Timber.e(it, "Error while launching media image viewer")
@@ -1498,7 +1498,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            url = command.url,
+                            obj = command.obj,
                             name = ""
                         )
                     }.onFailure {
@@ -1510,7 +1510,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_AUDIO,
-                            url = command.url,
+                            obj = command.obj,
                             name = command.name
                         )
                     }.onFailure {

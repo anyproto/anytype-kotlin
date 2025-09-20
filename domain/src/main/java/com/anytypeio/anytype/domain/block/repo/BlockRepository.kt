@@ -547,6 +547,7 @@ interface BlockRepository {
     suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite)
 
     suspend fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State?
+    suspend fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State>
     suspend fun publishingCreate(command: Command.Publishing.Create): String
     suspend fun publishingRemove(command: Command.Publishing.Remove)
 }

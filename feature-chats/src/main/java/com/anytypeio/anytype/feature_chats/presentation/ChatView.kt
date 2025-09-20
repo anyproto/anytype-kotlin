@@ -94,7 +94,7 @@ sealed interface ChatView {
             }
 
             data class Image(
-                val target: Id,
+                val obj: Id,
                 val url: String,
                 val name: String,
                 val ext: String,
@@ -102,7 +102,7 @@ sealed interface ChatView {
             ): Attachment()
 
             data class Video(
-                val target: Id,
+                val obj: Id,
                 val url: String,
                 val name: String,
                 val ext: String,
@@ -112,7 +112,7 @@ sealed interface ChatView {
             }
 
             data class Link(
-                val target: Id,
+                val obj: Id,
                 val wrapper: ObjectWrapper.Basic?,
                 val icon: ObjectIcon = ObjectIcon.None,
                 val typeName: String,

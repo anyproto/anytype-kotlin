@@ -43,10 +43,10 @@ fun SpaceIconView(
     val radius = when (mainSize) {
         20.dp -> 2.dp
         28.dp, 32.dp -> 4.dp
-        40.dp -> 5.dp
-        48.dp -> 6.dp
-        64.dp -> 10.dp
-        96.dp -> 12.dp
+        40.dp -> 6.dp
+        48.dp -> 8.dp
+        64.dp -> 12.dp
+        96.dp -> 20.dp
         else -> 6.dp
     }
 

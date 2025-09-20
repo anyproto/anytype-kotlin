@@ -1063,6 +1063,7 @@ sealed class BlockView : ViewType {
         abstract override val mode: Mode
         abstract override val isSelected: Boolean
         abstract val background: ThemeColor
+        abstract val targetObjectId: Id
 
         /**
          * UI-model for block containing file, with state DONE.
@@ -1076,10 +1077,10 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val decorations: List<Decoration> = emptyList(),
+            override val targetObjectId: Id,
             val size: Long?,
             val name: String,
             val mime: String?,
-            val targetObjectId: Id,
             val url: String,
             val fileExt: String? = null
         ) : Media(), Searchable {
@@ -1096,10 +1097,10 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val decorations: List<Decoration> = emptyList(),
+            override val targetObjectId: Id,
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val targetObjectId: Id,
             val url: String
         ) : Media() {
             override fun getViewType() = HOLDER_VIDEO
@@ -1121,6 +1122,7 @@ sealed class BlockView : ViewType {
             override val searchFields: List<Searchable.Field> = emptyList(),
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val decorations: List<Decoration> = emptyList(),
+            override val targetObjectId: Id,
             val url: String,
             val title: String?,
             val description: String?,
@@ -1147,10 +1149,10 @@ sealed class BlockView : ViewType {
             override val isSelected: Boolean = false,
             override val background: ThemeColor = ThemeColor.DEFAULT,
             override val decorations: List<Decoration> = emptyList(),
+            override val targetObjectId: Id,
             val size: Long?,
             val name: String?,
             val mime: String?,
-            val targetObjectId: Id,
             val url: String,
         ) : Media() {
             override fun getViewType() = HOLDER_PICTURE

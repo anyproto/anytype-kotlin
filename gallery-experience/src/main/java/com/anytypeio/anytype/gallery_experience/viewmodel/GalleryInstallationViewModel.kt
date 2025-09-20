@@ -30,7 +30,6 @@ import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationNaviga
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
-import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -122,9 +121,6 @@ class GalleryInstallationViewModel(
         viewModelScope.launch {
             command.emit(GalleryInstallationNavigation.CloseSpaces)
             val state = (mainState.value as? GalleryInstallationState.Success) ?: return@launch
-            if (spacesViewState.value.spaces.size >= CreateSpaceViewModel.MAX_SPACE_COUNT) {
-                return@launch
-            }
             val manifestInfo = state.info
             mainState.value = state.copy(isLoading = true)
             val params = CreateSpace.Params(
@@ -133,7 +129,6 @@ class GalleryInstallationViewModel(
                     Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                     Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble(),
                 ),
-                withChat = false,
                 useCase = SpaceCreationUseCase.EMPTY_MOBILE
             )
             createSpace.async(params).fold(

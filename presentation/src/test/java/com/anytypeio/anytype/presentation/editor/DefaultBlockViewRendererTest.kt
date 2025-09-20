@@ -4894,7 +4894,7 @@ class DefaultBlockViewRendererTest {
                     mapOf(
                         bookmarkObjectId to
                                 mapOf(
-                                    Relations.ID to page.id,
+                                    Relations.ID to bookmarkObjectId,
                                     Relations.NAME to bookmarkTitle,
                                     Relations.DESCRIPTION to bookmarkDescription,
                                     Relations.SOURCE to bookmarkUrl
@@ -4918,10 +4918,14 @@ class DefaultBlockViewRendererTest {
             ),
             BlockView.Media.Bookmark(
                 id = bookmark.id,
-                indent = 1,
-                title = bookmarkTitle,
+                targetObjectId = bookmarkObjectId,
                 url = bookmarkUrl,
+                faviconUrl = null,
+                imageUrl = null,
                 description = bookmarkDescription,
+                title = bookmarkTitle,
+                mode = BlockView.Mode.EDIT,
+                indent = 1,
                 isPreviousBlockMedia = false,
                 background = bookmark.parseThemeBackgroundColor(),
                 decorations = listOf(

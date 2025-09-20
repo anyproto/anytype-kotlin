@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -34,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -48,6 +50,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
@@ -100,11 +103,10 @@ fun HomeScreen(
     onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
-) {
+    onCreateElement: (WidgetView) -> Unit = {},
+    onCreateNewTypeClicked: () -> Unit
+    ) {
 
     Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
@@ -122,12 +124,11 @@ fun HomeScreen(
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onSpaceWidgetShareIconClicked = onSpaceWidgetShareIconClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onCreateWidget = onCreateWidget,
-            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onWidgetMenuTriggered = onWidgetMenuTriggered,
+            onCreateNewTypeClicked = onCreateNewTypeClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -196,11 +197,10 @@ private fun WidgetList(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onSpaceWidgetClicked: () -> Unit,
     onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateWidget: () -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    onCreateNewTypeClicked: () -> Unit
 ) {
 
     val view = LocalView.current
@@ -276,8 +276,8 @@ private fun WidgetList(
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onCreateObjectInsideWidget = onCreateObjectInsideWidget,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                onCreateElement = onCreateElement
                             )
                         }
                     } else {
@@ -294,8 +294,8 @@ private fun WidgetList(
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onCreateElement = onCreateElement
                         )
                     }
                 }
@@ -311,7 +311,7 @@ private fun WidgetList(
                                 item = item,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
+                                onObjectCheckboxClicked = onObjectCheckboxClicked
                             )
                         }
                     } else {
@@ -322,7 +322,7 @@ private fun WidgetList(
                             item = item,
                             onWidgetMenuAction = onWidgetMenuAction,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered
+                            onObjectCheckboxClicked = onObjectCheckboxClicked
                         )
                     }
                 }
@@ -387,7 +387,6 @@ private fun WidgetList(
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onSeeAllObjectsClicked = onSeeAllObjectsClicked,
                                 onWidgetMenuTriggered = onWidgetMenuTriggered
                             )
                         }
@@ -405,7 +404,6 @@ private fun WidgetList(
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
                             onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onCreateElement = onCreateElement
                         )
@@ -557,7 +555,20 @@ private fun WidgetList(
                         )
                     }
                 }
+
+                WidgetView.Section.ObjectTypes -> {
+                    SpaceObjectTypesSectionHeader(
+                        onCreateNewTypeClicked = onCreateNewTypeClicked
+                    )
+                }
+                WidgetView.Section.Pinned -> {
+                    PinnedSectionHeader()
+                }
             }
+        }
+
+        item {
+            Spacer(modifier = Modifier.height(200.dp))
         }
     }
 }
@@ -657,7 +668,6 @@ private fun SetOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement
         )
         AnimatedVisibility(
@@ -698,7 +708,6 @@ private fun GalleryWidgetItem(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSeeAllObjectsClicked: (WidgetView.Gallery) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {}
 ) {
     Box(
@@ -719,7 +728,6 @@ private fun GalleryWidgetItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSeeAllObjectsClicked = onSeeAllObjectsClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateElement = onCreateElement
         )
@@ -756,7 +764,7 @@ private fun LinkWidgetItem(
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -772,7 +780,7 @@ private fun LinkWidgetItem(
             onWidgetSourceClicked = onWidgetSourceClicked,
             isInEditMode = mode is InteractionMode.Edit,
             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onObjectCheckboxClicked = onObjectCheckboxClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -812,7 +820,7 @@ private fun TreeWidgetItem(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit
+    onCreateElement: (WidgetView) -> Unit
 ) {
     Box(
         modifier = modifier
@@ -831,8 +839,8 @@ private fun TreeWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+            onCreateElement = onCreateElement,
             mode = mode,
-            onCreateObjectInsideWidget = onCreateObjectInsideWidget,
             onWidgetMenuClicked = onWidgetMenuTriggered
         )
         AnimatedVisibility(
@@ -879,6 +887,54 @@ fun WidgetEditModeButton(
             modifier = Modifier.align(Alignment.Center),
             style = UXBody,
             color = colorResource(id = R.color.text_white)
+        )
+    }
+}
+
+@Composable
+private fun SpaceObjectTypesSectionHeader(
+    onCreateNewTypeClicked: () -> Unit
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_object_types),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
+        )
+        Image(
+            painter = painterResource(id = R.drawable.ic_default_plus),
+            contentDescription = "Create new type",
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+                .padding(end = 20.dp, bottom = 12.dp)
+                .size(18.dp)
+                .noRippleClickable { onCreateNewTypeClicked() },
+            contentScale = ContentScale.Inside
+        )
+    }
+}
+
+@Composable
+private fun PinnedSectionHeader() {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_pinned),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
         )
     }
 }

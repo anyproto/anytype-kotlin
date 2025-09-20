@@ -17,6 +17,9 @@ import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Tree
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -27,6 +30,7 @@ import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
+import timber.log.Timber
 
 
 class TreeWidgetContainer(
@@ -59,12 +63,8 @@ class TreeWidgetContainer(
                         isExpanded = !isCollapsed,
                         elements = emptyList(),
                         isLoading = true,
-                        name = when(val source = widget.source) {
-                            is Widget.Source.Bundled -> WidgetView.Name.Bundled(source = source)
-                            is Widget.Source.Default -> WidgetView.Name.Default(
-                                prettyPrintName = fieldParser.getObjectName(source.obj)
-                            )
-                        }
+                        icon = widget.icon,
+                        name = widget.source.getPrettyName(fieldParser)
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -114,9 +114,10 @@ class TreeWidgetContainer(
                             putAll(valid.associate { obj -> obj.id to obj.links })
                         }
                     }
-                    WidgetView.Tree(
+                    Tree(
                         id = widget.id,
                         source = widget.source,
+                        icon = widget.icon,
                         isExpanded = !isWidgetCollapsed,
                         elements = buildTree(
                             links = rootLevelLinks,
@@ -127,7 +128,7 @@ class TreeWidgetContainer(
                             rootLimit = rootLevelLimit,
                             storeOfObjectTypes = storeOfObjectTypes
                         ),
-                        name = WidgetView.Name.Bundled(source = source)
+                        name = Bundled(source = source)
                     )
                 }
             }
@@ -155,7 +156,7 @@ class TreeWidgetContainer(
                             putAll(valid.associate { obj -> obj.id to obj.links })
                         }
                     }
-                    WidgetView.Tree(
+                    Tree(
                         id = widget.id,
                         source = widget.source,
                         isExpanded = !isWidgetCollapsed,
@@ -168,11 +169,16 @@ class TreeWidgetContainer(
                             rootLimit = WidgetConfig.NO_LIMIT,
                             storeOfObjectTypes = storeOfObjectTypes
                         ),
-                        name = WidgetView.Name.Default(
+                        icon = widget.icon,
+                        name = Default(
                             prettyPrintName = fieldParser.getObjectName(source.obj)
                         )
                     )
                 }
+            }
+            else -> {
+                Timber.w("Unsupported source type for tree widget: ${widget.source}")
+                emptyFlow()
             }
         }
     }

@@ -1079,6 +1079,7 @@ message Model {
       Export export = 8;
       SaveFile saveFile = 9;
       Migration migration = 10;
+      PreloadFile preloadFile = 12;
     }
 
     string error = 11;
@@ -1087,6 +1088,7 @@ message Model {
     message Export {}
     message SaveFile {}
     message Migration {}
+    message PreloadFile {}
 
     enum State {
       None = 0;

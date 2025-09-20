@@ -179,10 +179,10 @@ class SplashViewModel(
         viewModelScope.launch {
             state.value = State.Loading
             launchAccount(BaseUseCase.None).proceed(
-                success = { analyticsId ->
-                    Timber.i("Account launched successfully, analyticsId: $analyticsId")
+                success = { (analyticsId, networkId) ->
+                    Timber.i("Account launched successfully, analyticsId: $analyticsId, networkId: $networkId")
                     crashReporter.setUser(analyticsId)
-                    updateUserProps(analyticsId)
+                    updateUserProps(analyticsId = analyticsId, networkId = networkId)
                     analytics.proceedWithAccountEvent(
                         startTime = startTime,
                         eventName = EventsDictionary.openAccount,
@@ -302,10 +302,14 @@ class SplashViewModel(
         }
     }
 
-    private fun updateUserProps(id: String) {
+    private fun updateUserProps(analyticsId: String, networkId: String) {
         viewModelScope.updateUserProperties(
             analytics = analytics,
-            userProperty = UserProperty.AccountId(id)
+            userProperty = UserProperty.AccountId(analyticsId)
+        )
+        viewModelScope.updateUserProperties(
+            analytics = analytics,
+            userProperty = UserProperty.NetworkId(networkId)
         )
         localeProvider.language().let { lang ->
             viewModelScope.updateUserProperties(

@@ -230,12 +230,14 @@ fun contentSizeForBackground(backgroundSize: Dp): Dp {
 
 fun cornerRadius(size: Dp): Dp {
     return when (size) {
-        in 0.dp..20.dp -> 2.dp
-        in 21.dp..29.dp -> 3.dp
-        in 30.dp..39.dp -> 4.dp
-        in 40.dp..47.dp -> 5.dp
-        in 48.dp..63.dp -> 6.dp
-        in 64.dp..95.dp -> 8.dp
-        else -> 12.dp
+        in 0.dp..31.dp -> 2.dp
+        in 32.dp..39.dp -> 5.dp
+        in 40.dp..47.dp -> 6.dp
+        in 48.dp..55.dp -> 8.dp
+        in 56.dp..63.dp -> 10.dp
+        in 64.dp..79.dp -> 12.dp
+        in 80.dp..95.dp -> 16.dp
+        in 96.dp..111.dp -> 20.dp
+        else -> 24.dp
     }
 }

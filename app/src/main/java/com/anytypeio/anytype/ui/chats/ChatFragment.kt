@@ -184,7 +184,9 @@ class ChatFragment : Fragment() {
                             )
                         }
                     },
-                    onRequestOpenFullScreenImage = { url -> vm.onMediaPreview(url) },
+                    onRequestOpenFullScreenImageGallery = { objects, index ->
+                        vm.onMediaPreview(objects, index)
+                                                          },
                     onSelectChatReaction = vm::onSelectChatReaction,
                     onViewChatReaction = { msg, emoji ->
                         vm.onViewChatReaction(msg = msg, emoji = emoji)
@@ -193,7 +195,7 @@ class ChatFragment : Fragment() {
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            url = attachment.url
+                            obj = attachment.obj
                         )
                     }
                 )
@@ -390,7 +392,8 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
-                                url = command.url
+                                objects = command.objects,
+                                index = command.index
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching media image viewer")
@@ -459,7 +462,7 @@ class ChatFragment : Fragment() {
                             MediaActivity.start(
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_AUDIO,
-                                url = command.url,
+                                obj = command.obj,
                                 name = command.name
                             )
                         }.onFailure {

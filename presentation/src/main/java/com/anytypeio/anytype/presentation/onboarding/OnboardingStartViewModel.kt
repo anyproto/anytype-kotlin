@@ -9,6 +9,9 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.analytics.props.UserProperty.Companion.ACCOUNT_ID_KEY
+import com.anytypeio.anytype.analytics.props.UserProperty.Companion.NETWORK_ID_KEY
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.exceptions.CreateAccountException
@@ -212,17 +215,19 @@ class OnboardingStartViewModel @Inject constructor(
         val config = configStorage.getOrNull()
         if (config != null) {
             val analyticsId = config.analytics
-            val userProperty = com.anytypeio.anytype.analytics.props.UserProperty.AccountId(analyticsId)
+            val userProperty = UserProperty.AccountId(analyticsId)
             analytics.updateUserProperty(userProperty)
+            val networkId = config.network
+            analytics.updateUserProperty(UserProperty.NetworkId(networkId))
             val lang = localeProvider.language()
-            analytics.updateUserProperty(com.anytypeio.anytype.analytics.props.UserProperty.InterfaceLanguage(lang))
+            analytics.updateUserProperty(UserProperty.InterfaceLanguage(lang))
             
             // Send CreateAccount event with all required props
             analytics.sendEvent(
                 startTime = startTime,
                 middleTime = System.currentTimeMillis(),
                 eventName = EventsDictionary.createAccount,
-                props = Props(mapOf("accountId" to analyticsId))
+                props = Props(mapOf(ACCOUNT_ID_KEY to analyticsId, NETWORK_ID_KEY to networkId))
             )
             analytics.sendEvent(eventName = EventsDictionary.createSpace)
         }

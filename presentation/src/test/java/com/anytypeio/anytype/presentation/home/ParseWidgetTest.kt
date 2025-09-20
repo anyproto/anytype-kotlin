@@ -5,14 +5,18 @@ import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import org.junit.Test
+import org.mockito.Mockito.mock
 
 class ParseWidgetTest {
 
 
+    var urlBuilder: UrlBuilder = mock()
 
     @Test
     fun `should hide widgets with archived source`() {
@@ -76,7 +80,8 @@ class ParseWidgetTest {
                 put(invalidSource.id, invalidSource.map)
                 put(validSource.id, validSource.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {
@@ -150,7 +155,8 @@ class ParseWidgetTest {
                 put(invalidSource.id, invalidSource.map)
                 put(validSource.id, validSource.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {
@@ -221,7 +227,8 @@ class ParseWidgetTest {
                 put(invalidSource.id, emptyMap())
                 put(validSource.id, validSource.map)
             },
-            config = StubConfig()
+            config = StubConfig(),
+            urlBuilder
         )
 
         assertTrue {

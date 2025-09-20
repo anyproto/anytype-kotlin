@@ -521,7 +521,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
                     ),
                     bookmarkObjectId to
                         mapOf(
-                            Relations.ID to root,
+                            Relations.ID to bookmarkObjectId,
                             Relations.NAME to bookmarkTitle,
                             Relations.DESCRIPTION to bookmarkDescription,
                             Relations.SOURCE to bookmarkUrl
@@ -548,6 +548,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
             ),
             BlockView.Media.Bookmark(
                 id = bookmark.id,
+                targetObjectId = bookmarkObjectId,
                 url = bookmarkUrl,
                 faviconUrl = null,
                 imageUrl = null,
@@ -790,7 +791,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         val testObserver = vm.commands.test()
 
-        vm.onClickListener(ListenerType.Picture.View(picture.id))
+        vm.onClickListener(ListenerType.Picture.View(obj = targetObjectId, target = picture.id))
 
         advanceUntilIdle()
 
@@ -798,7 +799,7 @@ class EditorLockPageTest : EditorPresentationTestSetup() {
 
         testObserver.assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
-                target = picture.id,
+                obj = targetObjectId,
                 url = builder.large(targetObjectId)
             )
         }

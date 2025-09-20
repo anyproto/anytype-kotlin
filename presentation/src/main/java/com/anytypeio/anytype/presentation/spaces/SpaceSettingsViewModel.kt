@@ -365,8 +365,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (!targetSpaceId.isNullOrEmpty()) {
-                        // Target space is set, show change Notification mode option
+                    if (spaceView.isShared) {
                         add(Spacer(height = 8))
                         add(Notifications)
                     }

@@ -13,18 +13,19 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -53,26 +54,121 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
-import coil3.compose.AsyncImage
 import coil3.request.CachePolicy
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.ui.media.MediaActivity
+import com.anytypeio.anytype.presentation.media.MediaViewModel
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
+import timber.log.Timber
 
 @Composable
-private fun ImageViewer(url: String) {
+fun ImageGallery(
+    images: List<MediaViewModel.MediaViewState.ImageContent.Image> = emptyList(),
+    index: Int = 0,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: (Id) -> Unit = {},
+    onOpenClick: (Id) -> Unit = {},
+    onDeleteClick: (Id) -> Unit = {}
+) {
+    val pagerState = rememberPagerState(initialPage = index) { images.size }
+    var chromeVisible by remember { mutableStateOf(true) }
+
+    LaunchedEffect(pagerState.settledPage) {
+        chromeVisible = true
+    }
+
+    Box(Modifier.fillMaxSize()) {
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier.fillMaxSize()
+        ) { page ->
+
+            val image = images[page]
+            val url = image.url
+
+            ImageViewer(
+                url = url,
+                onClick = {
+                    chromeVisible = !chromeVisible
+                    Timber.d("onClick, chrome visible: $chromeVisible")
+                },
+            )
+        }
+
+        // Page counter chip (top-center)
+
+        if (images.size > 1) {
+            AnimatedVisibility(
+                visible = chromeVisible,
+                enter = fadeIn(),
+                exit = fadeOut(),
+                modifier = Modifier.align(Alignment.TopCenter)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .systemBarsPadding()
+                        .padding(top = 48.dp)
+                        .background(
+                            color = colorResource(R.color.home_screen_toolbar_button),
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        .padding(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Text(
+                        text = "${pagerState.settledPage + 1}/${images.size}",
+                        style = Caption1Medium,
+                        color = colorResource(R.color.glyph_active)
+                    )
+                }
+            }
+        }
+
+        // Toolbar
+        AnimatedVisibility(
+            visible = chromeVisible,
+            enter = fadeIn(),
+            exit  = fadeOut(),
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 24.dp)
+        ) {
+            MediaActionToolbar(
+                modifier = Modifier.padding(bottom = 32.dp),
+                onBackClick = onBackClick,
+                onDownloadClick = {
+                    onDownloadClick(images[pagerState.settledPage].obj)
+                },
+                onDeleteClick = {
+                    onDeleteClick(images[pagerState.settledPage].obj)
+                },
+                onOpenClick = {
+                    onOpenClick(images[pagerState.settledPage].obj)
+                }
+            )
+        }
+    }
+}
+
+@Composable
+private fun ImageViewer(
+    url: String,
+    onClick: () -> Unit = {}
+) {
 
     val context = LocalContext.current
     var isLoading by remember { mutableStateOf(true) }
     var hasError by remember { mutableStateOf(false) }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+    ) {
         ZoomableAsyncImage(
             model = ImageRequest.Builder(context)
                 .data(url)
@@ -93,8 +189,12 @@ private fun ImageViewer(url: String) {
                 )
                 .build(),
             contentDescription = null,
-            modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Fit,
+            modifier = Modifier
+                .fillMaxSize(),
+            onClick = {
+                onClick()
+            }
         )
 
         when {
@@ -119,7 +219,6 @@ private fun ImageViewer(url: String) {
         }
     }
 }
-
 
 @Composable
 fun AudioPlayerBox(
@@ -146,12 +245,22 @@ fun VideoPlayerBox(
 }
 
 @Composable
-fun ImageBox(
-    url: String
+fun ImageGalleryBox(
+    images: List<MediaViewModel.MediaViewState.ImageContent.Image> =  emptyList(),
+    index: Int = 0,
+    onBackClick: () -> Unit = {},
+    onDownloadClick: (Id) -> Unit = {},
+    onOpenClick: (Id) -> Unit = {},
+    onDeleteClick: (Id) -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
-        ImageViewer(
-            url = url
+        ImageGallery(
+            images = images,
+            index = index,
+            onBackClick = onBackClick,
+            onDownloadClick = onDownloadClick,
+            onDeleteClick = onDeleteClick,
+            onOpenClick = onOpenClick
         )
     }
 }

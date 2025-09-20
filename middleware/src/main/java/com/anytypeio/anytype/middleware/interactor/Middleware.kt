@@ -2008,8 +2008,7 @@ class Middleware @Inject constructor(
     fun workspaceCreate(command: Command.CreateSpace): Command.CreateSpace.Result {
         val request = Rpc.Workspace.Create.Request(
             details = command.details,
-            useCase = command.useCase.toMiddlewareModel(),
-            withChat = command.withChat
+            useCase = command.useCase.toMiddlewareModel()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.workspaceCreate(request) }
@@ -3135,6 +3134,17 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.publishingGetStatus(request) }
         logResponseIfDebug(response, time)
         return response.publish?.toCorePublishStatus()
+    }
+
+    @Throws(Exception::class)
+    fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State> {
+        val request = Rpc.Publishing.List.Request(
+            spaceId = command.space?.id ?: ""
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.publishingList(request) }
+        logResponseIfDebug(response, time)
+        return response.publishes.map { it.toCorePublishStatus() }
     }
 
     @Throws(Exception::class)

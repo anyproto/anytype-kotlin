@@ -40,6 +40,8 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_RELATION_CUSTOM
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.analytics.props.UserProperty.Companion.ACCOUNT_ID_KEY
+import com.anytypeio.anytype.analytics.props.UserProperty.Companion.NETWORK_ID_KEY
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSortType
@@ -2167,15 +2169,23 @@ suspend fun Analytics.proceedWithAccountEvent(
 }
 
 suspend fun Analytics.sendOpenAccountEvent(
-    analytics: Id
+    analytics: Id,
+    networkId: Id
 ) {
     val userProperty = UserProperty.AccountId(analytics)
     updateUserProperty(userProperty)
+    val networkProperty = UserProperty.NetworkId(networkId)
+    updateUserProperty(networkProperty)
     sendEvent(
         startTime = null,
         middleTime = System.currentTimeMillis(),
         eventName = EventsDictionary.openAccount,
-        props = Props(map = mapOf("accountId" to analytics))
+        props = Props(
+            map = mapOf(
+                ACCOUNT_ID_KEY to analytics,
+                NETWORK_ID_KEY to networkId
+            )
+        )
     )
 }
 

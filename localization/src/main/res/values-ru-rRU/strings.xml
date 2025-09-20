@@ -807,10 +807,8 @@
     <string name="type_editing_title">Настройки типа</string>
     <string name="relation_editing_title">Настройки свойств</string>
     <string name="type_editing_uninstall">Удалить</string>
-    <string name="empty_tree_widget">Этот объект не имеет ссылок на другие объекты.\nПопробуйте создать новую.</string>
     <string name="empty_tree_widget_reader_access">Этот объект не имеет ссылок на другие объекты.</string>
-    <string name="empty_list_widget">Этот вид не имеет объектов.\nПопробуйте создать новый.</string>
-    <string name="empty_list_widget_no_objects">В этом виджете еще нет объектов.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">Этот вид данных не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="this_widget_has_no_object">Этот виджет не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="emoji">Эмодзи</string>
@@ -1991,6 +1989,10 @@
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Закреплённые</string>
+    <string name="widgets_section_object_types">Типы объектов</string>
+    <string name="widgets_menu_new_object_type">Новый</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="few">%d new messages</item>

@@ -35,6 +35,7 @@ import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.VaultPrefsSerializer
 import com.anytypeio.anytype.persistence.preferences.WallpaperMigration
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import timber.log.Timber
@@ -598,6 +599,9 @@ class DefaultUserSettingsCache(
                     .preferences[space.id]
                     ?.expandedWidgetIds
                     ?: emptyList()
+            }.catch {
+                Timber.e("Error fetching expanded widget ids for space ${space.id}: $this")
+                emit(emptyList())
             }
     }
 

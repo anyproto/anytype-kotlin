@@ -8,8 +8,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -202,9 +202,9 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
         is Widget.Source.Default -> {
             if (obj.layout == ObjectType.Layout.OBJECT_TYPE) {
                 val wrapper = Type(obj.map)
-                SupportedLayouts.createObjectLayouts.contains(wrapper.recommendedLayout)
+                canCreateObjectOfType(wrapper)
             } else {
-                true
+                false
             }
         }
         else -> false

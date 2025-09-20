@@ -18,7 +18,6 @@ import com.anytypeio.anytype.core_models.StubDataViewView
 import com.anytypeio.anytype.core_models.StubFilter
 import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
-import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubSpaceView
@@ -42,6 +41,7 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -77,7 +77,6 @@ import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
-import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
@@ -85,9 +84,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.presentation.MockObjectTypes.objectTypeNote
 import com.anytypeio.anytype.presentation.MockObjectTypes.objectTypePage
-import com.anytypeio.anytype.presentation.MockObjectTypes.objectTypeTask
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -101,7 +98,6 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
@@ -192,8 +188,6 @@ class HomeScreenViewModelTest {
 
     val activeViewStateHolder: WidgetActiveViewStateHolder = WidgetActiveViewStateHolder.Impl()
 
-    @Mock
-    lateinit var collapsedWidgetStateHolder: CollapsedWidgetStateHolder
 
     @Mock
     lateinit var unsubscriber: Unsubscriber
@@ -2807,9 +2801,8 @@ class HomeScreenViewModelTest {
     }
 
     private fun stubCollapsedWidgetState(id: Id, isCollapsed: Boolean = false) {
-        collapsedWidgetStateHolder.stub {
-            on { isCollapsed(id) } doReturn flowOf(isCollapsed)
-        }
+        // CollapsedWidgetStateHolder has been removed - widget state is now managed by expandedWidgetIds
+        // This stub is no longer needed
     }
 
     private fun stubObserveSpaceObject() {
@@ -2987,9 +2980,11 @@ class HomeScreenViewModelTest {
 
     @Mock
     private lateinit var copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+    @Mock
+    private lateinit var userSettingsRepository: UserSettingsRepository
 
     private fun buildViewModel() = HomeScreenViewModel(
-        vmParams = HomeScreenViewModel.VmParams(spaceId = spaceId),
+        vmParams = HomeScreenVmParams(spaceId = spaceId),
         interceptEvents = interceptEvents,
         createWidget = createWidget,
         deleteWidget = deleteWidget,
@@ -3004,7 +2999,6 @@ class HomeScreenViewModelTest {
         storelessSubscriptionContainer = storelessSubscriptionContainer,
         widgetSessionStateHolder = widgetSessionStateHolder,
         widgetActiveViewStateHolder = activeViewStateHolder,
-        collapsedWidgetStateHolder = collapsedWidgetStateHolder,
         urlBuilder = urlBuilder,
         move = move,
         emptyBin = emptyBin,
@@ -3050,6 +3044,7 @@ class HomeScreenViewModelTest {
         chatPreviews = chacPreviewContainer,
         notificationPermissionManager = notificationPermissionManager,
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
+        userSettingsRepository = userSettingsRepository,
         scope = GlobalScope // Using GlobalScope to avoid cancellation of flows
     )
 

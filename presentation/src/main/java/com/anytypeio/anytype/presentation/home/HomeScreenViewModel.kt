@@ -140,6 +140,7 @@ import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -167,6 +168,7 @@ import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
@@ -178,7 +180,6 @@ import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -191,7 +192,7 @@ import timber.log.Timber
  * Change subscription IDs for bundled widgets?
  */
 class HomeScreenViewModel(
-    private val vmParams: VmParams,
+    private val vmParams: HomeScreenVmParams,
     private val openObject: OpenObject,
     private val closeObject: CloseObject,
     private val createWidget: CreateWidget,
@@ -592,7 +593,12 @@ class HomeScreenViewModel(
                             widget = widget,
                             container = storelessSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
+                            isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
                             objectWatcher = objectWatcher,
@@ -612,7 +618,12 @@ class HomeScreenViewModel(
                                 widget = widget,
                                 subscription = widget.source.id,
                                 storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 urlBuilder = urlBuilder,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
@@ -634,7 +645,12 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -657,7 +673,12 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = expandedWidgetIds.map { !it.contains(widget.id) },
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -721,7 +742,17 @@ class HomeScreenViewModel(
                 objectViewState,
                 hasEditAccess,
                 userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
-            ) { _, state, isOwnerOrEditor, savedExpandedIds ->
+                    .catch { e ->
+                        Timber.e(e, "Failed to get expanded widget IDs, using defaults")
+                        emit(emptyList())
+                    },
+                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
+                    .catch { e ->
+                        Timber.e(e, "Failed to get collapsed section IDs, using defaults")
+                        emit(emptyList())
+                    }
+            ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
+                val currentCollapsedSections = savedCollapsedSections.toSet()
                 val s = when (state) {
                     is ObjectViewState.Idle -> flowOf(state)
                     is ObjectViewState.Failure -> flowOf(state)
@@ -732,26 +763,42 @@ class HomeScreenViewModel(
                         }
                     }
                 }
-                Triple(s, isOwnerOrEditor, savedExpandedIds)
-            }.flatMapLatest { (stateFlow, isOwnerOrEditor, savedExpandedIds) ->
+                Pair(s, Triple(isOwnerOrEditor, savedExpandedIds, currentCollapsedSections))
+            }.flatMapLatest { (stateFlow, params) ->
+                val (isOwnerOrEditor, savedExpandedIds, currentCollapsedSections) = params
                 stateFlow.map { state ->
                     if (state is ObjectViewState.Success) {
                         buildList {
+                            // Always add section headers
                             add(Widget.Section.Pinned(config = state.config))
-                            addAll(
-                                state.obj.blocks.parseWidgets(
-                                    root = state.obj.root,
-                                    details = state.obj.details,
-                                    config = state.config,
-                                    urlBuilder = urlBuilder
+
+                            // Add pinned widgets only if pinned section is not collapsed
+                            val isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
+                            if (!isPinnedSectionCollapsed) {
+                                addAll(
+                                    state.obj.blocks.parseWidgets(
+                                        root = state.obj.root,
+                                        details = state.obj.details,
+                                        config = state.config,
+                                        urlBuilder = urlBuilder
+                                    )
                                 )
-                            )
+                            }
+
                             add(Widget.Section.ObjectType(config = state.config))
-                            val types = mapSpaceTypesToWidgets(
-                                isOwnerOrEditor = isOwnerOrEditor,
-                                config = state.config
-                            )
-                            addAll(types)
+
+                            // Add object type widgets only if object type section is not collapsed
+                            val isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+                            if (!isObjectTypeSectionCollapsed) {
+                                val types = mapSpaceTypesToWidgets(
+                                    isOwnerOrEditor = isOwnerOrEditor,
+                                    config = state.config
+                                )
+                                addAll(types)
+                                Timber.d("Section states - Pinned: ${if (isPinnedSectionCollapsed) "collapsed" else "expanded"}, ObjectType widgets added: ${types.size}")
+                            } else {
+                                Timber.d("Section states - Pinned: ${if (isPinnedSectionCollapsed) "collapsed" else "expanded"}, ObjectType: collapsed, ObjectType widgets: 0 (section collapsed)")
+                            }
                         }.also { allWidgets ->
                             // Initialize active views for all widgets
                             // First get active views from bundled widgets (parsed from blocks)
@@ -1142,6 +1189,7 @@ class HomeScreenViewModel(
                     config = config,
                     icon = icon,
                     limit = widgetLimit,
+                    sectionType = SectionType.TYPES
                 )
             }
             Block.Content.Widget.Layout.LIST -> {
@@ -1150,7 +1198,8 @@ class HomeScreenViewModel(
                     source = widgetSource,
                     config = config,
                     icon = icon,
-                    limit = widgetLimit
+                    limit = widgetLimit,
+                    sectionType = SectionType.TYPES
                 )
             }
             Block.Content.Widget.Layout.COMPACT_LIST -> {
@@ -1160,7 +1209,8 @@ class HomeScreenViewModel(
                     config = config,
                     icon = icon,
                     limit = widgetLimit,
-                    isCompact = true
+                    isCompact = true,
+                    sectionType = SectionType.TYPES
                 )
             }
             Block.Content.Widget.Layout.VIEW -> {
@@ -1169,7 +1219,8 @@ class HomeScreenViewModel(
                     source = widgetSource,
                     config = config,
                     icon = icon,
-                    limit = widgetLimit
+                    limit = widgetLimit,
+                    sectionType = SectionType.TYPES
                 )
             }
             Block.Content.Widget.Layout.LINK -> {
@@ -1177,7 +1228,8 @@ class HomeScreenViewModel(
                     id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
-                    icon = icon
+                    icon = icon,
+                    sectionType = SectionType.TYPES
                 )
             }
             null -> {
@@ -1188,7 +1240,8 @@ class HomeScreenViewModel(
                         source = widgetSource,
                         config = config,
                         icon = icon,
-                        limit = widgetLimit
+                        limit = widgetLimit,
+                        sectionType = SectionType.TYPES
                     )
                 } else {
                     // Default to compact list for other types
@@ -1198,7 +1251,8 @@ class HomeScreenViewModel(
                         config = config,
                         icon = icon,
                         limit = widgetLimit,
-                        isCompact = true
+                        isCompact = true,
+                        sectionType = SectionType.TYPES
                     )
                 }
             }
@@ -2773,6 +2827,91 @@ class HomeScreenViewModel(
     }
 
     /**
+     * Handles section header clicks to collapse/expand all widgets in the section
+     */
+    fun onSectionClicked(sectionId: Id) {
+        viewModelScope.launch {
+            when (sectionId) {
+                Widget.Source.SECTION_OBJECT_TYPE -> {
+                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+
+                    val newCollapsedSections = if (isCurrentlyCollapsed) {
+                        // Expand section - remove from collapsed sections
+                        currentCollapsedSections.minus(sectionId)
+                    } else {
+                        // Collapse section - add to collapsed sections and collapse all type widgets
+                        collapseAllObjectTypeWidgets()
+                        currentCollapsedSections.plus(sectionId)
+                    }
+
+                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+                }
+                Widget.Source.SECTION_PINNED -> {
+                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+
+                    val newCollapsedSections = if (isCurrentlyCollapsed) {
+                        // Expand section - remove from collapsed sections
+                        currentCollapsedSections.minus(sectionId)
+                    } else {
+                        // Collapse section - add to collapsed sections and collapse all pinned widgets
+                        collapseAllPinnedWidgets()
+                        currentCollapsedSections.plus(sectionId)
+                    }
+
+                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+                }
+            }
+        }
+    }
+
+    /**
+     * Collapses all ObjectType widgets by removing them from expandedWidgetIds
+     */
+    private suspend fun collapseAllObjectTypeWidgets() {
+        val currentWidgets = widgets.value.orEmpty()
+        val objectTypeWidgetIds = currentWidgets
+            .filter { widget ->
+                widget !is Widget.Section && widget.sectionType == SectionType.TYPES
+            }
+            .map { it.id }
+
+        // Remove all ObjectType widget IDs from expanded set
+        expandedWidgetIds.value = expandedWidgetIds.value - objectTypeWidgetIds.toSet()
+        saveExpandedWidgetState()
+    }
+
+    /**
+     * Collapses all Pinned widgets by removing them from expandedWidgetIds
+     */
+    private suspend fun collapseAllPinnedWidgets() {
+        val currentWidgets = widgets.value.orEmpty()
+        val pinnedWidgetIds = currentWidgets
+            .filter { widget ->
+                widget !is Widget.Section && widget.sectionType == SectionType.PINNED
+            }
+            .map { it.id }
+
+        // Remove all Pinned widget IDs from expanded set
+        expandedWidgetIds.value = expandedWidgetIds.value - pinnedWidgetIds.toSet()
+        saveExpandedWidgetState()
+    }
+
+
+    /**
+     * Determines if a widget should be collapsed due to its section being collapsed
+     */
+    private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
+        return when {
+            widget is Widget.Section -> false // Sections themselves are not collapsed by section state
+            widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
+            widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+            else -> false
+        }
+    }
+
+    /**
      * Saves current expanded widget state to preferences
      */
     private suspend fun saveExpandedWidgetState() {
@@ -2814,7 +2953,7 @@ class HomeScreenViewModel(
     }
 
     class Factory @Inject constructor(
-        private val vmParams: VmParams,
+        private val vmParams: HomeScreenVmParams,
         private val openObject: OpenObject,
         private val closeObject: CloseObject,
         private val createObject: CreateObject,
@@ -3189,7 +3328,7 @@ fun ObjectWrapper.Basic.navigation(
     }
 }
 
-data class VmParams(val spaceId: SpaceId)
+data class HomeScreenVmParams(val spaceId: SpaceId)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

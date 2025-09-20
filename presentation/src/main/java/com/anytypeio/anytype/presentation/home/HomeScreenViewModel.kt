@@ -154,6 +154,7 @@ import com.anytypeio.anytype.presentation.widgets.toBasic
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlin.collections.orEmpty
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
@@ -248,7 +249,8 @@ class HomeScreenViewModel(
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+    private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
+    private val scope: CoroutineScope
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -284,7 +286,7 @@ class HomeScreenViewModel(
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
-    // Store widget object ID to use during cleanup when spaceManager might be empty
+    // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
     private var cachedWidgetObjectId: String? = null
 
     private val openWidgetObjectsHistory : MutableSet<OpenObjectHistoryItem> = LinkedHashSet()
@@ -2194,29 +2196,30 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
-        try {
-            // Ensure cleanup actually runs even as the ViewModel is being cleared.
-            kotlinx.coroutines.runBlocking(appCoroutineDispatchers.io + kotlinx.coroutines.NonCancellable) {
-                // Best-effort: never throw past this boundary
-                kotlin.runCatching {
-                    unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
-                }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 
-                val widgetObjectId = cachedWidgetObjectId
-                if (widgetObjectId != null) {
-                    kotlin.runCatching {
-                        proceedWithClosingWidgetObject(
-                            widgetObject = widgetObjectId,
-                            space = vmParams.spaceId
-                        )
-                    }.onFailure { Timber.e(it, "Error while closing widget object") }
-                }
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error during onCleared cleanup")
-        }
+        // Cancel existing jobs first to stop any ongoing work
         jobs.cancel()
         widgetObjectPipelineJobs.cancel()
+
+        // Launch fire-and-forget cleanup coroutine
+        // Using injected scope ensures proper lifecycle management
+        scope.launch(appCoroutineDispatchers.io) {
+            // Best-effort cleanup: never throw past this boundary
+            kotlin.runCatching {
+                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+            }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
+
+            val widgetObjectId = cachedWidgetObjectId
+            if (widgetObjectId != null) {
+                kotlin.runCatching {
+                    proceedWithClosingWidgetObject(
+                        widgetObject = widgetObjectId,
+                        space = vmParams.spaceId
+                    )
+                }.onFailure { Timber.e(it, "Error while closing widget object") }
+            }
+        }
+
         super.onCleared()
     }
 
@@ -2868,7 +2871,8 @@ class HomeScreenViewModel(
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
-        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+        private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
+        private val scope: CoroutineScope
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2929,7 +2933,8 @@ class HomeScreenViewModel(
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
             notificationPermissionManager = notificationPermissionManager,
-            copyInviteLinkToClipboard = copyInviteLinkToClipboard
+            copyInviteLinkToClipboard = copyInviteLinkToClipboard,
+            scope = scope
         ) as T
     }
 

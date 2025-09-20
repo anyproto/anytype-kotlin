@@ -205,13 +205,6 @@ sealed class Event {
                 val activeView: Id? = null,
                 val limit: Int? = null
             ) : Widgets()
-
-            data class AutoWidgetAdded(
-                override val context: Id,
-                val target: Id,
-                val targetName: String,
-                val widgetBlockId: String
-            ) : Widgets()
         }
 
         sealed class DataView : Command() {

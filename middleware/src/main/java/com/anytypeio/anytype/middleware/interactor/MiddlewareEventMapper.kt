@@ -364,16 +364,6 @@ fun anytype.Event.Message.toCoreModels(
             subscriptions = event.subIds
         )
     }
-    spaceAutoWidgetAdded != null -> {
-        val event = spaceAutoWidgetAdded
-        checkNotNull(event)
-        Event.Command.Widgets.AutoWidgetAdded(
-            context = context,
-            target = event.targetId,
-            targetName = event.targetName,
-            widgetBlockId = event.widgetBlockId
-        )
-    }
     else -> {
         if (BuildConfig.DEBUG) {
             Timber.w("Skipped event while mapping: $this")

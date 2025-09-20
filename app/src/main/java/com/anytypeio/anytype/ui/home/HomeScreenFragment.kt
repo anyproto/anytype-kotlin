@@ -440,15 +440,6 @@ class HomeScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening vault from home screen")
                 }
             }
-            is Command.ShowWidgetAutoCreatedToast -> {
-                toast(
-                    msg = getString(
-                        R.string.widget_auto_created_toast,
-                        command.name
-                    ),
-                    duration = Toast.LENGTH_LONG
-                )
-            }
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
                     // Back to ChatFragment if that was previous

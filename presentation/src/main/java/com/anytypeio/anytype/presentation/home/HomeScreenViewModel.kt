@@ -1152,7 +1152,7 @@ class HomeScreenViewModel(
         return when (objectType.widgetLayout) {
             Block.Content.Widget.Layout.TREE -> {
                 Widget.Tree(
-                    id = objectType.id,
+                    id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
                     icon = icon,
@@ -1161,7 +1161,7 @@ class HomeScreenViewModel(
             }
             Block.Content.Widget.Layout.LIST -> {
                 Widget.List(
-                    id = objectType.id,
+                    id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
                     icon = icon,
@@ -1170,7 +1170,7 @@ class HomeScreenViewModel(
             }
             Block.Content.Widget.Layout.COMPACT_LIST -> {
                 Widget.List(
-                    id = objectType.id,
+                    id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
                     icon = icon,
@@ -1180,7 +1180,7 @@ class HomeScreenViewModel(
             }
             Block.Content.Widget.Layout.VIEW -> {
                 Widget.View(
-                    id = objectType.id,
+                    id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
                     icon = icon,
@@ -1189,7 +1189,7 @@ class HomeScreenViewModel(
             }
             Block.Content.Widget.Layout.LINK -> {
                 Widget.Link(
-                    id = objectType.id,
+                    id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                     source = widgetSource,
                     config = config,
                     icon = icon
@@ -1199,7 +1199,7 @@ class HomeScreenViewModel(
                 if (objectType.uniqueKey == ObjectTypeIds.IMAGE) {
                     // Image type widgets default to gallery view
                     Widget.View(
-                        id = objectType.id,
+                        id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                         source = widgetSource,
                         config = config,
                         icon = icon,
@@ -1208,7 +1208,7 @@ class HomeScreenViewModel(
                 } else {
                     // Default to compact list for other types
                     Widget.List(
-                        id = objectType.id,
+                        id = "$WIDGET_TYPE_ID_PREFIX${objectType.id}",
                         source = widgetSource,
                         config = config,
                         icon = icon,
@@ -2932,6 +2932,7 @@ class HomeScreenViewModel(
         )
 
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
+        const val WIDGET_TYPE_ID_PREFIX = "widget-type-"
     }
 }
 

@@ -113,7 +113,8 @@ class TreeWidgetContainerTest {
             val widget = Widget.Tree(
                 id = MockDataFactory.randomUuid(),
                 source = Widget.Source.Default(source),
-                config = config
+                config = config,
+                icon = ObjectIcon.None
             )
 
             val expanded = flowOf(emptyList<TreePath>())
@@ -186,7 +187,8 @@ class TreeWidgetContainerTest {
         val widget = Widget.Tree(
             id = "widget",
             source = Widget.Source.Default(source),
-            config = config
+            config = config,
+            icon = ObjectIcon.None
         )
 
         val expanded = flowOf(
@@ -278,7 +280,8 @@ class TreeWidgetContainerTest {
             val widget = Widget.Tree(
                 id = "widget",
                 source = Widget.Source.Default(source),
-                config = config
+                config = config,
+                icon = ObjectIcon.None
             )
 
             val delayBeforeExpanded = 100L
@@ -473,7 +476,8 @@ class TreeWidgetContainerTest {
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
             source = Widget.Source.Default(source),
-            config = config
+            config = config,
+            icon = ObjectIcon.None
         )
 
         val expanded = flowOf(emptyList<TreePath>())
@@ -544,7 +548,8 @@ class TreeWidgetContainerTest {
         val widget = Widget.Tree(
             id = MockDataFactory.randomUuid(),
             source = Widget.Source.Default(source),
-            config = config
+            config = config,
+            icon = ObjectIcon.None
         )
 
         val expanded = flowOf(emptyList<TreePath>())

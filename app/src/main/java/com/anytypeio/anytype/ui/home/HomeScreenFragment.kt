@@ -96,7 +96,10 @@ class HomeScreenFragment : Fragment(),
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        componentManager().homeScreenComponent.get().inject(this)
+        val vmParams = HomeScreenViewModel.VmParams(
+            spaceId = SpaceId(space),
+        )
+        componentManager().homeScreenComponent.get(vmParams).inject(this)
         super.onCreate(savedInstanceState)
     }
 
@@ -224,14 +227,13 @@ class HomeScreenFragment : Fragment(),
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
             onSpaceWidgetShareIconClicked = vm::onSpaceWidgetShareIconClicked,
-            onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-            onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-            onCreateDataViewObject = vm::onCreateDataViewObject,
+            onCreateDataViewObject = {_, _ -> },
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
             onCreateElement = vm::onCreateWidgetElementClicked,
-            onWidgetMenuTriggered = vm::onWidgetMenuTriggered
+            onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
+            onCreateNewTypeClicked = vm::onCreateNewTypeClicked
         )
     }
 
@@ -467,6 +469,13 @@ class HomeScreenFragment : Fragment(),
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+            is Command.CreateNewType -> {
+                runCatching {
+                    navigation().openCreateObjectTypeScreen(spaceId = command.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening create new type screen")
+                }
             }
         }
     }

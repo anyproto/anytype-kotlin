@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -72,7 +73,7 @@ fun ChangeIconScreen(
     val allIconNames = remember { CustomIcons.iconsMap.keys.toList() }
 
     ModalBottomSheet(
-        modifier = modifier.windowInsetsPadding(WindowInsets.statusBars),
+        modifier = modifier,
         dragHandle = {
             Column {
                 Spacer(modifier = Modifier.height(6.dp))
@@ -80,6 +81,7 @@ fun ChangeIconScreen(
                 Spacer(modifier = Modifier.height(6.dp))
             }
         },
+        contentWindowInsets = { WindowInsets(0, 0, 0, 0) },
         scrimColor = colorResource(id = R.color.modal_screen_outside_background),
         containerColor = colorResource(id = R.color.background_secondary),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
@@ -90,6 +92,7 @@ fun ChangeIconScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(48.dp)
+                .statusBarsPadding()
         ) {
             Text(
                 modifier = Modifier.align(Alignment.Center),

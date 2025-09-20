@@ -1,22 +1,11 @@
 package com.anytypeio.anytype.ui.widgets.types
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.AnimationVector1D
-import androidx.compose.animation.core.LinearOutSlowInEasing
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -26,27 +15,20 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
-import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
@@ -69,7 +51,7 @@ fun TreeWidgetCard(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateObjectInsideWidget: (Id) -> Unit
+    onCreateElement: (WidgetView) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -104,15 +86,19 @@ fun TreeWidgetCard(
         ) {
             WidgetHeader(
                 title = item.getPrettyName(),
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                onDropDownMenuAction = onDropDownMenuAction,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode == InteractionMode.ReadOnly,
-                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) }
+                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) },
+                canCreateObject = item.canCreateObjectOfType,
+                onCreateElement = { onCreateElement(item) },
+                onObjectCheckboxClicked = { isChecked ->
+                    onObjectCheckboxClicked(item.source.id, isChecked)
+                }
             )
             if (item.elements.isNotEmpty()) {
                 TreeWidgetTreeItems(
@@ -127,18 +113,7 @@ fun TreeWidgetCard(
                     if (item.isLoading) {
                         EmptyWidgetPlaceholder(R.string.loading)
                     } else {
-                        if (mode !is InteractionMode.ReadOnly) {
-                            EmptyWidgetPlaceholderWithCreateButton(
-                                R.string.empty_tree_widget,
-                                onCreateClicked = {
-                                    onCreateObjectInsideWidget(item.id)
-                                }
-                            )
-                        } else {
-                            EmptyWidgetPlaceholder(
-                                R.string.empty_tree_widget_reader_access
-                            )
-                        }
+                        EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }
@@ -226,7 +201,9 @@ private fun TreeWidgetTreeItems(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
                     iconWithoutBackgroundMaxSize = 200.dp,
-                    modifier = Modifier.align(Alignment.CenterVertically).padding(start = 8.dp, end = 4.dp),
+                    modifier = Modifier
+                        .align(Alignment.CenterVertically)
+                        .padding(start = 8.dp, end = 4.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.id, isChecked)
                     }
@@ -256,179 +233,9 @@ private fun TreeWidgetTreeItems(
     }
 }
 
-@OptIn(ExperimentalFoundationApi::class)
-@Composable
-fun WidgetHeader(
-    title: String,
-    isCardMenuExpanded: MutableState<Boolean>,
-    isHeaderMenuExpanded: MutableState<Boolean>,
-    onWidgetHeaderClicked: () -> Unit,
-    onWidgetMenuTriggered: () -> Unit,
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onExpandElement: () -> Unit = {},
-    onCreateElement: () -> Unit = {},
-    isExpanded: Boolean = false,
-    isInEditMode: Boolean = true,
-    hasReadOnlyAccess: Boolean = false,
-    canCreate: Boolean = false
-) {
-    val haptic = LocalHapticFeedback.current
-    Box(
-        Modifier
-            .fillMaxWidth()
-            .height(40.dp)
-    ) {
-        Text(
-            text = title.ifEmpty { stringResource(id = R.string.untitled) },
-            style = HeadlineSubheading,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    start = 16.dp,
-                    end = if (isInEditMode) 76.dp else 32.dp
-                )
-                .align(Alignment.CenterStart)
-                .then(
-                    if (isInEditMode)
-                        Modifier
-                    else if (hasReadOnlyAccess) {
-                        Modifier.noRippleClickable {
-                            onWidgetHeaderClicked()
-                        }
-                    } else
-                        Modifier.combinedClickable(
-                            onClick = onWidgetHeaderClicked,
-                            onLongClick = {
-                                isCardMenuExpanded.value = !isCardMenuExpanded.value
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                if (isCardMenuExpanded.value) {
-                                    onWidgetMenuTriggered()
-                                }
-                            },
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                )
-        )
-
-        if (canCreate) {
-            Box(
-                Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 42.dp)
-                    .fillMaxHeight()
-                    .width(34.dp)
-                    .noRippleClickable {
-                        onCreateElement()
-                    }
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_widget_system_plus_18),
-                    contentDescription = stringResource(R.string.content_description_plus_button),
-                    modifier = Modifier.align(Alignment.Center)
-                )
-            }
-        }
-
-        WidgetArrow(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            isInEditMode = isInEditMode,
-            onExpandElement = onExpandElement,
-            isExpanded = isExpanded
-        )
-
-        AnimatedVisibility(
-            visible = isInEditMode,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 48.dp),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box {
-                Image(
-                    painterResource(R.drawable.ic_widget_three_dots),
-                    contentDescription = "Widget menu icon",
-                    modifier = Modifier
-                        .noRippleClickable {
-                            isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
-                        }
-                )
-                if (!hasReadOnlyAccess) {
-                    WidgetMenu(
-                        isExpanded = isHeaderMenuExpanded,
-                        onDropDownMenuAction = onDropDownMenuAction,
-                        canEditWidgets = !isInEditMode
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun WidgetArrow(
-    modifier: Modifier,
-    isInEditMode: Boolean,
-    onExpandElement: () -> Unit,
-    isExpanded: Boolean
-) {
-    val rotation = getAnimatedRotation(isExpanded)
-    Box(
-        modifier = modifier
-            .then(
-                if (isInEditMode)
-                    Modifier
-                else
-                    Modifier.noRippleClickable { onExpandElement() }
-            )
-    ) {
-        Image(
-            painterResource(R.drawable.ic_widget_tree_expand),
-            contentDescription = "Expand icon",
-            modifier = Modifier
-                .graphicsLayer { rotationZ = rotation.value }
-                .padding(horizontal = 12.dp)
-        )
-    }
-}
-
-@Composable
-fun getAnimatedRotation(isExpanded: Boolean): Animatable<Float, AnimationVector1D> {
-    val currentRotation = remember {
-        mutableStateOf(
-            if (isExpanded) ArrowIconDefaults.Expanded else ArrowIconDefaults.Collapsed
-        )
-    }
-    val rotation = remember { Animatable(currentRotation.value) }
-    LaunchedEffect(isExpanded) {
-        rotation.animateTo(
-            targetValue = if (isExpanded)
-                ArrowIconDefaults.Expanded
-            else
-                ArrowIconDefaults.Collapsed,
-            animationSpec = tween(
-                durationMillis = 300,
-                easing = LinearOutSlowInEasing
-            )
-        ) {
-            currentRotation.value = value
-        }
-    }
-    return rotation
-}
 
 
 @Immutable
 private object TreeWidgetTreeItemDefaults {
     val Indent = 20.dp
-}
-
-@Immutable
-private object ArrowIconDefaults {
-    const val Collapsed = 0f
-    const val Expanded = 90f
 }

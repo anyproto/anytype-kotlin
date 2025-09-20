@@ -136,23 +136,23 @@ private fun ColumnScope.CreateNewTypeScreenContent(
                 color = colorResource(id = R.color.shape_primary),
                 shape = RoundedCornerShape(12.dp)
             )
-            .padding(horizontal = 16.dp)
-            .padding(vertical = 12.dp)
+            .padding(start = 19.dp, end = 16.dp)
+            .padding(vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
     ) {
         ListWidgetObjectIcon(
             modifier = Modifier
                 .noRippleThrottledClickable {
                     onIconClicked()
                 },
-            iconSize = 48.dp,
+            iconSize = 30.dp,
             icon = icon,
             backgroundColor = R.color.amp_transparent
         )
-        Spacer(modifier = Modifier.width(0.dp))
+        Spacer(modifier = Modifier.width(9.dp))
         CreateTypeField(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(top = 11.5.dp)
                 .wrapContentHeight(),
             hint = uiState.getTitleHint(),
             initialValue = uiState.getInitialTitleValue(),

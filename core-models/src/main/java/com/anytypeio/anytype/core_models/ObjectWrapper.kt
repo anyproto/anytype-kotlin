@@ -215,6 +215,23 @@ sealed class ObjectWrapper {
         val iconName: String? get() = getSingleValue(Relations.ICON_NAME)
         val iconOption: Double? get() = getSingleValue(Relations.ICON_OPTION)
 
+        val widgetLayout: Block.Content.Widget.Layout?
+            get() = when (val value = map[Relations.WIDGET_LAYOUT]) {
+                is Double -> Block.Content.Widget.Layout.entries.singleOrNull { layout ->
+                    layout.code == value.toInt()
+                }
+                else -> null
+            }
+
+        val widgetLimit: Int?
+            get() = when (val value = map[Relations.WIDGET_LIMIT]) {
+                is Double -> value.toInt()
+                else -> null
+            }
+
+        val widgetViewId: String?
+            get() = getSingleValue(Relations.WIDGET_VIEW_ID)
+
         val allRecommendedRelations: List<Id>
             get() = recommendedFeaturedRelations + recommendedRelations + recommendedFileRelations + recommendedHiddenRelations
 

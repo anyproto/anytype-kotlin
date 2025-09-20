@@ -2,7 +2,6 @@ package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
@@ -10,7 +9,7 @@ import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 fun ObjectWrapper.Basic.objectIcon(
     builder: UrlBuilder,
-    objType: ObjectWrapper.Type?
+    objType: ObjectWrapper.Type? = null
 ): ObjectIcon {
 
     val obj = this
@@ -138,9 +137,4 @@ private fun ObjectWrapper.Type.objectFallbackIcon(): ObjectIcon.TypeIcon.Fallbac
             ObjectIcon.TypeIcon.Fallback.DEFAULT
         }
     }
-}
-
-@Deprecated("Use ObjectWrapper.Basic.icon(builder, objType) instead")
-fun ObjectWrapper.Basic.objectIcon(builder: UrlBuilder): ObjectIcon {
-    return ObjectIcon.None
 }

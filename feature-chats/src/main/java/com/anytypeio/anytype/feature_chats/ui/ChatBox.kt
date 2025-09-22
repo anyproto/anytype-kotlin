@@ -115,7 +115,7 @@ fun ChatBox(
     onUrlInserted: (Url) -> Unit,
     onImageCaptured: (Uri) -> Unit,
     onVideoCaptured: (Uri) -> Unit,
-    onAttachmentMenuTriggered: () -> Unit,
+    onAttachmentMenuTriggered: () -> Unit
     ) {
 
     val context = LocalContext.current

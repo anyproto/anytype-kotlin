@@ -864,8 +864,19 @@ class ChatViewModel @Inject constructor(
             }
         }
         viewModelScope.launch {
+            val hasAttachments = chatBoxAttachments.value.isNotEmpty()
+            val hasText = msg.isNotEmpty()
+            val type = when {
+                hasText && !hasAttachments -> EventsDictionary.ChatSentMessageType.TEXT
+                !hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.ATTACHMENT
+                hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.MIXED
+                else -> null
+            }
             analytics.sendEvent(
-                eventName = EventsDictionary.chatSentMessage
+                eventName = EventsDictionary.chatSentMessage,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.type to type)
+                )
             )
         }
     }
@@ -1127,6 +1138,14 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickMessageMenuDelete
+            )
+        }
+    }
+
+    fun onCopyMessageTextActionTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuCopy
             )
         }
     }

@@ -166,6 +166,7 @@ fun ChatScreenWrapper(
             onReacted = vm::onReacted,
             onCopyMessage = { msg ->
                 clipboard.setText(AnnotatedString(text = msg.content.msg))
+                vm.onCopyMessageTextActionTriggered()
             },
             onDeleteMessage = vm::onDeleteMessage,
             onDeleteMessageWarningTriggered = vm::onDeleteMessageWarningTriggered,

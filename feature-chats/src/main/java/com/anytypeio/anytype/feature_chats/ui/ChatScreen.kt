@@ -170,6 +170,7 @@ fun ChatScreenWrapper(
             onDeleteMessage = vm::onDeleteMessage,
             onDeleteMessageWarningTriggered = vm::onDeleteMessageWarningTriggered,
             onEditMessage = vm::onRequestEditMessageClicked,
+            onAttachmentMenuTriggered = vm::onAttachmentMenuTriggered,
             onAttachmentClicked = vm::onAttachmentClicked,
             onExitEditMessageMode = vm::onExitEditMessageMode,
             onMarkupLinkClicked = onMarkupLinkClicked,
@@ -377,6 +378,7 @@ fun ChatScreen(
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
     onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
+    onAttachmentMenuTriggered: () -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
@@ -897,7 +899,8 @@ fun ChatScreen(
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
                 onCreateAndAttachObject = onCreateAndAttachObject,
-                onCameraPermissionDenied = onCameraPermissionDenied
+                onCameraPermissionDenied = onCameraPermissionDenied,
+                onAttachmentMenuTriggered = onAttachmentMenuTriggered
             )
         }
     }

@@ -1131,6 +1131,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onAttachmentMenuTriggered() {
+       viewModelScope.launch {
+           analytics.sendEvent(
+               eventName = EventsDictionary.chatScreenChatAttach
+           )
+       }
+    }
+
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
         Timber.d("onAttachmentClicked: m")
         viewModelScope.launch {

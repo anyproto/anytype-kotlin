@@ -277,7 +277,7 @@ class HomeScreenViewModel(
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    private val spaceWidgetView = spaceWidgetContainer.view
+    private val spaceWidgetView: Flow<WidgetView> = spaceWidgetContainer.view
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 

@@ -70,7 +70,6 @@ import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -248,17 +247,6 @@ private fun WidgetList(
             key = { _, item -> item.id }
         ) { index, item ->
             when (item) {
-                is WidgetView.SpaceWidget.View -> {
-                    SpaceWidgetCard(
-                        onClick = onSpaceWidgetClicked,
-                        name = item.space.name.orEmpty(),
-                        icon = item.icon,
-                        spaceType = item.type,
-                        onSpaceShareIconClicked = { onSpaceWidgetShareIconClicked(item.space) },
-                        isShared = item.isShared,
-                        membersCount = item.membersCount
-                    )
-                }
                 is WidgetView.Tree -> {
                     if (mode is InteractionMode.Edit) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->

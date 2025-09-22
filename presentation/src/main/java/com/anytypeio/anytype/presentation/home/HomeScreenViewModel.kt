@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -78,6 +79,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -110,6 +112,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.Ex
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
@@ -136,7 +139,6 @@ import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
@@ -163,6 +165,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -220,7 +223,6 @@ class HomeScreenViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
-    private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
@@ -250,7 +252,8 @@ class HomeScreenViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val stringResourceProvider : StringResourceProvider
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -268,16 +271,12 @@ class HomeScreenViewModel(
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
-    private var isWidgetSessionRestored = false
-
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<Widgets>(null)
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
-
-    private val spaceWidgetView: Flow<WidgetView> = spaceWidgetContainer.view
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
@@ -297,6 +296,9 @@ class HomeScreenViewModel(
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
+
+    private val _spaceViewState = MutableStateFlow<SpaceViewState>(SpaceViewState.Init)
+    val spaceViewState: StateFlow<SpaceViewState> = _spaceViewState
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -411,37 +413,65 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
-        proceedWithNavPanelState()
+        proceedWithNavigationPanelState()
+        proceedWithSpaceViewSubscription()
+    }
+
+    private fun proceedWithSpaceViewSubscription() {
+        viewModelScope.launch {
+            combine(
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+                spaceMembers.observe(vmParams.spaceId),
+                userPermissions
+            ) { spaceView, spaceMembers, permissions ->
+                Triple(spaceView, spaceMembers, permissions)
+            }
+                .collect { (spaceView, members, permissions) ->
+                    val spaceMemberCount = if (members is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        members.members.toView(
+                            spaceView = spaceView,
+                            urlBuilder = urlBuilder,
+                            isCurrentUserOwner = permissions?.isOwner() == true
+                        ).size
+                    } else {
+                        0
+                    }
+                    val spaceIcon = spaceView.spaceIcon(urlBuilder)
+                    val name = spaceView.name
+                    val spaceName = if (name.isNullOrEmpty()) {
+                        stringResourceProvider.getUntitledObjectTitle()
+                    } else {
+                        name
+                    }
+                    _spaceViewState.value = SpaceViewState.Success(
+                        spaceName = spaceName,
+                        spaceIcon = spaceIcon,
+                        membersCount = spaceMemberCount,
+                        spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
+                        spaceUxType = spaceView.spaceUxType ?: SpaceUxType.DATA,
+                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
+                    )
+                }
+        }
     }
 
 
-    private fun proceedWithNavPanelState() {
+    private fun proceedWithNavigationPanelState() {
         viewModelScope.launch {
-            val spaceAccessType = views
-                .map {
-                    val space = it.firstOrNull { it is WidgetView.SpaceWidget.View }
-                    if (space is WidgetView.SpaceWidget.View) {
-                        space.space
-                            .spaceAccessType
-                    } else {
-                        null
-                    }
-                }
-                .distinctUntilChanged()
             combine(
-                spaceAccessType,
+                spaceViewState,
                 userPermissions
-            ) { type, permission ->
-                val spaceId = vmParams.spaceId.id
-                val spaceUxType =
-                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
-                        ?: SpaceUxType.DATA
-                NavPanelState.fromPermission(
-                    permission = permission,
-                    forceHome = false,
-                    spaceAccess = type,
-                    spaceUxType = spaceUxType
-                )
+            ) { spaceView, permission ->
+                if (spaceView is SpaceViewState.Success && permission != null) {
+                    NavPanelState.fromPermission(
+                        permission = permission,
+                        forceHome = false,
+                        spaceAccess = spaceView.spaceAccessType,
+                        spaceUxType = spaceView.spaceUxType
+                    )
+                } else {
+                    NavPanelState.Init
+                }
             }.collect {
                 navPanelState.value = it
             }
@@ -505,19 +535,18 @@ class HomeScreenViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithUserPermissions() {
         viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    userPermissionProvider.observe(SpaceId(config.space))
-                }.collect { permission ->
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect { permission ->
                     userPermissions.value = permission
-                    when(permission) {
+                    when (permission) {
                         SpaceMemberPermissions.WRITER,
                         SpaceMemberPermissions.OWNER -> {
                             if (mode.value == InteractionMode.ReadOnly) {
                                 mode.value = InteractionMode.Default
                             }
                         }
+
                         else -> {
                             mode.value = InteractionMode.ReadOnly
                         }
@@ -536,7 +565,6 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 combine(
                     flows = buildList<Flow<WidgetView>> {
-                        add(spaceWidgetView)
                         addAll(list.map { m -> m.view })
                     }
                 ) { array ->
@@ -860,7 +888,6 @@ class HomeScreenViewModel(
                     }
                 }
             )
-            add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
         }
         if (subscriptionIds.isNotEmpty()) {
             storelessSubscriptionContainer.unsubscribe(subscriptionIds)
@@ -1490,23 +1517,17 @@ class HomeScreenViewModel(
         if (mode.value == InteractionMode.Edit) {
             return
         }
-        val view = views.value.find { it is WidgetView.SpaceWidget.View }
-        if (view != null) {
-            val spaceView = (view as WidgetView.SpaceWidget.View)
-            val chat = spaceView.space.getValue<Id?>(Relations.CHAT_ID)
-            val space = spaceView.space.targetSpaceId
-            if (chat != null && space != null) {
-                navigation(
-                    Navigation.OpenChat(
-                        space = space,
-                        ctx = chat
-                    )
+        val spaceView = (spaceViewState.value as? SpaceViewState.Success) ?: return
+        val chat = spaceView.spaceChatId
+        if (chat != null) {
+            navigation(
+                Navigation.OpenChat(
+                    space = vmParams.spaceId.id,
+                    ctx = chat
                 )
-            } else {
-                Timber.w("Chat or space not found - not able to open space chat")
-            }
+            )
         } else {
-            Timber.w("Space widget not found")
+            Timber.w("Chat or space not found - not able to open space chat")
         }
     }
 
@@ -2955,6 +2976,20 @@ class HomeScreenViewModel(
         ) : ViewerSpaceSettingsState()
     }
 
+    sealed class SpaceViewState {
+        data object Init : SpaceViewState()
+        data class Success(
+            val spaceIcon: SpaceIconView,
+            val spaceName: String,
+            val membersCount: Int,
+            val spaceChatId: Id? = null,
+            val spaceAccessType: SpaceAccessType,
+            val spaceUxType: SpaceUxType
+        ) : SpaceViewState()
+
+        data class Failure(val e: Throwable) : SpaceViewState()
+    }
+
     class Factory @Inject constructor(
         private val vmParams: HomeScreenVmParams,
         private val openObject: OpenObject,
@@ -2986,7 +3021,6 @@ class HomeScreenViewModel(
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
-        private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails,
         private val getSpaceView: GetSpaceView,
         private val searchObjects: SearchObjects,
@@ -3015,7 +3049,8 @@ class HomeScreenViewModel(
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
-        private val scope: CoroutineScope
+        private val scope: CoroutineScope,
+        private val stringResourceProvider : StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3049,7 +3084,6 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
             spaceManager = spaceManager,
-            spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails,
             getSpaceView = getSpaceView,
             searchObjects = searchObjects,
@@ -3077,7 +3111,8 @@ class HomeScreenViewModel(
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
-            scope = scope
+            scope = scope,
+            stringResourceProvider = stringResourceProvider
         ) as T
     }
 

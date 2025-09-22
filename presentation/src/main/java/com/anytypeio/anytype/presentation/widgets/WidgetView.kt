@@ -188,14 +188,6 @@ sealed class WidgetView {
         }
     }
 
-    sealed class Action : WidgetView() {
-        data object EditWidgets : Action() {
-            override val id: Id get() = "id.action.edit-widgets"
-            override val isLoading: Boolean = false
-            override val canCreateObjectOfType: Boolean = false
-        }
-    }
-
     data object EmptyState : WidgetView() {
         override val id: Id get() = "id.widgets.empty.state"
         override val isLoading: Boolean = false

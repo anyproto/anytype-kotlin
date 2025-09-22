@@ -1,10 +1,7 @@
 package com.anytypeio.anytype.ui.widgets.menu
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -22,14 +19,10 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 
 @Composable
@@ -237,35 +230,5 @@ fun WidgetObjectTypeMenu(
 //                color = colorResource(id = R.color.shape_primary)
 //            )
         }
-    }
-}
-
-
-@Composable
-fun WidgetActionButton(
-    modifier: Modifier,
-    label: String,
-    onClick: () -> Unit
-) {
-    Box(
-        modifier = modifier
-            .defaultMinSize(minHeight = 32.dp)
-            .background(
-                shape = RoundedCornerShape(8.dp),
-                color = colorResource(id = R.color.background_primary).copy(alpha = 0.65f)
-            )
-            .noRippleClickable { onClick() },
-    ) {
-        Text(
-            modifier = Modifier
-                .align(Alignment.Center)
-                .padding(horizontal = 12.dp, vertical = 6.dp),
-            text = label,
-            style = Title2,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
-        )
     }
 }

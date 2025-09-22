@@ -3082,10 +3082,6 @@ class HomeScreenViewModel(
     }
 
     companion object {
-        val actions = listOf(
-            WidgetView.Action.EditWidgets
-        )
-
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
     }
 }

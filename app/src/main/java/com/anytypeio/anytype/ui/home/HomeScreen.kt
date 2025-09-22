@@ -3,9 +3,7 @@ package com.anytypeio.anytype.ui.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
@@ -40,7 +38,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
@@ -65,7 +62,6 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -510,45 +506,6 @@ private fun WidgetList(
                             onWidgetMenuAction(item.id, action)
                         }
                     )
-                }
-                is WidgetView.Action.EditWidgets -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp, start = 20.dp, end = 20.dp)
-                            .height(128.dp)
-                            .animateItem(
-                                placementSpec = spring(
-                                    stiffness = Spring.StiffnessHigh,
-                                    visibilityThreshold = IntOffset.Zero
-                                )
-                            )
-                    ) {
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Default,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            Row {
-                                WidgetActionButton(
-                                    label = stringResource(R.string.add_widget),
-                                    onClick = throttledClick(
-                                        onClick = {
-                                            onCreateWidget()
-                                        }
-                                    ),
-                                    modifier = Modifier.weight(1.0f)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                WidgetActionButton(
-                                    label = stringResource(R.string.edit_widgets),
-                                    onClick = onEditWidgets,
-                                    modifier = Modifier.weight(1.0f)
-                                )
-                            }
-                        }
-                    }
                 }
                 is WidgetView.EmptyState -> {
                     if (mode !is InteractionMode.Edit) {

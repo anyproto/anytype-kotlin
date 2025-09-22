@@ -168,6 +168,7 @@ fun ChatScreenWrapper(
                 clipboard.setText(AnnotatedString(text = msg.content.msg))
             },
             onDeleteMessage = vm::onDeleteMessage,
+            onDeleteMessageWarningTriggered = vm::onDeleteMessageWarningTriggered,
             onEditMessage = vm::onRequestEditMessageClicked,
             onAttachmentClicked = vm::onAttachmentClicked,
             onExitEditMessageMode = vm::onExitEditMessageMode,
@@ -371,6 +372,7 @@ fun ChatScreen(
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
@@ -641,7 +643,8 @@ fun ChatScreen(
                 canCreateInviteLink = canCreateInviteLink,
                 onRequestVideoPlayer = onRequestVideoPlayer,
                 highlightedMessageId = highlightedMessageId,
-                onHighlightMessage = triggerHighlight
+                onHighlightMessage = triggerHighlight,
+                onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
             )
 
             GoToMentionButton(

@@ -22,6 +22,11 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Empty
 
+enum class SectionType {
+    PINNED,
+    TYPES
+}
+
 sealed class Widget {
 
     abstract val id: Id
@@ -31,6 +36,7 @@ sealed class Widget {
     abstract val icon: ObjectIcon
 
     abstract val isAutoCreated: Boolean
+    abstract val sectionType: SectionType
 
     /**
      * @property [id] id of the widget
@@ -42,7 +48,8 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         val limit: Int = 0,
-        override val icon: ObjectIcon
+        override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
 
     /**
@@ -54,7 +61,8 @@ sealed class Widget {
         override val source: Source,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
-        override val icon: ObjectIcon
+        override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
 
     /**
@@ -68,7 +76,8 @@ sealed class Widget {
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon,
         val isCompact: Boolean = false,
-        val limit: Int = 0
+        val limit: Int = 0,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class View(
@@ -77,7 +86,8 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon,
-        val limit: Int
+        val limit: Int,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class AllObjects(
@@ -86,6 +96,7 @@ sealed class Widget {
         override val config: Config,
         override val icon: ObjectIcon = ObjectIcon.None,
         override val isAutoCreated: Boolean = false,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class Chat(
@@ -94,6 +105,7 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
 
     sealed class Section : Widget() {
@@ -102,7 +114,8 @@ sealed class Widget {
             override val source: Source = Source.Other,
             override val config: Config,
             override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None
+            override val icon: ObjectIcon = ObjectIcon.None,
+            override val sectionType: SectionType = SectionType.PINNED
         ) : Section()
 
         data class ObjectType(
@@ -110,7 +123,8 @@ sealed class Widget {
             override val source: Source = Source.Other,
             override val config: Config,
             override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None
+            override val icon: ObjectIcon = ObjectIcon.None,
+            override val sectionType: SectionType = SectionType.TYPES
         ) : Section()
     }
 
@@ -257,7 +271,8 @@ fun List<Block>.parseWidgets(
                                         id = w.id,
                                         source = source,
                                         config = config,
-                                        isAutoCreated = widgetContent.isAutoAdded
+                                        isAutoCreated = widgetContent.isAutoAdded,
+                                        sectionType = SectionType.PINNED
                                     )
                                 )
                             }
@@ -269,7 +284,8 @@ fun List<Block>.parseWidgets(
                                         source = source,
                                         config = config,
                                         icon = icon,
-                                        isAutoCreated = widgetContent.isAutoAdded
+                                        isAutoCreated = widgetContent.isAutoAdded,
+                                        sectionType = SectionType.PINNED
                                     )
                                 )
                             }
@@ -284,7 +300,8 @@ fun List<Block>.parseWidgets(
                                                 limit = widgetContent.limit,
                                                 config = config,
                                                 isAutoCreated = widgetContent.isAutoAdded,
-                                                icon = icon
+                                                icon = icon,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -296,7 +313,8 @@ fun List<Block>.parseWidgets(
                                                 source = source,
                                                 config = config,
                                                 icon = icon,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -309,7 +327,8 @@ fun List<Block>.parseWidgets(
                                                 limit = widgetContent.limit,
                                                 config = config,
                                                 icon = icon,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -323,7 +342,8 @@ fun List<Block>.parseWidgets(
                                                 limit = widgetContent.limit,
                                                 config = config,
                                                 icon = icon,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -337,7 +357,8 @@ fun List<Block>.parseWidgets(
                                                     limit = widgetContent.limit,
                                                     config = config,
                                                     icon = icon,
-                                                    isAutoCreated = widgetContent.isAutoAdded
+                                                    isAutoCreated = widgetContent.isAutoAdded,
+                                                    sectionType = SectionType.PINNED
                                                 )
                                             )
                                         }

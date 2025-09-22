@@ -48,13 +48,13 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -82,7 +82,7 @@ interface HomeScreenComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: HomeScreenViewModel.VmParams,
+            @BindsInstance vmParams: HomeScreenVmParams,
             dependencies: HomeScreenDependencies
         ): HomeScreenComponent
     }
@@ -261,12 +261,6 @@ object HomeScreenModule {
         @PerScreen
         @Binds
         fun unsubscriber(impl: Unsubscriber.Impl) : Unsubscriber
-
-        @PerScreen
-        @Binds
-        fun collapsedWidgetStateHolder(
-            holder: CollapsedWidgetStateHolder.Impl
-        ): CollapsedWidgetStateHolder
 
         @PerScreen
         @Binds

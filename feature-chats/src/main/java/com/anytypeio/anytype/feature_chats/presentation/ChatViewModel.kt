@@ -233,9 +233,7 @@ class ChatViewModel @Inject constructor(
                 EventsDictionary.ChatRoute.NAVIGATION.value
             analytics.sendEvent(
                 eventName = EventsDictionary.chatScreenChat,
-                props = Props(
-                    mapOf(EventsPropertiesKey.route to route)
-                )
+                props = Props(mapOf(EventsPropertiesKey.route to route))
             )
         }
     }

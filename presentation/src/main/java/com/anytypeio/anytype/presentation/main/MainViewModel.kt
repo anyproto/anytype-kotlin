@@ -539,7 +539,8 @@ class MainViewModel(
                         commands.emit(
                             Command.LaunchChat(
                                 space = spaceId,
-                                chat = chatId
+                                chat = chatId,
+                                triggeredByPush = true
                             )
                         )
                     }.onFailure {
@@ -552,7 +553,8 @@ class MainViewModel(
                 commands.emit(
                     Command.LaunchChat(
                         space = spaceId,
-                        chat = chatId
+                        chat = chatId,
+                        triggeredByPush = true
                     )
                 )
             }
@@ -578,7 +580,8 @@ class MainViewModel(
 
         data class LaunchChat(
             val space: Id,
-            val chat: Id
+            val chat: Id,
+            val triggeredByPush: Boolean = false
         ) : Command()
 
         data class Navigate(val destination: OpenObjectNavigation) : Command()

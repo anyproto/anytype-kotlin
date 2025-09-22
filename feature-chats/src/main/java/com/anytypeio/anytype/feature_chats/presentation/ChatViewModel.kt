@@ -227,7 +227,16 @@ class ChatViewModel @Inject constructor(
         checkIfShouldCreateInviteLink()
 
         viewModelScope.launch {
-
+            val route = if (vmParams.triggeredByPush)
+                EventsDictionary.ChatRoute.PUSH.value
+            else
+                EventsDictionary.ChatRoute.NAVIGATION.value
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenChat,
+                props = Props(
+                    mapOf(EventsPropertiesKey.route to route)
+                )
+            )
         }
     }
 
@@ -1819,7 +1828,8 @@ class ChatViewModel @Inject constructor(
         abstract val space: Space
         data class Default(
             val ctx: Id,
-            override val space: Space
+            override val space: Space,
+            val triggeredByPush: Boolean = false
         ) : Params()
     }
 

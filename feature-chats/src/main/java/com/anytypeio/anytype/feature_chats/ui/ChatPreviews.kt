@@ -222,7 +222,8 @@ fun ChatScreenPreview() {
         onImageCaptured = {},
         onVideoCaptured = {},
         onCreateAndAttachObject = {},
-        onDeleteMessageWarningTriggered = {}
+        onDeleteMessageWarningTriggered = {},
+        onAttachmentMenuTriggered = {}
     )
 }
 

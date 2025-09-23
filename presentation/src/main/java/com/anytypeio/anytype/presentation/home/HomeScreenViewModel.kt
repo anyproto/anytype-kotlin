@@ -119,6 +119,7 @@ import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -133,13 +134,13 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.BinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
@@ -239,7 +240,6 @@ class HomeScreenViewModel(
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
     private val fieldParser: FieldParser,
     private val spaceInviteResolver: SpaceInviteResolver,
@@ -572,31 +572,13 @@ class HomeScreenViewModel(
                     array.toList()
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                buildListOfWidgets(hasEditAccess, widgets)
+                widgets.ifEmpty {
+                    listOf(WidgetView.EmptyState)
+                }
             }.catch {
                 Timber.e(it, "Error while rendering widgets")
             }.flowOn(appCoroutineDispatchers.io).collect {
                 views.value = it
-            }
-        }
-    }
-
-    private fun buildListOfWidgets(
-        hasEditAccess: Boolean,
-        widgets: List<WidgetView>
-    ): List<WidgetView> {
-        return buildList {
-            val filtered = widgets.filterNot { view ->
-                (view is WidgetView.Bin && (view.isEmpty || view.isLoading))
-            }
-            addAll(filtered)
-            if (hasEditAccess) {
-                // >1, and not >0, because space widget view is always there.
-                if (widgets.size > 1) {
-                    //addAll(actions)
-                } else {
-                    add(WidgetView.EmptyState)
-                }
             }
         }
     }
@@ -735,6 +717,12 @@ class HomeScreenViewModel(
                         is Widget.Section.Pinned -> {
                             SectionWidgetContainer.Pinned
                         }
+
+                        is Widget.Bin -> {
+                            BinWidgetContainer(
+                                widget = widget
+                            )
+                        }
                     }
                 }
             }.collect {
@@ -812,6 +800,15 @@ class HomeScreenViewModel(
                                     storeOfObjectTypes = storeOfObjectTypes
                                 )
                                 addAll(pinnedWidgets)
+                                add(
+                                    Widget.Bin(
+                                        id = "widget_bin_id",
+                                        source = Widget.Source.Bundled.Bin,
+                                        config = state.config,
+                                        icon = ObjectIcon.None,
+                                        sectionType = SectionType.PINNED
+                                    )
+                                )
                             }
 
                             add(Widget.Section.ObjectType(config = state.config))
@@ -1603,20 +1600,21 @@ class HomeScreenViewModel(
     }
 
     private fun parseWidgetType(curr: Widget) = when (curr) {
-        is Widget.Link -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Tree -> Command.ChangeWidgetType.TYPE_TREE
-        is Widget.View -> Command.ChangeWidgetType.TYPE_VIEW
+        is Widget.Link -> ChangeWidgetType.TYPE_LINK
+        is Widget.Tree -> ChangeWidgetType.TYPE_TREE
+        is Widget.View -> ChangeWidgetType.TYPE_VIEW
         is Widget.List -> {
             if (curr.isCompact)
-                Command.ChangeWidgetType.TYPE_COMPACT_LIST
+                ChangeWidgetType.TYPE_COMPACT_LIST
             else
-                Command.ChangeWidgetType.TYPE_LIST
+                ChangeWidgetType.TYPE_LIST
         }
         // All-objects widget has link appearance.
-        is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Chat -> Command.ChangeWidgetType.TYPE_LINK
+        is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
+        is Widget.Chat -> ChangeWidgetType.TYPE_LINK
         is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -3025,7 +3023,6 @@ class HomeScreenViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
         private val clearLastOpenedObject: ClearLastOpenedObject,
-        private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
         private val featureToggles: FeatureToggles,
         private val fieldParser: FieldParser,
         private val spaceInviteResolver: SpaceInviteResolver,
@@ -3087,7 +3084,6 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
             clearLastOpenedObject = clearLastOpenedObject,
-            spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
             fieldParser = fieldParser,
             spaceInviteResolver = spaceInviteResolver,

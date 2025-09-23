@@ -477,6 +477,7 @@ private fun WidgetList(
                 }
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
+                        item = item,
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,

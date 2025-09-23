@@ -38,7 +38,7 @@ sealed class WidgetView {
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
-            get() = source.canCreateObjectOfType()
+            get() = false
 
         /**
          * @property [obj] is deprecated

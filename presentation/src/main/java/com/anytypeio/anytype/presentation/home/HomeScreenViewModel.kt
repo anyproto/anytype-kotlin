@@ -3188,11 +3188,6 @@ sealed class Command {
     }
 
     data class CreateSourceForNewWidget(val space: SpaceId, val widgets: Id) : Command()
-    data class CreateObjectForWidget(
-        val space: SpaceId,
-        val widget: Id,
-        val source: Id
-    ) : Command()
 
     data class ShareSpace(val space: SpaceId) : Command()
 

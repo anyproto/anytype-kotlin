@@ -57,10 +57,8 @@ import com.anytypeio.anytype.ui.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
-import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
@@ -73,7 +71,6 @@ import timber.log.Timber
 
 class HomeScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
-    WidgetObjectTypeListener,
     WidgetSourceTypeListener {
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
@@ -389,14 +386,6 @@ class HomeScreenFragment : Fragment(),
                 )
                 dialog.show(childFragmentManager, null)
             }
-            is Command.CreateObjectForWidget -> {
-                val dialog = WidgetObjectTypeFragment.new(
-                    space = command.space.id,
-                    widgetId = command.widget,
-                    source = command.source
-                )
-                dialog.show(childFragmentManager, null)
-            }
             is Command.OpenSpaceSettings -> {
                 runCatching {
                     findNavController().navigate(
@@ -555,14 +544,6 @@ class HomeScreenFragment : Fragment(),
     private fun showMnemonicReminderAlert() {
         isMnemonicReminderDialogNeeded = false
         findNavController().navigate(R.id.dashboardKeychainDialog)
-    }
-
-    override fun onCreateWidgetObject(
-        objType: ObjectWrapper.Type,
-        widgetId: Id,
-        source: Id
-    ) {
-        vm.onCreateObjectForWidget(type = objType, source = source)
     }
 
     override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {

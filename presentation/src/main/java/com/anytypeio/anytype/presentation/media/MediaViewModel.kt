@@ -114,7 +114,7 @@ class MediaViewModel(
                 )
             ).getOrNull()
 
-            val name: Stringf
+            val name: String
 
             if (obj != null) {
                 val wrapper = ObjectWrapper.File(obj.map)
@@ -122,8 +122,6 @@ class MediaViewModel(
             } else {
                 name = ""
             }
-
-            Timber.d("Name: $name")
 
             downloadFile.run(
                 DownloadFile.Params(

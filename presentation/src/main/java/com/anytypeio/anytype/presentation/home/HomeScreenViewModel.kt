@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectWrapper.*
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
@@ -1160,15 +1161,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onEditWidgets() {
-        viewModelScope.launch {
-            if (userPermissions.value?.isOwnerOrEditor() ==  true) {
-                proceedWithEnteringEditMode()
-                sendEditWidgetsEvent(analytics)
-            }
-        }
-    }
-
     fun onExitEditMode() {
         proceedWithExitingEditMode()
     }
@@ -1437,14 +1429,8 @@ class HomeScreenViewModel(
 
     fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
         when (action) {
-            DropDownMenuAction.ChangeWidgetSource -> {
-                proceedWithChangingSource(widget)
-            }
             DropDownMenuAction.ChangeWidgetType -> {
                 proceedWithChangingType(widget)
-            }
-            DropDownMenuAction.EditWidgets -> {
-                proceedWithEnteringEditMode()
             }
             DropDownMenuAction.RemoveWidget -> {
                 proceedWithDeletingWidget(widget)
@@ -1452,12 +1438,15 @@ class HomeScreenViewModel(
             DropDownMenuAction.EmptyBin -> {
                 proceedWithEmptyingBin()
             }
-            DropDownMenuAction.AddBelow -> {
-                proceedWithAddingWidgetBelow(widget)
-            }
             is DropDownMenuAction.CreateObjectOfType -> {
                 // Convert Basic wrapper to Type wrapper for ObjectType objects
-                val typeWrapper = ObjectWrapper.Type(action.source.obj.map)
+                val widget = widgets.value.orEmpty().find { it.id == action.widgetId }
+                val source = widget?.source
+                if (source !is Widget.Source.Default) {
+                    Timber.w("Expected Default source for creating object of type, got: $source")
+                    return
+                }
+                val typeWrapper = Type(source.obj.map)
                 onCreateNewObjectClicked(
                     objType = typeWrapper
                 )
@@ -2180,17 +2169,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceWidgetShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
-        viewModelScope.launch {
-            val space = spaceView.targetSpaceId
-            if (space != null) {
-                commands.emit(Command.ShareSpace(SpaceId(space)))
-            } else {
-                sendToast("Space not found")
-            }
-        }
-    }
-
     fun onNavBarShareIconClicked() {
         viewModelScope.launch {
             navPanelState.value.leftButtonClickAnalytics(analytics)
@@ -2202,16 +2180,6 @@ class HomeScreenViewModel(
 
     fun onHomeButtonClicked() {
         // Do nothing, as home button is not visible on space home screen.
-    }
-
-    fun onSpaceWidgetClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                Command.OpenSpaceSettings(
-                    spaceId = vmParams.spaceId
-                )
-            )
-        }
     }
 
     fun onBackClicked() {

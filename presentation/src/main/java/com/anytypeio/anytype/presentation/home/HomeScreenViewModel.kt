@@ -15,8 +15,11 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
+import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -2719,10 +2722,15 @@ class HomeScreenViewModel(
         source: Id
     ) {
         viewModelScope.launch {
+            val flags = buildList {
+                add(InternalFlags.ShouldSelectTemplate)
+                add(InternalFlags.ShouldSelectType)
+            }
             createObject.async(
                 params = CreateObject.Param(
                     space = vmParams.spaceId,
-                    type = TypeKey(type.uniqueKey)
+                    type = TypeKey(type.uniqueKey),
+                    internalFlags = flags
                 )
             ).fold(
                 onSuccess = { result ->

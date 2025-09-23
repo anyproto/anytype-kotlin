@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
@@ -220,7 +221,7 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
                 val wrapper = Type(obj.map)
                 canCreateObjectOfType(wrapper)
             } else {
-                false
+                createObjectLayouts.contains(obj.layout)
             }
         }
         else -> false

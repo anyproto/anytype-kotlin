@@ -18,12 +18,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
-import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ObjectWrapper.*
+import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
@@ -105,7 +103,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
@@ -140,13 +137,13 @@ import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -2446,7 +2443,11 @@ class HomeScreenViewModel(
                 is WidgetView.Tree -> {
                     getDefaultObjectType.async(vmParams.spaceId).getOrNull()?.type?.let { typeKey ->
                         storeOfObjectTypes.getByKey(key = typeKey.key)?.let {
-                            onCreateObjectForWidget(type = it, source = widget.source.id)
+                            onCreateObjectForTreeWidget(
+                                type = it,
+                                widgetId = widget.id,
+                                treeWidgetSourceId = widget.source.id
+                            )
                         }
                     }
                 }
@@ -2717,9 +2718,10 @@ class HomeScreenViewModel(
         )
     }
 
-    fun onCreateObjectForWidget(
+    fun onCreateObjectForTreeWidget(
         type: ObjectWrapper.Type,
-        source: Id
+        widgetId: Id,
+        treeWidgetSourceId: Id
     ) {
         viewModelScope.launch {
             val flags = buildList {
@@ -2734,7 +2736,17 @@ class HomeScreenViewModel(
                 )
             ).fold(
                 onSuccess = { result ->
-                    proceedWithCreatingLinkToNewObject(source, result)
+                    proceedWithCreatingLinkToNewObject(
+                        source = treeWidgetSourceId,
+                        result = result,
+                        position = Position.BOTTOM
+                    )
+                    // Ensure the tree widget source remains expanded after creating the object
+                    val sourcePath = "$widgetId/$treeWidgetSourceId"
+                    val currentExpanded = treeWidgetBranchStateHolder.stream(widgetId).first()
+                    if (!currentExpanded.contains(sourcePath)) {
+                        treeWidgetBranchStateHolder.onExpand(sourcePath)
+                    }
                     proceedWithNavigation(result.obj.navigation())
                 },
                 onFailure = {
@@ -2746,13 +2758,14 @@ class HomeScreenViewModel(
 
     private suspend fun proceedWithCreatingLinkToNewObject(
         source: Id,
-        result: CreateObject.Result
+        result: CreateObject.Result,
+        position: Position = Position.NONE
     ) {
         createBlock.async(
             params = CreateBlock.Params(
                 context = source,
                 target = "",
-                position = Position.NONE,
+                position = position,
                 prototype = Block.Prototype.Link(
                     target = result.objectId
                 )
@@ -2814,6 +2827,7 @@ class HomeScreenViewModel(
      * Toggles widget collapse state and persists to preferences
      */
     fun onToggleWidgetExpandedState(widgetId: Id) {
+        Timber.d("onToggleWidgetExpandedState, widgetId: $widgetId")
         viewModelScope.launch {
             val currentExpanded = expandedWidgetIds.value
             val newExpanded = if (currentExpanded.contains(widgetId)) {

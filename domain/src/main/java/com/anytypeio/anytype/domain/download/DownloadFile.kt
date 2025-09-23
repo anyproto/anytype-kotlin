@@ -1,16 +1,18 @@
 package com.anytypeio.anytype.domain.download
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.download.DownloadFile.Params
+import javax.inject.Inject
 import kotlin.coroutines.CoroutineContext
 
 /**
  * Use-case for starting downloading files.
  * @see Params
  */
-class DownloadFile(
+class DownloadFile @Inject constructor(
     private val downloader: Downloader,
     context: CoroutineContext
 ) : BaseUseCase<Unit, Params>(context) {

@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -25,7 +30,6 @@ import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -116,7 +120,8 @@ class ChatViewModel @Inject constructor(
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val analytics: Analytics
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -220,6 +225,17 @@ class ChatViewModel @Inject constructor(
 
         proceedWithSpaceSubscription()
         checkIfShouldCreateInviteLink()
+
+        viewModelScope.launch {
+            val route = if (vmParams.triggeredByPush)
+                EventsDictionary.ChatRoute.PUSH.value
+            else
+                EventsDictionary.ChatRoute.NAVIGATION.value
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenChat,
+                props = Props(mapOf(EventsPropertiesKey.route to route))
+            )
+        }
     }
 
 
@@ -359,7 +375,7 @@ class ChatViewModel @Inject constructor(
                                 Chat.Message.Attachment.Type.Image -> {
                                     val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
-                                        target = attachment.target,
+                                        obj = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
                                         name =  wrapper?.name.orEmpty(),
                                         ext = wrapper?.fileExt.orEmpty(),
@@ -373,7 +389,7 @@ class ChatViewModel @Inject constructor(
                                     when (wrapper?.layout) {
                                         ObjectType.Layout.IMAGE -> {
                                             ChatView.Message.Attachment.Image(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
                                                 ext = wrapper.fileExt.orEmpty(),
@@ -382,7 +398,7 @@ class ChatViewModel @Inject constructor(
                                         }
                                         ObjectType.Layout.VIDEO -> {
                                             ChatView.Message.Attachment.Video(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 url = urlBuilder.large(path = attachment.target),
                                                 name = wrapper.name.orEmpty(),
                                                 ext = wrapper.fileExt.orEmpty(),
@@ -406,7 +422,7 @@ class ChatViewModel @Inject constructor(
                                         else -> {
                                             val type = wrapper?.type?.firstOrNull()
                                             ChatView.Message.Attachment.Link(
-                                                target = attachment.target,
+                                                obj = attachment.target,
                                                 wrapper = wrapper,
                                                 icon = wrapper?.objectIcon(
                                                     builder = urlBuilder,
@@ -847,6 +863,22 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            val hasAttachments = chatBoxAttachments.value.isNotEmpty()
+            val hasText = msg.isNotEmpty()
+            val type = when {
+                hasText && !hasAttachments -> EventsDictionary.ChatSentMessageType.TEXT
+                !hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.ATTACHMENT
+                hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.MIXED
+                else -> null
+            }
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatSentMessage,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.type to type)
+                )
+            )
+        }
     }
 
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
@@ -858,7 +890,7 @@ class ChatViewModel @Inject constructor(
                         is ChatView.Message.Attachment.Image -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Image(
-                                    target = a.target,
+                                    target = a.obj,
                                     url = a.url
                                 )
                             )
@@ -866,7 +898,7 @@ class ChatViewModel @Inject constructor(
                         is ChatView.Message.Attachment.Video -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Video(
-                                    target = a.target,
+                                    target = a.obj,
                                     url = a.url
                                 )
                             )
@@ -885,7 +917,7 @@ class ChatViewModel @Inject constructor(
                             a.images.forEach { image ->
                                 add(
                                     ChatView.Message.ChatBoxAttachment.Existing.Image(
-                                        target = image.target,
+                                        target = image.obj,
                                         url = image.url
                                     )
                                 )
@@ -915,6 +947,11 @@ class ChatViewModel @Inject constructor(
                 }
             }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuEdit
+            )
         }
     }
 
@@ -971,6 +1008,11 @@ class ChatViewModel @Inject constructor(
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDetachItemChat
+            )
+        }
     }
 
     fun onClearReplyClicked() {
@@ -992,6 +1034,24 @@ class ChatViewModel @Inject constructor(
                     )
                 ).onFailure {
                     Timber.e(it, "Error while toggling chat message reaction")
+                }.onSuccess {
+                    Timber.d("Toggled chat reaction")
+                }
+
+                // Sending analytics
+                if (message is ChatView.Message) {
+                    val hasAlreadyUserReaction = message.reactions.any { r ->
+                        r.emoji == reaction && r.isSelected
+                    }
+                    if (hasAlreadyUserReaction) {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatRemoveReaction
+                        )
+                    } else {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatAddReaction
+                        )
+                    }
                 }
             } else {
                 Timber.w("Target message not found for reaction")
@@ -1000,6 +1060,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onReplyMessage(msg: ChatView.Message) {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReply
+            )
+        }
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Reply(
                 msg = msg.id,
@@ -1053,6 +1118,11 @@ class ChatViewModel @Inject constructor(
     fun onDeleteMessage(msg: ChatView.Message) {
         Timber.d("onDeleteMessageClicked msg: ${msg.id}")
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDeleteMessage
+            )
+        }
+        viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
                     chat = vmParams.ctx,
@@ -1064,14 +1134,56 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onAttachmentClicked(attachment: ChatView.Message.Attachment) {
-        Timber.d("onAttachmentClicked")
+    fun onDeleteMessageWarningTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuDelete
+            )
+        }
+    }
+
+    fun onCopyMessageTextActionTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuCopy
+            )
+        }
+    }
+
+    fun onAttachmentMenuTriggered() {
+       viewModelScope.launch {
+           analytics.sendEvent(
+               eventName = EventsDictionary.chatScreenChatAttach
+           )
+       }
+    }
+
+    fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
+        Timber.d("onAttachmentClicked: m")
         viewModelScope.launch {
             when(attachment) {
                 is ChatView.Message.Attachment.Image -> {
+                    val images = msg.attachments
+                        .flatMap { a ->
+                            when (a) {
+                                is ChatView.Message.Attachment.Image -> {
+                                    listOf(a)
+                                }
+                                is ChatView.Message.Attachment.Gallery -> {
+                                    a.images
+                                }
+                                else -> { emptyList() }
+                            }
+                        }
+                    val index = images.indexOfFirst {
+                        it.obj == attachment.obj
+                    }
+                    val objects = images.map { item -> item.obj }
                     uXCommands.emit(
                         UXCommand.OpenFullScreenImage(
-                            url = urlBuilder.original(attachment.target)
+                            objects = objects,
+                            msg = msg,
+                            idx = index
                         )
                     )
                 }
@@ -1097,10 +1209,9 @@ class ChatViewModel @Inject constructor(
                                 navigation.emit(wrapper.navigation())
                             }
                         } else if (wrapper.layout == ObjectType.Layout.AUDIO) {
-                            val hash = urlBuilder.original(wrapper.id)
                             commands.emit(
                                 ViewModelCommand.PlayAudio(
-                                    url = hash,
+                                    obj = wrapper.id,
                                     name = wrapper.name.orEmpty()
                                 )
                             )
@@ -1177,11 +1288,14 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onMediaPreview(url: String) {
-        Timber.d("onMediaPreview, url: $url")
+    fun onMediaPreview(objects: List<Id>, index: Int) {
+        Timber.d("onMediaPreview, objects: $objects")
         viewModelScope.launch {
             commands.emit(
-                ViewModelCommand.MediaPreview(urls = listOf(url))
+                ViewModelCommand.MediaPreview(
+                    index = index,
+                    objects = objects
+                )
             )
         }
     }
@@ -1193,6 +1307,11 @@ class ChatViewModel @Inject constructor(
                 ViewModelCommand.SelectChatReaction(
                     msg = msg
                 )
+            )
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReaction
             )
         }
     }
@@ -1455,6 +1574,11 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onGoToMention()
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToMention
+            )
+        }
     }
 
     fun onChatScrollToReply(replyMessage: Id) {
@@ -1462,12 +1586,20 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onLoadToReply(replyMessage = replyMessage)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.chatClickScrollToReply)
+        }
     }
 
     fun onScrollToBottomClicked(lastVisibleMessage: Id?) {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
             chatContainer.onLoadChatTail(lastVisibleMessage)
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToBottom
+            )
         }
     }
 
@@ -1630,9 +1762,9 @@ class ChatViewModel @Inject constructor(
         data object Exit : ViewModelCommand()
         data object OpenWidgets : ViewModelCommand()
         data class OpenSpaceMembers(val space: SpaceId) : ViewModelCommand()
-        data class MediaPreview(val urls: List<String>) : ViewModelCommand()
+        data class MediaPreview(val index: Int, val objects: List<Id>) : ViewModelCommand()
         data class Browse(val url: String) : ViewModelCommand()
-        data class PlayAudio(val url: String, val name: String) : ViewModelCommand()
+        data class PlayAudio(val obj: Id, val name: String) : ViewModelCommand()
         data class SelectChatReaction(val msg: Id) : ViewModelCommand()
         data class ViewChatReaction(val msg: Id, val emoji: String) : ViewModelCommand()
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
@@ -1644,7 +1776,11 @@ class ChatViewModel @Inject constructor(
     sealed class UXCommand {
         data object JumpToBottom : UXCommand()
         data class SetChatBoxInput(val input: String) : UXCommand()
-        data class OpenFullScreenImage(val url: String) : UXCommand()
+        data class OpenFullScreenImage(
+            val msg: ChatView.Message,
+            val objects: List<Id>,
+            val idx: Int = 0
+        ) : UXCommand()
         data object ShowRateLimitWarning: UXCommand()
     }
 
@@ -1717,7 +1853,8 @@ class ChatViewModel @Inject constructor(
         abstract val space: Space
         data class Default(
             val ctx: Id,
-            override val space: Space
+            override val space: Space,
+            val triggeredByPush: Boolean = false
         ) : Params()
     }
 

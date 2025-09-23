@@ -188,7 +188,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                     id = title.id,
                     text = title.content.asText().text,
                     mode = BlockView.Mode.READ,
-                    icon = ObjectIcon.None
+                    icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.ButtonOpenFile.ImageButton(
                     id = fileBlock.id,
@@ -311,6 +311,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.onClickListener(
             clicked = ListenerType.Picture.View(
+                obj = fileObject.id,
                 target = fileBlock.id
             )
         )
@@ -318,7 +319,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
 
         vm.commands.test().assertValue { value ->
             value is EventWrapper && value.peekContent() == Command.OpenFullScreenImage(
-                target = fileBlock.id,
+                obj = fileObject.id,
                 url = builder.large(fileObject.id)
             )
         }

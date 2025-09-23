@@ -24,7 +24,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -57,7 +56,7 @@ fun ListWidgetCard(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp)
             .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
@@ -84,15 +83,14 @@ fun ListWidgetCard(
                     Type.RecentLocal -> stringResource(id = R.string.recently_opened)
                     Type.Bin -> stringResource(R.string.bin)
                 },
+                icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                isHeaderMenuExpanded = isHeaderMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onDropDownMenuAction = onDropDownMenuAction,
-                canCreate = (item.type is Type.Favorites && mode is InteractionMode.Default),
+                canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
@@ -134,7 +132,7 @@ fun ListWidgetCard(
                         if (item.type is Type.Bin) {
                             EmptyWidgetPlaceholder(R.string.bin_empty_title)
                         } else {
-                            EmptyWidgetPlaceholder(R.string.this_widget_has_no_object)
+                            EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                         }
                     }
                     Spacer(modifier = Modifier.height(2.dp))
@@ -161,34 +159,34 @@ fun CompactListWidgetList(
         Column {
             Row(
                 modifier = Modifier
-                    .padding(vertical = 10.dp, horizontal = 16.dp)
+                    .fillMaxWidth()
+                    .height(40.dp)
+                    .padding(horizontal = 16.dp)
                     .then(
                         if (mode !is InteractionMode.Edit)
                             Modifier.noRippleClickable { onWidgetElementClicked(element.obj) }
                         else
                             Modifier
-                    )
+                    ),
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 ListWidgetObjectIcon(
                     iconSize = 18.dp,
                     icon = element.objectIcon,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(start = 0.dp, end = 4.dp),
+                    modifier = Modifier.padding(end = 12.dp),
                     onTaskIconClicked = { isChecked ->
                         onObjectCheckboxClicked(element.obj.id, isChecked)
                     },
                     iconWithoutBackgroundMaxSize = 200.dp
                 )
+                val (name, color) = element.getPrettyNameAndColor()
                 Text(
-                    text = element.getPrettyName(),
-                    modifier = Modifier
-                        .padding(start = 8.dp)
-                        .fillMaxWidth(),
+                    text = name,
+                    modifier = Modifier.weight(1f),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = PreviewTitle2Medium,
-                    color = colorResource(id = R.color.text_primary),
+                    color = color
                 )
             }
             if (idx != elements.lastIndex) {

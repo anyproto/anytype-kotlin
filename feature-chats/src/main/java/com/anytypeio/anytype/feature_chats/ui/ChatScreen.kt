@@ -91,7 +91,7 @@ fun ChatScreenWrapper(
     vm: ChatViewModel,
     onAttachObjectClicked: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
-    onRequestOpenFullScreenImage: (String) -> Unit,
+    onRequestOpenFullScreenImageGallery: (List<Id>, Int) -> Unit,
     onSelectChatReaction: (String) -> Unit,
     onViewChatReaction: (Id, String) -> Unit,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
@@ -166,9 +166,12 @@ fun ChatScreenWrapper(
             onReacted = vm::onReacted,
             onCopyMessage = { msg ->
                 clipboard.setText(AnnotatedString(text = msg.content.msg))
+                vm.onCopyMessageTextActionTriggered()
             },
             onDeleteMessage = vm::onDeleteMessage,
+            onDeleteMessageWarningTriggered = vm::onDeleteMessageWarningTriggered,
             onEditMessage = vm::onRequestEditMessageClicked,
+            onAttachmentMenuTriggered = vm::onAttachmentMenuTriggered,
             onAttachmentClicked = vm::onAttachmentClicked,
             onExitEditMessageMode = vm::onExitEditMessageMode,
             onMarkupLinkClicked = onMarkupLinkClicked,
@@ -272,7 +275,10 @@ fun ChatScreenWrapper(
                         // TODO
                     }
                     is UXCommand.OpenFullScreenImage -> {
-                        onRequestOpenFullScreenImage(command.url)
+                        onRequestOpenFullScreenImageGallery(
+                            command.objects,
+                            command.idx
+                        )
                     }
                     is UXCommand.ShowRateLimitWarning -> {
                         showSendRateLimitWarning = true
@@ -368,10 +374,12 @@ fun ChatScreen(
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
-    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
+    onAttachmentMenuTriggered: () -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
@@ -638,7 +646,8 @@ fun ChatScreen(
                 canCreateInviteLink = canCreateInviteLink,
                 onRequestVideoPlayer = onRequestVideoPlayer,
                 highlightedMessageId = highlightedMessageId,
-                onHighlightMessage = triggerHighlight
+                onHighlightMessage = triggerHighlight,
+                onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
             )
 
             GoToMentionButton(
@@ -891,7 +900,8 @@ fun ChatScreen(
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
                 onCreateAndAttachObject = onCreateAndAttachObject,
-                onCameraPermissionDenied = onCameraPermissionDenied
+                onCameraPermissionDenied = onCameraPermissionDenied,
+                onAttachmentMenuTriggered = onAttachmentMenuTriggered
             )
         }
     }

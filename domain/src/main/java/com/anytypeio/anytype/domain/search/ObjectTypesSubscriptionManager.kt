@@ -118,7 +118,10 @@ class ObjectTypesSubscriptionManager (
                     Relations.RECOMMENDED_FEATURED_RELATIONS,
                     Relations.RECOMMENDED_HIDDEN_RELATIONS,
                     Relations.RECOMMENDED_FILE_RELATIONS,
-                    Relations.IS_ARCHIVED
+                    Relations.IS_ARCHIVED,
+                    Relations.WIDGET_LAYOUT,
+                    Relations.WIDGET_LIMIT,
+                    Relations.WIDGET_VIEW_ID
                     ),
                 ignoreWorkspace = true
             )

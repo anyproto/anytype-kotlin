@@ -37,10 +37,10 @@ interface FieldParser {
         actionFailure: suspend (Throwable) -> Unit
     )
 
-    fun getObjectName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean = true): String
     fun getObjectName(objectWrapper: ObjectWrapper.Type): String
     fun getObjectPluralName(objectWrapper: ObjectWrapper.Type): String
-    fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic): String
+    fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean = true): String
     fun getObjectNameOrPluralsForTypes(objectWrapper: ObjectWrapper.Basic, ): String
     fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
@@ -139,7 +139,7 @@ class FieldParserImpl @Inject constructor(
     //endregion
 
     //region ObjectWrapper.Basic fields
-    override fun getObjectName(objectWrapper: ObjectWrapper.Basic): String {
+    override fun getObjectName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean): String {
         if (objectWrapper.isDeleted == true) {
             return stringResourceProvider.getDeletedObjectTitle()
         }
@@ -174,7 +174,7 @@ class FieldParserImpl @Inject constructor(
             }
         }
         return if (result.isNullOrBlank()) {
-            stringResourceProvider.getUntitledObjectTitle()
+            if (useUntitled) stringResourceProvider.getUntitledObjectTitle() else ""
         } else {
             result
         }
@@ -198,10 +198,10 @@ class FieldParserImpl @Inject constructor(
         }
     }
 
-    override fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic): String {
-        val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: getObjectName(objectWrapper)
+    override fun getObjectPluralName(objectWrapper: ObjectWrapper.Basic, useUntitled: Boolean): String {
+        val name = objectWrapper.pluralName?.takeIf { it.isNotEmpty() } ?: getObjectName(objectWrapper, useUntitled)
         return if (name.isEmpty()) {
-            stringResourceProvider.getUntitledObjectTitle()
+            if (useUntitled) stringResourceProvider.getUntitledObjectTitle() else ""
         } else {
             name
         }

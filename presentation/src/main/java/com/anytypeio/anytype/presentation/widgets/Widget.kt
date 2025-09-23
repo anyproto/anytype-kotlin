@@ -3,15 +3,29 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SupportedLayouts.isSupportedForWidgets
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
+import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Empty
+
+enum class SectionType {
+    PINNED,
+    TYPES
+}
 
 sealed class Widget {
 
@@ -19,8 +33,10 @@ sealed class Widget {
 
     abstract val source: Source
     abstract val config: Config
+    abstract val icon: ObjectIcon
 
     abstract val isAutoCreated: Boolean
+    abstract val sectionType: SectionType
 
     /**
      * @property [id] id of the widget
@@ -32,6 +48,8 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         val limit: Int = 0,
+        override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
 
     /**
@@ -43,6 +61,8 @@ sealed class Widget {
         override val source: Source,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
 
     /**
@@ -54,23 +74,29 @@ sealed class Widget {
         override val source: Source,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon,
         val isCompact: Boolean = false,
-        val limit: Int = 0
+        val limit: Int = 0,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class View(
         override val id: Id,
-        override val source: Source.Default,
+        override val source: Source,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
-        val limit: Int
+        override val icon: ObjectIcon,
+        val limit: Int,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class AllObjects(
         override val id: Id,
         override val source: Source.Bundled.AllObjects,
         override val config: Config,
+        override val icon: ObjectIcon = ObjectIcon.None,
         override val isAutoCreated: Boolean = false,
+        override val sectionType: SectionType
     ) : Widget()
 
     data class Chat(
@@ -78,18 +104,39 @@ sealed class Widget {
         override val source: Source.Bundled.Chat,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon,
+        override val sectionType: SectionType
     ) : Widget()
+
+    sealed class Section : Widget() {
+        data class Pinned(
+            override val id: Id = SECTION_PINNED,
+            override val source: Source = Source.Other,
+            override val config: Config,
+            override val isAutoCreated: Boolean = false,
+            override val icon: ObjectIcon = ObjectIcon.None,
+            override val sectionType: SectionType = SectionType.PINNED
+        ) : Section()
+
+        data class ObjectType(
+            override val id: Id = SECTION_OBJECT_TYPE,
+            override val source: Source = Source.Other,
+            override val config: Config,
+            override val isAutoCreated: Boolean = false,
+            override val icon: ObjectIcon = ObjectIcon.None,
+            override val sectionType: SectionType = SectionType.TYPES
+        ) : Section()
+    }
 
     sealed class Source {
 
         abstract val id: Id
         abstract val type: Id?
 
-        data class Default(
-            val obj: ObjectWrapper.Basic
-        ) : Source() {
+        data class Default(val obj: ObjectWrapper.Basic) : Source() {
             override val id: Id = obj.id
-            override val type: Id? = obj.type.firstOrNull()
+            // For ObjectType objects, use uniqueKey as type; for regular objects, use type field
+            override val type: Id? = obj.uniqueKey ?: obj.type.firstOrNull()
         }
 
         sealed class Bundled : Source() {
@@ -124,9 +171,27 @@ sealed class Widget {
             }
         }
 
+        data object Other : Source() {
+            override val id: Id = SOURCE_OTHER
+            override val type: Id? = null
+        }
+
         companion object {
+            const val SECTION_PINNED = "pinned_section"
+            const val SECTION_OBJECT_TYPE = "object_type_section"
+            const val SOURCE_OTHER = "source_other"
+
             val SOURCE_KEYS = ObjectSearchConstants.defaultKeys
         }
+    }
+}
+
+
+fun Widget.Source.getPrettyName(fieldParser: FieldParser): Name {
+    return when (this) {
+        is Widget.Source.Bundled -> Bundled(source = this)
+        is Widget.Source.Default -> buildWidgetName(obj, fieldParser)
+        Widget.Source.Other -> Empty
     }
 }
 
@@ -139,9 +204,25 @@ fun List<Widget>.forceChatPosition(): List<Widget> {
     return chatWidgets + otherWidgets
 }
 
-fun Widget.hasValidLayout(): Boolean = when (val widgetSource = source) {
-    is Widget.Source.Default -> isSupportedForWidgets(widgetSource.obj.layout)
+fun Widget.Source.hasValidSource(): Boolean = when (this) {
     is Widget.Source.Bundled -> true
+    is Widget.Source.Default -> obj.isValid && obj.notDeletedNorArchived
+    Widget.Source.Other -> false
+}
+
+fun Widget.Source.canCreateObjectOfType(): Boolean {
+    return when (this) {
+        Widget.Source.Bundled.Favorites -> true
+        is Widget.Source.Default -> {
+            if (obj.layout == ObjectType.Layout.OBJECT_TYPE) {
+                val wrapper = Type(obj.map)
+                canCreateObjectOfType(wrapper)
+            } else {
+                false
+            }
+        }
+        else -> false
+    }
 }
 
 fun List<Block>.parseActiveViews() : WidgetToActiveView {
@@ -161,7 +242,8 @@ fun List<Block>.parseActiveViews() : WidgetToActiveView {
 fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
-    config: Config
+    config: Config,
+    urlBuilder: UrlBuilder
 ): List<Widget> = buildList {
     val map = asMap()
     val widgets = map[root] ?: emptyList()
@@ -174,16 +256,14 @@ fun List<Block>.parseWidgets(
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
                     val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
+                    val targetObj = ObjectWrapper.Basic(raw)
+                    val icon = targetObj.objectIcon(builder = urlBuilder)
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
                         Widget.Source.Default(ObjectWrapper.Basic(raw))
                     }
-                    val hasValidSource = when(source) {
-                        is Widget.Source.Bundled -> true
-                        is Widget.Source.Default -> source.obj.isValid && source.obj.notDeletedNorArchived
-                    }
-                    if (hasValidSource && !WidgetConfig.excludedTypes.contains(source.type)) {
+                    if (source.hasValidSource() && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (source) {
                             is Widget.Source.Bundled.AllObjects -> {
                                 add(
@@ -191,20 +271,25 @@ fun List<Block>.parseWidgets(
                                         id = w.id,
                                         source = source,
                                         config = config,
-                                        isAutoCreated = widgetContent.isAutoAdded
+                                        isAutoCreated = widgetContent.isAutoAdded,
+                                        sectionType = SectionType.PINNED
                                     )
                                 )
                             }
+
                             is Widget.Source.Bundled.Chat -> {
                                 add(
                                     Widget.Chat(
                                         id = w.id,
                                         source = source,
                                         config = config,
-                                        isAutoCreated = widgetContent.isAutoAdded
+                                        icon = icon,
+                                        isAutoCreated = widgetContent.isAutoAdded,
+                                        sectionType = SectionType.PINNED
                                     )
                                 )
                             }
+
                             else -> {
                                 when (widgetContent.layout) {
                                     Block.Content.Widget.Layout.TREE -> {
@@ -214,7 +299,9 @@ fun List<Block>.parseWidgets(
                                                 source = source,
                                                 limit = widgetContent.limit,
                                                 config = config,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                icon = icon,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -225,7 +312,9 @@ fun List<Block>.parseWidgets(
                                                 id = w.id,
                                                 source = source,
                                                 config = config,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                icon = icon,
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -237,7 +326,9 @@ fun List<Block>.parseWidgets(
                                                 source = source,
                                                 limit = widgetContent.limit,
                                                 config = config,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                icon = icon,
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -250,7 +341,9 @@ fun List<Block>.parseWidgets(
                                                 isCompact = true,
                                                 limit = widgetContent.limit,
                                                 config = config,
-                                                isAutoCreated = widgetContent.isAutoAdded
+                                                icon = icon,
+                                                isAutoCreated = widgetContent.isAutoAdded,
+                                                sectionType = SectionType.PINNED
                                             )
                                         )
                                     }
@@ -263,7 +356,9 @@ fun List<Block>.parseWidgets(
                                                     source = source,
                                                     limit = widgetContent.limit,
                                                     config = config,
-                                                    isAutoCreated = widgetContent.isAutoAdded
+                                                    icon = icon,
+                                                    isAutoCreated = widgetContent.isAutoAdded,
+                                                    sectionType = SectionType.PINNED
                                                 )
                                             )
                                         }
@@ -272,14 +367,13 @@ fun List<Block>.parseWidgets(
                             }
                         }
                     }
-
                 }
             }
         }
     }
 }
 
-fun Id.bundled() : Widget.Source.Bundled = when (this) {
+fun Id.bundled(): Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
     BundledWidgetSourceIds.RECENT_LOCAL -> Widget.Source.Bundled.RecentLocal
     BundledWidgetSourceIds.FAVORITE -> Widget.Source.Bundled.Favorites
@@ -293,9 +387,15 @@ fun buildWidgetName(
     obj: ObjectWrapper.Basic,
     fieldParser: FieldParser
 ): Name {
-    val prettyPrintName = fieldParser.getObjectPluralName(obj)
+    val prettyPrintName = fieldParser.getObjectPluralName(obj, false)
     return Name.Default(prettyPrintName = prettyPrintName)
 }
+
+/**
+ * Extension to convert ObjectWrapper.Type to ObjectWrapper.Basic
+ * This allows us to use a unified Widget.Source.Default for both regular objects and type objects
+ */
+fun ObjectWrapper.Type.toBasic(): ObjectWrapper.Basic = ObjectWrapper.Basic(this.map)
 
 typealias WidgetId = Id
 typealias ViewId = Id

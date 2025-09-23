@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.bin.EmptyBin
@@ -47,13 +48,13 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -61,9 +62,12 @@ import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import dagger.Binds
+import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
 import dagger.Provides
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 
 @Component(
@@ -77,7 +81,10 @@ import kotlinx.coroutines.Dispatchers
 interface HomeScreenComponent {
     @Component.Factory
     interface Factory {
-        fun create(dependencies: HomeScreenDependencies): HomeScreenComponent
+        fun create(
+            @BindsInstance vmParams: HomeScreenVmParams,
+            dependencies: HomeScreenDependencies
+        ): HomeScreenComponent
     }
 
     fun inject(fragment: HomeScreenFragment)
@@ -85,6 +92,11 @@ interface HomeScreenComponent {
 
 @Module
 object HomeScreenModule {
+
+    @Provides
+    fun provideUnqualifiedScope(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): CoroutineScope = scope
 
     @JvmStatic
     @Provides
@@ -252,12 +264,6 @@ object HomeScreenModule {
 
         @PerScreen
         @Binds
-        fun collapsedWidgetStateHolder(
-            holder: CollapsedWidgetStateHolder.Impl
-        ): CollapsedWidgetStateHolder
-
-        @PerScreen
-        @Binds
         fun widgetSessionStateHolder(
             holder: WidgetSessionStateHolder.Impl
         ): WidgetSessionStateHolder
@@ -307,4 +313,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun provideChatEventChannel(): ChatEventChannel
     fun provideChatPreviewContainer(): ChatPreviewContainer
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
+    @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
 }

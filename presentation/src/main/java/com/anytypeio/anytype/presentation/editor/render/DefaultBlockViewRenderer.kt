@@ -1316,6 +1316,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             } else {
                 BlockView.Media.Bookmark(
                     id = block.id,
+                    targetObjectId = obj.id,
                     url = obj.source.orEmpty(),
                     title = obj.name,
                     description = obj.description,

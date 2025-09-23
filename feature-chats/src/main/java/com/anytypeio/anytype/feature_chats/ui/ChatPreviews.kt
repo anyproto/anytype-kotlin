@@ -83,7 +83,7 @@ fun ChatPreview() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ -> },
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReplyMessage = {},
@@ -95,7 +95,8 @@ fun ChatPreview() {
         onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
-        onHighlightMessage = {}
+        onHighlightMessage = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -138,7 +139,7 @@ fun ChatPreview2() {
         onReacted = { a, b -> },
         onDeleteMessage = {},
         onCopyMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ ->},
         onEditMessage = {},
         onMarkupLinkClicked = {},
         onReplyMessage = {},
@@ -150,7 +151,8 @@ fun ChatPreview2() {
         onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
-        onHighlightMessage = {}
+        onHighlightMessage = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -192,7 +194,7 @@ fun ChatScreenPreview() {
         onReacted = { a, b -> },
         onCopyMessage = {},
         onDeleteMessage = {},
-        onAttachmentClicked = {},
+        onAttachmentClicked = { _, _ ->},
         onEditMessage = {},
         onExitEditMessageMode = {},
         onMarkupLinkClicked = {},
@@ -219,7 +221,9 @@ fun ChatScreenPreview() {
         onEmptyStateAction = {},
         onImageCaptured = {},
         onVideoCaptured = {},
-        onCreateAndAttachObject = {}
+        onCreateAndAttachObject = {},
+        onDeleteMessageWarningTriggered = {},
+        onAttachmentMenuTriggered = {}
     )
 }
 
@@ -248,7 +252,8 @@ fun BubblePreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -279,6 +284,7 @@ fun BubbleEditedPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = {},
         onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -302,7 +308,7 @@ fun BubbleWithAttachmentPreview() {
         attachments = buildList {
             add(
                 ChatView.Message.Attachment.Link(
-                    target = "ID",
+                    obj = "ID",
                     wrapper = null,
                     typeName = "Page"
                 )
@@ -315,6 +321,7 @@ fun BubbleWithAttachmentPreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }

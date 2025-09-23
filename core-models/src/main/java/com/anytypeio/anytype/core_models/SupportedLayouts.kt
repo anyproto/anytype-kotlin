@@ -68,12 +68,17 @@ object SupportedLayouts {
 
     val lastOpenObjectLayouts = layouts + dateLayouts
 
+    /**
+     * Layouts that are excluded from being shown as space types in the widget section.
+     * This includes system layouts, date layouts, object type layout, and participant layout.
+     */
+    val excludedSpaceTypeLayouts = systemLayouts + dateLayouts + listOf(
+        ObjectType.Layout.OBJECT_TYPE,
+        ObjectType.Layout.PARTICIPANT
+    )
+
     fun isSupportedForWidgets(layout: ObjectType.Layout?) : Boolean {
         return widgetsLayouts.contains(layout)
-    }
-
-    fun isEditorOrFileLayout(layout: ObjectType.Layout?) : Boolean {
-        return editorLayouts.contains(layout) || fileLayouts.contains(layout)
     }
 
     fun isFileLayout(layout: ObjectType.Layout?) : Boolean {

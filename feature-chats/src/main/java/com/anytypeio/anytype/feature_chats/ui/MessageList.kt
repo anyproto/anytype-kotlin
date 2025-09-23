@@ -38,8 +38,9 @@ fun Messages(
     scrollState: LazyListState,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
-    onAttachmentClicked: (ChatView.Message.Attachment) -> Unit,
+    onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
@@ -135,7 +136,9 @@ fun Messages(
                         onCopyMessage = {
                             onCopyMessage(msg)
                         },
-                        onAttachmentClicked = onAttachmentClicked,
+                        onAttachmentClicked = {
+                            onAttachmentClicked(msg, it)
+                        },
                         onEditMessage = {
                             onEditMessage(msg)
                         },
@@ -164,7 +167,8 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer
+                        onRequestVideoPlayer = onRequestVideoPlayer,
+                        onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
                     )
                 }
                 if (idx == messages.lastIndex) {

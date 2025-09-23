@@ -3962,7 +3962,10 @@ class EditorViewModel(
                     EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
                         if (!clicked.item.image.isNullOrEmpty()){
                             dispatch(
-                                Command.OpenFullScreenImage(url = clicked.item.image)
+                                Command.OpenFullScreenImage(
+                                    obj = vmParams.ctx,
+                                    url = clicked.item.image
+                                )
                             )
                         } else {
                             Timber.e("Can't proceed with opening full screen image")
@@ -3983,7 +3986,7 @@ class EditorViewModel(
                         if (url != null ) {
                             dispatch(
                                 Command.OpenFullScreenImage(
-                                    target = clicked.target,
+                                    obj = clicked.obj,
                                     url = url
                                 )
                             )
@@ -4021,7 +4024,10 @@ class EditorViewModel(
                 when (mode) {
                     EditorMode.Edit, EditorMode.Read, EditorMode.Locked -> {
                         dispatch(
-                            Command.PlayVideo(url = clicked.url)
+                            Command.PlayVideo(
+                                url = clicked.url,
+                                obj = clicked.obj
+                            )
                         )
                     }
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.target)
@@ -4331,10 +4337,20 @@ class EditorViewModel(
                 }
             }
             ListenerType.Header.Video -> {
-                dispatch(Command.PlayVideo(url = urlBuilder.original(context)))
+                dispatch(
+                    Command.PlayVideo(
+                        obj = vmParams.ctx,
+                        url = urlBuilder.original(vmParams.ctx)
+                    )
+                )
             }
             ListenerType.Header.Image -> {
-                dispatch(Command.OpenFullScreenImage(url = urlBuilder.original(context)))
+                dispatch(
+                    Command.OpenFullScreenImage(
+                        url = urlBuilder.original(vmParams.ctx),
+                        obj = vmParams.ctx
+                    )
+                )
             }
             else -> {
                 Timber.w("Ignoring listener type: $clicked")
@@ -4439,7 +4455,8 @@ class EditorViewModel(
                 ObjectType.Layout.VIDEO -> {
                     dispatch(
                         Command.PlayVideo(
-                            url = urlBuilder.original(fileDetails.targetObjectId)
+                            url = urlBuilder.original(fileDetails.targetObjectId),
+                            obj = fileDetails.targetObjectId
                         )
                     )
                 }
@@ -4447,7 +4464,8 @@ class EditorViewModel(
                     dispatch(
                         Command.PlayAudio(
                             url = urlBuilder.original(fileDetails.targetObjectId),
-                            name = target.name
+                            name = target.name,
+                            obj = fileDetails.targetObjectId
                         )
                     )
                 }

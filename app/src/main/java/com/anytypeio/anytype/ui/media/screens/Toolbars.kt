@@ -17,6 +17,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 
 
 @Composable
@@ -44,27 +45,27 @@ fun MediaActionToolbar(
             contentDescription = null,
             modifier = Modifier
                 .padding(start = 20.dp)
-                .clickable { onBackClick() }
+                .noRippleClickable { onBackClick() }
         )
 
         Image(
-            modifier = Modifier.clickable { onDownloadClick() },
+            modifier = Modifier.noRippleClickable { onDownloadClick() },
             painter = painterResource(R.drawable.ic_object_action_download),
             contentDescription = null
         )
 
-        Image(
-            modifier = Modifier.clickable { onOpenClick() },
-            painter = painterResource(R.drawable.ic_open_as_object),
-            contentDescription = null
-        )
+//        Image(
+//            modifier = Modifier.clickable { onOpenClick() },
+//            painter = painterResource(R.drawable.ic_open_as_object),
+//            contentDescription = null
+//        )
 
         Image(
             painter = painterResource(R.drawable.icon_delete_red),
             contentDescription = null,
             modifier = Modifier
                 .padding(end = 20.dp)
-                .clickable { onDeleteClick() }
+                .noRippleClickable { onDeleteClick() }
         )
     }
 }

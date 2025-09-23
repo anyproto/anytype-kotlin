@@ -21,8 +21,8 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.collectionsSorts
 import com.anytypeio.anytype.presentation.search.Subscriptions
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emptyFlow
@@ -47,6 +47,7 @@ class ListWidgetContainer(
     onRequestCache: () -> WidgetView.ListOfObjects? = { null }
 ) : WidgetContainer {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
         if (isActive)
             buildViewFlow().onStart {
@@ -58,7 +59,8 @@ class ListWidgetContainer(
                         elements = emptyList(),
                         isExpanded = !isCollapsed,
                         isCompact = widget.isCompact,
-                        isLoading = true
+                        isLoading = true,
+                        icon = widget.icon
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -71,6 +73,7 @@ class ListWidgetContainer(
             emptyFlow()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
         if (isCollapsed) {
             flowOf(
@@ -80,6 +83,7 @@ class ListWidgetContainer(
                     type = resolveType(),
                     elements = emptyList(),
                     isExpanded = false,
+                    icon = widget.icon,
                     isCompact = widget.isCompact
                 )
             )
@@ -174,7 +178,8 @@ class ListWidgetContainer(
             )
         },
         isExpanded = true,
-        isCompact = widget.isCompact
+        isCompact = widget.isCompact,
+        icon = widget.icon,
     )
 
     private fun buildParams(

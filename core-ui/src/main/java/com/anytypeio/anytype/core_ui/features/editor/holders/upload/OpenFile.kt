@@ -33,7 +33,8 @@ class OpenImage(
         root.setOnClickListener {
             click(
                 ListenerType.Picture.View(
-                    target = item.id
+                    target = item.id,
+                    obj = item.targetId
                 )
             )
         }

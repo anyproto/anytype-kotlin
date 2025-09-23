@@ -4,7 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -88,7 +90,7 @@ class CreateTypeFragment: BaseBottomSheetComposeFragment() {
         val uiState = vm.uiIconsPickerScreen.collectAsStateWithLifecycle().value
         if (uiState is UiIconsPickerState.Visible) {
             ChangeIconScreen(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier.fillMaxSize().systemBarsPadding(),
                 onDismissRequest = vm::onDismissIconPicker,
                 onIconClicked = { name, color ->
                     vm.onNewIconPicked(

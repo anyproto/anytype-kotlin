@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.home.Command
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -96,7 +97,10 @@ class HomeScreenFragment : Fragment(),
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        componentManager().homeScreenComponent.get().inject(this)
+        val vmParams = HomeScreenVmParams(
+            spaceId = SpaceId(space),
+        )
+        componentManager().homeScreenComponent.get(vmParams).inject(this)
         super.onCreate(savedInstanceState)
     }
 
@@ -209,7 +213,7 @@ class HomeScreenFragment : Fragment(),
             onWidgetElementClicked = vm::onWidgetElementClicked,
             onWidgetSourceClicked = vm::onWidgetSourceClicked,
             onChangeWidgetView = vm::onChangeCurrentWidgetView,
-            onToggleExpandedWidgetState = vm::onToggleCollapsedWidgetState,
+            onToggleExpandedWidgetState = vm::onToggleWidgetExpandedState,
             onSearchClicked = vm::onSearchIconClicked,
             onCreateNewObjectClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectClicked() }
@@ -224,14 +228,14 @@ class HomeScreenFragment : Fragment(),
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
             onSpaceWidgetShareIconClicked = vm::onSpaceWidgetShareIconClicked,
-            onSeeAllObjectsClicked = vm::onSeeAllObjectsClicked,
-            onCreateObjectInsideWidget = vm::onCreateObjectInsideWidget,
-            onCreateDataViewObject = vm::onCreateDataViewObject,
+            onCreateDataViewObject = {_, _ -> },
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,
             onCreateElement = vm::onCreateWidgetElementClicked,
-            onWidgetMenuTriggered = vm::onWidgetMenuTriggered
+            onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
+            onCreateNewTypeClicked = vm::onCreateNewTypeClicked,
+            onSectionClicked = vm::onSectionClicked
         )
     }
 
@@ -438,15 +442,6 @@ class HomeScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening vault from home screen")
                 }
             }
-            is Command.ShowWidgetAutoCreatedToast -> {
-                toast(
-                    msg = getString(
-                        R.string.widget_auto_created_toast,
-                        command.name
-                    ),
-                    duration = Toast.LENGTH_LONG
-                )
-            }
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
                     // Back to ChatFragment if that was previous
@@ -467,6 +462,13 @@ class HomeScreenFragment : Fragment(),
                     type = "text/plain"
                 }
                 startActivity(Intent.createChooser(intent, null))
+            }
+            is Command.CreateNewType -> {
+                runCatching {
+                    navigation().openCreateObjectTypeScreen(spaceId = command.space)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening create new type screen")
+                }
             }
         }
     }

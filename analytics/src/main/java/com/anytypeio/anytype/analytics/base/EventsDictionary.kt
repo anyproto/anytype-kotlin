@@ -294,6 +294,71 @@ object EventsDictionary {
     const val clickMembership = "ClickMembership"
     const val changePlan = "ChangePlan"
 
+    //region --- Chats ---
+
+    // Screen + open
+    const val chatScreenChat = "ScreenChat" // props: route('Push'|'Navigation'), unreadMessageCount(Int), hasMentions(Boolean)
+    const val chatOpenChatByPush = "OpenChatByPush" // fallback if route can't be added on ScreenChat
+
+    // Attach menu flow
+    const val chatScreenChatAttach = "ScreenChatAttach"
+    const val chatClickScreenChatAttach = "ClickScreenChatAttach" // props: type('Object'|'Photo'|'File'|'Camera'), objectType(String)
+    const val chatAttachItemChat = "AttachItemChat" // props: type('Object'|'Photo'|'File'|'Camera'), count(Int)
+    const val chatDetachItemChat = "DetachItemChat"
+
+    // Mentions
+    const val chatMention = "Mention" // when user adds a mention; include route same as ScreenChat
+
+    // Message menu clicks
+    const val chatClickMessageMenuReply = "ClickMessageMenuReply"
+    const val chatClickMessageMenuEdit = "ClickMessageMenuEdit"
+    const val chatClickMessageMenuDelete = "ClickMessageMenuDelete"
+    const val chatClickMessageMenuCopy = "ClickMessageMenuCopy"
+    const val chatClickMessageMenuReaction = "ClickMessageMenuReaction"
+    const val chatClickMessageMenuLink = "ClickMessageMenuLink"
+
+    // Message mutations
+    const val chatDeleteMessage = "DeleteMessage"
+    const val chatAddReaction = "AddReaction"
+    const val chatRemoveReaction = "RemoveReaction"
+    const val chatSentMessage = "SentMessage" // props: type('Text'|'Attachment'|'Mixed')
+
+    // Scroll intents
+    const val chatClickScrollToBottom = "ClickScrollToBottom"
+    const val chatClickScrollToMention = "ClickScrollToMention"
+    const val chatClickScrollToReply = "ClickScrollToReply"
+
+    // --- Vault menu ---
+    const val chatScreenVaultCreateMenu = "ScreenVaultCreateMenu"
+    const val chatClickVaultCreateMenuChat = "ClickVaultCreateMenuChat"
+    const val chatClickVaultCreateMenuSpace = "ClickVaultCreateMenuSpace"
+
+    // --- Helper enums for strongly-typed values (optional) ---
+    enum class ChatRoute(val value: String) {
+        PUSH("Push"),
+        NAVIGATION("Navigation")
+    }
+
+    enum class ChatAttachType(val value: String) {
+        OBJECT("Object"),
+        PHOTO("Photo"),
+        FILE("File"),
+        CAMERA("Camera")
+    }
+
+    enum class ChatSentMessageType(val value: String) {
+        TEXT("Text"),
+        ATTACHMENT("Attachment"),
+        MIXED("Mixed")
+    }
+
+    enum class UXType(val value: String) {
+        CHAT("Chat"),
+        SPACE("Space")
+    }
+
+    //endregion
+
     enum class MembershipTierButton(val value: String) {
         INFO("LearnMore"),
         MANAGE("ManagePayment"),
@@ -324,6 +389,7 @@ object EventsDictionary {
     // Routes
     object Routes {
         const val home = "HomeScreen"
+        const val chat = "ScreenChat"
         const val widget = "Widget"
         const val searchScreen = "ScreenSearch"
         const val mention = "MenuMention"

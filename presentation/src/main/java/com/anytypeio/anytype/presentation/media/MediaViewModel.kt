@@ -4,11 +4,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +26,8 @@ import timber.log.Timber
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val downloadFile: DownloadFile
+    private val downloadFile: DownloadFile,
+    private val fetchObject: FetchObject
 ) : BaseViewModel() {
 
     private val _commands = MutableSharedFlow<Command>()
@@ -93,14 +99,34 @@ class MediaViewModel(
         }
     }
 
-    fun onDownloadObject(id: Id) {
-        Timber.d("onDownload: $id")
+    fun onDownloadObject(id: Id, space: SpaceId) {
+        Timber.d("onDownload: $id, space: $space")
         viewModelScope.launch {
+            val obj = fetchObject.async(
+                params = FetchObject.Params(
+                    space = space,
+                    obj = id,
+                    keys = listOf(
+                        Relations.ID,
+                        Relations.NAME,
+                        Relations.FILE_EXT
+                    )
+                )
+            ).getOrNull()
+
+            val name: String
+
+            if (obj != null) {
+                val wrapper = ObjectWrapper.File(obj.map)
+                name = wrapper.name + "." + wrapper.fileExt
+            } else {
+                name = ""
+            }
+
             downloadFile.run(
                 DownloadFile.Params(
                     url = urlBuilder.original(id),
-                    // TODO add name
-                    name = ""
+                    name = name
                 )
             ).proceed(
                 failure = {
@@ -149,14 +175,16 @@ class MediaViewModel(
     class Factory @Inject constructor(
         private val urlBuilder: UrlBuilder,
         private val setObjectListIsArchived: SetObjectListIsArchived,
-        private val downloadFile: DownloadFile
+        private val downloadFile: DownloadFile,
+        private val fetchObject: FetchObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return MediaViewModel(
                 urlBuilder = urlBuilder,
                 setObjectListIsArchived = setObjectListIsArchived,
-                downloadFile = downloadFile
+                downloadFile = downloadFile,
+                fetchObject = fetchObject
             ) as T
         }
     }

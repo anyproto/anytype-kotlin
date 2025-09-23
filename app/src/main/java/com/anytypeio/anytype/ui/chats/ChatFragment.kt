@@ -197,7 +197,8 @@ class ChatFragment : Fragment() {
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            obj = attachment.obj
+                            obj = attachment.obj,
+                            space = space
                         )
                     }
                 )
@@ -395,7 +396,8 @@ class ChatFragment : Fragment() {
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
                                 objects = command.objects,
-                                index = command.index
+                                index = command.index,
+                                space = space
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching media image viewer")
@@ -465,7 +467,8 @@ class ChatFragment : Fragment() {
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_AUDIO,
                                 obj = command.obj,
-                                name = command.name
+                                name = command.name,
+                                space = space
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching audio player")

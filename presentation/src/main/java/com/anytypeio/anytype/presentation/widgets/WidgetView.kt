@@ -155,6 +155,7 @@ sealed class WidgetView {
         override val id: Id,
         override val isLoading: Boolean = false,
         override val canCreateObjectOfType: Boolean = false,
+        val source: Widget.Source,
         val isEmpty: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView()

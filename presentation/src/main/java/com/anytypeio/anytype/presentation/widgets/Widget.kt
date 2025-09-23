@@ -131,6 +131,15 @@ sealed class Widget {
         ) : Section()
     }
 
+    data class Bin(
+        override val id: Id ,
+        override val source: Source.Bundled.Bin,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.PINNED
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id

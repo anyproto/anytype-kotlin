@@ -275,7 +275,7 @@ class DataViewListWidgetContainer(
             limit = when (widget) {
                 is Widget.List -> widget.limit
                 is Widget.View -> widget.limit
-                is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+                else -> {
                     throw IllegalStateException("Incompatible widget type.")
                 }
             }
@@ -528,7 +528,7 @@ class DataViewListWidgetContainer(
             is Widget.Section.ObjectType -> Section.ObjectTypes
             is Widget.Section.Pinned -> Section.Pinned
 
-            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
+            else -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
         }

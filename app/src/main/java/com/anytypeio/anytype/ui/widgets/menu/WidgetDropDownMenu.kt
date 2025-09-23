@@ -213,6 +213,56 @@ fun WidgetLongClickMenu(
     }
 }
 
+@Composable
+fun BinWidgetMenu(
+    widgetView: WidgetView,
+    isCardMenuExpanded: MutableState<Boolean>,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
+) {
+    DropdownMenu(
+        modifier = Modifier.width(254.dp),
+        expanded = isCardMenuExpanded.value,
+        onDismissRequest = { isCardMenuExpanded.value = false },
+        containerColor = colorResource(R.color.background_secondary),
+        shape = RoundedCornerShape(12.dp),
+        tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = 16.dp,
+            y = 8.dp
+        )
+    ) {
+        DropdownMenuItem(
+            onClick = {
+                onDropDownMenuAction(DropDownMenuAction.EmptyBin).also {
+                    isCardMenuExpanded.value = false
+                }
+            },
+            text = {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    androidx.compose.material.Text(
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(R.string.widget_empty_bin)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_widget_bin),
+                        contentDescription = "Empty bin icon",
+                        modifier = Modifier
+                            .wrapContentSize(),
+                        colorFilter = ColorFilter.tint(
+                            colorResource(id = R.color.palette_system_red)
+                        )
+                    )
+                }
+            }
+        )
+    }
+}
+
 // Preview Helper Components
 @DefaultPreviews
 @Composable

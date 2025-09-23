@@ -1615,8 +1615,8 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Section.ObjectType -> ChangeWidgetType.TYPE_LINK
-        is Widget.Section.Pinned -> ChangeWidgetType.TYPE_LINK
+        is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor

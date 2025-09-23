@@ -1106,7 +1106,8 @@
     <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Change Source</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Change Widget Type</string>
+    <string name="widget_unpin">Unpin</string>
     <string name="widget_remove_widget">Remove Widget</string>
     <string name="widget_empty_bin">Empty Bin</string>
     <string name="widget_edit_widgets">Edit Widgets</string>

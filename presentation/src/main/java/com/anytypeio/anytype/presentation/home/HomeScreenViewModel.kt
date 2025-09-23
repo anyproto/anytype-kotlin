@@ -804,14 +804,14 @@ class HomeScreenViewModel(
                             // Add pinned widgets only if pinned section is not collapsed
                             val isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
                             if (!isPinnedSectionCollapsed) {
-                                addAll(
-                                    state.obj.blocks.parseWidgets(
-                                        root = state.obj.root,
-                                        details = state.obj.details,
-                                        config = state.config,
-                                        urlBuilder = urlBuilder
-                                    )
+                                val pinnedWidgets = state.obj.blocks.parseWidgets(
+                                    root = state.obj.root,
+                                    details = state.obj.details,
+                                    config = state.config,
+                                    urlBuilder = urlBuilder,
+                                    storeOfObjectTypes = storeOfObjectTypes
                                 )
+                                addAll(pinnedWidgets)
                             }
 
                             add(Widget.Section.ObjectType(config = state.config))

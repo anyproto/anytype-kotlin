@@ -428,6 +428,7 @@ private fun WidgetList(
                 }
                 is WidgetView.Bin -> {
                     BinWidgetCard(
+                        widgetView = item,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },

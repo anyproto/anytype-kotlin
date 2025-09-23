@@ -12,6 +12,8 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -239,11 +241,12 @@ fun List<Block>.parseActiveViews() : WidgetToActiveView {
     return result
 }
 
-fun List<Block>.parseWidgets(
+suspend fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
     config: Config,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes,
 ): List<Widget> = buildList {
     val map = asMap()
     val widgets = map[root] ?: emptyList()
@@ -257,7 +260,10 @@ fun List<Block>.parseWidgets(
                     val target = sourceContent.target
                     val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
                     val targetObj = ObjectWrapper.Basic(raw)
-                    val icon = targetObj.objectIcon(builder = urlBuilder)
+                    val icon = targetObj.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(targetObj)
+                    )
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {

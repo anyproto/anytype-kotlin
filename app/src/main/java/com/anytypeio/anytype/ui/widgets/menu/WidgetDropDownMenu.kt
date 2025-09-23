@@ -42,7 +42,6 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 fun WidgetLongClickMenu(
     widgetView: WidgetView,
     isCardMenuExpanded: MutableState<Boolean>,
-    canChangeWidgetType: Boolean = false,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
     when (widgetView.sectionType) {
@@ -94,41 +93,39 @@ fun WidgetLongClickMenu(
                         color = colorResource(id = R.color.shape_primary)
                     )
                 }
-                if (canChangeWidgetType) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
-                                isCardMenuExpanded.value = false
-                            }
-                        },
-                        text = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
-                                Text(
-                                    modifier = Modifier.weight(1f),
-                                    style = BodyRegular,
-                                    color = colorResource(id = R.color.text_primary),
-                                    text = stringResource(R.string.widget_change_type)
-                                )
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_menu_item_change_type),
-                                    contentDescription = "Change Widget Type icon",
-                                    modifier = Modifier
-                                        .wrapContentSize(),
-                                    colorFilter = ColorFilter.tint(
-                                        colorResource(id = R.color.text_primary)
-                                    )
-                                )
-                            }
+                DropdownMenuItem(
+                    onClick = {
+                        onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
+                            isCardMenuExpanded.value = false
                         }
-                    )
-                    Divider(
-                        thickness = 0.5.dp,
-                        color = colorResource(id = R.color.shape_primary)
-                    )
-                }
+                    },
+                    text = {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                modifier = Modifier.weight(1f),
+                                style = BodyRegular,
+                                color = colorResource(id = R.color.text_primary),
+                                text = stringResource(R.string.widget_change_type)
+                            )
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_menu_item_change_type),
+                                contentDescription = "Change Widget Type icon",
+                                modifier = Modifier
+                                    .wrapContentSize(),
+                                colorFilter = ColorFilter.tint(
+                                    colorResource(id = R.color.text_primary)
+                                )
+                            )
+                        }
+                    }
+                )
+                Divider(
+                    thickness = 0.5.dp,
+                    color = colorResource(id = R.color.shape_primary)
+                )
                 DropdownMenuItem(
                     onClick = {
                         onDropDownMenuAction(DropDownMenuAction.RemoveWidget).also {
@@ -249,7 +246,6 @@ fun WidgetLongClickMenuPreview_PinnedSection_WithCreateOption() {
                 name = WidgetView.Name.Default("My Widget")
             ),
             isCardMenuExpanded = isExpanded,
-            canChangeWidgetType = true,
             onDropDownMenuAction = { /* Preview action */ }
         )
     }

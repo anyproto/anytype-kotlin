@@ -60,7 +60,8 @@ class ListWidgetContainer(
                         isExpanded = !isCollapsed,
                         isCompact = widget.isCompact,
                         isLoading = true,
-                        icon = widget.icon
+                        icon = widget.icon,
+                        sectionType = widget.sectionType
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -84,7 +85,8 @@ class ListWidgetContainer(
                     elements = emptyList(),
                     isExpanded = false,
                     icon = widget.icon,
-                    isCompact = widget.isCompact
+                    isCompact = widget.isCompact,
+                    sectionType = widget.sectionType
                 )
             )
         } else {
@@ -180,6 +182,7 @@ class ListWidgetContainer(
         isExpanded = true,
         isCompact = widget.isCompact,
         icon = widget.icon,
+        sectionType = widget.sectionType
     )
 
     private fun buildParams(

@@ -22,7 +22,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,7 +40,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
@@ -58,8 +56,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import com.anytypeio.anytype.ui.widgets.menu.WidgetObjectTypeMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 
 @Composable
 fun DataViewListWidgetCard(
@@ -171,46 +168,10 @@ fun DataViewListWidgetCard(
         }
 
         WidgetLongClickMenu(
-            source = item.source,
+            widgetView = item,
             isCardMenuExpanded = isCardMenuExpanded,
-            item = item,
-            mode = mode,
             onDropDownMenuAction = onDropDownMenuAction
         )
-    }
-}
-
-@Composable
-private fun WidgetLongClickMenu(
-    source: Widget.Source,
-    isCardMenuExpanded: MutableState<Boolean>,
-    item: WidgetView,
-    mode: InteractionMode,
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit
-) {
-    when (source) {
-        is Widget.Source.Default -> {
-            if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE && item.canCreateObjectOfType) {
-                WidgetObjectTypeMenu(
-                    isExpanded = isCardMenuExpanded,
-                    canCreateObjectOfType = item.canCreateObjectOfType,
-                    onCreateObjectOfTypeClicked = {
-                        onDropDownMenuAction.invoke(DropDownMenuAction.CreateObjectOfType(source))
-                    }
-                )
-            } else {
-                // Handle regular Default sources - show standard menu
-                WidgetMenu(
-                    isExpanded = isCardMenuExpanded,
-                    onDropDownMenuAction = onDropDownMenuAction,
-                    canEditWidgets = mode is InteractionMode.Default
-                )
-            }
-        }
-
-        else -> {
-            // no op
-        }
     }
 }
 
@@ -242,14 +203,9 @@ fun GalleryWidgetCard(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
-            )
+            .noRippleClickable {
+                isCardMenuExpanded.value = !isCardMenuExpanded.value
+            }
     ) {
         Column(
             modifier = Modifier
@@ -347,10 +303,8 @@ fun GalleryWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            source = item.source,
+            widgetView = item,
             isCardMenuExpanded = isCardMenuExpanded,
-            item = item,
-            mode = mode,
             onDropDownMenuAction = onDropDownMenuAction
         )
     }

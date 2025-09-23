@@ -442,7 +442,8 @@ class DataViewListWidgetContainer(
                 showIcon = withIcon,
                 showCover = withCover,
                 icon = widget.icon,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
         }
     }
@@ -483,7 +484,8 @@ class DataViewListWidgetContainer(
                 isExpanded = true,
                 isCompact = isCompact,
                 icon = widget.icon,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
         }
     }
@@ -506,7 +508,8 @@ class DataViewListWidgetContainer(
                 isCompact = widget.isCompact,
                 icon = widget.icon,
                 isLoading = isLoading,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
 
             is Widget.View -> Gallery(
@@ -518,7 +521,8 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isLoading = isLoading,
                 view = null,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
 
             is Widget.Section.ObjectType -> Section.ObjectTypes

@@ -197,7 +197,6 @@ class HomeScreenFragment : Fragment(),
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,
-            onEditWidgets = vm::onEditWidgets,
             onExitEditMode = vm::onExitEditMode,
             onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                 vm.onDropDownMenuAction(widget, action)
@@ -213,13 +212,9 @@ class HomeScreenFragment : Fragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onSpaceWidgetClicked = throttledClick(
-                onClick = vm::onSpaceWidgetClicked
-            ),
             onBundledWidgetClicked = vm::onBundledWidgetClicked,
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-            onSpaceWidgetShareIconClicked = vm::onSpaceWidgetShareIconClicked,
             onCreateDataViewObject = {_, _ -> },
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,

@@ -428,12 +428,12 @@ private fun WidgetList(
                 }
                 is WidgetView.Bin -> {
                     BinWidgetCard(
-                        widgetView = item,
+                        item = item,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
-                        onClick = { onBundledWidgetHeaderClicked(item.id) },
-                        mode = mode
+                        mode = mode,
+                        onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }
                 is WidgetView.AllContent -> {

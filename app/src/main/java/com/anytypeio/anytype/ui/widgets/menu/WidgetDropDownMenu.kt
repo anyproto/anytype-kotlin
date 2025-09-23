@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -79,8 +80,7 @@ fun WidgetLongClickMenu(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_menu_item_create),
                                     contentDescription = "New object icon",
-                                    modifier = Modifier
-                                        .wrapContentSize(),
+                                    modifier = Modifier.size(24.dp),
                                     colorFilter = ColorFilter.tint(
                                         colorResource(id = R.color.text_primary)
                                     )
@@ -113,8 +113,7 @@ fun WidgetLongClickMenu(
                             Image(
                                 painter = painterResource(id = R.drawable.ic_menu_item_change_type),
                                 contentDescription = "Change Widget Type icon",
-                                modifier = Modifier
-                                    .wrapContentSize(),
+                                modifier = Modifier.size(24.dp),
                                 colorFilter = ColorFilter.tint(
                                     colorResource(id = R.color.text_primary)
                                 )
@@ -146,8 +145,7 @@ fun WidgetLongClickMenu(
                             Image(
                                 painter = painterResource(id = R.drawable.ic_unpin_24),
                                 contentDescription = "Unpin widget icon",
-                                modifier = Modifier
-                                    .wrapContentSize(),
+                                modifier = Modifier.size(24.dp),
                                 colorFilter = ColorFilter.tint(
                                     colorResource(id = R.color.text_primary)
                                 )
@@ -192,8 +190,7 @@ fun WidgetLongClickMenu(
                                 Image(
                                     painter = painterResource(id = R.drawable.ic_menu_item_create),
                                     contentDescription = "New object icon",
-                                    modifier = Modifier
-                                        .wrapContentSize(),
+                                    modifier = Modifier.size(24.dp),
                                     colorFilter = ColorFilter.tint(
                                         colorResource(id = R.color.text_primary)
                                     )

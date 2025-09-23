@@ -38,6 +38,7 @@ fun Messages(
     scrollState: LazyListState,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
     onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
@@ -166,7 +167,8 @@ fun Messages(
                         },
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
-                        onRequestVideoPlayer = onRequestVideoPlayer
+                        onRequestVideoPlayer = onRequestVideoPlayer,
+                        onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
                     )
                 }
                 if (idx == messages.lastIndex) {

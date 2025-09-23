@@ -3185,6 +3185,14 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
     }
 
+    @Throws(Exception::class)
+    fun appShutdown() {
+        val request = Rpc.App.Shutdown.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.appShutdown(request)}
+        logResponseIfDebug(response, time)
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

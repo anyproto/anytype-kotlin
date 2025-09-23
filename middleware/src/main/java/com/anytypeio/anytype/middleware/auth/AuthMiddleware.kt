@@ -100,4 +100,8 @@ class AuthMiddleware(
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         middleware.registerDeviceToken(command = command)
     }
+
+    override suspend fun appShutdown() {
+        middleware.appShutdown()
+    }
 }

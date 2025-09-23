@@ -49,4 +49,6 @@ interface AuthDataStore {
     suspend fun debugExportLogs(dir: String): String
 
     suspend fun registerDeviceToken(request: Command.RegisterDeviceToken)
+
+    suspend fun appShutdown()
 }

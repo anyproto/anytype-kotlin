@@ -76,10 +76,15 @@ class MediaActivity : ComponentActivity() {
                             index = state.currentIndex,
                             onBackClick = { finish() },
                             onDownloadClick = { obj ->
-                                vm.onDownloadObject(
-                                    id = obj,
-                                    space = SpaceId(space.orEmpty())
-                                )
+                                val givenSpace = space
+                                if (givenSpace != null) {
+                                    vm.onDownloadObject(
+                                        id = obj,
+                                        space = SpaceId(space.orEmpty())
+                                    )
+                                } else {
+                                    toast("Space not found")
+                                }
                             },
                             onDeleteClick = vm::onDeleteObject
                         )

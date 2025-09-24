@@ -110,6 +110,10 @@ private fun OnboardingEmailScreen(
     }
 
     fun validateAndSubmit() {
+        if (innerValue.text.isEmpty()) {
+            isError = false
+            return
+        }
         if (isValidEmail(innerValue.text)) {
             isError = false
             focusManager.clearFocus()
@@ -222,6 +226,8 @@ private fun OnboardingEmailScreen(
                     ),
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
                     keyboardActions = KeyboardActions {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
                         validateAndSubmit()
                     }
                 )

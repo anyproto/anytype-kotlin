@@ -244,3 +244,142 @@ private fun ProfessionSelectionItem(
         }
     }
 }
+
+@DefaultPreviews
+@Composable
+private fun OnboardingSelectionScreenPreview() {
+    OnboardingSelectionScreenContent(
+        isLoading = false,
+        onBackClicked = {},
+        onContinueClicked = {},
+        onSkipClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun OnboardingSelectionScreenLoadingPreview() {
+    OnboardingSelectionScreenContent(
+        isLoading = true,
+        onBackClicked = {},
+        onContinueClicked = {},
+        onSkipClicked = {}
+    )
+}
+
+@Composable
+private fun OnboardingSelectionScreenContent(
+    isLoading: Boolean,
+    onBackClicked: () -> Unit,
+    onContinueClicked: (ProfessionItem) -> Unit = {},
+    onSkipClicked: () -> Unit = {}
+) {
+    var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Image(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable {
+                        onBackClicked()
+                    },
+                painter = painterResource(id = R.drawable.ic_back_24),
+                contentDescription = "Back button"
+            )
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(top = 81.dp)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.onboarding_selection_title),
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineTitleSemibold,
+                textAlign = TextAlign.Center,
+                letterSpacing = (-0.48).sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.onboarding_selection_description),
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_secondary),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
+                content = {
+                    professionItems.forEach { profession ->
+                        ProfessionSelectionItem(
+                            profession = profession,
+                            isSelected = selectedProfession == profession,
+                            onSelected = {
+                                selectedProfession = if (selectedProfession == profession) {
+                                    null // Deselect if already selected
+                                } else {
+                                    profession // Select if not selected
+                                }
+                            }
+                        )
+                    }
+                }
+            )
+            // Bottom padding to ensure items aren't hidden behind buttons
+            Spacer(modifier = Modifier.height(160.dp))
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 20.dp
+                )
+                .align(Alignment.BottomCenter)
+        ) {
+            ButtonOnboardingPrimaryLarge(
+                text = stringResource(id = R.string.onboarding_button_continue),
+                onClick = {
+                    selectedProfession?.let { profession ->
+                        onContinueClicked(profession)
+                    }
+                },
+                size = ButtonSize.Large,
+                modifierBox = Modifier.fillMaxWidth(),
+                loading = isLoading,
+                enabled = selectedProfession != null
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            ButtonOnboardingLinkLarge(
+                text = stringResource(id = R.string.onboarding_button_skip),
+                onClick = {
+                    onSkipClicked()
+                },
+                size = ButtonSize.Large,
+                modifierBox = Modifier.fillMaxWidth(),
+            )
+        }
+    }
+}

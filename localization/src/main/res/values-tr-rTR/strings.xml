@@ -993,7 +993,8 @@
     <string name="widget_type_view_description">Sorgu veya Koleksiyon düzenine sahip Widget</string>
     <string name="widget_type_compact_list">Kompakt liste</string>
     <string name="widget_change_source">Kaynağı Değiştir</string>
-    <string name="widget_change_type">Türü değiştir</string>
+    <string name="widget_change_type">Widget türünü değiştir</string>
+    <string name="widget_unpin">Sabitlemeyi kaldır</string>
     <string name="widget_remove_widget">Widget\'ı kaldır</string>
     <string name="widget_empty_bin">Çöp kutusu boş</string>
     <string name="widget_edit_widgets">Widget\'ları düzenle</string>
@@ -1070,7 +1071,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Çoğalt</string>
-    <string name="object_action_to_widgets">Widget\'lara</string>
+    <string name="object_action_to_widgets">Sabitle</string>
     <string name="object_action_download">İndir</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1964,6 +1965,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widgets_section_object_types">Nesne türleri</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>

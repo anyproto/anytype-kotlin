@@ -362,7 +362,7 @@ fun MnemonicDescription() {
             text = stringResource(id = R.string.onboarding_key_description),
             textAlign = TextAlign.Center,
             style = BodyCalloutRegular,
-            color = colorResource(id = R.color.text_primary)
+            color = colorResource(id = R.color.text_secondary)
         )
     }
 }

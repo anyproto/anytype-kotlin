@@ -254,7 +254,7 @@ val BodyCalloutRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.014).em
+    letterSpacing = (-0.024).sp
 )
 
 val UxSmallTextRegular = TextStyle(

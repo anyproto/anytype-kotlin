@@ -275,7 +275,7 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
 
 
 data class OnboardingSelectionItem(
-    val emoji: String,
+    val iconRes: Int,
     val titleResId: Int,
     val prettyName: String
 )

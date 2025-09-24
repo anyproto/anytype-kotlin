@@ -19,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -57,6 +58,7 @@ fun WhatIsRecoveryPhraseScreen() {
                 text = stringResource(R.string.onboarding_what_is_the_key),
                 style = HeadlineTitleSemibold,
                 color = colorResource(id = R.color.text_primary),
+                letterSpacing = (-0.48).sp
             )
         }
         Spacer(modifier = Modifier.height(24.dp))
@@ -69,7 +71,8 @@ fun WhatIsRecoveryPhraseScreen() {
         Text(
             text = stringResource(R.string.onboarding_recovery_phrase_description_title),
             color = colorResource(id = R.color.text_primary),
-            style = BodySemiBold
+            style = BodySemiBold,
+            letterSpacing = (-0.41).sp,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -88,7 +91,8 @@ fun WhatIsRecoveryPhraseScreen() {
         Text(
             text = stringResource(R.string.onboarding_recovery_phrase_description_2_title),
             color = colorResource(id = R.color.text_primary),
-            style = BodySemiBold
+            style = BodySemiBold,
+            letterSpacing = (-0.41).sp,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -107,7 +111,8 @@ fun WhatIsRecoveryPhraseScreen() {
         Text(
             text = stringResource(R.string.onboarding_recovery_phrase_description_3_title),
             color = colorResource(id = R.color.text_primary),
-            style = BodySemiBold
+            style = BodySemiBold,
+            letterSpacing = (-0.41).sp,
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(

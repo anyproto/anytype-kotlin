@@ -80,6 +80,7 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Title(modifier = Modifier.fillMaxWidth())
+            Spacer(modifier = Modifier.height(4.dp))
             Subtitle(modifier = Modifier.fillMaxWidth())
         }
         Column(
@@ -112,7 +113,7 @@ fun Title(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.W400,
             fontSize = 40.sp,
             lineHeight = 44.sp,
-            letterSpacing = (-0.05).em
+            letterSpacing = (-2).sp
         )
     )
 }
@@ -129,7 +130,7 @@ fun Subtitle(modifier: Modifier = Modifier) {
             fontWeight = FontWeight.W400,
             fontSize = 44.sp,
             lineHeight = 44.sp,
-            letterSpacing = (-0.05).em
+            letterSpacing = (-0.8).sp
         )
     )
 }

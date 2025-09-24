@@ -89,7 +89,7 @@ class ObjectActionAdapter(
                     tvActionTitle.setText(R.string.set_as_default)
                 }
                 ObjectAction.CREATE_WIDGET -> {
-                    ivActionIcon.setImageResource(R.drawable.ic_object_action_to_widgets_24)
+                    ivActionIcon.setImageResource(R.drawable.ic_state_pin_24)
                     tvActionTitle.setText(R.string.object_action_to_widgets)
                 }
                 ObjectAction.DOWNLOAD_FILE -> {

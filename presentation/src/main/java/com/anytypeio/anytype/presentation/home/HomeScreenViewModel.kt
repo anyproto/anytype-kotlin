@@ -790,29 +790,25 @@ class HomeScreenViewModel(
                 stateFlow.map { state ->
                     if (state is ObjectViewState.Success) {
                         buildList {
-                            // Always add section headers
-                            add(Widget.Section.Pinned(config = state.config))
 
                             // Add pinned widgets only if pinned section is not collapsed
+                            val pinnedWidgets = state.obj.blocks.parseWidgets(
+                                root = state.obj.root,
+                                details = state.obj.details,
+                                config = state.config,
+                                urlBuilder = urlBuilder,
+                                storeOfObjectTypes = storeOfObjectTypes
+                            )
+
                             val isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
-                            if (!isPinnedSectionCollapsed) {
-                                val pinnedWidgets = state.obj.blocks.parseWidgets(
-                                    root = state.obj.root,
-                                    details = state.obj.details,
-                                    config = state.config,
-                                    urlBuilder = urlBuilder,
-                                    storeOfObjectTypes = storeOfObjectTypes
-                                )
-                                addAll(pinnedWidgets)
-                                add(
-                                    Widget.Bin(
-                                        id = "widget_bin_id",
-                                        source = Widget.Source.Bundled.Bin,
-                                        config = state.config,
-                                        icon = ObjectIcon.None,
-                                        sectionType = SectionType.PINNED
-                                    )
-                                )
+
+                            if (pinnedWidgets.isNotEmpty()) {
+                                if (!isPinnedSectionCollapsed) {
+                                    add(Widget.Section.Pinned(config = state.config))
+                                    addAll(pinnedWidgets)
+                                } else {
+                                    add(Widget.Section.Pinned(config = state.config))
+                                }
                             }
 
                             add(Widget.Section.ObjectType(config = state.config))
@@ -828,6 +824,15 @@ class HomeScreenViewModel(
                                     config = state.config
                                 )
                                 addAll(types)
+                                add(
+                                    Widget.Bin(
+                                        id = "widget_bin_id",
+                                        source = Widget.Source.Bundled.Bin,
+                                        config = state.config,
+                                        icon = ObjectIcon.None,
+                                        sectionType = SectionType.PINNED
+                                    )
+                                )
                                 Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
                             } else {
                                 Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")

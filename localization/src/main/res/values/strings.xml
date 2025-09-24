@@ -1197,7 +1197,7 @@
     <!--region OBJECT ACTIONS -->
 
     <string name="object_action_duplicate">Duplicate</string>
-    <string name="object_action_to_widgets">To widgets</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Download</string>
 
     <!--endregion-->

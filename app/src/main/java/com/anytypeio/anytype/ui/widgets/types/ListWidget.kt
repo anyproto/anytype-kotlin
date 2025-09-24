@@ -50,14 +50,11 @@ fun ListWidgetCard(
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
     }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
-    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)

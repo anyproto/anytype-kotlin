@@ -100,7 +100,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -219,9 +218,6 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var objectWatcher: ObjectWatcher
-
-    @Mock
-    lateinit var spaceWidgetContainer: SpaceWidgetContainer
 
     @Mock
     lateinit var getSpaceView: GetSpaceView
@@ -547,7 +543,6 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -664,7 +659,6 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -1265,7 +1259,6 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -2899,16 +2892,6 @@ class HomeScreenViewModelTest {
         }
     }
 
-    private fun stubSpaceWidgetContainer(defaultSpaceWidgetView: WidgetView.SpaceWidget.View) {
-        spaceWidgetContainer.stub {
-            on {
-                view
-            } doReturn flowOf(
-                defaultSpaceWidgetView
-            )
-        }
-    }
-
     private fun stubGetSpaceView(
         spaceView: Id,
         objectWrapper: ObjectWrapper.Basic? = null
@@ -3027,10 +3010,6 @@ class HomeScreenViewModelTest {
         dateProvider = dateProvider,
         addObjectToCollection = addObjectToCollection,
         clearLastOpenedObject = clearLastOpenedObject,
-        spaceBinWidgetContainer = SpaceBinWidgetContainer(
-            container = storelessSubscriptionContainer,
-            manager = spaceManager
-        ),
         featureToggles = featureToggles,
         fieldParser = fieldParser,
         spaceInviteResolver = spaceInviteResolver,
@@ -3044,7 +3023,7 @@ class HomeScreenViewModelTest {
         notificationPermissionManager = notificationPermissionManager,
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
         userSettingsRepository = userSettingsRepository,
-        scope = GlobalScope // Using GlobalScope to avoid cancellation of flows
+        scope = GlobalScope // Using GlobalScope to avoid cancellation of flows,
     )
 
     companion object {

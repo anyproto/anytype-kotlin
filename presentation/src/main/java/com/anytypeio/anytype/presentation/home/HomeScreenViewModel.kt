@@ -179,6 +179,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
@@ -588,9 +589,9 @@ class HomeScreenViewModel(
 
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            widgets.filterNotNull().map { widgets ->
+            widgets.filterNotNull().mapNotNull { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.forceChatPosition().map { widget ->
+                widgets.map { widget ->
                     Timber.d("Creating container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(

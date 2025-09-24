@@ -12,20 +12,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
+import com.anytypeio.anytype.core_ui.extensions.resLightInt
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
@@ -82,7 +85,7 @@ fun SpaceIconView(
         is SpaceIconView.ChatSpace.Placeholder -> {
             SpacePlaceholder(
                 name = icon.name,
-                color = icon.color.res(),
+                iconColor = icon.color,
                 shape = CircleShape,
                 mainSize = mainSize,
                 fontSize = fontSize,
@@ -93,7 +96,7 @@ fun SpaceIconView(
         is SpaceIconView.DataSpace.Placeholder -> {
             SpacePlaceholder(
                 name = icon.name,
-                color = icon.color.res(),
+                iconColor = icon.color,
                 shape = RoundedCornerShape(radius),
                 mainSize = mainSize,
                 fontSize = fontSize,
@@ -129,7 +132,7 @@ private fun SpaceImage(
 @Composable
 private fun SpacePlaceholder(
     name: String,
-    color: Color,
+    iconColor: SystemColor,
     shape: Shape,
     mainSize: Dp,
     fontSize: androidx.compose.ui.unit.TextUnit,
@@ -138,7 +141,7 @@ private fun SpacePlaceholder(
     Box(
         modifier = modifier
             .size(mainSize)
-            .background(color = color, shape = shape),
+            .background(color = iconColor.res(), shape = shape),
         contentAlignment = Alignment.Center
     ) {
         Text(
@@ -148,8 +151,10 @@ private fun SpacePlaceholder(
                 .take(1)
                 .uppercase(),
             fontSize = fontSize,
+            fontFamily = fontInterRegular,
+            fontWeight = FontWeight.W600,
             textAlign = TextAlign.Center,
-            color = colorResource(id = R.color.text_label_inversion)
+            color = colorResource(iconColor.resLightInt())
         )
     }
 }
@@ -160,7 +165,8 @@ private fun SpacePlaceholder(
 private fun SpaceIconViewPreview() {
     SpaceIconView(
         icon = SpaceIconView.ChatSpace.Placeholder(
-            name = "U"
+            name = "U",
+            color = SystemColor.YELLOW
         ),
         onSpaceIconClick = {}
     )

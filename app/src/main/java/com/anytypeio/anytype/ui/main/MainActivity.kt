@@ -232,7 +232,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         R.id.chatScreen,
                                         ChatFragment.args(
                                             space = command.space,
-                                            ctx = command.chat
+                                            ctx = command.chat,
+                                            triggeredByPush = command.triggeredByPush
                                         )
                                     )
                                 }.onFailure {

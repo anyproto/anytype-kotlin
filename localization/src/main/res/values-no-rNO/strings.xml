@@ -803,10 +803,8 @@
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Fjern</string>
-    <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
     <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
-    <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
-    <string name="empty_list_widget_no_objects">There are no objects in this widget yet.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1962,6 +1960,10 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Festet</string>
+    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_menu_new_object_type">Ny</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

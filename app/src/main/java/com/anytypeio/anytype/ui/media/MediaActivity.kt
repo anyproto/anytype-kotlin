@@ -17,6 +17,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.media.MediaViewModel
@@ -35,6 +36,8 @@ class MediaActivity : ComponentActivity() {
     lateinit var factory: MediaViewModel.Factory
 
     private val vm by viewModels<MediaViewModel> { factory }
+
+    private val space get() = intent.getStringExtra(EXTRA_SPACE_ID)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         inject()
@@ -72,7 +75,17 @@ class MediaActivity : ComponentActivity() {
                             images = state.images,
                             index = state.currentIndex,
                             onBackClick = { finish() },
-                            onDownloadClick = vm::onDownloadObject,
+                            onDownloadClick = { obj ->
+                                val givenSpace = space
+                                if (givenSpace != null) {
+                                    vm.onDownloadObject(
+                                        id = obj,
+                                        space = SpaceId(space.orEmpty())
+                                    )
+                                } else {
+                                    toast("Space not found")
+                                }
+                            },
                             onDeleteClick = vm::onDeleteObject
                         )
                     }
@@ -142,6 +155,7 @@ class MediaActivity : ComponentActivity() {
         private const val TYPE_UNKNOWN = 0
 
         private const val EXTRA_OBJECTS = "extra_object_ids"
+        private const val EXTRA_SPACE_ID = "extra_space_id"
         private const val EXTRA_IMAGE_INDEX = "extra_image_index"
         private const val EXTRA_MEDIA_TYPE = "extra_media_type"
         private const val EXTRA_MEDIA_NAME = "extra_media_name"
@@ -149,6 +163,7 @@ class MediaActivity : ComponentActivity() {
         fun start(
             context: Context,
             obj: Id,
+            space: Id,
             mediaType: Int,
             name: String? = null
         ) {
@@ -156,6 +171,7 @@ class MediaActivity : ComponentActivity() {
                 putStringArrayListExtra(EXTRA_OBJECTS, arrayListOf(obj))
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
+                putExtra(EXTRA_SPACE_ID, space)
                 addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP)
             }
             context.startActivity(intent)
@@ -167,12 +183,14 @@ class MediaActivity : ComponentActivity() {
         fun start(
             context: Context,
             objects: List<Id>,
+            space: Id,
             mediaType: Int,
             name: String? = null,
             index: Int = 0
         ) {
             val intent = Intent(context, MediaActivity::class.java).apply {
                 putStringArrayListExtra(EXTRA_OBJECTS, ArrayList(objects))
+                putExtra(EXTRA_SPACE_ID, space)
                 putExtra(EXTRA_MEDIA_TYPE, mediaType)
                 putExtra(EXTRA_MEDIA_NAME, name)
                 putExtra(EXTRA_IMAGE_INDEX, index)

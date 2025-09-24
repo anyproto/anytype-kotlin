@@ -95,7 +95,8 @@ fun ChatPreview() {
         onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
-        onHighlightMessage = {}
+        onHighlightMessage = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -150,7 +151,8 @@ fun ChatPreview2() {
         onEmptyStateAction = {},
         onRequestVideoPlayer = {},
         highlightedMessageId = null,
-        onHighlightMessage = {}
+        onHighlightMessage = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -219,7 +221,9 @@ fun ChatScreenPreview() {
         onEmptyStateAction = {},
         onImageCaptured = {},
         onVideoCaptured = {},
-        onCreateAndAttachObject = {}
+        onCreateAndAttachObject = {},
+        onDeleteMessageWarningTriggered = {},
+        onAttachmentMenuTriggered = {}
     )
 }
 
@@ -248,7 +252,8 @@ fun BubblePreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -279,6 +284,7 @@ fun BubbleEditedPreview() {
         onAddReactionClicked = {},
         onViewChatReaction = {},
         onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }
 
@@ -315,6 +321,7 @@ fun BubbleWithAttachmentPreview() {
         onScrollToReplyClicked = {},
         onAddReactionClicked = {},
         onViewChatReaction = {},
-        onMentionClicked = {}
+        onMentionClicked = {},
+        onDeleteMessageWarningTriggered = {}
     )
 }

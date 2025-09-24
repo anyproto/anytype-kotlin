@@ -803,10 +803,8 @@
     <string name="type_editing_title">Tür ayarları</string>
     <string name="relation_editing_title">Özellik ayarları</string>
     <string name="type_editing_uninstall">Kaldır</string>
-    <string name="empty_tree_widget">Bu nesnenin diğer nesnelerle bağlantısı yoktur.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="empty_tree_widget_reader_access">Bu nesnenin diğer nesnelerle bağlantısı yok.</string>
-    <string name="empty_list_widget">Bu görünümde nesne yok.\nYeni bir tane oluşturmayı deneyin.</string>
-    <string name="empty_list_widget_no_objects">Bu widget\'ta henüz hiçbir nesne yok.</string>
+    <string name="empty_list_widget_no_objects">İçinde nesne yok</string>
     <string name="empty_list_widget_no_view">Bu veri görünümünde nesne yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="this_widget_has_no_object">Bu widget\'ın nesnesi yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="emoji">Emoji</string>
@@ -1962,6 +1960,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_view_object">Nesneyi Görüntüle</string>
     <string name="web_publishing_open_in_browser">Tarayıcıda Aç</string>
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
+    <string name="widgets_section_pinned">Sabitlendi</string>
+    <string name="widgets_section_object_types">Nesne türleri</string>
+    <string name="widgets_menu_new_object_type">Yeni</string>
+    <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>

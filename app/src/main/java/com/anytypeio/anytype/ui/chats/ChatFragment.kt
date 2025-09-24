@@ -90,6 +90,8 @@ class ChatFragment : Fragment() {
     val ctx get() = arg<Id>(CTX_KEY)
     private val space get() = arg<Id>(SPACE_KEY)
 
+    private val triggeredByPush get() = arg<Boolean>(TRIGGERED_BY_PUSH_KEY)
+
     override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies()
         super.onCreate(savedInstanceState)
@@ -195,7 +197,8 @@ class ChatFragment : Fragment() {
                         MediaActivity.start(
                             context = requireContext(),
                             mediaType = MediaActivity.TYPE_VIDEO,
-                            obj = attachment.obj
+                            obj = attachment.obj,
+                            space = space
                         )
                     }
                 )
@@ -393,7 +396,8 @@ class ChatFragment : Fragment() {
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_IMAGE,
                                 objects = command.objects,
-                                index = command.index
+                                index = command.index,
+                                space = space
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching media image viewer")
@@ -463,7 +467,8 @@ class ChatFragment : Fragment() {
                                 context = requireContext(),
                                 mediaType = MediaActivity.TYPE_AUDIO,
                                 obj = command.obj,
-                                name = command.name
+                                name = command.name,
+                                space = space
                             )
                         }.onFailure {
                             Timber.e(it, "Error while launching audio player")
@@ -564,7 +569,8 @@ class ChatFragment : Fragment() {
                 key = ctx,
                 param = ChatViewModel.Params.Default(
                     ctx = ctx,
-                    space = SpaceId(space)
+                    space = SpaceId(space),
+                    triggeredByPush = triggeredByPush
                 )
             )
             .inject(this)
@@ -611,13 +617,16 @@ class ChatFragment : Fragment() {
     companion object {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
+        private const val TRIGGERED_BY_PUSH_KEY = "arg.discussion.triggered-by-push"
         const val PERMISSIONS_REQUEST_CODE = 100
         fun args(
             space: Id,
-            ctx: Id
+            ctx: Id,
+            triggeredByPush: Boolean = false
         ) = bundleOf(
             CTX_KEY to ctx,
-            SPACE_KEY to space
+            SPACE_KEY to space,
+            TRIGGERED_BY_PUSH_KEY to triggeredByPush
         )
     }
 }

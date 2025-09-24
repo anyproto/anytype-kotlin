@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -115,7 +120,8 @@ class ChatViewModel @Inject constructor(
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val analytics: Analytics
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -219,6 +225,17 @@ class ChatViewModel @Inject constructor(
 
         proceedWithSpaceSubscription()
         checkIfShouldCreateInviteLink()
+
+        viewModelScope.launch {
+            val route = if (vmParams.triggeredByPush)
+                EventsDictionary.ChatRoute.PUSH.value
+            else
+                EventsDictionary.ChatRoute.NAVIGATION.value
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenChat,
+                props = Props(mapOf(EventsPropertiesKey.route to route))
+            )
+        }
     }
 
 
@@ -846,6 +863,22 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            val hasAttachments = chatBoxAttachments.value.isNotEmpty()
+            val hasText = msg.isNotEmpty()
+            val type = when {
+                hasText && !hasAttachments -> EventsDictionary.ChatSentMessageType.TEXT
+                !hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.ATTACHMENT
+                hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.MIXED
+                else -> null
+            }
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatSentMessage,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.type to type)
+                )
+            )
+        }
     }
 
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
@@ -915,6 +948,11 @@ class ChatViewModel @Inject constructor(
             }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuEdit
+            )
+        }
     }
 
     fun onAttachObject(obj: GlobalSearchItemView) {
@@ -970,6 +1008,11 @@ class ChatViewModel @Inject constructor(
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDetachItemChat
+            )
+        }
     }
 
     fun onClearReplyClicked() {
@@ -991,6 +1034,24 @@ class ChatViewModel @Inject constructor(
                     )
                 ).onFailure {
                     Timber.e(it, "Error while toggling chat message reaction")
+                }.onSuccess {
+                    Timber.d("Toggled chat reaction")
+                }
+
+                // Sending analytics
+                if (message is ChatView.Message) {
+                    val hasAlreadyUserReaction = message.reactions.any { r ->
+                        r.emoji == reaction && r.isSelected
+                    }
+                    if (hasAlreadyUserReaction) {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatRemoveReaction
+                        )
+                    } else {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatAddReaction
+                        )
+                    }
                 }
             } else {
                 Timber.w("Target message not found for reaction")
@@ -999,6 +1060,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onReplyMessage(msg: ChatView.Message) {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReply
+            )
+        }
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Reply(
                 msg = msg.id,
@@ -1052,6 +1118,11 @@ class ChatViewModel @Inject constructor(
     fun onDeleteMessage(msg: ChatView.Message) {
         Timber.d("onDeleteMessageClicked msg: ${msg.id}")
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDeleteMessage
+            )
+        }
+        viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
                     chat = vmParams.ctx,
@@ -1061,6 +1132,30 @@ class ChatViewModel @Inject constructor(
                 Timber.e(it, "Error while deleting chat message")
             }
         }
+    }
+
+    fun onDeleteMessageWarningTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuDelete
+            )
+        }
+    }
+
+    fun onCopyMessageTextActionTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuCopy
+            )
+        }
+    }
+
+    fun onAttachmentMenuTriggered() {
+       viewModelScope.launch {
+           analytics.sendEvent(
+               eventName = EventsDictionary.chatScreenChatAttach
+           )
+       }
     }
 
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
@@ -1212,6 +1307,11 @@ class ChatViewModel @Inject constructor(
                 ViewModelCommand.SelectChatReaction(
                     msg = msg
                 )
+            )
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReaction
             )
         }
     }
@@ -1474,6 +1574,11 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onGoToMention()
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToMention
+            )
+        }
     }
 
     fun onChatScrollToReply(replyMessage: Id) {
@@ -1481,12 +1586,20 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onLoadToReply(replyMessage = replyMessage)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.chatClickScrollToReply)
+        }
     }
 
     fun onScrollToBottomClicked(lastVisibleMessage: Id?) {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
             chatContainer.onLoadChatTail(lastVisibleMessage)
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToBottom
+            )
         }
     }
 
@@ -1740,7 +1853,8 @@ class ChatViewModel @Inject constructor(
         abstract val space: Space
         data class Default(
             val ctx: Id,
-            override val space: Space
+            override val space: Space,
+            val triggeredByPush: Boolean = false
         ) : Params()
     }
 

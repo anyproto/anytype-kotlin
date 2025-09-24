@@ -290,7 +290,6 @@ fun VaultScreenContent(
                                             }
                                         ),
                                     title = item.space.name.orEmpty(),
-                                    subtitle = item.accessType,
                                     icon = item.icon,
                                     isPinned = item.isPinned,
                                     spaceView = item,
@@ -374,7 +373,6 @@ fun VaultScreenContent(
                                             }
                                         )),
                                 title = item.space.name.orEmpty(),
-                                subtitle = item.accessType,
                                 isPinned = item.isPinned,
                                 icon = item.icon,
                                 spaceView = item,

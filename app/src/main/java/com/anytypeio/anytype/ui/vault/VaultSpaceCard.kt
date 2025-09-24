@@ -2,13 +2,11 @@ package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -50,7 +48,6 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
-import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
@@ -61,7 +58,6 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 fun VaultSpaceCard(
     modifier: Modifier,
     title: String,
-    subtitle: String,
     icon: SpaceIconView,
     isPinned: Boolean = false,
     spaceBackground: SpaceBackground,
@@ -108,16 +104,20 @@ fun VaultSpaceCard(
             .padding(horizontal = 16.dp)
     }
 
-    Box(modifier = updatedModifier) {
+    Row(
+        modifier = updatedModifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         SpaceIconView(
             icon = icon,
             mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart)
         )
         ContentSpace(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp),
             title = title,
-            subtitle = subtitle,
             isPinned = isPinned
         )
 
@@ -147,30 +147,25 @@ fun VaultSpaceCard(
 
 @Composable
 private fun ContentSpace(
+    modifier: Modifier,
     title: String,
-    subtitle: String,
     isPinned: Boolean = false,
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 80.dp, top = 12.1.dp)
-    ) {
-        Text(
-            text = title.ifEmpty { stringResource(id = R.string.untitled) },
-            style = BodySemiBold,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
+    Column(modifier = modifier) {
+
         Row(
             modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = subtitle,
-                style = Title3,
-                color = colorResource(id = R.color.control_transparent_secondary),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(end = 16.dp),
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
+                style = BodySemiBold,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
             )
             if (isPinned) {
                 Image(
@@ -243,14 +238,19 @@ fun VaultChatCard(
             .padding(horizontal = 16.dp)
     }
 
-    Box(modifier = updatedModifier) {
+    Row(
+        modifier = updatedModifier,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
         SpaceIconView(
             icon = icon,
             mainSize = 64.dp,
             modifier = Modifier
-                .align(Alignment.CenterStart)
         )
         ContentChat(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(start = 12.dp),
             title = title,
             subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
@@ -288,7 +288,8 @@ fun VaultChatCard(
 }
 
 @Composable
-private fun BoxScope.ContentChat(
+private fun RowScope.ContentChat(
+    modifier: Modifier,
     title: String,
     subtitle: String,
     creatorName: String? = null,
@@ -300,13 +301,7 @@ private fun BoxScope.ContentChat(
     isMuted: Boolean? = null,
     isPinned: Boolean = false
 ) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .fillMaxHeight()
-            .padding(start = 80.dp, top = 12.1.dp),
-        verticalArrangement = Arrangement.Top
-    ) {
+    Column(modifier = modifier) {
         TitleRow(
             modifier = Modifier
                 .fillMaxWidth()
@@ -699,7 +694,6 @@ fun VaultDataSpaceCardPreview() {
         VaultSpaceCard(
             modifier = Modifier.fillMaxWidth(),
             title = "B&O Museum",
-            subtitle = "Private space",
             icon = SpaceIconView.ChatSpace.Placeholder(),
             currentPinnedCount = 3,
             isPinned = true,

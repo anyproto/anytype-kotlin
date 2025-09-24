@@ -991,7 +991,8 @@
     <string name="widget_type_view_description">Widget dengan tata letak Kuery atau Koleksi</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Ubah sumber</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Ubah tipe widget</string>
+    <string name="widget_unpin">Lepas sematan</string>
     <string name="widget_remove_widget">Hapus widget</string>
     <string name="widget_empty_bin">Tempat sampah kosong</string>
     <string name="widget_edit_widgets">Sunting widget</string>
@@ -1068,7 +1069,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
-    <string name="object_action_to_widgets">Ke widget</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Unduh</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1950,6 +1951,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widgets_section_object_types">Tipe objek</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>

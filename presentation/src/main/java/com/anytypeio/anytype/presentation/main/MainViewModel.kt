@@ -570,7 +570,7 @@ class MainViewModel(
                 appShutdown.async(Unit)
                 Timber.d("App shutdown completed")
             } catch (e: Exception) {
-                Timber.w(e, "Error while waiting for deep link jobs to complete")
+                Timber.e(e, "Error during app shutdown")
             }
         }
         super.onCleared()

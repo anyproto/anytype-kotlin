@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
@@ -44,7 +45,9 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -83,7 +86,9 @@ class MainViewModel(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val appShutdown: AppShutdown,
+    private val scope: CoroutineScope
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -559,6 +564,17 @@ class MainViewModel(
                 )
             }
         }
+    }
+
+    override fun onCleared() {
+        scope.launch {
+            try {
+                appShutdown.async(Unit)
+            } catch (e: Exception) {
+                Timber.w(e, "Error while waiting for deep link jobs to complete")
+            }
+        }
+        super.onCleared()
     }
 
     sealed class Command {

@@ -160,6 +160,20 @@ fun SystemColor.resInt(): Int {
     }
 }
 
+fun SystemColor.resLightInt(): Int {
+    return when (this) {
+        SystemColor.YELLOW -> R.color.palette_light_yellow
+        SystemColor.AMBER -> R.color.palette_light_orange
+        SystemColor.RED -> R.color.palette_light_red
+        SystemColor.PINK -> R.color.palette_light_pink
+        SystemColor.PURPLE -> R.color.palette_light_purple
+        SystemColor.BLUE -> R.color.palette_light_blue
+        SystemColor.SKY -> R.color.palette_light_ice
+        SystemColor.TEAL -> R.color.palette_light_teal
+        SystemColor.GREEN -> R.color.palette_light_lime
+    }
+}
+
 /**
  * Gets gradient colors for wallpaper gradients using actual start/end colors
  */

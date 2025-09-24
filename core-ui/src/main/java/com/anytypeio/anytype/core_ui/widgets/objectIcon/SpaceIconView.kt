@@ -16,6 +16,7 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -27,6 +28,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.extensions.resLightInt
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.fontInterRegular
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
@@ -149,6 +151,8 @@ private fun SpacePlaceholder(
                 .take(1)
                 .uppercase(),
             fontSize = fontSize,
+            fontFamily = fontInterRegular,
+            fontWeight = FontWeight.W600,
             textAlign = TextAlign.Center,
             color = colorResource(iconColor.resLightInt())
         )

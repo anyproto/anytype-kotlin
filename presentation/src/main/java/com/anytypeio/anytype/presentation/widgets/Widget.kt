@@ -8,10 +8,13 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -128,6 +131,15 @@ sealed class Widget {
         ) : Section()
     }
 
+    data class Bin(
+        override val id: Id ,
+        override val source: Source.Bundled.Bin,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.PINNED
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -177,6 +189,7 @@ sealed class Widget {
         }
 
         companion object {
+            const val WIDGET_BIN_ID = "widget_bin_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SOURCE_OTHER = "source_other"
@@ -218,10 +231,15 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
                 val wrapper = Type(obj.map)
                 canCreateObjectOfType(wrapper)
             } else {
-                false
+                createObjectLayouts.contains(obj.layout)
             }
         }
-        else -> false
+        Widget.Source.Bundled.AllObjects -> false
+        Widget.Source.Bundled.Bin -> false
+        Widget.Source.Bundled.Chat -> false
+        Widget.Source.Bundled.Recent -> false
+        Widget.Source.Bundled.RecentLocal -> false
+        Widget.Source.Other -> false
     }
 }
 
@@ -239,11 +257,12 @@ fun List<Block>.parseActiveViews() : WidgetToActiveView {
     return result
 }
 
-fun List<Block>.parseWidgets(
+suspend fun List<Block>.parseWidgets(
     root: Id,
     details: Map<Id, Struct>,
     config: Config,
-    urlBuilder: UrlBuilder
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes,
 ): List<Widget> = buildList {
     val map = asMap()
     val widgets = map[root] ?: emptyList()
@@ -257,7 +276,10 @@ fun List<Block>.parseWidgets(
                     val target = sourceContent.target
                     val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
                     val targetObj = ObjectWrapper.Basic(raw)
-                    val icon = targetObj.objectIcon(builder = urlBuilder)
+                    val icon = targetObj.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(targetObj)
+                    )
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {

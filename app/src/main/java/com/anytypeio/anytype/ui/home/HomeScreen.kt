@@ -3,14 +3,10 @@ package com.anytypeio.anytype.ui.home
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.spring
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
@@ -40,7 +36,6 @@ import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
@@ -65,7 +60,6 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetActionButton
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -74,7 +68,6 @@ import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.SpaceWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -91,7 +84,6 @@ fun HomeScreen(
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
-    onEditWidgets: () -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -102,9 +94,7 @@ fun HomeScreen(
     onCreateNewObjectLongClicked: () -> Unit,
     onNavBarShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSpaceWidgetClicked: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
@@ -122,11 +112,8 @@ fun HomeScreen(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
-            onEditWidgets = onEditWidgets,
-            onSpaceWidgetClicked = onSpaceWidgetClicked,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onSpaceWidgetShareIconClicked = onSpaceWidgetShareIconClicked,
             onCreateWidget = onCreateWidget,
             onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
@@ -196,11 +183,8 @@ private fun WidgetList(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onEditWidgets: () -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onSpaceWidgetClicked: () -> Unit,
-    onSpaceWidgetShareIconClicked: (ObjectWrapper.SpaceView) -> Unit,
     onCreateWidget: () -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
@@ -252,17 +236,6 @@ private fun WidgetList(
             key = { _, item -> item.id }
         ) { index, item ->
             when (item) {
-                is WidgetView.SpaceWidget.View -> {
-                    SpaceWidgetCard(
-                        onClick = onSpaceWidgetClicked,
-                        name = item.space.name.orEmpty(),
-                        icon = item.icon,
-                        spaceType = item.type,
-                        onSpaceShareIconClicked = { onSpaceWidgetShareIconClicked(item.space) },
-                        isShared = item.isShared,
-                        membersCount = item.membersCount
-                    )
-                }
                 is WidgetView.Tree -> {
                     if (mode is InteractionMode.Edit) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
@@ -455,11 +428,12 @@ private fun WidgetList(
                 }
                 is WidgetView.Bin -> {
                     BinWidgetCard(
+                        item = item,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
-                        onClick = { onBundledWidgetHeaderClicked(item.id) },
-                        mode = mode
+                        mode = mode,
+                        onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }
                 is WidgetView.AllContent -> {
@@ -479,7 +453,8 @@ private fun WidgetList(
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                alpha = alpha.value
+                                alpha = alpha.value,
+                                widgetView = item
                             )
                         }
                     } else {
@@ -495,12 +470,14 @@ private fun WidgetList(
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            alpha = 1.0f
+                            alpha = 1.0f,
+                            widgetView = item
                         )
                     }
                 }
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
+                        item = item,
                         mode = mode,
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
@@ -510,45 +487,6 @@ private fun WidgetList(
                             onWidgetMenuAction(item.id, action)
                         }
                     )
-                }
-                is WidgetView.Action.EditWidgets -> {
-                    Box(
-                        Modifier
-                            .fillMaxWidth()
-                            .padding(top = 6.dp, start = 20.dp, end = 20.dp)
-                            .height(128.dp)
-                            .animateItem(
-                                placementSpec = spring(
-                                    stiffness = Spring.StiffnessHigh,
-                                    visibilityThreshold = IntOffset.Zero
-                                )
-                            )
-                    ) {
-                        AnimatedVisibility(
-                            visible = mode is InteractionMode.Default,
-                            modifier = Modifier.align(Alignment.TopCenter),
-                            enter = fadeIn(),
-                            exit = fadeOut()
-                        ) {
-                            Row {
-                                WidgetActionButton(
-                                    label = stringResource(R.string.add_widget),
-                                    onClick = throttledClick(
-                                        onClick = {
-                                            onCreateWidget()
-                                        }
-                                    ),
-                                    modifier = Modifier.weight(1.0f)
-                                )
-                                Spacer(modifier = Modifier.width(12.dp))
-                                WidgetActionButton(
-                                    label = stringResource(R.string.edit_widgets),
-                                    onClick = onEditWidgets,
-                                    modifier = Modifier.weight(1.0f)
-                                )
-                            }
-                        }
-                    }
                 }
                 is WidgetView.EmptyState -> {
                     if (mode !is InteractionMode.Edit) {
@@ -616,27 +554,6 @@ private fun ListOfObjectsItem(
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered
         )
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp),
-            enter = fadeIn() + slideInHorizontally { it / 4 },
-            exit = fadeOut() + slideOutHorizontally { it / 4 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_remove_widget),
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(24.dp)
-                    .noRippleClickable {
-                        onWidgetMenuAction(
-                            item.id, DropDownMenuAction.RemoveWidget
-                        )
-                    },
-                contentDescription = "Remove widget icon"
-            )
-        }
     }
 }
 
@@ -678,27 +595,6 @@ private fun SetOfObjectsItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement
         )
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp),
-            enter = fadeIn() + slideInHorizontally { it / 4 },
-            exit = fadeOut() + slideOutHorizontally { it / 4 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_remove_widget),
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(24.dp)
-                    .noRippleClickable {
-                        onWidgetMenuAction(
-                            item.id, DropDownMenuAction.RemoveWidget
-                        )
-                    },
-                contentDescription = "Remove widget icon"
-            )
-        }
     }
 }
 
@@ -739,27 +635,6 @@ private fun GalleryWidgetItem(
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateElement = onCreateElement
         )
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp),
-            enter = fadeIn() + slideInHorizontally { it / 4 },
-            exit = fadeOut() + slideOutHorizontally { it / 4 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_remove_widget),
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(24.dp)
-                    .noRippleClickable {
-                        onWidgetMenuAction(
-                            item.id, DropDownMenuAction.RemoveWidget
-                        )
-                    },
-                contentDescription = "Remove widget icon"
-            )
-        }
     }
 }
 
@@ -786,31 +661,9 @@ private fun LinkWidgetItem(
                 onWidgetMenuAction(item.id, action)
             },
             onWidgetSourceClicked = onWidgetSourceClicked,
-            isInEditMode = mode is InteractionMode.Edit,
             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
             onObjectCheckboxClicked = onObjectCheckboxClicked
         )
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp),
-            enter = fadeIn() + slideInHorizontally { it / 4 },
-            exit = fadeOut() + slideOutHorizontally { it / 4 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_remove_widget),
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(24.dp)
-                    .noRippleClickable {
-                        onWidgetMenuAction(
-                            item.id, DropDownMenuAction.RemoveWidget
-                        )
-                    },
-                contentDescription = "Remove widget icon"
-            )
-        }
     }
 }
 
@@ -851,27 +704,6 @@ private fun TreeWidgetItem(
             mode = mode,
             onWidgetMenuClicked = onWidgetMenuTriggered
         )
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .padding(start = 12.dp),
-            enter = fadeIn() + slideInHorizontally { it / 4 },
-            exit = fadeOut() + slideOutHorizontally { it / 4 }
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_remove_widget),
-                modifier = Modifier
-                    .height(24.dp)
-                    .width(24.dp)
-                    .noRippleClickable {
-                        onWidgetMenuAction(
-                            item.id, DropDownMenuAction.RemoveWidget
-                        )
-                    },
-                contentDescription = "Remove widget icon"
-            )
-        }
     }
 }
 

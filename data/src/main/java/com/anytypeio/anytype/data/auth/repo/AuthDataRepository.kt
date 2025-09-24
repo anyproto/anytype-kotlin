@@ -125,4 +125,8 @@ class AuthDataRepository(
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         factory.remote.registerDeviceToken(command)
     }
+
+    override suspend fun appShutdown() {
+        factory.remote.appShutdown()
+    }
 }

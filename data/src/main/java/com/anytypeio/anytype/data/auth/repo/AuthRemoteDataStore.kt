@@ -114,4 +114,8 @@ class AuthRemoteDataStore(
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         authRemote.registerDeviceToken(command)
     }
+
+    override suspend fun appShutdown() {
+        authRemote.appShutdown()
+    }
 }

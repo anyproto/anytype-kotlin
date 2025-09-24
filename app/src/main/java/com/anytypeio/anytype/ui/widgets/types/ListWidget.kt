@@ -33,7 +33,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.WidgetView.ListOfObjects.Type
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 
 @Composable
 fun ListWidgetCard(
@@ -50,14 +50,11 @@ fun ListWidgetCard(
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
     }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
-    }
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(start = 16.dp, end = 16.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
@@ -139,11 +136,10 @@ fun ListWidgetCard(
                 }
             }
         }
-        WidgetMenu(
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode !is InteractionMode.Edit,
-            canEmptyBin = item.elements.isNotEmpty() && item.type is Type.Bin
+        WidgetLongClickMenu(
+            widgetView = item,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
 }

@@ -6,20 +6,24 @@ import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.Mockito.mock
 
 class ParseWidgetLimitTest {
 
     val source = StubObject()
+    val storeOfObjectTypes = DefaultStoreOfObjectTypes()
     var urlBuilder: UrlBuilder = mock()
 
     @Test
-    fun `should parse widget limit for widget with tree layout`() {
+    fun `should parse widget limit for widget with tree layout`() = runTest {
 
         val widgetContent = Block.Content.Widget(
             limit = MockDataFactory.randomInt(),
@@ -48,7 +52,8 @@ class ParseWidgetLimitTest {
                 put(source.id, source.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {
@@ -58,7 +63,7 @@ class ParseWidgetLimitTest {
     }
 
     @Test
-    fun `should parse widget limit for widget with list layout`() {
+    fun `should parse widget limit for widget with list layout`() = runTest {
 
         val widgetContent = Block.Content.Widget(
             limit = MockDataFactory.randomInt(),
@@ -87,7 +92,8 @@ class ParseWidgetLimitTest {
                 put(source.id, source.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {
@@ -97,7 +103,7 @@ class ParseWidgetLimitTest {
     }
 
     @Test
-    fun `should parse widget limit for widget with compact list layout`() {
+    fun `should parse widget limit for widget with compact list layout`() = runTest {
 
         val widgetContent = Block.Content.Widget(
             limit = MockDataFactory.randomInt(),
@@ -126,7 +132,8 @@ class ParseWidgetLimitTest {
                 put(source.id, source.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {

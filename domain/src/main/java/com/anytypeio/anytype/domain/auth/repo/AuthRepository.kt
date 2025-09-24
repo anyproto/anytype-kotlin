@@ -66,4 +66,6 @@ interface AuthRepository {
     suspend fun debugExportLogs(dir: String): String
 
     suspend fun registerDeviceToken(command: Command.RegisterDeviceToken)
+
+    suspend fun appShutdown()
 }

@@ -1,17 +1,16 @@
 package com.anytypeio.anytype.ui.widgets.types
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,14 +31,19 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.WidgetId
+import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.menu.BinWidgetMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun BinWidgetCard(
+    item: WidgetView.Bin,
     mode: InteractionMode,
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    onClick: () -> Unit,
+    hasReadOnlyAccess: Boolean = false,
+    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -58,11 +62,13 @@ fun BinWidgetCard(
                 color = colorResource(id = R.color.dashboard_card_background)
             )
             .then(
-                if (mode is InteractionMode.Default)
+                if (hasReadOnlyAccess) {
+                    Modifier.noRippleClickable {
+                        onWidgetSourceClicked(item.id, item.source)
+                    }
+                } else {
                     Modifier.combinedClickable(
-                        onClick = {
-                            onClick()
-                        },
+                        onClick = { onWidgetSourceClicked(item.id, item.source) },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)
@@ -70,73 +76,39 @@ fun BinWidgetCard(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
                     )
-                else
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
+                }
             )
     ) {
-        Box(
+
+        Row (
             Modifier
-                .padding(vertical = 6.dp)
-                .height(40.dp)
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
+
             Image(
                 painter = painterResource(id = R.drawable.ic_widget_bin),
                 contentDescription = "Bin icon",
                 modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 14.dp)
+                    .padding(end = 12.dp)
+                    .size(18.dp)
             )
+
             Text(
                 text = stringResource(id = R.string.bin),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                modifier = Modifier
-                    .align(Alignment.CenterStart)
-                    .padding(start = 42.dp, end = 16.dp),
+                modifier = Modifier.weight(1f),
                 style = HeadlineSubheading,
                 color = colorResource(id = R.color.text_primary),
             )
         }
-        AnimatedVisibility(
-            visible = mode is InteractionMode.Edit,
-            modifier = Modifier
-                .align(Alignment.CenterEnd)
-                .padding(end = 20.dp),
-            enter = fadeIn(),
-            exit = fadeOut()
-        ) {
-            Box {
-                Image(
-                    painterResource(R.drawable.ic_widget_three_dots),
-                    contentDescription = "Widget menu icon",
-                    modifier = Modifier
-                        .noRippleClickable {
-                            isHeaderMenuExpanded.value = !isHeaderMenuExpanded.value
-                        }
-                )
-                WidgetMenu(
-                    isExpanded = isHeaderMenuExpanded,
-                    onDropDownMenuAction = onDropDownMenuAction,
-                    canRemove = false,
-                    canChangeType = false,
-                    canChangeSource = false,
-                    canEmptyBin = true,
-                    canEditWidgets = mode is InteractionMode.Default,
-                    canAddBelow = false
-                )
-            }
-        }
-        WidgetMenu(
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canRemove = false,
-            canChangeType = false,
-            canChangeSource = false,
-            canEmptyBin = true,
-            canEditWidgets = mode is InteractionMode.Default,
-            canAddBelow = false
+        BinWidgetMenu(
+            widgetView = item,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
 }

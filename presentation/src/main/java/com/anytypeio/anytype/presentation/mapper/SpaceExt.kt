@@ -11,7 +11,7 @@ fun List<ObjectWrapper.SpaceMember>.toView(
     spaceView: ObjectWrapper.SpaceView?,
     urlBuilder: UrlBuilder,
     isCurrentUserOwner: Boolean,
-    account: Id?
+    account: Id? = null
 ): List<ShareSpaceMemberView> {
     return this.mapNotNull { spaceMember ->
         if (spaceView == null) return@mapNotNull null

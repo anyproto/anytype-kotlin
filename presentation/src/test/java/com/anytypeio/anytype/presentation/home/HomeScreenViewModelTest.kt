@@ -20,9 +20,7 @@ import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
-import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.StubWidgetBlock
-import com.anytypeio.anytype.core_models.UNKNOWN_SPACE_TYPE
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -94,7 +92,6 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -322,13 +319,6 @@ class HomeScreenViewModelTest {
         widgets = SECOND_WIDGET_OBJECT_ID
     )
 
-    private val defaultSpaceWidgetView = WidgetView.SpaceWidget.View(
-        space = StubSpaceView(),//StubSpaceView(targetSpaceId = spaceId.id),
-        icon = SpaceIconView.DataSpace.Placeholder(),
-        type = UNKNOWN_SPACE_TYPE,
-        membersCount = 0
-    )
-
    lateinit var typeWidgets : List<WidgetView>
 
     private lateinit var urlBuilder: UrlBuilder
@@ -402,7 +392,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -428,7 +418,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.EmptyState)
                 }
             )
@@ -459,7 +449,7 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
@@ -478,7 +468,7 @@ class HomeScreenViewModelTest {
                 val secondTimeItem = awaitItem()
                 assertEquals(
                     expected = buildList {
-                        add(defaultSpaceWidgetView)
+                        
                         add(WidgetView.EmptyState)
                     },
                     actual = secondTimeItem
@@ -569,7 +559,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
@@ -685,7 +675,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
@@ -791,7 +781,7 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -817,7 +807,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
@@ -903,7 +893,7 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -930,7 +920,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
@@ -1083,7 +1073,7 @@ class HomeScreenViewModelTest {
             stubWidgetActiveView(favoriteWidgetBlock)
 
             stubSpaceManager()
-            stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
@@ -1130,7 +1120,7 @@ class HomeScreenViewModelTest {
 
                 assertEquals(
                     expected = buildList {
-                        add(defaultSpaceWidgetView)
+                        
                         add(WidgetView.Section.Pinned)
                         add(
                             WidgetView.Tree(
@@ -1247,8 +1237,6 @@ class HomeScreenViewModelTest {
             )
         )
 
-        val binWidget = WidgetView.Bin(id = Subscriptions.SUBSCRIPTION_BIN)
-
         stubConfig()
         stubInterceptEvents(events = emptyFlow())
         stubOpenWidgetObject(givenObjectView)
@@ -1280,7 +1268,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Link(
@@ -1356,7 +1344,7 @@ class HomeScreenViewModelTest {
         stubSaveWidgetSession()
         stubGetDefaultPageType()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         storelessSubscriptionContainer.stub {
             onBlocking {
@@ -1479,7 +1467,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
         stubDeleteWidget(widgetBlock, givenPayload)
 
         val vm = buildViewModel()
@@ -1551,7 +1539,7 @@ class HomeScreenViewModelTest {
             stubGetWidgetSession()
             stubCloseObject()
             stubSpaceManager()
-            stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            
 
             val vm = buildViewModel()
 
@@ -1684,7 +1672,7 @@ class HomeScreenViewModelTest {
             delay = delayBeforeSwitchingSpace
         )
 
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         stubObserveSpaceObject()
         stubUserPermission()
@@ -1867,7 +1855,7 @@ class HomeScreenViewModelTest {
             delay = delayBeforeSwitchingSpace
         )
 
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         stubObserveSpaceObject()
         stubUserPermission()
@@ -1998,7 +1986,7 @@ class HomeScreenViewModelTest {
         stubObserveSpaceObject()
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -2019,7 +2007,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
-                    add(defaultSpaceWidgetView)
+                    
                     add(WidgetView.EmptyState)
                 }
             )
@@ -2076,7 +2064,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         val vm = buildViewModel()
 
@@ -2146,7 +2134,7 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            
 
             val vm = buildViewModel()
 
@@ -2238,7 +2226,7 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            stubSpaceWidgetContainer(defaultSpaceWidgetView)
+            
 
             stubSpaceBinWidgetContainer()
 
@@ -2346,7 +2334,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         stubSpaceBinWidgetContainer()
 
@@ -2515,7 +2503,7 @@ class HomeScreenViewModelTest {
         }
 
         stubSpaceManager()
-        stubSpaceWidgetContainer(defaultSpaceWidgetView)
+        
 
         stubSpaceBinWidgetContainer()
 
@@ -2993,7 +2981,6 @@ class HomeScreenViewModelTest {
         storeOfObjectTypes = storeOfObjectTypes,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,
-        spaceWidgetContainer = spaceWidgetContainer,
         spaceManager = spaceManager,
         setObjectDetails = setObjectDetails,
         getSpaceView = getSpaceView,
@@ -3023,7 +3010,8 @@ class HomeScreenViewModelTest {
         notificationPermissionManager = notificationPermissionManager,
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
         userSettingsRepository = userSettingsRepository,
-        scope = GlobalScope // Using GlobalScope to avoid cancellation of flows,
+        scope = GlobalScope,
+        stringResourceProvider = stringResourceProvider
     )
 
     companion object {

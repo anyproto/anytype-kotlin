@@ -6,10 +6,11 @@ import com.anytypeio.anytype.core_models.StubLinkToObjectBlock
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
+import kotlinx.coroutines.test.runTest
 import org.junit.Test
 import org.mockito.Mockito.mock
 
@@ -17,9 +18,10 @@ class ParseWidgetTest {
 
 
     var urlBuilder: UrlBuilder = mock()
+    val storeOfObjectTypes = DefaultStoreOfObjectTypes()
 
     @Test
-    fun `should hide widgets with archived source`() {
+    fun `should hide widgets with archived source`() = runTest {
 
         val invalidSource = StubObject(
             isArchived = true
@@ -81,7 +83,8 @@ class ParseWidgetTest {
                 put(validSource.id, validSource.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {
@@ -94,7 +97,7 @@ class ParseWidgetTest {
     }
 
     @Test
-    fun `should hide widgets with deleted source`() {
+    fun `should hide widgets with deleted source`()= runTest {
 
         val invalidSource = StubObject(
             isDeleted = true
@@ -156,7 +159,8 @@ class ParseWidgetTest {
                 put(validSource.id, validSource.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {
@@ -168,7 +172,7 @@ class ParseWidgetTest {
         }
     }
     @Test
-    fun `should hide widgets with invalid source because of empty details`() {
+    fun `should hide widgets with invalid source because of empty details`()= runTest {
 
         val invalidSource = StubObject()
 
@@ -228,7 +232,8 @@ class ParseWidgetTest {
                 put(validSource.id, validSource.map)
             },
             config = StubConfig(),
-            urlBuilder
+            urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         assertTrue {

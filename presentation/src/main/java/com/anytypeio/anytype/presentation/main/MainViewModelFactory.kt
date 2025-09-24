@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
@@ -23,6 +24,7 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
+import kotlinx.coroutines.CoroutineScope
 
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
@@ -44,7 +46,9 @@ class MainViewModelFactory @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val appShutdown: AppShutdown,
+    private val scope: CoroutineScope
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -69,6 +73,8 @@ class MainViewModelFactory @Inject constructor(
         spaceViews = spaceViews,
         pendingIntentStore = pendingIntentStore,
         observeSpaceWallpaper = observeSpaceWallpaper,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        appShutdown = appShutdown,
+        scope = scope
     ) as T
 }

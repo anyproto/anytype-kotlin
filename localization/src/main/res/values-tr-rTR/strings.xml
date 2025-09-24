@@ -1965,8 +1965,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widgets_section_object_types">Nesne türleri</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
-    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
-    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>
+    <string name="widget_unpin_alert_title">Bu Widget Geri Yüklenemez</string>
     <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>

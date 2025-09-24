@@ -38,7 +38,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 
 @Composable
 fun TreeWidgetCard(
@@ -119,12 +119,11 @@ fun TreeWidgetCard(
                 }
             }
         }
-        if (mode != InteractionMode.ReadOnly) {
-            WidgetMenu(
-                isExpanded = isCardMenuExpanded,
-                onDropDownMenuAction = onDropDownMenuAction
-            )
-        }
+        WidgetLongClickMenu(
+            widgetView = item,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
+        )
     }
 }
 

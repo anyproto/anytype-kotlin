@@ -31,7 +31,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -39,7 +39,6 @@ fun LinkWidgetCard(
     item: WidgetView.Link,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
-    isInEditMode: Boolean,
     hasReadOnlyAccess: Boolean = false,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
@@ -107,10 +106,10 @@ fun LinkWidgetCard(
                 color = colorResource(id = R.color.text_primary),
             )
         }
-        WidgetMenu(
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = !isInEditMode
+        WidgetLongClickMenu(
+            widgetView = item,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
 }

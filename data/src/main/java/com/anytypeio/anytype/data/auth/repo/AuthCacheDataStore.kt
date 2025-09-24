@@ -109,4 +109,7 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
     override suspend fun registerDeviceToken(request: Command.RegisterDeviceToken) {
         throw UnsupportedOperationException()
     }
+    override suspend fun appShutdown() {
+        throw UnsupportedOperationException()
+    }
 }

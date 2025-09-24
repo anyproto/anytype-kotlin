@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.widgets.types
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -32,16 +31,17 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
+import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun SpaceChatWidgetCard(
+    item: WidgetView,
     mode: InteractionMode,
     onWidgetClicked: () -> Unit = {},
     onDropDownMenuAction: (DropDownMenuAction) -> Unit = {},
@@ -78,8 +78,7 @@ fun SpaceChatWidgetCard(
             )
             .alpha(
                 if (isCardMenuExpanded.value) 0.8f else 1f
-            )
-        ,
+            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -104,7 +103,9 @@ fun SpaceChatWidgetCard(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
+                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                            R.color.color_accent
+                        ),
                         shape = CircleShape
                     )
                     .size(20.dp),
@@ -129,7 +130,9 @@ fun SpaceChatWidgetCard(
                     .height(20.dp)
                     .defaultMinSize(minWidth = 20.dp)
                     .background(
-                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(R.color.color_accent),
+                        color = if (isMuted) colorResource(R.color.glyph_active) else colorResource(
+                            R.color.color_accent
+                        ),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center
@@ -143,35 +146,10 @@ fun SpaceChatWidgetCard(
             }
             Spacer(modifier = Modifier.width(16.dp))
         }
-        WidgetMenu(
-            isExpanded = isCardMenuExpanded,
-            onDropDownMenuAction = onDropDownMenuAction,
-            canEditWidgets = mode !is InteractionMode.Edit,
-            canChangeType = false
+        WidgetLongClickMenu(
+            widgetView = item,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
         )
     }
-}
-
-@DefaultPreviews
-@Composable
-fun SpaceChatWidgetPreview() {
-    SpaceChatWidgetCard(
-        onWidgetClicked = {},
-        mode = InteractionMode.Default,
-        unReadMessageCount = 1,
-        unReadMentionCount = 1,
-        isMuted = false
-    )
-}
-
-@DefaultPreviews
-@Composable
-fun SpaceChatWidgetMutedPreview() {
-    SpaceChatWidgetCard(
-        onWidgetClicked = {},
-        mode = InteractionMode.Default,
-        unReadMessageCount = 1,
-        unReadMentionCount = 1,
-        isMuted = true
-    )
 }

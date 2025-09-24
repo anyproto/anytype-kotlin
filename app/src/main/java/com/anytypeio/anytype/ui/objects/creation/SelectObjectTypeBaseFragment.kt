@@ -39,55 +39,14 @@ import com.anytypeio.anytype.presentation.objects.ClipboardToolbarViewState
 import com.anytypeio.anytype.presentation.objects.Command
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
-import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
+import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
-
-/**
- * A fragment that allows you to select an object type for a new object in a widget.
- */
-class WidgetObjectTypeFragment: SelectObjectTypeBaseFragment() {
-
-    private val widget get() = arg<Id>(WIDGET_ID_ARG)
-    private val source get() = arg<Id>(SOURCE_ID_ARG)
-
-    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParentSafe<WidgetObjectTypeListener> {
-            onCreateWidgetObject(
-                objType = objType,
-                widgetId = widget,
-                source = source
-            )
-        }
-    }
-
-    override fun resolveScreenTitle(): String {
-        return getString(R.string.create_object)
-    }
-
-    companion object {
-        private const val WIDGET_ID_ARG = "arg.select-object-type.widget-id"
-        private const val SOURCE_ID_ARG = "arg.select-object-type.widget-source-id"
-        fun new(
-            space: Id,
-            widgetId: Id,
-            source: Id
-        ) = WidgetObjectTypeFragment().apply {
-            arguments = bundleOf(
-                SPACE_ID_KEY to space,
-                WIDGET_ID_ARG to widgetId,
-                SOURCE_ID_ARG to source
-            )
-        }
-    }
-}
 
 /**
  * “A fragment that allows you to select an object type as the source in a new widget.”

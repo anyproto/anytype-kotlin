@@ -13,7 +13,8 @@ class LinkWidgetContainer(
             id = widget.id,
             source = widget.source,
             icon = widget.icon,
-            name = widget.source.getPrettyName(fieldParser)
+            name = widget.source.getPrettyName(fieldParser),
+            sectionType = widget.sectionType
         )
     )
 }

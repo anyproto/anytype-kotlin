@@ -64,7 +64,8 @@ class TreeWidgetContainer(
                         elements = emptyList(),
                         isLoading = true,
                         icon = widget.icon,
-                        name = widget.source.getPrettyName(fieldParser)
+                        name = widget.source.getPrettyName(fieldParser),
+                        sectionType = widget.sectionType
                     )
                     if (isCollapsed) {
                         emit(loadingStateView)
@@ -128,7 +129,8 @@ class TreeWidgetContainer(
                             rootLimit = rootLevelLimit,
                             storeOfObjectTypes = storeOfObjectTypes
                         ),
-                        name = Bundled(source = source)
+                        name = Bundled(source = source),
+                        sectionType = widget.sectionType
                     )
                 }
             }
@@ -172,7 +174,8 @@ class TreeWidgetContainer(
                         icon = widget.icon,
                         name = Default(
                             prettyPrintName = fieldParser.getObjectName(source.obj)
-                        )
+                        ),
+                        sectionType = widget.sectionType
                     )
                 }
             }

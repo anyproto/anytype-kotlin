@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -314,4 +315,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun provideChatPreviewContainer(): ChatPreviewContainer
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
+    fun stringResProvider() : StringResourceProvider
 }

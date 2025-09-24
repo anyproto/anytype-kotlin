@@ -5,7 +5,6 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -48,11 +47,9 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSettingsState
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
@@ -60,10 +57,8 @@ import com.anytypeio.anytype.ui.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.creation.WidgetObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
-import com.anytypeio.anytype.ui.objects.types.pickers.WidgetObjectTypeListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
@@ -76,7 +71,6 @@ import timber.log.Timber
 
 class HomeScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
-    WidgetObjectTypeListener,
     WidgetSourceTypeListener {
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
@@ -115,34 +109,30 @@ class HomeScreenFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = content {
-        val view = (vm.views.collectAsStateWithLifecycle().value.find {
-            it is WidgetView.SpaceWidget.View
-        } as? WidgetView.SpaceWidget.View)
-
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
             contentWindowInsets = WindowInsets(0.dp),
             topBar = {
-                HomeScreenToolbar(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .statusBarsPadding(),
-                    spaceIconView = view?.icon ?: SpaceIconView.Loading,
-                    onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                    membersCount = view?.membersCount ?: 0,
-                    name = view?.space?.name.orEmpty(),
-                    onBackButtonClicked = vm::onBackClicked,
-                    onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                )
+                val spaceViewState = vm.spaceViewState.collectAsStateWithLifecycle().value
+                if (spaceViewState is HomeScreenViewModel.SpaceViewState.Success) {
+                    HomeScreenToolbar(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .statusBarsPadding(),
+                        spaceViewState = spaceViewState,
+                        onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
+                        onBackButtonClicked = vm::onBackClicked,
+                        onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
+                    )
+                }
             }
         ) { paddingValues ->
             PageWithWidgets(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .navigationBarsPadding(),
-                showSpaceWidget = false
+                    .navigationBarsPadding()
             )
         }
 
@@ -189,6 +179,17 @@ class HomeScreenFragment : Fragment(),
             else -> {}
         }
 
+        val pendingBundledWidgetId =
+            vm.pendingBundledWidgetDeletion.collectAsStateWithLifecycle().value
+        if (pendingBundledWidgetId != null) {
+            UnpinWidgetScreen(
+                onPinCancelled = { vm.onBundledWidgetDeletionCanceled() },
+                onPinAccepted = {
+                    vm.onBundledWidgetDeletionConfirmed()
+                }
+            )
+        }
+
         BackHandler {
             vm.onBackClicked()
         }
@@ -196,16 +197,14 @@ class HomeScreenFragment : Fragment(),
 
     @Composable
     fun PageWithWidgets(
-        modifier: Modifier = Modifier,
-        showSpaceWidget: Boolean = true
+        modifier: Modifier = Modifier
     ) {
         HomeScreen(
             modifier = modifier,
-            widgets = if (showSpaceWidget) vm.views.collectAsState().value else vm.views.collectAsState().value.filter { it !is WidgetView.SpaceWidget },
+            widgets = vm.views.collectAsState().value,
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,
-            onEditWidgets = vm::onEditWidgets,
             onExitEditMode = vm::onExitEditMode,
             onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                 vm.onDropDownMenuAction(widget, action)
@@ -221,13 +220,9 @@ class HomeScreenFragment : Fragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onSpaceWidgetClicked = throttledClick(
-                onClick = vm::onSpaceWidgetClicked
-            ),
             onBundledWidgetClicked = vm::onBundledWidgetClicked,
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-            onSpaceWidgetShareIconClicked = vm::onSpaceWidgetShareIconClicked,
             onCreateDataViewObject = {_, _ -> },
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
@@ -402,14 +397,6 @@ class HomeScreenFragment : Fragment(),
                 )
                 dialog.show(childFragmentManager, null)
             }
-            is Command.CreateObjectForWidget -> {
-                val dialog = WidgetObjectTypeFragment.new(
-                    space = command.space.id,
-                    widgetId = command.widget,
-                    source = command.source
-                )
-                dialog.show(childFragmentManager, null)
-            }
             is Command.OpenSpaceSettings -> {
                 runCatching {
                     findNavController().navigate(
@@ -568,14 +555,6 @@ class HomeScreenFragment : Fragment(),
     private fun showMnemonicReminderAlert() {
         isMnemonicReminderDialogNeeded = false
         findNavController().navigate(R.id.dashboardKeychainDialog)
-    }
-
-    override fun onCreateWidgetObject(
-        objType: ObjectWrapper.Type,
-        widgetId: Id,
-        source: Id
-    ) {
-        vm.onCreateObjectForWidget(type = objType, source = source)
     }
 
     override fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id) {

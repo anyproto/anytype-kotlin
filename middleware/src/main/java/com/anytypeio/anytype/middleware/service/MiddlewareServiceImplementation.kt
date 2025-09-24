@@ -2833,4 +2833,17 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun appShutdown(request: Rpc.App.Shutdown.Request): Rpc.App.Shutdown.Response {
+        val encoded = Service.appShutdown(
+            Rpc.App.Shutdown.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.App.Shutdown.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.App.Shutdown.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

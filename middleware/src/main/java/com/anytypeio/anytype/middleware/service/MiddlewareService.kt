@@ -680,4 +680,7 @@ interface MiddlewareService {
     fun publishingList(request: Rpc.Publishing.List.Request): Rpc.Publishing.List.Response
 
     //endregion
+
+    @Throws(Exception::class)
+    fun appShutdown(request: Rpc.App.Shutdown.Request): Rpc.App.Shutdown.Response
 }

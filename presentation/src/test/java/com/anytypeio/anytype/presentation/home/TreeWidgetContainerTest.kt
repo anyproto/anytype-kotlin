@@ -372,7 +372,8 @@ class TreeWidgetContainerTest {
                                 )
                             )
                         ),
-                        isExpanded = true
+                        isExpanded = true,
+                        sectionType = SectionType.TYPES
                     ),
                     actual = firstTimeState
                 )
@@ -454,7 +455,8 @@ class TreeWidgetContainerTest {
                                 )
                             )
                         ),
-                        isExpanded = true
+                        isExpanded = true,
+                        sectionType = SectionType.TYPES
                     ),
                     actual = secondTimeState
                 )

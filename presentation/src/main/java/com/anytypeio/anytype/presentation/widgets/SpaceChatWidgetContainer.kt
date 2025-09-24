@@ -45,7 +45,8 @@ class SpaceChatWidgetContainer @Inject constructor(
                     source = widget.source,
                     unreadMessageCount = unreadMessageCount,
                     unreadMentionCount = unreadMentionCount,
-                    isMuted = isMuted
+                    isMuted = isMuted,
+                    sectionType = widget.sectionType
                 )
             }
                 .distinctUntilChanged()
@@ -55,7 +56,8 @@ class SpaceChatWidgetContainer @Inject constructor(
                         WidgetView.SpaceChat(
                             id = widget.id,
                             source = widget.source,
-                            isMuted = false // Default to unmuted while loading
+                            isMuted = false, // Default to unmuted while loading
+                            sectionType = widget.sectionType
                         )
                     )
                 }
@@ -65,7 +67,8 @@ class SpaceChatWidgetContainer @Inject constructor(
             WidgetView.SpaceChat(
                 id = widget.id,
                 source = widget.source,
-                isMuted = false // Default to unmuted on error
+                isMuted = false, // Default to unmuted on error
+                sectionType = widget.sectionType
             )
         )
     }

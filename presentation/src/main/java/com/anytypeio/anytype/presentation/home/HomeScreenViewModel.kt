@@ -293,6 +293,9 @@ class HomeScreenViewModel(
     // Expanded widget IDs for persistence across app restarts
     private val expandedWidgetIds = MutableStateFlow<Set<Id>>(emptySet())
 
+    // State for bundled widget deletion warning
+    val pendingBundledWidgetDeletion = MutableStateFlow<Id?>(null)
+
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
@@ -1077,7 +1080,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithDeletingWidget(widget: Id) {
+    fun proceedWithDeletingWidget(widget: Id) {
         Timber.d("Proceeding with widget deletion: $widget")
         viewModelScope.launch {
             val config = spaceManager.getConfig()
@@ -1430,7 +1433,15 @@ class HomeScreenViewModel(
                 proceedWithChangingType(widget)
             }
             DropDownMenuAction.RemoveWidget -> {
-                proceedWithDeletingWidget(widget)
+                // Check if this is a bundled widget that needs a warning
+                val targetWidget = widgets.value.orEmpty().find { it.id == widget }
+                if (targetWidget?.source is Widget.Source.Bundled) {
+                    // Show warning modal for bundled widgets
+                    pendingBundledWidgetDeletion.value = widget
+                } else {
+                    // Proceed directly for non-bundled widgets
+                    proceedWithDeletingWidget(widget)
+                }
             }
             DropDownMenuAction.EmptyBin -> {
                 proceedWithEmptyingBin()
@@ -1449,6 +1460,10 @@ class HomeScreenViewModel(
                 )
             }
         }
+    }
+
+    fun onHideBundledWidgetDeletionScreen() {
+        pendingBundledWidgetDeletion.value = null
     }
 
     fun onBundledWidgetClicked(widget: Id) {
@@ -2075,6 +2090,18 @@ class HomeScreenViewModel(
     }
 
     private fun isInEditMode() = mode.value == InteractionMode.Edit
+
+    fun onBundledWidgetDeletionConfirmed() {
+        val widgetId = pendingBundledWidgetDeletion.value
+        if (widgetId != null) {
+            proceedWithDeletingWidget(widgetId)
+            pendingBundledWidgetDeletion.value = null
+        }
+    }
+
+    fun onBundledWidgetDeletionCanceled() {
+        pendingBundledWidgetDeletion.value = null
+    }
 
     private fun dispatchSelectHomeTabCustomSourceEvent(widget: Id, source: Widget.Source) {
         viewModelScope.launch {

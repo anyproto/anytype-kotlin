@@ -15,10 +15,12 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -177,6 +179,18 @@ class HomeScreenFragment : Fragment(),
                 )
             }
             else -> {}
+        }
+
+        val pendingBundledWidgetId =
+            vm.pendingBundledWidgetDeletion.collectAsStateWithLifecycle().value
+        if (pendingBundledWidgetId != null) {
+            UnpinWidgetScreen(
+                onPinCancelled = { vm.onHideBundledWidgetDeletionScreen() },
+                onPinAccepted = {
+                    vm.proceedWithDeletingWidget(pendingBundledWidgetId)
+                    vm.onHideBundledWidgetDeletionScreen()
+                }
+            )
         }
 
         BackHandler {

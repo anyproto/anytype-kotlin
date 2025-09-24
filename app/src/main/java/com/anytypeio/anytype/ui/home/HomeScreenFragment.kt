@@ -183,10 +183,9 @@ class HomeScreenFragment : Fragment(),
             vm.pendingBundledWidgetDeletion.collectAsStateWithLifecycle().value
         if (pendingBundledWidgetId != null) {
             UnpinWidgetScreen(
-                onPinCancelled = { vm.onHideBundledWidgetDeletionScreen() },
+                onPinCancelled = { vm.onBundledWidgetDeletionCanceled() },
                 onPinAccepted = {
-                    vm.proceedWithDeletingWidget(pendingBundledWidgetId)
-                    vm.onHideBundledWidgetDeletionScreen()
+                    vm.onBundledWidgetDeletionConfirmed()
                 }
             )
         }

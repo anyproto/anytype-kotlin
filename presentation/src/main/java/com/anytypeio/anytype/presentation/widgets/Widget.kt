@@ -189,6 +189,7 @@ sealed class Widget {
         }
 
         companion object {
+            const val WIDGET_BIN_ID = "widget_bin_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SOURCE_OTHER = "source_other"

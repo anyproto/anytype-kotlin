@@ -147,6 +147,7 @@ import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
@@ -826,7 +827,7 @@ class HomeScreenViewModel(
                                 addAll(types)
                                 add(
                                     Widget.Bin(
-                                        id = "widget_bin_id",
+                                        id = WIDGET_BIN_ID,
                                         source = Widget.Source.Bundled.Bin,
                                         config = state.config,
                                         icon = ObjectIcon.None,
@@ -1466,10 +1467,6 @@ class HomeScreenViewModel(
                 )
             }
         }
-    }
-
-    fun onHideBundledWidgetDeletionScreen() {
-        pendingBundledWidgetDeletion.value = null
     }
 
     fun onBundledWidgetClicked(widget: Id) {

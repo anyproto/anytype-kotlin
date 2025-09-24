@@ -233,7 +233,12 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
                 createObjectLayouts.contains(obj.layout)
             }
         }
-        else -> false
+        Widget.Source.Bundled.AllObjects -> false
+        Widget.Source.Bundled.Bin -> false
+        Widget.Source.Bundled.Chat -> false
+        Widget.Source.Bundled.Recent -> false
+        Widget.Source.Bundled.RecentLocal -> false
+        Widget.Source.Other -> false
     }
 }
 

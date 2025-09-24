@@ -38,12 +38,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -159,13 +161,14 @@ private fun OnboardingEmailScreen(
                     text = stringResource(R.string.onboarding_email_add_title),
                     color = colorResource(id = R.color.text_primary),
                     style = HeadlineTitleSemibold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    letterSpacing = (-0.48).sp,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.onboarding_email_add_description),
-                    style = UXBody,
+                    style = BodyCalloutRegular,
                     color = colorResource(id = R.color.text_secondary),
                     textAlign = TextAlign.Center
                 )

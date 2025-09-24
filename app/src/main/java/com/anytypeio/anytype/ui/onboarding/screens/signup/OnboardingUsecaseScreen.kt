@@ -34,6 +34,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -47,14 +48,14 @@ import com.anytypeio.anytype.presentation.onboarding.signup.UsecaseItem
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSelectionItem
 
 private val usecaseItems = listOf(
-    UsecaseItem("📋", R.string.onboarding_usecase_habit_tracking, "HabitTracking"),
-    UsecaseItem("📚", R.string.onboarding_usecase_knowledge, "Knowledge"),
-    UsecaseItem("🗓️", R.string.onboarding_usecase_life_planning, "LifePlanning"),
-    UsecaseItem("💬", R.string.onboarding_usecase_messaging, "Messaging"),
-    UsecaseItem("📝", R.string.onboarding_usecase_notes, "NoteTaking"),
-    UsecaseItem("✅", R.string.onboarding_usecase_projects, "Projects"),
-    UsecaseItem("👥", R.string.onboarding_usecase_team_work, "TeamWork"),
-    UsecaseItem("👻", R.string.onboarding_usecase_other, "Other"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_habit, R.string.onboarding_usecase_habit_tracking, "HabitTracking"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_know, R.string.onboarding_usecase_knowledge, "Knowledge"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_life, R.string.onboarding_usecase_life_planning, "LifePlanning"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_messag, R.string.onboarding_usecase_messaging, "Messaging"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_note, R.string.onboarding_usecase_notes, "NoteTaking"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_projects, R.string.onboarding_usecase_projects, "Projects"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_personal, R.string.onboarding_usecase_team_work, "TeamWork"),
+    UsecaseItem(R.drawable.ic_onboarding_usecase_other, R.string.onboarding_usecase_other, "Other"),
 )
 
 @Composable
@@ -108,13 +109,14 @@ fun OnboardingUsecaseScreen(
                 text = stringResource(R.string.onboarding_usecase_title),
                 color = colorResource(id = R.color.text_primary),
                 style = HeadlineTitleSemibold,
-                textAlign = TextAlign.Center
+                textAlign = TextAlign.Center,
+                letterSpacing = (-0.48).sp
             )
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(R.string.onboarding_usecase_description),
-                style = UXBody,
+                style = BodyCalloutRegular,
                 color = colorResource(id = R.color.text_secondary),
                 textAlign = TextAlign.Center
             )
@@ -209,9 +211,10 @@ private fun UsecaseSelectionItem(
                     modifier = Modifier.size(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = usecase.emoji,
-                        style = BodyCalloutRegular,
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = usecase.iconRes),
+                        contentDescription = "Use case icon"
                     )
                 }
                 Spacer(modifier = Modifier.width(6.dp))

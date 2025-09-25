@@ -1948,7 +1948,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
     <string name="private_local_yours_forever">Privato, locale, tuo per sempre</string>
-    <string name="wallpaper_item_space_icon_color">Icona spazio \ncolore</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>
     <string name="web_publishing_customize_url">Personalizza URL</string>

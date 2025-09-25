@@ -41,6 +41,7 @@ class DateProviderImplTest {
         appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider)
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())
         Mockito.`when`(localeProvider.language()).thenReturn(Locale.getDefault().language)
+        Mockito.`when`(stringResourceProvider.getToday()).thenReturn("Today")
         Mockito.`when`(stringResourceProvider.getYesterday()).thenReturn("Yesterday")
     }
 
@@ -237,7 +238,7 @@ class DateProviderImplTest {
 
     // MARK: getChatPreviewDate Tests
     @Test
-    fun getChatPreviewDate_todayTimestamp_returnsTimeFormat() = runTest(dispatcher) {
+    fun getChatPreviewDate_todayTimestamp_returnsToday() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -255,8 +256,8 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(todayTimestamp)
 
-        // Then: Should return time in HH:mm format
-        assertEquals("18:32", result)
+        // Then: Should return "Today"
+        assertEquals("Today", result)
     }
 
     @Test
@@ -284,7 +285,7 @@ class DateProviderImplTest {
     }
 
     @Test
-    fun getChatPreviewDate_currentYearNotTodayOrYesterday_returnsDateWithoutYear() = runTest(dispatcher) {
+    fun getChatPreviewDate_currentYearNotTodayOrYesterday_returnsShortDate() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -299,12 +300,12 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return date in "MMM d" format
-        assertTrue("Result should contain month and day", result.matches(Regex("\\w{3} \\d{1,2}")))
+        // Then: Should return date in "dd/MM" format
+        assertTrue("Result should contain day/month format", result.matches(Regex("\\d{2}/\\d{2}")))
     }
 
     @Test
-    fun getChatPreviewDate_previousYear_returnsDateWithYear() = runTest(dispatcher) {
+    fun getChatPreviewDate_previousYear_returnsShortDateWithYear() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -319,13 +320,13 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return date in "MMM d, yyyy" format
-        assertTrue("Result should contain month, day and year",
-            result.matches(Regex("\\w{3} \\d{1,2}, \\d{4}")))
+        // Then: Should return date in "dd/MM/yy" format
+        assertTrue("Result should contain day/month/year format",
+            result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")))
     }
 
     @Test
-    fun getChatPreviewDate_futureYear_returnsDateWithYear() = runTest(dispatcher) {
+    fun getChatPreviewDate_futureYear_returnsShortDateWithYear() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -340,13 +341,13 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return date in "MMM d, yyyy" format
-        assertTrue("Result should contain month, day and year",
-            result.matches(Regex("\\w{3} \\d{1,2}, \\d{4}")))
+        // Then: Should return date in "dd/MM/yy" format
+        assertTrue("Result should contain day/month/year format",
+            result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")))
     }
 
     @Test
-    fun getChatPreviewDate_midnightToday_returnsTimeFormat() = runTest(dispatcher) {
+    fun getChatPreviewDate_midnightToday_returnsToday() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -364,12 +365,12 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return time in HH:mm format
-        assertEquals("00:00", result)
+        // Then: Should return "Today"
+        assertEquals("Today", result)
     }
 
     @Test
-    fun getChatPreviewDate_endOfDay_returnsTimeFormat() = runTest(dispatcher) {
+    fun getChatPreviewDate_endOfDay_returnsToday() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -387,8 +388,8 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return time in HH:mm format
-        assertEquals("23:59", result)
+        // Then: Should return "Today"
+        assertEquals("Today", result)
     }
 
     @Test
@@ -412,11 +413,12 @@ class DateProviderImplTest {
 
         // Then: Should handle timezone correctly
         assertNotNull("Result should not be null", result)
-        assertTrue("Result should be time format, yesterday, or date format. Got: '$result'",
-            result.matches(Regex("\\d{2}:\\d{2}")) || // HH:mm format for today
+        assertTrue("Result should be today, yesterday, weekday, or date format. Got: '$result'",
+            result == "Today" || // Today
             result == "Yesterday" || // Yesterday
-            result.matches(Regex("[A-Za-z]{3} \\d{1,2}")) || // MMM d format for current year
-            result.matches(Regex("[A-Za-z]{3} \\d{1,2}, \\d{4}")) // MMM d, yyyy format for different year
+            result.matches(Regex("[A-Za-z]{3}")) || // EEE format for weekdays
+            result.matches(Regex("\\d{2}/\\d{2}")) || // dd/MM format for current year
+            result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")) // dd/MM/yy format for different year
         )
     }
 
@@ -465,7 +467,33 @@ class DateProviderImplTest {
     }
 
     @Test
-    fun getChatPreviewDate_veryOldDate_returnsDateWithYear() = runTest(dispatcher) {
+    fun getChatPreviewDate_withinSevenDays_returnsWeekday() = runTest(dispatcher) {
+        dateProviderImpl = DateProviderImpl(
+            defaultZoneId = ZoneId.of("UTC"),
+            localeProvider = localeProvider,
+            appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+            stringResourceProvider = stringResourceProvider
+        )
+        // Given: A timestamp from 3 days ago (within 7 days but not today/yesterday)
+        val threeDaysAgo = LocalDateTime.now(ZoneId.of("UTC"))
+            .minusDays(3)
+            .withHour(15)
+            .withMinute(30)
+            .withSecond(0)
+            .withNano(0)
+        val timestamp = threeDaysAgo.toEpochSecond(ZoneOffset.UTC)
+
+        // When
+        val result = dateProviderImpl.getChatPreviewDate(timestamp)
+
+        // Then: Should return short weekday format (e.g., "Sun", "Mon", "Tue")
+        assertTrue("Result should be short weekday format", result.matches(Regex("[A-Za-z]{3}")))
+        assertTrue("Result should be a valid weekday abbreviation",
+            listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").contains(result))
+    }
+
+    @Test
+    fun getChatPreviewDate_veryOldDate_returnsShortDateWithYear() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -479,7 +507,7 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return date with year
-        assertTrue("Result should contain year", result.contains("1990"))
+        // Then: Should return date in dd/MM/yy format (e.g., "25/12/90")
+        assertTrue("Result should be in dd/MM/yy format", result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")))
     }
 }

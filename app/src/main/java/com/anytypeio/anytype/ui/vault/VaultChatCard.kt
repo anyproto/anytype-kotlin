@@ -465,10 +465,15 @@ private fun buildChatContentWithInlineIcons(
     val inlineContentMap = mutableMapOf<String, InlineTextContent>()
 
     val text = buildAnnotatedString {
-        // Add creator name if available
+        // Add creator name if available (truncate if too long)
         if (creatorName != null) {
+            val truncatedCreatorName = if (creatorName.length > 30) {
+                creatorName.take(27) + "..."
+            } else {
+                creatorName
+            }
             withStyle(style = spanTitle2Medium) {
-                append("$creatorName\n")
+                append("$truncatedCreatorName\n")
             }
         }
 

@@ -103,12 +103,13 @@ fun StubSpaceView(
     targetSpaceId: Id = MockDataFactory.randomUuid(),
     spaceAccessType: SpaceAccessType = SpaceAccessType.DEFAULT,
     sharedSpaceLimit: Int? = null,
-    spaceAccountStatus: SpaceStatus? = null,
-    spaceLocalStatus: SpaceStatus? = null,
+    spaceAccountStatus: SpaceStatus? = SpaceStatus.SPACE_ACTIVE,
+    spaceLocalStatus: SpaceStatus? = SpaceStatus.OK,
     chatId: Id? = null,
     spaceUxType: SpaceUxType = SpaceUxType.DATA,
     spaceOrder: String? = null,
     createdDate: Double = MockDataFactory.randomLong().toDouble(),
+    spaceJoinDate: Double = MockDataFactory.randomLong().toDouble()
 ) = ObjectWrapper.SpaceView(
     map = mapOf(
         Relations.ID to id,
@@ -120,6 +121,7 @@ fun StubSpaceView(
         Relations.SPACE_LOCAL_STATUS to spaceLocalStatus?.code?.toDouble(),
         Relations.SPACE_UX_TYPE to spaceUxType.code.toDouble(),
         Relations.SPACE_ORDER to spaceOrder,
-        Relations.CREATED_DATE to createdDate
+        Relations.CREATED_DATE to createdDate,
+        Relations.SPACE_JOIN_DATE to spaceJoinDate
     )
 )

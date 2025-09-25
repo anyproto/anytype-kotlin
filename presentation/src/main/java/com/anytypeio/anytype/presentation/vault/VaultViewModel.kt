@@ -262,9 +262,9 @@ class VaultViewModel(
             compareBy(nullsLast()) { it.space.spaceOrder }
         )
 
-        // Sort unpinned spaces by message date (descending), then by creation date (descending)
+        // Sort unpinned spaces by effective date (descending), then by creation date (descending)
         val sortedUnpinnedSpaces = unpinnedSpaces.sortedWith(
-            compareByDescending<VaultSpaceView> { it.lastMessageDate ?: 0L }
+            compareByDescending<VaultSpaceView> { calculateEffectiveDate(it) ?: 0L }
                 .thenByDescending { it.space.getSingleValue<Double>(Relations.CREATED_DATE) ?: 0.0 }
         )
 
@@ -272,6 +272,24 @@ class VaultViewModel(
             pinnedSpaces = sortedPinnedSpaces,
             mainSpaces = sortedUnpinnedSpaces
         )
+    }
+
+    /**
+     * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
+     * - If both lastMessageDate and spaceJoinDate are available, return the maximum
+     * - If only one is available, return that one
+     * - If neither is available, return null (fallback to creation date in comparator)
+     */
+    private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
+        val lastMessageDate = space.lastMessageDate
+        val spaceJoinDate = space.space.spaceJoinDate?.toLong()
+
+        return when {
+            lastMessageDate != null && spaceJoinDate != null -> maxOf(lastMessageDate, spaceJoinDate)
+            lastMessageDate != null -> lastMessageDate
+            spaceJoinDate != null -> spaceJoinDate
+            else -> null
+        }
     }
 
     private suspend fun mapToVaultSpaceViewItemWithCanPin(

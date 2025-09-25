@@ -54,7 +54,6 @@ import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
-import com.anytypeio.anytype.ui.vault.ContentChat
 
 @Composable
 fun VaultChatCard(
@@ -204,7 +203,8 @@ private fun RowScope.ContentChat(
                 Image(
                     painter = painterResource(R.drawable.ic_pin_18),
                     contentDescription = stringResource(R.string.content_desc_pin),
-                    modifier = Modifier.size(18.dp)
+                    modifier = Modifier.size(18.dp),
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                 )
             }
         }
@@ -324,7 +324,8 @@ private fun UnreadIndicatorsRow(
             Image(
                 painter = painterResource(R.drawable.ic_pin_18),
                 contentDescription = stringResource(R.string.content_desc_pin),
-                modifier = Modifier.size(18.dp)
+                modifier = Modifier.size(18.dp),
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
             )
         }
     }
@@ -354,15 +355,6 @@ fun TitleRow(
                     style = BodySemiBold,
                     color = colorResource(id = R.color.text_primary),
                 )
-                // 1: optional muted icon
-                if (isMuted == true) {
-                    Image(
-                        painter = mutedIcon,
-                        contentDescription = stringResource(R.string.content_desc_muted),
-                        modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                    )
-                }
                 // 2: optional time (only if messageTime != null)
                 messageTime?.let {
                     Text(

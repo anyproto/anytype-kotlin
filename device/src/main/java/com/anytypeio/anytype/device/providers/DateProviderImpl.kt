@@ -287,12 +287,16 @@ class DateProviderImpl @Inject constructor(
 
         return when (dateType) {
             DateType.TODAY -> {
-                // Show time in HH:mm format
-                formatToDateString(timestamp, "HH:mm")
+                // Show "Today"
+                stringResourceProvider.getToday()
             }
             DateType.YESTERDAY -> {
                 // Show "Yesterday" localized
                 stringResourceProvider.getYesterday()
+            }
+            DateType.PREVIOUS_SEVEN_DAYS -> {
+                // Show short weekday format in locale (e.g., "Sun", "Fri")
+                formatToDateString(timestamp, "EEE")
             }
             else -> {
                 // Check if it's current year
@@ -300,11 +304,11 @@ class DateProviderImpl @Inject constructor(
                 val messageYear = getLocalDateOfTime(timestamp).year
 
                 if (currentYear == messageYear) {
-                    // Show "MMM d" format (e.g., "Apr 12")
-                    formatToDateString(timestamp, "MMM d")
+                    // Show short date format in locale (e.g., "02/09")
+                    formatToDateString(timestamp, "dd/MM")
                 } else {
-                    // Show "MMM d, yyyy" format (e.g., "Apr 12, 2024")
-                    formatToDateString(timestamp, "MMM d, yyyy")
+                    // Show short date + year format (e.g., "29/08/24")
+                    formatToDateString(timestamp, "dd/MM/yy")
                 }
             }
         }

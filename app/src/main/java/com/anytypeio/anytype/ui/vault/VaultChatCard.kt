@@ -23,7 +23,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.Layout
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -193,9 +192,7 @@ private fun RowScope.ContentChat(
             TitleRow(
                 modifier = Modifier.weight(1f),
                 message = title,
-                messageTime = messageTime,
-                mutedIcon = painterResource(R.drawable.ci_notifications_off),
-                isMuted = isMuted
+                messageTime = messageTime
             )
 
             // Show pin icon when no content but is pinned
@@ -335,9 +332,7 @@ private fun UnreadIndicatorsRow(
 fun TitleRow(
     modifier: Modifier,
     message: String,
-    messageTime: String?,
-    mutedIcon: Painter,
-    isMuted: Boolean? = null
+    messageTime: String?
 ) {
     val density = LocalDensity.current
 

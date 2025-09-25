@@ -381,23 +381,12 @@ fun TitleRow(
                 )
             } else null
 
-            // 2) Measure icon next (if muted)
-            val iconPlaceable = if (isMuted == true) {
-                // if time exists, icon is at index 1; if no time, still index 1
-                measurables.getOrNull(1)?.measure(
-                    constraints.copy(minWidth = 0, minHeight = 0)
-                )
-            } else null
-
             // 3) Compute reserved width:
             //    time width + gap before time (if time exists)
             //  + icon width + gap before icon (if icon exists)
             val reserved = listOfNotNull(
-                timePlaceable?.width,
-                iconPlaceable?.width
-            ).sum() +
-                    (if (iconPlaceable != null) iconTextGap else 0) +
-                    (if (timePlaceable != null) textTimeGap else 0)
+                timePlaceable?.width
+            ).sum() + (if (timePlaceable != null) textTimeGap else 0)
 
             // 4) Measure text with remaining width
             val maxTextWidth = (constraints.maxWidth - reserved).coerceAtLeast(0)
@@ -411,7 +400,6 @@ fun TitleRow(
             // 5) Determine row height
             val rowHeight = listOfNotNull(
                 textPlaceable?.height,
-                iconPlaceable?.height,
                 timePlaceable?.height
             ).maxOrNull() ?: 0
 
@@ -419,14 +407,6 @@ fun TitleRow(
             layout(constraints.maxWidth, rowHeight) {
                 val textY = (rowHeight - (textPlaceable?.height ?: 0)) / 2
                 textPlaceable?.placeRelative(x = 0, y = textY)
-
-                iconPlaceable?.let {
-                    val iconY = (rowHeight - it.height) / 2
-                    it.placeRelative(
-                        x = (textPlaceable?.width ?: 0) + iconTextGap,
-                        y = iconY
-                    )
-                }
 
                 timePlaceable?.let {
                     val timeY = (rowHeight - it.height) / 2

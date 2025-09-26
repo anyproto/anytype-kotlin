@@ -631,8 +631,7 @@ private fun SpaceMemberRequest(
                     style = PreviewTitle2Medium,
                     color = colorResource(id = R.color.text_primary),
                     modifier = Modifier
-                        .weight(1f, fill = false)
-                        .padding(end = 12.dp),
+                        .weight(1f, fill = false),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -642,37 +641,24 @@ private fun SpaceMemberRequest(
                     Text(
                         text = "($youAsMemberText)",
                         style = PreviewTitle2Medium,
-                        color = colorResource(id = R.color.text_secondary),
+                        color = colorResource(id = R.color.text_primary),
                     )
                 }
+                Spacer(modifier = Modifier.width(8.dp))
             }
             Spacer(modifier = Modifier.height(2.dp))
             val color = when (request) {
                 ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
                 ShareSpaceMemberView.Config.Request.Leave -> ThemeColor.RED
             }
-            val text = when (request) {
-                ShareSpaceMemberView.Config.Request.Join -> stringResource(
-                    id = R.string.multiplayer_join_request
-                )
-
-                ShareSpaceMemberView.Config.Request.Leave -> stringResource(
-                    id = R.string.multiplayer_leave_request
-                )
-            }
+            val globalName = member.globalName?.ifEmpty { member.identity }
             Text(
-                text = text,
-                color = colorResource(id = R.color.text_label_inversion),
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .background(
-                        color = colorResource(id = R.color.background_multiplayer_request),
-                        shape = RoundedCornerShape(size = 3.dp)
-                    )
-                    .padding(start = 6.dp, end = 6.dp),
+                text = globalName.orEmpty(),
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = Relations1
+                style = Caption1Regular
             )
         }
         when (request) {
@@ -858,7 +844,8 @@ fun SpaceJoinRequestPreview() {
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
-                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),

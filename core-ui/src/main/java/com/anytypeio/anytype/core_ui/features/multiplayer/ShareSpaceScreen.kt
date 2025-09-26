@@ -231,14 +231,14 @@ fun ShareSpaceScreen(
                             }
 
                             is ShareSpaceMemberView.Config.Request -> {
-                                SpaceMemberRequest(
+                                SpaceMember(
                                     member = member.obj,
                                     icon = member.icon,
-                                    request = config,
-                                    onViewRequestClicked = {
+                                    config = config,
+                                    isUser = member.isUser,
+                                    onMemberClicked = {
                                         onViewRequestClicked(member)
-                                    },
-                                    isUser = member.isUser
+                                    }
                                 )
                             }
                         }
@@ -407,16 +407,16 @@ enum class DragValue { DRAGGED_DOWN, DRAGGED_UP }
 @Composable
 private fun SpaceMember(
     isUser: Boolean,
-    isCurrentUserOwner: Boolean,
+    isCurrentUserOwner: Boolean = false,
     member: ObjectWrapper.SpaceMember,
     icon: SpaceMemberIconView,
-    config: ShareSpaceMemberView.Config.Member,
-    onCanEditClicked: () -> Unit,
-    onCanViewClicked: () -> Unit,
-    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
-    onRemoveMemberClicked: () -> Unit,
-    canEditEnabled: Boolean,
-    canReadEnabled: Boolean
+    config: ShareSpaceMemberView.Config,
+    onCanEditClicked: () -> Unit = {},
+    onCanViewClicked: () -> Unit = {},
+    onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit = {},
+    onRemoveMemberClicked: () -> Unit = {},
+    canEditEnabled: Boolean = false,
+    canReadEnabled: Boolean = false
 ) {
     var isMemberMenuExpanded by remember { mutableStateOf(false) }
     Row(
@@ -482,7 +482,7 @@ private fun SpaceMember(
                     .padding(end = 16.dp)
             )
         }
-        if (isCurrentUserOwner && config !is ShareSpaceMemberView.Config.Member.Owner) {
+        if (isCurrentUserOwner && config is ShareSpaceMemberView.Config.Member && config !is ShareSpaceMemberView.Config.Member.Owner) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_action_more),
@@ -607,79 +607,6 @@ fun SpaceMemberIcon(
     }
 }
 
-@Composable
-private fun SpaceMemberRequest(
-    member: ObjectWrapper.SpaceMember,
-    isUser: Boolean,
-    icon: SpaceMemberIconView,
-    request: ShareSpaceMemberView.Config.Request,
-    onViewRequestClicked: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .height(72.dp)
-            .fillMaxWidth()
-    ) {
-        Spacer(modifier = Modifier.width(16.dp))
-        SpaceMemberIcon(
-            icon = icon,
-            modifier = Modifier.align(Alignment.CenterVertically)
-        )
-        Spacer(modifier = Modifier.width(12.dp))
-        Column(
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .weight(1.0f)
-        ) {
-            Row {
-                Text(
-                    text = member.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
-                    style = PreviewTitle2Medium,
-                    color = colorResource(id = R.color.text_primary),
-                    modifier = Modifier
-                        .weight(1f, fill = false),
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-                if (isUser) {
-                    Spacer(modifier = Modifier.width(4.dp))
-                    val youAsMemberText = stringResource(id = R.string.multiplayer_you_as_member)
-                    Text(
-                        text = "($youAsMemberText)",
-                        style = PreviewTitle2Medium,
-                        color = colorResource(id = R.color.text_primary),
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-            }
-            Spacer(modifier = Modifier.height(2.dp))
-            Text(
-                text = member.globalName ?: member.identity,
-                color = colorResource(id = R.color.text_secondary),
-                modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis,
-                style = Caption1Regular
-            )
-        }
-        // Show participant status text instead of buttons
-        val statusText = getParticipantStatusText(
-            member = member,
-            canApproveRequests = isUser
-        )
-
-        if (statusText != null) {
-            Text(
-                text = statusText,
-                style = Title2,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier
-                    .align(Alignment.CenterVertically)
-                    .padding(end = 16.dp)
-            )
-        }
-    }
-}
 
 /**
  * Get participant status text based on the participant's status and permissions.
@@ -878,7 +805,7 @@ fun InviteLinkDisplay(
 @Composable
 @Preview
 fun SpaceJoinRequestPreview() {
-    SpaceMemberRequest(
+    SpaceMember(
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
@@ -888,8 +815,7 @@ fun SpaceJoinRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        request = ShareSpaceMemberView.Config.Request.Join,
-        onViewRequestClicked = {},
+        config = ShareSpaceMemberView.Config.Request.Join,
         isUser = false
     )
 }
@@ -897,7 +823,7 @@ fun SpaceJoinRequestPreview() {
 @Composable
 @Preview
 fun SpaceJoinLongTitleRequestPreview() {
-    SpaceMemberRequest(
+    SpaceMember(
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
@@ -906,8 +832,7 @@ fun SpaceJoinLongTitleRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        request = ShareSpaceMemberView.Config.Request.Join,
-        onViewRequestClicked = {},
+        config = ShareSpaceMemberView.Config.Request.Join,
         isUser = false
     )
 }
@@ -915,7 +840,7 @@ fun SpaceJoinLongTitleRequestPreview() {
 @Composable
 @Preview
 fun SpaceLeaveRequestPreview() {
-    SpaceMemberRequest(
+    SpaceMember(
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "1",
@@ -924,8 +849,7 @@ fun SpaceLeaveRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        request = ShareSpaceMemberView.Config.Request.Leave,
-        onViewRequestClicked = {},
+        config = ShareSpaceMemberView.Config.Request.Leave,
         isUser = true
     )
 }

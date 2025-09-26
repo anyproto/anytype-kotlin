@@ -1415,8 +1415,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Viewer</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1456,9 +1458,10 @@
     <string name="multiplayer_members">Members</string>
     <string name="multiplayer_leave_request">Leave request</string>
     <string name="multiplayer_join_request">Join request</string>
-    <string name="multiplayer_approve_request">Approve</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>

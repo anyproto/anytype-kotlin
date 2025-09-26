@@ -23,7 +23,7 @@ fun Section(
     modifier: Modifier = Modifier,
     title: String,
     color: Color = colorResource(id = R.color.text_secondary),
-    textPaddingStart: Dp = 20.dp
+    textPaddingStart: Dp = 16.dp
 ) {
     Box(modifier = modifier
         .height(52.dp)

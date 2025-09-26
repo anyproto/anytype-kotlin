@@ -67,6 +67,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
@@ -90,6 +91,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
@@ -240,9 +242,7 @@ fun ShareSpaceScreen(
                                 )
                             }
                         }
-                        if (index != members.lastIndex) {
-                            Divider()
-                        }
+                        Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                     }
                 }
                 if (members.size > 2) {
@@ -457,23 +457,29 @@ private fun SpaceMember(
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
-                text = when (config) {
-                    ShareSpaceMemberView.Config.Member.Writer -> {
-                        stringResource(id = R.string.multiplayer_can_edit)
-                    }
+                text = member.globalName ?: member.identity,
+                color = colorResource(id = R.color.text_secondary),
+                modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                style = Caption1Regular
+            )
+        }
 
-                    ShareSpaceMemberView.Config.Member.Owner -> {
-                        stringResource(id = R.string.multiplayer_owner)
-                    }
+        // Show participant status text instead of buttons
+        val statusText = getParticipantStatusText(
+            member = member,
+            canApproveRequests = isUser
+        )
 
-                    ShareSpaceMemberView.Config.Member.Reader -> {
-                        stringResource(id = R.string.multiplayer_can_view)
-                    }
-
-                    else -> EMPTY_STRING_VALUE
-                },
-                style = Relations3,
-                color = colorResource(id = R.color.text_secondary)
+        if (statusText != null) {
+            Text(
+                text = statusText,
+                style = Title2,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 16.dp)
             )
         }
         if (isCurrentUserOwner && config !is ShareSpaceMemberView.Config.Member.Owner) {
@@ -647,13 +653,8 @@ private fun SpaceMemberRequest(
                 Spacer(modifier = Modifier.width(8.dp))
             }
             Spacer(modifier = Modifier.height(2.dp))
-            val color = when (request) {
-                ShareSpaceMemberView.Config.Request.Join -> ThemeColor.PINK
-                ShareSpaceMemberView.Config.Request.Leave -> ThemeColor.RED
-            }
-            val globalName = member.globalName?.ifEmpty { member.identity }
             Text(
-                text = globalName.orEmpty(),
+                text = member.globalName ?: member.identity,
                 color = colorResource(id = R.color.text_secondary),
                 modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
                 maxLines = 1,
@@ -661,30 +662,68 @@ private fun SpaceMemberRequest(
                 style = Caption1Regular
             )
         }
-        when (request) {
-            ShareSpaceMemberView.Config.Request.Join -> {
-                ButtonSecondary(
-                    text = stringResource(R.string.multiplayer_view_request),
-                    onClick = throttledClick(
-                        onClick = { onViewRequestClicked() }
-                    ),
-                    size = ButtonSize.Small,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
-            }
+        // Show participant status text instead of buttons
+        val statusText = getParticipantStatusText(
+            member = member,
+            canApproveRequests = isUser
+        )
 
-            ShareSpaceMemberView.Config.Request.Leave -> {
-                ButtonSecondary(
-                    text = stringResource(R.string.multiplayer_approve_request),
-                    onClick = throttledClick(
-                        onClick = { }
-                    ),
-                    size = ButtonSize.Small,
-                    modifier = Modifier.align(Alignment.CenterVertically)
-                )
+        if (statusText != null) {
+            Text(
+                text = statusText,
+                style = Title2,
+                color = colorResource(id = R.color.text_primary),
+                modifier = Modifier
+                    .align(Alignment.CenterVertically)
+                    .padding(end = 16.dp)
+            )
+        }
+    }
+}
+
+/**
+ * Get participant status text based on the participant's status and permissions.
+ * Similar to iOS participantStatus(_:) function.
+ */
+@Composable
+private fun getParticipantStatusText(
+    member: ObjectWrapper.SpaceMember,
+    canApproveRequests: Boolean
+): String? {
+    return when (member.status) {
+        ParticipantStatus.ACTIVE -> {
+            // Show permission level for active participants
+            val permission = member.permissions?.let { getPermissionTitle(it) }
+            permission
+        }
+        ParticipantStatus.JOINING -> {
+            // Show different messages based on whether user can approve requests
+            if (canApproveRequests) {
+                stringResource(R.string.multiplayer_approve_request)
+            } else {
+                stringResource(R.string.membership_price_pending)
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+        ParticipantStatus.REMOVING -> {
+            stringResource(R.string.multiplayer_leave_request) // "Leave request"
+        }
+        ParticipantStatus.DECLINED,
+        ParticipantStatus.CANCELLED,
+        ParticipantStatus.REMOVED -> {
+            // These statuses should not be shown (return null similar to iOS)
+            null
+        }
+        null -> null
+    }
+}
+
+@Composable
+private fun getPermissionTitle(permissions: SpaceMemberPermissions): String {
+    return when (permissions) {
+        SpaceMemberPermissions.READER -> stringResource(R.string.multiplayer_viewer)
+        SpaceMemberPermissions.WRITER -> stringResource(R.string.multiplayer_editor)
+        SpaceMemberPermissions.OWNER -> stringResource(R.string.multiplayer_owner)
+        SpaceMemberPermissions.NO_PERMISSIONS -> stringResource(R.string.multiplayer_no_permissions)
     }
 }
 

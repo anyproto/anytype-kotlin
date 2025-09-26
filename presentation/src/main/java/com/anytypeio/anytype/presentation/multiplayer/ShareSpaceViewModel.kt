@@ -940,23 +940,27 @@ data class ShareSpaceMemberView(
                 }
 
                 ParticipantStatus.JOINING -> {
-                    if (includeRequests)
-                        ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Request.Join,
-                            icon = icon,
-                            isUser = isUser
-                        )
-                    else
-                        null
+                    ShareSpaceMemberView(
+                        obj = obj,
+                        config = Config.Request.Join,
+                        icon = icon,
+                        isUser = isUser
+                    )
                 }
 
                 ParticipantStatus.REMOVING -> {
-                    // Always filter out participants with REMOVING status
-                    null
+                    ShareSpaceMemberView(
+                        obj = obj,
+                        config = Config.Request.Leave,
+                        icon = icon,
+                        isUser = isUser
+                    )
                 }
 
-                else -> null
+                ParticipantStatus.REMOVED -> null
+                ParticipantStatus.DECLINED -> null
+                ParticipantStatus.CANCELLED -> null
+                null -> null
             }
         }
     }

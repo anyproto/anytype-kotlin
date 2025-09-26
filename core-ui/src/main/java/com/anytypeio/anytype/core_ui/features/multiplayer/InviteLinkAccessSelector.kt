@@ -27,6 +27,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -118,7 +119,8 @@ fun InviteLinkAccessSelector(
 fun AccessLevelOption(
     modifier: Modifier = Modifier,
     uiItemUI: UiInviteLinkAccess,
-    isSelected: Boolean = false
+    isSelected: Boolean = false,
+    isCurrentUserOwner: Boolean = false
 ) {
     Row(
         modifier = modifier
@@ -166,6 +168,16 @@ fun AccessLevelOption(
         } else {
             Spacer(modifier = Modifier.width(16.dp))
         }
+
+        if (isCurrentUserOwner && !isSelected) {
+            Spacer(modifier = Modifier.width(12.dp))
+            Image(
+                modifier = Modifier.size(18.dp),
+                painter = painterResource(id = R.drawable.ic_arrow_right_18),
+                contentDescription = "Open change invite link screen icon",
+                contentScale = ContentScale.Inside
+            )
+        }
     }
 }
 
@@ -176,7 +188,7 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = w
     SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
 }
 
-@Preview(showBackground = true)
+@DefaultPreviews
 @Composable
 private fun InviteLinkAccessSelectorPreview() {
     InviteLinkAccessSelector(

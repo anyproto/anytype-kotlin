@@ -156,13 +156,15 @@ fun ShareSpaceScreen(
             AccessLevelOption(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .padding(end = 12.dp)
                     .noRippleThrottledClickable {
                         // Only owners can modify invite link access settings
                         if (isCurrentUserOwner) {
                             showInviteLinkAccessSelector = !showInviteLinkAccessSelector
                         }
                     },
-                uiItemUI = item
+                uiItemUI = item,
+                isCurrentUserOwner = isCurrentUserOwner
             )
             
             // Show invite link and copy button when not LINK_DISABLED

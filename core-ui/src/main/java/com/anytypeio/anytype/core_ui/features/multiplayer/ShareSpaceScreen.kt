@@ -98,6 +98,14 @@ import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
+data class ContextAction(
+    val title: String,
+    val isSelected: Boolean = false,
+    val isDestructive: Boolean = false,
+    val isEnabled: Boolean = true,
+    val action: () -> Unit
+)
+
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
 fun ShareSpaceScreen(
@@ -482,7 +490,26 @@ private fun SpaceMember(
                     .padding(end = 16.dp)
             )
         }
-        if (isCurrentUserOwner && config is ShareSpaceMemberView.Config.Member && config !is ShareSpaceMemberView.Config.Member.Owner) {
+        // Get context actions for this participant
+        val contextActions = if (isCurrentUserOwner) {
+            participantContextActions(
+                member = member,
+                memberConfig = config,
+                canChangeWriterToReader = canReadEnabled,
+                canChangeReaderToWriter = canEditEnabled,
+                canRemoveMember = true,
+                canApproveRequests = isUser,
+                onCanViewClicked = onCanViewClicked,
+                onCanEditClicked = onCanEditClicked,
+                onRemoveMemberClicked = onRemoveMemberClicked,
+                onViewRequestClicked = { onMemberClicked(member) }
+            )
+        } else {
+            emptyList()
+        }
+
+        // Show dropdown menu if there are actions available
+        if (contextActions.isNotEmpty()) {
             Box(modifier = Modifier.align(Alignment.CenterVertically)) {
                 Image(
                     painter = painterResource(id = R.drawable.ic_action_more),
@@ -498,63 +525,40 @@ private fun SpaceMember(
                         color = colorResource(id = R.color.background_secondary)
                     )
                 ) {
-                    DropdownMenuItem(
-                        modifier = Modifier.alpha(if (canReadEnabled) 1.0f else 0.3f),
-                        onClick = {
-                            onCanViewClicked().also {
+                    contextActions.forEachIndexed { index, contextAction ->
+                        DropdownMenuItem(
+                            modifier = Modifier.alpha(if (contextAction.isEnabled) 1.0f else 0.3f),
+                            onClick = {
+                                if (contextAction.isEnabled) {
+                                    contextAction.action()
+                                }
                                 isMemberMenuExpanded = false
                             }
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.multiplayer_can_view),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.weight(1.0f)
-                        )
-                        if (config is ShareSpaceMemberView.Config.Member.Reader) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
-                                contentDescription = "Checked icon",
-                                modifier = Modifier.align(Alignment.CenterVertically)
+                        ) {
+                            Text(
+                                text = contextAction.title,
+                                style = BodyRegular,
+                                color = colorResource(
+                                    id = if (contextAction.isDestructive) {
+                                        R.color.palette_dark_red
+                                    } else {
+                                        R.color.text_primary
+                                    }
+                                ),
+                                modifier = Modifier.weight(1.0f)
                             )
-                        }
-                    }
-                    Divider()
-                    DropdownMenuItem(
-                        modifier = Modifier.alpha(if (canEditEnabled) 1.0f else 0.3f),
-                        onClick = {
-                            onCanEditClicked().also {
-                                isMemberMenuExpanded = false
+                            if (contextAction.isSelected) {
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                                    contentDescription = "Checked icon",
+                                    modifier = Modifier.align(Alignment.CenterVertically)
+                                )
                             }
                         }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.multiplayer_can_edit),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.weight(1.0f)
-                        )
-                        if (config is ShareSpaceMemberView.Config.Member.Writer) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
-                                contentDescription = "Checked icon",
-                                modifier = Modifier.align(Alignment.CenterVertically)
-                            )
+                        // Add divider between items (except after the last item)
+                        if (index < contextActions.size - 1) {
+                            Divider()
                         }
-                    }
-                    Divider()
-                    DropdownMenuItem(
-                        onClick = {
-                            isMemberMenuExpanded = false
-                            onRemoveMemberClicked()
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(id = R.string.multiplayer_remove_member),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.palette_dark_red)
-                        )
                     }
                 }
             }
@@ -607,6 +611,98 @@ fun SpaceMemberIcon(
     }
 }
 
+
+/**
+ * Get context actions for a participant based on their status and current user permissions.
+ * Similar to iOS participantContextActions(_:) function.
+ */
+@Composable
+private fun participantContextActions(
+    member: ObjectWrapper.SpaceMember,
+    memberConfig: ShareSpaceMemberView.Config,
+    canChangeWriterToReader: Boolean,
+    canChangeReaderToWriter: Boolean,
+    canRemoveMember: Boolean,
+    canApproveRequests: Boolean,
+    onCanViewClicked: () -> Unit,
+    onCanEditClicked: () -> Unit,
+    onRemoveMemberClicked: () -> Unit,
+    onViewRequestClicked: () -> Unit
+): List<ContextAction> {
+    // Don't show actions for owners
+    if (memberConfig is ShareSpaceMemberView.Config.Member.Owner) {
+        return emptyList()
+    }
+
+    return when (member.status) {
+        ParticipantStatus.ACTIVE -> {
+            buildList {
+                // Can View action
+                add(
+                    ContextAction(
+                        title = stringResource(id = R.string.multiplayer_can_view),
+                        isSelected = memberConfig is ShareSpaceMemberView.Config.Member.Reader,
+                        isDestructive = false,
+                        isEnabled = canChangeWriterToReader || memberConfig is ShareSpaceMemberView.Config.Member.Reader,
+                        action = onCanViewClicked
+                    )
+                )
+
+                // Can Edit action
+                add(
+                    ContextAction(
+                        title = stringResource(id = R.string.multiplayer_can_edit),
+                        isSelected = memberConfig is ShareSpaceMemberView.Config.Member.Writer,
+                        isDestructive = false,
+                        isEnabled = canChangeReaderToWriter || memberConfig is ShareSpaceMemberView.Config.Member.Writer,
+                        action = onCanEditClicked
+                    )
+                )
+
+                // Remove Member action
+                add(
+                    ContextAction(
+                        title = stringResource(id = R.string.multiplayer_remove_member),
+                        isSelected = false,
+                        isDestructive = true,
+                        isEnabled = canRemoveMember,
+                        action = onRemoveMemberClicked
+                    )
+                )
+            }
+        }
+        ParticipantStatus.JOINING -> {
+            if (canApproveRequests) {
+                listOf(
+                    ContextAction(
+                        title = stringResource(id = R.string.multiplayer_approve_request),
+                        isSelected = false,
+                        isDestructive = false,
+                        isEnabled = canApproveRequests,
+                        action = onViewRequestClicked
+                    )
+                )
+            } else {
+                emptyList()
+            }
+        }
+        ParticipantStatus.REMOVING -> {
+            listOf(
+                ContextAction(
+                    title = stringResource(id = R.string.multiplayer_approve_request), // Using same string as iOS "approve"
+                    isSelected = false,
+                    isDestructive = false,
+                    isEnabled = canApproveRequests,
+                    action = onViewRequestClicked
+                )
+            )
+        }
+        ParticipantStatus.DECLINED,
+        ParticipantStatus.CANCELLED,
+        ParticipantStatus.REMOVED,
+        null -> emptyList()
+    }
+}
 
 /**
  * Get participant status text based on the participant's status and permissions.
@@ -828,7 +924,9 @@ fun SpaceJoinLongTitleRequestPreview() {
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to stringResource(id = R.string.default_text_placeholder),
-                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble(),
+                Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
@@ -845,7 +943,9 @@ fun SpaceLeaveRequestPreview() {
             mapOf(
                 Relations.ID to "1",
                 Relations.NAME to "Konstantin",
-                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+                Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble(),
+                Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
@@ -877,7 +977,9 @@ fun ShareSpaceScreenPreview() {
                         mapOf(
                             Relations.ID to "1",
                             Relations.NAME to "Konstantin",
-                            Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble()
+                            Relations.PARTICIPANT_STATUS to ParticipantStatus.JOINING.code.toDouble(),
+                            Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                            Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
                     icon = SpaceMemberIconView.Placeholder(
@@ -890,7 +992,10 @@ fun ShareSpaceScreenPreview() {
                     obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
-                            Relations.NAME to "Evgenii"
+                            Relations.NAME to "Evgenii",
+                            Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble(),
+                            Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                            Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
                     icon = SpaceMemberIconView.Placeholder(
@@ -903,7 +1008,10 @@ fun ShareSpaceScreenPreview() {
                     obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
-                            Relations.NAME to "Aleksey"
+                            Relations.NAME to "Aleksey",
+                            Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble(),
+                            Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                            Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
                     config = ShareSpaceMemberView.Config.Request.Leave,
@@ -917,7 +1025,10 @@ fun ShareSpaceScreenPreview() {
                     obj = ObjectWrapper.SpaceMember(
                         mapOf(
                             Relations.ID to "2",
-                            Relations.NAME to "Anton"
+                            Relations.NAME to "Anton",
+                            Relations.PARTICIPANT_STATUS to ParticipantStatus.ACTIVE.code.toDouble(),
+                            Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                            Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
                     config = ShareSpaceMemberView.Config.Request.Join,
@@ -954,7 +1065,9 @@ private fun SpaceOwnerMemberPreview() {
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
-                Relations.NAME to "Evgenii"
+                Relations.NAME to "Evgenii",
+                Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
@@ -977,7 +1090,9 @@ private fun SpaceEditorMemberPreview() {
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
-                Relations.NAME to "Evgenii"
+                Relations.NAME to "Evgenii",
+                Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
@@ -1000,7 +1115,9 @@ private fun SpaceMemberLongNamePreview() {
         member = ObjectWrapper.SpaceMember(
             mapOf(
                 Relations.ID to "2",
-                Relations.NAME to "Walter Walter Walter Walter Walter Walter"
+                Relations.NAME to "Walter Walter Walter Walter Walter Walter",
+                Relations.PARTICIPANT_PERMISSIONS to SpaceMemberPermissions.WRITER.code.toDouble(),
+                Relations.GLOBAL_NAME to "konstantin.anytype.io"
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),

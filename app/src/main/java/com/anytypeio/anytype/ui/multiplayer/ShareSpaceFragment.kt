@@ -65,7 +65,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
-                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked
+                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
+                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->

@@ -96,6 +96,7 @@ import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 @Composable
 fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
+    isCurrentUserOwner: Boolean,
     members: List<SpaceMemberView>,
     incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
@@ -156,7 +157,10 @@ fun ShareSpaceScreen(
                 modifier = Modifier
                     .fillMaxWidth()
                     .noRippleThrottledClickable {
-                        showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                        // Only owners can modify invite link access settings
+                        if (isCurrentUserOwner) {
+                            showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                        }
                     },
                 uiItemUI = item
             )
@@ -418,7 +422,7 @@ private fun SpaceMember(
                     Text(
                         text = "($youAsMemberText)",
                         style = PreviewTitle2Medium,
-                        color = colorResource(id = R.color.text_secondary),
+                        color = colorResource(id = R.color.text_primary),
                     )
                 }
             }
@@ -881,7 +885,8 @@ fun ShareSpaceScreenPreview() {
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
-        onCopyInviteLinkClicked = {}
+        onCopyInviteLinkClicked = {},
+        isCurrentUserOwner = true
     )
 }
 

@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
@@ -37,12 +38,14 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -93,6 +96,7 @@ private fun OnboardingEmailScreen(
 ) {
     var innerValue by remember { mutableStateOf(TextFieldValue()) }
     var isError by remember { mutableStateOf(false) }
+    var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
@@ -106,6 +110,10 @@ private fun OnboardingEmailScreen(
     }
 
     fun validateAndSubmit() {
+        if (innerValue.text.isEmpty()) {
+            isError = false
+            return
+        }
         if (isValidEmail(innerValue.text)) {
             isError = false
             focusManager.clearFocus()
@@ -157,13 +165,14 @@ private fun OnboardingEmailScreen(
                     text = stringResource(R.string.onboarding_email_add_title),
                     color = colorResource(id = R.color.text_primary),
                     style = HeadlineTitleSemibold,
-                    textAlign = TextAlign.Center
+                    textAlign = TextAlign.Center,
+                    letterSpacing = (-0.48).sp,
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Text(
                     modifier = Modifier.fillMaxWidth(),
                     text = stringResource(R.string.onboarding_email_add_description),
-                    style = UXBody,
+                    style = BodyCalloutRegular,
                     color = colorResource(id = R.color.text_secondary),
                     textAlign = TextAlign.Center
                 )
@@ -178,41 +187,48 @@ private fun OnboardingEmailScreen(
                     shape = RoundedCornerShape(size = 16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
-                        .focusRequester(focusRequester),
-                placeholder = {
-                    Text(
-                        text = stringResource(id = R.string.onboarding_enter_email),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_tertiary)
-                    )
-                },
-                textStyle = PreviewTitle1Regular.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                singleLine = true,
-                isError = isError,
-                supportingText = {
-                    if (isError) {
-                        Text(
-                            text = stringResource(id = R.string.onboarding_email_error),
-                            color = colorResource(id = R.color.palette_system_red),
-                            style = Caption1Regular
-                        )
-                    }
-                },
-                colors = TextFieldDefaults.colors(
-                    disabledTextColor = colorResource(id = R.color.text_primary),
-                    cursorColor = colorResource(id = R.color.color_accent),
-                    focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent,
-                    errorIndicatorColor = Color.Transparent
-                ),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions {
-                    validateAndSubmit()
+                        .focusRequester(focusRequester)
+                        .onFocusChanged { focusState ->
+                            isFocused = focusState.isFocused
+                        },
+                    placeholder = {
+                        if (innerValue.text.isEmpty() && !isFocused) {
+                            Text(
+                                text = stringResource(id = R.string.onboarding_enter_email),
+                                style = PreviewTitle1Regular,
+                                color = colorResource(id = R.color.text_tertiary)
+                            )
+                        }
+                    },
+                    textStyle = PreviewTitle1Regular.copy(
+                        color = colorResource(id = R.color.text_primary)
+                    ),
+                    singleLine = true,
+                    isError = isError,
+                    supportingText = {
+                        if (isError) {
+                            Text(
+                                text = stringResource(id = R.string.onboarding_email_error),
+                                color = colorResource(id = R.color.palette_system_red),
+                                style = Caption1Regular
+                            )
+                        }
+                    },
+                    colors = TextFieldDefaults.colors(
+                        disabledTextColor = colorResource(id = R.color.text_primary),
+                        cursorColor = colorResource(id = R.color.color_accent),
+                        focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent
+                    ),
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                        validateAndSubmit()
                     }
                 )
             }

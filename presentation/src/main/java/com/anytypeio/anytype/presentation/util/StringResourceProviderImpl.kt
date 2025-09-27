@@ -72,6 +72,10 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
         }
     }
 
+    override fun getToday(): String {
+        return context.getString(R.string.today)
+    }
+
     override fun getYesterday(): String {
         return context.getString(R.string.yesterday)
     }

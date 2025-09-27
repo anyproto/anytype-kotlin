@@ -404,6 +404,8 @@ sealed class ObjectWrapper {
                 } ?: NotificationState.ALL
 
         val spaceOrder: String? get() = getSingleValue(Relations.SPACE_ORDER)
+
+        val spaceJoinDate: Double? get() = getSingleValue(Relations.SPACE_JOIN_DATE)
     }
 
     inline fun <reified T> getValue(relation: Key): T? {

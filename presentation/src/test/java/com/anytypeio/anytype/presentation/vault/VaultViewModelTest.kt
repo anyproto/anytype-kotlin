@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -383,6 +384,217 @@ class VaultViewModelTest {
                 }
             }
         }
+
+    /**
+     * Test the effective date calculation logic for unpinned space sorting.
+     * This tests the new sorting behavior where unpinned spaces are sorted by:
+     * - Effective date (max of lastMessageDate and spaceJoinDate) in descending order
+     * - Then by creation date in descending order
+     */
+    @Test
+    fun `sorts unpinned spaces by effective date using max of lastMessageDate and spaceJoinDate`() = runTest {
+        turbineScope {
+            // Given - Three chat spaces with different combinations of lastMessageDate and spaceJoinDate
+            val space1Id = "space1"
+            val space2Id = "space2"
+            val space3Id = "space3"
+            val chatId1 = "chatId1"
+            val chatId2 = "chatId2"
+            val chatId3 = "chatId3"
+
+            val baseTime = 1000000L
+            val recentTime = baseTime + 3000L
+            val middleTime = baseTime + 2000L
+            val oldTime = baseTime + 1000L
+
+            // Space1: lastMessageDate is newer (should be sorted first)
+            val space1 = StubSpaceView(
+                id = space1Id,
+                targetSpaceId = space1Id,
+                chatId = chatId1,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = baseTime.toDouble(),
+                spaceJoinDate = middleTime.toDouble()
+            )
+
+            // Space2: spaceJoinDate is newer than lastMessageDate (should be sorted second)
+            val space2 = StubSpaceView(
+                id = space2Id,
+                targetSpaceId = space2Id,
+                chatId = chatId2,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = baseTime.toDouble(),
+                spaceJoinDate = recentTime.toDouble()
+            )
+
+            // Space3: both dates are older (should be sorted third)
+            val space3 = StubSpaceView(
+                id = space3Id,
+                targetSpaceId = space3Id,
+                chatId = chatId3,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = baseTime.toDouble(),
+                spaceJoinDate = oldTime.toDouble()
+            )
+
+            // Chat previews with message dates
+            val chatPreview1 = stubChatPreview(space1Id, chatId1, recentTime) // newest message
+            val chatPreview2 = stubChatPreview(space2Id, chatId2, oldTime) // oldest message (but join date is newest)
+            val chatPreview3 = stubChatPreview(space3Id, chatId3, middleTime) // middle message (but join date is older)
+
+            val spacesList = listOf(space1, space2, space3)
+            val chatPreviews = listOf(chatPreview1, chatPreview2, chatPreview3)
+            val permissions = mapOf(
+                space1Id to SpaceMemberPermissions.WRITER,
+                space2Id to SpaceMemberPermissions.WRITER,
+                space3Id to SpaceMemberPermissions.WRITER
+            )
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                // First emission should be Loading
+                val loading = awaitItem()
+                assertTrue(loading is VaultUiState.Loading)
+
+                // Second emission should be Sections with our data
+                val sections = awaitItem() as VaultUiState.Sections
+                val pinned = sections.pinnedSpaces
+                val main = sections.mainSpaces
+
+                // Expected sorting by effective date (descending):
+                // 1. Space1: effective date = max(recentTime, middleTime) = recentTime
+                // 2. Space2: effective date = max(oldTime, recentTime) = recentTime (same as space1, but creation date tie-breaker)
+                // 3. Space3: effective date = max(middleTime, oldTime) = middleTime
+                //
+                // Actually, since space1 and space2 both have effective date = recentTime,
+                // they should be ordered by creation date (descending). Since they have same creation date,
+                // the order might be determined by the original list order or ID comparison.
+
+                assertEquals("Should have 3 unpinned spaces", 3, main.size)
+
+                // The first space should be either space1 or space2 (both have effective date = recentTime)
+                // Let's verify that space3 is last (has oldest effective date = middleTime)
+                val lastSpaceId = main.last().space.id
+                assertEquals("Space3 should be last (oldest effective date)", space3Id, lastSpaceId)
+
+                // Verify that space1 and space2 are ordered before space3
+                val firstTwoIds = main.take(2).map { it.space.id }
+                assertTrue("Space1 should be in first two positions", space1Id in firstTwoIds)
+                assertTrue("Space2 should be in first two positions", space2Id in firstTwoIds)
+            }
+        }
+    }
+
+    /**
+     * Test effective date calculation when only one date is available
+     */
+    @Test
+    fun `sorts unpinned spaces correctly when only lastMessageDate or spaceJoinDate is available`() = runTest {
+        turbineScope {
+            val space1Id = "space1_only_message"
+            val space2Id = "space2_only_join"
+            val space3Id = "space3_neither"
+            val chatId1 = "chatId1"
+
+            val baseTime = 1000000L
+            val messageTime = baseTime + 2000L
+            val joinTime = baseTime + 1000L
+
+            // Space1: Only has lastMessageDate (via chat preview)
+            val space1 = StubSpaceView(
+                id = space1Id,
+                targetSpaceId = space1Id,
+                chatId = chatId1,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = baseTime.toDouble()
+                // No spaceJoinDate set
+            )
+
+            // Space2: Only has spaceJoinDate (no chat preview)
+            val space2 = StubSpaceView(
+                id = space2Id,
+                targetSpaceId = space2Id,
+                spaceUxType = SpaceUxType.DATA,
+                createdDate = baseTime.toDouble(),
+                spaceJoinDate = joinTime.toDouble()
+            )
+
+            // Space3: Has neither (should fall back to creation date)
+            val space3 = StubSpaceView(
+                id = space3Id,
+                targetSpaceId = space3Id,
+                spaceUxType = SpaceUxType.DATA,
+                createdDate = (baseTime - 1000L).toDouble() // Earlier creation date
+                // No spaceJoinDate, no chat preview
+            )
+
+            val chatPreview1 = stubChatPreview(space1Id, chatId1, messageTime)
+
+            val spacesList = listOf(space1, space2, space3)
+            val chatPreviews = listOf(chatPreview1)
+            val permissions = mapOf(
+                space1Id to SpaceMemberPermissions.OWNER,
+                space2Id to SpaceMemberPermissions.OWNER,
+                space3Id to SpaceMemberPermissions.OWNER
+            )
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spacesList))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val unpinnedSpaces = sections.mainSpaces
+
+                assertEquals("Should have 3 unpinned spaces", 3, unpinnedSpaces.size)
+
+                // Expected order:
+                // 1. Space1: effective date = messageTime (2000)
+                // 2. Space2: effective date = joinTime (1000)
+                // 3. Space3: effective date = null, falls back to creation date (-1000)
+
+                val actualOrder = unpinnedSpaces.map { it.space.id }
+                assertEquals("Spaces should be ordered by effective date",
+                    listOf(space1Id, space2Id, space3Id), actualOrder)
+            }
+        }
+    }
 
     //region Drag and Drop Tests
 

@@ -49,6 +49,7 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -82,7 +83,7 @@ fun MySitesScreen(
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = null,
                 modifier = Modifier
-                    .clickable { onBackClicked() }
+                    .noRippleClickable { onBackClicked() }
                     .align(Alignment.CenterStart)
                     .padding(start = 16.dp)
             )

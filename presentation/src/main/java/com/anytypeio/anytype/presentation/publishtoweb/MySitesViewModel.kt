@@ -16,6 +16,7 @@ import com.anytypeio.anytype.domain.publishing.GetWebPublishingList
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -39,7 +40,8 @@ class MySitesViewModel(
     private val getPublishingDomain: GetPublishingDomain,
     private val removePublishing: RemovePublishing,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
     private val _viewState = MutableStateFlow<MySitesViewState>(MySitesViewState.Init)
     val viewState = _viewState.asStateFlow()
@@ -120,13 +122,19 @@ class MySitesViewModel(
             val view = awaitActiveSpaceView(item.space)
             if (view != null) {
                 val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                commands.emit(
-                    Command.OpenObject(
-                        objectId = item.obj,
-                        spaceId = item.space,
-                        chatId = chatId
+                spaceManager.set(
+                    item.space.id
+                ).onSuccess {
+                    commands.emit(
+                        Command.OpenObject(
+                            objectId = item.obj,
+                            spaceId = item.space,
+                            chatId = chatId
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Failed to open space before navigating to an object from my-sites screen")
+                }
             } else {
                 commands.emit(Command.ShowToast("Failed to find space for this object"))
             }
@@ -174,7 +182,8 @@ class MySitesViewModel(
         private val getPublishingDomain: GetPublishingDomain,
         private val removePublishing: RemovePublishing,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -184,7 +193,8 @@ class MySitesViewModel(
                 getPublishingDomain = getPublishingDomain,
                 removePublishing = removePublishing,
                 spaceViews = spaceViews,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                spaceManager = spaceManager
             ) as T
         }
     }

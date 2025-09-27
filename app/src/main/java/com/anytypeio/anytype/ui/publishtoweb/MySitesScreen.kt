@@ -107,7 +107,9 @@ fun MySitesScreen(
         }
         if (viewState is MySitesViewState.Content) {
             if (viewState.items.isEmpty()) {
-                MySitesEmptyState()
+                MySitesEmptyState(
+                    modifier = Modifier.weight(1f)
+                )
             } else {
                 LazyColumn(
                     modifier = Modifier.weight(1f)
@@ -286,7 +288,7 @@ fun MySitesEmptyState(
     modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
         Column(

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.core_utils.date.DateFormatter
 import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
@@ -45,6 +46,10 @@ object MySitesModule {
         @PerDialog
         @Binds
         fun factory(factory: MySitesViewModel.Factory): ViewModelProvider.Factory
+
+        @PerDialog
+        @Binds
+        fun dateFormatter(formatter: DateFormatter.Default): DateFormatter
     }
 }
 

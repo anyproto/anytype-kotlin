@@ -148,7 +148,7 @@ fun MySitesScreen(
                                 maxLines = 1
                             )
                             Text(
-                                text = "${item.size} • ${item.timestamp}",
+                                text = "${item.timestamp} • ${item.size}",
                                 style = Caption1Regular,
                                 color = colorResource(R.color.text_secondary),
                                 maxLines = 1

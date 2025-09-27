@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.date.DateFormatter
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -41,6 +42,7 @@ class MySitesViewModel(
     private val removePublishing: RemovePublishing,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
+    private val dateFormatter: DateFormatter,
     private val spaceManager: SpaceManager
 ) : BaseViewModel() {
     private val _viewState = MutableStateFlow<MySitesViewState>(MySitesViewState.Init)
@@ -73,7 +75,9 @@ class MySitesViewModel(
                             builder = urlBuilder,
                             objType = null
                         ),
-                        timestamp = data.timestamp.toString(),
+                        timestamp = dateFormatter.format(
+                            millis = data.timestamp * 1000L
+                        ),
                         uri = data.uri
                     )
                 }
@@ -184,6 +188,7 @@ class MySitesViewModel(
         private val removePublishing: RemovePublishing,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
+        private val dateFormatter: DateFormatter,
         private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
@@ -195,7 +200,8 @@ class MySitesViewModel(
                 removePublishing = removePublishing,
                 spaceViews = spaceViews,
                 urlBuilder = urlBuilder,
-                spaceManager = spaceManager
+                spaceManager = spaceManager,
+                dateFormatter = dateFormatter
             ) as T
         }
     }

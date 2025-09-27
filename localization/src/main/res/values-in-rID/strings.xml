@@ -802,7 +802,7 @@
     <string name="relation_editing_title">Pengaturan properti</string>
     <string name="type_editing_uninstall">Hapus</string>
     <string name="empty_tree_widget_reader_access">Objek ini tidak punya tautan ke objek lain.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Tidak ada objek</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -991,7 +991,8 @@
     <string name="widget_type_view_description">Widget dengan tata letak Kuery atau Koleksi</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Ubah sumber</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Ubah tipe widget</string>
+    <string name="widget_unpin">Lepas sematan</string>
     <string name="widget_remove_widget">Hapus widget</string>
     <string name="widget_empty_bin">Tempat sampah kosong</string>
     <string name="widget_edit_widgets">Sunting widget</string>
@@ -1068,7 +1069,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
-    <string name="object_action_to_widgets">Ke widget</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Unduh</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1932,7 +1933,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
     <string name="private_local_yours_forever">Pribadi, lokal, milikmu selamanya</string>
-    <string name="wallpaper_item_space_icon_color">Warna ikon \nruang</string>
+    <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1950,6 +1951,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widgets_section_object_types">Tipe objek</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>
+    <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>
+    <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
+    <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>

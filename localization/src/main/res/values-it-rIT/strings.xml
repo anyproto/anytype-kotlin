@@ -993,7 +993,8 @@
     <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Cambia Tipo di Widget</string>
+    <string name="widget_unpin">Togli</string>
     <string name="widget_remove_widget">Rimuovi Widget</string>
     <string name="widget_empty_bin">Svuota Cestino</string>
     <string name="widget_edit_widgets">Modifica Widgets</string>
@@ -1070,7 +1071,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplica</string>
-    <string name="object_action_to_widgets">Ai widget</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Scarica</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1947,7 +1948,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
     <string name="private_local_yours_forever">Privato, locale, tuo per sempre</string>
-    <string name="wallpaper_item_space_icon_color">Icona spazio \ncolore</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>
     <string name="web_publishing_customize_url">Personalizza URL</string>
@@ -1965,6 +1966,9 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_section_object_types">Object types</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Togli</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d nuovo messaggio</item>
         <item quantity="other">%d nuovi messaggi</item>

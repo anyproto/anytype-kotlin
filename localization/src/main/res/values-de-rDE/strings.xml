@@ -993,7 +993,8 @@
     <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Kompakte Liste</string>
     <string name="widget_change_source">Quelle ändern</string>
-    <string name="widget_change_type">Typ ändern</string>
+    <string name="widget_change_type">Widget-Typ ändern</string>
+    <string name="widget_unpin">Loslösen</string>
     <string name="widget_remove_widget">Widget entfernen</string>
     <string name="widget_empty_bin">Behälter leeren</string>
     <string name="widget_edit_widgets">Widgets bearbeiten</string>
@@ -1070,7 +1071,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplizieren</string>
-    <string name="object_action_to_widgets">Zu Widgets</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Herunterladen</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1946,7 +1947,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Einstellungen</string>
     <string name="web_publishing_customize_url">URL anpassen</string>
@@ -1964,6 +1965,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widgets_section_object_types">Objekttypen</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Loslösen</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

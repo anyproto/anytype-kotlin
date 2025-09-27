@@ -991,7 +991,8 @@
     <string name="widget_type_view_description">带有查询或集锦布局的小部件</string>
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
-    <string name="widget_change_type">更改类型</string>
+    <string name="widget_change_type">更改小部件类型</string>
+    <string name="widget_unpin">取消固定</string>
     <string name="widget_remove_widget">删除小部件</string>
     <string name="widget_empty_bin">清空回收站</string>
     <string name="widget_edit_widgets">编辑小部件</string>
@@ -1068,7 +1069,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">生成副本</string>
-    <string name="object_action_to_widgets">至小部件</string>
+    <string name="object_action_to_widgets">钉住</string>
     <string name="object_action_download">下载</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1929,7 +1930,7 @@
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">首选项</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1947,6 +1948,9 @@
     <string name="widgets_section_object_types">对象类型</string>
     <string name="widgets_menu_new_object_type">新建</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">取消固定</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

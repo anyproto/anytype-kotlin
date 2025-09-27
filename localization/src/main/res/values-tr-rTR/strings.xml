@@ -993,7 +993,8 @@
     <string name="widget_type_view_description">Sorgu veya Koleksiyon düzenine sahip Widget</string>
     <string name="widget_type_compact_list">Kompakt liste</string>
     <string name="widget_change_source">Kaynağı Değiştir</string>
-    <string name="widget_change_type">Türü değiştir</string>
+    <string name="widget_change_type">Widget türünü değiştir</string>
+    <string name="widget_unpin">Sabitlemeyi kaldır</string>
     <string name="widget_remove_widget">Widget\'ı kaldır</string>
     <string name="widget_empty_bin">Çöp kutusu boş</string>
     <string name="widget_edit_widgets">Widget\'ları düzenle</string>
@@ -1070,7 +1071,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Çoğalt</string>
-    <string name="object_action_to_widgets">Widget\'lara</string>
+    <string name="object_action_to_widgets">Sabitle</string>
     <string name="object_action_download">İndir</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1946,7 +1947,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
     <string name="private_local_yours_forever">Gizli, yerel, sonsuza kadar sizin</string>
-    <string name="wallpaper_item_space_icon_color">Alan simgesi \nrengi</string>
+    <string name="wallpaper_item_space_icon_color">Varsayılan Renk</string>
     <string name="publish_to_web">Web\'de Yayınla</string>
     <string name="preferences">Tercihler</string>
     <string name="web_publishing_customize_url">URL\'yi özelleştir</string>
@@ -1964,6 +1965,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widgets_section_object_types">Nesne türleri</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
+    <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>
+    <string name="widget_unpin_alert_title">Bu Widget Geri Yüklenemez</string>
+    <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>

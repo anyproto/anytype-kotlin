@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
+import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
 import com.anytypeio.anytype.ui.chats.ChatFragment
@@ -34,7 +35,7 @@ import com.anytypeio.anytype.ui.settings.typography
 import timber.log.Timber
 import javax.inject.Inject
 
-class MySitesFragment : BaseBottomSheetComposeFragment() {
+class MySitesFragment : BaseComposeFragment() {
 
     @Inject
     lateinit var factory: MySitesViewModel.Factory
@@ -57,7 +58,10 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
                         onViewObjectClicked = vm::onOpenObject,
                         onOpenInBrowserClicked = vm::onOpenInBrowser,
                         onCopyWebLinkClicked = vm::onCopyWebLink,
-                        onUnpublishClicked = vm::onUnpublishClicked
+                        onUnpublishClicked = vm::onUnpublishClicked,
+                        onBackClicked = {
+                            findNavController().popBackStack()
+                        }
                     )
                     LaunchedEffect(Unit) {
                         vm.commands.collect { command ->
@@ -76,21 +80,15 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
                                     )
                                 }
                                 is MySitesViewModel.Command.OpenObject -> {
-                                    val nav = parentFragment?.findNavController() ?: return@collect
-                                    navigateToHomeOrChatThen(
-                                        nav = nav,
-                                        chat = command.chatId,
-                                        space = command.spaceId.id
-                                    ) {
-                                        nav.safeNavigateOrLog(
-                                            id = R.id.objectNavigation,
-                                            args = EditorFragment.args(
-                                                ctx = command.objectId,
-                                                space = command.spaceId.id
-                                            ),
-                                            errorTag = "object from my-sites",
-                                        )
-                                    }
+                                    val nav = findNavController()
+                                    nav.safeNavigateOrLog(
+                                        id = R.id.objectNavigation,
+                                        args = EditorFragment.args(
+                                            ctx = command.objectId,
+                                            space = command.spaceId.id
+                                        ),
+                                        errorTag = "object from my-sites",
+                                    )
                                 }
                             }
                         }
@@ -129,10 +127,8 @@ class MySitesFragment : BaseBottomSheetComposeFragment() {
         safeNavigate(currentId, id, args, errorTag)
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        skipCollapsed()
-        expand()
+    override fun onApplyWindowRootInsets(view: View) {
+        // Do not apply
     }
 
     override fun injectDependencies() {

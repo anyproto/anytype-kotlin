@@ -55,6 +55,7 @@ class MySitesViewModel(
     }
 
     private suspend fun proceedWithLoadingPages() {
+        _viewState.value = MySitesViewState.Loading
         getWebPublishingList.async(
             params = GetWebPublishingList.Params(space = null)
         ).onFailure {
@@ -211,7 +212,7 @@ class MySitesViewModel(
 
 sealed class MySitesViewState {
     data object Init : MySitesViewState()
-
+    data object Loading : MySitesViewState()
     data class Content(
         val items: List<Item>
     ) : MySitesViewState()

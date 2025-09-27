@@ -10,6 +10,6 @@ interface DateFormatter {
         override fun format(millis: Long): String {
             return defaultFormat.format(millis)
         }
-        private val defaultFormat = SimpleDateFormat("d MMMM YYYY")
+        private val defaultFormat = SimpleDateFormat("d MMMM yyyy")
     }
 }

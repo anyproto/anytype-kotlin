@@ -2275,6 +2275,9 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Unpin</string>
 
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+
 
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>

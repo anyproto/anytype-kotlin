@@ -6,7 +6,7 @@ import javax.inject.Inject
 interface DateFormatter {
     fun format(millis: Long) : String
 
-    class Default @Inject constructor() : DateFormatter {
+    class Basic @Inject constructor() : DateFormatter {
         override fun format(millis: Long): String {
             return defaultFormat.format(millis)
         }

@@ -49,7 +49,7 @@ object MySitesModule {
 
         @PerDialog
         @Binds
-        fun dateFormatter(formatter: DateFormatter.Default): DateFormatter
+        fun dateFormatter(formatter: DateFormatter.Basic): DateFormatter
     }
 }
 

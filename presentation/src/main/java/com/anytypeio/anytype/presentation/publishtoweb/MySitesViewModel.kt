@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.date.DateFormatter
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -70,7 +71,7 @@ class MySitesViewModel(
                         obj = data.obj,
                         space = data.space,
                         name = wrapper.name.orEmpty(),
-                        size = data.size.toString(),
+                        size = data.size.readableFileSize(),
                         icon = wrapper.objectIcon(
                             builder = urlBuilder,
                             objType = null

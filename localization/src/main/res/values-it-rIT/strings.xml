@@ -10,7 +10,7 @@
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
     <string name="key">Chiave</string>
-    <string name="login_key">Chiave</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
+    <string name="vault_settings_section_misc">Varie</string>
     <string name="app_preferences">Preferenze App</string>
+    <string name="settings_application">Applicazione</string>
     <string name="vault_key">Cassaforte &amp; Chiave</string>
     <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
@@ -1973,6 +1975,8 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="my_sites">I miei Siti</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Pubblicate il tuo primo sito web per iniziare.</string>
     <plurals name="notification_messages_count">

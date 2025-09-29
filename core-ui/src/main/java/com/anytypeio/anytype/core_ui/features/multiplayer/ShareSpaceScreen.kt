@@ -376,7 +376,6 @@ private fun SpaceMember(
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit = {}
 ) {
-    var isMemberMenuExpanded by remember { mutableStateOf(false) }
     Row(
         modifier = Modifier
             .height(72.dp)
@@ -412,6 +411,7 @@ private fun SpaceMember(
                         color = colorResource(id = R.color.text_primary),
                     )
                 }
+                Spacer(modifier = Modifier.width(16.dp))
             }
             Spacer(modifier = Modifier.height(2.dp))
             Text(
@@ -424,80 +424,110 @@ private fun SpaceMember(
             )
         }
 
-        // Show participant status text
-        memberView.statusText?.let { statusText ->
-            Text(
-                text = statusText,
-                style = Title2,
-                color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.align(Alignment.CenterVertically)
-            )
-        }
+        MemberStatusWithDropdown(
+            statusText = memberView.statusText,
+            contextActions = memberView.contextActions,
+            memberView = memberView,
+            onContextActionClicked = onContextActionClicked,
+            modifier = Modifier.align(Alignment.CenterVertically)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+    }
+}
 
-        // Show dropdown menu if there are actions available
-        if (memberView.contextActions.isNotEmpty()) {
-            Box(modifier = Modifier.align(Alignment.CenterVertically)) {
+@Composable
+private fun MemberStatusWithDropdown(
+    statusText: String?,
+    contextActions: List<SpaceMemberView.ContextAction>,
+    memberView: SpaceMemberView,
+    onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var isMemberMenuExpanded by remember { mutableStateOf(false) }
+
+    if (contextActions.isNotEmpty()) {
+        Box(modifier = modifier) {
+            Row(
+                modifier = Modifier
+                    .noRippleClickable { isMemberMenuExpanded = true }
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Status text
+                statusText?.let { text ->
+                    Text(
+                        text = text,
+                        style = Title2,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+
+                // Dropdown arrow icon
+                Spacer(modifier = Modifier.width(4.dp))
                 Image(
                     painter = painterResource(id = R.drawable.ic_arrow_down_18),
                     contentDescription = "Menu button",
-                    modifier = Modifier
-                        .padding(start = 4.dp)
-                        .noRippleClickable { isMemberMenuExpanded = true },
                     colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary))
                 )
-                DropdownMenu(
-                    modifier = Modifier.width(254.dp),
-                    containerColor = colorResource(R.color.background_secondary),
-                    shape = RoundedCornerShape(12.dp),
-                    tonalElevation = 8.dp,
-                    offset = DpOffset(
-                        x = 16.dp,
-                        y = 8.dp
-                    ),
-                    expanded = isMemberMenuExpanded,
-                    onDismissRequest = {
-                        isMemberMenuExpanded = false
-                    }
-                ) {
-                    memberView.contextActions.forEachIndexed { index, contextAction ->
-                        DropdownMenuItem(
-                            modifier = Modifier.alpha(if (contextAction.isEnabled) 1.0f else 0.3f),
-                            onClick = {
-                                if (contextAction.isEnabled) {
-                                    onContextActionClicked(memberView, contextAction.actionType)
+            }
+
+            // Dropdown menu
+            DropdownMenu(
+                modifier = Modifier.width(254.dp),
+                containerColor = colorResource(R.color.background_secondary),
+                shape = RoundedCornerShape(12.dp),
+                tonalElevation = 8.dp,
+                offset = DpOffset(x = 16.dp, y = 8.dp),
+                expanded = isMemberMenuExpanded,
+                onDismissRequest = { isMemberMenuExpanded = false }
+            ) {
+                contextActions.forEachIndexed { index, action ->
+                    DropdownMenuItem(
+                        modifier = Modifier.alpha(if (action.isEnabled) 1.0f else 0.3f),
+                        onClick = {
+                            if (action.isEnabled) {
+                                onContextActionClicked(memberView, action.actionType)
+                            }
+                            isMemberMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = action.title,
+                            style = BodyRegular,
+                            color = colorResource(
+                                id = if (action.isDestructive) {
+                                    R.color.palette_system_red
+                                } else {
+                                    R.color.text_primary
                                 }
-                                isMemberMenuExpanded = false
-                            }
-                        ) {
-                            Text(
-                                text = contextAction.title,
-                                style = BodyRegular,
-                                color = colorResource(
-                                    id = if (contextAction.isDestructive) {
-                                        R.color.palette_system_red
-                                    } else {
-                                        R.color.text_primary
-                                    }
-                                ),
-                                modifier = Modifier.weight(1.0f)
+                            ),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                        if (action.isSelected) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
+                                contentDescription = "Checked icon",
+                                modifier = Modifier.align(Alignment.CenterVertically)
                             )
-                            if (contextAction.isSelected) {
-                                Image(
-                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_check),
-                                    contentDescription = "Checked icon",
-                                    modifier = Modifier.align(Alignment.CenterVertically)
-                                )
-                            }
                         }
-                        // Add divider between items (except after the last item)
-                        if (index < memberView.contextActions.size - 1) {
-                            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                        }
+                    }
+                    // Add divider between items (except after the last item)
+                    if (index < contextActions.size - 1) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     }
                 }
             }
         }
-        Spacer(modifier = Modifier.width(16.dp))
+    } else {
+        // When no context actions, just show the status text
+        statusText?.let { text ->
+            Text(
+                text = text,
+                style = Title2,
+                color = colorResource(id = R.color.text_primary),
+                modifier = modifier
+            )
+        }
     }
 }
 

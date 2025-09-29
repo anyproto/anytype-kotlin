@@ -1261,8 +1261,8 @@
     <string name="multiplayer_approve_request">Erişimi ayarla</string>
     <string name="multiplayer_view_request">İsteği görüntüle</string>
     <string name="multiplayer_owner">Sahip</string>
-    <string name="multiplayer_no_permissions">No permissions</string>
-    <string name="multiplayer_pending">Pending</string>
+    <string name="multiplayer_no_permissions">İzin yok</string>
+    <string name="multiplayer_pending">Beklemede</string>
     <string name="multiplayer_can_edit">Düzenleyebilir</string>
     <string name="multiplayer_can_view">Görüntüleyebilir</string>
     <string name="multiplayer_space_add_viewer">Görüntüleyici ekle</string>
@@ -1339,7 +1339,7 @@
         <item quantity="one">%1$d istek</item>
         <item quantity="other">%1$d istek</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">sen</string>
     <string name="multiplayer_spaces">Alanlar</string>
     <string name="multiplayer_space_status_joining">Katılınıyor</string>
     <string name="multiplayer_space_status_active">Etkin</string>
@@ -1979,5 +1979,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
         <item quantity="other">%d yeni mesaj</item>
     </plurals>
     <!-- Multiplayer actions -->
-    <string name="multiplayer_approve">Approve</string>
+    <string name="multiplayer_approve">Onayla</string>
 </resources>

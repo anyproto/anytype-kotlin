@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.multiplayer
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.`object`.activeReaders
 import com.anytypeio.anytype.domain.`object`.activeWriters
 import com.anytypeio.anytype.domain.`object`.isSubscriberLimitReached
@@ -41,5 +42,8 @@ private fun ObjectWrapper.SpaceView.shouldShowIncentiveState(
 ): Boolean {
     return isCurrentUserOwner &&
             spaceAccessType == SpaceAccessType.SHARED &&
-            spaceMembers.any { it.status == ParticipantStatus.JOINING }
+            spaceMembers.any {
+                it.status == ParticipantStatus.JOINING
+                        || (it.status == ParticipantStatus.ACTIVE && it.permissions == SpaceMemberPermissions.READER)
+            }
 }

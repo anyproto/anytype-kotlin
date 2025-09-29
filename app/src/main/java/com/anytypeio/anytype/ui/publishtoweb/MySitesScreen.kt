@@ -293,7 +293,8 @@ fun MySitesEmptyState(
         contentAlignment = Alignment.Center
     ) {
         Column(
-            modifier = Modifier
+            modifier = Modifier,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Image(
                 painter = painterResource(R.drawable.ic_my_sites_empty_state),

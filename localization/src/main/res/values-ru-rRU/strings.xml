@@ -1226,8 +1226,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Редактор</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Наблюдатель </string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1264,9 +1266,11 @@
     <string name="multiplayer_members">Участники</string>
     <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
-    <string name="multiplayer_approve_request">Подтвердить</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Посмотреть запрос</string>
     <string name="multiplayer_owner">Владелец</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Только просмотр</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
@@ -1347,7 +1351,7 @@
         <item quantity="many">%1$d запросов</item>
         <item quantity="other">%1$d запросы</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Вы</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Пространства</string>
     <string name="multiplayer_space_status_joining">Присоединяется</string>
     <string name="multiplayer_space_status_active">Активно</string>
@@ -2005,4 +2009,6 @@
         <item quantity="many">%d new messages</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

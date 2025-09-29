@@ -166,7 +166,7 @@ fun ShareSpaceScreen(
                 uiItemUI = item,
                 isCurrentUserOwner = isCurrentUserOwner
             )
-            
+
             // Show invite link and copy button when not LINK_DISABLED
             when (inviteLinkAccessLevel) {
                 is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
@@ -175,18 +175,21 @@ fun ShareSpaceScreen(
                     onShareClicked = onShareInviteLinkClicked,
                     onQrCodeClicked = onShareQrCodeClicked
                 )
+
                 is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
                     link = inviteLinkAccessLevel.link,
                     onCopyClicked = onCopyInviteLinkClicked,
                     onShareClicked = onShareInviteLinkClicked,
                     onQrCodeClicked = onShareQrCodeClicked
                 )
+
                 is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
                     link = inviteLinkAccessLevel.link,
                     onCopyClicked = onCopyInviteLinkClicked,
                     onShareClicked = onShareInviteLinkClicked,
                     onQrCodeClicked = onShareQrCodeClicked
                 )
+
                 SpaceInviteLinkAccessLevel.LinkDisabled -> {}
             }
             Section(
@@ -273,7 +276,7 @@ fun ShareSpaceScreen(
                 size = ButtonSize.Large
             )
         }
-        
+
         // Confirmation dialog for invite link access changes
         if (confirmationDialogLevel != null) {
             showConfirmScreen(
@@ -395,7 +398,8 @@ private fun SpaceMember(
         ) {
             Row {
                 Text(
-                    text = memberView.obj.name.orEmpty().ifEmpty { stringResource(id = R.string.untitled) },
+                    text = memberView.obj.name.orEmpty()
+                        .ifEmpty { stringResource(id = R.string.untitled) },
                     style = PreviewTitle2Medium,
                     color = colorResource(id = R.color.text_primary),
                     maxLines = 1,
@@ -417,7 +421,9 @@ private fun SpaceMember(
             Text(
                 text = memberView.obj.globalName ?: memberView.obj.identity,
                 color = colorResource(id = R.color.text_secondary),
-                modifier = Modifier.fillMaxWidth().padding(end = 16.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(end = 16.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 style = Caption1Regular
@@ -576,8 +582,6 @@ fun SpaceMemberIcon(
 }
 
 
-
-
 @Composable
 fun InviteLinkDisplay(
     modifier: Modifier = Modifier,
@@ -587,7 +591,7 @@ fun InviteLinkDisplay(
     onQrCodeClicked: (String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
-    
+
     Column(
         modifier = modifier
             .fillMaxWidth()
@@ -614,7 +618,7 @@ fun InviteLinkDisplay(
             )
 
             Spacer(modifier = Modifier.width(8.dp))
-            
+
             // Three dots menu trigger
             Box {
                 Image(
@@ -627,7 +631,7 @@ fun InviteLinkDisplay(
                         },
                     contentScale = ContentScale.Inside
                 )
-                
+
                 // Dropdown menu
                 DropdownMenu(
                     modifier = Modifier.widthIn(min = 252.dp),
@@ -650,7 +654,7 @@ fun InviteLinkDisplay(
                             modifier = Modifier.weight(1.0f)
                         )
                         Image(
-                            painter = painterResource(id = R.drawable.ic_object_action_copy_link,),
+                            painter = painterResource(id = R.drawable.ic_object_action_copy_link),
                             contentDescription = "Copy link icon",
                             modifier = Modifier
                                 .size(22.dp)
@@ -660,9 +664,9 @@ fun InviteLinkDisplay(
                             )
                         )
                     }
-                    
+
                     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    
+
                     // Share link
                     DropdownMenuItem(
                         onClick = {
@@ -684,9 +688,9 @@ fun InviteLinkDisplay(
                                 .align(Alignment.CenterVertically)
                         )
                     }
-                    
+
                     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    
+
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
@@ -863,7 +867,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
-                                icon = SpaceMemberIconView.Placeholder(
+                    icon = SpaceMemberIconView.Placeholder(
                         name = "Aleksey"
                     )
                 )
@@ -879,7 +883,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
-                                icon = SpaceMemberIconView.Placeholder(
+                    icon = SpaceMemberIconView.Placeholder(
                         name = "Anton"
                     )
                 )

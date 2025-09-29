@@ -57,7 +57,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.mapper.toSpaceMemberView
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
@@ -277,7 +277,7 @@ class SpaceSettingsViewModel(
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.toView(
+                    spaceMembers.members.toSpaceMemberView(
                         spaceView = spaceView,
                         urlBuilder = urlBuilder,
                         isCurrentUserOwner = permission?.isOwner() == true,

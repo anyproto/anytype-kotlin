@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.StubRelationObject
-import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test

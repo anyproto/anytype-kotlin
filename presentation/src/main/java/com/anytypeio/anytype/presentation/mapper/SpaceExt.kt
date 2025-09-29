@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
 
-fun List<ObjectWrapper.SpaceMember>.toView(
+fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
     spaceView: ObjectWrapper.SpaceView?,
     urlBuilder: UrlBuilder,
     isCurrentUserOwner: Boolean,
@@ -22,7 +22,6 @@ fun List<ObjectWrapper.SpaceMember>.toView(
             urlBuilder = urlBuilder,
             canChangeWriterToReader = canChangeWriterToReader,
             canChangeReaderToWriter = canChangeReaderToWriter,
-            includeRequests = isCurrentUserOwner,
             account = account,
             isCurrentUserOwner = isCurrentUserOwner,
             canRemoveMember = isCurrentUserOwner,

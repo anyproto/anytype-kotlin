@@ -43,7 +43,7 @@ import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.mapper.toSpaceMemberView
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
@@ -185,7 +185,7 @@ class ShareSpaceViewModel(
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
-                members.value = spaceMembers.toView(
+                members.value = spaceMembers.toSpaceMemberView(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
                     isCurrentUserOwner = result.isCurrentUserOwner,
@@ -1034,7 +1034,6 @@ data class SpaceMemberView(
             urlBuilder: UrlBuilder,
             canChangeWriterToReader: Boolean,
             canChangeReaderToWriter: Boolean,
-            includeRequests: Boolean,
             isCurrentUserOwner: Boolean = false,
             canRemoveMember: Boolean = false,
             canApproveRequests: Boolean = false
@@ -1120,14 +1119,20 @@ data class SpaceMemberView(
                 }
 
                 ParticipantStatus.JOINING -> {
-                    SpaceMemberView(
-                        obj = obj,
-                        config = Config.Request.Join,
-                        icon = icon,
-                        isUser = isUser,
-                        statusText = statusText,
-                        contextActions = contextActions
-                    )
+                    // Only show join requests to space owners
+                    if (isCurrentUserOwner) {
+                        SpaceMemberView(
+                            obj = obj,
+                            config = Config.Request.Join,
+                            icon = icon,
+                            isUser = isUser,
+                            statusText = statusText,
+                            contextActions = contextActions
+                        )
+                    } else {
+                        // Hide join requests from non-owners (Editors/Viewers)
+                        null
+                    }
                 }
 
                 ParticipantStatus.REMOVING -> {

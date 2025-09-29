@@ -8,6 +8,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.date.DateFormatter
+import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -16,6 +18,7 @@ import com.anytypeio.anytype.domain.publishing.GetWebPublishingList
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -39,7 +42,9 @@ class MySitesViewModel(
     private val getPublishingDomain: GetPublishingDomain,
     private val removePublishing: RemovePublishing,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val dateFormatter: DateFormatter,
+    private val spaceManager: SpaceManager
 ) : BaseViewModel() {
     private val _viewState = MutableStateFlow<MySitesViewState>(MySitesViewState.Init)
     val viewState = _viewState.asStateFlow()
@@ -53,6 +58,7 @@ class MySitesViewModel(
     }
 
     private suspend fun proceedWithLoadingPages() {
+        _viewState.value = MySitesViewState.Loading
         getWebPublishingList.async(
             params = GetWebPublishingList.Params(space = null)
         ).onFailure {
@@ -65,12 +71,14 @@ class MySitesViewModel(
                         obj = data.obj,
                         space = data.space,
                         name = wrapper.name.orEmpty(),
-                        size = data.size.toString(),
+                        size = data.size.readableFileSize(),
                         icon = wrapper.objectIcon(
                             builder = urlBuilder,
                             objType = null
                         ),
-                        timestamp = data.timestamp.toString(),
+                        timestamp = dateFormatter.format(
+                            millis = data.timestamp * 1000L
+                        ),
                         uri = data.uri
                     )
                 }
@@ -120,13 +128,19 @@ class MySitesViewModel(
             val view = awaitActiveSpaceView(item.space)
             if (view != null) {
                 val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
-                commands.emit(
-                    Command.OpenObject(
-                        objectId = item.obj,
-                        spaceId = item.space,
-                        chatId = chatId
+                spaceManager.set(
+                    item.space.id
+                ).onSuccess {
+                    commands.emit(
+                        Command.OpenObject(
+                            objectId = item.obj,
+                            spaceId = item.space,
+                            chatId = chatId
+                        )
                     )
-                )
+                }.onFailure {
+                    Timber.e(it, "Failed to open space before navigating to an object from my-sites screen")
+                }
             } else {
                 commands.emit(Command.ShowToast("Failed to find space for this object"))
             }
@@ -174,7 +188,9 @@ class MySitesViewModel(
         private val getPublishingDomain: GetPublishingDomain,
         private val removePublishing: RemovePublishing,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val dateFormatter: DateFormatter,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -184,7 +200,9 @@ class MySitesViewModel(
                 getPublishingDomain = getPublishingDomain,
                 removePublishing = removePublishing,
                 spaceViews = spaceViews,
-                urlBuilder = urlBuilder
+                urlBuilder = urlBuilder,
+                spaceManager = spaceManager,
+                dateFormatter = dateFormatter
             ) as T
         }
     }
@@ -201,7 +219,7 @@ class MySitesViewModel(
 
 sealed class MySitesViewState {
     data object Init : MySitesViewState()
-
+    data object Loading : MySitesViewState()
     data class Content(
         val items: List<Item>
     ) : MySitesViewState()

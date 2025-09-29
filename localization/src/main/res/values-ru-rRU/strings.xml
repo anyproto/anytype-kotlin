@@ -997,7 +997,8 @@
     <string name="widget_type_view_description">Виджет с макетом запроса или коллекции</string>
     <string name="widget_type_compact_list">Компактный список</string>
     <string name="widget_change_source">Изменить источник</string>
-    <string name="widget_change_type">Изменить тип</string>
+    <string name="widget_change_type">Изменить тип виджета</string>
+    <string name="widget_unpin">Открепить</string>
     <string name="widget_remove_widget">Удалить виджет</string>
     <string name="widget_empty_bin">Очистить корзину</string>
     <string name="widget_edit_widgets">Редактировать виджеты</string>
@@ -1074,7 +1075,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Дублировать</string>
-    <string name="object_action_to_widgets">В виджеты</string>
+    <string name="object_action_to_widgets">Закрепить</string>
     <string name="object_action_download">Скачать</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1172,7 +1173,7 @@
     <!--endregion-->
     <string name="error_kanban_view_not_supported">Kanban view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="error_calendar_view_not_supported">Calendar view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
-    <string name="error_graph_view_not_supported">Graph view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
+    <string name="error_graph_view_not_supported">Представление графа пока недоступно на мобильном телефоне.\nИзменить тип просмотра (Настройки - &gt; Вид) или создайте новый вид для доступа к вашим данным.</string>
     <string name="error_generic_view_not_supported">This view is not available on mobile yet.\nChange view type (Settings -&gt; View) or create a new one to access your data.</string>
     <string name="create_object_section_pinned">Закреплённые</string>
     <string name="any_object_creation_menu_pin_on_top">Закрепить сверху</string>
@@ -1187,12 +1188,12 @@
     <string name="option_widget_edit">Изменить вариант</string>
     <string name="options_empty_description">Ничего не найдено. Создайте первую опцию для начала.</string>
     <string name="options_empty_title">Опций нет</string>
-    <string name="options_empty_not_editable">The property is empty</string>
+    <string name="options_empty_not_editable">Свойство не заполнено</string>
     <string name="options_delete_title">Вы уверены?</string>
     <string name="options_delete_description">The option will be permanently removed from your space</string>
     <string name="object_values_empty_description">Objects not found</string>
     <string name="object_values_empty_title">No values</string>
-    <string name="object_values_empty_not_editable">The property is empty</string>
+    <string name="object_values_empty_not_editable">Свойство не заполнено</string>
     <string name="object_values_delete_title">Вы уверены?</string>
     <string name="object_values_delete_description">The object will be moved to the Bin.</string>
     <string name="hint_enter_name">Введите название...</string>
@@ -1975,7 +1976,7 @@
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Настройки</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1993,6 +1994,9 @@
     <string name="widgets_section_object_types">Типы объектов</string>
     <string name="widgets_menu_new_object_type">Новый</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Открепить</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="few">%d new messages</item>

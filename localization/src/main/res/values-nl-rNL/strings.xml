@@ -993,7 +993,8 @@
     <string name="widget_type_view_description">Widget met een opdracht of collectie opmaak</string>
     <string name="widget_type_compact_list">Compacte lijst</string>
     <string name="widget_change_source">Wijzig bron</string>
-    <string name="widget_change_type">Wijzig type</string>
+    <string name="widget_change_type">Wijzig widget type</string>
+    <string name="widget_unpin">Losmaken</string>
     <string name="widget_remove_widget">Verwijder widget</string>
     <string name="widget_empty_bin">Leeg prullenmand</string>
     <string name="widget_edit_widgets">Bewerk widget</string>
@@ -1070,7 +1071,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Dupliceer</string>
-    <string name="object_action_to_widgets">Naar widgets</string>
+    <string name="object_action_to_widgets">Zet vast</string>
     <string name="object_action_download">Downloaden</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1946,7 +1947,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publiceer op het internet</string>
     <string name="preferences">Voorkeuren</string>
     <string name="web_publishing_customize_url">Pas URL aan</string>
@@ -1964,6 +1965,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="widgets_section_object_types">Objecttypes</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Losmaken</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

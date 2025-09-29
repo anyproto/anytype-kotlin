@@ -234,39 +234,64 @@ fun ProfileSettingsScreen(
             Divider(paddingStart = 60.dp)
         }
         item {
-            Row(
-                modifier = Modifier
-                    .height(52.dp)
-                    .clickable { 
-                        onLogoutClicked()
-                    },
-                verticalAlignment = Alignment.CenterVertically,
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_settings_log_out),
-                    contentDescription = "Option icon",
-                    modifier = Modifier.padding(
-                        start = 20.dp
-                    )
-                )
-                ActionWithProgressBar(
-                    name = stringResource(R.string.log_out),
-                    color = colorResource(R.color.palette_system_red),
-                    onClick = onLogoutClicked,
-                    isInProgress = isLogoutInProgress,
-                    textStartPadding = 10.dp,
-                    modifier = Modifier.weight(1.0f)
-                )
-                Box(
-                    modifier = Modifier,
-                    contentAlignment = Alignment.CenterEnd
-                ) {
-                    Arrow()
-                }
-            }
+            LogoutButton(onLogoutClicked, isLogoutInProgress)
         }
         item {
             Box(Modifier.height(54.dp))
+        }
+    }
+}
+
+@Composable
+private fun LogoutButton(
+    onLogoutClicked: () -> Unit,
+    isLogoutInProgress: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .height(52.dp)
+            .clickable {
+                onLogoutClicked()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_settings_log_out),
+            contentDescription = "Option icon",
+            modifier = Modifier.padding(
+                start = 20.dp
+            )
+        )
+        Box(
+            modifier = Modifier
+                .weight(1.0f)
+                .height(52.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = stringResource(R.string.log_out),
+                color = colorResource(R.color.palette_system_red),
+                style = BodyRegular,
+                modifier = Modifier.padding(
+                    start = 10.dp
+                )
+            )
+            if (isLogoutInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 20.dp)
+                        .size(24.dp),
+                    color = colorResource(R.color.shape_secondary)
+                )
+            }
+        }
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Arrow()
         }
     }
 }

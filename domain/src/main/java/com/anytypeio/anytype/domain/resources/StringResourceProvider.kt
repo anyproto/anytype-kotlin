@@ -25,4 +25,7 @@ interface StringResourceProvider {
     fun getMultiplayerApproveRequest(): String
     fun getMultiplayerPending(): String
     fun getMultiplayerLeaveRequest(): String
+    fun getMultiplayerRemoveMember(): String
+    fun getMultiplayerViewRequest(): String
+    fun getMultiplayerApprove(): String
 }

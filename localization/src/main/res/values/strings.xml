@@ -2285,4 +2285,7 @@ Please provide specific details of your needs here.</string>
         <item quantity="other">%d new messages</item>
     </plurals>
 
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
+
 </resources>

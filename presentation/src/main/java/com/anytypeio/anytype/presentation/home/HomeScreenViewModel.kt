@@ -113,7 +113,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.Ex
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.mapper.toSpaceMemberView
+import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
@@ -436,7 +436,8 @@ class HomeScreenViewModel(
                         members.members.toSpaceMemberView(
                             spaceView = spaceView,
                             urlBuilder = urlBuilder,
-                            isCurrentUserOwner = permissions?.isOwner() == true
+                            isCurrentUserOwner = permissions?.isOwner() == true,
+                            stringResourceProvider = stringResourceProvider
                         ).size
                     } else {
                         0

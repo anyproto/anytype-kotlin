@@ -120,4 +120,16 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getMultiplayerLeaveRequest(): String {
         return context.getString(LocalizationR.string.multiplayer_leave_request)
     }
+
+    override fun getMultiplayerRemoveMember(): String {
+        return context.getString(LocalizationR.string.multiplayer_remove_member)
+    }
+
+    override fun getMultiplayerViewRequest(): String {
+        return context.getString(LocalizationR.string.multiplayer_view_request)
+    }
+
+    override fun getMultiplayerApprove(): String {
+        return context.getString(LocalizationR.string.multiplayer_approve)
+    }
 }

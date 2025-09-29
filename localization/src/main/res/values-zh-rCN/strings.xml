@@ -10,7 +10,7 @@
     <string name="appearance">外观</string>
     <string name="file_storage">文件存储</string>
     <string name="key">密钥</string>
-    <string name="login_key">密钥</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">清除文件缓存</string>
     <string name="debug_sync_report">调试同步报告</string>
     <string name="debug">调试</string>
@@ -29,7 +29,9 @@
     <string name="dark">暗色</string>
     <string name="system">跟随系统</string>
     <string name="settings">设置</string>
+    <string name="vault_settings_section_misc">其他</string>
     <string name="app_preferences">App Preferences</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">您是否备份了密钥？</string>
     <string name="you_will_need_to_sign_in">您将需要恢复短语才能进入您的文库。将其保存在安全的地方。如果您丢失了它，您将无法再进入您的文库。</string>
@@ -1955,6 +1957,8 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">取消固定</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">

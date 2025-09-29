@@ -991,7 +991,8 @@
     <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">緊湊型列表</string>
     <string name="widget_change_source">變更來源</string>
-    <string name="widget_change_type">更改類型</string>
+    <string name="widget_change_type">變更小工具類型</string>
+    <string name="widget_unpin">取消釘選</string>
     <string name="widget_remove_widget">移除小工具</string>
     <string name="widget_empty_bin">清空垃圾桶</string>
     <string name="widget_edit_widgets">編輯小工具</string>
@@ -1068,7 +1069,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">建立副本</string>
-    <string name="object_action_to_widgets">設置到小工具</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">已下載</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1933,7 +1934,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferences</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1951,6 +1952,9 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_section_object_types">Object types</string>
     <string name="widgets_menu_new_object_type">新增</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">取消釘選</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

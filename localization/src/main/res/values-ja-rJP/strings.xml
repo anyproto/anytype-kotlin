@@ -991,7 +991,8 @@
     <string name="widget_type_view_description">クエリやコレクションのレイアウトで表示します</string>
     <string name="widget_type_compact_list">コンパクトリスト</string>
     <string name="widget_change_source">ソースを変更</string>
-    <string name="widget_change_type">種類を変更</string>
+    <string name="widget_change_type">ウィジェットの種類を変更</string>
+    <string name="widget_unpin">ピン留め解除</string>
     <string name="widget_remove_widget">ウィジェットを削除</string>
     <string name="widget_empty_bin">空のごみ箱</string>
     <string name="widget_edit_widgets">ウィジェットを編集</string>
@@ -1068,7 +1069,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">複製</string>
-    <string name="object_action_to_widgets">ウィジェット作成</string>
+    <string name="object_action_to_widgets">ピン留め</string>
     <string name="object_action_download">ダウンロード</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1934,7 +1935,7 @@
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Web公開</string>
     <string name="preferences">環境設定</string>
     <string name="web_publishing_customize_url">URLをカスタマイズ</string>
@@ -1952,6 +1953,9 @@
     <string name="widgets_section_object_types">タイプ</string>
     <string name="widgets_menu_new_object_type">新規</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

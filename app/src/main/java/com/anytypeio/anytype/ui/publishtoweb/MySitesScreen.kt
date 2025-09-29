@@ -50,6 +50,7 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.Header
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -294,14 +295,16 @@ fun MySitesEmptyState(
         Column(
             modifier = Modifier
         ) {
-
-            Text(
-                text = stringResource(R.string.my_sites_it_s_empty_here),
-                color = colorResource(R.color.text_primary)
+            Image(
+                painter = painterResource(R.drawable.ic_my_sites_empty_state),
+                contentDescription = null
             )
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
-                text = stringResource(R.string.my_sites_publish_your_first_website_to_get_started),
-                color = colorResource(R.color.text_secondary)
+                text = stringResource(R.string.my_sites_empty_state_text),
+                color = colorResource(R.color.text_primary),
+                textAlign = TextAlign.Center,
+                style = BodyRegular
             )
         }
     }

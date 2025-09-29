@@ -280,14 +280,13 @@ class ShareSpaceViewModel(
      * Consolidates the logic for both viewer and editor permission changes.
      */
     private fun changeParticipantPermissions(
-        view: SpaceMemberView,
+        spaceMemberView: SpaceMemberView,
         targetPermission: SpaceMemberPermissions,
-        canChangePermission: Boolean,
         analyticsType: String
     ) {
-        Timber.d("changeParticipantPermissions, view: [$view], targetPermission: $targetPermission")
+        Timber.d("changeParticipantPermissions, view: [$spaceMemberView], targetPermission: $targetPermission")
 
-        if (!canChangePermission) {
+        if (!spaceMemberView.canReadEnabled) {
             Timber.w("Can't change permissions")
             viewModelScope.launch {
                 commands.emit(Command.ToastPermission)
@@ -297,11 +296,11 @@ class ShareSpaceViewModel(
 
         viewModelScope.launch {
             // Only change if the current permission is different from target
-            if (view.obj.permissions != targetPermission) {
+            if (spaceMemberView.obj.permissions != targetPermission) {
                 changeSpaceMemberPermissions.async(
                     ChangeSpaceMemberPermissions.Params(
                         space = vmParams.space,
-                        identity = view.obj.identity,
+                        identity = spaceMemberView.obj.identity,
                         permission = targetPermission
                     )
                 ).fold(
@@ -325,18 +324,16 @@ class ShareSpaceViewModel(
 
     fun onProceedWithChangingParticipantToEditor(view: SpaceMemberView) {
         changeParticipantPermissions(
-            view = view,
+            spaceMemberView = view,
             targetPermission = SpaceMemberPermissions.WRITER,
-            canChangePermission = view.canEditEnabled,
             analyticsType = "Write"
         )
     }
 
     fun onProceedWithChangingParticipantToViewer(view: SpaceMemberView) {
         changeParticipantPermissions(
-            view = view,
+            spaceMemberView = view,
             targetPermission = SpaceMemberPermissions.READER,
-            canChangePermission = view.canReadEnabled,
             analyticsType = "Read"
         )
     }
@@ -409,13 +406,13 @@ class ShareSpaceViewModel(
     /**
      * Handles context action clicks using the unified ActionType approach
      */
-    fun onContextActionClicked(view: SpaceMemberView, actionType: SpaceMemberView.ActionType) {
+    fun onContextActionClicked(view: SpaceMemberView, actionType: ActionType) {
         Timber.d("onContextActionClicked, view: [$view], actionType: $actionType")
         when (actionType) {
-            SpaceMemberView.ActionType.CAN_VIEW -> onProceedWithChangingParticipantToViewer(view)
-            SpaceMemberView.ActionType.CAN_EDIT -> onProceedWithChangingParticipantToEditor(view)
-            SpaceMemberView.ActionType.REMOVE_MEMBER -> onRemoveMemberClicked(view)
-            SpaceMemberView.ActionType.VIEW_REQUEST -> onViewRequestClicked(view)
+            ActionType.CAN_VIEW -> onProceedWithChangingParticipantToViewer(view)
+            ActionType.CAN_EDIT -> onProceedWithChangingParticipantToEditor(view)
+            ActionType.REMOVE_MEMBER -> onRemoveMemberClicked(view)
+            ActionType.VIEW_REQUEST -> onViewRequestClicked(view)
         }
     }
 

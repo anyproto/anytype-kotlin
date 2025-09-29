@@ -804,7 +804,7 @@
     <string name="relation_editing_title">Ajustes de la propiedad</string>
     <string name="type_editing_uninstall">Borrar</string>
     <string name="empty_tree_widget_reader_access">Este objeto no tiene enlaces a otros objetos.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">No contiene objetos</string>
     <string name="empty_list_widget_no_view">Esta vista de datos no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="this_widget_has_no_object">Este widget no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="emoji">Emoji</string>
@@ -1218,8 +1218,10 @@
     <string name="multiplayer_link_disabled">Enlace desactivado</string>
     <string name="multiplayer_link_disabled_desc">Solo tendrán acceso los miembros que ya se hayan incorporado.</string>
     <string name="multiplayer_editor_access">Acceso como editor</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">Quienes tengan el enlace podrán editar y escribir en el chat.</string>
     <string name="multiplayer_viewer_access">Acceso como visitante</string>
+    <string name="multiplayer_viewer">Visitante</string>
     <string name="multiplayer_viewer_access_desc">Quienes tengan el enlace podrán ver y leer el chat.</string>
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
@@ -1256,9 +1258,11 @@
     <string name="multiplayer_members">Miembros</string>
     <string name="multiplayer_leave_request">Retirar solicitud</string>
     <string name="multiplayer_join_request">Solicitud de acceso</string>
-    <string name="multiplayer_approve_request">Aprobar</string>
+    <string name="multiplayer_approve_request">Establecer acceso</string>
     <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
+    <string name="multiplayer_no_permissions">Sin permisos</string>
+    <string name="multiplayer_pending">Pendiente</string>
     <string name="multiplayer_can_edit">Puede editar</string>
     <string name="multiplayer_can_view">Puede visualizar</string>
     <string name="multiplayer_space_add_viewer">Añadir visitante</string>
@@ -1335,7 +1339,7 @@
         <item quantity="one">%1$d solicitud</item>
         <item quantity="other">%1$d solicitudes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Tú</string>
+    <string name="multiplayer_you_as_member">tú</string>
     <string name="multiplayer_spaces">Espacios</string>
     <string name="multiplayer_space_status_joining">Accediendo</string>
     <string name="multiplayer_space_status_active">Activo</string>
@@ -1936,13 +1940,13 @@ En concreto,
     <string name="camera_permission_settings_message">Para escanear códigos QR, debes permitir acceso a la cámara en los ajustes del dispositivo.</string>
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
-    <string name="attachment_image">Attachment image</string>
+    <string name="attachment_image">Imagen adjunta</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>
     <string name="share_space_error_not_shareable">Parece que este espacio ya no está compartido. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="share_space_error_request_failed">¡Huy! La solicitud ha fallado. Comprueba tu conexión a Internet e inténtalo de nuevo.</string>
     <string name="share_space_error_space_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
-    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_generic">Se ha producido un error inesperado: %1$s. Inténtalo de nuevo más tarde.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
@@ -1968,8 +1972,12 @@ En concreto,
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Desanclar</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publica tu primer sitio web para empezar.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

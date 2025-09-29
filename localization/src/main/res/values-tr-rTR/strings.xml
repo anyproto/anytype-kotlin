@@ -1218,8 +1218,10 @@
     <string name="multiplayer_link_disabled">Bağlantı devre dışı</string>
     <string name="multiplayer_link_disabled_desc">Yalnızca davet edilmiş üyeler erişebilir</string>
     <string name="multiplayer_editor_access">Düzenleyici erişimi</string>
+    <string name="multiplayer_editor">Düzenleyici</string>
     <string name="multiplayer_editor_access_desc">Bağlantıya sahip kişiler sohbette düzenleyebilir ve yazabilir</string>
     <string name="multiplayer_viewer_access">Görüntüleyici erişimi</string>
+    <string name="multiplayer_viewer">Görüntüleyen</string>
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
@@ -1256,9 +1258,11 @@
     <string name="multiplayer_members">Üyeler</string>
     <string name="multiplayer_leave_request">Ayrılma talebi</string>
     <string name="multiplayer_join_request">Katılma talebi</string>
-    <string name="multiplayer_approve_request">Onayla</string>
+    <string name="multiplayer_approve_request">Erişimi ayarla</string>
     <string name="multiplayer_view_request">İsteği görüntüle</string>
     <string name="multiplayer_owner">Sahip</string>
+    <string name="multiplayer_no_permissions">İzin yok</string>
+    <string name="multiplayer_pending">Beklemede</string>
     <string name="multiplayer_can_edit">Düzenleyebilir</string>
     <string name="multiplayer_can_view">Görüntüleyebilir</string>
     <string name="multiplayer_space_add_viewer">Görüntüleyici ekle</string>
@@ -1335,7 +1339,7 @@
         <item quantity="one">%1$d istek</item>
         <item quantity="other">%1$d istek</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Siz</string>
+    <string name="multiplayer_you_as_member">sen</string>
     <string name="multiplayer_spaces">Alanlar</string>
     <string name="multiplayer_space_status_joining">Katılınıyor</string>
     <string name="multiplayer_space_status_active">Etkin</string>
@@ -1968,8 +1972,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>
     <string name="widget_unpin_alert_title">Bu Widget Geri Yüklenemez</string>
     <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
+    <string name="my_sites_it_s_empty_here">Burası boş</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">İlk web sitenizi yayınlayarak başlayın.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Onayla</string>
 </resources>

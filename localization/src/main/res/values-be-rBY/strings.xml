@@ -1226,8 +1226,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Рэдактар</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Праглядальнік</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1264,9 +1266,11 @@
     <string name="multiplayer_members">Удзельнікі</string>
     <string name="multiplayer_leave_request">Запыт на выхад</string>
     <string name="multiplayer_join_request">Запыт на далучэнне</string>
-    <string name="multiplayer_approve_request">Зацвердзіць</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Паглядзець запыт</string>
     <string name="multiplayer_owner">Уладальнік</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Можа рэдагаваць</string>
     <string name="multiplayer_can_view">Толькі прагляд</string>
     <string name="multiplayer_space_add_viewer">Дадаць гледача</string>
@@ -1347,7 +1351,7 @@
         <item quantity="many">%1$d запытаў</item>
         <item quantity="other">%1$d запытаў</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Вы</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Прасторы</string>
     <string name="multiplayer_space_status_joining">Далучаецца</string>
     <string name="multiplayer_space_status_active">Актыўны</string>
@@ -1994,10 +1998,14 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Адмацаваць</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="few">%d new messages</item>
         <item quantity="many">%d new messages</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

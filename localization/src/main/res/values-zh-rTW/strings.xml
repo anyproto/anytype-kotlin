@@ -1214,8 +1214,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">編輯者</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">瀏覽者</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1252,9 +1254,11 @@
     <string name="multiplayer_members">成員</string>
     <string name="multiplayer_leave_request">離開請求</string>
     <string name="multiplayer_join_request">加入請求</string>
-    <string name="multiplayer_approve_request">批准</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">查看請求</string>
     <string name="multiplayer_owner">擁有者</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">可編輯</string>
     <string name="multiplayer_can_view">可檢視</string>
     <string name="multiplayer_space_add_viewer">新增瀏覽者</string>
@@ -1329,7 +1333,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d 個請求</item>
     </plurals>
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">空間</string>
     <string name="multiplayer_space_status_joining">正在加入</string>
     <string name="multiplayer_space_status_active">使用中</string>
@@ -1955,7 +1959,11 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">取消釘選</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

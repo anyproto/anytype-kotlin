@@ -1218,8 +1218,10 @@
     <string name="multiplayer_link_disabled">Koppeling uitgeschakeld</string>
     <string name="multiplayer_link_disabled_desc">Alleen reeds uitgenodigde leden hebben toegang</string>
     <string name="multiplayer_editor_access">Schrijftoegang</string>
+    <string name="multiplayer_editor">Bewerker</string>
     <string name="multiplayer_editor_access_desc">Mensen met koppeling kunnen bewerken en schrijven in chat</string>
     <string name="multiplayer_viewer_access">Leestoegang</string>
+    <string name="multiplayer_viewer">Lezer</string>
     <string name="multiplayer_viewer_access_desc">Mensen met koppeling kunnen chat zien en lezen</string>
     <string name="multiplayer_request_access">Vraag toegang aan</string>
     <string name="multiplayer_request_access_desc">Eigenaar moet elk deelnameverzoek goedkeuren</string>
@@ -1256,9 +1258,11 @@
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>
-    <string name="multiplayer_approve_request">Goedkeuren</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Bekijk verzoek</string>
     <string name="multiplayer_owner">Eigenaar</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Kan bewerken</string>
     <string name="multiplayer_can_view">Kan weergeven</string>
     <string name="multiplayer_space_add_viewer">Voeg lezer toe</string>
@@ -1335,7 +1339,7 @@
         <item quantity="one">%1$d verzoek</item>
         <item quantity="other">%1$d verzoeken</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Jij</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Ruimtes</string>
     <string name="multiplayer_space_status_joining">Deelnemen</string>
     <string name="multiplayer_space_status_active">Actief</string>
@@ -1968,8 +1972,12 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Losmaken</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

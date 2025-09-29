@@ -1214,8 +1214,10 @@
     <string name="multiplayer_link_disabled">Tautan dinonaktifkan</string>
     <string name="multiplayer_link_disabled_desc">Hanya anggota yang sudah diundang yang memiliki akses</string>
     <string name="multiplayer_editor_access">Akses penyunting</string>
+    <string name="multiplayer_editor">Penyunting</string>
     <string name="multiplayer_editor_access_desc">Orang dengan tautan ini bisa menyunting dan menulis di obrolan</string>
     <string name="multiplayer_viewer_access">Akses pembaca</string>
+    <string name="multiplayer_viewer">Pembaca</string>
     <string name="multiplayer_viewer_access_desc">Orang dengan tautan ini bisa membaca obrolan</string>
     <string name="multiplayer_request_access">Minta akses</string>
     <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
@@ -1252,9 +1254,11 @@
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
-    <string name="multiplayer_approve_request">Terima</string>
+    <string name="multiplayer_approve_request">Atur akses</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Dapat melihat</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
@@ -1329,7 +1333,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Kamu</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>
@@ -1954,7 +1958,11 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>
     <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
     <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
+    <string name="my_sites_it_s_empty_here">Di sini kosong</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Terbitkan situs web pertamamu untuk memulai.</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

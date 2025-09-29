@@ -1218,8 +1218,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Leser</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1256,9 +1258,11 @@
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>
-    <string name="multiplayer_approve_request">Genehmigen</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
@@ -1335,7 +1339,7 @@
         <item quantity="one">%1$d Anfrage</item>
         <item quantity="other">%1$d Anfragen</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Du</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Spaces</string>
     <string name="multiplayer_space_status_joining">Beitreten</string>
     <string name="multiplayer_space_status_active">Aktiv</string>
@@ -1968,8 +1972,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

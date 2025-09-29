@@ -1219,8 +1219,10 @@
     <string name="multiplayer_link_disabled">Link disabilitato</string>
     <string name="multiplayer_link_disabled_desc">Solo i membri già invitati hanno accesso</string>
     <string name="multiplayer_editor_access">Accesso editor</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">Le persone con un link possono modificare e scrivere in chat</string>
     <string name="multiplayer_viewer_access">Accesso al visualizzatore</string>
+    <string name="multiplayer_viewer">Visualizzatore</string>
     <string name="multiplayer_viewer_access_desc">Le persone con link possono visualizzare e leggere la chat</string>
     <string name="multiplayer_request_access">Richiesta di accesso</string>
     <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
@@ -1257,9 +1259,11 @@
     <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
     <string name="multiplayer_join_request">Richiesta di partecipazione</string>
-    <string name="multiplayer_approve_request">Approva</string>
+    <string name="multiplayer_approve_request">Imposta accesso</string>
     <string name="multiplayer_view_request">Visualizza richiesta</string>
     <string name="multiplayer_owner">Proprietario</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Può modificare</string>
     <string name="multiplayer_can_view">Può visualizzare</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
@@ -1336,7 +1340,7 @@
         <item quantity="one">%1$d richiesta</item>
         <item quantity="other">%1$d richieste</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Tu</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
@@ -1969,8 +1973,12 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Pubblicate il tuo primo sito web per iniziare.</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d nuovo messaggio</item>
         <item quantity="other">%d nuovi messaggi</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

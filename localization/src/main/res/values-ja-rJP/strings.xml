@@ -1214,8 +1214,10 @@
     <string name="multiplayer_link_disabled">招待リンクの無効化</string>
     <string name="multiplayer_link_disabled_desc">すでに招待されたメンバー以外は参加できません</string>
     <string name="multiplayer_editor_access">編集メンバー</string>
+    <string name="multiplayer_editor">編集可能</string>
     <string name="multiplayer_editor_access_desc">編集やチャットに参加することができます</string>
     <string name="multiplayer_viewer_access">閲覧メンバー</string>
+    <string name="multiplayer_viewer">閲覧可能</string>
     <string name="multiplayer_viewer_access_desc">スペースやチャットを閲覧することができます</string>
     <string name="multiplayer_request_access">参加リクエスト</string>
     <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
@@ -1252,9 +1254,11 @@
     <string name="multiplayer_members">メンバー</string>
     <string name="multiplayer_leave_request">退出リクエスト</string>
     <string name="multiplayer_join_request">参加リクエスト</string>
-    <string name="multiplayer_approve_request">承認</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">リクエストを確認</string>
     <string name="multiplayer_owner">所有者</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">編集可能</string>
     <string name="multiplayer_can_view">閲覧可能</string>
     <string name="multiplayer_space_add_viewer">閲覧のみ許可</string>
@@ -1329,7 +1333,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d件のリクエスト</item>
     </plurals>
-    <string name="multiplayer_you_as_member">あなた</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">スペース</string>
     <string name="multiplayer_space_status_joining">参加中</string>
     <string name="multiplayer_space_status_active">有効</string>
@@ -1956,7 +1960,11 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">まずは、Webサイトを公開しましょう。</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

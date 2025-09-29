@@ -1218,8 +1218,10 @@
     <string name="multiplayer_link_disabled">Enlace desactivado</string>
     <string name="multiplayer_link_disabled_desc">Solo tendrán acceso los miembros que ya se hayan incorporado.</string>
     <string name="multiplayer_editor_access">Acceso como editor</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">Quienes tengan el enlace podrán editar y escribir en el chat.</string>
     <string name="multiplayer_viewer_access">Acceso como visitante</string>
+    <string name="multiplayer_viewer">Visitante</string>
     <string name="multiplayer_viewer_access_desc">Quienes tengan el enlace podrán ver y leer el chat.</string>
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
@@ -1256,9 +1258,11 @@
     <string name="multiplayer_members">Miembros</string>
     <string name="multiplayer_leave_request">Retirar solicitud</string>
     <string name="multiplayer_join_request">Solicitud de acceso</string>
-    <string name="multiplayer_approve_request">Aprobar</string>
+    <string name="multiplayer_approve_request">Establecer acceso</string>
     <string name="multiplayer_view_request">Ver solicitud</string>
     <string name="multiplayer_owner">Propietario</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Puede editar</string>
     <string name="multiplayer_can_view">Puede visualizar</string>
     <string name="multiplayer_space_add_viewer">Añadir visitante</string>
@@ -1335,7 +1339,7 @@
         <item quantity="one">%1$d solicitud</item>
         <item quantity="other">%1$d solicitudes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Tú</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Espacios</string>
     <string name="multiplayer_space_status_joining">Accediendo</string>
     <string name="multiplayer_space_status_active">Activo</string>
@@ -1974,4 +1978,6 @@ En concreto,
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

@@ -10,7 +10,7 @@
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
     <string name="key">Ключ</string>
-    <string name="login_key">Ключ</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
@@ -29,7 +29,9 @@
     <string name="dark">Тёмный</string>
     <string name="system">Системный</string>
     <string name="settings">Настройки</string>
+    <string name="vault_settings_section_misc">Прочее</string>
     <string name="app_preferences">Параметры приложения</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Хранилище и ключ</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы сделали резервную копию вашего ключа?</string>
     <string name="you_will_need_to_sign_in">Он необходим для входа в хранилище. Храните его в безопасном месте. Если Вы его потеряете - больше не сможете войти в своё хранилище.</string>
@@ -2001,6 +2003,8 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Открепить</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">

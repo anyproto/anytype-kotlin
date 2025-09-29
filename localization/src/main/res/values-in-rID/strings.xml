@@ -10,7 +10,7 @@
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="key">Kunci</string>
-    <string name="login_key">Kunci</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
+    <string name="vault_settings_section_misc">Lain-Lain</string>
     <string name="app_preferences">Setelan Aplikasi</string>
+    <string name="settings_application">Aplikasi</string>
     <string name="vault_key">Brankas &amp; Kunci</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">Anda membutuhkannya untuk masuk. Simplanlah dalam tempat yang aman. Jika hilang, kamu tidak akan bisa mengakses brankasmu.</string>
@@ -1958,6 +1960,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>
     <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
     <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
+    <string name="my_sites">Situsku</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">Di sini kosong</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Terbitkan situs web pertamamu untuk memulai.</string>
     <plurals name="notification_messages_count">

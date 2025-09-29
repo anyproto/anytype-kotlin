@@ -8,6 +8,7 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -41,12 +42,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -61,6 +64,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.Arrow
 import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
@@ -119,11 +123,11 @@ fun ProfileSettingsScreen(
             Divider()
         }
         item {
-            Section(stringResource(R.string.app_preferences))
+            Section(stringResource(R.string.settings_application))
         }
         item {
             Option(
-                image = R.drawable.ic_appearance,
+                image = R.drawable.ic_settings_appearance,
                 text = stringResource(R.string.appearance),
                 onClick = onAppearanceClicked
             )
@@ -133,7 +137,7 @@ fun ProfileSettingsScreen(
         }
         item {
             OptionWithBadge(
-                image = R.drawable.ic_notifications_28,
+                image = R.drawable.ic_settings_notifications,
                 text = stringResource(R.string.notifications_title),
                 showBadge = notificationsDisabled,
                 onClick = onOpenNotificationSettings
@@ -142,9 +146,35 @@ fun ProfileSettingsScreen(
         item {
             Divider(paddingStart = 60.dp)
         }
+
         item {
-            Section(stringResource(R.string.vault_key))
+            Option(
+                image = R.drawable.ic_settings_access,
+                text = stringResource(R.string.login_key),
+                onClick = onKeychainPhraseClicked
+            )
         }
+        item {
+            Divider(paddingStart = 60.dp)
+        }
+        if (showMembership?.isShowing == true) {
+            item {
+                OptionMembership(
+                    image = R.drawable.ic_settings_membership,
+                    text = stringResource(R.string.settings_membership),
+                    onClick = onMembershipClicked,
+                    membershipStatus = membershipStatus
+                )
+            }
+            item {
+                Divider(paddingStart = 60.dp)
+            }
+        }
+
+        item {
+            Section(stringResource(R.string.data_management))
+        }
+
         item {
             Option(
                 image = R.drawable.ic_settings_spaces,
@@ -158,8 +188,8 @@ fun ProfileSettingsScreen(
 
         item {
             Option(
-                image = R.drawable.ic_file_storage,
-                text = stringResource(R.string.data_management),
+                image = R.drawable.ic_settings_data_management,
+                text = stringResource(R.string.local_storage),
                 onClick = onDataManagementClicked
             )
         }
@@ -168,7 +198,7 @@ fun ProfileSettingsScreen(
         }
         item {
             Option(
-                image = R.drawable.ic_file_storage,
+                image = R.drawable.ic_settings_my_sites,
                 text = stringResource(R.string.settings_my_sites),
                 onClick = onMySitesClicked
             )
@@ -176,32 +206,14 @@ fun ProfileSettingsScreen(
         item {
             Divider(paddingStart = 60.dp)
         }
+
+        item {
+            Section(stringResource(R.string.vault_settings_section_misc))
+        }
+
         item {
             Option(
-                image = R.drawable.ic_keychain_phrase,
-                text = stringResource(R.string.login_key),
-                onClick = onKeychainPhraseClicked
-            )
-        }
-        item {
-            Divider(paddingStart = 60.dp)
-        }
-        if (showMembership?.isShowing == true) {
-            item {
-                OptionMembership(
-                    image = R.drawable.ic_membership,
-                    text = stringResource(R.string.settings_membership),
-                    onClick = onMembershipClicked,
-                    membershipStatus = membershipStatus
-                )
-            }
-            item {
-                Divider(paddingStart = 60.dp)
-            }
-        }
-        item {
-            Option(
-                image = R.drawable.ic_about,
+                image = R.drawable.ic_settings_about,
                 text = stringResource(R.string.about),
                 onClick = onAboutClicked
             )
@@ -212,7 +224,7 @@ fun ProfileSettingsScreen(
             }
             item {
                 Option(
-                    image = R.drawable.ic_debug,
+                    image = R.drawable.ic_settings_debug,
                     text = stringResource(R.string.debug),
                     onClick = onDebugClicked
                 )
@@ -222,15 +234,64 @@ fun ProfileSettingsScreen(
             Divider(paddingStart = 60.dp)
         }
         item {
-            ActionWithProgressBar(
-                name = stringResource(R.string.log_out),
-                color = colorResource(R.color.palette_system_red),
-                onClick = onLogoutClicked,
-                isInProgress = isLogoutInProgress
-            )
+            LogoutButton(onLogoutClicked, isLogoutInProgress)
         }
         item {
             Box(Modifier.height(54.dp))
+        }
+    }
+}
+
+@Composable
+private fun LogoutButton(
+    onLogoutClicked: () -> Unit,
+    isLogoutInProgress: Boolean
+) {
+    Row(
+        modifier = Modifier
+            .height(52.dp)
+            .clickable {
+                onLogoutClicked()
+            },
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Image(
+            painter = painterResource(R.drawable.ic_settings_log_out),
+            contentDescription = "Option icon",
+            modifier = Modifier.padding(
+                start = 20.dp
+            )
+        )
+        Box(
+            modifier = Modifier
+                .weight(1.0f)
+                .height(52.dp)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.CenterStart
+        ) {
+            Text(
+                text = stringResource(R.string.log_out),
+                color = colorResource(R.color.palette_system_red),
+                style = BodyRegular,
+                modifier = Modifier.padding(
+                    start = 10.dp
+                )
+            )
+            if (isLogoutInProgress) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 20.dp)
+                        .size(24.dp),
+                    color = colorResource(R.color.shape_secondary)
+                )
+            }
+        }
+        Box(
+            modifier = Modifier,
+            contentAlignment = Alignment.CenterEnd
+        ) {
+            Arrow()
         }
     }
 }
@@ -284,10 +345,12 @@ fun ActionWithProgressBar(
     name: String,
     color: Color = Color.Unspecified,
     onClick: () -> Unit = {},
-    isInProgress: Boolean
+    isInProgress: Boolean,
+    textStartPadding: Dp = 20.dp,
+    modifier: Modifier = Modifier
 ) {
     Box(
-        modifier = Modifier
+        modifier = modifier
             .height(52.dp)
             .fillMaxWidth()
             .clickable(onClick = onClick),
@@ -298,7 +361,7 @@ fun ActionWithProgressBar(
             color = color,
             style = BodyRegular,
             modifier = Modifier.padding(
-                start = 20.dp
+                start = textStartPadding
             )
         )
         if (isInProgress) {

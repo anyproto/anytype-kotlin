@@ -1,0 +1,33 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+  <path
+      android:pathData="M12,3.5m-1.5,0a1.5,1.5 0,1 1,3 0a1.5,1.5 0,1 1,-3 0"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M12,20.5m-1.5,0a1.5,1.5 0,1 1,3 0a1.5,1.5 0,1 1,-3 0"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M3.5,12m0,1.5a1.5,1.5 0,1 1,0 -3a1.5,1.5 0,1 1,0 3"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M20.5,12m0,1.5a1.5,1.5 0,1 1,0 -3a1.5,1.5 0,1 1,0 3"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M5.989,5.988m-1.061,1.061a1.5,1.5 0,1 1,2.121 -2.121a1.5,1.5 0,1 1,-2.121 2.121"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M18.01,18.008m-1.061,1.061a1.5,1.5 0,1 1,2.121 -2.121a1.5,1.5 0,1 1,-2.121 2.121"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M18.01,5.989m-1.061,-1.061a1.5,1.5 106.856,1 1,2.121 2.121a1.5,1.5 106.856,1 1,-2.121 -2.121"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M5.989,18.012m-1.061,-1.061a1.5,1.5 0,1 1,2.121 2.121a1.5,1.5 0,1 1,-2.121 -2.121"
+      android:fillColor="@color/control_secondary"/>
+  <path
+      android:pathData="M12,12m-5,0a5,5 0,1 1,10 0a5,5 0,1 1,-10 0"
+      android:fillColor="@color/control_secondary"/>
+</vector>

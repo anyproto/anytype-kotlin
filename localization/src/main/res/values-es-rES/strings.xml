@@ -10,7 +10,7 @@
     <string name="appearance">Aspecto</string>
     <string name="file_storage">Almacenamiento de archivos</string>
     <string name="key">Clave</string>
-    <string name="login_key">Clave</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
     <string name="debug_sync_report">Informe de sincronización de depuración</string>
     <string name="debug">Depurar</string>
@@ -29,7 +29,9 @@
     <string name="dark">Oscuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Ajustes</string>
+    <string name="vault_settings_section_misc">Varios</string>
     <string name="app_preferences">Preferencias de la aplicación</string>
+    <string name="settings_application">Aplicación</string>
     <string name="vault_key">Arca y clave</string>
     <string name="have_you_back_up_your_recovery_phrase">¿Has hecho una copia de respaldo de tu clave?</string>
     <string name="you_will_need_to_sign_in">La necesitarás para entrar en tu arca. Mantenla en un lugar seguro. Si la pierdes, ya no podrás entrar en tu arca.</string>
@@ -1972,6 +1974,8 @@ En concreto,
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Desanclar</string>
+    <string name="my_sites">Mis sitios</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publica tu primer sitio web para empezar.</string>
     <plurals name="notification_messages_count">

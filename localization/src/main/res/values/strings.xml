@@ -1462,6 +1462,7 @@
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
     <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>

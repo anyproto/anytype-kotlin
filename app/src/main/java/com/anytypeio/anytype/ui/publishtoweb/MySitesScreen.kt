@@ -77,7 +77,7 @@ fun MySitesScreen(
             modifier = Modifier.fillMaxWidth()
         ) {
             Header(
-                text = stringResource(R.string.publish_to_web)
+                text = stringResource(R.string.my_sites)
             )
             Image(
                 painter = painterResource(R.drawable.ic_default_top_back),

@@ -10,7 +10,7 @@
     <string name="appearance">Знешні выгляд</string>
     <string name="file_storage">Сховішча файлаў</string>
     <string name="key">Ключ</string>
-    <string name="login_key">Ключ</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Ачысціць файлавы кэш</string>
     <string name="debug_sync_report">Адладкавая справаздача сінхранізацыі</string>
     <string name="debug">Адладка</string>
@@ -29,7 +29,9 @@
     <string name="dark">Цёмны</string>
     <string name="system">Сістэма</string>
     <string name="settings">Налады</string>
+    <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">App Preferences</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Вы стварылі рэзервовую копію свайго ключа?</string>
     <string name="you_will_need_to_sign_in">Ён спатрэбіцца вам для ўваходу ў сховішча. Захоўвайце яго ў надзейным месцы. Калі вы страціце яго, вы больш не зможаце ўвайсці ў сховішча.</string>
@@ -1998,6 +2000,8 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Адмацаваць</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <plurals name="notification_messages_count">

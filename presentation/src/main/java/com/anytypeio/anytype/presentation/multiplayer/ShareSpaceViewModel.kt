@@ -42,10 +42,14 @@ import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
+import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.mapper.toView
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command.ShareInviteLink
+import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView.ActionType
+import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView.ContextAction
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.objects.toSpaceMembers
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.getSpaceMembersSearchParams
@@ -81,12 +85,13 @@ class ShareSpaceViewModel(
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
-    private val gradientProvider: SpaceGradientProvider
+    private val gradientProvider: SpaceGradientProvider,
+    private val stringResourceProvider: StringResourceProvider
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
 
-    val members = MutableStateFlow<List<ShareSpaceMemberView>>(emptyList())
+    val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
     val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
@@ -185,16 +190,17 @@ class ShareSpaceViewModel(
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
-                members.value = spaceMembers.toView(
+                members.value = spaceMembers.toSpaceMemberView(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
                     isCurrentUserOwner = result.isCurrentUserOwner,
-                    account = account
+                    account = account,
+                    stringResourceProvider = stringResourceProvider
                 )
-                showIncentive.value = spaceView?.getIncentiveState(
+                showIncentive.value = spaceView.getIncentiveState(
                     spaceMembers = spaceMembers,
                     isCurrentUserOwner = result.isCurrentUserOwner
-                ) ?: ShareSpaceIncentiveState.Hidden
+                )
             }
         }
     }
@@ -256,7 +262,7 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onViewRequestClicked(view: ShareSpaceMemberView) {
+    fun onViewRequestClicked(view: SpaceMemberView) {
         Timber.d("onViewRequestClicked, view: [$view]")
         viewModelScope.launch {
             commands.emit(
@@ -268,24 +274,33 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onCanEditClicked(
-        view: ShareSpaceMemberView
+    /**
+     * Changes space member permissions to the specified permission level.
+     * Consolidates the logic for both viewer and editor permission changes.
+     */
+    private fun changeParticipantPermissions(
+        spaceMemberView: SpaceMemberView,
+        targetPermission: SpaceMemberPermissions,
+        analyticsType: String
     ) {
-        Timber.d("onCanEditClicked, view: [$view]")
-        if (!view.canEditEnabled) {
+        Timber.d("changeParticipantPermissions, view: [$spaceMemberView], targetPermission: $targetPermission")
+
+        if (!spaceMemberView.canReadEnabled) {
             Timber.w("Can't change permissions")
             viewModelScope.launch {
                 commands.emit(Command.ToastPermission)
             }
             return
         }
+
         viewModelScope.launch {
-            if (view.config != ShareSpaceMemberView.Config.Member.Writer) {
+            // Only change if the current permission is different from target
+            if (spaceMemberView.obj.permissions != targetPermission) {
                 changeSpaceMemberPermissions.async(
                     ChangeSpaceMemberPermissions.Params(
                         space = vmParams.space,
-                        identity = view.obj.identity,
-                        permission = SpaceMemberPermissions.WRITER
+                        identity = spaceMemberView.obj.identity,
+                        permission = targetPermission
                     )
                 ).fold(
                     onFailure = { e ->
@@ -297,7 +312,7 @@ class ShareSpaceViewModel(
                         analytics.sendEvent(
                             eventName = EventsDictionary.changeSpaceMemberPermissions,
                             props = Props(
-                                mapOf(EventsPropertiesKey.type to "Write")
+                                mapOf(EventsPropertiesKey.type to analyticsType)
                             )
                         )
                     }
@@ -306,46 +321,24 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onCanViewClicked(
-        view: ShareSpaceMemberView
-    ) {
-        Timber.d("onCanViewClicked, view: [$view]")
-        if (!view.canReadEnabled) {
-            Timber.w("Can't change permissions")
-            viewModelScope.launch {
-                commands.emit(Command.ToastPermission)
-            }
-            return
-        }
-        viewModelScope.launch {
-            if (view.config != ShareSpaceMemberView.Config.Member.Reader) {
-                changeSpaceMemberPermissions.async(
-                    ChangeSpaceMemberPermissions.Params(
-                        space = vmParams.space,
-                        identity = view.obj.identity,
-                        permission = SpaceMemberPermissions.READER
-                    )
-                ).fold(
-                    onFailure = { e ->
-                        Timber.e(e, "Error while changing member permissions")
-                        proceedWithMultiplayerError(e)
-                    },
-                    onSuccess = {
-                        Timber.d("Successfully updated space member permissions")
-                        analytics.sendEvent(
-                            eventName = EventsDictionary.changeSpaceMemberPermissions,
-                            props = Props(
-                                mapOf(EventsPropertiesKey.type to "Read")
-                            )
-                        )
-                    }
-                )
-            }
-        }
+    fun onProceedWithChangingParticipantToEditor(view: SpaceMemberView) {
+        changeParticipantPermissions(
+            spaceMemberView = view,
+            targetPermission = SpaceMemberPermissions.WRITER,
+            analyticsType = "Write"
+        )
+    }
+
+    fun onProceedWithChangingParticipantToViewer(view: SpaceMemberView) {
+        changeParticipantPermissions(
+            spaceMemberView = view,
+            targetPermission = SpaceMemberPermissions.READER,
+            analyticsType = "Read"
+        )
     }
 
     fun onRemoveMemberClicked(
-        view: ShareSpaceMemberView
+        view: SpaceMemberView
     ) {
         Timber.d("onRemoveMemberClicked")
         viewModelScope.launch {
@@ -406,6 +399,19 @@ class ShareSpaceViewModel(
                     space = vmParams.space
                 )
             )
+        }
+    }
+
+    /**
+     * Handles context action clicks using the unified ActionType approach
+     */
+    fun onContextActionClicked(view: SpaceMemberView, actionType: ActionType) {
+        Timber.d("onContextActionClicked, view: [$view], actionType: $actionType")
+        when (actionType) {
+            ActionType.CAN_VIEW -> onProceedWithChangingParticipantToViewer(view)
+            ActionType.CAN_EDIT -> onProceedWithChangingParticipantToEditor(view)
+            ActionType.REMOVE_MEMBER -> onRemoveMemberClicked(view)
+            ActionType.VIEW_REQUEST -> onViewRequestClicked(view)
         }
     }
 
@@ -648,10 +654,13 @@ class ShareSpaceViewModel(
             permissions = when (newLevel) {
                 is SpaceInviteLinkAccessLevel.EditorAccess ->
                     SpaceMemberPermissions.WRITER
+
                 SpaceInviteLinkAccessLevel.LinkDisabled ->
                     SpaceMemberPermissions.NO_PERMISSIONS
+
                 is SpaceInviteLinkAccessLevel.RequestAccess ->
                     SpaceMemberPermissions.NO_PERMISSIONS
+
                 is SpaceInviteLinkAccessLevel.ViewerAccess ->
                     SpaceMemberPermissions.READER
             }
@@ -774,7 +783,8 @@ class ShareSpaceViewModel(
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
         private val spaceInviteLinkStore: SpaceInviteLinkStore,
-        private val gradientProvider: SpaceGradientProvider
+        private val gradientProvider: SpaceGradientProvider,
+        private val stringResourceProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -795,7 +805,8 @@ class ShareSpaceViewModel(
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             changeSpaceInvitePermissions = changeSpaceInvitePermissions,
             spaceInviteLinkStore = spaceInviteLinkStore,
-            gradientProvider = gradientProvider
+            gradientProvider = gradientProvider,
+            stringResourceProvider = stringResourceProvider
         ) as T
     }
 
@@ -833,7 +844,7 @@ class ShareSpaceViewModel(
         const val SHARE_SPACE_SPACE_SUBSCRIPTION = "share-space-subscription.space"
     }
 
-    sealed class UiEvent{
+    sealed class UiEvent {
         sealed class AccessChange : UiEvent() {
             data object Editor : AccessChange()
             data object Viewer : AccessChange()
@@ -850,115 +861,242 @@ class ShareSpaceViewModel(
 
     data class CombineResult(
         val isCurrentUserOwner: Boolean,
-        val spaceView: ObjectWrapper.SpaceView?,
+        val spaceView: ObjectWrapper.SpaceView,
         val tierId: TierId,
         val spaceMembers: List<ObjectWrapper.SpaceMember>,
     )
 }
 
-data class ShareSpaceMemberView(
+data class SpaceMemberView(
     val obj: ObjectWrapper.SpaceMember,
-    val config: Config = Config.Member.Owner,
     val icon: SpaceMemberIconView,
     val canReadEnabled: Boolean = false,
     val canEditEnabled: Boolean = false,
-    val isUser: Boolean = false
+    val isUser: Boolean = false,
+    val statusText: String? = null,
+    val contextActions: List<ContextAction> = emptyList()
 ) {
-    sealed class Config {
-        sealed class Request : Config() {
-            data object Join : Request()
-            data object Leave : Request()
+
+    data class ContextAction(
+        val title: String,
+        val isSelected: Boolean = false,
+        val isDestructive: Boolean = false,
+        val isEnabled: Boolean = true,
+        val actionType: ActionType
+    )
+
+    enum class ActionType {
+        CAN_VIEW,
+        CAN_EDIT,
+        REMOVE_MEMBER,
+        VIEW_REQUEST
+    }
+}
+
+/**
+ * Data class to hold both participant info (status text and context actions).
+ */
+data class ParticipantInfo(
+    val statusText: String? = null,
+    val contextActions: List<ContextAction> = emptyList()
+)
+
+/**
+ * Get participant info including status text and context actions based on their status and permissions.
+ * This method combines the logic for generating both status text and context actions.
+ */
+private fun ObjectWrapper.SpaceMember.getParticipantInfo(
+    canChangeWriterToReader: Boolean,
+    canChangeReaderToWriter: Boolean,
+    isCurrentUserOwner: Boolean,
+    stringResourceProvider: StringResourceProvider
+): ParticipantInfo {
+    return when (status) {
+        ParticipantStatus.ACTIVE -> {
+            // Status text shows permission level for active participants
+            val statusText = when (permissions) {
+                SpaceMemberPermissions.READER -> stringResourceProvider.getMultiplayerViewer()
+                SpaceMemberPermissions.WRITER -> stringResourceProvider.getMultiplayerEditor()
+                SpaceMemberPermissions.OWNER -> stringResourceProvider.getMultiplayerOwner()
+                SpaceMemberPermissions.NO_PERMISSIONS -> stringResourceProvider.getMultiplayerNoPermissions()
+                null -> null
+            }
+
+            // Context actions are only available for non-owners when current user is owner
+            val contextActions = if (isCurrentUserOwner && permissions != SpaceMemberPermissions.OWNER) {
+                buildList {
+                    // Change to Viewer action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerViewer(),
+                            isSelected = permissions == SpaceMemberPermissions.READER,
+                            isDestructive = false,
+                            isEnabled = canChangeWriterToReader || permissions == SpaceMemberPermissions.READER,
+                            actionType = ActionType.CAN_VIEW
+                        )
+                    )
+
+                    // Change to Editor action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerEditor(),
+                            isSelected = permissions == SpaceMemberPermissions.WRITER,
+                            isDestructive = false,
+                            isEnabled = canChangeReaderToWriter || permissions == SpaceMemberPermissions.WRITER,
+                            actionType = ActionType.CAN_EDIT
+                        )
+                    )
+
+                    // Remove Member action
+                    add(
+                        ContextAction(
+                            title = stringResourceProvider.getMultiplayerRemoveMember(),
+                            isSelected = false,
+                            isDestructive = true,
+                            isEnabled = true,
+                            actionType = ActionType.REMOVE_MEMBER
+                        )
+                    )
+                }
+            } else {
+                emptyList()
+            }
+
+            ParticipantInfo(statusText = statusText, contextActions = contextActions)
         }
 
-        sealed class Member : Config() {
-            data object Owner : Member()
-            data object Writer : Member()
-            data object Reader : Member()
-            data object NoPermissions : Member()
-            data object Unknown : Member()
+        ParticipantStatus.JOINING -> {
+            // Status text varies based on viewer's permissions
+            val statusText = if (isCurrentUserOwner) {
+                stringResourceProvider.getMultiplayerApproveRequest()
+            } else {
+                stringResourceProvider.getMultiplayerPending()
+            }
+
+            // Context actions only for those who can approve
+            val contextActions = if (isCurrentUserOwner) {
+                listOf(
+                    ContextAction(
+                        title = stringResourceProvider.getMultiplayerViewRequest(),
+                        isSelected = false,
+                        isDestructive = false,
+                        isEnabled = true,
+                        actionType = ActionType.VIEW_REQUEST
+                    )
+                )
+            } else {
+                emptyList()
+            }
+
+            ParticipantInfo(statusText = statusText, contextActions = contextActions)
+        }
+
+        ParticipantStatus.REMOVING -> {
+            val statusText = stringResourceProvider.getMultiplayerLeaveRequest()
+
+            val contextActions = if (isCurrentUserOwner) {
+                listOf(
+                    ContextAction(
+                        title = stringResourceProvider.getMultiplayerApprove(),
+                        isSelected = false,
+                        isDestructive = false,
+                        isEnabled = true,
+                        actionType = ActionType.VIEW_REQUEST
+                    )
+                )
+            } else {
+                emptyList()
+            }
+
+            ParticipantInfo(statusText = statusText, contextActions = contextActions)
+        }
+
+        ParticipantStatus.DECLINED,
+        ParticipantStatus.CANCELLED,
+        ParticipantStatus.REMOVED,
+        null -> {
+            // These statuses should not be shown
+            ParticipantInfo(statusText = null, contextActions = emptyList())
         }
     }
+}
 
-    companion object {
-        fun fromObject(
-            account: Id?,
-            obj: ObjectWrapper.SpaceMember,
-            urlBuilder: UrlBuilder,
-            canChangeWriterToReader: Boolean,
-            canChangeReaderToWriter: Boolean,
-            includeRequests: Boolean
-        ): ShareSpaceMemberView? {
-            val icon = SpaceMemberIconView.icon(
-                obj = obj,
-                urlBuilder = urlBuilder
+fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
+    spaceView: ObjectWrapper.SpaceView,
+    urlBuilder: UrlBuilder,
+    isCurrentUserOwner: Boolean,
+    account: Id? = null,
+    stringResourceProvider: StringResourceProvider
+): List<SpaceMemberView> = mapNotNull { spaceMember ->
+
+    val canChangeReaderToWriter = spaceView.canChangeReaderToWriter(participants = this)
+    val canChangeWriterToReader = spaceView.canChangeWriterToReader(participants = this)
+
+    val isUser = spaceMember.identity == account
+
+    val icon = SpaceMemberIconView.icon(
+        obj = spaceMember,
+        urlBuilder = urlBuilder
+    )
+
+    // Generate participant info (status text and context actions)
+    val participantInfo = spaceMember.getParticipantInfo(
+        canChangeWriterToReader = canChangeWriterToReader,
+        canChangeReaderToWriter = canChangeReaderToWriter,
+        isCurrentUserOwner = isCurrentUserOwner,
+        stringResourceProvider = stringResourceProvider
+    )
+
+    val statusText = participantInfo.statusText
+    val contextActions = participantInfo.contextActions
+    when (spaceMember.status) {
+        ParticipantStatus.ACTIVE -> {
+            SpaceMemberView(
+                obj = spaceMember,
+                icon = icon,
+                canReadEnabled = canChangeWriterToReader,
+                canEditEnabled = canChangeReaderToWriter,
+                isUser = isUser,
+                statusText = statusText,
+                contextActions = contextActions
             )
-            val isUser = obj.identity == account
-            return when (obj.status) {
-                ParticipantStatus.ACTIVE -> {
-                    when (obj.permissions) {
-                        SpaceMemberPermissions.READER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Reader,
-                            icon = icon,
-                            canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter,
-                            isUser = isUser
-                        )
+        }
 
-                        SpaceMemberPermissions.WRITER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Writer,
-                            icon = icon,
-                            canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter,
-                            isUser = isUser
-                        )
-
-                        SpaceMemberPermissions.OWNER -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Owner,
-                            icon = icon,
-                            canReadEnabled = canChangeWriterToReader,
-                            canEditEnabled = canChangeReaderToWriter,
-                            isUser = isUser
-                        )
-
-                        SpaceMemberPermissions.NO_PERMISSIONS -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.NoPermissions,
-                            icon = icon,
-                            isUser = isUser
-                        )
-
-                        null -> ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Member.Unknown,
-                            icon = icon,
-                            isUser = isUser
-                        )
-                    }
-                }
-
-                ParticipantStatus.JOINING -> {
-                    if (includeRequests)
-                        ShareSpaceMemberView(
-                            obj = obj,
-                            config = Config.Request.Join,
-                            icon = icon,
-                            isUser = isUser
-                        )
-                    else
-                        null
-                }
-
-                ParticipantStatus.REMOVING -> {
-                    // Always filter out participants with REMOVING status
-                    null
-                }
-
-                else -> null
+        ParticipantStatus.JOINING -> {
+            // Only show join requests to space owners
+            if (isCurrentUserOwner) {
+                SpaceMemberView(
+                    obj = spaceMember,
+                    icon = icon,
+                    isUser = isUser,
+                    statusText = statusText,
+                    contextActions = contextActions
+                )
+            } else {
+                // Hide join requests from non-owners (Editors/Viewers)
+                null
             }
         }
+
+        ParticipantStatus.REMOVING -> {
+            if (isCurrentUserOwner) {
+                SpaceMemberView(
+                    obj = spaceMember,
+                    icon = icon,
+                    isUser = isUser,
+                    statusText = statusText,
+                    contextActions = contextActions
+                )
+            } else {
+                // Hide leave requests from non-owners (Editors/Viewers)
+                null
+            }
+        }
+
+        ParticipantStatus.REMOVED -> null
+        ParticipantStatus.DECLINED -> null
+        ParticipantStatus.CANCELLED -> null
+        null -> null
     }
 }
 

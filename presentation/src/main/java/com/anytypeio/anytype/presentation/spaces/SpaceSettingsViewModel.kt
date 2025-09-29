@@ -28,6 +28,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
@@ -57,7 +58,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
@@ -122,7 +123,8 @@ class SpaceSettingsViewModel(
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val getGradients: GetCoverGradientCollection,
-    private val setWallpaper: SetWallpaper
+    private val setWallpaper: SetWallpaper,
+    private val stringResourceProvider: StringResourceProvider
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -277,11 +279,12 @@ class SpaceSettingsViewModel(
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.toView(
+                    spaceMembers.members.toSpaceMemberView(
                         spaceView = spaceView,
                         urlBuilder = urlBuilder,
                         isCurrentUserOwner = permission?.isOwner() == true,
-                        account = account
+                        account = account,
+                        stringResourceProvider = stringResourceProvider
                     ).size
                 } else {
                     0
@@ -394,7 +397,11 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.DeleteSpace)
+                    if (permission?.isOwner() == true) {
+                        add(UiSpaceSettingsItem.DeleteSpace)
+                    } else {
+                        add(UiSpaceSettingsItem.LeaveSpace)
+                    }
                     add(Spacer(height = 32))
                 }
 
@@ -981,7 +988,8 @@ class SpaceSettingsViewModel(
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
         private val spaceInviteLinkStore: SpaceInviteLinkStore,
         private val getGradients: GetCoverGradientCollection,
-        private val setWallpaper: SetWallpaper
+        private val setWallpaper: SetWallpaper,
+        private val stringResourceProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -1015,7 +1023,8 @@ class SpaceSettingsViewModel(
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
             spaceInviteLinkStore = spaceInviteLinkStore,
             getGradients = getGradients,
-            setWallpaper = setWallpaper
+            setWallpaper = setWallpaper,
+            stringResourceProvider = stringResourceProvider
         ) as T
     }
 

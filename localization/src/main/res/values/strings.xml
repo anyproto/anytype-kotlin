@@ -13,7 +13,7 @@
     <string name="appearance">Appearance</string>
     <string name="file_storage">Files storage</string>
     <string name="key">Key</string>
-    <string name="login_key">Key</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Clear file cache</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -36,7 +36,10 @@
     <string name="account_default_name" translatable="false">U</string>
 
     <string name="settings">Settings</string>
+    <string name="vault_settings_section_misc">Misc</string>
+
     <string name="app_preferences">App Preferences</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Vault &amp; Key</string>
 
     <string name="have_you_back_up_your_recovery_phrase">Have you backed up your Key?</string>
@@ -1415,8 +1418,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Viewer</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1456,9 +1461,11 @@
     <string name="multiplayer_members">Members</string>
     <string name="multiplayer_leave_request">Leave request</string>
     <string name="multiplayer_join_request">Join request</string>
-    <string name="multiplayer_approve_request">Approve</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">View request</string>
     <string name="multiplayer_owner">Owner</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Can view</string>
     <string name="multiplayer_space_add_viewer">Add viewer</string>
@@ -1540,7 +1547,7 @@
         <item quantity="other">%1$d requests</item>
     </plurals>
 
-    <string name="multiplayer_you_as_member">You</string>
+    <string name="multiplayer_you_as_member">you</string>
 
     <string name="multiplayer_spaces">Spaces</string>
 
@@ -2275,6 +2282,8 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Unpin</string>
 
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
 
@@ -2283,5 +2292,8 @@ Please provide specific details of your needs here.</string>
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 
 </resources>

@@ -113,7 +113,7 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.Ex
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
@@ -155,7 +155,6 @@ import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
-import com.anytypeio.anytype.presentation.widgets.forceChatPosition
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
@@ -434,10 +433,11 @@ class HomeScreenViewModel(
             }
                 .collect { (spaceView, members, permissions) ->
                     val spaceMemberCount = if (members is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                        members.members.toView(
+                        members.members.toSpaceMemberView(
                             spaceView = spaceView,
                             urlBuilder = urlBuilder,
-                            isCurrentUserOwner = permissions?.isOwner() == true
+                            isCurrentUserOwner = permissions?.isOwner() == true,
+                            stringResourceProvider = stringResourceProvider
                         ).size
                     } else {
                         0

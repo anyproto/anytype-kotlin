@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.wallpaper.WallpaperStore
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.device.DefaultGradientCollectionProvider
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
@@ -141,4 +142,5 @@ interface SpaceSettingsDependencies : ComponentDependencies {
     fun clipboard() : Clipboard
     fun logger(): Logger
     fun spaceInviteLinkStore() : SpaceInviteLinkStore
+    fun stringResourceProvider(): StringResourceProvider
 }

@@ -15,6 +15,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 
@@ -23,7 +24,7 @@ fun Section(
     modifier: Modifier = Modifier,
     title: String,
     color: Color = colorResource(id = R.color.text_secondary),
-    textPaddingStart: Dp = 20.dp
+    textPaddingStart: Dp = 16.dp
 ) {
     Box(modifier = modifier
         .height(52.dp)
@@ -37,7 +38,7 @@ fun Section(
                 .align(Alignment.BottomStart),
             text = title,
             color = color,
-            style = Caption1Regular
+            style = Caption1Medium
         )
     }
 }

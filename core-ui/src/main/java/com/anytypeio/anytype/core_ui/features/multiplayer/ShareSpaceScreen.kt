@@ -203,26 +203,11 @@ fun ShareSpaceScreen(
             ) {
                 members.forEachIndexed { index, member ->
                     item {
-                        when (member.config) {
-                            is SpaceMemberView.Config.Member -> {
-                                SpaceMember(
-                                    memberView = member,
-                                    onContextActionClicked = onContextActionClicked,
-                                    onMemberClicked = onMemberClicked
-                                )
-                            }
-
-                            is SpaceMemberView.Config.Request -> {
-                                SpaceMember(
-                                    memberView = member,
-                                    onContextActionClicked = onContextActionClicked,
-                                    onMemberClicked = { obj ->
-                                        // For requests, clicking on member opens the request
-                                        onContextActionClicked(member, SpaceMemberView.ActionType.VIEW_REQUEST)
-                                    }
-                                )
-                            }
-                        }
+                        SpaceMember(
+                            memberView = member,
+                            onContextActionClicked = onContextActionClicked,
+                            onMemberClicked = onMemberClicked
+                        )
                         Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                     }
                 }
@@ -724,7 +709,6 @@ fun SpaceJoinRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        config = SpaceMemberView.Config.Request.Join,
         isUser = false,
         statusText = "Approve request",
         contextActions = listOf(
@@ -755,7 +739,6 @@ fun SpaceJoinLongTitleRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        config = SpaceMemberView.Config.Request.Join,
         isUser = false,
         statusText = "Pending"
     )
@@ -780,7 +763,6 @@ fun SpaceLeaveRequestPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Konstantin"),
-        config = SpaceMemberView.Config.Request.Leave,
         isUser = true,
         statusText = "Leave request"
     )
@@ -851,8 +833,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
-                    config = SpaceMemberView.Config.Request.Leave,
-                    icon = SpaceMemberIconView.Placeholder(
+                                icon = SpaceMemberIconView.Placeholder(
                         name = "Aleksey"
                     )
                 )
@@ -868,8 +849,7 @@ fun ShareSpaceScreenPreview() {
                             Relations.GLOBAL_NAME to "konstantin.anytype.io"
                         )
                     ),
-                    config = SpaceMemberView.Config.Request.Join,
-                    icon = SpaceMemberIconView.Placeholder(
+                                icon = SpaceMemberIconView.Placeholder(
                         name = "Anton"
                     )
                 )
@@ -905,7 +885,6 @@ private fun SpaceOwnerMemberPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
-        config = SpaceMemberView.Config.Member.Owner,
         isUser = true,
         statusText = "Owner"
     )
@@ -929,7 +908,6 @@ private fun SpaceEditorMemberPreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Evgenii"),
-        config = SpaceMemberView.Config.Member.Writer,
         isUser = true,
         statusText = "Editor",
         contextActions = listOf(
@@ -969,7 +947,6 @@ private fun SpaceMemberLongNamePreview() {
             )
         ),
         icon = SpaceMemberIconView.Placeholder(name = "Walter"),
-        config = SpaceMemberView.Config.Member.Writer,
         isUser = true,
         statusText = "Editor"
     )

@@ -886,20 +886,6 @@ data class SpaceMemberView(
         REMOVE_MEMBER,
         VIEW_REQUEST
     }
-    sealed class Config {
-        sealed class Request : Config() {
-            data object Join : Request()
-            data object Leave : Request()
-        }
-
-        sealed class Member : Config() {
-            data object Owner : Member()
-            data object Writer : Member()
-            data object Reader : Member()
-            data object NoPermissions : Member()
-            data object Unknown : Member()
-        }
-    }
 
     companion object {
         /**

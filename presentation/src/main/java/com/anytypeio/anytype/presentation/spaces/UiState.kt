@@ -74,5 +74,6 @@ sealed class UiSpaceSettingsItem {
     data object Bin : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()
     data object DeleteSpace : UiSpaceSettingsItem()
+    data object LeaveSpace : UiSpaceSettingsItem()
     data object Notifications : UiSpaceSettingsItem()
 }

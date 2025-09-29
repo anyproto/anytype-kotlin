@@ -313,6 +313,17 @@ fun DeleteSpaceItem(
 }
 
 @Composable
+fun LeaveSpaceItem(
+    modifier: Modifier = Modifier
+) {
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.multiplayer_leave_space),
+        textColor = R.color.palette_system_red
+    )
+}
+
+@Composable
 fun BaseButton(
     modifier: Modifier = Modifier,
     icon: Int? = null,

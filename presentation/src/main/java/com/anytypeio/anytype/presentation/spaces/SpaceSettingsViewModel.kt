@@ -397,7 +397,11 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.DeleteSpace)
+                    if (permission?.isOwner() == true) {
+                        add(UiSpaceSettingsItem.DeleteSpace)
+                    } else {
+                        add(UiSpaceSettingsItem.LeaveSpace)
+                    }
                     add(Spacer(height = 32))
                 }
 

@@ -278,6 +278,18 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
+                        UiSpaceSettingsItem.LeaveSpace -> {
+                            item {
+                                LeaveSpaceItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnLeaveSpaceClicked) },
+                                )
+                            }
+                        }
+
                         is UiSpaceSettingsItem.Members -> {
                             item {
                                 MembersItem(

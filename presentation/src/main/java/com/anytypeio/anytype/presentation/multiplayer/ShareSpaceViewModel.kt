@@ -101,8 +101,7 @@ class ShareSpaceViewModel(
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     // New state for invite link access levels (Task #24)
-    val inviteLinkAccessLevel =
-        MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
 
@@ -909,12 +908,9 @@ data class ParticipantInfo(
 private fun ObjectWrapper.SpaceMember.getParticipantInfo(
     canChangeWriterToReader: Boolean,
     canChangeReaderToWriter: Boolean,
-    canRemoveMember: Boolean,
-    canApproveRequests: Boolean,
     isCurrentUserOwner: Boolean,
     stringResourceProvider: StringResourceProvider
 ): ParticipantInfo {
-    // Handle different participant statuses
     return when (status) {
         ParticipantStatus.ACTIVE -> {
             // Status text shows permission level for active participants
@@ -929,7 +925,7 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
             // Context actions are only available for non-owners when current user is owner
             val contextActions = if (isCurrentUserOwner && permissions != SpaceMemberPermissions.OWNER) {
                 buildList {
-                    // Can View action
+                    // Change to Viewer action
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerViewer(),
@@ -940,7 +936,7 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                         )
                     )
 
-                    // Can Edit action
+                    // Change to Editor action
                     add(
                         ContextAction(
                             title = stringResourceProvider.getMultiplayerEditor(),
@@ -957,7 +953,7 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                             title = stringResourceProvider.getMultiplayerRemoveMember(),
                             isSelected = false,
                             isDestructive = true,
-                            isEnabled = canRemoveMember,
+                            isEnabled = true,
                             actionType = ActionType.REMOVE_MEMBER
                         )
                     )
@@ -971,20 +967,20 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
 
         ParticipantStatus.JOINING -> {
             // Status text varies based on viewer's permissions
-            val statusText = if (canApproveRequests) {
+            val statusText = if (isCurrentUserOwner) {
                 stringResourceProvider.getMultiplayerApproveRequest()
             } else {
                 stringResourceProvider.getMultiplayerPending()
             }
 
             // Context actions only for those who can approve
-            val contextActions = if (isCurrentUserOwner && canApproveRequests) {
+            val contextActions = if (isCurrentUserOwner) {
                 listOf(
                     ContextAction(
                         title = stringResourceProvider.getMultiplayerViewRequest(),
                         isSelected = false,
                         isDestructive = false,
-                        isEnabled = canApproveRequests,
+                        isEnabled = true,
                         actionType = ActionType.VIEW_REQUEST
                     )
                 )
@@ -1004,7 +1000,7 @@ private fun ObjectWrapper.SpaceMember.getParticipantInfo(
                         title = stringResourceProvider.getMultiplayerApprove(),
                         isSelected = false,
                         isDestructive = false,
-                        isEnabled = canApproveRequests,
+                        isEnabled = true,
                         actionType = ActionType.VIEW_REQUEST
                     )
                 )
@@ -1047,8 +1043,6 @@ fun List<ObjectWrapper.SpaceMember>.toSpaceMemberView(
     val participantInfo = spaceMember.getParticipantInfo(
         canChangeWriterToReader = canChangeWriterToReader,
         canChangeReaderToWriter = canChangeReaderToWriter,
-        canRemoveMember = true,
-        canApproveRequests = isCurrentUserOwner,
         isCurrentUserOwner = isCurrentUserOwner,
         stringResourceProvider = stringResourceProvider
     )

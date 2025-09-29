@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.R
+import com.anytypeio.anytype.localization.R as LocalizationR
 import javax.inject.Inject
 
 class StringResourceProviderImpl @Inject constructor(private val context: Context) :
@@ -90,5 +91,45 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
 
     override fun getMessagesCountText(count: Int): String {
         return context.resources.getQuantityString(R.plurals.notification_messages_count, count, count)
+    }
+
+    override fun getMultiplayerViewer(): String {
+        return context.getString(LocalizationR.string.multiplayer_viewer)
+    }
+
+    override fun getMultiplayerEditor(): String {
+        return context.getString(LocalizationR.string.multiplayer_editor)
+    }
+
+    override fun getMultiplayerOwner(): String {
+        return context.getString(LocalizationR.string.multiplayer_owner)
+    }
+
+    override fun getMultiplayerNoPermissions(): String {
+        return context.getString(LocalizationR.string.multiplayer_no_permissions)
+    }
+
+    override fun getMultiplayerApproveRequest(): String {
+        return context.getString(LocalizationR.string.multiplayer_approve_request)
+    }
+
+    override fun getMultiplayerPending(): String {
+        return context.getString(LocalizationR.string.multiplayer_pending)
+    }
+
+    override fun getMultiplayerLeaveRequest(): String {
+        return context.getString(LocalizationR.string.multiplayer_leave_request)
+    }
+
+    override fun getMultiplayerRemoveMember(): String {
+        return context.getString(LocalizationR.string.multiplayer_remove_member)
+    }
+
+    override fun getMultiplayerViewRequest(): String {
+        return context.getString(LocalizationR.string.multiplayer_view_request)
+    }
+
+    override fun getMultiplayerApprove(): String {
+        return context.getString(LocalizationR.string.multiplayer_approve)
     }
 }

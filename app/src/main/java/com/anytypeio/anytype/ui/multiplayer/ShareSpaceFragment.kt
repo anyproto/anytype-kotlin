@@ -51,13 +51,9 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ShareSpaceScreen(
-                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                     members = vm.members.collectAsStateWithLifecycle().value,
-                    onViewRequestClicked = vm::onViewRequestClicked,
-                    onCanEditClicked = vm::onCanEditClicked,
-                    onCanViewClicked = vm::onCanViewClicked,
-                    onRemoveMemberClicked = vm::onRemoveMemberClicked,
+                    onContextActionClicked = vm::onContextActionClicked,
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
                     incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
@@ -69,7 +65,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
-                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked
+                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
+                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->

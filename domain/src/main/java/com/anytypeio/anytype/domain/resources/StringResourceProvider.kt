@@ -18,4 +18,14 @@ interface StringResourceProvider {
     fun getInitialSpaceName(): String
     fun getUntitledCreatorName(): String
     fun getMessagesCountText(count: Int): String
+    fun getMultiplayerViewer(): String
+    fun getMultiplayerEditor(): String
+    fun getMultiplayerOwner(): String
+    fun getMultiplayerNoPermissions(): String
+    fun getMultiplayerApproveRequest(): String
+    fun getMultiplayerPending(): String
+    fun getMultiplayerLeaveRequest(): String
+    fun getMultiplayerRemoveMember(): String
+    fun getMultiplayerViewRequest(): String
+    fun getMultiplayerApprove(): String
 }

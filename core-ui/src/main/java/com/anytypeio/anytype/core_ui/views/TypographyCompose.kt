@@ -265,6 +265,14 @@ val UxSmallTextRegular = TextStyle(
     letterSpacing = (-0.014).em
 )
 
+val UxSmallTextMedium = TextStyle(
+    fontFamily = fontInterMedium,
+    fontWeight = FontWeight.W500,
+    fontSize = 14.sp,
+    lineHeight = 22.sp,
+    letterSpacing = (-0.12).sp
+)
+
 //UX/Caption 1/Medium
 val Caption1Medium = TextStyle(
     fontFamily = fontInterMedium,

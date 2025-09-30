@@ -11,7 +11,7 @@ import timber.log.Timber
 
 fun ObjectWrapper.SpaceView.getIncentiveState(
     isCurrentUserOwner: Boolean, spaceMembers: List<ObjectWrapper.SpaceMember>
-): ShareSpaceViewModel.ShareSpaceIncentiveState {
+): ShareSpaceViewModel.ShareSpaceMembersIncentiveState {
     Timber.d("isCurrentUserOwner: $isCurrentUserOwner, spaceMembers: $spaceMembers")
 
     if (!shouldShowIncentiveState(
@@ -19,21 +19,25 @@ fun ObjectWrapper.SpaceView.getIncentiveState(
             spaceMembers = spaceMembers
         )
     ) {
-        return ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden
+        return ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden
     }
 
     return when {
         isSubscriberLimitReached(
             currentSubscribers = activeReaders(spaceMembers),
             subscriberLimit = readersLimit?.toInt()
-        ) -> ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders
+        ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders(
+            count = sharedSpaceLimit
+        )
 
         isSubscriberLimitReached(
             currentSubscribers = activeWriters(spaceMembers),
             subscriberLimit = writersLimit?.toInt()
-        ) -> ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceEditors
+        ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors(
+            count = sharedSpaceLimit
+        )
 
-        else -> ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden
+        else -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden
     }
 }
 

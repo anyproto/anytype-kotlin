@@ -94,7 +94,7 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
-    val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
+    val showIncentive = MutableStateFlow<ShareSpaceMembersIncentiveState>(ShareSpaceMembersIncentiveState.Hidden)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
     private var _spaceViews: ObjectWrapper.SpaceView? = null
@@ -833,10 +833,10 @@ class ShareSpaceViewModel(
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
     }
 
-    sealed class ShareSpaceIncentiveState {
-        data object Hidden : ShareSpaceIncentiveState()
-        data object VisibleSpaceReaders : ShareSpaceIncentiveState()
-        data object VisibleSpaceEditors : ShareSpaceIncentiveState()
+    sealed class ShareSpaceMembersIncentiveState {
+        data object Hidden : ShareSpaceMembersIncentiveState()
+        data class VisibleSpaceMembersReaders(val count: Int) : ShareSpaceMembersIncentiveState()
+        data class VisibleSpaceMembersEditors(val count: Int) : ShareSpaceMembersIncentiveState()
     }
 
     companion object {

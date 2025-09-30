@@ -47,6 +47,8 @@ class PublishToWebViewModel(
     private val _viewState = MutableStateFlow<PublishToWebViewState>(PublishToWebViewState.Init)
     val viewState = _viewState.asStateFlow()
 
+    private val objectIcon = MutableStateFlow<ObjectIcon>(ObjectIcon.None)
+
     val commands = MutableSharedFlow<Command>()
 
     init {
@@ -75,6 +77,9 @@ class PublishToWebViewModel(
                 ObjectIcon.None
             }
 
+            // Caching object icon
+            objectIcon.value = icon
+
             getPublishingState.async(
                 params = GetPublishingState.Params(
                     space = vmParams.space,
@@ -95,7 +100,7 @@ class PublishToWebViewModel(
                         objectName = wrapper?.name.orEmpty(),
                         spaceName = space?.name.orEmpty(),
                         showJoinSpaceButton = true,
-                        icon = icon ?: ObjectIcon.None
+                        icon = icon
                     )
                 } else {
                     if (domain != null) {
@@ -105,7 +110,7 @@ class PublishToWebViewModel(
                             objectName = wrapper?.name.orEmpty(),
                             spaceName = space?.name.orEmpty(),
                             showJoinSpaceButton = state.showJoinSpaceButton,
-                            icon = icon ?: ObjectIcon.None
+                            icon = icon
                         )
                     } else {
                         Timber.w("DROID-3786 Failed to get publishing domain")
@@ -122,7 +127,8 @@ class PublishToWebViewModel(
             uri = viewState.value.uri,
             objectName = viewState.value.objectName,
             spaceName = viewState.value.spaceName,
-            showJoinSpaceButton = showJoinSpaceButton
+            showJoinSpaceButton = showJoinSpaceButton,
+            icon = objectIcon.value
         )
         proceedWithPublishing(
             uri = uri,
@@ -137,7 +143,8 @@ class PublishToWebViewModel(
             uri = viewState.value.uri,
             objectName = viewState.value.objectName,
             spaceName = viewState.value.spaceName,
-            showJoinSpaceButton = showJoinSpaceButton
+            showJoinSpaceButton = showJoinSpaceButton,
+            icon = objectIcon.value
         )
         proceedWithUpdating(
             uri = uri,
@@ -183,7 +190,8 @@ class PublishToWebViewModel(
                     uri = viewState.value.uri,
                     err = it.message.orEmpty(),
                     objectName = viewState.value.objectName,
-                    spaceName = viewState.value.spaceName
+                    spaceName = viewState.value.spaceName,
+                    icon = objectIcon.value
                 )
             }.onSuccess { url ->
                 proceedWithResolvingInitialState()
@@ -208,7 +216,8 @@ class PublishToWebViewModel(
                     uri = viewState.value.uri,
                     err = it.message.orEmpty(),
                     objectName = viewState.value.objectName,
-                    spaceName = viewState.value.spaceName
+                    spaceName = viewState.value.spaceName,
+                    icon = objectIcon.value
                 )
             }.onSuccess { url ->
                 proceedWithResolvingInitialState()
@@ -340,7 +349,8 @@ sealed class PublishToWebViewState {
         override val uri: String,
         override val objectName: String,
         override val spaceName: String,
-        override val showJoinSpaceButton: Boolean = false
+        override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : PublishToWebViewState()
 
     data class FailedToPublish(
@@ -349,6 +359,7 @@ sealed class PublishToWebViewState {
         override val objectName: String,
         override val spaceName: String,
         override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None,
         val err: String
     ) : PublishToWebViewState()
 
@@ -358,6 +369,7 @@ sealed class PublishToWebViewState {
         override val objectName: String,
         override val spaceName: String,
         override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None,
         val err: String
     ) : PublishToWebViewState()
 }

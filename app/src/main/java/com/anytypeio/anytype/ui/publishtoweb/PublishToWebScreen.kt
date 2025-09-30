@@ -208,6 +208,9 @@ fun PublishToWebScreen(
                     objectIcon = when(viewState) {
                         is PublishToWebViewState.NotPublished -> viewState.icon
                         is PublishToWebViewState.Published -> viewState.icon
+                        is PublishToWebViewState.Publishing -> viewState.icon
+                        is PublishToWebViewState.FailedToPublish -> viewState.icon
+                        is PublishToWebViewState.FailedToUpdate -> viewState.icon
                         else -> ObjectIcon.None
                     }
                 )

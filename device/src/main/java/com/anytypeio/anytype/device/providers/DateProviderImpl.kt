@@ -287,16 +287,23 @@ class DateProviderImpl @Inject constructor(
 
         return when (dateType) {
             DateType.TODAY -> {
-                // Show "Today"
-                stringResourceProvider.getToday()
+                // Show time for today's messages (e.g., "18:32")
+                val locale = localeProvider.locale()
+                val df = DateFormat.getTimeInstance(DateFormat.SHORT, locale)
+                val timePattern = if (df is SimpleDateFormat) {
+                    df.toPattern()
+                } else {
+                    "HH:mm"
+                }
+                formatToDateString(timestamp, timePattern)
             }
             DateType.YESTERDAY -> {
                 // Show "Yesterday" localized
                 stringResourceProvider.getYesterday()
             }
             DateType.PREVIOUS_SEVEN_DAYS -> {
-                // Show short weekday format in locale (e.g., "Sun", "Fri")
-                formatToDateString(timestamp, "EEE")
+                // Show full weekday format in locale (e.g., "Sunday", "Friday")
+                formatToDateString(timestamp, "EEEE")
             }
             else -> {
                 // Check if it's current year

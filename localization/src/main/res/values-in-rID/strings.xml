@@ -10,7 +10,7 @@
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="key">Kunci</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Kunci Masuk</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
@@ -1259,8 +1259,8 @@
     <string name="multiplayer_approve_request">Atur akses</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
-    <string name="multiplayer_no_permissions">No permissions</string>
-    <string name="multiplayer_pending">Pending</string>
+    <string name="multiplayer_no_permissions">Tidak ada izin</string>
+    <string name="multiplayer_pending">Menunggu</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Dapat melihat</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
@@ -1335,7 +1335,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">kamu</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>
@@ -1961,12 +1961,12 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
     <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
     <string name="my_sites">Situsku</string>
-    <string name="my_sites_empty_state_text">There are no published objects yet</string>
+    <string name="my_sites_empty_state_text">Belum ada objek diterbitkan</string>
     <string name="my_sites_it_s_empty_here">Di sini kosong</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Terbitkan situs web pertamamu untuk memulai.</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>
     <!-- Multiplayer actions -->
-    <string name="multiplayer_approve">Approve</string>
+    <string name="multiplayer_approve">Setujui</string>
 </resources>

@@ -204,7 +204,12 @@ fun PublishToWebScreen(
                     objectName = viewState.objectName,
                     spaceName = viewState.spaceName,
                     onPreviewClicked = onPreviewClicked,
-                    showSpaceHeader = showJoinSpaceBannerChecked
+                    showSpaceHeader = showJoinSpaceBannerChecked,
+                    objectIcon = when(viewState) {
+                        is PublishToWebViewState.NotPublished -> viewState.icon
+                        is PublishToWebViewState.Published -> viewState.icon
+                        else -> ObjectIcon.None
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when(viewState) {

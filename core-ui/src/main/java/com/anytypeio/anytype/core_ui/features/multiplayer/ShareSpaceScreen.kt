@@ -385,8 +385,8 @@ private fun AddEditorsIncentive(
             .background(
                 brush = Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFFFEE7E0), // #FEE7E0
-                        Color(0xFFFFF6F3)  // #FFF6F3
+                        colorResource(R.color.incentive_gradient_start),
+                        colorResource(R.color.incentive_gradient_end)
                     ),
                     startY = 0.0f,
                     endY = Float.POSITIVE_INFINITY // vertical (180deg)

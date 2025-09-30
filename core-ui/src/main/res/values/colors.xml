@@ -361,4 +361,7 @@
     <color name="yellowEnd">#ECD91B</color>
     <color name="yellowStart">#FFB522</color>
 
+    <color name="incentive_gradient_start">#FEE7E0</color>
+    <color name="incentive_gradient_end">#FFF6F3</color>
+
 </resources>

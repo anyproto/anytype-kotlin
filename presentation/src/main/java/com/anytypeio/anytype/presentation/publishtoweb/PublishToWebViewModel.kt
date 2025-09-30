@@ -52,6 +52,8 @@ class PublishToWebViewModel(
     private fun proceedWithResolvingInitialState() {
         viewModelScope.launch {
 
+            _viewState.value = PublishToWebViewState.Loading
+
             val wrapper = fetchObject()
             val space = spaces.get(vmParams.space)
 
@@ -268,6 +270,19 @@ sealed class PublishToWebViewState {
     abstract val showJoinSpaceButton: Boolean
 
     data object Init : PublishToWebViewState() {
+        override val uri: String
+            get() = ""
+        override val domain: String
+            get() = ""
+        override val objectName: String
+            get() = ""
+        override val spaceName: String
+            get() = ""
+        override val showJoinSpaceButton: Boolean
+            get() = false
+    }
+
+    data object Loading : PublishToWebViewState() {
         override val uri: String
             get() = ""
         override val domain: String

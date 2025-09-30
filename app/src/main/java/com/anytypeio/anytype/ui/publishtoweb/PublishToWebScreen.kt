@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.ui.publishtoweb
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -78,6 +82,7 @@ fun PublishToWebScreen(
 
     val initialUrl = if (viewState is PublishToWebViewState.Init) "" else "/${viewState.uri}"
     var url by rememberSaveable(viewState.uri) { mutableStateOf(initialUrl) }
+    val isLoading = viewState is PublishToWebViewState.Loading
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -93,6 +98,7 @@ fun PublishToWebScreen(
             Header(
                 text = stringResource(R.string.publish_to_web)
             )
+
             Section(
                 title = stringResource(R.string.web_publishing_customize_url)
             )
@@ -327,6 +333,28 @@ fun PublishToWebScreen(
                     }
                 }
                 Spacer(modifier = Modifier.height(10.dp))
+            }
+        }
+
+        AnimatedVisibility(
+            visible = isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 64.dp)
+                    .background(color = colorResource(R.color.background_secondary))
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(32.dp),
+                    color = colorResource(R.color.glyph_active),
+                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                    strokeWidth = 2.dp
+                )
             }
         }
 

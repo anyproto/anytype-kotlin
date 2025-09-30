@@ -61,7 +61,9 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceNameInputField
 import timber.log.Timber
@@ -441,6 +443,7 @@ fun PublishToWebScreenPublishingPreview() {
 private fun PreviewCard(
     objectName: String,
     spaceName: String,
+    objectIcon: ObjectIcon = ObjectIcon.None,
     showSpaceHeader: Boolean = false,
     onPreviewClicked: () -> Unit
 ) {
@@ -527,6 +530,17 @@ private fun PreviewCard(
             Spacer(modifier = Modifier.height(32.dp))
         }
 
+        if (objectIcon != ObjectIcon.None) {
+            ListWidgetObjectIcon(
+                icon = objectIcon,
+                iconSize = 40.dp,
+                modifier = Modifier.padding(
+                    start = 32.dp,
+                    bottom = 8.dp
+                )
+            )
+        }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -567,7 +581,10 @@ private fun PreviewCardPreview() {
         objectName = "What I Learned as a Product Designersigner What I Learned as a Product Designer",
         spaceName = "Anytype Design",
         onPreviewClicked = {},
-        showSpaceHeader = false
+        showSpaceHeader = false,
+        objectIcon = ObjectIcon.Basic.Emoji(
+            unicode = "❤️"
+        )
     )
 }
 

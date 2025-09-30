@@ -117,7 +117,7 @@ fun MySitesScreen(
                 ) {
                     itemsIndexed(
                         items = viewState.items,
-                        key = { _, item -> item.timestamp },
+                        key = { _, item -> item.obj },
                     ) { index, item ->
 
                         var showDropdownMenu by remember { mutableStateOf(false) }

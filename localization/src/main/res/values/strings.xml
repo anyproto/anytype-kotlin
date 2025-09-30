@@ -1802,7 +1802,9 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Membership upgrade</string>
     <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
+
 
     <plurals name="period_years">
         <item quantity="one">year</item>

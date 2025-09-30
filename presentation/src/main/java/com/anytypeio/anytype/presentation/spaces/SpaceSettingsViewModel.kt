@@ -237,6 +237,8 @@ class SpaceSettingsViewModel(
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
+                val showSpaceShareIncentive = sharedSpaceLimit > 0 && sharedSpaceCount >= sharedSpaceLimit
+
                 val spaceIcon = spaceView.spaceIcon(urlBuilder)
 
                 val wallpaperResult = computeWallpaperResult(
@@ -366,6 +368,11 @@ class SpaceSettingsViewModel(
                                 add(Members(count = spaceMemberCount))
                             }
                         }
+                    }
+
+                    if (showSpaceShareIncentive) {
+                        add(Spacer(height = 16))
+                        add(UiSpaceSettingsItem.SharedSpacesIncentive(count = sharedSpaceLimit))
                     }
 
                     if (spaceView.isShared) {
@@ -590,6 +597,11 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnUpdateWallpaperClicked -> {
                 proceedWithWallpaperUpdate(uiEvent)
+            }
+            UiEvent.OnAddMoreSpacesClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.NavigateToMembership)
+                }
             }
         }
     }
@@ -915,23 +927,6 @@ class SpaceSettingsViewModel(
                 }
         }
     }
-
-    data class SpaceData(
-        val spaceId: Id?,
-        val createdDateInMillis: Long?,
-        val createdBy: Id?,
-        val network: Id?,
-        val name: String,
-        val description: String,
-        val icon: SpaceIconView,
-        val isDeletable: Boolean = false,
-        val spaceType: SpaceType,
-        val shareLimitReached: ShareLimitsState,
-        val requests: Int = 0,
-        val isEditEnabled: Boolean,
-        val isUserOwner: Boolean,
-        val permissions: SpaceMemberPermissions,
-    )
 
     data class ShareLimitsState(
         val shareLimitReached: Boolean = false,

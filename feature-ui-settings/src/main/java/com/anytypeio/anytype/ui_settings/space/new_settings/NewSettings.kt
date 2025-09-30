@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
+import com.anytypeio.anytype.ui_settings.space.SharedSpacesIncentiveItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -445,6 +446,20 @@ fun NewSpaceSettingsScreen(
                                         },
                                     icon = icon,
                                     supportText = supportText
+                                )
+                            }
+                        }
+
+                        is UiSpaceSettingsItem.SharedSpacesIncentive -> {
+                            item {
+                                SharedSpacesIncentiveItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem(),
+                                    count = item.count,
+                                    onAddMoreSpacesClicked = {
+                                        uiEvent(UiEvent.OnAddMoreSpacesClicked)
+                                    }
                                 )
                             }
                         }

@@ -46,4 +46,6 @@ sealed class UiEvent {
         data class Mentions(override val targetSpaceId: Id?) : OnNotificationsSetting()
         data class None(override val targetSpaceId: Id?) : OnNotificationsSetting()
     }
+
+    data object OnAddMoreSpacesClicked : UiEvent()
 }

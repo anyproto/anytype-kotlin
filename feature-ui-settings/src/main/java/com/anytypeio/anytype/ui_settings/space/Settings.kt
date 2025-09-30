@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui_settings.space
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,10 +10,15 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
@@ -20,10 +26,15 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.features.multiplayer.SharedSpacesIncentiveItem
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.Title3
+import com.anytypeio.anytype.core_ui.views.UXBody
+import com.anytypeio.anytype.core_ui.views.UxSmallTextMedium
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.ui_settings.R
 
@@ -155,15 +166,61 @@ fun SharedSpaceSharing(
     }
 }
 
+@Composable
+fun SharedSpacesIncentiveItem(
+    modifier: Modifier = Modifier,
+    count: Int,
+    onAddMoreSpacesClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFEE7E0), // #FEE7E0
+                        Color(0xFFFFF6F3)  // #FFF6F3
+                    ),
+                    startY = 0.0f,
+                    endY = Float.POSITIVE_INFINITY // vertical (180deg)
+                ),
+                shape = RoundedCornerShape(22.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(
+                id = R.string.membership_space_settings_share_limit,
+                count
+            ),
+            color = colorResource(id = R.color.text_primary),
+            style = Title2
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.membership_space_settings_share_limit_2),
+            color = colorResource(id = R.color.text_primary),
+            style = Title3
+        )
+        ButtonUpgrade(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .height(36.dp),
+            onClick = {
+                onAddMoreSpacesClicked()
+            },
+            text = stringResource(id = R.string.multiplayer_upgrade_button),
+            style = UxSmallTextMedium
+        )
+    }
+}
+
 @Preview
 @Composable
 private fun PrivateSpaceSharingPreview() {
-    PrivateSpaceSharing(
-        onSharePrivateSpaceClicked = {},
-        shareLimitStateState = SpaceSettingsViewModel.ShareLimitsState(
-            shareLimitReached = true,
-            sharedSpacesLimit = 5
-        ),
+    SharedSpacesIncentiveItem(
+        count = 3,
+        modifier = Modifier.fillMaxWidth(),
         onAddMoreSpacesClicked = {}
     )
 }

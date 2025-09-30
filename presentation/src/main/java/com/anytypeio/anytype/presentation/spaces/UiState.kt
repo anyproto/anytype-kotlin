@@ -76,4 +76,5 @@ sealed class UiSpaceSettingsItem {
     data object DeleteSpace : UiSpaceSettingsItem()
     data object LeaveSpace : UiSpaceSettingsItem()
     data object Notifications : UiSpaceSettingsItem()
+    data class SharedSpacesIncentive(val count: Int) : UiSpaceSettingsItem()
 }

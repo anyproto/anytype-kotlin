@@ -154,63 +154,69 @@ fun ShareSpaceScreen(
                 Toolbar(title = stringResource(R.string.multiplayer_members))
             }
 
-            Incentive(
-                incentiveState = incentiveState,
-                onIncentiveClicked = onIncentiveClicked
-            )
-
-            Section(
-                title = stringResource(R.string.multiplayer_members_invite_links_section)
-            )
-            val item = inviteLinkAccessLevel.getInviteLinkItemParams()
-            AccessLevelOption(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 12.dp)
-                    .noRippleThrottledClickable {
-                        // Only owners can modify invite link access settings
-                        if (isCurrentUserOwner) {
-                            showInviteLinkAccessSelector = !showInviteLinkAccessSelector
-                        }
-                    },
-                uiItemUI = item,
-                isCurrentUserOwner = isCurrentUserOwner
-            )
-
-            // Show invite link and copy button when not LINK_DISABLED
-            when (inviteLinkAccessLevel) {
-                is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                SpaceInviteLinkAccessLevel.LinkDisabled -> {}
-            }
-            Section(
-                title = stringResource(R.string.multiplayer_members_and_requests)
-            )
-
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
             ) {
+
+                item {
+                    Incentive(
+                        incentiveState = incentiveState,
+                        onIncentiveClicked = onIncentiveClicked
+                    )
+
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_invite_links_section)
+                    )
+                    val item = inviteLinkAccessLevel.getInviteLinkItemParams()
+                    AccessLevelOption(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 12.dp)
+                            .noRippleThrottledClickable {
+                                // Only owners can modify invite link access settings
+                                if (isCurrentUserOwner) {
+                                    showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                                }
+                            },
+                        uiItemUI = item,
+                        isCurrentUserOwner = isCurrentUserOwner
+                    )
+                }
+
+                item {
+                    // Show invite link and copy button when not LINK_DISABLED
+                    when (inviteLinkAccessLevel) {
+                        is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        SpaceInviteLinkAccessLevel.LinkDisabled -> {}
+                    }
+                }
+                item {
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_and_requests)
+                    )
+                }
                 members.forEachIndexed { index, member ->
                     item {
                         SpaceMember(

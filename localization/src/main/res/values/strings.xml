@@ -2291,7 +2291,7 @@ Please provide specific details of your needs here.</string>
     
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
-    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="members_limits_incentive_viewers" translatable="false">You’ve reached the limit of %1$d viewers</string>
 
 
     <plurals name="notification_messages_count">

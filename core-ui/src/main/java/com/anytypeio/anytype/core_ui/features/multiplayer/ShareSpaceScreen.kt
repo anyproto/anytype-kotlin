@@ -81,6 +81,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
@@ -503,7 +504,7 @@ private fun MemberStatusWithDropdown(
                 statusText?.let { text ->
                     Text(
                         text = text,
-                        style = Title2,
+                        style = Title3,
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
@@ -569,7 +570,7 @@ private fun MemberStatusWithDropdown(
         statusText?.let { text ->
             Text(
                 text = text,
-                style = Title2,
+                style = Title3,
                 color = colorResource(id = R.color.text_primary),
                 modifier = modifier
             )
@@ -643,7 +644,7 @@ fun InviteLinkDisplay(
                 .fillMaxWidth()
                 .background(
                     color = colorResource(id = R.color.transparent_tertiary),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(26.dp)
                 )
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -757,10 +758,8 @@ fun InviteLinkDisplay(
         }
         Spacer(modifier = Modifier.height(8.dp))
         // Copy button
-        ButtonPrimary(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+        ButtonOnboardingPrimaryLarge(
+            modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
                 onCopyClicked(link)

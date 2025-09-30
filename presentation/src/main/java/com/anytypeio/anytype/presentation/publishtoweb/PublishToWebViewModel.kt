@@ -61,10 +61,19 @@ class PublishToWebViewModel(
             val wrapper = fetchObject()
             val space = spaces.get(vmParams.space)
 
-            val icon = wrapper?.objectIcon(
-                builder = urlBuilder,
-                objType = null
-            )
+            val icon = if (wrapper != null) {
+                if (wrapper.iconEmoji.isNullOrEmpty() && wrapper.iconImage.isNullOrEmpty()) {
+                    // Skipping fallback icon
+                    ObjectIcon.None
+                } else {
+                    wrapper.objectIcon(
+                        builder = urlBuilder,
+                        objType = null
+                    )
+                }
+            } else {
+                ObjectIcon.None
+            }
 
             getPublishingState.async(
                 params = GetPublishingState.Params(

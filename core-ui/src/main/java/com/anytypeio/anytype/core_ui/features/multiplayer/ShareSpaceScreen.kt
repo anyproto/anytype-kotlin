@@ -42,6 +42,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
@@ -86,6 +87,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.Title3
+import com.anytypeio.anytype.core_ui.views.UxSmallTextMedium
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
@@ -98,7 +101,7 @@ fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
     isCurrentUserOwner: Boolean,
     members: List<SpaceMemberView>,
-    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
+    incentiveState: ShareSpaceViewModel.ShareSpaceMembersIncentiveState,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
@@ -149,6 +152,12 @@ fun ShareSpaceScreen(
             ) {
                 Toolbar(title = stringResource(R.string.multiplayer_members))
             }
+
+            Incentive(
+                incentiveState = incentiveState,
+                onIncentiveClicked = onIncentiveClicked
+            )
+
             Section(
                 title = stringResource(R.string.multiplayer_members_invite_links_section)
             )
@@ -195,10 +204,7 @@ fun ShareSpaceScreen(
             Section(
                 title = stringResource(R.string.multiplayer_members_and_requests)
             )
-            Incentive(
-                incentiveState = incentiveState,
-                onIncentiveClicked = onIncentiveClicked
-            )
+
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -324,50 +330,84 @@ private fun showConfirmScreen(
 
 @Composable
 private fun Incentive(
-    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
+    incentiveState: ShareSpaceViewModel.ShareSpaceMembersIncentiveState,
     onIncentiveClicked: () -> Unit
 ) {
     when (incentiveState) {
-        is ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders -> {
-            Text(
+        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders -> {
+            AddEditorsIncentive(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                text = stringResource(id = R.string.multiplayer_cant_add_members),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-            ButtonUpgrade(
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                text = stringResource(
+                    id = R.string.members_limits_incentive_viewers,
+                    incentiveState.count
+                )
+            ) {
+                onIncentiveClicked()
+            }
+        }
+        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors -> {
+            AddEditorsIncentive(
                 modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
-                    .height(36.dp)
-                    .verticalScroll(rememberScrollState()),
-                onClick = onIncentiveClicked,
-                text = stringResource(id = R.string.multiplayer_upgrade_button)
-            )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                text = stringResource(
+                    id = R.string.members_limits_incentive_editors,
+                    incentiveState.count
+                )
+            ){
+                onIncentiveClicked()
+            }
         }
 
-        ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceEditors -> {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState()),
-                text = stringResource(id = R.string.multiplayer_cant_add_editors),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-            ButtonUpgrade(
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
-                    .height(36.dp)
-                    .verticalScroll(rememberScrollState()),
-                onClick = onIncentiveClicked,
-                text = stringResource(id = R.string.multiplayer_upgrade_button)
-            )
-        }
-
-        ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden -> {
+        ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden -> {
             //show nothing
         }
+    }
+}
+
+@Composable
+private fun AddEditorsIncentive(
+    modifier: Modifier = Modifier,
+    text: String,
+    onButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFFFEE7E0), // #FEE7E0
+                        Color(0xFFFFF6F3)  // #FFF6F3
+                    ),
+                    startY = 0.0f,
+                    endY = Float.POSITIVE_INFINITY // vertical (180deg)
+                ),
+                shape = RoundedCornerShape(22.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = text,
+            color = colorResource(id = R.color.text_primary),
+            style = Title2
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.members_limits_incentive_editors_sub),
+            color = colorResource(id = R.color.text_primary),
+            style = Title3
+        )
+        ButtonUpgrade(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .height(36.dp),
+            onClick = { onButtonClicked() },
+            text = stringResource(id = R.string.multiplayer_upgrade_button),
+            style = UxSmallTextMedium
+        )
     }
 }
 
@@ -891,7 +931,7 @@ fun ShareSpaceScreenPreview() {
         },
         onContextActionClicked = { _, _ -> },
         onShareQrCodeClicked = {},
-        incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
+        incentiveState = ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
         onMemberClicked = {},

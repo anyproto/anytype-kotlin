@@ -27,14 +27,14 @@ fun ObjectWrapper.SpaceView.getIncentiveState(
             currentSubscribers = activeReaders(spaceMembers),
             subscriberLimit = readersLimit?.toInt()
         ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders(
-            count = sharedSpaceLimit
+            count = readersLimit?.toInt() ?: 0
         )
 
         isSubscriberLimitReached(
             currentSubscribers = activeWriters(spaceMembers),
             subscriberLimit = writersLimit?.toInt()
         ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors(
-            count = sharedSpaceLimit
+            count = writersLimit?.toInt() ?: 0
         )
 
         else -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden

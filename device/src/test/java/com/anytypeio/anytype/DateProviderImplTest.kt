@@ -372,7 +372,7 @@ class DateProviderImplTest {
         // Then: Should return time ("00:00" or "12:00 AM" depending on locale)
         assertNotNull("Result should not be null", result)
         assertTrue("Result should contain time format for midnight",
-            result.matches(Regex("(0{1,2}:00|12:00\\s?(AM|am))")) // "00:00" or "12:00 AM"
+            result.matches(Regex("(00:00|0:00|12:00\\s?(AM|am))")) // "00:00" or "12:00 AM"
         )
     }
 

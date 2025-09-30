@@ -293,7 +293,7 @@ class DateProviderImpl @Inject constructor(
                 val timePattern = if (df is SimpleDateFormat) {
                     df.toPattern()
                 } else {
-                    defaultDateFormat
+                    "HH:mm"
                 }
                 formatToDateString(timestamp, timePattern)
             }

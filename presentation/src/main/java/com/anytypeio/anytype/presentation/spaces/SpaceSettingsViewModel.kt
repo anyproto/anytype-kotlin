@@ -237,7 +237,9 @@ class SpaceSettingsViewModel(
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
-                val showSpaceShareIncentive = sharedSpaceLimit > 0 && sharedSpaceCount >= sharedSpaceLimit
+                val showSpaceShareIncentive = sharedSpaceLimit > 0
+                        && sharedSpaceCount >= sharedSpaceLimit
+                        && spaceView.spaceAccessType != SpaceAccessType.SHARED
 
                 val spaceIcon = spaceView.spaceIcon(urlBuilder)
 

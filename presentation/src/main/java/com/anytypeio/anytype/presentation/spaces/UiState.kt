@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -76,5 +75,4 @@ sealed class UiSpaceSettingsItem {
     data object DeleteSpace : UiSpaceSettingsItem()
     data object LeaveSpace : UiSpaceSettingsItem()
     data object Notifications : UiSpaceSettingsItem()
-    data class SharedSpacesIncentive(val count: Int) : UiSpaceSettingsItem()
 }

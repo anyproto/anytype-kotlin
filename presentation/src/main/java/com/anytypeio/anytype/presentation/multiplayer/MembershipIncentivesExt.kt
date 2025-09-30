@@ -10,9 +10,21 @@ import com.anytypeio.anytype.domain.`object`.isSubscriberLimitReached
 import timber.log.Timber
 
 fun ObjectWrapper.SpaceView.getIncentiveState(
-    isCurrentUserOwner: Boolean, spaceMembers: List<ObjectWrapper.SpaceMember>
+    isCurrentUserOwner: Boolean,
+    spaceMembers: List<ObjectWrapper.SpaceMember>,
+    sharedSpaceCount: Int,
+    sharedSpaceLimit: Int,
 ): ShareSpaceViewModel.ShareSpaceMembersIncentiveState {
     Timber.d("isCurrentUserOwner: $isCurrentUserOwner, spaceMembers: $spaceMembers")
+
+    if (sharedSpaceLimit > 0
+        && sharedSpaceCount >= sharedSpaceLimit
+        && spaceAccessType != SpaceAccessType.SHARED
+    ) {
+        return ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSharableSpaces(
+            count = sharedSpaceLimit
+        )
+    }
 
     if (!shouldShowIncentiveState(
             isCurrentUserOwner = isCurrentUserOwner,

@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -81,6 +82,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -95,6 +97,7 @@ import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import com.anytypeio.anytype.presentation.spaces.UiEvent
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -371,7 +374,96 @@ private fun Incentive(
         ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden -> {
             //show nothing
         }
+
+        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSharableSpaces -> {
+            SharedSpacesIncentiveItem(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                count = incentiveState.count,
+                onAddMoreSpacesClicked = {
+                    onIncentiveClicked()
+                }
+            )
+        }
     }
+}
+
+@Composable
+fun SharedSpacesIncentiveItem(
+    modifier: Modifier = Modifier,
+    count: Int,
+    onAddMoreSpacesClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(R.color.incentive_gradient_start),
+                        colorResource(R.color.incentive_gradient_end)
+                    ),
+                    startY = 0.0f,
+                    endY = Float.POSITIVE_INFINITY // vertical (180deg)
+                ),
+                shape = RoundedCornerShape(22.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(
+                id = R.string.membership_space_settings_share_limit,
+                count
+            ),
+            color = colorResource(id = R.color.text_primary),
+            style = Title2
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.membership_space_settings_share_limit_2),
+            color = colorResource(id = R.color.text_primary),
+            style = Title3
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ButtonIncentiveSecond(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 12.dp)
+                    .height(36.dp),
+                onClick = {
+                    onAddMoreSpacesClicked()
+                },
+                text = stringResource(id = R.string.multiplayer_manage_spaces),
+                style = UxSmallTextMedium
+            )
+            ButtonUpgrade(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 12.dp)
+                    .height(36.dp),
+                onClick = {
+                    onAddMoreSpacesClicked()
+                },
+                text = stringResource(id = R.string.multiplayer_upgrade_button),
+                style = UxSmallTextMedium
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PrivateSpaceSharingPreview() {
+    SharedSpacesIncentiveItem(
+        count = 3,
+        modifier = Modifier.fillMaxWidth(),
+        onAddMoreSpacesClicked = {}
+    )
 }
 
 @Composable

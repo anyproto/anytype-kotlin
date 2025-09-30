@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_ui.features.multiplayer.SharedSpacesIncentiveItem
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -59,7 +60,6 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
-import com.anytypeio.anytype.ui_settings.space.SharedSpacesIncentiveItem
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -446,20 +446,6 @@ fun NewSpaceSettingsScreen(
                                         },
                                     icon = icon,
                                     supportText = supportText
-                                )
-                            }
-                        }
-
-                        is UiSpaceSettingsItem.SharedSpacesIncentive -> {
-                            item {
-                                SharedSpacesIncentiveItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    count = item.count,
-                                    onAddMoreSpacesClicked = {
-                                        uiEvent(UiEvent.OnAddMoreSpacesClicked)
-                                    }
                                 )
                             }
                         }

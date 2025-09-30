@@ -372,11 +372,6 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (showSpaceShareIncentive) {
-                        add(Spacer(height = 16))
-                        add(UiSpaceSettingsItem.SharedSpacesIncentive(count = sharedSpaceLimit))
-                    }
-
                     if (spaceView.isShared) {
                         add(Spacer(height = 8))
                         add(Notifications)

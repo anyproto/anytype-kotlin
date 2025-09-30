@@ -1456,6 +1456,7 @@
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
+    <string name="multiplayer_manage_spaces">Manage Spaces</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Members</string>

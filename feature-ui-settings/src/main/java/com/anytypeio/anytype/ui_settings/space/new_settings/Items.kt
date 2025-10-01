@@ -38,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -81,13 +82,22 @@ fun MembersItem(
     modifier: Modifier = Modifier,
     item: UiSpaceSettingsItem.Members
 ) {
-    BaseButton(
-        modifier = modifier,
-        title = stringResource(id = R.string.space_settings_members_button_members),
-        icon = R.drawable.ic_members_24,
-        count = item.count.toString(),
-        countIsColored = item.withColor
-    )
+    if (item.editorLimit) {
+        BaseButton(
+            modifier = modifier,
+            title = stringResource(id = R.string.space_settings_members_button_members),
+            icon = R.drawable.ic_members_24,
+            errorIcon = R.drawable.ic_counter_error_20
+        )
+    } else {
+        BaseButton(
+            modifier = modifier,
+            title = stringResource(id = R.string.space_settings_members_button_members),
+            icon = R.drawable.ic_members_24,
+            count = item.count.toString(),
+            countIsColored = item.withColor
+        )
+    }
 }
 
 @Composable
@@ -330,7 +340,8 @@ fun BaseButton(
     title: String,
     count: String? = null,
     textColor: Int = R.color.text_primary,
-    countIsColored: Boolean = false
+    countIsColored: Boolean = false,
+    errorIcon: Int? = null
 ) {
     Row(
         modifier = modifier
@@ -358,16 +369,23 @@ fun BaseButton(
             style = PreviewTitle1Regular,
             color = colorResource(id = textColor),
         )
+        if (errorIcon != null && count == null) {
+            Image(
+                painter = painterResource(id = errorIcon),
+                contentDescription = "Error icon",
+                modifier = Modifier.size(20.dp)
+            )
+        }
         if (count != null) {
-            val (shape, color, textColor) = when {
+            val (shape, color, textColor, textStyle) = when {
                 countIsColored && count.length > 2 -> {
-                    Triple(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                    MembersIconParams(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white), Caption1Regular)
                 }
                 countIsColored -> {
-                    Triple(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                    MembersIconParams(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white), Caption1Regular)
                 }
                 else -> {
-                    Triple(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary))
+                    MembersIconParams(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary), BodyRegular)
                 }
             }
             val horizontalPadding = if (count.length > 1) 5.dp else 0.dp
@@ -386,7 +404,7 @@ fun BaseButton(
                         .padding(horizontal = horizontalPadding),
                     text = count,
                     textAlign = TextAlign.Center,
-                    style = Caption1Regular,
+                    style = textStyle,
                     color = textColor
                 )
             }
@@ -398,6 +416,13 @@ fun BaseButton(
         )
     }
 }
+
+data class MembersIconParams(
+    val shape: Shape,
+    val backgroundColor: Color,
+    val textColor: Color,
+    val textStyle: TextStyle
+)
 
 @DefaultPreviews
 @Composable

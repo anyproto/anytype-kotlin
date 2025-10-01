@@ -58,6 +58,8 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
+import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -282,16 +284,21 @@ class SpaceSettingsViewModel(
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
-                val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.toSpaceMemberView(
                         spaceView = spaceView,
                         urlBuilder = urlBuilder,
                         isCurrentUserOwner = permission?.isOwner() == true,
                         account = account,
                         stringResourceProvider = stringResourceProvider
-                    ).size
+                    ).size to spaceView.spaceLimitsState(
+                        spaceMembers = spaceMembers.members,
+                        isCurrentUserOwner = permission?.isOwner() == true,
+                        sharedSpaceCount = sharedSpaceCount,
+                        sharedSpaceLimit = sharedSpaceLimit
+                    )
                 } else {
-                    0
+                    0 to SpaceLimitsState.Init
                 }
 
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
@@ -346,28 +353,53 @@ class SpaceSettingsViewModel(
                     }
 
                     if (spaceView.isPossibleToShare) {
+                        val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = true,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = true,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = true,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                             is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = false,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                         }
                     }

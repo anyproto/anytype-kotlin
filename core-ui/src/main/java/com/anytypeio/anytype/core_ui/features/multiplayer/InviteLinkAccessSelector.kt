@@ -194,7 +194,7 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = w
 @Composable
 private fun InviteLinkAccessSelectorPreview() {
     InviteLinkAccessSelector(
-        currentAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false),
+        currentAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false),
         onAccessLevelChanged = {}
     )
 }

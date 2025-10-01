@@ -174,7 +174,7 @@ fun ShareSpaceScreen(
                     )
                     val item = inviteLinkAccessLevel.getInviteLinkItemParams()
                     val isAccessLevelDisabled =
-                        (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.isEnabled == false
+                        (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.possibleToUpdate == false
                     AccessLevelOption(
                         modifier = Modifier
                             .fillMaxWidth()

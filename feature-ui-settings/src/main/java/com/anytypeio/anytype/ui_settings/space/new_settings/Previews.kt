@@ -30,7 +30,7 @@ fun NewSpaceSettingsScreenPreview() {
                 UiSpaceSettingsItem.InviteLink("linkl"),
                 UiSpaceSettingsItem.Spacer(height = 8),
                 UiSpaceSettingsItem.Section.Collaboration,
-                UiSpaceSettingsItem.Members(1, true),
+                UiSpaceSettingsItem.Members(1, false, false),
                 UiSpaceSettingsItem.Section.ContentModel,
                 UiSpaceSettingsItem.ObjectTypes,
                 UiSpaceSettingsItem.Section.Preferences,

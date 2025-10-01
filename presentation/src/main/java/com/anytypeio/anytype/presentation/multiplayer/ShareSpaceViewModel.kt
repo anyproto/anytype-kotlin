@@ -133,11 +133,11 @@ class ShareSpaceViewModel(
                 .catch {
                     Timber.e(it, "Error while observing space invite link store")
                     inviteLinkAccessLevel.value =
-                        SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
+                        SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false)
                 }.collect { (inviteLink, incentiveState) ->
                     inviteLinkAccessLevel.value =
                         if (incentiveState is SpaceLimitsState.SharableLimit) {
-                            SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
+                            SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false)
                         } else {
                             inviteLink
                         }

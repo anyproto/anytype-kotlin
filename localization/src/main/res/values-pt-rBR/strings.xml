@@ -1255,6 +1255,7 @@
     <string name="multiplayer_cant_add_members">Você não pode adicionar mais membros</string>
     <string name="multiplayer_cant_add_editors">Você não pode adicionar mais editores</string>
     <string name="multiplayer_upgrade_button">✦ Atualizar</string>
+    <string name="multiplayer_manage_spaces">Gerenciar espaços</string>
     <string name="multiplayer_upgrade_button_request">✦ Dê um “upgrade” na sua assinatura para adicionar mais membros</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Dê um “upgrade” na sua assinatura para adicionar mais espaços</string>
     <string name="multiplayer_members">Membros</string>
@@ -1548,7 +1549,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="membership_upgrade_title">Atualizar assinatura</string>
     <string name="membership_upgrade_description">Entre em contato conosco para obter armazenamento extra, editores de espaço ou mais espaços compartilhados. A equipe Anytype fornecerá detalhes e condições adaptadas às suas necessidades.</string>
     <string name="membership_upgrade_button">Entrar em contato com a equipe Anytype</string>
-    <string name="membership_space_settings_share_limit">Você atingiu o limite de espaço %1$d que pode ser compartilhado</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="one">ano</item>
         <item quantity="other">%d anos</item>
@@ -1975,6 +1977,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

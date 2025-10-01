@@ -1251,6 +1251,7 @@
     <string name="multiplayer_cant_add_members">您无法添加更多成员</string>
     <string name="multiplayer_cant_add_editors">您无法添加更多编辑者</string>
     <string name="multiplayer_upgrade_button">✦ 升级</string>
+    <string name="multiplayer_manage_spaces">管理空间</string>
     <string name="multiplayer_upgrade_button_request">✦ 升级以添加更多成员</string>
     <string name="multiplayer_upgrade_spaces_button">✦ 升级以创建更多空间</string>
     <string name="multiplayer_members">参与的人</string>
@@ -1541,7 +1542,8 @@
     <string name="membership_upgrade_title">会员升级</string>
     <string name="membership_upgrade_description">联系我们以获取额外的存储空间、空间编辑器或更多共享空间。任何类型的团队都将根据您的需求提供量身定制的细节和条件。</string>
     <string name="membership_upgrade_button">联系Anytype团队</string>
-    <string name="membership_space_settings_share_limit">您已经达到 %1$d 个可共享空间的限制</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>
@@ -1961,6 +1963,9 @@
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

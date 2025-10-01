@@ -94,9 +94,9 @@ class CreateSpaceViewModel(
             return
         }
         val (uxType, useCase) = if (vmParams.spaceUxType == SpaceUxType.CHAT) {
-            SpaceUxType.CHAT to SpaceCreationUseCase.NONE
+            SpaceUxType.CHAT to SpaceCreationUseCase.CHAT_SPACE
         } else {
-            SpaceUxType.DATA to SpaceCreationUseCase.EMPTY_MOBILE
+            SpaceUxType.DATA to SpaceCreationUseCase.DATA_SPACE_MOBILE
         }
         viewModelScope.launch {
             val params = CreateSpace.Params(

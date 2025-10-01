@@ -6,9 +6,9 @@ package com.anytypeio.anytype.core_models.multiplayer
 sealed class SpaceInviteLinkAccessLevel {
 
     /**
-     * Link is disabled - no active invitation link
+     * Link is disabled - no active invitation link, possibleToUpdate indicates if user can change invite link type
      */
-    data object LinkDisabled : SpaceInviteLinkAccessLevel()
+    data class LinkDisabled(val possibleToUpdate: Boolean = true) : SpaceInviteLinkAccessLevel()
 
     /**
      * Editor access - users can edit the space content

@@ -9,6 +9,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.AnchoredDraggableState
 import androidx.compose.foundation.gestures.DraggableAnchors
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -42,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
@@ -65,8 +67,8 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
@@ -80,16 +82,19 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Title2
+import com.anytypeio.anytype.core_ui.views.Title3
+import com.anytypeio.anytype.core_ui.views.UxSmallTextMedium
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
+import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -98,12 +103,13 @@ fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
     isCurrentUserOwner: Boolean,
     members: List<SpaceMemberView>,
-    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
+    incentiveState: SpaceLimitsState,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onIncentiveClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
 
     onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
@@ -149,61 +155,74 @@ fun ShareSpaceScreen(
             ) {
                 Toolbar(title = stringResource(R.string.multiplayer_members))
             }
-            Section(
-                title = stringResource(R.string.multiplayer_members_invite_links_section)
-            )
-            val item = inviteLinkAccessLevel.getInviteLinkItemParams()
-            AccessLevelOption(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(end = 12.dp)
-                    .noRippleThrottledClickable {
-                        // Only owners can modify invite link access settings
-                        if (isCurrentUserOwner) {
-                            showInviteLinkAccessSelector = !showInviteLinkAccessSelector
-                        }
-                    },
-                uiItemUI = item,
-                isCurrentUserOwner = isCurrentUserOwner
-            )
 
-            // Show invite link and copy button when not LINK_DISABLED
-            when (inviteLinkAccessLevel) {
-                is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
-                    link = inviteLinkAccessLevel.link,
-                    onCopyClicked = onCopyInviteLinkClicked,
-                    onShareClicked = onShareInviteLinkClicked,
-                    onQrCodeClicked = onShareQrCodeClicked
-                )
-
-                SpaceInviteLinkAccessLevel.LinkDisabled -> {}
-            }
-            Section(
-                title = stringResource(R.string.multiplayer_members_and_requests)
-            )
-            Incentive(
-                incentiveState = incentiveState,
-                onIncentiveClicked = onIncentiveClicked
-            )
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .fillMaxHeight()
             ) {
+
+                item {
+                    Incentive(
+                        incentiveState = incentiveState,
+                        onIncentiveClicked = onIncentiveClicked,
+                        onManageSpacesClicked = onManageSpacesClicked
+                    )
+
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_invite_links_section)
+                    )
+                    val item = inviteLinkAccessLevel.getInviteLinkItemParams()
+                    val isAccessLevelDisabled =
+                        (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.possibleToUpdate == false
+                    AccessLevelOption(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(end = 12.dp)
+                            .noRippleThrottledClickable {
+                                // Only owners can modify invite link access settings
+                                if (isCurrentUserOwner && !isAccessLevelDisabled) {
+                                    showInviteLinkAccessSelector = !showInviteLinkAccessSelector
+                                }
+                            },
+                        uiItemUI = item,
+                        isCurrentUserOwner = isCurrentUserOwner,
+                        isDisabled = isAccessLevelDisabled
+                    )
+                }
+
+                item {
+                    // Show invite link and copy button when not LINK_DISABLED
+                    when (inviteLinkAccessLevel) {
+                        is SpaceInviteLinkAccessLevel.EditorAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        is SpaceInviteLinkAccessLevel.RequestAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        is SpaceInviteLinkAccessLevel.ViewerAccess -> InviteLinkDisplay(
+                            link = inviteLinkAccessLevel.link,
+                            onCopyClicked = onCopyInviteLinkClicked,
+                            onShareClicked = onShareInviteLinkClicked,
+                            onQrCodeClicked = onShareQrCodeClicked
+                        )
+
+                        is SpaceInviteLinkAccessLevel.LinkDisabled -> {}
+                    }
+                }
+                item {
+                    Section(
+                        title = stringResource(R.string.multiplayer_members_and_requests)
+                    )
+                }
                 members.forEachIndexed { index, member ->
                     item {
                         SpaceMember(
@@ -324,50 +343,179 @@ private fun showConfirmScreen(
 
 @Composable
 private fun Incentive(
-    incentiveState: ShareSpaceViewModel.ShareSpaceIncentiveState,
-    onIncentiveClicked: () -> Unit
+    incentiveState: SpaceLimitsState,
+    onIncentiveClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit = {}
 ) {
     when (incentiveState) {
-        is ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders -> {
-            Text(
+        is SpaceLimitsState.ViewersLimit -> {
+            AddEditorsIncentive(
                 modifier = Modifier
-                    .padding(horizontal = 20.dp),
-                text = stringResource(id = R.string.multiplayer_cant_add_members),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-            ButtonUpgrade(
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                text = stringResource(
+                    id = R.string.members_limits_incentive_viewers,
+                    incentiveState.count
+                )
+            ) {
+                onIncentiveClicked()
+            }
+        }
+        is SpaceLimitsState.EditorsLimit -> {
+            AddEditorsIncentive(
                 modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
-                    .height(36.dp)
-                    .verticalScroll(rememberScrollState()),
-                onClick = onIncentiveClicked,
-                text = stringResource(id = R.string.multiplayer_upgrade_button)
-            )
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                text = stringResource(
+                    id = R.string.members_limits_incentive_editors,
+                    incentiveState.count
+                )
+            ){
+                onIncentiveClicked()
+            }
         }
 
-        ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceEditors -> {
-            Text(
-                modifier = Modifier
-                    .padding(horizontal = 20.dp)
-                    .verticalScroll(rememberScrollState()),
-                text = stringResource(id = R.string.multiplayer_cant_add_editors),
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_primary)
-            )
-            ButtonUpgrade(
-                modifier = Modifier
-                    .padding(top = 12.dp, bottom = 24.dp, start = 16.dp, end = 16.dp)
-                    .height(36.dp)
-                    .verticalScroll(rememberScrollState()),
-                onClick = onIncentiveClicked,
-                text = stringResource(id = R.string.multiplayer_upgrade_button)
-            )
-        }
-
-        ShareSpaceViewModel.ShareSpaceIncentiveState.Hidden -> {
+        SpaceLimitsState.Init -> {
             //show nothing
         }
+
+        is SpaceLimitsState.SharableLimit -> {
+            SharedSpacesIncentiveItem(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
+                    .fillMaxWidth(),
+                count = incentiveState.count,
+                onAddMoreSpacesClicked = {
+                    onIncentiveClicked()
+                },
+                onManageSpacesClicked = {
+                    onManageSpacesClicked()
+                }
+            )
+        }
+    }
+}
+
+@Composable
+fun SharedSpacesIncentiveItem(
+    modifier: Modifier = Modifier,
+    count: Int,
+    onAddMoreSpacesClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(R.color.incentive_gradient_start),
+                        colorResource(R.color.incentive_gradient_end)
+                    ),
+                    startY = 0.0f,
+                    endY = Float.POSITIVE_INFINITY // vertical (180deg)
+                ),
+                shape = RoundedCornerShape(22.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(
+                id = R.string.membership_space_settings_share_limit,
+                count
+            ),
+            color = colorResource(id = R.color.text_primary),
+            style = Title2
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.membership_space_settings_share_limit_2),
+            color = colorResource(id = R.color.text_primary),
+            style = Title3
+        )
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            ButtonIncentiveSecond(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 12.dp)
+                    .height(36.dp),
+                onClick = {
+                    onManageSpacesClicked()
+                },
+                text = stringResource(id = R.string.multiplayer_manage_spaces),
+                style = UxSmallTextMedium
+            )
+            ButtonUpgrade(
+                modifier = Modifier
+                    .weight(1f)
+                    .padding(top = 12.dp)
+                    .height(36.dp),
+                onClick = {
+                    onAddMoreSpacesClicked()
+                },
+                text = stringResource(id = R.string.multiplayer_upgrade_button),
+                style = UxSmallTextMedium
+            )
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun PrivateSpaceSharingPreview() {
+    SharedSpacesIncentiveItem(
+        count = 3,
+        modifier = Modifier.fillMaxWidth(),
+        onAddMoreSpacesClicked = {},
+        onManageSpacesClicked = {}
+    )
+}
+
+@Composable
+private fun AddEditorsIncentive(
+    modifier: Modifier = Modifier,
+    text: String,
+    onButtonClicked: () -> Unit
+) {
+    Column(
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(R.color.incentive_gradient_start),
+                        colorResource(R.color.incentive_gradient_end)
+                    ),
+                    startY = 0.0f,
+                    endY = Float.POSITIVE_INFINITY // vertical (180deg)
+                ),
+                shape = RoundedCornerShape(22.dp)
+            )
+            .padding(16.dp)
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = text,
+            color = colorResource(id = R.color.text_primary),
+            style = Title2
+        )
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.members_limits_incentive_editors_sub),
+            color = colorResource(id = R.color.text_primary),
+            style = Title3
+        )
+        ButtonUpgrade(
+            modifier = Modifier
+                .padding(top = 12.dp)
+                .height(36.dp),
+            onClick = { onButtonClicked() },
+            text = stringResource(id = R.string.multiplayer_upgrade_button),
+            style = UxSmallTextMedium
+        )
     }
 }
 
@@ -463,7 +611,7 @@ private fun MemberStatusWithDropdown(
                 statusText?.let { text ->
                     Text(
                         text = text,
-                        style = Title2,
+                        style = Title3,
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
@@ -529,7 +677,7 @@ private fun MemberStatusWithDropdown(
         statusText?.let { text ->
             Text(
                 text = text,
-                style = Title2,
+                style = Title3,
                 color = colorResource(id = R.color.text_primary),
                 modifier = modifier
             )
@@ -603,7 +751,7 @@ fun InviteLinkDisplay(
                 .fillMaxWidth()
                 .background(
                     color = colorResource(id = R.color.transparent_tertiary),
-                    shape = RoundedCornerShape(8.dp)
+                    shape = RoundedCornerShape(26.dp)
                 )
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
@@ -717,10 +865,8 @@ fun InviteLinkDisplay(
         }
         Spacer(modifier = Modifier.height(8.dp))
         // Copy button
-        ButtonPrimary(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(48.dp),
+        ButtonOnboardingPrimaryLarge(
+            modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
                 onCopyClicked(link)
@@ -891,7 +1037,7 @@ fun ShareSpaceScreenPreview() {
         },
         onContextActionClicked = { _, _ -> },
         onShareQrCodeClicked = {},
-        incentiveState = ShareSpaceViewModel.ShareSpaceIncentiveState.VisibleSpaceReaders,
+        incentiveState = SpaceLimitsState.EditorsLimit(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
         onMemberClicked = {},
@@ -902,7 +1048,8 @@ fun ShareSpaceScreenPreview() {
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
         onCopyInviteLinkClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        onManageSpacesClicked = {}
     )
 }
 

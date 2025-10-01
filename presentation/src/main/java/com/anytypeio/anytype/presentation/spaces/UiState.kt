@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -57,7 +56,7 @@ sealed class UiSpaceSettingsItem {
     data class Name(val name: String) : UiSpaceSettingsItem()
     data class Description(val description: String) : UiSpaceSettingsItem()
     data class InviteLink(val link: String) : UiSpaceSettingsItem()
-    data class Members(val count: Int, val withColor: Boolean = false) : UiSpaceSettingsItem()
+    data class Members(val count: Int, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem()
     data class MembersSmall(val count: Int) : UiSpaceSettingsItem()
     data object EntrySpace : UiSpaceSettingsItem()
     data object InviteMembers : UiSpaceSettingsItem()

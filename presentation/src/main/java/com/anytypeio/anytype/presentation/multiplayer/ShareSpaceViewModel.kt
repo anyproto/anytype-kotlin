@@ -17,6 +17,7 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.isPossibleToUpgradeNumberOfSpaceMembers
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
@@ -42,9 +43,11 @@ import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
 import com.anytypeio.anytype.domain.`object`.canChangeWriterToReader
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel.Command.ShareInviteLink
@@ -62,6 +65,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
@@ -86,7 +90,8 @@ class ShareSpaceViewModel(
     private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val gradientProvider: SpaceGradientProvider,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val profileContainer: ProfileSubscriptionManager
 ) : BaseViewModel() {
 
     private val _activeTier = MutableStateFlow<ActiveTierState>(ActiveTierState.Init)
@@ -94,42 +99,56 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
-    val showIncentive = MutableStateFlow<ShareSpaceIncentiveState>(ShareSpaceIncentiveState.Hidden)
+    val spaceLimitsState = MutableStateFlow<SpaceLimitsState>(SpaceLimitsState.Init)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
     private var _spaceViews: ObjectWrapper.SpaceView? = null
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     // New state for invite link access levels (Task #24)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
 
     init {
         Timber.i("Share-space init with params: $vmParams")
-        proceedWithUserPermissions(space = vmParams.space)
+        proceedWithUserPermissions()
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()
+        proceedWithInviteLinkState()
+    }
+
+    private fun proceedWithInviteLinkState() {
         viewModelScope.launch {
-            spaceInviteLinkStore.observe(vmParams.space)
-                .onStart {
-                    Timber.d("Observing space invite link store for space: ${vmParams.space}")
-                    proceedWithRequestCurrentInviteLink()
-                }
+            combine(
+                spaceInviteLinkStore.observe(vmParams.space)
+                    .onStart {
+                        Timber.d("Observing space invite link store for space: ${vmParams.space}")
+                        proceedWithRequestCurrentInviteLink()
+                    },
+                spaceLimitsState
+            ) { inviteLink, incentive ->
+                inviteLink to incentive
+            }
                 .catch {
                     Timber.e(it, "Error while observing space invite link store")
-                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
-                }
-                .collect { inviteLink ->
-                    inviteLinkAccessLevel.value = inviteLink
+                    inviteLinkAccessLevel.value =
+                        SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false)
+                }.collect { (inviteLink, incentiveState) ->
+                    inviteLinkAccessLevel.value =
+                        if (incentiveState is SpaceLimitsState.SharableLimit) {
+                            SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false)
+                        } else {
+                            inviteLink
+                        }
                 }
         }
     }
 
-    private fun proceedWithUserPermissions(space: SpaceId) {
+    private fun proceedWithUserPermissions() {
         viewModelScope.launch {
             permissions
-                .observe(space = space)
+                .observe(space = vmParams.space)
                 .collect { permission ->
                     isCurrentUserOwner.value = permission == OWNER
                     if (permission == OWNER) {
@@ -155,6 +174,17 @@ class ShareSpaceViewModel(
 
     private fun proceedWithSubscriptions() {
         viewModelScope.launch {
+            val spaceLimits = combine(
+                spaceViews.sharedSpaceCount(permissions.all()),
+                profileContainer
+                    .observe()
+                    .map { wrapper ->
+                        wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+                    },
+            ) { sharedSpaceCount, sharedSpaceLimit ->
+                sharedSpaceCount to sharedSpaceLimit
+            }
+
             val account = getAccount.async(Unit).getOrNull()?.id
             val spaceViewFlow = spaceViews
                 .observe()
@@ -166,16 +196,19 @@ class ShareSpaceViewModel(
                 subscription = SHARE_SPACE_MEMBER_SUBSCRIPTION
             )
             combine(
+                spaceLimits,
                 spaceViewFlow,
                 container.subscribe(spaceMembersSearchParams),
                 isCurrentUserOwner,
                 _activeTier.filterIsInstance<ActiveTierState.Success>()
-            ) { spaceView, membersResponse, isCurrentUserOwner, activeTier ->
+            ) { (sharedSpacesCount, sharedSpacesLimit), spaceView, membersResponse, isCurrentUserOwner, activeTier ->
                 CombineResult(
                     isCurrentUserOwner = isCurrentUserOwner,
                     spaceView = spaceView,
                     tierId = activeTier.tierId,
-                    spaceMembers = membersResponse.toSpaceMembers()
+                    spaceMembers = membersResponse.toSpaceMembers(),
+                    sharedSpacesCount = sharedSpacesCount,
+                    sharedSpacesLimit = sharedSpacesLimit
                 )
             }.catch {
                 Timber.e(
@@ -190,6 +223,7 @@ class ShareSpaceViewModel(
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
+
                 members.value = spaceMembers.toSpaceMemberView(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
@@ -197,9 +231,12 @@ class ShareSpaceViewModel(
                     account = account,
                     stringResourceProvider = stringResourceProvider
                 )
-                showIncentive.value = spaceView.getIncentiveState(
+
+                spaceLimitsState.value = spaceView.spaceLimitsState(
                     spaceMembers = spaceMembers,
-                    isCurrentUserOwner = result.isCurrentUserOwner
+                    isCurrentUserOwner = result.isCurrentUserOwner,
+                    sharedSpaceCount = result.sharedSpacesCount,
+                    sharedSpaceLimit = result.sharedSpacesLimit
                 )
             }
         }
@@ -428,6 +465,13 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onManageSpacesClicked() {
+        Timber.d("onManageSpacesClicked")
+        viewModelScope.launch {
+            commands.emit(Command.ShowManageSpacesScreen)
+        }
+    }
+
     //region Invite Link Access Level
     /**
      * Called when user selects a new invite link access level
@@ -496,7 +540,7 @@ class ShareSpaceViewModel(
 
         when (newLevel) {
 
-            SpaceInviteLinkAccessLevel.LinkDisabled -> {
+            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                 revokeSpaceInviteLink.async(space).fold(
                     onSuccess = {
                         Timber.d("Successfully disabled invite link")
@@ -514,7 +558,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink(
                             inviteType = InviteType.WITHOUT_APPROVE,
                             permissions = SpaceMemberPermissions.WRITER
@@ -565,7 +609,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink(
                             inviteType = InviteType.WITHOUT_APPROVE,
                             permissions = SpaceMemberPermissions.READER
@@ -616,7 +660,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink()
                     }
 
@@ -655,7 +699,7 @@ class ShareSpaceViewModel(
                 is SpaceInviteLinkAccessLevel.EditorAccess ->
                     SpaceMemberPermissions.WRITER
 
-                SpaceInviteLinkAccessLevel.LinkDisabled ->
+                is SpaceInviteLinkAccessLevel.LinkDisabled ->
                     SpaceMemberPermissions.NO_PERMISSIONS
 
                 is SpaceInviteLinkAccessLevel.RequestAccess ->
@@ -784,7 +828,8 @@ class ShareSpaceViewModel(
         private val changeSpaceInvitePermissions: ChangeSpaceInvitePermissions,
         private val spaceInviteLinkStore: SpaceInviteLinkStore,
         private val gradientProvider: SpaceGradientProvider,
-        private val stringResourceProvider: StringResourceProvider
+        private val stringResourceProvider: StringResourceProvider,
+        private val profileContainer: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = ShareSpaceViewModel(
@@ -806,7 +851,8 @@ class ShareSpaceViewModel(
             changeSpaceInvitePermissions = changeSpaceInvitePermissions,
             spaceInviteLinkStore = spaceInviteLinkStore,
             gradientProvider = gradientProvider,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            profileContainer = profileContainer
         ) as T
     }
 
@@ -831,12 +877,7 @@ class ShareSpaceViewModel(
         data object ShowMembershipScreen : Command()
         data object ShowMembershipUpgradeScreen : Command()
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
-    }
-
-    sealed class ShareSpaceIncentiveState {
-        data object Hidden : ShareSpaceIncentiveState()
-        data object VisibleSpaceReaders : ShareSpaceIncentiveState()
-        data object VisibleSpaceEditors : ShareSpaceIncentiveState()
+        data object ShowManageSpacesScreen : Command()
     }
 
     companion object {
@@ -864,6 +905,8 @@ class ShareSpaceViewModel(
         val spaceView: ObjectWrapper.SpaceView,
         val tierId: TierId,
         val spaceMembers: List<ObjectWrapper.SpaceMember>,
+        val sharedSpacesCount: Int,
+        val sharedSpacesLimit: Int
     )
 }
 
@@ -1109,4 +1152,11 @@ sealed class ShareSpaceErrors {
     data object IncorrectPermissions : ShareSpaceErrors()
     data object NoSuchSpace : ShareSpaceErrors()
     data class Error(val msg: String) : ShareSpaceErrors()
+}
+
+sealed class SpaceLimitsState {
+    data object Init : SpaceLimitsState()
+    data class ViewersLimit(val count: Int) : SpaceLimitsState()
+    data class EditorsLimit(val count: Int) : SpaceLimitsState()
+    data class SharableLimit(val count: Int) : SpaceLimitsState()
 }

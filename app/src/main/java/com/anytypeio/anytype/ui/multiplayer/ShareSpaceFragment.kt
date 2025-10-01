@@ -55,7 +55,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     members = vm.members.collectAsStateWithLifecycle().value,
                     onContextActionClicked = vm::onContextActionClicked,
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
-                    incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
+                    incentiveState = vm.spaceLimitsState.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
                     onManageSpacesClicked = vm::onManageSpacesClicked,
                     isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,

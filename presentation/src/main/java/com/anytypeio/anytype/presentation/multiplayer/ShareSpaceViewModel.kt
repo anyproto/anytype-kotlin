@@ -99,7 +99,7 @@ class ShareSpaceViewModel(
     val members = MutableStateFlow<List<SpaceMemberView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val isCurrentUserOwner = MutableStateFlow(false)
-    val showIncentive = MutableStateFlow<ShareSpaceMembersIncentiveState>(ShareSpaceMembersIncentiveState.Hidden)
+    val spaceLimitsState = MutableStateFlow<SpaceLimitsState>(SpaceLimitsState.Init)
     val isLoadingInProgress = MutableStateFlow(false)
     val shareSpaceErrors = MutableStateFlow<ShareSpaceErrors>(ShareSpaceErrors.Hidden)
     private var _spaceViews: ObjectWrapper.SpaceView? = null
@@ -112,9 +112,13 @@ class ShareSpaceViewModel(
 
     init {
         Timber.i("Share-space init with params: $vmParams")
-        proceedWithUserPermissions(space = vmParams.space)
+        proceedWithUserPermissions()
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()
+        proceedWithInviteLinkState()
+    }
+
+    private fun proceedWithInviteLinkState() {
         viewModelScope.launch {
             combine(
                 spaceInviteLinkStore.observe(vmParams.space)
@@ -122,16 +126,17 @@ class ShareSpaceViewModel(
                         Timber.d("Observing space invite link store for space: ${vmParams.space}")
                         proceedWithRequestCurrentInviteLink()
                     },
-                showIncentive
+                spaceLimitsState
             ) { inviteLink, incentive ->
                 inviteLink to incentive
             }
                 .catch {
                     Timber.e(it, "Error while observing space invite link store")
-                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
+                    inviteLinkAccessLevel.value =
+                        SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
                 }.collect { (inviteLink, incentiveState) ->
                     inviteLinkAccessLevel.value =
-                        if (incentiveState is ShareSpaceMembersIncentiveState.VisibleSharableSpaces) {
+                        if (incentiveState is SpaceLimitsState.SharableLimit) {
                             SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
                         } else {
                             inviteLink
@@ -140,10 +145,10 @@ class ShareSpaceViewModel(
         }
     }
 
-    private fun proceedWithUserPermissions(space: SpaceId) {
+    private fun proceedWithUserPermissions() {
         viewModelScope.launch {
             permissions
-                .observe(space = space)
+                .observe(space = vmParams.space)
                 .collect { permission ->
                     isCurrentUserOwner.value = permission == OWNER
                     if (permission == OWNER) {
@@ -219,13 +224,6 @@ class ShareSpaceViewModel(
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
 
-                val incentiveState = spaceView.getIncentiveState(
-                    spaceMembers = spaceMembers,
-                    isCurrentUserOwner = result.isCurrentUserOwner,
-                    sharedSpaceCount = result.sharedSpacesCount,
-                    sharedSpaceLimit = result.sharedSpacesLimit
-                )
-
                 members.value = spaceMembers.toSpaceMemberView(
                     spaceView = spaceView,
                     urlBuilder = urlBuilder,
@@ -234,7 +232,12 @@ class ShareSpaceViewModel(
                     stringResourceProvider = stringResourceProvider
                 )
 
-                showIncentive.value = incentiveState
+                spaceLimitsState.value = spaceView.spaceLimitsState(
+                    spaceMembers = spaceMembers,
+                    isCurrentUserOwner = result.isCurrentUserOwner,
+                    sharedSpaceCount = result.sharedSpacesCount,
+                    sharedSpaceLimit = result.sharedSpacesLimit
+                )
             }
         }
     }
@@ -877,13 +880,6 @@ class ShareSpaceViewModel(
         data object ShowManageSpacesScreen : Command()
     }
 
-    sealed class ShareSpaceMembersIncentiveState {
-        data object Hidden : ShareSpaceMembersIncentiveState()
-        data class VisibleSpaceMembersReaders(val count: Int) : ShareSpaceMembersIncentiveState()
-        data class VisibleSpaceMembersEditors(val count: Int) : ShareSpaceMembersIncentiveState()
-        data class VisibleSharableSpaces(val count: Int) : ShareSpaceMembersIncentiveState()
-    }
-
     companion object {
         const val SHARE_SPACE_MEMBER_SUBSCRIPTION = "share-space-subscription.member"
         const val SHARE_SPACE_SPACE_SUBSCRIPTION = "share-space-subscription.space"
@@ -1156,4 +1152,11 @@ sealed class ShareSpaceErrors {
     data object IncorrectPermissions : ShareSpaceErrors()
     data object NoSuchSpace : ShareSpaceErrors()
     data class Error(val msg: String) : ShareSpaceErrors()
+}
+
+sealed class SpaceLimitsState {
+    data object Init : SpaceLimitsState()
+    data class ViewersLimit(val count: Int) : SpaceLimitsState()
+    data class EditorsLimit(val count: Int) : SpaceLimitsState()
+    data class SharableLimit(val count: Int) : SpaceLimitsState()
 }

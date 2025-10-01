@@ -93,7 +93,7 @@ import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.views.UxSmallTextMedium
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
@@ -103,7 +103,7 @@ fun ShareSpaceScreen(
     isLoadingInProgress: Boolean,
     isCurrentUserOwner: Boolean,
     members: List<SpaceMemberView>,
-    incentiveState: ShareSpaceViewModel.ShareSpaceMembersIncentiveState,
+    incentiveState: SpaceLimitsState,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
     inviteLinkAccessLoading: Boolean,
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
@@ -343,12 +343,12 @@ private fun showConfirmScreen(
 
 @Composable
 private fun Incentive(
-    incentiveState: ShareSpaceViewModel.ShareSpaceMembersIncentiveState,
+    incentiveState: SpaceLimitsState,
     onIncentiveClicked: () -> Unit,
     onManageSpacesClicked: () -> Unit = {}
 ) {
     when (incentiveState) {
-        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders -> {
+        is SpaceLimitsState.ViewersLimit -> {
             AddEditorsIncentive(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -361,7 +361,7 @@ private fun Incentive(
                 onIncentiveClicked()
             }
         }
-        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors -> {
+        is SpaceLimitsState.EditorsLimit -> {
             AddEditorsIncentive(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -375,11 +375,11 @@ private fun Incentive(
             }
         }
 
-        ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden -> {
+        SpaceLimitsState.Init -> {
             //show nothing
         }
 
-        is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSharableSpaces -> {
+        is SpaceLimitsState.SharableLimit -> {
             SharedSpacesIncentiveItem(
                 modifier = Modifier
                     .padding(horizontal = 16.dp, vertical = 8.dp)
@@ -1037,7 +1037,7 @@ fun ShareSpaceScreenPreview() {
         },
         onContextActionClicked = { _, _ -> },
         onShareQrCodeClicked = {},
-        incentiveState = ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors(4),
+        incentiveState = SpaceLimitsState.EditorsLimit(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
         onMemberClicked = {},

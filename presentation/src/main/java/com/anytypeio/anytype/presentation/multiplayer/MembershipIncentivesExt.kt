@@ -9,19 +9,19 @@ import com.anytypeio.anytype.domain.`object`.activeWriters
 import com.anytypeio.anytype.domain.`object`.isSubscriberLimitReached
 import timber.log.Timber
 
-fun ObjectWrapper.SpaceView.getIncentiveState(
+fun ObjectWrapper.SpaceView.spaceLimitsState(
     isCurrentUserOwner: Boolean,
     spaceMembers: List<ObjectWrapper.SpaceMember>,
     sharedSpaceCount: Int,
     sharedSpaceLimit: Int,
-): ShareSpaceViewModel.ShareSpaceMembersIncentiveState {
+): SpaceLimitsState {
     Timber.d("isCurrentUserOwner: $isCurrentUserOwner, spaceMembers: $spaceMembers")
 
     if (sharedSpaceLimit > 0
         && sharedSpaceCount >= sharedSpaceLimit
         && spaceAccessType != SpaceAccessType.SHARED
     ) {
-        return ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSharableSpaces(
+        return SpaceLimitsState.SharableLimit(
             count = sharedSpaceLimit
         )
     }
@@ -31,25 +31,25 @@ fun ObjectWrapper.SpaceView.getIncentiveState(
             spaceMembers = spaceMembers
         )
     ) {
-        return ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden
+        return SpaceLimitsState.Init
     }
 
     return when {
         isSubscriberLimitReached(
             currentSubscribers = activeReaders(spaceMembers),
             subscriberLimit = readersLimit?.toInt()
-        ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders(
+        ) -> SpaceLimitsState.ViewersLimit(
             count = readersLimit?.toInt() ?: 0
         )
 
         isSubscriberLimitReached(
             currentSubscribers = activeWriters(spaceMembers),
             subscriberLimit = writersLimit?.toInt()
-        ) -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersEditors(
+        ) -> SpaceLimitsState.EditorsLimit(
             count = writersLimit?.toInt() ?: 0
         )
 
-        else -> ShareSpaceViewModel.ShareSpaceMembersIncentiveState.Hidden
+        else -> SpaceLimitsState.Init
     }
 }
 

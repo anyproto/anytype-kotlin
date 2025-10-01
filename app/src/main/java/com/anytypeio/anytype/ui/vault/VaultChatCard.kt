@@ -248,7 +248,7 @@ private fun ChatSubtitleRow(
             modifier = Modifier.weight(1f),
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.text_transparent_secondary),
         )
 
         UnreadIndicatorsRow(
@@ -355,7 +355,7 @@ fun TitleRow(
                     Text(
                         text = it,
                         style = Relations2,
-                        color = colorResource(id = R.color.control_transparent_secondary),
+                        color = colorResource(id = R.color.text_transparent_secondary),
                     )
                 }
             }

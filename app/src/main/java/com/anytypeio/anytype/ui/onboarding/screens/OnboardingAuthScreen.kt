@@ -80,7 +80,6 @@ fun AuthScreen(
             verticalArrangement = Arrangement.Center
         ) {
             Title(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(4.dp))
             Subtitle(modifier = Modifier.fillMaxWidth())
         }
         Column(

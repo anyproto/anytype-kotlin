@@ -126,7 +126,7 @@ fun ButtonOnboardingSecondaryLarge(
                 Text(
                     text = if (loading) "" else text,
                     modifier = Modifier,
-                    style = ButtonRegular,
+                    style = ButtonMedium,
                     textAlign = TextAlign.Center
                 )
             }

@@ -661,10 +661,11 @@ fun InviteType.toMiddleware(): MInviteType = when (this) {
 fun SpaceCreationUseCase.toMiddlewareModel(): Rpc.Object.ImportUseCase.Request.UseCase = when (this) {
     SpaceCreationUseCase.NONE -> Rpc.Object.ImportUseCase.Request.UseCase.NONE
     SpaceCreationUseCase.GET_STARTED -> Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED
-    SpaceCreationUseCase.EMPTY -> Rpc.Object.ImportUseCase.Request.UseCase.EMPTY
+    SpaceCreationUseCase.DATA_SPACE -> Rpc.Object.ImportUseCase.Request.UseCase.DATA_SPACE
     SpaceCreationUseCase.GUIDE_ONLY -> Rpc.Object.ImportUseCase.Request.UseCase.GUIDE_ONLY
     SpaceCreationUseCase.GET_STARTED_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
-    SpaceCreationUseCase.EMPTY_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.EMPTY_MOBILE
+    SpaceCreationUseCase.CHAT_SPACE -> Rpc.Object.ImportUseCase.Request.UseCase.CHAT_SPACE
+    SpaceCreationUseCase.DATA_SPACE_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.DATA_SPACE_MOBILE
 }
 
 fun NotificationState.toMiddlewareModel(): Rpc.PushNotification.SetSpaceMode.Mode = when (this) {

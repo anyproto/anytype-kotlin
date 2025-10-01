@@ -129,7 +129,7 @@ class GalleryInstallationViewModel(
                     Relations.ICON_OPTION to spaceGradientProvider.randomId().toDouble(),
                     Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble(),
                 ),
-                useCase = SpaceCreationUseCase.EMPTY_MOBILE
+                useCase = SpaceCreationUseCase.DATA_SPACE_MOBILE
             )
             createSpace.async(params).fold(
                 onSuccess = { result ->

@@ -67,8 +67,8 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
@@ -84,7 +84,6 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
@@ -94,10 +93,9 @@ import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.views.UxSmallTextMedium
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
+import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
-import com.anytypeio.anytype.presentation.spaces.UiEvent
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -111,6 +109,7 @@ fun ShareSpaceScreen(
     confirmationDialogLevel: SpaceInviteLinkAccessLevel?,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onIncentiveClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit,
 
     onInviteLinkAccessLevelSelected: (SpaceInviteLinkAccessLevel) -> Unit,
@@ -166,25 +165,29 @@ fun ShareSpaceScreen(
                 item {
                     Incentive(
                         incentiveState = incentiveState,
-                        onIncentiveClicked = onIncentiveClicked
+                        onIncentiveClicked = onIncentiveClicked,
+                        onManageSpacesClicked = onManageSpacesClicked
                     )
 
                     Section(
                         title = stringResource(R.string.multiplayer_members_invite_links_section)
                     )
                     val item = inviteLinkAccessLevel.getInviteLinkItemParams()
+                    val isAccessLevelDisabled =
+                        (inviteLinkAccessLevel as? SpaceInviteLinkAccessLevel.LinkDisabled)?.isEnabled == false
                     AccessLevelOption(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(end = 12.dp)
                             .noRippleThrottledClickable {
                                 // Only owners can modify invite link access settings
-                                if (isCurrentUserOwner) {
+                                if (isCurrentUserOwner && !isAccessLevelDisabled) {
                                     showInviteLinkAccessSelector = !showInviteLinkAccessSelector
                                 }
                             },
                         uiItemUI = item,
-                        isCurrentUserOwner = isCurrentUserOwner
+                        isCurrentUserOwner = isCurrentUserOwner,
+                        isDisabled = isAccessLevelDisabled
                     )
                 }
 
@@ -212,7 +215,7 @@ fun ShareSpaceScreen(
                             onQrCodeClicked = onShareQrCodeClicked
                         )
 
-                        SpaceInviteLinkAccessLevel.LinkDisabled -> {}
+                        is SpaceInviteLinkAccessLevel.LinkDisabled -> {}
                     }
                 }
                 item {
@@ -341,7 +344,8 @@ private fun showConfirmScreen(
 @Composable
 private fun Incentive(
     incentiveState: ShareSpaceViewModel.ShareSpaceMembersIncentiveState,
-    onIncentiveClicked: () -> Unit
+    onIncentiveClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit = {}
 ) {
     when (incentiveState) {
         is ShareSpaceViewModel.ShareSpaceMembersIncentiveState.VisibleSpaceMembersReaders -> {
@@ -383,6 +387,9 @@ private fun Incentive(
                 count = incentiveState.count,
                 onAddMoreSpacesClicked = {
                     onIncentiveClicked()
+                },
+                onManageSpacesClicked = {
+                    onManageSpacesClicked()
                 }
             )
         }
@@ -393,7 +400,8 @@ private fun Incentive(
 fun SharedSpacesIncentiveItem(
     modifier: Modifier = Modifier,
     count: Int,
-    onAddMoreSpacesClicked: () -> Unit
+    onAddMoreSpacesClicked: () -> Unit,
+    onManageSpacesClicked: () -> Unit
 ) {
     Column(
         modifier = modifier
@@ -436,7 +444,7 @@ fun SharedSpacesIncentiveItem(
                     .padding(top = 12.dp)
                     .height(36.dp),
                 onClick = {
-                    onAddMoreSpacesClicked()
+                    onManageSpacesClicked()
                 },
                 text = stringResource(id = R.string.multiplayer_manage_spaces),
                 style = UxSmallTextMedium
@@ -462,7 +470,8 @@ private fun PrivateSpaceSharingPreview() {
     SharedSpacesIncentiveItem(
         count = 3,
         modifier = Modifier.fillMaxWidth(),
-        onAddMoreSpacesClicked = {}
+        onAddMoreSpacesClicked = {},
+        onManageSpacesClicked = {}
     )
 }
 
@@ -1039,7 +1048,8 @@ fun ShareSpaceScreenPreview() {
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
         onCopyInviteLinkClicked = {},
-        isCurrentUserOwner = true
+        isCurrentUserOwner = true,
+        onManageSpacesClicked = {}
     )
 }
 

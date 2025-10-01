@@ -106,7 +106,7 @@ class ShareSpaceViewModel(
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     // New state for invite link access levels (Task #24)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
 
@@ -128,13 +128,11 @@ class ShareSpaceViewModel(
             }
                 .catch {
                     Timber.e(it, "Error while observing space invite link store")
-                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
                 }.collect { (inviteLink, incentiveState) ->
                     inviteLinkAccessLevel.value =
                         if (incentiveState is ShareSpaceMembersIncentiveState.VisibleSharableSpaces) {
-                            // Disable link changes when user reached the limit of shared spaces
-                            //TODO здесь нужен новый стейт который дизайблит линк и убирает иконку >
-                            SpaceInviteLinkAccessLevel.LinkDisabled
+                            SpaceInviteLinkAccessLevel.LinkDisabled(isEnabled = false)
                         } else {
                             inviteLink
                         }
@@ -464,6 +462,13 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onManageSpacesClicked() {
+        Timber.d("onManageSpacesClicked")
+        viewModelScope.launch {
+            commands.emit(Command.ShowManageSpacesScreen)
+        }
+    }
+
     //region Invite Link Access Level
     /**
      * Called when user selects a new invite link access level
@@ -532,7 +537,7 @@ class ShareSpaceViewModel(
 
         when (newLevel) {
 
-            SpaceInviteLinkAccessLevel.LinkDisabled -> {
+            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                 revokeSpaceInviteLink.async(space).fold(
                     onSuccess = {
                         Timber.d("Successfully disabled invite link")
@@ -550,7 +555,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink(
                             inviteType = InviteType.WITHOUT_APPROVE,
                             permissions = SpaceMemberPermissions.WRITER
@@ -601,7 +606,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink(
                             inviteType = InviteType.WITHOUT_APPROVE,
                             permissions = SpaceMemberPermissions.READER
@@ -652,7 +657,7 @@ class ShareSpaceViewModel(
 
             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                 when (currentLevel) {
-                    SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                    is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                         generateInviteLink()
                     }
 
@@ -691,7 +696,7 @@ class ShareSpaceViewModel(
                 is SpaceInviteLinkAccessLevel.EditorAccess ->
                     SpaceMemberPermissions.WRITER
 
-                SpaceInviteLinkAccessLevel.LinkDisabled ->
+                is SpaceInviteLinkAccessLevel.LinkDisabled ->
                     SpaceMemberPermissions.NO_PERMISSIONS
 
                 is SpaceInviteLinkAccessLevel.RequestAccess ->
@@ -869,6 +874,7 @@ class ShareSpaceViewModel(
         data object ShowMembershipScreen : Command()
         data object ShowMembershipUpgradeScreen : Command()
         data class OpenParticipantObject(val objectId: Id, val space: SpaceId) : Command()
+        data object ShowManageSpacesScreen : Command()
     }
 
     sealed class ShareSpaceMembersIncentiveState {

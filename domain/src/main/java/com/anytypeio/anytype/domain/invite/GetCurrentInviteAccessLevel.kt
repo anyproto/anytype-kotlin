@@ -52,7 +52,7 @@ class GetCurrentInviteAccessLevel @Inject constructor(
      * Helper method to update store with disabled state and return it
      */
     private fun updateStoreAndReturnDisabled(spaceId: SpaceId): SpaceInviteLinkAccessLevel {
-        val disabledState = SpaceInviteLinkAccessLevel.LinkDisabled
+        val disabledState = SpaceInviteLinkAccessLevel.LinkDisabled()
         store.update(spaceId, disabledState)
         return disabledState
     }
@@ -71,7 +71,7 @@ class GetCurrentInviteAccessLevel @Inject constructor(
 
             InviteType.GUEST -> {
                 // GUEST type is not supported in our current UI
-                SpaceInviteLinkAccessLevel.LinkDisabled
+                SpaceInviteLinkAccessLevel.LinkDisabled()
             }
 
             InviteType.WITHOUT_APPROVE -> {
@@ -85,7 +85,7 @@ class GetCurrentInviteAccessLevel @Inject constructor(
                         spaceInviteLink.scheme
                     )
 
-                    SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LinkDisabled
+                    SpaceMemberPermissions.NO_PERMISSIONS -> SpaceInviteLinkAccessLevel.LinkDisabled()
                 }
             }
         }

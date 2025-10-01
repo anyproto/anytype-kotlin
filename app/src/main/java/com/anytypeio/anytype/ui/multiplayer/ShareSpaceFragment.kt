@@ -57,6 +57,7 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
                     incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
+                    onManageSpacesClicked = vm::onManageSpacesClicked,
                     isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
                     onMemberClicked = vm::onMemberClicked,
                     inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
@@ -257,6 +258,13 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                             objectId = command.objectId
                         )
                     )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation: $command")
+                }
+            }
+            Command.ShowManageSpacesScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.spaceListScreen)
                 }.onFailure {
                     Timber.e(it, "Error while navigation: $command")
                 }

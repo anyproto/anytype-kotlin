@@ -139,7 +139,7 @@ class SpaceSettingsViewModel(
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
@@ -365,7 +365,7 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(Members(count = spaceMemberCount, withColor = true))
                             }
-                            SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(Members(count = spaceMemberCount))
                             }
@@ -916,7 +916,7 @@ class SpaceSettingsViewModel(
                 .catch {
                     Timber.e(it, "Error observing invite link access level")
                     // Emit default value on error
-                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled()
                 }
                 .collect { accessLevel ->
                     Timber.d("Invite link access level updated: $accessLevel")

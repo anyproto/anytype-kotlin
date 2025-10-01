@@ -1255,6 +1255,7 @@
     <string name="multiplayer_cant_add_members">No puedes añadir más miembros</string>
     <string name="multiplayer_cant_add_editors">No puedes añadir más editores</string>
     <string name="multiplayer_upgrade_button">✦ Ampliar</string>
+    <string name="multiplayer_manage_spaces">Gestionar espacios</string>
     <string name="multiplayer_upgrade_button_request">✦ Ampliar para añadir más miembros</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Ampliar para añadir más espacios</string>
     <string name="multiplayer_members">Miembros</string>
@@ -1551,7 +1552,8 @@ En concreto,
     <string name="membership_upgrade_title">Ampliación de la suscripción</string>
     <string name="membership_upgrade_description">Habla con nosotros si quieres aumentar el almacenamiento, los editores de tus espacios o los espacios compartidos. El equipo de Anytype te ofrecerá detalles y condiciones adaptados a tus necesidades.</string>
     <string name="membership_upgrade_button">Hablar con el equipo de Anytype</string>
-    <string name="membership_space_settings_share_limit">Has alcanzado el límite de %1$d espacios compartidos.</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="one">año</item>
         <item quantity="other">%d años</item>
@@ -1978,6 +1980,9 @@ En concreto,
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publica tu primer sitio web para empezar.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

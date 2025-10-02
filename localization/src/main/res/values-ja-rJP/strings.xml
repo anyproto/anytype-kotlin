@@ -68,6 +68,10 @@
     <string name="get_more_space">さらに多くのスペースを入手</string>
     <string name="account_name">名前</string>
     <string name="space_settings">スペース設定</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">データ管理</string>
     <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
@@ -1804,6 +1808,7 @@
     <string name="space_settings_qrcode">QRコード</string>
     <string name="space_settings_members_button_members">メンバー</string>
     <string name="space_settings_types_button">タイプ</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">デフォルトのタイプ</string>
     <string name="space_settings_wallpaper_button">壁紙</string>
     <string name="space_settings_storage_button">リモートストレージ</string>
@@ -1971,6 +1976,14 @@
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">チャット</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">スペース</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

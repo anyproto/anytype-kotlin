@@ -1008,6 +1008,7 @@ class SpaceSettingsViewModel(
      * 1. The current user is the owner of the space
      * 2. The space has a defined UX type (Chat or Data)
      * 3. The space is shared (not private or default)
+     * 4. The space has a valid chat ID (not null or empty)
      *
      * @param permission The current user's permissions in the space
      * @param spaceView The space view data containing space configuration
@@ -1020,6 +1021,7 @@ class SpaceSettingsViewModel(
         return permission?.isOwner() == true
             && spaceView.spaceUxType != null
             && spaceView.spaceAccessType == SpaceAccessType.SHARED
+            && !spaceView.chatId.isNullOrEmpty()
     }
 
     data class ShareLimitsState(

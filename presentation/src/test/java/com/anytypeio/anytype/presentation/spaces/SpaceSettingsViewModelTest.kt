@@ -26,6 +26,7 @@ class SpaceSettingsViewModelTest {
             return permission?.isOwner() == true
                 && spaceView.spaceUxType != null
                 && spaceView.spaceAccessType == SpaceAccessType.SHARED
+                && !spaceView.chatId.isNullOrEmpty()
         }
     }
 
@@ -35,7 +36,8 @@ class SpaceSettingsViewModelTest {
         val permission = SpaceMemberPermissions.OWNER
         val spaceView = StubSpaceView(
             spaceUxType = SpaceUxType.DATA,
-            spaceAccessType = SpaceAccessType.SHARED
+            spaceAccessType = SpaceAccessType.SHARED,
+            chatId = "valid-chat-id"
         )
 
         // When
@@ -131,7 +133,8 @@ class SpaceSettingsViewModelTest {
         val permission = SpaceMemberPermissions.OWNER
         val spaceView = StubSpaceView(
             spaceUxType = SpaceUxType.CHAT,
-            spaceAccessType = SpaceAccessType.SHARED
+            spaceAccessType = SpaceAccessType.SHARED,
+            chatId = "valid-chat-id"
         )
 
         // When
@@ -147,7 +150,42 @@ class SpaceSettingsViewModelTest {
         val permission = SpaceMemberPermissions.WRITER
         val spaceView = StubSpaceView(
             spaceUxType = SpaceUxType.DATA,
-            spaceAccessType = SpaceAccessType.SHARED
+            spaceAccessType = SpaceAccessType.SHARED,
+            chatId = "valid-chat-id"
+        )
+
+        // When
+        val result = testHelper.shouldShowChangeTypeOption(permission, spaceView)
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `shouldShowChangeTypeOption returns false when chatId is null`() {
+        // Given
+        val permission = SpaceMemberPermissions.OWNER
+        val spaceView = StubSpaceView(
+            spaceUxType = SpaceUxType.DATA,
+            spaceAccessType = SpaceAccessType.SHARED,
+            chatId = null
+        )
+
+        // When
+        val result = testHelper.shouldShowChangeTypeOption(permission, spaceView)
+
+        // Then
+        assertFalse(result)
+    }
+
+    @Test
+    fun `shouldShowChangeTypeOption returns false when chatId is empty`() {
+        // Given
+        val permission = SpaceMemberPermissions.OWNER
+        val spaceView = StubSpaceView(
+            spaceUxType = SpaceUxType.DATA,
+            spaceAccessType = SpaceAccessType.SHARED,
+            chatId = ""
         )
 
         // When

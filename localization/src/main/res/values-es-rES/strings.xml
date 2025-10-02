@@ -10,7 +10,7 @@
     <string name="appearance">Aspecto</string>
     <string name="file_storage">Almacenamiento de archivos</string>
     <string name="key">Clave</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Clave de acceso</string>
     <string name="clear_file_cache">Limpiar caché de archivos</string>
     <string name="debug_sync_report">Informe de sincronización de depuración</string>
     <string name="debug">Depurar</string>
@@ -62,16 +62,16 @@
     <string name="local_storage">Almacenamiento local</string>
     <string name="offload_files">Guardar en el nodo</string>
     <string name="local_storage_used">%1$s usados</string>
-    <string name="space_usage">Usado: %1$s de %2$s</string>
+    <string name="space_usage">En uso: %1$s de %2$s</string>
     <string name="remote_storage">Almacenamiento remoto</string>
     <string name="contact_us">Contacto</string>
     <string name="get_more_space">Conseguir más espacio</string>
     <string name="account_name">Nombre</string>
     <string name="space_settings">Ajustes del espacio</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">No se ha podido cambiar el tipo de espacio. Inténtalo de nuevo.</string>
+    <string name="space_settings_error_wallpaper">No se ha podido actualizar el fondo de pantalla. Inténtalo de nuevo.</string>
+    <string name="space_settings_error_name">No se ha podido actualizar el nombre del espacio. Inténtalo de nuevo.</string>
+    <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
     <string name="data_management">Gestión de datos</string>
     <string name="deleted_account_danger_zone_msg">Una vez solicitada la eliminación de tu arca, tendrás 30 días para cancelar la solicitud. Pasados 30 días, los datos cifrados de tu arca se eliminarán definitivamente del nodo de respaldo y no podrás iniciar sesión en Anytype desde dispositivos nuevos.</string>
     <string name="danger_zone">¡Zona peligrosa!</string>
@@ -372,7 +372,7 @@
     <string name="select_query">Seleccionar consulta</string>
     <string name="objects">Objetos</string>
     <string name="object_1">Objeto</string>
-    <string name="your_objects">tus objetos</string>
+    <string name="your_objects">Tus objetos</string>
     <string name="web_pages">Páginas web</string>
     <string name="select_files">Seleccionar archivos</string>
     <string name="u">U</string>
@@ -584,7 +584,7 @@
     <string name="choose_pin_code">Elegir código PIN</string>
     <string name="congratulations">¡Enhorabuena!</string>
     <string name="time_to_update_title">Es necesario actualizar</string>
-    <string name="time_to_update_text">Parte de tu contenido se ha manejado con una versión más reciente de Anytype. \nActualiza la aplicación para trabajar con todos tus documentos y las funciones más recientes.</string>
+    <string name="time_to_update_text">Parte de tu contenido se ha manejado con una versión más reciente de Anytype.\nActualiza la aplicación para trabajar con todos tus documentos y las funciones más recientes.</string>
     <string name="update">Actualizar</string>
     <string name="later">Más tarde</string>
     <string name="let_us_start">¡Vamos a empezar!</string>
@@ -1182,7 +1182,7 @@
     <string name="clipboard_panel_create_object_from_clipboard">Crear objeto desde el portapapeles</string>
     <string name="block_media_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="relation_value_create_new">Crear «%1$s»</string>
-    <string name="option_widget_create">Crear opción </string>
+    <string name="option_widget_create">Crear opción</string>
     <string name="option_widget_edit">Editar opción</string>
     <string name="options_empty_description">No se ha encontrado nada. Crea la primera opción para comenzar.</string>
     <string name="options_empty_title">Sin opciones</string>
@@ -1454,7 +1454,7 @@
     <string name="payments_code_resend">Reenviar</string>
     <string name="payments_code_resend_in">Reenviar dentro de %1$d s</string>
     <!-- Membership Welcome -->
-    <string name="payments_welcome_title">Te damos la bienvenida a la red, \n%1$s</string>
+    <string name="payments_welcome_title">Te damos la bienvenida a la red,\n%1$s</string>
     <string name="payments_welcome_subtitle">¡Enhorabuena por tu curiosidad!</string>
     <string name="payments_welcome_button">Continuar</string>
     <!-- Membership Email -->
@@ -1556,8 +1556,8 @@ En concreto,
     <string name="membership_upgrade_title">Ampliación de la suscripción</string>
     <string name="membership_upgrade_description">Habla con nosotros si quieres aumentar el almacenamiento, los editores de tus espacios o los espacios compartidos. El equipo de Anytype te ofrecerá detalles y condiciones adaptados a tus necesidades.</string>
     <string name="membership_upgrade_button">Hablar con el equipo de Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
-    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
+    <string name="membership_space_settings_share_limit">Has alcanzado el límite de %1$d espacios compartidos.</string>
+    <string name="membership_space_settings_share_limit_2">Mejora tu suscripción o elimina alguno.</string>
     <plurals name="period_years">
         <item quantity="one">año</item>
         <item quantity="other">%d años</item>
@@ -1820,7 +1820,7 @@ En concreto,
     <string name="space_settings_qrcode">Código QR</string>
     <string name="space_settings_members_button_members">Miembros</string>
     <string name="space_settings_types_button">Tipos de objeto</string>
-    <string name="space_settings_space_types_button">Channel Type</string>
+    <string name="space_settings_space_types_button">Tipo de canal</string>
     <string name="space_settings_default_type_button">Tipo de objeto por defecto</string>
     <string name="space_settings_wallpaper_button">Fondo de pantalla</string>
     <string name="space_settings_storage_button">Almacenamiento remoto</string>
@@ -1941,7 +1941,7 @@ En concreto,
     <string name="vault_join_via_qr">Unirse con código QR</string>
     <string name="vault_qr_scan_error_title">No se ha podido escanear el código QR</string>
     <string name="vault_qr_scan_error_description">Procura que se vea con claridad e inténtalo de nuevo.</string>
-    <string name="vault_qr_invalid_title">Código QR no válido</string>
+    <string name="vault_qr_invalid_title">El código QR no es válido</string>
     <string name="vault_qr_invalid_description">El código QR escaneado no corresponde a una invitación válida. Compruébalo e inténtalo de nuevo.</string>
     <string name="vault_qr_try_again">Inténtalo de nuevo</string>
     <string name="camera_permission_required_title">Se requiere permiso de cámara</string>
@@ -1956,11 +1956,11 @@ En concreto,
     <string name="share_space_error_request_failed">¡Huy! La solicitud ha fallado. Comprueba tu conexión a Internet e inténtalo de nuevo.</string>
     <string name="share_space_error_space_deleted">Parece que este espacio se ha eliminado. Asegúrate de que tus dispositivos están sincronizados.</string>
     <string name="share_space_error_generic">Se ha producido un error inesperado: %1$s. Inténtalo de nuevo más tarde.</string>
-    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
-    <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
+    <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Default Color</string>
+    <string name="private_local_yours_forever">Privado, local, tuyo para siempre</string>
+    <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
     <string name="web_publishing_customize_url">Personalizar URL</string>
@@ -1968,38 +1968,38 @@ En concreto,
     <string name="web_publishing_unpublish">No publicar</string>
     <string name="web_publishing_update">Actualizar</string>
     <string name="web_publishing_publish">Publicar</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_failed_to_update">Fallo al actualizar: %1$s</string>
     <string name="web_publishing_join">Unirte</string>
-    <string name="settings_my_sites">My sites</string>
-    <string name="web_publishing_view_object">View Object</string>
-    <string name="web_publishing_open_in_browser">Open in Browser</string>
-    <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="settings_my_sites">Mis sitios</string>
+    <string name="web_publishing_view_object">Ver objeto</string>
+    <string name="web_publishing_open_in_browser">Abrir en el explorador</string>
+    <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_object_types">Tipos de objeto</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
-    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
-    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
-    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>
+    <string name="widget_unpin_alert_description">Hemos rediseñado el funcionamiento de los widgets y este widget ya no es compatible. Una vez desanclado, este widget no se puede restaurar.</string>
+    <string name="widget_unpin_alert_title">Este widget no se podrá restaurar</string>
     <string name="widget_unpin_alert_button_unpin">Desanclar</string>
     <string name="my_sites">Mis sitios</string>
-    <string name="my_sites_empty_state_text">There are no published objects yet</string>
-    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_empty_state_text">Aún no hay ningún objeto publicado</string>
+    <string name="my_sites_it_s_empty_here">Aquí no hay nada</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publica tu primer sitio web para empezar.</string>
-    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
-    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
-    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
-    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="members_limits_incentive_editors">Has alcanzado el límite de %1$d editores.</string>
+    <string name="members_limits_incentive_editors_sub">Mejora tu suscripción para invitar a más miembros.</string>
+    <string name="members_limits_incentive_viewers">Has alcanzado el límite de %1$d visitantes.</string>
+    <string name="space_settings_space_type_chat_title">Tipo de canal</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
-    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_chat_descr">Chat de grupo con datos compartidos. La mejor opción para grupos pequeños o una sola conversación continua.</string>
     <string name="space_settings_space_type_space_item_title">Espacio</string>
-    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
-    <string name="alert_change_space_type_title">Convert Channel Type?</string>
-    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
-    <string name="alert_change_space_type_button">Yes, convert</string>
+    <string name="space_settings_space_type_space_descr">Centro de organización avanzada de datos. Próximamente podrá tener distintos chats por temas. Ideal para equipos más grandes.</string>
+    <string name="alert_change_space_type_title">¿Convertir en otro tipo de canal?</string>
+    <string name="alert_change_space_type_subtitle">El cambio entre espacio y chat es también un cambio considerable de experiencia.</string>
+    <string name="alert_change_space_type_button">Sí, convertir</string>
     <plurals name="notification_messages_count">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
+        <item quantity="one">%d mensaje nuevo</item>
+        <item quantity="other">%d mensajes nuevos</item>
     </plurals>
     <!-- Multiplayer actions -->
-    <string name="multiplayer_approve">Approve</string>
+    <string name="multiplayer_approve">Aprobar</string>
 </resources>

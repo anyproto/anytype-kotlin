@@ -68,10 +68,10 @@
     <string name="get_more_space">Daha fazla alan alın</string>
     <string name="account_name">İsim</string>
     <string name="space_settings">Alan ayarları</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Alan türü değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_wallpaper">Duvar kağıdı yüklenemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="data_management">Veri yönetimi</string>
     <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
     <string name="danger_zone">Tehlikeli bölge</string>

@@ -48,4 +48,11 @@ sealed class UiEvent {
     }
 
     data object OnAddMoreSpacesClicked : UiEvent()
+
+    data object OnChangeTypeClicked : UiEvent()
+
+    sealed class OnChangeSpaceType : UiEvent() {
+        data object ToChat : OnChangeSpaceType()
+        data object ToSpace : OnChangeSpaceType()
+    }
 }

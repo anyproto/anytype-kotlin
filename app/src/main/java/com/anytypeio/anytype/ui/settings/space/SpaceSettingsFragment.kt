@@ -28,6 +28,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.SpaceSettingsErrors
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
@@ -151,6 +153,54 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
         }
 
         ShareSpaceQrCodeScreen(viewModel = vm)
+
+        // Space Settings Error Alerts
+        val spaceSettingsErrors = vm.spaceSettingsErrors.collectAsStateWithLifecycle().value
+        when (spaceSettingsErrors) {
+            SpaceSettingsErrors.Hidden -> {
+                // No error to display
+            }
+            SpaceSettingsErrors.ChangeSpaceTypeFailed -> {
+                BaseAlertDialog(
+                    dialogText = getString(R.string.space_settings_error_change_type),
+                    buttonText = getString(android.R.string.ok),
+                    onButtonClick = { vm.clearSpaceSettingsError() },
+                    onDismissRequest = { vm.clearSpaceSettingsError() }
+                )
+            }
+            SpaceSettingsErrors.WallpaperUpdateFailed -> {
+                BaseAlertDialog(
+                    dialogText = getString(R.string.space_settings_error_wallpaper),
+                    buttonText = getString(android.R.string.ok),
+                    onButtonClick = { vm.clearSpaceSettingsError() },
+                    onDismissRequest = { vm.clearSpaceSettingsError() }
+                )
+            }
+            SpaceSettingsErrors.NameUpdateFailed -> {
+                BaseAlertDialog(
+                    dialogText = getString(R.string.space_settings_error_name),
+                    buttonText = getString(android.R.string.ok),
+                    onButtonClick = { vm.clearSpaceSettingsError() },
+                    onDismissRequest = { vm.clearSpaceSettingsError() }
+                )
+            }
+            SpaceSettingsErrors.IconUpdateFailed -> {
+                BaseAlertDialog(
+                    dialogText = getString(R.string.space_settings_error_icon),
+                    buttonText = getString(android.R.string.ok),
+                    onButtonClick = { vm.clearSpaceSettingsError() },
+                    onDismissRequest = { vm.clearSpaceSettingsError() }
+                )
+            }
+            is SpaceSettingsErrors.GenericError -> {
+                BaseAlertDialog(
+                    dialogText = spaceSettingsErrors.message,
+                    buttonText = getString(android.R.string.ok),
+                    onButtonClick = { vm.clearSpaceSettingsError() },
+                    onDismissRequest = { vm.clearSpaceSettingsError() }
+                )
+            }
+        }
     }
 
     private suspend fun observeCommands(

@@ -75,4 +75,10 @@ sealed class UiSpaceSettingsItem {
     data object DeleteSpace : UiSpaceSettingsItem()
     data object LeaveSpace : UiSpaceSettingsItem()
     data object Notifications : UiSpaceSettingsItem()
+
+    sealed class ChangeType : UiSpaceSettingsItem() {
+        abstract val isEnabled: Boolean
+        data class Data(override val isEnabled: Boolean = false) : ChangeType()
+        data class Chat(override val isEnabled: Boolean = false) : ChangeType()
+    }
 }

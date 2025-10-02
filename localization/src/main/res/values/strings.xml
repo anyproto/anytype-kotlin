@@ -85,6 +85,10 @@
     <string name="get_more_space">Get more space</string>
     <string name="account_name">Name</string>
     <string name="space_settings">Space settings</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Data management</string>
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
@@ -2102,6 +2106,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">Members</string>
     <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Default Object Type</string>
     <string name="space_settings_wallpaper_button">Wallpaper</string>
     <string name="space_settings_storage_button">Remote Storage</string>
@@ -2293,6 +2298,16 @@ Please provide specific details of your needs here.</string>
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Space</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
 
 
     <plurals name="notification_messages_count">

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -145,6 +146,8 @@ class SpaceSettingsViewModel(
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
+    val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
+
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
         viewModelScope.launch {
@@ -238,10 +241,6 @@ class SpaceSettingsViewModel(
             ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink ->
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
-
-                val showSpaceShareIncentive = sharedSpaceLimit > 0
-                        && sharedSpaceCount >= sharedSpaceLimit
-                        && spaceView.spaceAccessType != SpaceAccessType.SHARED
 
                 val spaceIcon = spaceView.spaceIcon(urlBuilder)
 
@@ -407,6 +406,15 @@ class SpaceSettingsViewModel(
                     if (spaceView.isShared) {
                         add(Spacer(height = 8))
                         add(Notifications)
+                    }
+
+
+                    if (shouldShowChangeTypeOption(permission, spaceView)) {
+                        add(Spacer(height = 8))
+                        when (spaceView.spaceUxType) {
+                            SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
+                            else -> add(UiSpaceSettingsItem.ChangeType.Data(isEnabled = true))
+                        }
                     }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
@@ -632,6 +640,42 @@ class SpaceSettingsViewModel(
                     commands.emit(Command.NavigateToMembership)
                 }
             }
+            UiEvent.OnChangeTypeClicked -> {
+                // This event opens the bottom sheet, no action needed in ViewModel
+            }
+            is UiEvent.OnChangeSpaceType -> {
+                when (uiEvent) {
+                    is UiEvent.OnChangeSpaceType.ToChat -> {
+                        proceedWithChangingSpaceType(SpaceUxType.CHAT)
+                    }
+                    is UiEvent.OnChangeSpaceType.ToSpace -> {
+                        proceedWithChangingSpaceType(SpaceUxType.DATA)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithChangingSpaceType(newType: SpaceUxType) {
+        Timber.d("Changing space type to: $newType")
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                params = Params(
+                    space = vmParams.space,
+                    details = mapOf(
+                        Relations.SPACE_UX_TYPE to newType.code.toDouble()
+                    )
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully changed space type to: $newType")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error while changing space type")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.ChangeSpaceTypeFailed
+                }
+            )
         }
     }
 
@@ -659,9 +703,11 @@ class SpaceSettingsViewModel(
             setWallpaper.async(params).fold(
                 onSuccess = {
                     Timber.d("Wallpaper updated")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
                 },
-                onFailure = {
-                    Timber.w(it, "Failed to update wallpaper")
+                onFailure = { error ->
+                    Timber.w(error, "Failed to update wallpaper")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.WallpaperUpdateFailed
                 }
             )
         }
@@ -957,6 +1003,29 @@ class SpaceSettingsViewModel(
         }
     }
 
+    /**
+     * Determines whether the "Change Type" option should be shown in space settings.
+     *
+     * The change type option is only available when:
+     * 1. The current user is the owner of the space
+     * 2. The space has a defined UX type (Chat or Data)
+     * 3. The space is shared (not private or default)
+     * 4. The space has a valid chat ID (not null or empty)
+     *
+     * @param permission The current user's permissions in the space
+     * @param spaceView The space view data containing space configuration
+     * @return true if the change type option should be shown, false otherwise
+     */
+    internal fun shouldShowChangeTypeOption(
+        permission: SpaceMemberPermissions?,
+        spaceView: ObjectWrapper.SpaceView
+    ): Boolean {
+        return permission?.isOwner() == true
+            && spaceView.spaceUxType != null
+            && spaceView.spaceAccessType == SpaceAccessType.SHARED
+            && !spaceView.chatId.isNullOrEmpty()
+    }
+
     data class ShareLimitsState(
         val shareLimitReached: Boolean = false,
         val sharedSpacesLimit: Int = 0
@@ -981,6 +1050,19 @@ class SpaceSettingsViewModel(
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
         data class OpenDebugScreen(val spaceId: String) : Command()
         data object RequestNotificationPermission : Command()
+    }
+
+    sealed class SpaceSettingsErrors {
+        data object Hidden : SpaceSettingsErrors()
+        data object ChangeSpaceTypeFailed : SpaceSettingsErrors()
+        data object WallpaperUpdateFailed : SpaceSettingsErrors()
+        data object NameUpdateFailed : SpaceSettingsErrors()
+        data object IconUpdateFailed : SpaceSettingsErrors()
+        data class GenericError(val message: String) : SpaceSettingsErrors()
+    }
+
+    fun clearSpaceSettingsError() {
+        spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
     }
 
     class Factory @Inject constructor(

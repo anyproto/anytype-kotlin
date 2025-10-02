@@ -353,6 +353,7 @@ class SpaceSettingsViewModel(
 
                     if (spaceView.isPossibleToShare) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
+                        val membersCountWithColor = permission?.isOwner() == true
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))
@@ -361,7 +362,7 @@ class SpaceSettingsViewModel(
                                 add(
                                     Members(
                                         count = spaceMemberCount,
-                                        withColor = true,
+                                        withColor = membersCountWithColor,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -373,7 +374,7 @@ class SpaceSettingsViewModel(
                                 add(
                                     Members(
                                         count = spaceMemberCount,
-                                        withColor = true,
+                                        withColor = membersCountWithColor,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -385,7 +386,7 @@ class SpaceSettingsViewModel(
                                 add(
                                     Members(
                                         count = spaceMemberCount,
-                                        withColor = true,
+                                        withColor = membersCountWithColor,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -395,7 +396,7 @@ class SpaceSettingsViewModel(
                                 add(
                                     Members(
                                         count = spaceMemberCount,
-                                        withColor = false,
+                                        withColor = membersCountWithColor,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )

@@ -68,6 +68,10 @@
     <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -1803,6 +1807,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_qrcode">Kode QR</string>
     <string name="space_settings_members_button_members">Anggota</string>
     <string name="space_settings_types_button">Tipe Objek</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Tipe Objek Bawaan</string>
     <string name="space_settings_wallpaper_button">Latar belakang</string>
     <string name="space_settings_storage_button">Penyimpanan Jarak Jauh</string>
@@ -1969,6 +1974,14 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="members_limits_incentive_editors">Kamu telah mencapai batas %1$d penyunting</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">Kamu telah mencapai batas %1$d pemirsa</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Obrolan</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Ruang</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>

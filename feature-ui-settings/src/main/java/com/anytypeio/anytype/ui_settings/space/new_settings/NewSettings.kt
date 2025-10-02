@@ -604,17 +604,20 @@ fun NewSpaceSettingsScreen(
     }
 
     if (showChangeTypeSheet) {
-        ChannelTypeBottomSheet(
-            currentType = uiState.items.first { it is UiSpaceSettingsItem.ChangeType} as UiSpaceSettingsItem.ChangeType,
-            onTypeSelected = { selectedType ->
-                selectedSpaceType = selectedType
-                showChangeTypeSheet = false
-                showChangeTypeConfirmation = true
-            },
-            onDismiss = {
-                showChangeTypeSheet = false
-            }
-        )
+        val changeTypeItem = uiState.items.filterIsInstance<UiSpaceSettingsItem.ChangeType>().firstOrNull()
+        if (changeTypeItem != null) {
+            ChannelTypeBottomSheet(
+                currentType = changeTypeItem,
+                onTypeSelected = { selectedType ->
+                    selectedSpaceType = selectedType
+                    showChangeTypeSheet = false
+                    showChangeTypeConfirmation = true
+                },
+                onDismiss = {
+                    showChangeTypeSheet = false
+                }
+            )
+        }
     }
 
     if (showChangeTypeConfirmation) {

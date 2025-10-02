@@ -115,6 +115,22 @@ fun NotificationsItem(
 }
 
 @Composable
+fun ChangeTypeItem(
+    modifier: Modifier = Modifier,
+    currentType: UiSpaceSettingsItem.ChangeType
+) {
+    val title = when (currentType) {
+        UiSpaceSettingsItem.ChangeType.Chat -> stringResource(R.string.chat)
+        UiSpaceSettingsItem.ChangeType.Data -> stringResource(R.string.data)
+    }
+
+    BaseButton(
+        modifier = modifier,
+        title = title,
+    )
+}
+
+@Composable
 fun ObjectTypesItem(
     modifier: Modifier = Modifier
 ) {

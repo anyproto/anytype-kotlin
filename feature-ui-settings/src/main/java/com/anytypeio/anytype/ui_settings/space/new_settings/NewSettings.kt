@@ -79,6 +79,9 @@ fun NewSpaceSettingsScreen(
     var showEditTitle by remember { mutableStateOf(false) }
     var showTechInfo by remember { mutableStateOf(false) }
     var showNotificationsSettings by remember { mutableStateOf(false) }
+    var showChangeTypeSheet by remember { mutableStateOf(false) }
+    var showChangeTypeConfirmation by remember { mutableStateOf(false) }
+    var selectedSpaceType by remember { mutableStateOf("") }
     val showWallpaperPicker = remember { mutableStateOf(false) }
     val wallpaperSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -449,6 +452,21 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
+
+                        is UiSpaceSettingsItem.ChangeType -> {
+                            item {
+                                ChangeTypeItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            showChangeTypeSheet = true
+                                        },
+                                    currentType = item
+                                )
+                            }
+                        }
                     }
 
                 }
@@ -574,6 +592,39 @@ fun NewSpaceSettingsScreen(
             },
             onDismiss = {
                 showNotificationsSettings = false
+            }
+        )
+    }
+
+    if (showChangeTypeSheet) {
+        ChannelTypeBottomSheet(
+            currentType = uiState.items.first { it is UiSpaceSettingsItem.ChangeType},
+            onTypeSelected = { selectedType ->
+                selectedSpaceType = selectedType
+                showChangeTypeSheet = false
+                showChangeTypeConfirmation = true
+            },
+            onDismiss = {
+                showChangeTypeSheet = false
+            }
+        )
+    }
+
+    if (showChangeTypeConfirmation) {
+        ChangeTypeConfirmationDialog(
+            selectedType = selectedSpaceType,
+            onConfirm = {
+                showChangeTypeConfirmation = false
+                when (selectedSpaceType) {
+                    "Chat" -> uiEvent(UiEvent.OnChangeSpaceType.ToChat(confirmed = true))
+                    "Space" -> uiEvent(UiEvent.OnChangeSpaceType.ToSpace(confirmed = true))
+                }
+            },
+            onCancel = {
+                showChangeTypeConfirmation = false
+            },
+            onDismiss = {
+                showChangeTypeConfirmation = false
             }
         )
     }

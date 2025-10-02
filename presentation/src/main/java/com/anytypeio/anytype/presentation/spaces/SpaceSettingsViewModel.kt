@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -409,6 +410,12 @@ class SpaceSettingsViewModel(
                         add(Notifications)
                     }
 
+                    add(Spacer(height = 8))
+                    when (spaceView.spaceUxType) {
+                        SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat)
+                        else -> add(UiSpaceSettingsItem.ChangeType.Data)
+                    }
+
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
                     add(Spacer(height = 8))
@@ -632,6 +639,43 @@ class SpaceSettingsViewModel(
                     commands.emit(Command.NavigateToMembership)
                 }
             }
+            UiEvent.OnChangeTypeClicked -> {
+                // This event opens the bottom sheet, no action needed in ViewModel
+            }
+            is UiEvent.OnChangeSpaceType -> {
+                when (uiEvent) {
+                    is UiEvent.OnChangeSpaceType.ToChat -> {
+                        if (uiEvent.confirmed) {
+                            proceedWithChangingSpaceType(com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.CHAT)
+                        }
+                    }
+                    is UiEvent.OnChangeSpaceType.ToSpace -> {
+                        if (uiEvent.confirmed) {
+                            proceedWithChangingSpaceType(com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.DATA)
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithChangingSpaceType(newType: com.anytypeio.anytype.core_models.multiplayer.SpaceUxType) {
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                params = Params(
+                    space = vmParams.space,
+                    details = mapOf(
+                        Relations.SPACE_UX_TYPE to newType.code.toDouble()
+                    )
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully changed space type to: $newType")
+                },
+                onFailure = {
+                    Timber.e(it, "Error while changing space type")
+                }
+            )
         }
     }
 

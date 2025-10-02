@@ -262,7 +262,8 @@ fun ChatScreenWrapper(
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
             onCreateAndAttachObject = vm::onCreateAndAttachObject,
-            onCameraPermissionDenied = vm::onCameraPermissionDenied
+            onCameraPermissionDenied = vm::onCameraPermissionDenied,
+            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->

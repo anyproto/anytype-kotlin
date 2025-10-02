@@ -127,6 +127,7 @@ class ChatViewModel @Inject constructor(
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
+    val canCreateInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
@@ -158,6 +159,7 @@ class ChatViewModel @Inject constructor(
                     } else if (permission == SpaceMemberPermissions.READER || permission == SpaceMemberPermissions.NO_PERMISSIONS) {
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
+                    canCreateInviteLink.value = permission?.isOwner() == true
                 }
         }
 

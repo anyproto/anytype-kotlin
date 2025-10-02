@@ -146,6 +146,8 @@ class SpaceSettingsViewModel(
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
+    val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
+
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
         viewModelScope.launch {
@@ -667,9 +669,11 @@ class SpaceSettingsViewModel(
             ).fold(
                 onSuccess = {
                     Timber.d("Successfully changed space type to: $newType")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
                 },
-                onFailure = {
-                    Timber.e(it, "Error while changing space type")
+                onFailure = { error ->
+                    Timber.e(error, "Error while changing space type")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.ChangeSpaceTypeFailed
                 }
             )
         }
@@ -699,9 +703,11 @@ class SpaceSettingsViewModel(
             setWallpaper.async(params).fold(
                 onSuccess = {
                     Timber.d("Wallpaper updated")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
                 },
-                onFailure = {
-                    Timber.w(it, "Failed to update wallpaper")
+                onFailure = { error ->
+                    Timber.w(error, "Failed to update wallpaper")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.WallpaperUpdateFailed
                 }
             )
         }
@@ -1044,6 +1050,19 @@ class SpaceSettingsViewModel(
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
         data class OpenDebugScreen(val spaceId: String) : Command()
         data object RequestNotificationPermission : Command()
+    }
+
+    sealed class SpaceSettingsErrors {
+        data object Hidden : SpaceSettingsErrors()
+        data object ChangeSpaceTypeFailed : SpaceSettingsErrors()
+        data object WallpaperUpdateFailed : SpaceSettingsErrors()
+        data object NameUpdateFailed : SpaceSettingsErrors()
+        data object IconUpdateFailed : SpaceSettingsErrors()
+        data class GenericError(val message: String) : SpaceSettingsErrors()
+    }
+
+    fun clearSpaceSettingsError() {
+        spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
     }
 
     class Factory @Inject constructor(

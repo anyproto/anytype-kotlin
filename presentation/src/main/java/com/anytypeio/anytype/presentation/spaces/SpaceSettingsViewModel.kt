@@ -411,7 +411,7 @@ class SpaceSettingsViewModel(
                     }
 
 
-                    if (permission?.isOwner() == true) {
+                    if (shouldShowChangeTypeOption(permission, spaceView)) {
                         add(Spacer(height = 8))
                         when (spaceView.spaceUxType) {
                             SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
@@ -999,6 +999,27 @@ class SpaceSettingsViewModel(
                     inviteLinkAccessLevel.value = accessLevel
                 }
         }
+    }
+
+    /**
+     * Determines whether the "Change Type" option should be shown in space settings.
+     *
+     * The change type option is only available when:
+     * 1. The current user is the owner of the space
+     * 2. The space has a defined UX type (Chat or Data)
+     * 3. The space is shared (not private or default)
+     *
+     * @param permission The current user's permissions in the space
+     * @param spaceView The space view data containing space configuration
+     * @return true if the change type option should be shown, false otherwise
+     */
+    internal fun shouldShowChangeTypeOption(
+        permission: SpaceMemberPermissions?,
+        spaceView: ObjectWrapper.SpaceView
+    ): Boolean {
+        return permission?.isOwner() == true
+            && spaceView.spaceUxType != null
+            && spaceView.spaceAccessType == SpaceAccessType.SHARED
     }
 
     data class ShareLimitsState(

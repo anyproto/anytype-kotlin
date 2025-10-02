@@ -2102,6 +2102,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">Members</string>
     <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Default Object Type</string>
     <string name="space_settings_wallpaper_button">Wallpaper</string>
     <string name="space_settings_storage_button">Remote Storage</string>
@@ -2293,6 +2294,12 @@ Please provide specific details of your needs here.</string>
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Space</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
 
 
     <plurals name="notification_messages_count">

@@ -68,6 +68,10 @@
     <string name="get_more_space">Krijg meer ruimte</string>
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Gegevensbeheer</string>
     <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
@@ -1816,6 +1820,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_qrcode">QR-code</string>
     <string name="space_settings_members_button_members">Leden</string>
     <string name="space_settings_types_button">Objecttypes</string>
+    <string name="space_settings_space_types_button">Kanaaltype</string>
     <string name="space_settings_default_type_button">Standaard objecttype</string>
     <string name="space_settings_wallpaper_button">Achtergrond</string>
     <string name="space_settings_storage_button">Externe opslag</string>
@@ -1983,6 +1988,14 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="members_limits_incentive_editors">Je hebt de limiet bereikt van %1$d bewerkers</string>
     <string name="members_limits_incentive_editors_sub">Upgrade jouw lidmaatschap om meer leden uit te nodigen.</string>
     <string name="members_limits_incentive_viewers">Je hebt de limiet bereikt van %1$d kijkers</string>
+    <string name="space_settings_space_type_chat_title">Kanaaltype</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Groepsgesprek met gedeelde gegevens. Beste voor kleine groepen of een lopend gesprek.</string>
+    <string name="space_settings_space_type_space_item_title">Ruimte</string>
+    <string name="space_settings_space_type_space_descr">Hub voor geavanceerde gegevensbeheer. Meerdere gesprekken per onderwerp komen binnenkort. Ideaal voor grotere teams.</string>
+    <string name="alert_change_space_type_title">Zet kanaaltype om?</string>
+    <string name="alert_change_space_type_subtitle">Wisselen tussen ruimte en gesprek zal de ervaring aanzienlijk veranderen.</string>
+    <string name="alert_change_space_type_button">Ja, zet om</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d nieuw bericht</item>
         <item quantity="other">%d nieuwe berichten</item>

@@ -235,6 +235,7 @@ fun ChatScreenWrapper(
             onUrlInserted = vm::onUrlPasted,
             onGoToMentionClicked = vm::onGoToMentionClicked,
             onEmptyStateAction = vm::onEmptyStateAction,
+            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value,
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
                 .value is ChatBoxMode.ReadOnly,
@@ -262,8 +263,7 @@ fun ChatScreenWrapper(
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
             onCreateAndAttachObject = vm::onCreateAndAttachObject,
-            onCameraPermissionDenied = vm::onCameraPermissionDenied,
-            canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
+            onCameraPermissionDenied = vm::onCameraPermissionDenied
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->

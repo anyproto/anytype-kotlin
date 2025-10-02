@@ -68,10 +68,10 @@
     <string name="get_more_space">Krijg meer ruimte</string>
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Wijzigen van ruimtetype mislukt. Probeer het alsjeblieft opnieuw.</string>
+    <string name="space_settings_error_wallpaper">Bijwerken van achtergrond is mislukt. Probeer het alsjeblieft opnieuw.</string>
+    <string name="space_settings_error_name">Wijzigen van ruimtenaam mislukt. Probeer het alsjeblieft opnieuw.</string>
+    <string name="space_settings_error_icon">Bijwerken van ruimtepictogram is mislukt. Probeer het alsjeblieft opnieuw.</string>
     <string name="data_management">Gegevensbeheer</string>
     <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>

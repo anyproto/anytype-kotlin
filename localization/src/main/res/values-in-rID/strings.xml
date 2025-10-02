@@ -1546,7 +1546,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="membership_upgrade_title">Gangguan pada status keanggotaan saat ini</string>
     <string name="membership_upgrade_description">Hubungi kami untuk penyimpanan ekstra, tambahan editor, atau lebih banyak ruang bersama. Tim Anytype akan memberikan detail dan ketentuan yang disesuaikan dengan kebutuhan Anda.</string>
     <string name="membership_upgrade_button">Hubungi Tim Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit">Kamu telah mencapai batas %1$d ruang terbagi</string>
     <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
@@ -1966,9 +1966,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="my_sites_empty_state_text">Belum ada objek diterbitkan</string>
     <string name="my_sites_it_s_empty_here">Di sini kosong</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Terbitkan situs web pertamamu untuk memulai.</string>
-    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors">Kamu telah mencapai batas %1$d penyunting</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
-    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="members_limits_incentive_viewers">Kamu telah mencapai batas %1$d pemirsa</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>

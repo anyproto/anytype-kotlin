@@ -68,6 +68,10 @@
     <string name="get_more_space">獲取更多空間</string>
     <string name="account_name">名稱</string>
     <string name="space_settings">空間設置</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">資料管理</string>
     <string name="deleted_account_danger_zone_msg">一旦您請求刪除您的筆記庫，您有 30 天的時間取消此請求。 30 天後，您的加密筆記庫資料將從備份節點永久刪除，您將無法在新裝置上登入 Anytype。</string>
     <string name="danger_zone">危險區域</string>
@@ -1803,6 +1807,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">成員</string>
     <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Default Object Type</string>
     <string name="space_settings_wallpaper_button">桌布</string>
     <string name="space_settings_storage_button">Remote Storage</string>
@@ -1970,6 +1975,14 @@ Please provide specific details of your needs here.</string>
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">空間</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

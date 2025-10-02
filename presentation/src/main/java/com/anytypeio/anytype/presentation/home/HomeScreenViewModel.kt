@@ -2213,8 +2213,21 @@ class HomeScreenViewModel(
     fun onBackClicked() {
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
+            val currentSpaceView = _spaceViewState.value
+            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
+                is SpaceViewState.Success -> {
+                    currentSpaceView.spaceUxType to currentSpaceView.spaceChatId
+                }
+                else -> {
+                    // Default to DATA type if space view not loaded
+                    SpaceUxType.DATA to null
+                }
+            }
             commands.emit(
-                Command.HandleChatSpaceBackNavigation
+                Command.HandleChatSpaceBackNavigation(
+                    spaceUxType = spaceUxType,
+                    spaceChatId = spaceChatId
+                )
             )
         }
     }
@@ -3229,7 +3242,10 @@ sealed class Command {
 
     data object ShowLeaveSpaceWarning : Command()
 
-    data object HandleChatSpaceBackNavigation : Command()
+    data class HandleChatSpaceBackNavigation(
+        val spaceUxType: SpaceUxType,
+        val spaceChatId: Id?
+    ) : Command()
 
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()

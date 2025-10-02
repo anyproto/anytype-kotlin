@@ -410,10 +410,13 @@ class SpaceSettingsViewModel(
                         add(Notifications)
                     }
 
-                    add(Spacer(height = 8))
-                    when (spaceView.spaceUxType) {
-                        SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat)
-                        else -> add(UiSpaceSettingsItem.ChangeType.Data)
+
+                    if (permission?.isOwner() == true) {
+                        add(Spacer(height = 8))
+                        when (spaceView.spaceUxType) {
+                            SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
+                            else -> add(UiSpaceSettingsItem.ChangeType.Data(isEnabled = true))
+                        }
                     }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
@@ -645,21 +648,18 @@ class SpaceSettingsViewModel(
             is UiEvent.OnChangeSpaceType -> {
                 when (uiEvent) {
                     is UiEvent.OnChangeSpaceType.ToChat -> {
-                        if (uiEvent.confirmed) {
-                            proceedWithChangingSpaceType(com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.CHAT)
-                        }
+                        proceedWithChangingSpaceType(SpaceUxType.CHAT)
                     }
                     is UiEvent.OnChangeSpaceType.ToSpace -> {
-                        if (uiEvent.confirmed) {
-                            proceedWithChangingSpaceType(com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.DATA)
-                        }
+                        proceedWithChangingSpaceType(SpaceUxType.DATA)
                     }
                 }
             }
         }
     }
 
-    private fun proceedWithChangingSpaceType(newType: com.anytypeio.anytype.core_models.multiplayer.SpaceUxType) {
+    private fun proceedWithChangingSpaceType(newType: SpaceUxType) {
+        Timber.d("Changing space type to: $newType")
         viewModelScope.launch {
             setSpaceDetails.async(
                 params = Params(

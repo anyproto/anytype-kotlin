@@ -52,7 +52,7 @@ sealed class UiEvent {
     data object OnChangeTypeClicked : UiEvent()
 
     sealed class OnChangeSpaceType : UiEvent() {
-        data class ToChat(val confirmed: Boolean) : OnChangeSpaceType()
-        data class ToSpace(val confirmed: Boolean) : OnChangeSpaceType()
+        data object ToChat : OnChangeSpaceType()
+        data object ToSpace : OnChangeSpaceType()
     }
 }

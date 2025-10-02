@@ -35,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -119,14 +120,17 @@ fun ChangeTypeItem(
     modifier: Modifier = Modifier,
     currentType: UiSpaceSettingsItem.ChangeType
 ) {
-    val title = when (currentType) {
-        UiSpaceSettingsItem.ChangeType.Chat -> stringResource(R.string.chat)
-        UiSpaceSettingsItem.ChangeType.Data -> stringResource(R.string.data)
+    val (supportText, icon) = when (currentType) {
+        is UiSpaceSettingsItem.ChangeType.Chat -> stringResource(R.string.chat) to R.drawable.ic_chat_type_24
+        is UiSpaceSettingsItem.ChangeType.Data -> stringResource(R.string.space) to R.drawable.ic_space_type_24
     }
 
     BaseButton(
         modifier = modifier,
-        title = title,
+        title = stringResource(id = R.string.space_settings_space_types_button),
+        icon = icon,
+        count = supportText,
+        isEnabled = currentType.isEnabled
     )
 }
 
@@ -357,7 +361,8 @@ fun BaseButton(
     count: String? = null,
     textColor: Int = R.color.text_primary,
     countIsColored: Boolean = false,
-    errorIcon: Int? = null
+    errorIcon: Int? = null,
+    isEnabled: Boolean = true
 ) {
     Row(
         modifier = modifier
@@ -368,7 +373,8 @@ fun BaseButton(
             )
             .padding(vertical = 20.dp)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .alpha(if (isEnabled) 1f else 0.3f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
@@ -689,7 +695,9 @@ private fun RowScope.LinkItem(onClick:() -> Unit, text: String, description: Str
             )
         }
         Text(
-            modifier = Modifier.wrapContentSize().padding(top = 6.dp),
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(top = 6.dp),
             text = text,
             style = Caption2Regular,
             color = colorResource(id = R.color.text_primary)

@@ -47,7 +47,7 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 @Composable
 fun ChannelTypeBottomSheet(
     currentType: UiSpaceSettingsItem.ChangeType,
-    onTypeSelected: (String) -> Unit,
+    onTypeSelected: (UiSpaceSettingsItem.ChangeType) -> Unit,
     onDismiss: () -> Unit
 ) {
     val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
@@ -82,25 +82,43 @@ fun ChannelTypeBottomSheet(
                     .align(Alignment.CenterHorizontally)
                     .padding(horizontal = 24.dp, vertical = 12.dp)
             )
+            val isChatChecked = currentType is UiSpaceSettingsItem.ChangeType.Chat
             TypeOption(
                 modifier = Modifier
-                    .noRippleThrottledClickable { onTypeSelected("Chat") },
+                    .noRippleThrottledClickable {
+                        if (!isChatChecked) {
+                            onTypeSelected(UiSpaceSettingsItem.ChangeType.Chat())
+                        } else {
+                            onDismiss()
+                        }
+                    },
                 title = stringResource(R.string.space_settings_space_type_chat_item_title),
                 subtitle = stringResource(R.string.space_settings_space_type_chat_descr),
                 icon = R.drawable.ic_chat_type_24,
-                checked = currentType is UiSpaceSettingsItem.ChangeType.Chat,
+                checked = isChatChecked
             )
             Divider(
                 paddingStart = 16.dp,
                 paddingEnd = 16.dp,
             )
+            val isSpaceChecked = currentType is UiSpaceSettingsItem.ChangeType.Data
             TypeOption(
                 modifier = Modifier
-                    .noRippleThrottledClickable { onTypeSelected("Space") },
+                    .noRippleThrottledClickable {
+                        if (!isSpaceChecked) {
+                            onTypeSelected(UiSpaceSettingsItem.ChangeType.Data())
+                        } else {
+                            onDismiss()
+                        }
+                    },
                 title = stringResource(R.string.space_settings_space_type_space_item_title),
                 subtitle = stringResource(R.string.space_settings_space_type_space_descr),
                 icon = R.drawable.ic_space_type_24,
-                checked = currentType is UiSpaceSettingsItem.ChangeType.Data,
+                checked = isSpaceChecked
+            )
+            Divider(
+                paddingStart = 16.dp,
+                paddingEnd = 16.dp,
             )
         }
     }
@@ -146,6 +164,7 @@ fun TypeOption(
                 color = colorResource(id = R.color.text_primary)
             )
             Text(
+                modifier = Modifier.padding(end = 12.dp),
                 text = subtitle,
                 style = Relations3,
                 color = colorResource(id = R.color.text_secondary),
@@ -168,7 +187,7 @@ fun TypeOption(
 @Composable
 fun ChannelTypeBottomSheetPreview() {
     ChannelTypeBottomSheet(
-        currentType = UiSpaceSettingsItem.ChangeType.Chat,
+        currentType = UiSpaceSettingsItem.ChangeType.Chat(),
         onTypeSelected = {},
         onDismiss = {},
     )

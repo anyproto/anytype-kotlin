@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.*
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
@@ -81,7 +82,11 @@ fun NewSpaceSettingsScreen(
     var showNotificationsSettings by remember { mutableStateOf(false) }
     var showChangeTypeSheet by remember { mutableStateOf(false) }
     var showChangeTypeConfirmation by remember { mutableStateOf(false) }
-    var selectedSpaceType by remember { mutableStateOf("") }
+    var selectedSpaceType by remember {
+        mutableStateOf<UiSpaceSettingsItem.ChangeType>(
+            UiSpaceSettingsItem.ChangeType.Data()
+        )
+    }
     val showWallpaperPicker = remember { mutableStateOf(false) }
     val wallpaperSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -461,7 +466,9 @@ fun NewSpaceSettingsScreen(
                                         .animateItem()
                                         .clip(RoundedCornerShape(16.dp))
                                         .clickable {
-                                            showChangeTypeSheet = true
+                                            if (item.isEnabled) {
+                                                showChangeTypeSheet = true
+                                            }
                                         },
                                     currentType = item
                                 )
@@ -598,7 +605,7 @@ fun NewSpaceSettingsScreen(
 
     if (showChangeTypeSheet) {
         ChannelTypeBottomSheet(
-            currentType = uiState.items.first { it is UiSpaceSettingsItem.ChangeType},
+            currentType = uiState.items.first { it is UiSpaceSettingsItem.ChangeType} as UiSpaceSettingsItem.ChangeType,
             onTypeSelected = { selectedType ->
                 selectedSpaceType = selectedType
                 showChangeTypeSheet = false
@@ -612,12 +619,11 @@ fun NewSpaceSettingsScreen(
 
     if (showChangeTypeConfirmation) {
         ChangeTypeConfirmationDialog(
-            selectedType = selectedSpaceType,
             onConfirm = {
                 showChangeTypeConfirmation = false
                 when (selectedSpaceType) {
-                    "Chat" -> uiEvent(UiEvent.OnChangeSpaceType.ToChat(confirmed = true))
-                    "Space" -> uiEvent(UiEvent.OnChangeSpaceType.ToSpace(confirmed = true))
+                    is UiSpaceSettingsItem.ChangeType.Chat -> uiEvent(ToChat)
+                    is UiSpaceSettingsItem.ChangeType.Data -> uiEvent(ToSpace)
                 }
             },
             onCancel = {

@@ -26,6 +26,7 @@ fun EmojiIconView(
     modifier: Modifier = Modifier,
     icon: ObjectIcon.Basic.Emoji,
     backgroundSize: Dp,
+    emojiFontSize: Float = backgroundSize.value,
     iconWithoutBackgroundMaxSize: Dp,
     backgroundColor: Int = R.color.shape_tertiary
 ) {
@@ -63,7 +64,7 @@ fun EmojiIconView(
         ) {
             Text(
                 text = EmojiUtils.processSafe(icon.unicode).toString(),
-                fontSize = (backgroundSize.value).sp,
+                fontSize = emojiFontSize.sp,
                 textAlign = TextAlign.Center,
                 modifier = Modifier.align(Alignment.Center)
             )

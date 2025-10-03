@@ -603,7 +603,8 @@ fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
     operator = operator_.toCoreModels(),
     condition = condition.toCoreModels(),
     quickOption = quickOption.toCoreModels(),
-    value = value_
+    value = value_,
+    relationFormat = format.format()
 )
 
 fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {

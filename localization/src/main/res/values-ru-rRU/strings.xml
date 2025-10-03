@@ -10,7 +10,7 @@
     <string name="appearance">Внешний вид</string>
     <string name="file_storage">Хранилище файлов</string>
     <string name="key">Ключ</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Ключ входа</string>
     <string name="clear_file_cache">Очистить кэш-файлов</string>
     <string name="debug_sync_report">Отладочный отчет синхронизации</string>
     <string name="debug">Отладка</string>
@@ -68,10 +68,10 @@
     <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Название</string>
     <string name="space_settings">Настройки пространства</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Не удалось изменить тип пространства. Попробуйте ещё раз.</string>
+    <string name="space_settings_error_wallpaper">Не удалось обновить обои. Попробуйте ещё раз.</string>
+    <string name="space_settings_error_name">Не удалось обновить название пространства. Попробуйте ещё раз.</string>
+    <string name="space_settings_error_icon">Не удалось обновить значок пространства. Попробуйте ещё раз. </string>
     <string name="data_management">Управление данными</string>
     <string name="deleted_account_danger_zone_msg">Как только вы запросите удаление вашего хранилища, у вас будет 30 дней, чтобы отменить этот запрос. После 30 дней ваши зашифрованные данные хранилища будут навсегда удалены из резервной копии, и вы не сможете войти в Anytype на новых устройствах.</string>
     <string name="danger_zone">Осторожно!</string>
@@ -814,7 +814,7 @@
     <string name="relation_editing_title">Настройки свойств</string>
     <string name="type_editing_uninstall">Удалить</string>
     <string name="empty_tree_widget_reader_access">Этот объект не имеет ссылок на другие объекты.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Нет объектов</string>
     <string name="empty_list_widget_no_view">Этот вид данных не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="this_widget_has_no_object">Этот виджет не имеет объектов.\nПопробуйте создать новый.</string>
     <string name="emoji">Эмодзи</string>

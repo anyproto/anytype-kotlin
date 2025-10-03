@@ -283,7 +283,7 @@ suspend fun List<Block>.parseWidgets(
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
-                        Widget.Source.Default(ObjectWrapper.Basic(raw))
+                        Widget.Source.Default(obj = targetObj)
                     }
                     if (source.hasValidSource() && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (source) {
@@ -346,6 +346,7 @@ suspend fun List<Block>.parseWidgets(
                                             Widget.List(
                                                 id = w.id,
                                                 source = source,
+                                                isCompact = false,
                                                 limit = widgetContent.limit,
                                                 config = config,
                                                 icon = icon,

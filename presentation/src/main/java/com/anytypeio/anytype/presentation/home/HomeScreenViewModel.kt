@@ -773,19 +773,19 @@ class HomeScreenViewModel(
                         Timber.e(e, "Failed to get collapsed section IDs, using defaults")
                         emit(emptyList())
                     }
-            ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
+            ) { _, widgetsObjectViewState, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
                 val currentCollapsedSections = savedCollapsedSections.toSet()
-                val s = when (state) {
-                    is ObjectViewState.Idle -> flowOf(state)
-                    is ObjectViewState.Failure -> flowOf(state)
-                    is ObjectViewState.Loading -> flowOf(state)
+                val widgetsObjectViewStateFlow = when (widgetsObjectViewState) {
+                    is ObjectViewState.Idle -> flowOf(widgetsObjectViewState)
+                    is ObjectViewState.Failure -> flowOf(widgetsObjectViewState)
+                    is ObjectViewState.Loading -> flowOf(widgetsObjectViewState)
                     is ObjectViewState.Success -> {
-                        payloads.scan(state) { s, p ->
+                        payloads.scan(widgetsObjectViewState) { s, p ->
                             s.copy(obj = reduce(state = s.obj, event = p))
                         }
                     }
                 }
-                Pair(s, Triple(isOwnerOrEditor, savedExpandedIds, currentCollapsedSections))
+                Pair(widgetsObjectViewStateFlow, Triple(isOwnerOrEditor, savedExpandedIds, currentCollapsedSections))
             }.flatMapLatest { (stateFlow, params) ->
                 val (isOwnerOrEditor, savedExpandedIds, currentCollapsedSections) = params
                 stateFlow.map { state ->

@@ -568,6 +568,8 @@
     <string name="view_gallery">ギャラリー</string>
     <string name="view_kanban">ボード</string>
     <string name="page_cover">カバー画像</string>
+    <string name="object_action_pin">ピン留め</string>
+    <string name="object_action_unpin">ピン留め解除</string>
     <string name="editor_toolbar">ボタン</string>
     <string name="wait_a_bit_message">少々お待ちください。まもなくです…</string>
     <string name="confirm">確定</string>

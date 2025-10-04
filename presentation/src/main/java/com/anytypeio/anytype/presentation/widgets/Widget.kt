@@ -428,6 +428,9 @@ suspend fun buildWidgets(
             urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
+            .filterNot { widget ->
+                widget.source is Widget.Source.Bundled.Bin
+            }
 
         val isPinnedSectionCollapsed =
             currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)

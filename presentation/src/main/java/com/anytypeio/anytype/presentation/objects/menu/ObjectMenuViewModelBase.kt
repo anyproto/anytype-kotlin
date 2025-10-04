@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.objects.menu
 import android.net.Uri
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
@@ -21,10 +22,12 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
@@ -70,7 +73,9 @@ abstract class ObjectMenuViewModelBase(
     private val fieldParser: FieldParser,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val showObject: GetObject,
+    private val deleteWidget: DeleteWidget
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     protected val jobs = mutableListOf<Job>()
@@ -78,6 +83,8 @@ abstract class ObjectMenuViewModelBase(
     val isObjectArchived = MutableStateFlow(false)
     val commands = MutableSharedFlow<Command>(replay = 0)
     val actions = MutableStateFlow(emptyList<ObjectAction>())
+
+    private val pinnedWidgetBlockId = MutableStateFlow<Id?>(null)
 
     private val _options = MutableStateFlow(
         ObjectMenuOptionsProvider.Options(
@@ -113,6 +120,7 @@ abstract class ObjectMenuViewModelBase(
 
     fun onStart(
         ctx: Id,
+        space: SpaceId,
         isFavorite: Boolean,
         isArchived: Boolean,
         isLocked: Boolean,
@@ -120,19 +128,61 @@ abstract class ObjectMenuViewModelBase(
         isReadOnly: Boolean
     ) {
         Timber.d("ObjectMenuViewModelBase, onStart, ctx:[$ctx], isFavorite:[$isFavorite], isArchived:[$isArchived], isLocked:[$isLocked], isReadOnly: [$isReadOnly]")
-        actions.value = buildActions(
-            ctx = ctx,
-            isArchived = isArchived,
-            isFavorite = isFavorite,
-            isTemplate = isTemplate,
-            isLocked = isLocked,
-            isReadOnly = isReadOnly
-        )
+        viewModelScope.launch {
+            pinnedWidgetBlockId.collect { widgetId ->
+                actions.value = buildActions(
+                    ctx = ctx,
+                    isArchived = isArchived,
+                    isFavorite = isFavorite,
+                    isTemplate = isTemplate,
+                    isLocked = isLocked,
+                    isReadOnly = isReadOnly,
+                    isCurrentObjectPinned = widgetId != null
+                )
+            }
+        }
         jobs += viewModelScope.launch {
             menuOptionsProvider
                 .provide(ctx = ctx, isLocked = isLocked, isReadOnly = isReadOnly)
                 .distinctUntilChanged()
                 .collect(_options)
+        }
+        jobs += viewModelScope.launch {
+            spaceManager.getConfig(space)?.let { config ->
+                val widgetsObject = config.widgets
+                val params = GetObject.Params(
+                    target = widgetsObject,
+                    space = space,
+                    saveAsLastOpened = false
+                )
+                showObject.async(params).fold(
+                    onFailure = {
+                        Timber.e(it, "Error fetching widgets object")
+                    },
+                    onSuccess = { obj ->
+                        val blocks = obj.blocks
+                        val widgetBlock = blocks.find { block ->
+                            val content = block.content
+                            if (content is Block.Content.Widget) {
+                                val child = block.children.firstOrNull()
+                                if (child != null) {
+                                    val linkChild = blocks.find { it.id == child }
+                                    if (linkChild != null && linkChild.content is Block.Content.Link) {
+                                        val linkContent = linkChild.content as Block.Content.Link
+                                        return@find linkContent.target == ctx
+                                    }
+                                }
+                            }
+                            false
+                        }
+                        if (widgetBlock != null) {
+                            pinnedWidgetBlockId.value = widgetBlock.id
+                        } else {
+                            pinnedWidgetBlockId.value = null
+                        }
+                    }
+                )
+            }
         }
     }
 
@@ -144,7 +194,8 @@ abstract class ObjectMenuViewModelBase(
         isFavorite: Boolean,
         isTemplate: Boolean = false,
         isLocked: Boolean,
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        isCurrentObjectPinned: Boolean
     ): List<ObjectAction>
 
     protected fun proceedWithRemovingFromFavorites(ctx: Id) {
@@ -435,6 +486,7 @@ abstract class ObjectMenuViewModelBase(
                     result.fold(
                         onSuccess = { payload ->
                             payloadDelegator.dispatch(payload)
+                            sendToast("Widget created")
                             isDismissed.value = true
                         },
                         onFailure = {
@@ -451,6 +503,29 @@ abstract class ObjectMenuViewModelBase(
                     sendToast("Could not create widget: config is missing.")
                 }
             }
+        }
+    }
+
+    fun proceedWithRemovingWidget() {
+        val widgetId = pinnedWidgetBlockId.value ?: return
+        viewModelScope.launch {
+            val config = spaceManager.getConfig()
+            deleteWidget.async(
+                params = DeleteWidget.Params(
+                    ctx = config?.widgets ?: return@launch,
+                    targets = listOf(widgetId)
+                )
+            ).fold(
+                onSuccess = {
+                    dispatcher.send(it)
+                    sendToast("Widget removed")
+                    isDismissed.value = true
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting widget")
+                    sendToast(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
         }
     }
 

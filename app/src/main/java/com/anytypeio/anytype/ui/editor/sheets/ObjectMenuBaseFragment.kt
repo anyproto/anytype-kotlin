@@ -14,6 +14,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
@@ -124,6 +125,7 @@ abstract class ObjectMenuBaseFragment :
 
         super.onStart()
         vm.onStart(
+            space = SpaceId(space),
             ctx = ctx,
             isArchived = isArchived,
             isFavorite = isFavorite,

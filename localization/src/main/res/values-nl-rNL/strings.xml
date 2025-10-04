@@ -569,6 +569,8 @@
     <string name="view_gallery">Galerij</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Paginaomslag</string>
+    <string name="object_action_pin">Zet vast</string>
+    <string name="object_action_unpin">Losmaken</string>
     <string name="editor_toolbar">knop</string>
     <string name="wait_a_bit_message">Even geduld. We zijn er bijna…</string>
     <string name="confirm">Bevestigen</string>

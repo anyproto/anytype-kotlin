@@ -571,6 +571,8 @@
     <string name="view_gallery">Галерея</string>
     <string name="view_kanban">Канбан</string>
     <string name="page_cover">Page cover</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Unpin</string>
     <string name="editor_toolbar">button</string>
     <string name="wait_a_bit_message">Please give us a moment. We\'re almost there…</string>
     <string name="confirm">Confirm</string>

@@ -568,6 +568,8 @@
     <string name="view_gallery">相册</string>
     <string name="view_kanban">看板</string>
     <string name="page_cover">页面封面</string>
+    <string name="object_action_pin">钉住</string>
+    <string name="object_action_unpin">取消固定</string>
     <string name="editor_toolbar">按钮</string>
     <string name="wait_a_bit_message">请给我们一点时间，马上就好…</string>
     <string name="confirm">确认</string>

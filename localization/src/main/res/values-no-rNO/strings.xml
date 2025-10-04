@@ -569,6 +569,8 @@
     <string name="view_gallery">Galleri</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Forsidebilde</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Løsne</string>
     <string name="editor_toolbar">knapp</string>
     <string name="wait_a_bit_message">Gi oss et øyeblikk. Vi er nesten der…</string>
     <string name="confirm">Bekreft</string>

@@ -941,7 +941,7 @@ class HomeScreenViewModel(
         type: Int,
         target: Id?
     ) {
-        //todo legacy logic, to be removed in future
+        //DROID-3965 legacy logic, adding widgets only through "pin" button
     }
 
     /**

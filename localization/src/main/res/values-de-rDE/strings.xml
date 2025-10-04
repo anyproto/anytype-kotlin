@@ -569,6 +569,8 @@
     <string name="view_gallery">Galerie</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Seitencover</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Loslösen</string>
     <string name="editor_toolbar">Knopf</string>
     <string name="wait_a_bit_message">Bitte gib uns einen Moment. Wir sind fast da…</string>
     <string name="confirm">Bestätige</string>

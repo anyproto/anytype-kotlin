@@ -568,6 +568,8 @@
     <string name="view_gallery">畫廊</string>
     <string name="view_kanban">看板</string>
     <string name="page_cover">頁面封面</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">取消釘選</string>
     <string name="editor_toolbar">按鈕</string>
     <string name="wait_a_bit_message">請給我們一點時間。 馬上就好…</string>
     <string name="confirm">確認</string>

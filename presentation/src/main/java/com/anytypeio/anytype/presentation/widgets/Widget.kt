@@ -420,6 +420,34 @@ fun buildWidgetName(
  */
 fun ObjectWrapper.Type.toBasic(): ObjectWrapper.Basic = ObjectWrapper.Basic(this.map)
 
+/**
+ * Finds the widget block that links to the specified object context.
+ * Returns the block ID if found, null otherwise.
+ */
+fun findWidgetBlockForObject(ctx: Id, blocks: List<Block>): Id? {
+    return blocks.find { block ->
+        isWidgetPointingToObject(block, ctx, blocks)
+    }?.id
+}
+
+/**
+ * Checks if a widget block is pointing to the target object.
+ * A widget points to an object when its first child is a Link block targeting that object.
+ */
+private fun isWidgetPointingToObject(
+    block: Block,
+    targetCtx: Id,
+    allBlocks: List<Block>
+): Boolean {
+    if (block.content !is Block.Content.Widget) return false
+
+    val childLinkId = block.children.firstOrNull() ?: return false
+    val linkBlock = allBlocks.find { it.id == childLinkId } ?: return false
+    val linkContent = linkBlock.content as? Block.Content.Link ?: return false
+
+    return linkContent.target == targetCtx
+}
+
 typealias WidgetId = Id
 typealias ViewId = Id
 typealias FromIndex = Int

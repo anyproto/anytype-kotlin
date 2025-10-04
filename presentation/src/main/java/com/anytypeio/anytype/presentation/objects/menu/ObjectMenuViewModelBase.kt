@@ -46,6 +46,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
+import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -148,41 +149,7 @@ abstract class ObjectMenuViewModelBase(
                 .collect(_options)
         }
         jobs += viewModelScope.launch {
-            spaceManager.getConfig(space)?.let { config ->
-                val widgetsObject = config.widgets
-                val params = GetObject.Params(
-                    target = widgetsObject,
-                    space = space,
-                    saveAsLastOpened = false
-                )
-                showObject.async(params).fold(
-                    onFailure = {
-                        Timber.e(it, "Error fetching widgets object")
-                    },
-                    onSuccess = { obj ->
-                        val blocks = obj.blocks
-                        val widgetBlock = blocks.find { block ->
-                            val content = block.content
-                            if (content is Block.Content.Widget) {
-                                val child = block.children.firstOrNull()
-                                if (child != null) {
-                                    val linkChild = blocks.find { it.id == child }
-                                    if (linkChild != null && linkChild.content is Block.Content.Link) {
-                                        val linkContent = linkChild.content as Block.Content.Link
-                                        return@find linkContent.target == ctx
-                                    }
-                                }
-                            }
-                            false
-                        }
-                        if (widgetBlock != null) {
-                            pinnedWidgetBlockId.value = widgetBlock.id
-                        } else {
-                            pinnedWidgetBlockId.value = null
-                        }
-                    }
-                )
-            }
+            checkIfObjectIsPinned(ctx, space)
         }
     }
 
@@ -578,6 +545,44 @@ abstract class ObjectMenuViewModelBase(
                 )
             )
         }
+    }
+
+    /**
+     * Checks if the given object is pinned as a widget in the space's home screen.
+     * Updates [pinnedWidgetBlockId] with the widget block ID if found, or null otherwise.
+     */
+    private suspend fun checkIfObjectIsPinned(ctx: Id, space: SpaceId) {
+        spaceManager.getConfig(space)?.let { config ->
+            fetchWidgetsAndUpdatePinnedState(
+                ctx = ctx,
+                widgetsObjectId = config.widgets,
+                space = space
+            )
+        }
+    }
+
+    /**
+     * Fetches the widgets object and updates the pinned state for the given context.
+     */
+    private suspend fun fetchWidgetsAndUpdatePinnedState(
+        ctx: Id,
+        widgetsObjectId: Id,
+        space: SpaceId
+    ) {
+        val params = GetObject.Params(
+            target = widgetsObjectId,
+            space = space,
+            saveAsLastOpened = false
+        )
+        showObject.async(params).fold(
+            onFailure = { error ->
+                Timber.e(error, "Error fetching widgets object")
+                pinnedWidgetBlockId.value = null
+            },
+            onSuccess = { obj ->
+                pinnedWidgetBlockId.value = findWidgetBlockForObject(ctx, obj.blocks)
+            }
+        )
     }
 
     sealed class Command {

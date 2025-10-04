@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
@@ -1274,17 +1273,12 @@ class HomeScreenViewModel(
                 proceedWithEmptyingBin()
             }
             is DropDownMenuAction.CreateObjectOfType -> {
-                // Convert Basic wrapper to Type wrapper for ObjectType objects
-                val widget = widgets.value.orEmpty().find { it.id == action.widgetId }
-                val source = widget?.source
-                if (source !is Widget.Source.Default) {
-                    Timber.w("Expected Default source for creating object of type, got: $source")
+                val widgetView = views.value.find { it.id == action.widgetId }
+                if (widgetView == null) {
+                    Timber.w("Widget view not found for id: ${action.widgetId}")
                     return
                 }
-                val typeWrapper = Type(source.obj.map)
-                onCreateNewObjectClicked(
-                    objType = typeWrapper
-                )
+                onCreateWidgetElementClicked(widgetView)
             }
         }
     }
@@ -2077,6 +2071,7 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
+        val currentWidgets = widgets.value.orEmpty()
 
         // Cancel existing jobs first to stop any ongoing work
         jobs.cancel()
@@ -2086,8 +2081,18 @@ class HomeScreenViewModel(
         // Using injected scope ensures proper lifecycle management
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
+            val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
+                if (widget is Widget.Section) return@mapNotNull null
+                if (widget.source is Widget.Source.Bundled)
+                    widget.source.id
+                else
+                    widget.id
+            }
+            Timber.d("Unsubscribing from widgets: $widgetSubscriptions")
             kotlin.runCatching {
-                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+                storelessSubscriptionContainer.unsubscribe(
+                    subscriptions = widgetSubscriptions + listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION)
+                )
             }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 
             val widgetObjectId = cachedWidgetObjectId

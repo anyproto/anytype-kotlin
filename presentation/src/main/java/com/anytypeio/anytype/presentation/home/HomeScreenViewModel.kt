@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -737,9 +738,31 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * Applies payload events to the object view state.
+     * Only Success states get payload scanning; other states pass through unchanged.
+     */
+    private fun Flow<ObjectViewState>.applyPayloadEvents(
+        payloads: Flow<Payload>
+    ): Flow<ObjectViewState> {
+        return flatMapLatest { state ->
+            when (state) {
+                is ObjectViewState.Idle,
+                is ObjectViewState.Failure,
+                is ObjectViewState.Loading -> flowOf(state)
+
+                is ObjectViewState.Success -> {
+                    payloads.scan(state) { currentState, payload ->
+                        currentState.copy(obj = reduce(state = currentState.obj, event = payload))
+                    }
+                }
+            }
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithObjectViewStatePipeline() {
-        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+        val externalChannelEvents = spaceManager.observe().flatMapLatest { config ->
             merge(
                 interceptEvents.build(
                     InterceptEvents.Params(config.widgets)
@@ -761,112 +784,111 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             combine(
                 storeOfObjectTypes.trackChanges(),
-                objectViewState,
-                hasEditAccess,
-                userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
+                objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
+                hasEditAccess.distinctUntilChanged(),
+                userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId).distinctUntilChanged()
                     .catch { e ->
                         Timber.e(e, "Failed to get expanded widget IDs, using defaults")
                         emit(emptyList())
                     },
                 userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
+                    .distinctUntilChanged()
                     .catch { e ->
                         Timber.e(e, "Failed to get collapsed section IDs, using defaults")
                         emit(emptyList())
                     }
-            ) { _, widgetsObjectViewState, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
-                val currentCollapsedSections = savedCollapsedSections.toSet()
-                val widgetsObjectViewStateFlow = when (widgetsObjectViewState) {
-                    is ObjectViewState.Idle -> flowOf(widgetsObjectViewState)
-                    is ObjectViewState.Failure -> flowOf(widgetsObjectViewState)
-                    is ObjectViewState.Loading -> flowOf(widgetsObjectViewState)
-                    is ObjectViewState.Success -> {
-                        payloads.scan(widgetsObjectViewState) { s, p ->
-                            s.copy(obj = reduce(state = s.obj, event = p))
-                        }
+            ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
+                (state as? ObjectViewState.Success)?.let {
+                    val blocks = it.obj.blocks
+                    blocks.forEach {
+                        Log.d(
+                            "Test1983",
+                            "Block in object: ${it.id} of type ${it.content::class.simpleName}"
+                        )
                     }
                 }
-                Pair(widgetsObjectViewStateFlow, Triple(isOwnerOrEditor, savedExpandedIds, currentCollapsedSections))
-            }.flatMapLatest { (stateFlow, params) ->
-                val (isOwnerOrEditor, savedExpandedIds, currentCollapsedSections) = params
-                stateFlow.map { state ->
-                    if (state is ObjectViewState.Success) {
-                        buildList {
+                val currentCollapsedSections = savedCollapsedSections.toSet()
+                if (state is ObjectViewState.Success) {
+                    buildList {
 
-                            // Add pinned widgets only if pinned section is not collapsed
-                            val pinnedWidgets = state.obj.blocks.parseWidgets(
-                                root = state.obj.root,
-                                details = state.obj.details,
-                                config = state.config,
-                                urlBuilder = urlBuilder,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
+                        // Add pinned widgets only if pinned section is not collapsed
+                        val pinnedWidgets = state.obj.blocks.parseWidgets(
+                            root = state.obj.root,
+                            details = state.obj.details,
+                            config = state.config,
+                            urlBuilder = urlBuilder,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
 
-                            val isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
+                        val isPinnedSectionCollapsed =
+                            currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
 
-                            if (pinnedWidgets.isNotEmpty()) {
-                                if (!isPinnedSectionCollapsed) {
-                                    add(Widget.Section.Pinned(config = state.config))
-                                    addAll(pinnedWidgets)
-                                } else {
-                                    add(Widget.Section.Pinned(config = state.config))
-                                }
-                            }
-
-                            add(Widget.Section.ObjectType(config = state.config))
-
-                            // Add object type widgets only if object type section is not collapsed
-                            val isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
-                            val pinnedSectionStateDesc = if (isPinnedSectionCollapsed) "collapsed" else "expanded"
-                            val objectTypeSectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
-
-                            if (!isObjectTypeSectionCollapsed) {
-                                val types = mapSpaceTypesToWidgets(
-                                    isOwnerOrEditor = isOwnerOrEditor,
-                                    config = state.config
-                                )
-                                addAll(types)
-                                add(
-                                    Widget.Bin(
-                                        id = WIDGET_BIN_ID,
-                                        source = Widget.Source.Bundled.Bin,
-                                        config = state.config,
-                                        icon = ObjectIcon.None,
-                                        sectionType = SectionType.PINNED
-                                    )
-                                )
-                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
+                        if (pinnedWidgets.isNotEmpty()) {
+                            if (!isPinnedSectionCollapsed) {
+                                add(Widget.Section.Pinned(config = state.config))
+                                addAll(pinnedWidgets)
                             } else {
-                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
+                                add(Widget.Section.Pinned(config = state.config))
                             }
-                        }.also { allWidgets ->
-                            // Initialize active views for all widgets
-                            // First get active views from bundled widgets (parsed from blocks)
-                            val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
-
-                            // For ObjectType widgets, preserve any existing active view state
-                            // since they don't have persistent storage in blocks
-                            val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
-                            val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
-                                allWidgets
-                                    .filter { it !is Widget.Section }
-                                    .any { widget ->
-                                        widget.id == widgetId && widget.source is Widget.Source.Default &&
-                                                (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
-                                    }
-                            }
-
-                            // Combine bundled widget active views with preserved ObjectType active views
-                            val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
-                            widgetActiveViewStateHolder.init(combinedActiveViews)
-
-                            // Update collapsed widget state based on persisted expanded IDs
-                            // Update expanded widget state from persistence
-                            // When savedExpandedIds is empty (no cache), all widgets will be collapsed
-                            expandedWidgetIds.value = savedExpandedIds.toSet()
                         }
-                    } else {
-                        emptyList()
+
+                        add(Widget.Section.ObjectType(config = state.config))
+
+                        // Add object type widgets only if object type section is not collapsed
+                        val isObjectTypeSectionCollapsed =
+                            currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+                        val pinnedSectionStateDesc =
+                            if (isPinnedSectionCollapsed) "collapsed" else "expanded"
+                        val objectTypeSectionStateDesc =
+                            if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+
+                        if (!isObjectTypeSectionCollapsed) {
+                            val types = mapSpaceTypesToWidgets(
+                                isOwnerOrEditor = isOwnerOrEditor,
+                                config = state.config
+                            )
+                            addAll(types)
+                            add(
+                                Widget.Bin(
+                                    id = WIDGET_BIN_ID,
+                                    source = Widget.Source.Bundled.Bin,
+                                    config = state.config,
+                                    icon = ObjectIcon.None,
+                                    sectionType = SectionType.PINNED
+                                )
+                            )
+                            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
+                        } else {
+                            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
+                        }
+                    }.also { allWidgets ->
+                        // Initialize active views for all widgets
+                        // First get active views from bundled widgets (parsed from blocks)
+                        val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
+
+                        // For ObjectType widgets, preserve any existing active view state
+                        // since they don't have persistent storage in blocks
+                        val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                        val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
+                            allWidgets
+                                .filter { it !is Widget.Section }
+                                .any { widget ->
+                                    widget.id == widgetId && widget.source is Widget.Source.Default &&
+                                            (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
+                                }
+                        }
+
+                        // Combine bundled widget active views with preserved ObjectType active views
+                        val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
+                        widgetActiveViewStateHolder.init(combinedActiveViews)
+
+                        // Update collapsed widget state based on persisted expanded IDs
+                        // Update expanded widget state from persistence
+                        // When savedExpandedIds is empty (no cache), all widgets will be collapsed
+                        expandedWidgetIds.value = savedExpandedIds.toSet()
                     }
+                } else {
+                    emptyList()
                 }
             }.collect { widgetList ->
                 Timber.d("Emitting list of widgets: ${widgetList.size}")

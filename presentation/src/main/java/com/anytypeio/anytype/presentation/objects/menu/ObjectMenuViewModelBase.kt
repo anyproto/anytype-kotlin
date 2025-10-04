@@ -433,35 +433,32 @@ abstract class ObjectMenuViewModelBase(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null && obj.isValid) {
-                createWidget(
-                    CreateWidget.Params(
-                        ctx = config.widgets,
-                        source = obj.id,
-                        type = when {
-                            obj.layout.isDataView() -> {
-                                WidgetLayout.VIEW
-                            }
-                            obj.layout == ObjectType.Layout.PARTICIPANT -> {
-                                WidgetLayout.LINK
-                            }
-                            else -> {
-                                WidgetLayout.TREE
-                            }
+                val params = CreateWidget.Params(
+                    ctx = config.widgets,
+                    source = obj.id,
+                    type = when {
+                        obj.layout.isDataView() -> {
+                            WidgetLayout.VIEW
                         }
-                    )
-                ).collect { result ->
-                    result.fold(
-                        onSuccess = { payload ->
-                            payloadDelegator.dispatch(payload)
-                            sendToast("Widget created")
-                            isDismissed.value = true
-                        },
-                        onFailure = {
-                            Timber.e(it, "Error while creating widget")
-                            sendToast(SOMETHING_WENT_WRONG_MSG)
+                        obj.layout == ObjectType.Layout.PARTICIPANT -> {
+                            WidgetLayout.LINK
                         }
-                    )
-                }
+                        else -> {
+                            WidgetLayout.TREE
+                        }
+                    }
+                )
+                createWidget.async(params).fold(
+                    onSuccess = { payload ->
+                        payloadDelegator.dispatch(payload)
+                        sendToast("Widget created")
+                        isDismissed.value = true
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while creating widget")
+                        sendToast(SOMETHING_WENT_WRONG_MSG)
+                    }
+                )
             } else {
                 if (!obj.isValid) {
                     sendToast("Could not create widget: object is not valid.")
@@ -483,8 +480,9 @@ abstract class ObjectMenuViewModelBase(
                     targets = listOf(widgetId)
                 )
             ).fold(
-                onSuccess = {
-                    dispatcher.send(it)
+                onSuccess = { payload ->
+                    payloadDelegator.dispatch(payload)
+                    pinnedWidgetBlockId.value = null
                     sendToast("Widget removed")
                     isDismissed.value = true
                 },

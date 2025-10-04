@@ -569,6 +569,8 @@
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Sayfa kapağı</string>
+    <string name="object_action_pin">Sabitle</string>
+    <string name="object_action_unpin">Sabitlemeyi kaldır</string>
     <string name="editor_toolbar">düğme</string>
     <string name="wait_a_bit_message">Lütfen bize biraz izin verin. Neredeyse hazır olmak üzere…</string>
     <string name="confirm">Onayla</string>

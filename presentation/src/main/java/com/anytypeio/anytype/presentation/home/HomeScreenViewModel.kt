@@ -1007,38 +1007,7 @@ class HomeScreenViewModel(
         type: Int,
         target: Id?
     ) {
-        viewModelScope.launch {
-            createWidget(
-                CreateWidget.Params(
-                    ctx = ctx,
-                    source = source,
-                    type = when (type) {
-                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                        Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
-                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                        else -> WidgetLayout.LINK
-                    },
-                    target = target,
-                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while creating widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while creating widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while creating widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
-                    }
-                }
-            }
-        }
+        //todo legacy logic, to be removed in future
     }
 
     /**

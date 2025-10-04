@@ -10,7 +10,7 @@
     <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
-    <string name="login_key">Schlüssel</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
+    <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">App-Einstellungen</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Speicherplatz erweitern</string>
     <string name="account_name">Name</string>
     <string name="space_settings">Space-Einstellungen</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Dateiverwaltung</string>
     <string name="deleted_account_danger_zone_msg">Sobald die Löschung deines Tresors angefordert wurde, hast du 30 Tage um diese Anfrage zu widerrufen. Nach 30 Tagen werden deine verschlüsselten Tresor-Daten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="danger_zone">Gefahrenbereich</string>
@@ -563,6 +569,8 @@
     <string name="view_gallery">Galerie</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Seitencover</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Loslösen</string>
     <string name="editor_toolbar">Knopf</string>
     <string name="wait_a_bit_message">Bitte gib uns einen Moment. Wir sind fast da…</string>
     <string name="confirm">Bestätige</string>
@@ -1253,6 +1261,7 @@
     <string name="multiplayer_cant_add_members">Du kannst keine weiteren Mitglieder hinzufügen</string>
     <string name="multiplayer_cant_add_editors">Du kannst keine weiteren Editoren hinzufügen</string>
     <string name="multiplayer_upgrade_button">✦ Plan upgraden</string>
+    <string name="multiplayer_manage_spaces">Spaces verwalten</string>
     <string name="multiplayer_upgrade_button_request">✦ Plan upgraden, um weitere Mitglieder hinzuzufügen</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Plan upgraden, um weitere Spaces zu erstellen</string>
     <string name="multiplayer_members">Mitglieder</string>
@@ -1549,7 +1558,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="membership_upgrade_title">Hochstufen der Mitgliedschaft</string>
     <string name="membership_upgrade_description">Kontaktiere und bezüglich mehr Speicherplatz oder mehr geteilten Spaces. Das Anytype Team wird sich mit Informationen und den auf dich zugeschnittenen Konditionen melden. </string>
     <string name="membership_upgrade_button">Anytype-Team kontaktieren</string>
-    <string name="membership_space_settings_share_limit">Du hast die Grenze von %1$d Spaces erreicht, die geteilt werden können</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="one">Jahr</item>
         <item quantity="other">%d Jahre</item>
@@ -1812,6 +1822,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_qrcode">QR-Code</string>
     <string name="space_settings_members_button_members">Mitglieder</string>
     <string name="space_settings_types_button">Objekttypen</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Standard-Objekttyp</string>
     <string name="space_settings_wallpaper_button">Hintergrundbild</string>
     <string name="space_settings_storage_button">Remote Storage</string>
@@ -1972,8 +1983,21 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Space</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>

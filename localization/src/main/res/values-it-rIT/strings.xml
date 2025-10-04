@@ -10,7 +10,7 @@
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
     <string name="key">Chiave</string>
-    <string name="login_key">Chiave</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
+    <string name="vault_settings_section_misc">Varie</string>
     <string name="app_preferences">Preferenze App</string>
+    <string name="settings_application">Applicazione</string>
     <string name="vault_key">Cassaforte &amp; Chiave</string>
     <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Ottieni più spazio</string>
     <string name="account_name">Nome</string>
     <string name="space_settings">Impostazioni dello Spazio</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Gestione dati</string>
     <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
@@ -563,6 +569,8 @@
     <string name="view_gallery">Galleria</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Copertina della pagina</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Togli</string>
     <string name="editor_toolbar">pulsante</string>
     <string name="wait_a_bit_message">Per favore, concedici un momento. Ci siamo quasi…</string>
     <string name="confirm">Conferma</string>
@@ -1254,6 +1262,7 @@
     <string name="multiplayer_cant_add_members">Non puoi aggiungere altri membri</string>
     <string name="multiplayer_cant_add_editors">Non puoi aggiungere altri editor</string>
     <string name="multiplayer_upgrade_button">✦ Aggiorna</string>
+    <string name="multiplayer_manage_spaces">Gestisci Spazi</string>
     <string name="multiplayer_upgrade_button_request">✦ Aggiorna per aggiungere più membri</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Fai l\'upgrade per aggiungere più spazi</string>
     <string name="multiplayer_members">Membri</string>
@@ -1550,7 +1559,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Aggiornamento Membership</string>
     <string name="membership_upgrade_description">Contattaci per ottenere più spazio di archiviazione, editor di spazi o più spazi condivisi. Il team di Anytype fornirà dettagli e condizioni su misura per le tue esigenze.</string>
     <string name="membership_upgrade_button">Contatta il Team Anytype</string>
-    <string name="membership_space_settings_share_limit">Hai raggiunto il limite di %1$d spazi che possono essere condivisi</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>
@@ -1813,6 +1823,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">Codice QR</string>
     <string name="space_settings_members_button_members">Membri</string>
     <string name="space_settings_types_button">Tipi di Oggetto</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Tipo di Oggetto predefinito</string>
     <string name="space_settings_wallpaper_button">Sfondo</string>
     <string name="space_settings_storage_button">Spazio di archiviazione remoto</string>
@@ -1973,8 +1984,21 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="my_sites">I miei Siti</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Pubblicate il tuo primo sito web per iniziare.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Spazio</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d nuovo messaggio</item>
         <item quantity="other">%d nuovi messaggi</item>

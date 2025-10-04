@@ -10,7 +10,7 @@
     <string name="appearance">外観</string>
     <string name="file_storage">ファイルストレージ</string>
     <string name="key">鍵</string>
-    <string name="login_key">鍵</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">ファイルキャッシュを消去</string>
     <string name="debug_sync_report">デバッグ同期レポート</string>
     <string name="debug">デバッグ</string>
@@ -29,7 +29,9 @@
     <string name="dark">ダーク</string>
     <string name="system">標準</string>
     <string name="settings">設定</string>
+    <string name="vault_settings_section_misc">その他</string>
     <string name="app_preferences">アプリ設定</string>
+    <string name="settings_application">アプリ</string>
     <string name="vault_key">保管庫と鍵</string>
     <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">さらに多くのスペースを入手</string>
     <string name="account_name">名前</string>
     <string name="space_settings">スペース設定</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">データ管理</string>
     <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
@@ -562,6 +568,8 @@
     <string name="view_gallery">ギャラリー</string>
     <string name="view_kanban">ボード</string>
     <string name="page_cover">カバー画像</string>
+    <string name="object_action_pin">ピン留め</string>
+    <string name="object_action_unpin">ピン留め解除</string>
     <string name="editor_toolbar">ボタン</string>
     <string name="wait_a_bit_message">少々お待ちください。まもなくです…</string>
     <string name="confirm">確定</string>
@@ -1249,6 +1257,7 @@
     <string name="multiplayer_cant_add_members">これ以上、閲覧権限のメンバーを追加できません。</string>
     <string name="multiplayer_cant_add_editors">これ以上、編集権限のメンバーを追加できません。</string>
     <string name="multiplayer_upgrade_button">✦ アップグレード</string>
+    <string name="multiplayer_manage_spaces">スペース管理</string>
     <string name="multiplayer_upgrade_button_request">✦ アップグレードしてさらに多くのメンバーを追加</string>
     <string name="multiplayer_upgrade_spaces_button">✦ アップグレードしてさらにスペースを追加</string>
     <string name="multiplayer_members">メンバー</string>
@@ -1544,7 +1553,8 @@
     <string name="membership_upgrade_title">メンバーシップをアップグレード</string>
     <string name="membership_upgrade_description">ストレージ容量の追加、スペースエディターに関するご質問、または共有スペースの増設については、お気軽にお問い合わせください。Anytypeがお客様のニーズに合わせた詳細と条件をご案内いたします。</string>
     <string name="membership_upgrade_button">Anytypeへのお問い合わせ</string>
-    <string name="membership_space_settings_share_limit">共有スペースの上限数である%1$dつに達しました。</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d 年間</item>
     </plurals>
@@ -1800,6 +1810,7 @@
     <string name="space_settings_qrcode">QRコード</string>
     <string name="space_settings_members_button_members">メンバー</string>
     <string name="space_settings_types_button">タイプ</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">デフォルトのタイプ</string>
     <string name="space_settings_wallpaper_button">壁紙</string>
     <string name="space_settings_storage_button">リモートストレージ</string>
@@ -1960,8 +1971,21 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
+    <string name="my_sites">サイト</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">まずは、Webサイトを公開しましょう。</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">チャット</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">スペース</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

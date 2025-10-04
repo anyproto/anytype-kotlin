@@ -571,6 +571,8 @@
     <string name="view_gallery">Галерэя </string>
     <string name="view_kanban">Канбан</string>
     <string name="page_cover">Вокладка старонкі</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Адмацаваць</string>
     <string name="editor_toolbar">кнопка</string>
     <string name="wait_a_bit_message">Калі ласка, дайце нам хвілінку. Мы амаль там...</string>
     <string name="confirm">Пацвердзіць</string>

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Section
@@ -285,11 +286,12 @@ class DataViewListWidgetContainer(
         val params = if (struct.isValidObject()) {
             val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
+            val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
             StoreSearchParams(
                 space = space,
                 subscription = obj.root,
-                sorts = targetView?.sorts.orEmpty(),
+                sorts = sorts,
                 keys = buildList {
                     addAll(defaultKeys)
                     addAll(dataViewKeys)

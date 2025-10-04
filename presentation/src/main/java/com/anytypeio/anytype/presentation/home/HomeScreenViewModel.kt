@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
@@ -38,7 +37,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
@@ -112,14 +110,12 @@ import com.anytypeio.anytype.presentation.home.Command.ShareSpace
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.ExpandWidget
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -145,20 +141,19 @@ import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.buildWidgets
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
-import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
-import com.anytypeio.anytype.presentation.widgets.toBasic
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -298,6 +293,8 @@ class HomeScreenViewModel(
     val pendingBundledWidgetDeletion = MutableStateFlow<Id?>(null)
 
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
+
+
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
@@ -482,52 +479,6 @@ class HomeScreenViewModel(
                 navPanelState.value = it
             }
         }
-    }
-
-    private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config): List<Widget> {
-        val allTypes = storeOfObjectTypes.getAll()
-        val filteredObjectTypes = allTypes
-            .mapNotNull { objectType ->
-                if (!objectType.isValid ||
-                    SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
-                    objectType.isArchived == true ||
-                    objectType.isDeleted == true ||
-                    objectType.uniqueKey == ObjectTypeIds.TEMPLATE
-                ) {
-                    return@mapNotNull null
-                } else {
-                    objectType
-                }
-            }
-
-        Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
-
-        // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
-        val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
-            !objectType.restrictions.contains(ObjectRestriction.DELETE)
-        }
-
-        val allTypeWidgetIds = mutableListOf<Id>()
-
-        val widgetList = buildList {
-            // Add user-created types first (deletable)
-            for (objectType in myTypes) {
-                val widget = createWidgetViewFromType(objectType, config)
-                add(widget)
-                // Track all type widgets for initial collapsed state
-                allTypeWidgetIds.add(widget.id)
-            }
-
-            // Add system types (not deletable)
-            for (objectType in systemTypes) {
-                val widget = createWidgetViewFromType(objectType, config)
-                add(widget)
-                // Track all type widgets for initial collapsed state
-                allTypeWidgetIds.add(widget.id)
-            }
-        }
-
-        return widgetList
     }
 
     private fun proceedWithViewStatePipeline() {
@@ -737,9 +688,36 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * Applies payload events to the object view state.
+     * Only Success states get payload scanning; other states pass through unchanged.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun proceedWithObjectViewStatePipeline() {
-        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+    private fun Flow<ObjectViewState>.applyPayloadEvents(
+        payloads: Flow<Payload>
+    ): Flow<ObjectViewState> {
+        return flatMapLatest { state ->
+            when (state) {
+                is ObjectViewState.Idle,
+                is ObjectViewState.Failure,
+                is ObjectViewState.Loading -> flowOf(state)
+
+                is ObjectViewState.Success -> {
+                    payloads.scan(state) { currentState, payload ->
+                        currentState.copy(obj = reduce(state = currentState.obj, event = payload))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Observes external payload events from the space manager.
+     * Merges intercepted events with delegated payloads for the current widget context.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeExternalPayloadEvents(): Flow<Payload> {
+        return spaceManager.observe().flatMapLatest { config ->
             merge(
                 interceptEvents.build(
                     InterceptEvents.Params(config.widgets)
@@ -751,122 +729,78 @@ class HomeScreenViewModel(
                 },
                 payloadDelegator.intercept(ctx = config.widgets)
             )
-
         }
+    }
 
+    /**
+     * Observes expanded widget IDs with error handling.
+     * Returns an empty list as default if fetching fails.
+     */
+    private fun observeExpandedWidgetIds(): Flow<List<Id>> {
+        return userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
+            .distinctUntilChanged()
+            .catch { e ->
+                Timber.e(e, "Failed to get expanded widget IDs, using defaults")
+                emit(emptyList())
+            }
+    }
+
+    /**
+     * Observes collapsed section IDs with error handling.
+     * Returns an empty list as default if fetching fails.
+     */
+    private fun observeCollapsedSectionIds(): Flow<List<Id>> {
+        return userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
+            .distinctUntilChanged()
+            .catch { e ->
+                Timber.e(e, "Failed to get collapsed section IDs, using defaults")
+                emit(emptyList())
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun proceedWithObjectViewStatePipeline() {
+        val externalChannelEvents = observeExternalPayloadEvents()
         val internalChannelEvents = objectPayloadDispatcher.flow()
-
         val payloads = merge(externalChannelEvents, internalChannelEvents)
 
         viewModelScope.launch {
             combine(
                 storeOfObjectTypes.trackChanges(),
-                objectViewState,
-                hasEditAccess,
-                userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
-                    .catch { e ->
-                        Timber.e(e, "Failed to get expanded widget IDs, using defaults")
-                        emit(emptyList())
-                    },
-                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
-                    .catch { e ->
-                        Timber.e(e, "Failed to get collapsed section IDs, using defaults")
-                        emit(emptyList())
-                    }
+                objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
+                hasEditAccess.distinctUntilChanged(),
+                observeExpandedWidgetIds(),
+                observeCollapsedSectionIds()
             ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
-                val currentCollapsedSections = savedCollapsedSections.toSet()
-                val s = when (state) {
-                    is ObjectViewState.Idle -> flowOf(state)
-                    is ObjectViewState.Failure -> flowOf(state)
-                    is ObjectViewState.Loading -> flowOf(state)
-                    is ObjectViewState.Success -> {
-                        payloads.scan(state) { s, p ->
-                            s.copy(obj = reduce(state = s.obj, event = p))
-                        }
+                val params = WidgetUiParams(
+                    isOwnerOrEditor = isOwnerOrEditor,
+                    expandedIds = savedExpandedIds.toSet(),
+                    collapsedSections = savedCollapsedSections.toSet()
+                )
+                if (state is ObjectViewState.Success) {
+                    val allWidgets = buildWidgets(state, params, urlBuilder, storeOfObjectTypes)
+                    // Initialize active views for all widgets
+                    val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
+
+                    // Preserve ObjectType active views (not stored in WidgetsObj blocks)
+                    val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                    val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
+                        allWidgets
+                            .filter { it !is Widget.Section }
+                            .any { widget ->
+                                widget.id == widgetId && widget.source is Widget.Source.Default &&
+                                        (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
+                            }
                     }
-                }
-                Pair(s, Triple(isOwnerOrEditor, savedExpandedIds, currentCollapsedSections))
-            }.flatMapLatest { (stateFlow, params) ->
-                val (isOwnerOrEditor, savedExpandedIds, currentCollapsedSections) = params
-                stateFlow.map { state ->
-                    if (state is ObjectViewState.Success) {
-                        buildList {
 
-                            // Add pinned widgets only if pinned section is not collapsed
-                            val pinnedWidgets = state.obj.blocks.parseWidgets(
-                                root = state.obj.root,
-                                details = state.obj.details,
-                                config = state.config,
-                                urlBuilder = urlBuilder,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
+                    val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
+                    widgetActiveViewStateHolder.init(combinedActiveViews)
 
-                            val isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
-
-                            if (pinnedWidgets.isNotEmpty()) {
-                                if (!isPinnedSectionCollapsed) {
-                                    add(Widget.Section.Pinned(config = state.config))
-                                    addAll(pinnedWidgets)
-                                } else {
-                                    add(Widget.Section.Pinned(config = state.config))
-                                }
-                            }
-
-                            add(Widget.Section.ObjectType(config = state.config))
-
-                            // Add object type widgets only if object type section is not collapsed
-                            val isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
-                            val pinnedSectionStateDesc = if (isPinnedSectionCollapsed) "collapsed" else "expanded"
-                            val objectTypeSectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
-
-                            if (!isObjectTypeSectionCollapsed) {
-                                val types = mapSpaceTypesToWidgets(
-                                    isOwnerOrEditor = isOwnerOrEditor,
-                                    config = state.config
-                                )
-                                addAll(types)
-                                add(
-                                    Widget.Bin(
-                                        id = WIDGET_BIN_ID,
-                                        source = Widget.Source.Bundled.Bin,
-                                        config = state.config,
-                                        icon = ObjectIcon.None,
-                                        sectionType = SectionType.PINNED
-                                    )
-                                )
-                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
-                            } else {
-                                Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
-                            }
-                        }.also { allWidgets ->
-                            // Initialize active views for all widgets
-                            // First get active views from bundled widgets (parsed from blocks)
-                            val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
-
-                            // For ObjectType widgets, preserve any existing active view state
-                            // since they don't have persistent storage in blocks
-                            val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
-                            val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
-                                allWidgets
-                                    .filter { it !is Widget.Section }
-                                    .any { widget ->
-                                        widget.id == widgetId && widget.source is Widget.Source.Default &&
-                                                (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
-                                    }
-                            }
-
-                            // Combine bundled widget active views with preserved ObjectType active views
-                            val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
-                            widgetActiveViewStateHolder.init(combinedActiveViews)
-
-                            // Update collapsed widget state based on persisted expanded IDs
-                            // Update expanded widget state from persistence
-                            // When savedExpandedIds is empty (no cache), all widgets will be collapsed
-                            expandedWidgetIds.value = savedExpandedIds.toSet()
-                        }
-                    } else {
-                        emptyList()
-                    }
+                    // Update expanded IDs from persistence
+                    expandedWidgetIds.value = params.expandedIds
+                    allWidgets
+                } else {
+                    emptyList()
                 }
             }.collect { widgetList ->
                 Timber.d("Emitting list of widgets: ${widgetList.size}")
@@ -1007,38 +941,7 @@ class HomeScreenViewModel(
         type: Int,
         target: Id?
     ) {
-        viewModelScope.launch {
-            createWidget(
-                CreateWidget.Params(
-                    ctx = ctx,
-                    source = source,
-                    type = when (type) {
-                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                        Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
-                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                        else -> WidgetLayout.LINK
-                    },
-                    target = target,
-                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while creating widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while creating widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while creating widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
-                    }
-                }
-            }
-        }
+        //DROID-3965 legacy logic, adding widgets only through "pin" button
     }
 
     /**
@@ -1202,91 +1105,7 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
-     */
-    private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
-        val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
-        val icon = objectType.objectIcon()
-        val widgetLimit = objectType.widgetLimit ?: 0
 
-        return when (objectType.widgetLayout) {
-            Block.Content.Widget.Layout.TREE -> {
-                Widget.Tree(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                    sectionType = SectionType.TYPES
-                )
-            }
-            Block.Content.Widget.Layout.LIST -> {
-                Widget.List(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                    sectionType = SectionType.TYPES
-                )
-            }
-            Block.Content.Widget.Layout.COMPACT_LIST -> {
-                Widget.List(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                    isCompact = true,
-                    sectionType = SectionType.TYPES
-                )
-            }
-            Block.Content.Widget.Layout.VIEW -> {
-                Widget.View(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                    sectionType = SectionType.TYPES
-                )
-            }
-            Block.Content.Widget.Layout.LINK -> {
-                Widget.Link(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    sectionType = SectionType.TYPES
-                )
-            }
-            null -> {
-                if (objectType.uniqueKey == ObjectTypeIds.IMAGE) {
-                    // Image type widgets default to gallery view
-                    Widget.View(
-                        id = objectType.id,
-                        source = widgetSource,
-                        config = config,
-                        icon = icon,
-                        limit = widgetLimit,
-                        sectionType = SectionType.TYPES
-                    )
-                } else {
-                    // Default to compact list for other types
-                    Widget.List(
-                        id = objectType.id,
-                        source = widgetSource,
-                        config = config,
-                        icon = icon,
-                        limit = widgetLimit,
-                        isCompact = true,
-                        sectionType = SectionType.TYPES
-                    )
-                }
-            }
-        }
-    }
 
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
@@ -1454,17 +1273,12 @@ class HomeScreenViewModel(
                 proceedWithEmptyingBin()
             }
             is DropDownMenuAction.CreateObjectOfType -> {
-                // Convert Basic wrapper to Type wrapper for ObjectType objects
-                val widget = widgets.value.orEmpty().find { it.id == action.widgetId }
-                val source = widget?.source
-                if (source !is Widget.Source.Default) {
-                    Timber.w("Expected Default source for creating object of type, got: $source")
+                val widgetView = views.value.find { it.id == action.widgetId }
+                if (widgetView == null) {
+                    Timber.w("Widget view not found for id: ${action.widgetId}")
                     return
                 }
-                val typeWrapper = Type(source.obj.map)
-                onCreateNewObjectClicked(
-                    objType = typeWrapper
-                )
+                onCreateWidgetElementClicked(widgetView)
             }
         }
     }
@@ -2257,6 +2071,7 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
+        val currentWidgets = widgets.value.orEmpty()
 
         // Cancel existing jobs first to stop any ongoing work
         jobs.cancel()
@@ -2266,8 +2081,18 @@ class HomeScreenViewModel(
         // Using injected scope ensures proper lifecycle management
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
+            val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
+                if (widget is Widget.Section) return@mapNotNull null
+                if (widget.source is Widget.Source.Bundled)
+                    widget.source.id
+                else
+                    widget.id
+            }
+            Timber.d("Unsubscribing from widgets: $widgetSubscriptions")
             kotlin.runCatching {
-                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+                storelessSubscriptionContainer.unsubscribe(
+                    subscriptions = widgetSubscriptions + listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION)
+                )
             }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 
             val widgetObjectId = cachedWidgetObjectId

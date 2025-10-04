@@ -9,9 +9,5 @@
       android:fillType="evenOdd"/>
   <path
       android:pathData="M4.707,8.955C4.317,9.346 4.317,9.979 4.707,10.37L13.63,19.293C14.021,19.683 14.654,19.683 15.045,19.293L15.909,18.428C16.122,18.215 16.228,17.918 16.197,17.618L15.858,14.358C15.824,14.03 15.955,13.705 16.206,13.492L21.172,9.281C21.618,8.902 21.646,8.224 21.232,7.811L16.189,2.768C15.776,2.354 15.098,2.382 14.719,2.828L10.507,7.794C10.293,8.046 9.969,8.176 9.641,8.142L6.382,7.803C6.082,7.772 5.785,7.878 5.572,8.091L4.707,8.955Z"
-      android:strokeLineJoin="round"
-      android:strokeWidth="1.5"
-      android:fillColor="#00000000"
-      android:strokeColor="@color/glyph_active"
-      android:strokeLineCap="round"/>
+      android:fillColor="@color/glyph_active"/>
 </vector>

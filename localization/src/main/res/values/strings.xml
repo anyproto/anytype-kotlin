@@ -632,6 +632,8 @@
     <string name="view_gallery">Gallery</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Page cover</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Unpin</string>
 
     <string name="editor_toolbar">button</string>
 

@@ -48,14 +48,6 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_undoredo)
                     tvActionTitle.setText(R.string.undoredo)
                 }
-                ObjectAction.ADD_TO_FAVOURITE -> {
-                    ivActionIcon.setImageResource(R.drawable.ic_object_action_add_to_favorites)
-                    tvActionTitle.setText(R.string.favourite)
-                }
-                ObjectAction.REMOVE_FROM_FAVOURITE -> {
-                    ivActionIcon.setImageResource(R.drawable.ic_object_action_unfavorite)
-                    tvActionTitle.setText(R.string.unfavorite)
-                }
                 ObjectAction.SEARCH_ON_PAGE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_search)
                     tvActionTitle.setText(R.string.search)
@@ -88,9 +80,13 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_set_as_default_24)
                     tvActionTitle.setText(R.string.set_as_default)
                 }
-                ObjectAction.CREATE_WIDGET -> {
+                ObjectAction.PIN -> {
                     ivActionIcon.setImageResource(R.drawable.ic_state_pin_24)
-                    tvActionTitle.setText(R.string.object_action_to_widgets)
+                    tvActionTitle.setText(R.string.object_action_pin)
+                }
+                ObjectAction.UNPIN -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_state_unpin_24)
+                    tvActionTitle.setText(R.string.object_action_unpin)
                 }
                 ObjectAction.DOWNLOAD_FILE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_download)

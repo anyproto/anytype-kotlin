@@ -250,6 +250,10 @@ class BlockMiddleware(
         return middleware.filePreload(command = command)
     }
 
+    override suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile) {
+        return middleware.fileDiscardPreload(command)
+    }
+
     override suspend fun fileDrop(command: Command.FileDrop): Payload {
         return middleware.fileDrop(command)
     }

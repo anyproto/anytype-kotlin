@@ -279,6 +279,10 @@ class BlockDataRepository(
         return remote.preloadFile(command)
     }
 
+    override suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile) {
+        remote.discardPreloadedFile(command)
+    }
+
     override suspend fun fileDrop(command: Command.FileDrop): Payload {
         return remote.fileDrop(command)
     }

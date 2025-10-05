@@ -47,6 +47,10 @@ sealed class Command {
         val type: Block.Content.File.Type?
     )
 
+    class DiscardPreloadedFile(
+        val preloadedFileId: Id
+    )
+
     class FileDrop(
         val space: SpaceId,
         val ctx: Id,

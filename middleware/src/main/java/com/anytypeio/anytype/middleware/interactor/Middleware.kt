@@ -857,6 +857,16 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun fileDiscardPreload(command: Command.DiscardPreloadedFile) {
+        val request = Rpc.File.DiscardPreload.Request(
+            fileId = command.preloadedFileId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileDiscardPreload(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun fileDrop(command: Command.FileDrop): Payload {
         val request = Rpc.File.Drop.Request(
             contextId = command.ctx,

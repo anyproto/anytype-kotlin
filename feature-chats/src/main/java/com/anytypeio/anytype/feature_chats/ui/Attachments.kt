@@ -7,6 +7,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -321,6 +322,7 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
+            .defaultMinSize(minWidth = 228.dp)
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,

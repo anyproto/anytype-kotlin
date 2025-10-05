@@ -68,7 +68,8 @@ fun WidgetHeader(
             iconSize = 18.dp,
             icon = icon,
             modifier = Modifier.padding(end = 12.dp),
-            onTaskIconClicked = onObjectCheckboxClicked
+            onTaskIconClicked = onObjectCheckboxClicked,
+            emojiFontSize = 18f
         )
 
         Text(

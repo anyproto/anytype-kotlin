@@ -61,7 +61,7 @@ fun Header(
             ,
             text = text,
             color = colorResource(id = R.color.text_primary),
-            style = Title1,
+            style = Caption1Medium,
             maxLines = 1,
             textAlign = TextAlign.Center
         )

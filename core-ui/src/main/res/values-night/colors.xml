@@ -9,6 +9,8 @@
     <color name="text_white">#FFFFFF</color>
     <color name="text_label_inversion">#000000</color>
     <color name="text_button_label">#000000</color>
+    <color name="text_transparent_secondary">#B3F3F3F3</color> <!-- #F3F3F3 70% -->
+    <color name="text_transparent_tertiary">#66F3F3F3</color> <!-- #F3F3F3 40% -->
 
     <color name="background_primary">#000000</color>
     <color name="background_notification_primary">#FFFFFF</color>

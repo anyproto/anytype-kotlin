@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.publishing.CreatePublishing
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
@@ -20,6 +21,8 @@ import com.anytypeio.anytype.domain.publishing.GetPublishingState
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import java.text.Normalizer
 import java.util.Locale
 import javax.inject.Inject
@@ -37,11 +40,14 @@ class PublishToWebViewModel(
     private val getPublishingState: GetPublishingState,
     private val removePublishing: RemovePublishing,
     private val searchObjects: SearchObjects,
-    private val spaces: SpaceViewSubscriptionContainer
+    private val spaces: SpaceViewSubscriptionContainer,
+    private val urlBuilder: UrlBuilder
 ) : BaseViewModel() {
 
     private val _viewState = MutableStateFlow<PublishToWebViewState>(PublishToWebViewState.Init)
     val viewState = _viewState.asStateFlow()
+
+    private val objectIcon = MutableStateFlow<ObjectIcon>(ObjectIcon.None)
 
     val commands = MutableSharedFlow<Command>()
 
@@ -52,8 +58,27 @@ class PublishToWebViewModel(
     private fun proceedWithResolvingInitialState() {
         viewModelScope.launch {
 
+            _viewState.value = PublishToWebViewState.Loading
+
             val wrapper = fetchObject()
             val space = spaces.get(vmParams.space)
+
+            val icon = if (wrapper != null) {
+                if (wrapper.iconEmoji.isNullOrEmpty() && wrapper.iconImage.isNullOrEmpty()) {
+                    // Skipping fallback icon
+                    ObjectIcon.None
+                } else {
+                    wrapper.objectIcon(
+                        builder = urlBuilder,
+                        objType = null
+                    )
+                }
+            } else {
+                ObjectIcon.None
+            }
+
+            // Caching object icon
+            objectIcon.value = icon
 
             getPublishingState.async(
                 params = GetPublishingState.Params(
@@ -74,7 +99,8 @@ class PublishToWebViewModel(
                         uri = wrapper?.name?.toWebSlugAdaptive().orEmpty(),
                         objectName = wrapper?.name.orEmpty(),
                         spaceName = space?.name.orEmpty(),
-                        showJoinSpaceButton = true
+                        showJoinSpaceButton = true,
+                        icon = icon
                     )
                 } else {
                     if (domain != null) {
@@ -83,7 +109,8 @@ class PublishToWebViewModel(
                             uri = state.uri,
                             objectName = wrapper?.name.orEmpty(),
                             spaceName = space?.name.orEmpty(),
-                            showJoinSpaceButton = state.showJoinSpaceButton
+                            showJoinSpaceButton = state.showJoinSpaceButton,
+                            icon = icon
                         )
                     } else {
                         Timber.w("DROID-3786 Failed to get publishing domain")
@@ -100,7 +127,8 @@ class PublishToWebViewModel(
             uri = viewState.value.uri,
             objectName = viewState.value.objectName,
             spaceName = viewState.value.spaceName,
-            showJoinSpaceButton = showJoinSpaceButton
+            showJoinSpaceButton = showJoinSpaceButton,
+            icon = objectIcon.value
         )
         proceedWithPublishing(
             uri = uri,
@@ -115,7 +143,8 @@ class PublishToWebViewModel(
             uri = viewState.value.uri,
             objectName = viewState.value.objectName,
             spaceName = viewState.value.spaceName,
-            showJoinSpaceButton = showJoinSpaceButton
+            showJoinSpaceButton = showJoinSpaceButton,
+            icon = objectIcon.value
         )
         proceedWithUpdating(
             uri = uri,
@@ -161,7 +190,8 @@ class PublishToWebViewModel(
                     uri = viewState.value.uri,
                     err = it.message.orEmpty(),
                     objectName = viewState.value.objectName,
-                    spaceName = viewState.value.spaceName
+                    spaceName = viewState.value.spaceName,
+                    icon = objectIcon.value
                 )
             }.onSuccess { url ->
                 proceedWithResolvingInitialState()
@@ -186,7 +216,8 @@ class PublishToWebViewModel(
                     uri = viewState.value.uri,
                     err = it.message.orEmpty(),
                     objectName = viewState.value.objectName,
-                    spaceName = viewState.value.spaceName
+                    spaceName = viewState.value.spaceName,
+                    icon = objectIcon.value
                 )
             }.onSuccess { url ->
                 proceedWithResolvingInitialState()
@@ -233,7 +264,8 @@ class PublishToWebViewModel(
         private val removePublishing: RemovePublishing,
         private val searchObjects: SearchObjects,
         private val params: Params,
-        private val spaces: SpaceViewSubscriptionContainer
+        private val spaces: SpaceViewSubscriptionContainer,
+        private val urlBuilder: UrlBuilder
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -244,7 +276,8 @@ class PublishToWebViewModel(
                 getPublishingState = getStatus,
                 removePublishing = removePublishing,
                 searchObjects = searchObjects,
-                spaces = spaces
+                spaces = spaces,
+                urlBuilder = urlBuilder
             ) as T
         }
     }
@@ -280,12 +313,26 @@ sealed class PublishToWebViewState {
             get() = false
     }
 
+    data object Loading : PublishToWebViewState() {
+        override val uri: String
+            get() = ""
+        override val domain: String
+            get() = ""
+        override val objectName: String
+            get() = ""
+        override val spaceName: String
+            get() = ""
+        override val showJoinSpaceButton: Boolean
+            get() = false
+    }
+
     data class NotPublished(
         override val domain: String,
         override val uri: String,
         override val objectName: String,
         override val spaceName: String,
-        override val showJoinSpaceButton: Boolean = false
+        override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : PublishToWebViewState()
 
     data class Published(
@@ -293,7 +340,8 @@ sealed class PublishToWebViewState {
         override val uri: String,
         override val objectName: String,
         override val spaceName: String,
-        override val showJoinSpaceButton: Boolean = false
+        override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : PublishToWebViewState()
 
     data class Publishing(
@@ -301,7 +349,8 @@ sealed class PublishToWebViewState {
         override val uri: String,
         override val objectName: String,
         override val spaceName: String,
-        override val showJoinSpaceButton: Boolean = false
+        override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None
     ) : PublishToWebViewState()
 
     data class FailedToPublish(
@@ -310,6 +359,7 @@ sealed class PublishToWebViewState {
         override val objectName: String,
         override val spaceName: String,
         override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None,
         val err: String
     ) : PublishToWebViewState()
 
@@ -319,6 +369,7 @@ sealed class PublishToWebViewState {
         override val objectName: String,
         override val spaceName: String,
         override val showJoinSpaceButton: Boolean = false,
+        val icon: ObjectIcon = ObjectIcon.None,
         val err: String
     ) : PublishToWebViewState()
 }

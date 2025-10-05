@@ -18,12 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.R
@@ -100,7 +100,7 @@ fun InviteLinkAccessSelector(
                                 UiInviteLinkAccess.EDITOR -> SpaceInviteLinkAccessLevel.EditorAccess.EMPTY
                                 UiInviteLinkAccess.VIEWER -> SpaceInviteLinkAccessLevel.ViewerAccess.EMPTY
                                 UiInviteLinkAccess.REQUEST -> SpaceInviteLinkAccessLevel.RequestAccess.EMPTY
-                                UiInviteLinkAccess.DISABLED -> SpaceInviteLinkAccessLevel.LinkDisabled
+                                UiInviteLinkAccess.DISABLED -> SpaceInviteLinkAccessLevel.LinkDisabled()
                             }
                         )
                     }
@@ -120,12 +120,14 @@ fun AccessLevelOption(
     modifier: Modifier = Modifier,
     uiItemUI: UiInviteLinkAccess,
     isSelected: Boolean = false,
-    isCurrentUserOwner: Boolean = false
+    isCurrentUserOwner: Boolean = false,
+    isDisabled: Boolean = false
 ) {
     Row(
         modifier = modifier
             .heightIn(min = 72.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .alpha(if (isDisabled) 0.3f else 1.0f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Spacer(modifier = Modifier.width(16.dp))
@@ -169,7 +171,7 @@ fun AccessLevelOption(
             Spacer(modifier = Modifier.width(16.dp))
         }
 
-        if (isCurrentUserOwner && !isSelected) {
+        if (!isDisabled && isCurrentUserOwner && !isSelected) {
             Spacer(modifier = Modifier.width(12.dp))
             Image(
                 modifier = Modifier.size(18.dp),
@@ -185,14 +187,25 @@ fun SpaceInviteLinkAccessLevel.getInviteLinkItemParams(): UiInviteLinkAccess = w
     is SpaceInviteLinkAccessLevel.EditorAccess -> UiInviteLinkAccess.EDITOR
     is SpaceInviteLinkAccessLevel.ViewerAccess -> UiInviteLinkAccess.VIEWER
     is SpaceInviteLinkAccessLevel.RequestAccess -> UiInviteLinkAccess.REQUEST
-    SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
+    is SpaceInviteLinkAccessLevel.LinkDisabled -> UiInviteLinkAccess.DISABLED
 }
 
 @DefaultPreviews
 @Composable
 private fun InviteLinkAccessSelectorPreview() {
     InviteLinkAccessSelector(
-        currentAccessLevel = SpaceInviteLinkAccessLevel.EditorAccess(""),
+        currentAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(possibleToUpdate = false),
         onAccessLevelChanged = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun AccessLevelOptionPreview() {
+    AccessLevelOption(
+        modifier = Modifier.fillMaxWidth(),
+        isSelected = false,
+        uiItemUI = UiInviteLinkAccess.DISABLED,
+        isDisabled = true,
     )
 }

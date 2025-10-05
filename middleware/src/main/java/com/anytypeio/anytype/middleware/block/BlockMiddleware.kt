@@ -246,6 +246,14 @@ class BlockMiddleware(
         command: Command.UploadFile
     ): ObjectWrapper.File = middleware.fileUpload(command)
 
+    override suspend fun preloadFile(command: Command.PreloadFile): Id {
+        return middleware.filePreload(command = command)
+    }
+
+    override suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile) {
+        return middleware.fileDiscardPreload(command)
+    }
+
     override suspend fun fileDrop(command: Command.FileDrop): Payload {
         return middleware.fileDrop(command)
     }

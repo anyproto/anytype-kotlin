@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
@@ -28,6 +29,7 @@ import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
@@ -129,7 +131,9 @@ object ObjectMenuModule {
         removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         userPermissionProvider: UserPermissionProvider,
         deleteRelationFromObject: DeleteRelationFromObject,
-        objectMenuOptionsProvider: ObjectMenuOptionsProvider
+        objectMenuOptionsProvider: ObjectMenuOptionsProvider,
+        showObject: GetObject,
+        deleteWidget: DeleteWidget
     ): ObjectMenuViewModel.Factory = ObjectMenuViewModel.Factory(
         setObjectIsArchived = setObjectIsArchived,
         duplicateObject = duplicateObject,
@@ -158,7 +162,9 @@ object ObjectMenuModule {
         addToFeaturedRelations = addToFeaturedRelations,
         removeFromFeaturedRelations = removeFromFeaturedRelations,
         userPermissionProvider = userPermissionProvider,
-        deleteRelationFromObject = deleteRelationFromObject
+        deleteRelationFromObject = deleteRelationFromObject,
+        showObject = showObject,
+        deleteWidget = deleteWidget
     )
 
     @JvmStatic
@@ -274,7 +280,9 @@ object ObjectSetMenuModule {
         userPermissionProvider: UserPermissionProvider,
         deleteRelationFromObject: DeleteRelationFromObject,
         setObjectDetails: SetObjectDetails,
-        objectMenuOptionsProvider: ObjectMenuOptionsProvider
+        objectMenuOptionsProvider: ObjectMenuOptionsProvider,
+        showObject: GetObject,
+        deleteWidget: DeleteWidget
     ): ObjectSetMenuViewModel.Factory = ObjectSetMenuViewModel.Factory(
         setObjectListIsArchived = setObjectIsArchived,
         addBackLinkToObject = addBackLinkToObject,
@@ -301,7 +309,9 @@ object ObjectSetMenuModule {
         userPermissionProvider = userPermissionProvider,
         deleteRelationFromObject = deleteRelationFromObject,
         updateFields = updateFields,
-        setObjectDetails = setObjectDetails
+        setObjectDetails = setObjectDetails,
+        showObject = showObject,
+        deleteWidget = deleteWidget
     )
 
     @JvmStatic

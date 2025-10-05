@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.SHARED
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions.OWNER
@@ -190,34 +189,6 @@ interface SpaceViewSubscriptionContainer {
         companion object {
             const val GLOBAL_SUBSCRIPTION = "subscription.global.space-views"
         }
-    }
-}
-
-@Deprecated("To de deleted")
-fun SpaceViewSubscriptionContainer.isSharingLimitReached(
-    spaceToUserPermissions: Flow<Map<Id, SpaceMemberPermissions>>
-) : Flow<Pair<Boolean, Int>> {
-    val sharedSpacesCount = combine(
-        observe(),
-        spaceToUserPermissions
-    ) { spaceViews, permissions ->
-        spaceViews.count { spaceView ->
-            val permission = permissions[spaceView.targetSpaceId]
-            spaceView.spaceAccessType == SHARED && permission == OWNER
-        }
-    }
-    val sharedSpaceLimit = observe().map { spaceViews ->
-        val defaultSpace = spaceViews.firstOrNull { space ->
-            space.spaceAccessType == SpaceAccessType.DEFAULT
-        }
-        defaultSpace?.sharedSpaceLimit ?: 0
-    }
-    return combine(
-        sharedSpaceLimit,
-        sharedSpacesCount
-    ) { limit, count ->
-        val isLimitReached = limit == 0 || count >= limit
-        Pair(isLimitReached, limit)
     }
 }
 

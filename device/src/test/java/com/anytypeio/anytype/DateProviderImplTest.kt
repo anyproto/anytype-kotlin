@@ -238,7 +238,7 @@ class DateProviderImplTest {
 
     // MARK: getChatPreviewDate Tests
     @Test
-    fun getChatPreviewDate_todayTimestamp_returnsToday() = runTest(dispatcher) {
+    fun getChatPreviewDate_todayTimestamp_returnsTime() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -256,8 +256,12 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(todayTimestamp)
 
-        // Then: Should return "Today"
-        assertEquals("Today", result)
+        // Then: Should return time in short format (e.g., "18:32" or "6:32 PM" depending on locale)
+        assertNotNull("Result should not be null", result)
+        assertTrue("Result should contain time format",
+            result.matches(Regex("\\d{1,2}:\\d{2}")) || // 24-hour format like "18:32"
+            result.matches(Regex("\\d{1,2}:\\d{2}\\s?(AM|PM|am|pm)")) // 12-hour format like "6:32 PM"
+        )
     }
 
     @Test
@@ -347,7 +351,7 @@ class DateProviderImplTest {
     }
 
     @Test
-    fun getChatPreviewDate_midnightToday_returnsToday() = runTest(dispatcher) {
+    fun getChatPreviewDate_midnightToday_returnsTime() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -365,12 +369,15 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return "Today"
-        assertEquals("Today", result)
+        // Then: Should return time ("00:00" or "12:00 AM" depending on locale)
+        assertNotNull("Result should not be null", result)
+        assertTrue("Result should contain time format for midnight",
+            result.matches(Regex("(00:00|0:00|12:00\\s?(AM|am))")) // "00:00" or "12:00 AM"
+        )
     }
 
     @Test
-    fun getChatPreviewDate_endOfDay_returnsToday() = runTest(dispatcher) {
+    fun getChatPreviewDate_endOfDay_returnsTime() = runTest(dispatcher) {
         dateProviderImpl = DateProviderImpl(
             defaultZoneId = ZoneId.of("UTC"),
             localeProvider = localeProvider,
@@ -388,8 +395,12 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return "Today"
-        assertEquals("Today", result)
+        // Then: Should return time ("23:59" or "11:59 PM" depending on locale)
+        assertNotNull("Result should not be null", result)
+        assertTrue("Result should contain time format for end of day",
+            result.matches(Regex("23:59")) || // 24-hour format
+            result.matches(Regex("11:59\\s?(PM|pm)")) // 12-hour format
+        )
     }
 
     @Test
@@ -413,10 +424,11 @@ class DateProviderImplTest {
 
         // Then: Should handle timezone correctly
         assertNotNull("Result should not be null", result)
-        assertTrue("Result should be today, yesterday, weekday, or date format. Got: '$result'",
-            result == "Today" || // Today
+        assertTrue("Result should be time, yesterday, weekday, or date format. Got: '$result'",
+            result.matches(Regex("\\d{1,2}:\\d{2}")) || // Time in 24-hour format
+            result.matches(Regex("\\d{1,2}:\\d{2}\\s?(AM|PM|am|pm)")) || // Time in 12-hour format
             result == "Yesterday" || // Yesterday
-            result.matches(Regex("[A-Za-z]{3}")) || // EEE format for weekdays
+            result.matches(Regex("[A-Za-z]+")) || // Full weekday names
             result.matches(Regex("\\d{2}/\\d{2}")) || // dd/MM format for current year
             result.matches(Regex("\\d{2}/\\d{2}/\\d{2}")) // dd/MM/yy format for different year
         )
@@ -486,10 +498,10 @@ class DateProviderImplTest {
         // When
         val result = dateProviderImpl.getChatPreviewDate(timestamp)
 
-        // Then: Should return short weekday format (e.g., "Sun", "Mon", "Tue")
-        assertTrue("Result should be short weekday format", result.matches(Regex("[A-Za-z]{3}")))
-        assertTrue("Result should be a valid weekday abbreviation",
-            listOf("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat").contains(result))
+        // Then: Should return full weekday format (e.g., "Sunday", "Monday", "Tuesday")
+        assertTrue("Result should be full weekday format", result.matches(Regex("[A-Za-z]+")))
+        assertTrue("Result should be a valid full weekday name",
+            listOf("Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday").contains(result))
     }
 
     @Test

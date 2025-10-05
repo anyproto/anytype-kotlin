@@ -93,34 +93,36 @@ fun WidgetLongClickMenu(
                         color = colorResource(id = R.color.shape_primary)
                     )
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
-                            isCardMenuExpanded.value = false
-                        }
-                    },
-                    text = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.fillMaxWidth()
-                        ) {
-                            Text(
-                                modifier = Modifier.weight(1f),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_primary),
-                                text = stringResource(R.string.widget_change_type)
-                            )
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_menu_item_change_type),
-                                contentDescription = "Change Widget Type icon",
-                                modifier = Modifier.size(24.dp),
-                                colorFilter = ColorFilter.tint(
-                                    colorResource(id = R.color.text_primary)
+                if(widgetView.canChangeWidgetType()) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onDropDownMenuAction(DropDownMenuAction.ChangeWidgetType).also {
+                                isCardMenuExpanded.value = false
+                            }
+                        },
+                        text = {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.fillMaxWidth()
+                            ) {
+                                Text(
+                                    modifier = Modifier.weight(1f),
+                                    style = BodyRegular,
+                                    color = colorResource(id = R.color.text_primary),
+                                    text = stringResource(R.string.widget_change_type)
                                 )
-                            )
+                                Image(
+                                    painter = painterResource(id = R.drawable.ic_menu_item_change_type),
+                                    contentDescription = "Change Widget Type icon",
+                                    modifier = Modifier.size(24.dp),
+                                    colorFilter = ColorFilter.tint(
+                                        colorResource(id = R.color.text_primary)
+                                    )
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
                 Divider(
                     thickness = 0.5.dp,
                     color = colorResource(id = R.color.shape_primary)
@@ -207,6 +209,32 @@ fun WidgetLongClickMenu(
         null -> {
             //do nothing
         }
+    }
+}
+
+private fun WidgetView.canChangeWidgetType(): Boolean {
+    return when (this) {
+        is WidgetView.Gallery -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
+        is WidgetView.Link -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
+        is WidgetView.ListOfObjects -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
+        is WidgetView.SetOfObjects -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
+        is WidgetView.Tree -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
+        else -> false
     }
 }
 

@@ -22,11 +22,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -79,9 +80,7 @@ fun AuthScreen(
             modifier = Modifier.align(Alignment.Center),
             verticalArrangement = Arrangement.Center
         ) {
-            Title(modifier = Modifier.fillMaxWidth())
-            Spacer(modifier = Modifier.height(4.dp))
-            Subtitle(modifier = Modifier.fillMaxWidth())
+            CombinedTitle(modifier = Modifier.fillMaxWidth())
         }
         Column(
             modifier = Modifier.fillMaxWidth().align(Alignment.BottomCenter),
@@ -102,35 +101,44 @@ fun AuthScreen(
 }
 
 @Composable
-fun Title(modifier: Modifier = Modifier) {
-    Text(
-        modifier = modifier,
-        textAlign = TextAlign.Center,
-        color = colorResource(R.color.text_primary),
-        text = stringResource(id = R.string.onboarding_auth_title),
-        style = TextStyle(
-            fontFamily = fontInterRegular,
-            fontWeight = FontWeight.W400,
-            fontSize = 40.sp,
-            lineHeight = 44.sp,
-            letterSpacing = (-2).sp
-        )
-    )
-}
+fun CombinedTitle(modifier: Modifier = Modifier) {
+    val titleText = stringResource(id = R.string.onboarding_auth_title)
+    val subtitleText = stringResource(id = R.string.onboarding_auth_subtitle)
+    val primaryColor = colorResource(R.color.text_primary)
+    val secondaryColor = colorResource(R.color.text_secondary)
 
-@Composable
-fun Subtitle(modifier: Modifier = Modifier) {
+    val annotatedString = buildAnnotatedString {
+        withStyle(
+            style = SpanStyle(
+                fontFamily = fontInterRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 40.sp,
+                letterSpacing = (-2).sp,
+                color = primaryColor
+            )
+        ) {
+            append(titleText)
+        }
+        append("\n")
+        withStyle(
+            style = SpanStyle(
+                fontFamily = fontRiccioneRegular,
+                fontWeight = FontWeight.W400,
+                fontSize = 44.sp,
+                letterSpacing = (-0.8).sp,
+                color = secondaryColor
+            )
+        ) {
+            append(subtitleText)
+        }
+    }
+
     Text(
         modifier = modifier,
-        text = stringResource(id = R.string.onboarding_auth_subtitle),
+        text = annotatedString,
         textAlign = TextAlign.Center,
-        color = colorResource(R.color.text_secondary),
         style = TextStyle(
-            fontFamily = fontRiccioneRegular,
-            fontWeight = FontWeight.W400,
-            fontSize = 44.sp,
-            lineHeight = 44.sp,
-            letterSpacing = (-0.8).sp
+            lineHeight = 44.sp
         )
     )
 }

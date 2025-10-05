@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -83,4 +84,5 @@ interface ShareSpaceDependencies : ComponentDependencies {
     fun logger(): Logger
     fun spaceInviteLinkStore(): SpaceInviteLinkStore
     fun stringResourceProvider(): StringResourceProvider
+    fun profileContainer(): ProfileSubscriptionManager
 }

@@ -829,16 +829,41 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun fileUpload(command: Command.UploadFile): ObjectWrapper.File {
-        val type = command.type.toMiddlewareModel()
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
-            type = type,
+            type = command.type.toMiddlewareModel(),
             spaceId = command.space.id,
+            preloadFileId = command.preloadFileId.orEmpty(),
+            preloadOnly = false
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
         logResponseIfDebug(response, time)
         return ObjectWrapper.File(response.details.orEmpty())
+    }
+
+    @Throws(Exception::class)
+    fun filePreload(command: Command.PreloadFile): Id {
+        val request = Rpc.File.Upload.Request(
+            localPath = command.path,
+            type = command.type.toMiddlewareModel(),
+            spaceId = command.space.id,
+            preloadOnly = true
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileUpload(request) }
+        logResponseIfDebug(response, time)
+        return response.preloadFileId
+    }
+
+    @Throws(Exception::class)
+    fun fileDiscardPreload(command: Command.DiscardPreloadedFile) {
+        val request = Rpc.File.DiscardPreload.Request(
+            fileId = command.preloadedFileId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileDiscardPreload(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)

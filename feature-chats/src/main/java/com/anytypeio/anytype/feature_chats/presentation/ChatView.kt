@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.chats.ChatContainer
@@ -117,7 +118,20 @@ sealed interface ChatView {
                 val icon: ObjectIcon = ObjectIcon.None,
                 val typeName: String,
                 val isDeleted: Boolean = false
-            ): Attachment()
+            ): Attachment() {
+
+                private val resolvedTitle: String
+                    get() {
+                    val layout = wrapper?.layout
+                    return if (layout == ObjectType.Layout.NOTE) {
+                        wrapper.snippet.orEmpty()
+                    } else {
+                        wrapper?.name.orEmpty()
+                    }
+                }
+
+                val title : String = resolvedTitle
+            }
 
             data class Bookmark(
                 val id: Id,

@@ -65,7 +65,7 @@ class MySitesViewModel(
             Timber.e(it, "Failed to load web publishing list")
         }.onSuccess { result ->
             _viewState.value = MySitesViewState.Content(
-                result.map { data ->
+                result.distinctBy { it.obj }.map { data ->
                     val wrapper = ObjectWrapper.Basic(data.details)
                     MySitesViewState.Item(
                         obj = data.obj,
@@ -139,7 +139,10 @@ class MySitesViewModel(
                         )
                     )
                 }.onFailure {
-                    Timber.e(it, "Failed to open space before navigating to an object from my-sites screen")
+                    Timber.e(
+                        it,
+                        "Failed to open space before navigating to an object from my-sites screen"
+                    )
                 }
             } else {
                 commands.emit(Command.ShowToast("Failed to find space for this object"))

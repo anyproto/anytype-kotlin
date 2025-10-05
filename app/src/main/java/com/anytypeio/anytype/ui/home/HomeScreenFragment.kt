@@ -33,6 +33,7 @@ import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
@@ -431,9 +432,16 @@ class HomeScreenFragment : Fragment(),
             }
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
-                    // Back to ChatFragment if that was previous
-                    val result = findNavController().popBackStack(R.id.chatScreen, false)
-                    if (!result) {
+                    // Deterministic navigation based on space type, not back stack
+                    val chatId = command.spaceChatId
+                    if (command.spaceUxType == SpaceUxType.CHAT && !chatId.isNullOrEmpty()) {
+                        // Chat space: navigate to chat object
+                        navigation().openChat(
+                            target = chatId,
+                            space = space
+                        )
+                    } else {
+                        // Data space: always navigate to vault
                         vm.proceedWithExitingToVault()
                         findNavController().navigate(R.id.action_back_on_vault)
                     }

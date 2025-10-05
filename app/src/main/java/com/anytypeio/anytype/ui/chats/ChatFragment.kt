@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -43,8 +42,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.features.multiplayer.GenerateInviteLinkCard
-import com.anytypeio.anytype.core_ui.features.multiplayer.ShareInviteLinkCard
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -70,7 +67,6 @@ import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
-import com.anytypeio.anytype.ui.multiplayer.DeleteSpaceInviteLinkWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
@@ -114,12 +110,8 @@ class ChatFragment : Fragment() {
             val notificationsSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
             var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
-            val inviteModalState = vm.inviteModalState.collectAsStateWithLifecycle().value
             val showNotificationPermissionDialog =
                 vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
-            val canCreateInviteLink = vm.canCreateInviteLink.collectAsStateWithLifecycle().value
-            val isGeneratingInviteLink =
-                vm.isGeneratingInviteLink.collectAsStateWithLifecycle().value
 
             ErrorScreen()
 
@@ -265,67 +257,6 @@ class ChatFragment : Fragment() {
                 }
             } else {
                 componentManager().globalSearchComponent.release()
-            }
-
-            when (inviteModalState) {
-                is ChatViewModel.InviteModalState.ShowShareCard -> {
-                    ModalBottomSheet(
-                        onDismissRequest = {
-                            vm.onInviteModalDismissed()
-                        },
-                        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                        containerColor = Color.Transparent,
-                        contentColor = Color.Transparent,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                        dragHandle = null
-                    ) {
-                        ShareInviteLinkCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                                .background(
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = colorResource(id = R.color.widget_background)
-                                ),
-                            link = inviteModalState.link,
-                            isCurrentUserOwner = canCreateInviteLink,
-                            onShareInviteClicked = { vm.onShareInviteLinkFromCardClicked() },
-                            onDeleteLinkClicked = { vm.onDeleteLinkClicked() },
-                            onShowQrCodeClicked = { vm.onShareQrCodeClicked() }
-                        )
-                    }
-                }
-
-                is ChatViewModel.InviteModalState.ShowGenerateCard -> {
-                    ModalBottomSheet(
-                        onDismissRequest = {
-                            vm.onInviteModalDismissed()
-                        },
-                        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
-                        containerColor = Color.Transparent,
-                        contentColor = Color.Transparent,
-                        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-                        dragHandle = null
-                    ) {
-                        GenerateInviteLinkCard(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(horizontal = 8.dp)
-                                .background(
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = colorResource(id = R.color.widget_background)
-                                ),
-                            onGenerateInviteLinkClicked = {
-                                vm.onGenerateInviteLinkClicked()
-                            },
-                            isLoading = isGeneratingInviteLink
-                        )
-                    }
-                }
-
-                ChatViewModel.InviteModalState.Hidden -> {
-                    // No modal shown
-                }
             }
         }
         LaunchedEffect(Unit) {
@@ -494,23 +425,6 @@ class ChatFragment : Fragment() {
                             toast("QR Code sharing - to be implemented")
                         }.onFailure {
                             Timber.e(it, "Error while opening QR code")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.ShowDeleteLinkWarning -> {
-                        runCatching {
-                            val dialog = DeleteSpaceInviteLinkWarning()
-                            dialog.onAccepted = {
-                                vm.onDeleteLinkAccepted().also {
-                                    dialog.dismiss()
-                                }
-                            }
-                            dialog.onCancelled = {
-                                // Do nothing.
-                            }
-                            dialog.show(childFragmentManager, null)
-                        }.onFailure {
-                            Timber.e(it, "Error while showing delete link warning")
                         }
                     }
 

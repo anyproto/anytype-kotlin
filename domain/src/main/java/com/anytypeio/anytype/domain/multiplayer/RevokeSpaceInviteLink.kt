@@ -17,7 +17,7 @@ class RevokeSpaceInviteLink @Inject constructor(
         val result = repo.revokeSpaceInviteLink(space = params)
 
         // Update the store to reflect that the invite link is now disabled
-        store.update(params, SpaceInviteLinkAccessLevel.LinkDisabled)
+        store.update(params, SpaceInviteLinkAccessLevel.LinkDisabled())
 
         return result
     }

@@ -226,7 +226,7 @@ class DefaultDataViewSubscription(
     }
 }
 
-private fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLink>): List<DVSort> {
+fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLink>): List<DVSort> {
     return map { sort ->
         val relationLink = relationLinks.find { it.key == sort.relationKey }
         sort.copy(relationFormat = relationLink?.format ?: RelationFormat.LONG_TEXT)

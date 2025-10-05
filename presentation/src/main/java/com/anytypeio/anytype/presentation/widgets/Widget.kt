@@ -4,26 +4,32 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ObjectWrapper.Type
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.presentation.home.ObjectViewState
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Empty
+import timber.log.Timber
 
 enum class SectionType {
     PINNED,
@@ -283,7 +289,7 @@ suspend fun List<Block>.parseWidgets(
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
-                        Widget.Source.Default(ObjectWrapper.Basic(raw))
+                        Widget.Source.Default(obj = targetObj)
                     }
                     if (source.hasValidSource() && !WidgetConfig.excludedTypes.contains(source.type)) {
                         when (source) {
@@ -346,6 +352,7 @@ suspend fun List<Block>.parseWidgets(
                                             Widget.List(
                                                 id = w.id,
                                                 source = source,
+                                                isCompact = false,
                                                 limit = widgetContent.limit,
                                                 config = config,
                                                 icon = icon,
@@ -395,6 +402,214 @@ suspend fun List<Block>.parseWidgets(
     }
 }
 
+data class WidgetUiParams(
+    val isOwnerOrEditor: Boolean,
+    val expandedIds: Set<Id>,
+    val collapsedSections: Set<String>
+)
+
+/**
+ * Pure function: computes list of widgets from the current Success state and UI params.
+ * No side effects; suitable for unit testing.
+ */
+suspend fun buildWidgets(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Widget> {
+    val currentCollapsedSections = params.collapsedSections
+    return buildList {
+        // Pinned widgets (from blocks)
+        val pinnedWidgets = state.obj.blocks.parseWidgets(
+            root = state.obj.root,
+            details = state.obj.details,
+            config = state.config,
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+            .filterNot { widget ->
+                widget.source is Widget.Source.Bundled.Bin
+            }
+
+        val isPinnedSectionCollapsed =
+            currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
+
+        if (pinnedWidgets.isNotEmpty()) {
+            if (!isPinnedSectionCollapsed) {
+                add(Widget.Section.Pinned(config = state.config))
+                addAll(pinnedWidgets)
+            } else {
+                add(Widget.Section.Pinned(config = state.config))
+            }
+        }
+
+        add(Widget.Section.ObjectType(config = state.config))
+
+        // ObjectType widgets
+        val isObjectTypeSectionCollapsed =
+            currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+
+        val pinnedSectionStateDesc =
+            if (isPinnedSectionCollapsed) "collapsed" else "expanded"
+        val objectTypeSectionStateDesc =
+            if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+
+        if (!isObjectTypeSectionCollapsed) {
+            val types = mapSpaceTypesToWidgets(
+                isOwnerOrEditor = params.isOwnerOrEditor,
+                config = state.config,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+            addAll(types)
+            add(
+                Widget.Bin(
+                    id = WIDGET_BIN_ID,
+                    source = Widget.Source.Bundled.Bin,
+                    config = state.config,
+                    icon = ObjectIcon.None,
+                    sectionType = SectionType.PINNED
+                )
+            )
+            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
+        } else {
+            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
+        }
+    }
+}
+
+private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config, storeOfObjectTypes: StoreOfObjectTypes): List<Widget> {
+    val allTypes = storeOfObjectTypes.getAll()
+    val filteredObjectTypes = allTypes
+        .mapNotNull { objectType ->
+            if (!objectType.isValid ||
+                SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
+                objectType.isArchived == true ||
+                objectType.isDeleted == true ||
+                objectType.uniqueKey == ObjectTypeIds.TEMPLATE
+            ) {
+                return@mapNotNull null
+            } else {
+                objectType
+            }
+        }
+
+    Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
+
+    // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
+    val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
+        !objectType.restrictions.contains(ObjectRestriction.DELETE)
+    }
+
+    val allTypeWidgetIds = mutableListOf<Id>()
+
+    val widgetList = buildList {
+        // Add user-created types first (deletable)
+        for (objectType in myTypes) {
+            val widget = createWidgetViewFromType(objectType, config)
+            add(widget)
+            // Track all type widgets for initial collapsed state
+            allTypeWidgetIds.add(widget.id)
+        }
+
+        // Add system types (not deletable)
+        for (objectType in systemTypes) {
+            val widget = createWidgetViewFromType(objectType, config)
+            add(widget)
+            // Track all type widgets for initial collapsed state
+            allTypeWidgetIds.add(widget.id)
+        }
+    }
+
+    return widgetList
+}
+
+/**
+ * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
+ */
+private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
+    val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
+    val icon = objectType.objectIcon()
+    val widgetLimit = objectType.widgetLimit ?: 0
+
+    return when (objectType.widgetLayout) {
+        Block.Content.Widget.Layout.TREE -> {
+            Widget.Tree(
+                id = objectType.id,
+                source = widgetSource,
+                config = config,
+                icon = icon,
+                limit = widgetLimit,
+                sectionType = SectionType.TYPES
+            )
+        }
+        Block.Content.Widget.Layout.LIST -> {
+            Widget.List(
+                id = objectType.id,
+                source = widgetSource,
+                config = config,
+                icon = icon,
+                limit = widgetLimit,
+                sectionType = SectionType.TYPES
+            )
+        }
+        Block.Content.Widget.Layout.COMPACT_LIST -> {
+            Widget.List(
+                id = objectType.id,
+                source = widgetSource,
+                config = config,
+                icon = icon,
+                limit = widgetLimit,
+                isCompact = true,
+                sectionType = SectionType.TYPES
+            )
+        }
+        Block.Content.Widget.Layout.VIEW -> {
+            Widget.View(
+                id = objectType.id,
+                source = widgetSource,
+                config = config,
+                icon = icon,
+                limit = widgetLimit,
+                sectionType = SectionType.TYPES
+            )
+        }
+        Block.Content.Widget.Layout.LINK -> {
+            Widget.Link(
+                id = objectType.id,
+                source = widgetSource,
+                config = config,
+                icon = icon,
+                sectionType = SectionType.TYPES
+            )
+        }
+        null -> {
+            if (objectType.uniqueKey == ObjectTypeIds.IMAGE) {
+                // Image type widgets default to gallery view
+                Widget.View(
+                    id = objectType.id,
+                    source = widgetSource,
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit,
+                    sectionType = SectionType.TYPES
+                )
+            } else {
+                // Default to compact list for other types
+                Widget.List(
+                    id = objectType.id,
+                    source = widgetSource,
+                    config = config,
+                    icon = icon,
+                    limit = widgetLimit,
+                    isCompact = true,
+                    sectionType = SectionType.TYPES
+                )
+            }
+        }
+    }
+}
+
 fun Id.bundled(): Widget.Source.Bundled = when (this) {
     BundledWidgetSourceIds.RECENT -> Widget.Source.Bundled.Recent
     BundledWidgetSourceIds.RECENT_LOCAL -> Widget.Source.Bundled.RecentLocal
@@ -418,6 +633,34 @@ fun buildWidgetName(
  * This allows us to use a unified Widget.Source.Default for both regular objects and type objects
  */
 fun ObjectWrapper.Type.toBasic(): ObjectWrapper.Basic = ObjectWrapper.Basic(this.map)
+
+/**
+ * Finds the widget block that links to the specified object context.
+ * Returns the block ID if found, null otherwise.
+ */
+fun findWidgetBlockForObject(ctx: Id, blocks: List<Block>): Id? {
+    return blocks.find { block ->
+        isWidgetPointingToObject(block, ctx, blocks)
+    }?.id
+}
+
+/**
+ * Checks if a widget block is pointing to the target object.
+ * A widget points to an object when its first child is a Link block targeting that object.
+ */
+private fun isWidgetPointingToObject(
+    block: Block,
+    targetCtx: Id,
+    allBlocks: List<Block>
+): Boolean {
+    if (block.content !is Block.Content.Widget) return false
+
+    val childLinkId = block.children.firstOrNull() ?: return false
+    val linkBlock = allBlocks.find { it.id == childLinkId } ?: return false
+    val linkContent = linkBlock.content as? Block.Content.Link ?: return false
+
+    return linkContent.target == targetCtx
+}
 
 typealias WidgetId = Id
 typealias ViewId = Id

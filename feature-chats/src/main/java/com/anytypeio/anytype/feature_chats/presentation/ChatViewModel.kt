@@ -18,10 +18,8 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
@@ -29,7 +27,6 @@ import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -42,10 +39,6 @@ import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
-import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
-import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -57,7 +50,6 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
-import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -113,10 +105,6 @@ class ChatViewModel @Inject constructor(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val spacePermissionProvider: UserPermissionProvider,
     private val notificationBuilder: NotificationBuilder,
-    private val generateSpaceInviteLink: GenerateSpaceInviteLink,
-    private val makeSpaceShareable: MakeSpaceShareable,
-    private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
@@ -140,8 +128,6 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val canCreateInviteLink = MutableStateFlow(false)
-    val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
-    val isGeneratingInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
@@ -173,7 +159,6 @@ class ChatViewModel @Inject constructor(
                     } else if (permission == SpaceMemberPermissions.READER || permission == SpaceMemberPermissions.NO_PERMISSIONS) {
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
-                    // Update invite link creation permission (only owners can create invite links)
                     canCreateInviteLink.value = permission?.isOwner() == true
                 }
         }
@@ -224,7 +209,6 @@ class ChatViewModel @Inject constructor(
         }
 
         proceedWithSpaceSubscription()
-        checkIfShouldCreateInviteLink()
 
         viewModelScope.launch {
             val route = if (vmParams.triggeredByPush)
@@ -1347,142 +1331,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onInviteModalDismissed() {
-        Timber.d("onInviteModalDismissed")
-        inviteModalState.value = InviteModalState.Hidden
-    }
-
-    fun onGenerateInviteLinkClicked() {
-        Timber.d("onGenerateInviteLinkClicked")
-        viewModelScope.launch {
-            isGeneratingInviteLink.value = true
-            proceedWithGeneratingInviteLink()
-        }
-    }
-
-    private suspend fun proceedWithGeneratingInviteLink(
-        inviteType: InviteType = InviteType.MEMBER,
-        permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER
-    ) {
-        if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
-            makeSpaceShareable.async(
-                params = vmParams.space
-            ).fold(
-                onSuccess = {
-                    Timber.d("Successfully made space shareable")
-                    generateInviteLink(
-                        inviteType = inviteType,
-                        permissions = permissions
-                    )
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Error while making space shareable")
-                    isGeneratingInviteLink.value = false
-                    inviteModalState.value = InviteModalState.Hidden
-                    errorState.value = UiErrorState.Show(
-                        "Failed to make space shareable. Please try again."
-                    )
-                }
-            )
-        } else {
-            generateInviteLink(
-                inviteType = inviteType,
-                permissions = permissions
-            )
-        }
-    }
-
-    private suspend fun generateInviteLink(
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
-    ) {
-        generateSpaceInviteLink.async(
-            params = GenerateSpaceInviteLink.Params(
-                space = vmParams.space,
-                inviteType = inviteType,
-                permissions = permissions
-            )
-        ).fold(
-            onSuccess = { inviteLink ->
-                Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
-                isGeneratingInviteLink.value = false
-            },
-            onFailure = { error ->
-                Timber.e(error, "Error while generating invite link")
-                isGeneratingInviteLink.value = false
-                inviteModalState.value = InviteModalState.Hidden
-                errorState.value = UiErrorState.Show(
-                    "Failed to generate invite link. Please try again."
-                )
-            }
-        )
-    }
-
     fun onEmptyStateAction() {
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
-        }
-    }
-
-    fun onShareInviteLinkFromCardClicked() {
-        viewModelScope.launch {
-            when (val state = inviteModalState.value) {
-                is InviteModalState.ShowShareCard -> {
-                    commands.emit(ViewModelCommand.ShareInviteLink(state.link))
-                }
-                else -> {
-                    Timber.w("Ignoring share invite click while in state: $state")
-                }
-            }
-        }
-    }
-
-    fun onShareQrCodeClicked() {
-        viewModelScope.launch {
-            when (val state = inviteModalState.value) {
-                is InviteModalState.ShowShareCard -> {
-                    commands.emit(ViewModelCommand.ShareQrCode(state.link))
-                }
-                else -> {
-                    Timber.w("Ignoring QR-code click while in state: $state")
-                }
-            }
-        }
-    }
-
-    fun onDeleteLinkClicked() {
-        Timber.d("onDeleteLinkClicked")
-        viewModelScope.launch {
-            if (canCreateInviteLink.value) {
-                commands.emit(ViewModelCommand.ShowDeleteLinkWarning)
-            } else {
-                Timber.w("Something wrong with permissions.")
-            }
-        }
-    }
-
-    fun onDeleteLinkAccepted() {
-        Timber.d("onDeleteLinkAccepted")
-        viewModelScope.launch {
-            if (canCreateInviteLink.value) {
-                revokeSpaceInviteLink.async(
-                    params = vmParams.space
-                ).fold(
-                    onSuccess = {
-                        Timber.d("Revoked space invite link")
-                        inviteModalState.value = InviteModalState.Hidden
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error while revoking space invite link")
-                        inviteModalState.value = InviteModalState.Hidden
-                        errorState.value = UiErrorState.Show(
-                            "Failed to delete invite link. Please try again."
-                        )
-                    }
-                )
-            } else {
-                Timber.w("Something wrong with permissions.")
-            }
         }
     }
 
@@ -1672,31 +1523,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Used for testing. Will be deleted.
-     */
-    private fun generateDummyChatHistory() {
-        viewModelScope.launch {
-            var replyTo: Id? = null
-            repeat(100) { idx ->
-
-                addChatMessage.async(
-                    Command.ChatCommand.AddMessage(
-                        chat = vmParams.ctx,
-                        message = DummyMessageGenerator.generateMessage(
-                            text = idx.toString(),
-                            replyTo = if (idx == 99) replyTo else null
-                        )
-                    )
-                ).onSuccess { (msg, payload) ->
-                    if (idx == 0) {
-                       replyTo = msg
-                    }
-                }
-            }
-        }
-    }
-
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
@@ -1712,44 +1538,6 @@ class ChatViewModel @Inject constructor(
                 spaceAccessType.value = space?.spaceAccessType
             }
         }
-    }
-
-    //region Invite Link Screen
-
-    // Check if we should create invite link
-    fun checkIfShouldCreateInviteLink() {
-        viewModelScope.launch {
-            val inviteLink = getSpaceInviteLink
-                .async(vmParams.space)
-                .onFailure { Timber.e(it, "Error while getting space invite link") }
-                .getOrNull()
-
-            combine(
-                spaceViews.observe(vmParams.space),
-                canCreateInviteLink,
-                uiState
-            ) { spaceView, canCreateInvite, ui ->
-                spaceView.spaceUxType == SpaceUxType.CHAT
-                        && canCreateInvite
-                        && inviteLink == null
-                        && ui.messages.isEmpty()
-            }.collect { shouldGenerate ->
-                Timber.d("DROID-3943, Should generate new Invite link without approve: $shouldGenerate")
-                if (shouldGenerate) {
-                    proceedWithGeneratingInviteLink(
-                        inviteType = InviteType.WITHOUT_APPROVE,
-                        permissions = SpaceMemberPermissions.WRITER
-                    )
-                }
-            }
-        }
-    }
-    //endregion
-
-    sealed class InviteModalState {
-        data object Hidden : InviteModalState()
-        data object ShowGenerateCard : InviteModalState()
-        data class ShowShareCard(val link: String) : InviteModalState()
     }
 
     data class ChatBoxMediaUri(
@@ -1770,7 +1558,6 @@ class ChatViewModel @Inject constructor(
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
-        data object ShowDeleteLinkWarning : ViewModelCommand()
     }
 
     sealed class UXCommand {

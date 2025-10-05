@@ -17,6 +17,7 @@ enum class ObjectAction {
     COPY_LINK,
     DELETE_FILES,
     SET_AS_DEFAULT,
-    CREATE_WIDGET,
+    PIN,
+    UNPIN,
     DOWNLOAD_FILE
 }

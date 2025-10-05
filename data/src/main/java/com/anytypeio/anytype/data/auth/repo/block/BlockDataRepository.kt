@@ -275,6 +275,10 @@ class BlockDataRepository(
         command: Command.UploadFile
     ): ObjectWrapper.File = remote.uploadFile(command)
 
+    override suspend fun preloadFile(command: Command.PreloadFile): Id {
+        return remote.preloadFile(command)
+    }
+
     override suspend fun fileDrop(command: Command.FileDrop): Payload {
         return remote.fileDrop(command)
     }

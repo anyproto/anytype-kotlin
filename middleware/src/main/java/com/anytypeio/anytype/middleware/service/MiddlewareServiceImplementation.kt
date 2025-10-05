@@ -686,6 +686,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun fileDiscardPreload(request: Rpc.File.DiscardPreload.Request): Rpc.File.DiscardPreload.Response {
+        val encoded = Service.fileDiscardPreload(Rpc.File.DiscardPreload.Request.ADAPTER.encode(request))
+        val response = Rpc.File.DiscardPreload.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.DiscardPreload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun fileDrop(request: Rpc.File.Drop.Request): Rpc.File.Drop.Response {
         val encoded = Service.fileDrop(Rpc.File.Drop.Request.ADAPTER.encode(request))
         val response = Rpc.File.Drop.Response.ADAPTER.decode(encoded)

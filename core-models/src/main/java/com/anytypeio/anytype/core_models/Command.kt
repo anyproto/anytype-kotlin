@@ -37,6 +37,13 @@ sealed class Command {
     class UploadFile(
         val space: SpaceId,
         val path: String,
+        val type: Block.Content.File.Type?,
+        val preloadFileId: Id? = null
+    )
+
+    class PreloadFile(
+        val space: SpaceId,
+        val path: String,
         val type: Block.Content.File.Type?
     )
 

@@ -34,6 +34,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
+import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -97,6 +99,8 @@ class ChatViewModel @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val discardPreloadedFile: DiscardPreloadedFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,

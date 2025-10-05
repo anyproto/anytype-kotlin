@@ -720,8 +720,16 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
-                            val path = withContext(dispatchers.io) {
-                                copyFileToCacheDirectory.copy(attachment.uri)
+                            var preloadedFileId: Id? = null
+                            var path: String? = null
+                            val state = attachment.state
+                            if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }
                             }
                             if (path != null) {
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
@@ -736,7 +744,8 @@ class ChatViewModel @Inject constructor(
                                     UploadFile.Params(
                                         space = vmParams.space,
                                         path = path,
-                                        type = Block.Content.File.Type.NONE
+                                        type = Block.Content.File.Type.NONE,
+                                        preloadFileId = preloadedFileId
                                     )
                                 ).onSuccess { file ->
                                     copyFileToCacheDirectory.delete(path)
@@ -1247,12 +1256,14 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value += uris.map { uri ->
-            ChatView.Message.ChatBoxAttachment.Media(
-                uri = uri.uri,
-                isVideo = uri.isVideo,
-                capturedByCamera = uri.capturedByCamera
-            )
+        viewModelScope.launch {
+            chatBoxAttachments.value += uris.map { uri ->
+                ChatView.Message.ChatBoxAttachment.Media(
+                    uri = uri.uri,
+                    isVideo = uri.isVideo,
+                    capturedByCamera = uri.capturedByCamera
+                )
+            }
         }
     }
 
@@ -1262,8 +1273,43 @@ class ChatViewModel @Inject constructor(
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
-                size = info.size
+                size = info.size,
+                state = ChatView.Message.ChatBoxAttachment.State.Preloading
             )
+        }
+        // Starting preloading files
+        viewModelScope.launch {
+            infos.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                if (path != null) {
+                    preloadFile.async(
+                        params = PreloadFile.Params(
+                            space = vmParams.space,
+                            path = path,
+                            type = Block.Content.File.Type.NONE
+                        )
+                    ).onSuccess { preloadedFileId: Id ->
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.File && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Preloaded(
+                                        preloadedFileId = preloadedFileId,
+                                        path = path
+                                    )
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }.onFailure {
+                        Timber.e(it, "Error while preloading attachment")
+                    }
+
+                    // TODO clear temp file.
+                }
+            }
         }
     }
 

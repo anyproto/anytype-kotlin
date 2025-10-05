@@ -240,7 +240,7 @@ internal fun ChatBoxAttachments(
                 is ChatView.Message.ChatBoxAttachment.File -> {
                     item {
                         Box {
-                            AttachedObject(
+                            AttachedFile(
                                 modifier = Modifier
                                     .padding(
                                         top = 12.dp,

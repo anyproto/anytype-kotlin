@@ -191,7 +191,10 @@ sealed interface ChatView {
             sealed class State {
                 data object Idle : State()
                 data object Preloading: State()
-                data class Preloaded(val preloadedFileId: Id): State()
+                data class Preloaded(
+                    val preloadedFileId: Id,
+                    val path: String
+                ): State()
                 data object Uploading : State()
                 data object Uploaded : State()
                 data object Failed : State()

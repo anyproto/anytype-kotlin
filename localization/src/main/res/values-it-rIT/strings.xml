@@ -10,7 +10,7 @@
     <string name="appearance">Aspetto</string>
     <string name="file_storage">Archiviazione File</string>
     <string name="key">Chiave</string>
-    <string name="login_key">Chiave</string>
+    <string name="login_key">Chiave di Accesso</string>
     <string name="clear_file_cache">Svuota la cache dei file</string>
     <string name="debug_sync_report">Debug Sync Report</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Scuro</string>
     <string name="system">Sistema</string>
     <string name="settings">Impostazioni</string>
+    <string name="vault_settings_section_misc">Varie</string>
     <string name="app_preferences">Preferenze App</string>
+    <string name="settings_application">Applicazione</string>
     <string name="vault_key">Cassaforte &amp; Chiave</string>
     <string name="have_you_back_up_your_recovery_phrase">Hai eseguito il backup della tua chiave?</string>
     <string name="you_will_need_to_sign_in">Ne avrai bisogno per entrare nella tua cassaforte. Tienila in un posto sicuro. Se la perdi, non puoi più entrare nella tua cassaforte.</string>
@@ -44,7 +46,7 @@
     <string name="about_meta_info">Versione dell\'app: %1$s\nNumero di build: %2$d\nVersione della libreria: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDispositivo\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s</string>
     <string name="about_meta_info_new">Versione dell\'app: %1$s\nNumero di build: %2$d\nVersione della libreria: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDispositivo\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nChiave Ethereum\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Dispositivo: %1$s\nVersione di Android: %2$d\nVersione app: %3$s\nNumero di build: %4$d\nVersione libreria: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDispositivo\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
-    <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
+    <string name="about_meta_info_for_copy_new">Dispositivo: %1$s\nVersione Android: %2$d\nVersione App: %3$s\nNumero build: %4$d\nVersione libreria: %5$s\ ID \u00A0Account:\u00A0%6$s\nID dispositivo:\u00A0%7$s\nID Analytics:\u00A0%8$s\nID chiave Ethereum:\u00A0%9$s</string>
     <string name="space">Spazio</string>
     <string name="space_name">Nome dello Spazio</string>
     <string name="default_space">Spazio d\'ingresso</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Ottieni più spazio</string>
     <string name="account_name">Nome</string>
     <string name="space_settings">Impostazioni dello Spazio</string>
+    <string name="space_settings_error_change_type">Impossibile modificare il tipo di spazio. Riprovare.</string>
+    <string name="space_settings_error_wallpaper">Impossibile aggiornare lo sfondo. Riprova.</string>
+    <string name="space_settings_error_name">Impossibile aggiornare il nome dello spazio. Riprova.</string>
+    <string name="space_settings_error_icon">Impossibile aggiornare l\'icona dello spazio. Riprova.</string>
     <string name="data_management">Gestione dati</string>
     <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
@@ -385,7 +391,7 @@
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Blocco non supportato</string>
-    <string name="new_relation">New property</string>
+    <string name="new_relation">Nuova proprietà</string>
     <string name="copy_link">Copia collegamento</string>
     <string name="edit_link">Modifica collegamento</string>
     <string name="unlink">Scollega</string>
@@ -501,9 +507,9 @@
     <string name="my_types">I miei tipi</string>
     <string name="my_relations">Le mie proprietà</string>
     <string name="type_added">Tipo `%1$s` aggiunto alla tua libreria</string>
-    <string name="block_data_view_content_description_title">The name of the source query of the inline query</string>
+    <string name="block_data_view_content_description_title">Il nome della query sorgente della query in linea</string>
     <string name="block_data_view_content_description_no_source">La query in linea non ha sorgente</string>
-    <string name="block_data_view_content_description_no_data">The source of the inline query has no type</string>
+    <string name="block_data_view_content_description_no_data">La fonte della query in linea non ha alcun tipo</string>
     <string name="object_search_recently_opened_section_title">Aperti di recente</string>
     <string name="widget_source_anytype_library">Libreria di Anytype</string>
     <string name="widget_source_default_lists">Liste predefinite</string>
@@ -521,8 +527,8 @@
     <string name="set_no_items_title">Nessun oggetto</string>
     <string name="set_no_items_description">Crea il primo oggetto per continuare</string>
     <string name="set_no_items_button">Crea oggetto</string>
-    <string name="set_collection_view_not_present">View is not present in Query or Collection, please recreate object</string>
-    <string name="menu_turn_to_collection">Turn Query into Collection</string>
+    <string name="set_collection_view_not_present">La vista non è presente nella Query o nella Collezione, ricreare l\'oggetto.</string>
+    <string name="menu_turn_to_collection">Trasforma la Query in una Collezione</string>
     <string name="menu_change_query">Cambia query</string>
     <string name="collections">Collezioni</string>
     <string name="collection_widget_description">La tua collezione di oggetti</string>
@@ -541,7 +547,7 @@
     <string name="menu_type_change">Cambia tipo</string>
     <string name="menu_type_open">Apri tipo</string>
     <string name="menu_type_open_set">Apri query di %1$s</string>
-    <string name="menu_type_create_set">Create query of %1$s</string>
+    <string name="menu_type_create_set">Crea query di %1$s</string>
     <string name="toast_active_view_delete">La vista corrente non può essere eliminata</string>
     <string name="type_templates_widget_title">Crea oggetto</string>
     <string name="view_layout_widget_title">Disposizione</string>
@@ -563,6 +569,8 @@
     <string name="view_gallery">Galleria</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Copertina della pagina</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Togli</string>
     <string name="editor_toolbar">pulsante</string>
     <string name="wait_a_bit_message">Per favore, concedici un momento. Ci siamo quasi…</string>
     <string name="confirm">Conferma</string>
@@ -706,8 +714,8 @@
     <string name="remove">Rimuovi</string>
     <string name="choose_options">Choose options</string>
     <string name="search_tags">Search tags</string>
-    <string name="choose_relation_to_filter">Choose a property to filter</string>
-    <string name="choose_relation_to_sort">Choose a property to sort</string>
+    <string name="choose_relation_to_filter">Scegli una proprietà da filtrare</string>
+    <string name="choose_relation_to_sort">Scegli una proprietà da ordinare</string>
     <string name="btn_apply_new_object">Aggiungi alla lista</string>
     <string name="btn_add">Aggiungi</string>
     <string name="btn_upload_gallery">Upload from Gallery</string>
@@ -716,7 +724,7 @@
     <string name="alert_qr_camera">Vai su Impostazioni - Chiave sul Desktop per trovare il codice QR per l\'accesso.</string>
     <string name="alert_qr_camera_ok">Ok</string>
     <string name="choose_option">Choose option</string>
-    <string name="find_a_relation">Find a property</string>
+    <string name="find_a_relation">Trova una Proprietà</string>
     <string name="inbox">Inbox</string>
     <string name="unknown_type">Tipo sconosciuto</string>
     <string name="collection">Collezione</string>
@@ -804,7 +812,7 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Rimuovi</string>
     <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Nessun oggetto all\'interno</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1254,6 +1262,7 @@
     <string name="multiplayer_cant_add_members">Non puoi aggiungere altri membri</string>
     <string name="multiplayer_cant_add_editors">Non puoi aggiungere altri editor</string>
     <string name="multiplayer_upgrade_button">✦ Aggiorna</string>
+    <string name="multiplayer_manage_spaces">Gestisci Spazi</string>
     <string name="multiplayer_upgrade_button_request">✦ Aggiorna per aggiungere più membri</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Fai l\'upgrade per aggiungere più spazi</string>
     <string name="multiplayer_members">Membri</string>
@@ -1262,8 +1271,8 @@
     <string name="multiplayer_approve_request">Imposta accesso</string>
     <string name="multiplayer_view_request">Visualizza richiesta</string>
     <string name="multiplayer_owner">Proprietario</string>
-    <string name="multiplayer_no_permissions">No permissions</string>
-    <string name="multiplayer_pending">Pending</string>
+    <string name="multiplayer_no_permissions">Nessuna autorizzazione</string>
+    <string name="multiplayer_pending">In attesa</string>
     <string name="multiplayer_can_edit">Può modificare</string>
     <string name="multiplayer_can_view">Può visualizzare</string>
     <string name="multiplayer_space_add_viewer">Aggiungi visualizzatore</string>
@@ -1340,7 +1349,7 @@
         <item quantity="one">%1$d richiesta</item>
         <item quantity="other">%1$d richieste</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">tu</string>
     <string name="multiplayer_spaces">Spazi</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
@@ -1550,7 +1559,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">Aggiornamento Membership</string>
     <string name="membership_upgrade_description">Contattaci per ottenere più spazio di archiviazione, editor di spazi o più spazi condivisi. Il team di Anytype fornirà dettagli e condizioni su misura per le tue esigenze.</string>
     <string name="membership_upgrade_button">Contatta il Team Anytype</string>
-    <string name="membership_space_settings_share_limit">Hai raggiunto il limite di %1$d spazi che possono essere condivisi</string>
+    <string name="membership_space_settings_share_limit">Hai raggiunto il limite di %1$d spazi condivisi</string>
+    <string name="membership_space_settings_share_limit_2">Esegui l\'aggiornamento per ottenere più spazio o rimuovi gli spazi.</string>
     <plurals name="period_years">
         <item quantity="one">anno</item>
         <item quantity="other">%d anni</item>
@@ -1667,7 +1677,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_toast_type_added">Tipo di oggetto aggiunto</string>
     <string name="all_content_toast_type_removed">Tipo di oggetto rimosso</string>
     <string name="all_content_toast_archived">Oggetto archiviato</string>
-    <string name="all_content_new_relation">New property</string>
+    <string name="all_content_new_relation">Nuova proprietà</string>
     <string name="all_content_new_type">New type</string>
     <string name="all_content_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_snackbar_title">spostato nel cestino</string>
@@ -1705,8 +1715,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_empty_items_title">È vuoto qui.</string>
     <string name="object_type_empty_items_subtitle">Crea i tuoi primi oggetti per iniziare.</string>
     <string name="object_type_menu_delete">Elimina completamente</string>
-    <string name="object_type_objects_menu_open_set">Open Query</string>
-    <string name="object_type_objects_menu_create_set">Create Query</string>
+    <string name="object_type_objects_menu_open_set">Apri Query</string>
+    <string name="object_type_objects_menu_create_set">Crea Query</string>
     <string name="object_type_templates_menu_set_default">Imposta come predefinito</string>
     <string name="object_type_templates_menu_edit">Modifica</string>
     <string name="object_type_templates_menu_duplicate">Duplica</string>
@@ -1716,7 +1726,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_section_hidden">Nascosto</string>
     <string name="object_type_fields_section_file">File</string>
     <string name="object_type_fields_section_local_fields">Trovato in oggetti </string>
-    <string name="object_type_fields_section_empty_state_text">No properties yet</string>
+    <string name="object_type_fields_section_empty_state_text">Nessuna Proprietà</string>
     <string name="object_type_fields_title">Proprietà</string>
     <string name="object_type_fields_info_text">Stai modificando il tipo</string>
     <string name="object_type_fields_edit_field">Modifica del campo</string>
@@ -1724,8 +1734,8 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_fields_preview_field">Anteprima campo</string>
     <string name="object_type_fields_btn_save">Salva</string>
     <string name="object_type_fields_menu_delete">Scollega dal tipo</string>
-    <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
-    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
+    <string name="object_type_fields_menu_remove_from_type">Rimuovi dal Tipo</string>
+    <string name="object_type_fields_menu_move_to_bin">Sposta nel Cestino</string>
     <string name="object_type_fields_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="object_type_fields_menu_remove">Rimuovi</string>
     <string name="object_type_fields_local_info_title">Trovato in oggetti</string>
@@ -1734,10 +1744,10 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_templates_empty">Questo Tipo non ha modelli</string>
     <string name="object_properties_section_local">Local</string>
     <string name="object_properties_section_hidden">Nascosto</string>
-    <string name="object_properties_local_info_title">Local properties</string>
+    <string name="object_properties_local_info_title">Proprietà Locali</string>
     <string name="object_properties_local_info_description">Queste proprietà esistono solo in questo oggetto e non fanno parte del suo Tipo. Aggiungere al tipo per utilizzarlo in tutti gli oggetti, oppure rimuovere.</string>
-    <string name="object_properties_empty_state">No properties yet. Add some to this type</string>
-    <string name="object_type_open_type_error">Failed to open the object type</string>
+    <string name="object_properties_empty_state">Non ci sono ancora proprietà. Aggiungine alcune a questo tipo</string>
+    <string name="object_type_open_type_error">Impossibile aprire il tipo di oggetto</string>
     <string name="object_type_edit_type_details_error">La modifica di questo tipo non è consentita.</string>
     <string name="day_of_week_monday">Lunedì</string>
     <string name="day_of_week_tuesday">Martedì</string>
@@ -1769,7 +1779,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_settings_item_remove">Cancella tipo</string>
     <string name="chats_alert_delete_this_message_description">Non può essere ripristinato dopo la conferma</string>
     <string name="chats_alert_delete_this_message">Eliminare questo messaggio?</string>
-    <string name="object_set_of_title">Query of</string>
+    <string name="object_set_of_title">Query di</string>
     <string name="migration_update_is_in_progress">Aggiornamento in corso</string>
     <string name="migration_this_shouldn_t_take_long">Questo potrebbe richiedere un po \'di tempo. Si prega di non chiudere l\'app fino a quando il processo è completato.</string>
     <string name="migration_error_try_again">Riprova</string>
@@ -1799,7 +1809,7 @@ Please provide specific details of your needs here.</string>
     <string name="field_checkbox_title">Seleziona</string>
     <string name="field_menu_add_to_type">Aggiungi al tipo corrente</string>
     <string name="field_menu_remove_from_object">Rimuovi dall\'oggetto</string>
-    <string name="space_settings_space_name_hint">Add a name</string>
+    <string name="space_settings_space_name_hint">Aggiungi un nome</string>
     <string name="space_settings_space_description_hint">Aggiungi una descrizione</string>
     <string name="space_settings_section_collaboration">Collaborazione</string>
     <string name="space_settings_section_content_model">Modello di contenuto</string>
@@ -1813,6 +1823,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">Codice QR</string>
     <string name="space_settings_members_button_members">Membri</string>
     <string name="space_settings_types_button">Tipi di Oggetto</string>
+    <string name="space_settings_space_types_button">Tipo di Canale</string>
     <string name="space_settings_default_type_button">Tipo di Oggetto predefinito</string>
     <string name="space_settings_wallpaper_button">Sfondo</string>
     <string name="space_settings_storage_button">Spazio di archiviazione remoto</string>
@@ -1826,7 +1837,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_add_property_screen_section_types">Formati delle proprietà</string>
     <string name="object_type_add_property_screen_section_existing">Proprietà esistenti</string>
     <string name="object_type_add_property_screen_search_hint">Cerca o crea una nuova</string>
-    <string name="new_property_hint">New property</string>
+    <string name="new_property_hint">Nuova proprietà</string>
     <string name="edit_property_limit_objects">Limita gli oggetti a</string>
     <string name="edit_property_limit_objects_all">Limita gli oggetti</string>
     <string name="edit_property_limit_all">Tutto</string>
@@ -1854,7 +1865,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title_search_hint">Cerca...</string>
     <string name="space_invite_link_copied">Il link dell\'invito allo spazio è stato copiato!</string>
     <string name="object_type_create_new_title">Crea nuovo tipo</string>
-    <string name="object_type_rename_title">Rename type</string>
+    <string name="object_type_rename_title">Rinomina tipo</string>
     <string name="object_type_create_plural_title">Nome Tipo al plurale</string>
     <string name="object_type_create_title_hint">es. Progetto</string>
     <string name="object_type_create_plural_title_hint">es. Progetti</string>
@@ -1865,7 +1876,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_source_suggested">Suggerito</string>
     <string name="widgets_empty_state_message">Non ci sono ancora widget</string>
     <string name="space_settings_auto_create_widgets">Creazione Automatica Widgets</string>
-    <string name="space_types_screen_title">Object types</string>
+    <string name="space_types_screen_title">Tipi di oggetto</string>
     <string name="space_types_screen_section_my_types">I miei Tipi</string>
     <string name="space_types_screen_section_system_types">Tipi Di Sistema</string>
     <string name="space_properties_screen_title">Proprietà</string>
@@ -1887,12 +1898,12 @@ Please provide specific details of your needs here.</string>
     <string name="onboarding_error_config_file_network_id_mismatch">La configurazione di rete non corrisponde. Controllare le impostazioni di rete.</string>
     <string name="onboarding_set_your_name_title">Aggiungi Il Tuo Nome</string>
     <string name="onboarding_soul_creation_description">Visibile solo alle persone con cui condividi qualcosa. Non esiste un registro centrale per questi nomi.</string>
-    <string name="onboarding_email_add_title">Stay in the loop</string>
-    <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
-    <string name="onboarding_enter_email">Enter your email</string>
+    <string name="onboarding_email_add_title">Resta aggiornato</string>
+    <string name="onboarding_email_add_description">Ci piacerebbe condividere suggerimenti, trucchi e aggiornamenti dei prodotti con te. La tua email non è mai collegata alla tua identità. Non condivideremo mai i tuoi dati.</string>
+    <string name="onboarding_enter_email">Inserisci il tuo indirizzo e-mail</string>
     <string name="onboarding_button_continue">Continua</string>
     <string name="onboarding_button_skip">Salta</string>
-    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_email_error">Indirizzo e-mail errato</string>
     <string name="onboarding_name_error">Inserisci nome</string>
     <string name="notifications_modal_title">Attiva le notifiche push</string>
     <string name="notifications_modal_description">Ricevi una notifica immediata quando qualcuno ti invia un messaggio o ti menziona nei tuoi spazi.</string>
@@ -1952,7 +1963,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
     <string name="private_local_yours_forever">Privato, locale, tuo per sempre</string>
-    <string name="wallpaper_item_space_icon_color">Default Color</string>
+    <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>
     <string name="web_publishing_customize_url">Personalizza URL</string>
@@ -1967,18 +1978,31 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_open_in_browser">Apri nel Browser</string>
     <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <string name="widgets_section_pinned">Fissato</string>
-    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_section_object_types">Tipi di oggetto</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
-    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
-    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
-    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widgets_menu_delete_object_type">Elimina Tipo Oggetto</string>
+    <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>
+    <string name="widget_unpin_alert_title">Questo Widget Non Può Essere Ripristinato</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
-    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites">I miei Siti</string>
+    <string name="my_sites_empty_state_text">Non ci sono ancora oggetti pubblicati</string>
+    <string name="my_sites_it_s_empty_here">Qui è vuoto</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Pubblicate il tuo primo sito web per iniziare.</string>
+    <string name="members_limits_incentive_editors">Hai raggiunto il limite di %1$d editor</string>
+    <string name="members_limits_incentive_editors_sub">Aggiorna la tua iscrizione per invitare più membri.</string>
+    <string name="members_limits_incentive_viewers">Hai raggiunto il limite di %1$d spettatori</string>
+    <string name="space_settings_space_type_chat_title">Tipo di Canale</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Chat di gruppo con dati condivisi. Ideale per piccoli gruppi o singole conversazioni continue.</string>
+    <string name="space_settings_space_type_space_item_title">Spazio</string>
+    <string name="space_settings_space_type_space_descr">Hub per la gestione avanzata dei dati. Multi-chat per argomento in arrivo. Ideale per team di grandi dimensioni.</string>
+    <string name="alert_change_space_type_title">Convertire il Tipo di Canale?</string>
+    <string name="alert_change_space_type_subtitle">Passare da Spazio a Chat cambierà significativamente l\'esperienza.</string>
+    <string name="alert_change_space_type_button">Sì, convertire</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d nuovo messaggio</item>
         <item quantity="other">%d nuovi messaggi</item>
     </plurals>
     <!-- Multiplayer actions -->
-    <string name="multiplayer_approve">Approve</string>
+    <string name="multiplayer_approve">Approva</string>
 </resources>

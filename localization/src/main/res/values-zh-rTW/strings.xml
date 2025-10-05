@@ -10,7 +10,7 @@
     <string name="appearance">外觀</string>
     <string name="file_storage">檔案儲存空間</string>
     <string name="key">密鑰</string>
-    <string name="login_key">密鑰</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">清除檔案緩存</string>
     <string name="debug_sync_report">除錯同步報告</string>
     <string name="debug">除錯模式</string>
@@ -29,7 +29,9 @@
     <string name="dark">深色</string>
     <string name="system">跟隨系統</string>
     <string name="settings">設置</string>
+    <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">App Preferences</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">您備份好您的密鑰了嗎？</string>
     <string name="you_will_need_to_sign_in">您將需要使用它來登入您的帳號。請將其保存在安全的地方。 若遺失了，您將無法再登入您的帳號。</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">獲取更多空間</string>
     <string name="account_name">名稱</string>
     <string name="space_settings">空間設置</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">資料管理</string>
     <string name="deleted_account_danger_zone_msg">一旦您請求刪除您的筆記庫，您有 30 天的時間取消此請求。 30 天後，您的加密筆記庫資料將從備份節點永久刪除，您將無法在新裝置上登入 Anytype。</string>
     <string name="danger_zone">危險區域</string>
@@ -562,6 +568,8 @@
     <string name="view_gallery">畫廊</string>
     <string name="view_kanban">看板</string>
     <string name="page_cover">頁面封面</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">取消釘選</string>
     <string name="editor_toolbar">按鈕</string>
     <string name="wait_a_bit_message">請給我們一點時間。 馬上就好…</string>
     <string name="confirm">確認</string>
@@ -1249,6 +1257,7 @@
     <string name="multiplayer_cant_add_members">您無法新增更多成員</string>
     <string name="multiplayer_cant_add_editors">您無法新增更多編輯者</string>
     <string name="multiplayer_upgrade_button">✦ 升級</string>
+    <string name="multiplayer_manage_spaces">管理空間</string>
     <string name="multiplayer_upgrade_button_request">✦ 升級以新增更多成員</string>
     <string name="multiplayer_upgrade_spaces_button">✦ 升級以使用更多空間</string>
     <string name="multiplayer_members">成員</string>
@@ -1543,7 +1552,8 @@ Please provide specific details of your needs here.</string>
     <string name="membership_upgrade_title">會員升級</string>
     <string name="membership_upgrade_description">如需更多額外的儲存容量、更多空間編輯者或更多共享空間，請與我們聯絡。 Anytype 團隊將根據您的需求和條件為您量身定製。</string>
     <string name="membership_upgrade_button">聯絡 Anytype 團隊</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d spaces that can be shared</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d 年</item>
     </plurals>
@@ -1799,6 +1809,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_qrcode">QR Code</string>
     <string name="space_settings_members_button_members">成員</string>
     <string name="space_settings_types_button">Object Types</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Default Object Type</string>
     <string name="space_settings_wallpaper_button">桌布</string>
     <string name="space_settings_storage_button">Remote Storage</string>
@@ -1959,8 +1970,21 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">取消釘選</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Chat</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">空間</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>

@@ -10,7 +10,7 @@
     <string name="appearance">Görünüm</string>
     <string name="file_storage">Dosya depolama alanı</string>
     <string name="key">Kurtarma anahtarı</string>
-    <string name="login_key">Kurtarma anahtarı</string>
+    <string name="login_key">Giriş Anahtarı</string>
     <string name="clear_file_cache">Dosya önbelleğini temizle</string>
     <string name="debug_sync_report">Hata Ayıklama Senkronizasyon Raporu</string>
     <string name="debug">Hata ayıklama</string>
@@ -29,7 +29,9 @@
     <string name="dark">Karanlık</string>
     <string name="system">Sistem</string>
     <string name="settings">Ayarlar</string>
+    <string name="vault_settings_section_misc">Diğer</string>
     <string name="app_preferences">Uygulama Tercihleri</string>
+    <string name="settings_application">Uygulama</string>
     <string name="vault_key">Kasa &amp; Anahtar</string>
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
     <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Daha fazla alan alın</string>
     <string name="account_name">İsim</string>
     <string name="space_settings">Alan ayarları</string>
+    <string name="space_settings_error_change_type">Alan türü değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_wallpaper">Duvar kağıdı yüklenemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="data_management">Veri yönetimi</string>
     <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
@@ -504,7 +510,7 @@
     <string name="block_data_view_content_description_title">Satır içi sorgunun kaynak sorgusunun adı</string>
     <string name="block_data_view_content_description_no_source">Satır içi sorgunun kaynağı yok</string>
     <string name="block_data_view_content_description_no_data">Satır içi sorgunun kaynağının türü yok</string>
-    <string name="object_search_recently_opened_section_title">Yakın zamanda açıldı</string>
+    <string name="object_search_recently_opened_section_title">Yakın zamanda açılan</string>
     <string name="widget_source_anytype_library">Anytype Kitaplığı</string>
     <string name="widget_source_default_lists">Varsayılan listeler</string>
     <string name="widget_source_system">Sistem</string>
@@ -563,6 +569,8 @@
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Sayfa kapağı</string>
+    <string name="object_action_pin">Sabitle</string>
+    <string name="object_action_unpin">Sabitlemeyi kaldır</string>
     <string name="editor_toolbar">düğme</string>
     <string name="wait_a_bit_message">Lütfen bize biraz izin verin. Neredeyse hazır olmak üzere…</string>
     <string name="confirm">Onayla</string>
@@ -860,8 +868,8 @@
     <string name="unselect_all">Seçimi kaldır</string>
     <string name="sets">Setler</string>
     <string name="favorites">Favoriler</string>
-    <string name="recent">Yakın zamanda düzenlendi</string>
-    <string name="recently_opened">Yakın zamanda açıldı</string>
+    <string name="recent">Yakın zamanda düzenlenen</string>
+    <string name="recently_opened">Yakın zamanda açılan</string>
     <string name="bin">Çöp kutusu</string>
     <string name="synced_files">Dosyaları temizle</string>
     <string name="log_in">Giriş yap</string>
@@ -1219,7 +1227,7 @@
     <string name="multiplayer_link_disabled_desc">Yalnızca davet edilmiş üyeler erişebilir</string>
     <string name="multiplayer_editor_access">Düzenleyici erişimi</string>
     <string name="multiplayer_editor">Düzenleyici</string>
-    <string name="multiplayer_editor_access_desc">Bağlantıya sahip kişiler sohbette düzenleyebilir ve yazabilir</string>
+    <string name="multiplayer_editor_access_desc">Bağlantıya sahip kişiler sohbeti düzenleyebilir ve yazabilir</string>
     <string name="multiplayer_viewer_access">Görüntüleyici erişimi</string>
     <string name="multiplayer_viewer">Görüntüleyen</string>
     <string name="multiplayer_viewer_access_desc">Bağlantıya sahip kişiler sohbeti görüntüleyebilir ve okuyabilir</string>
@@ -1253,6 +1261,7 @@
     <string name="multiplayer_cant_add_members">Daha fazla üye ekleyemezsiniz</string>
     <string name="multiplayer_cant_add_editors">Daha fazla düzenleyici ekleyemezsiniz</string>
     <string name="multiplayer_upgrade_button">✦ Yükselt</string>
+    <string name="multiplayer_manage_spaces">Alanları yönetin</string>
     <string name="multiplayer_upgrade_button_request">✦ Daha fazla üye eklemek için yükseltin</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Daha fazla alan eklemek için yükseltin</string>
     <string name="multiplayer_members">Üyeler</string>
@@ -1549,7 +1558,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="membership_upgrade_title">Üyelik yükseltme</string>
     <string name="membership_upgrade_description">Ekstra depolama, alan editörleri veya daha fazla ortak alan için bize ulaşın. Anytype ekibi ihtiyaçlarınıza göre uyarlanmış ayrıntılar ve koşullar sağlayacaktır.</string>
     <string name="membership_upgrade_button">Anytype ekibi ile iletişime geçin</string>
-    <string name="membership_space_settings_share_limit">Paylaşılabilecek %1$d alan sınırına ulaştınız.</string>
+    <string name="membership_space_settings_share_limit">%1$d paylaşılan alan sınırına ulaştınız</string>
+    <string name="membership_space_settings_share_limit_2">Daha fazlası için yükseltin veya var olan alanları kaldırın.</string>
     <plurals name="period_years">
         <item quantity="one">yıl</item>
         <item quantity="other">%d yıl</item>
@@ -1679,7 +1689,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat">Sohbet</string>
     <string name="copy">Kopyala</string>
     <string name="copy_text">Metni Kopyala</string>
-    <string name="copy_plain_text">Düz Metni Kopyala</string>
+    <string name="copy_plain_text">Metni Kopyala</string>
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
@@ -1753,7 +1763,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="attachments">Ek dosyalar</string>
     <string name="space_list_empty_state_create_your_first_space_to_get_started">Başlamak için ilk alanınızı oluşturun</string>
     <string name="space_list_empty_state_it_is_empty_here">Burası boş.</string>
-    <string name="emoji_category_smileys_and_people">Suratlar &amp; İnsanlar</string>
+    <string name="emoji_category_smileys_and_people">İfadeler &amp; İnsanlar</string>
     <string name="emoji_category_animals_and_nature">Hayvanlar &amp; Doğa</string>
     <string name="emoji_category_food_and_drink">Yiyecek &amp; İçecek</string>
     <string name="emoji_category_activity_and_sport">Etkinlik &amp; Spor</string>
@@ -1761,7 +1771,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="emoji_category_objects">Nesneler</string>
     <string name="emoji_category_symbols">Semboller</string>
     <string name="emoji_category_flags">Bayraklar</string>
-    <string name="emoji_recently_used_section">Yakın zamanda kullanılmış</string>
+    <string name="emoji_recently_used_section">Yakın zamanda kullanılan</string>
     <string name="chat_message_reactions_no_reactions_yet">Henüz tepki verilmemiş</string>
     <string name="chat_message_reactions_no_reactions_message">Muhtemelen birisi tepkisini kaldırdı veya teknik bir sorun oluştu</string>
     <string name="object_types_human">İnsan</string>
@@ -1812,6 +1822,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_qrcode">Karekod</string>
     <string name="space_settings_members_button_members">Üyeler</string>
     <string name="space_settings_types_button">Nesne Türleri</string>
+    <string name="space_settings_space_types_button">Kanal Türü</string>
     <string name="space_settings_default_type_button">Varsayılan Nesne Türü</string>
     <string name="space_settings_wallpaper_button">Duvar kağıdı</string>
     <string name="space_settings_storage_button">Uzak Depolama</string>
@@ -1915,7 +1926,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_all_short">Hepsi</string>
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
-    <string name="space_notify_unmute">Susturmayı kaldır</string>
+    <string name="space_notify_unmute">Sesi aç</string>
     <string name="space_notify_mute">Sustur</string>
     <string name="vault_pinned_limit_message">%1$d sabitlenmiş alan mevcut sınırınızdır. Yeni bir favori eklemek için birini sabitlemekten kaldırın.</string>
     <string name="vault_space_settings">Alan Ayarları</string>
@@ -1972,8 +1983,21 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>
     <string name="widget_unpin_alert_title">Bu Widget Geri Yüklenemez</string>
     <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
+    <string name="my_sites">Sitelerim</string>
+    <string name="my_sites_empty_state_text">Henüz yayınlanmış nesne bulunmamaktadır</string>
     <string name="my_sites_it_s_empty_here">Burası boş</string>
     <string name="my_sites_publish_your_first_website_to_get_started">İlk web sitenizi yayınlayarak başlayın.</string>
+    <string name="members_limits_incentive_editors">%1$d editör sınırına ulaştınız</string>
+    <string name="members_limits_incentive_editors_sub">Daha fazla üye davet etmek için üyeliğinizi yükseltin.</string>
+    <string name="members_limits_incentive_viewers">%1$d görüntüleyici sınırına ulaştınız</string>
+    <string name="space_settings_space_type_chat_title">Kanal Türü</string>
+    <string name="space_settings_space_type_chat_item_title">Sohbet</string>
+    <string name="space_settings_space_type_chat_descr">Paylaşılan verilerle grup sohbeti. Küçük gruplar veya devam eden tek bir konuşma için en uygun seçenektir.</string>
+    <string name="space_settings_space_type_space_item_title">Alan</string>
+    <string name="space_settings_space_type_space_descr">Gelişmiş veri yönetimi için Hub. Konuya göre çoklu sohbetler yakında geliyor. Daha büyük gruplar için idealdir.</string>
+    <string name="alert_change_space_type_title">Kanal Türü Dönüştürülsün mü?</string>
+    <string name="alert_change_space_type_subtitle">Alan ve Sohbet arasında geçiş yapmak, deneyimi önemli ölçüde değiştirecektir.</string>
+    <string name="alert_change_space_type_button">Evet, dönüştür</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>

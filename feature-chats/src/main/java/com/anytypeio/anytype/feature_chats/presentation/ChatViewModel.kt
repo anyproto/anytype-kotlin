@@ -1017,10 +1017,12 @@ class ChatViewModel @Inject constructor(
             it != attachment
         }
         viewModelScope.launch {
+            var path: String? = null
             val preloaded = when(attachment) {
                 is ChatView.Message.ChatBoxAttachment.File -> {
                     val state = attachment.state
                     if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
                         state.preloadedFileId
                     } else {
                         null
@@ -1029,6 +1031,7 @@ class ChatViewModel @Inject constructor(
                 is ChatView.Message.ChatBoxAttachment.Media -> {
                     val state = attachment.state
                     if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
                         state.preloadedFileId
                     } else {
                         null
@@ -1045,6 +1048,9 @@ class ChatViewModel @Inject constructor(
                 }.onFailure {
                     Timber.e("Error while discarding preloaded file: $preloaded")
                 }
+            }
+            if (!path.isNullOrEmpty()) {
+                copyFileToCacheDirectory.delete(path)
             }
         }
         viewModelScope.launch {

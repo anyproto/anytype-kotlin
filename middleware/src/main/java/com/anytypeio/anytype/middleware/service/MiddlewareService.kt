@@ -204,6 +204,9 @@ interface MiddlewareService {
     fun fileUpload(request: Rpc.File.Upload.Request): Rpc.File.Upload.Response
 
     @Throws(Exception::class)
+    fun fileDiscardPreload(request: Rpc.File.DiscardPreload.Request): Rpc.File.DiscardPreload.Response
+
+    @Throws(Exception::class)
     fun fileDownload(request: Rpc.File.Download.Request): Rpc.File.Download.Response
 
     @Throws(Exception::class)

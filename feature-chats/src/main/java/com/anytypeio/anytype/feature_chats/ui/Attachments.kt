@@ -267,7 +267,7 @@ fun BubbleAttachments(
                 val title = if (attachment.isDeleted) {
                     stringResource(R.string.non_existent_object)
                 } else {
-                    attachment.wrapper?.name.orEmpty().ifEmpty {
+                    attachment.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
                 }

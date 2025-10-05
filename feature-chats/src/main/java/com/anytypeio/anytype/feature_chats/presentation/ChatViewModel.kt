@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -70,6 +71,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -115,6 +117,8 @@ class ChatViewModel @Inject constructor(
     private val getObject: GetObject,
     private val analytics: Analytics
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+
+    private val preloadingJobs = mutableListOf<Job>()
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
         replay = 0,
@@ -577,7 +581,13 @@ class ChatViewModel @Inject constructor(
         if (BuildConfig.DEBUG) {
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
+
         viewModelScope.launch {
+
+            // Cancelling preloading jobs if there are any:
+
+            preloadingJobs.cancel()
+
             // Use LinkDetector to find all types of links (URLs, emails, phones)
             val detectedLinkMarks = LinkDetector.addLinkMarksToText(
                 text = msg,
@@ -1283,7 +1293,8 @@ class ChatViewModel @Inject constructor(
             }
         }
         // Starting preloading files
-        viewModelScope.launch {
+
+        preloadingJobs += viewModelScope.launch {
             uris.forEach { info ->
                 val path = withContext(dispatchers.io) {
                     copyFileToCacheDirectory.copy(info.uri)
@@ -1335,7 +1346,7 @@ class ChatViewModel @Inject constructor(
             )
         }
         // Starting preloading files
-        viewModelScope.launch {
+        preloadingJobs += viewModelScope.launch {
             infos.forEach { info ->
                 val path = withContext(dispatchers.io) {
                     copyFileToCacheDirectory.copy(info.uri)

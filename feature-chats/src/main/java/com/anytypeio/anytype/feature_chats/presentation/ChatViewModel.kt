@@ -997,6 +997,37 @@ class ChatViewModel @Inject constructor(
             it != attachment
         }
         viewModelScope.launch {
+            val preloaded = when(attachment) {
+                is ChatView.Message.ChatBoxAttachment.File -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                is ChatView.Message.ChatBoxAttachment.Media -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                else -> null
+            }
+
+            if (!preloaded.isNullOrEmpty()) {
+                discardPreloadedFile.async(
+                    params = preloaded
+                ).onSuccess {
+                    Timber.d("Successfully Discarded preloaded file: $preloaded")
+                }.onFailure {
+                    Timber.e("Error while discarding preloaded file: $preloaded")
+                }
+            }
+        }
+        viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatDetachItemChat
             )

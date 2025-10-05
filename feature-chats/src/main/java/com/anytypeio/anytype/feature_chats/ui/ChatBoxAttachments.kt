@@ -346,7 +346,10 @@ private fun BoxScope.ChatBoxAttachmentState(state: ChatView.Message.ChatBoxAttac
         ChatView.Message.ChatBoxAttachment.State.Uploaded -> {
             // Do nothing.
         }
-        ChatView.Message.ChatBoxAttachment.State.Uploading -> {
+        is ChatView.Message.ChatBoxAttachment.State.Preloaded -> {
+            // Do nothing.
+        }
+        ChatView.Message.ChatBoxAttachment.State.Uploading, ChatView.Message.ChatBoxAttachment.State.Preloading -> {
             CircularProgressIndicator(
                 modifier = Modifier
                     .padding(

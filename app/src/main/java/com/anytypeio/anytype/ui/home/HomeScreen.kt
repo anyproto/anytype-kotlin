@@ -375,44 +375,74 @@ private fun WidgetList(
                 is WidgetView.SetOfObjects -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            SetOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                alpha = alpha.value,
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
+
+                            DataViewListWidgetCard(
+                                modifier = modifier,
                                 item = item,
-                                onWidgetElementClicked = { obj ->
+                                mode = mode,
+                                onWidgetObjectClicked = { obj ->
                                     onWidgetElementClicked(item.id, obj)
                                 },
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuAction = onWidgetMenuAction,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateDataViewObject = onCreateDataViewObject,
                                 onCreateElement = onCreateElement,
-                                isDragging = isDragged
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
-                        SetOfObjectsItem(
-                            index = index,
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
+
+                        DataViewListWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onCreateDataViewObject = onCreateDataViewObject,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
@@ -626,49 +656,6 @@ private fun ListOfObjectsItem(
 }
 
 @Composable
-private fun SetOfObjectsItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.SetOfObjects,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {},
-    isDragging: Boolean = false
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        DataViewListWidgetCard(
-            item = item,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onChangeWidgetView = onChangeWidgetView,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement,
-            isDragging = isDragging
-        )
-    }
-}
-
-@Composable
 private fun GalleryWidgetItem(
     modifier: Modifier = Modifier,
     index: Int,
@@ -704,8 +691,7 @@ private fun GalleryWidgetItem(
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onCreateElement = onCreateElement,
-            isDragging = isDragging
+            onCreateElement = onCreateElement
         )
     }
 }

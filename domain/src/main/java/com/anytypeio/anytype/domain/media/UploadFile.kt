@@ -19,13 +19,15 @@ class UploadFile @Inject constructor(
         command = Command.UploadFile(
             path = params.path,
             type = params.type,
-            space = params.space
+            space = params.space,
+            preloadFileId = params.preloadFileId
         )
     )
 
     data class Params(
         val path: String,
         val space: SpaceId,
-        val type: Block.Content.File.Type = Block.Content.File.Type.FILE
+        val type: Block.Content.File.Type = Block.Content.File.Type.FILE,
+        val preloadFileId: Id? = null
     )
 }

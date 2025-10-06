@@ -146,9 +146,9 @@ sealed interface ChatView {
 
             data class Media(
                 val uri: String,
-                val state: State = State.Idle,
                 val isVideo: Boolean = false,
-                val capturedByCamera: Boolean = false
+                val capturedByCamera: Boolean = false,
+                val state: State = State.Idle,
             ): ChatBoxAttachment()
 
             data class File(
@@ -190,6 +190,11 @@ sealed interface ChatView {
 
             sealed class State {
                 data object Idle : State()
+                data object Preloading: State()
+                data class Preloaded(
+                    val preloadedFileId: Id,
+                    val path: String
+                ): State()
                 data object Uploading : State()
                 data object Uploaded : State()
                 data object Failed : State()

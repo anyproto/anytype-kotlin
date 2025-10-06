@@ -523,40 +523,72 @@ private fun WidgetList(
                 is WidgetView.ListOfObjects -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            ListOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                alpha = alpha.value,
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
+
+                            ListWidgetCard(
+                                modifier = modifier,
                                 item = item,
-                                onWidgetElementClicked = { obj ->
+                                mode = mode,
+                                onWidgetObjectClicked = { obj ->
                                     onWidgetElementClicked(item.id, obj)
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onWidgetMenuAction = onWidgetMenuAction,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
-                                isDragging = isDragged
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
-                        ListOfObjectsItem(
-                            index = index,
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
+
+                        ListWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
@@ -645,46 +677,6 @@ private fun WidgetList(
         item {
             Spacer(modifier = Modifier.height(200.dp))
         }
-    }
-}
-
-@Composable
-private fun ListOfObjectsItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.ListOfObjects,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {},
-    isDragging: Boolean = false
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        ListWidgetCard(
-            item = item,
-            mode = mode,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTriggered,
-            isDragging = isDragging
-        )
     }
 }
 

@@ -20,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -32,6 +33,7 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
+import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
@@ -60,9 +62,10 @@ fun TreeWidgetCard(
                 bottom = 6.dp,
             )
         ) {
+            val (title, icon) = getTitleAndIcon(item, item.icon)
             WidgetHeader(
-                title = item.getPrettyName(),
-                icon = item.icon,
+                title = title,
+                icon = icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -208,6 +211,34 @@ private fun TreeWidgetTreeItems(
     }
 }
 
+@Composable
+private fun getTitleAndIcon(
+    item: WidgetView.Tree,
+    icon: ObjectIcon
+): Pair<String, ObjectIcon> {
+    return when (item.source) {
+        Widget.Source.Bundled.Favorites -> Pair(
+            stringResource(id = R.string.favorites),
+            ObjectIcon.SimpleIcon("star", R.color.text_primary)
+        )
+        Widget.Source.Bundled.Recent -> Pair(
+            stringResource(id = R.string.recent),
+            ObjectIcon.SimpleIcon("pencil", R.color.text_primary)
+        )
+        Widget.Source.Bundled.RecentLocal -> Pair(
+            stringResource(id = R.string.recently_opened),
+            ObjectIcon.SimpleIcon("eye", R.color.text_primary)
+        )
+        Widget.Source.Bundled.Bin -> Pair(
+            stringResource(R.string.bin),
+            ObjectIcon.SimpleIcon("calendar", R.color.text_primary)
+        )
+        else -> Pair(
+            item.getPrettyName(),
+            icon
+        )
+    }
+}
 
 
 @Immutable

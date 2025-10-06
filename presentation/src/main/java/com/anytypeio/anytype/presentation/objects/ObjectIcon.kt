@@ -108,6 +108,8 @@ sealed class ObjectIcon {
             }
         }
     }
+
+    data class SimpleIcon(val rawValue: String, val color: Int) : ObjectIcon()
 }
 
 sealed class SpaceMemberIconView {

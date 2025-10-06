@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SimpleIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -123,6 +124,14 @@ fun ListWidgetObjectIcon(
                 mime = icon.mime,
                 modifier = modifier,
                 iconSize = iconSize,
+            )
+        }
+
+        is ObjectIcon.SimpleIcon -> {
+            SimpleIcon(
+                modifier = modifier,
+                icon = icon,
+                backgroundSize = iconSize
             )
         }
     }

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -53,14 +54,10 @@ fun ListWidgetCard(
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
+            val (title, icon ) = getBundleTitleAndIcon(item.type)
             WidgetHeader(
-                title = when(item.type) {
-                    Type.Favorites -> stringResource(id = R.string.favorites)
-                    Type.Recent -> stringResource(id = R.string.recent)
-                    Type.RecentLocal -> stringResource(id = R.string.recently_opened)
-                    Type.Bin -> stringResource(R.string.bin)
-                },
-                icon = item.icon,
+                title = title,
+                icon = icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -120,6 +117,30 @@ fun ListWidgetCard(
             menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
+        )
+    }
+}
+
+@Composable
+fun getBundleTitleAndIcon(
+    type: Type,
+): Pair<String, ObjectIcon> {
+    return when (type) {
+        Type.Favorites -> Pair(
+            stringResource(id = R.string.favorites),
+            ObjectIcon.SimpleIcon("star", R.color.text_primary)
+        )
+        Type.Recent -> Pair(
+            stringResource(id = R.string.recent),
+            ObjectIcon.SimpleIcon("pencil", R.color.text_primary)
+        )
+        Type.RecentLocal -> Pair(
+            stringResource(id = R.string.recently_opened),
+            ObjectIcon.SimpleIcon("eye", R.color.text_primary)
+        )
+        Type.Bin -> Pair(
+            stringResource(R.string.bin),
+            ObjectIcon.SimpleIcon("calendar", R.color.text_primary)
         )
     }
 }

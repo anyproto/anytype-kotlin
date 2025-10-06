@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.WidgetView.ListOfObjects.Type
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun ListWidgetCard(
@@ -42,6 +43,7 @@ fun ListWidgetCard(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
     modifier: Modifier = Modifier
 ) {
@@ -115,7 +117,7 @@ fun ListWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

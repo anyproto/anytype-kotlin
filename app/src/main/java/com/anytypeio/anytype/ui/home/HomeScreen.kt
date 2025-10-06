@@ -65,7 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.shouldShowLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -243,6 +243,8 @@ private fun WidgetList(
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
 
+                            val menuItems = item.getWidgetMenuItems()
+
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
@@ -260,7 +262,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             TreeWidgetCard(
@@ -279,18 +281,21 @@ private fun WidgetList(
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         TreeWidgetCard(
@@ -309,6 +314,7 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onCreateElement = onCreateElement,
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
@@ -319,6 +325,8 @@ private fun WidgetList(
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
 
+                            val menuItems = item.getWidgetMenuItems()
+
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
@@ -336,7 +344,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             LinkWidgetCard(
@@ -346,18 +354,21 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         LinkWidgetCard(
@@ -367,6 +378,7 @@ private fun WidgetList(
                                 onWidgetMenuAction(item.id, action)
                             },
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
@@ -377,6 +389,8 @@ private fun WidgetList(
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
 
+                            val menuItems = item.getWidgetMenuItems()
+
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
@@ -394,7 +408,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             DataViewListWidgetCard(
@@ -413,18 +427,21 @@ private fun WidgetList(
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         DataViewListWidgetCard(
@@ -443,6 +460,7 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onCreateElement = onCreateElement,
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
@@ -452,6 +470,8 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            val menuItems = item.getWidgetMenuItems()
 
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
@@ -470,7 +490,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             GalleryWidgetCard(
@@ -489,18 +509,21 @@ private fun WidgetList(
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         GalleryWidgetCard(
@@ -519,6 +542,7 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onCreateElement = onCreateElement,
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
@@ -528,6 +552,8 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            val menuItems = item.getWidgetMenuItems()
 
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
@@ -546,7 +572,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             ListWidgetCard(
@@ -564,18 +590,21 @@ private fun WidgetList(
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         ListWidgetCard(
@@ -593,6 +622,7 @@ private fun WidgetList(
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onCreateElement = onCreateElement,
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
@@ -613,6 +643,8 @@ private fun WidgetList(
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
 
+                            val menuItems = item.getWidgetMenuItems()
+
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -629,7 +661,7 @@ private fun WidgetList(
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = item.shouldShowLongClickMenu()
+                                shouldEnableLongClick = menuItems.isNotEmpty()
                             )
 
                             AllContentWidgetCard(
@@ -638,18 +670,21 @@ private fun WidgetList(
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
+                                menuItems = menuItems,
                                 isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
 
+                        val menuItems = item.getWidgetMenuItems()
+
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                            shouldEnableLongClick = item.shouldShowLongClickMenu()
+                            shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
                         AllContentWidgetCard(
@@ -658,6 +693,7 @@ private fun WidgetList(
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
+                            menuItems = menuItems,
                             isCardMenuExpanded = isCardMenuExpanded
                         )
                     }

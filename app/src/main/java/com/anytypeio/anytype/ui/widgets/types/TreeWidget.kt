@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun TreeWidgetCard(
@@ -48,6 +49,7 @@ fun TreeWidgetCard(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
+    menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
     modifier: Modifier = Modifier
 ) {
@@ -94,7 +96,7 @@ fun TreeWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

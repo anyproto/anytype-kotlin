@@ -147,7 +147,7 @@ fun SpaceChatWidgetCard(
             Spacer(modifier = Modifier.width(16.dp))
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = emptyList(),
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

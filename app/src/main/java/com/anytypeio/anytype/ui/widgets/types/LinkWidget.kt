@@ -21,12 +21,14 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun LinkWidgetCard(
     item: WidgetView.Link,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
     modifier: Modifier = Modifier
 ) {
@@ -62,7 +64,7 @@ fun LinkWidgetCard(
             )
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

@@ -56,6 +56,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun DataViewListWidgetCard(
@@ -69,6 +70,7 @@ fun DataViewListWidgetCard(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
     modifier: Modifier = Modifier
 ) {
@@ -146,7 +148,7 @@ fun DataViewListWidgetCard(
         }
 
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )
@@ -165,6 +167,7 @@ fun GalleryWidgetCard(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
+    menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
     modifier: Modifier = Modifier
 ) {
@@ -265,7 +268,7 @@ fun GalleryWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

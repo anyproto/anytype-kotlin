@@ -10,7 +10,7 @@
     <string name="appearance">Erscheinungsbild</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Anmeldeschlüssel</string>
     <string name="clear_file_cache">Dateicache leeren</string>
     <string name="debug_sync_report">Debug Sync Bericht</string>
     <string name="debug">Debug</string>
@@ -31,7 +31,7 @@
     <string name="settings">Einstellungen</string>
     <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">App-Einstellungen</string>
-    <string name="settings_application">Application</string>
+    <string name="settings_application">Anwendung</string>
     <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
     <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
@@ -52,7 +52,7 @@
     <string name="default_space">Standard Space</string>
     <string name="space_settings_apply_random_gradient">Zufällige Volltonfarbe verwenden</string>
     <string name="space_settings_apply_upload_image">Bild hochladen</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Symbolfarbe ändern</string>
     <string name="profile_settings_apply_upload_image">Bild hochladen</string>
     <string name="remove_image">Bild entfernen</string>
     <string name="delete_space">Space löschen</string>
@@ -63,7 +63,7 @@
     <string name="offload_files">Dateien abladen</string>
     <string name="local_storage_used">%1$s benutzt</string>
     <string name="space_usage">%1$s von %2$s benutzt</string>
-    <string name="remote_storage">Remote Storage</string>
+    <string name="remote_storage">Entfernte Speicherung</string>
     <string name="contact_us">Kontaktiere uns</string>
     <string name="get_more_space">Speicherplatz erweitern</string>
     <string name="account_name">Name</string>
@@ -385,9 +385,9 @@
     <string name="scroll_to_select_position">Scrollen, um neue Position auszuwählen</string>
     <string name="block_action_add_below">Unten hinzufügen</string>
     <string name="content_desc_back_button">Back button</string>
-    <string name="content_desc_share_button">Share button</string>
+    <string name="content_desc_share_button">Teilen-Schaltfläche</string>
     <string name="content_desc_home_button">Home button</string>
-    <string name="content_desc_chat_button">Chat button</string>
+    <string name="content_desc_chat_button">Chat-Schaltfläche</string>
     <string name="content_desc_search_button">Search button</string>
     <string name="content_desc_add_doc_button">Add doc</string>
     <string name="unsupported_block">Nicht unterstützter Block</string>
@@ -1051,9 +1051,9 @@
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
     <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
-    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
+    <string name="onboarding_tap_to_reveal">Enthüllen und kopieren</string>
     <string name="onboarding_key_skip">Überspringen</string>
-    <string name="onboarding_key_not_now">I’ll save it later</string>
+    <string name="onboarding_key_not_now">Ich werde ihn später speichern</string>
     <string name="onboarding_key_copy">In die Zwischenablage kopieren</string>
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
@@ -1065,12 +1065,12 @@
     <string name="onboarding_your_name">Gib deinen Namen ein</string>
     <string name="onboarding_mnemonic_read_more">Mehr erfahren</string>
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
-    <string name="onboarding_what_is_the_key">How the Key works?</string>
+    <string name="onboarding_what_is_the_key">Wie der Schlüssel funktioniert?</string>
     <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
     <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
     <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Nur du bist dafür verantwortlich</string>
     <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
     <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
@@ -1245,7 +1245,7 @@
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Privater Kommentar für einen Space-Eigentümer</string>
     <string name="multiplayer_request_to_join_explanation">Sobald der Spacebesitzer Ihre Anfrage genehmigt, werden Sie dem Space beitreten, wobei der Eigentümer die Zugriffsrechte festgelegt.</string>
-    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_title">%1$s beitreten</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
     <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
     <string name="multiplayer_request_to_join_sent_title">Anfrage gesendet</string>
@@ -1270,8 +1270,8 @@
     <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
-    <string name="multiplayer_no_permissions">No permissions</string>
-    <string name="multiplayer_pending">Pending</string>
+    <string name="multiplayer_no_permissions">Keine Berechtigungen</string>
+    <string name="multiplayer_pending">Ausstehend</string>
     <string name="multiplayer_can_edit">Darf bearbeiten</string>
     <string name="multiplayer_can_view">Darf ansehen</string>
     <string name="multiplayer_space_add_viewer">Viewer hinzufügen</string>
@@ -1683,7 +1683,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="main_navigation_content_desc_back_button">Back button</string>
     <string name="main_navigation_content_desc_members_button">Share and members button</string>
     <string name="main_navigation_content_desc_home_button">Home button</string>
-    <string name="main_navigation_content_desc_chat_button">Chat button</string>
+    <string name="main_navigation_content_desc_chat_button">Chat-Schaltfläche</string>
     <string name="main_navigation_content_desc_search_button">Schaltfläche zum Suchen von Objekten</string>
     <string name="main_navigation_content_desc_create_button">Schaltfläche zum Erstellen eines Objekts</string>
     <string name="chat">Chat</string>
@@ -1825,7 +1825,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Standard-Objekttyp</string>
     <string name="space_settings_wallpaper_button">Hintergrundbild</string>
-    <string name="space_settings_storage_button">Remote Storage</string>
+    <string name="space_settings_storage_button">Entfernte Speicherung</string>
     <string name="space_settings_space_info_button">Bereichsinformationen</string>
     <string name="space_settings_delete_space_button">Bereich löschen</string>
     <string name="space_settings_icon_title">Bild bearbeiten</string>
@@ -1849,7 +1849,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="property_limit_objects_title">Objekte einschränken</string>
     <string name="property_include_time_section">Zeit einbeziehen</string>
     <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
-    <string name="migration_screen_new_version_update">New Version Update</string>
+    <string name="migration_screen_new_version_update">Aktualisierung auf neue Version</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
     <string name="migration_screen_description_2">It might take a little while, but don\'t worry, your data is safe.</string>
     <string name="migration_screen_start_update">Aktualisierung starten</string>
@@ -1908,12 +1908,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Benachrichtigungen aktivieren</string>
     <string name="notifications_modal_cancel_button">Nicht jetzt</string>
-    <string name="vault_create_chat">New Chat</string>
+    <string name="vault_create_chat">Neuer Chat</string>
     <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">Keine Übereinstimmungen gefunden</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_box_take_photo">Foto machen</string>
@@ -1938,7 +1938,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
     <string name="content_desc_muted">Stumm geschaltet</string>
-    <string name="failed_to_load_image">Failed to load image</string>
+    <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
     <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
@@ -1962,7 +1962,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Default Color</string>
+    <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Einstellungen</string>
     <string name="web_publishing_customize_url">URL anpassen</string>
@@ -1972,10 +1972,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="web_publishing_publish">Publish</string>
     <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
     <string name="web_publishing_join">Beitreten</string>
-    <string name="settings_my_sites">My sites</string>
-    <string name="web_publishing_view_object">View Object</string>
-    <string name="web_publishing_open_in_browser">Open in Browser</string>
-    <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="settings_my_sites">Meine Seiten</string>
+    <string name="web_publishing_view_object">Objekt ansehen</string>
+    <string name="web_publishing_open_in_browser">Im Browser öffnen</string>
+    <string name="web_publishing_copy_web_link">Weblink kopieren</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_object_types">Objekttypen</string>
     <string name="widgets_menu_new_object_type">Neu</string>
@@ -1985,7 +1985,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
-    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_it_s_empty_here">Hier ist es leer</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
@@ -1999,9 +1999,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
     <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
-        <item quantity="one">%d new message</item>
-        <item quantity="other">%d new messages</item>
+        <item quantity="one">%d neue Nachricht</item>
+        <item quantity="other">%d neue Nachrichten</item>
     </plurals>
     <!-- Multiplayer actions -->
-    <string name="multiplayer_approve">Approve</string>
+    <string name="multiplayer_approve">Genehmigen</string>
 </resources>

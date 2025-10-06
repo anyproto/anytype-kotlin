@@ -1689,7 +1689,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat">Sohbet</string>
     <string name="copy">Kopyala</string>
     <string name="copy_text">Metni Kopyala</string>
-    <string name="copy_plain_text">Metni Kopyala</string>
+    <string name="copy_plain_text">Düz Metni Kopyala</string>
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
@@ -1927,7 +1927,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
     <string name="space_notify_unmute">Sesi aç</string>
-    <string name="space_notify_mute">Sustur</string>
+    <string name="space_notify_mute">Sessize al</string>
     <string name="vault_pinned_limit_message">%1$d sabitlenmiş alan mevcut sınırınızdır. Yeni bir favori eklemek için birini sabitlemekten kaldırın.</string>
     <string name="vault_space_settings">Alan Ayarları</string>
     <string name="notification_settings_title">Bildirimler</string>

@@ -12,7 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -33,7 +33,6 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
-import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
@@ -44,27 +43,9 @@ fun LinkWidgetCard(
     hasReadOnlyAccess: Boolean = false,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     dragModifier: Modifier = Modifier,
-    isDragging: Boolean = false
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false)
 ) {
-    val isCardMenuExpanded = remember {
-        mutableStateOf(false)
-    }
     val haptic = LocalHapticFeedback.current
-
-    // Track if we've started dragging to manage menu state
-    val hasStartedDragging = remember { mutableStateOf(false) }
-
-    // Close menu when dragging starts (with delay to avoid accidental triggers)
-    LaunchedEffect(isDragging) {
-        if (isDragging) {
-            hasStartedDragging.value = true
-            // Add a small delay to avoid triggering on very short drags
-            delay(1000)
-            isCardMenuExpanded.value = false
-        } else if (hasStartedDragging.value) {
-            hasStartedDragging.value = false
-        }
-    }
     Box(
         modifier = Modifier
             .fillMaxWidth()

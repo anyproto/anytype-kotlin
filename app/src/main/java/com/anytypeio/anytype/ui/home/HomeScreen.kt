@@ -26,6 +26,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -70,6 +71,7 @@ import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -282,6 +284,20 @@ private fun WidgetList(
                 is WidgetView.Link -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
                             LinkWidgetCard(
                                 item = item,
                                 onDropDownMenuAction = { action ->
@@ -291,10 +307,11 @@ private fun WidgetList(
                                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                isDragging = isDragged
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
                         LinkWidgetCard(
                             item = item,
                             onDropDownMenuAction = { action ->
@@ -304,7 +321,7 @@ private fun WidgetList(
                             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             dragModifier = Modifier,
-                            isDragging = false
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }

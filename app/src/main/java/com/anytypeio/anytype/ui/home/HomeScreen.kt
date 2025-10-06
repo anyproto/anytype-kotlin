@@ -88,7 +88,7 @@ fun HomeScreen(
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onBundledWidgetClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
@@ -184,7 +184,7 @@ private fun WidgetList(
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -305,7 +305,7 @@ private fun WidgetList(
                             val modifier = WidgetCardModifier(
                                 isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
                                 dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
                             )
@@ -326,7 +326,7 @@ private fun WidgetList(
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
                             onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
                         )
 
@@ -485,10 +485,7 @@ private fun WidgetList(
                                 index = index,
                                 mode = mode,
                                 onWidgetClicked = {
-                                    onWidgetSourceClicked(
-                                        item.id,
-                                        Widget.Source.Bundled.AllObjects
-                                    )
+                                    onWidgetSourceClicked(item.id)
                                 },
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
@@ -503,10 +500,7 @@ private fun WidgetList(
                             index = index,
                             mode = mode,
                             onWidgetClicked = {
-                                onWidgetSourceClicked(
-                                    item.id,
-                                    Widget.Source.Bundled.AllObjects
-                                )
+                                onWidgetSourceClicked(item.id,)
                             },
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
@@ -523,7 +517,7 @@ private fun WidgetList(
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
                         isMuted = item.isMuted,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         }
@@ -568,7 +562,7 @@ private fun ListOfObjectsItem(
     alpha: Float,
     item: WidgetView.ListOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -608,7 +602,7 @@ private fun SetOfObjectsItem(
     alpha: Float,
     item: WidgetView.SetOfObjects,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -651,7 +645,7 @@ private fun GalleryWidgetItem(
     alpha: Float,
     item: WidgetView.Gallery,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -697,7 +691,7 @@ private fun TreeWidgetItem(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
     isDragging: Boolean = false

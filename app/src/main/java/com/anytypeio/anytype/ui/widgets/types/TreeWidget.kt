@@ -36,7 +36,6 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.TreePath
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
@@ -48,7 +47,7 @@ fun TreeWidgetCard(
     item: WidgetView.Tree,
     onExpandElement: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -95,7 +94,7 @@ fun TreeWidgetCard(
                 title = item.getPrettyName(),
                 icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,

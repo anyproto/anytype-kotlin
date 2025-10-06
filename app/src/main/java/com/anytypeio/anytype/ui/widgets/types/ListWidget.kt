@@ -30,7 +30,6 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.WidgetView.ListOfObjects.Type
@@ -42,7 +41,7 @@ fun ListWidgetCard(
     item: WidgetView.ListOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -92,7 +91,7 @@ fun ListWidgetCard(
                 },
                 icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,

@@ -31,7 +31,6 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.BinWidgetMenu
@@ -42,7 +41,7 @@ fun BinWidgetCard(
     item: WidgetView.Bin,
     mode: InteractionMode,
     hasReadOnlyAccess: Boolean = false,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {
     val isCardMenuExpanded = remember {
@@ -64,11 +63,11 @@ fun BinWidgetCard(
             .then(
                 if (hasReadOnlyAccess) {
                     Modifier.noRippleClickable {
-                        onWidgetSourceClicked(item.id, item.source)
+                        onWidgetSourceClicked(item.id)
                     }
                 } else {
                     Modifier.combinedClickable(
-                        onClick = { onWidgetSourceClicked(item.id, item.source) },
+                        onClick = { onWidgetSourceClicked(item.id) },
                         onLongClick = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                             haptic.performHapticFeedback(HapticFeedbackType.LongPress)

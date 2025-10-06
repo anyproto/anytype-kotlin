@@ -1144,15 +1144,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetSourceClicked(widget: Id, source: Widget.Source) {
-        Timber.d("onWidgetSourceClicked: $source")
-        val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
-        when (source) {
+    fun onWidgetSourceClicked(widgetId: Id) {
+        Timber.d("onWidgetSourceClicked:")
+        val widget = widgets.value?.find { it.id == widgetId } ?: return
+        Timber.d("Widget source: ${widget.source}")
+        when (val source = widget.source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source,
-                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1167,8 +1167,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1183,8 +1182,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.RecentLocal -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1199,7 +1197,7 @@ class HomeScreenViewModel(
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
                     dispatchSelectHomeTabCustomSourceEvent(
-                        widget = widget,
+                        widget = widgetId,
                         source = source
                     )
                     proceedWithOpeningObject(source.obj)

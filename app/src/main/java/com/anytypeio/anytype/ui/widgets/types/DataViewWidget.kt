@@ -65,7 +65,7 @@ fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -113,7 +113,7 @@ fun DataViewListWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id, item.source)
+                        onWidgetSourceClicked(item.id)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -187,7 +187,7 @@ fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -235,7 +235,7 @@ fun GalleryWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id, item.source)
+                        onWidgetSourceClicked(item.id)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -287,7 +287,7 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.id, item.source)
+                                            onWidgetSourceClicked(item.id)
                                         }
                                 ) {
                                     Text(

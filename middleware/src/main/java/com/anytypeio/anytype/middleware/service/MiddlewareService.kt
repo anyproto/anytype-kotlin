@@ -480,6 +480,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockWidgetSetViewId(request: Rpc.BlockWidget.SetViewId.Request) : Rpc.BlockWidget.SetViewId.Response
 
+    @Throws(Exception::class)
+    fun objectTypesSetOrder(request: Rpc.ObjectType.SetOrder.Request) : Rpc.ObjectType.SetOrder.Response
+
     //endregion
 
     //region WORKSPACE

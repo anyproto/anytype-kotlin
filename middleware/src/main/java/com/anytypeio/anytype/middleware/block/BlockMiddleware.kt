@@ -1052,6 +1052,10 @@ class BlockMiddleware(
         return middleware.diffVersions(command)
     }
 
+    override suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
+        return middleware.objectTypesSetOrder(command)
+    }
+
     override suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>> {
         return middleware.chatAddMessage(command)
     }

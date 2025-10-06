@@ -109,7 +109,7 @@ fun TypeIconView(
  * Helper composable to render an icon inside a Box with centered content.
  */
 @Composable
-private fun IconBoxView(
+fun IconBoxView(
     boxModifier: Modifier,
     imageModifier: Modifier,
     imageVector: ImageVector,

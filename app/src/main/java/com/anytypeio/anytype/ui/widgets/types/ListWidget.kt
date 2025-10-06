@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui.widgets.types
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -8,15 +7,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -28,61 +25,41 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.WidgetView.ListOfObjects.Type
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun ListWidgetCard(
     item: WidgetView.ListOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
 ) {
-    val isCardMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.dashboard_card_background)
-            )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
-            )
-    ) {
+    Box(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
+            val (title, icon ) = getBundleTitleAndIcon(item.type)
             WidgetHeader(
-                title = when(item.type) {
-                    Type.Favorites -> stringResource(id = R.string.favorites)
-                    Type.Recent -> stringResource(id = R.string.recent)
-                    Type.RecentLocal -> stringResource(id = R.string.recently_opened)
-                    Type.Bin -> stringResource(R.string.bin)
-                },
-                icon = item.icon,
+                title = title,
+                icon = icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
@@ -137,9 +114,33 @@ fun ListWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
+        )
+    }
+}
+
+@Composable
+fun getBundleTitleAndIcon(
+    type: Type,
+): Pair<String, ObjectIcon> {
+    return when (type) {
+        Type.Favorites -> Pair(
+            stringResource(id = R.string.favorites),
+            ObjectIcon.SimpleIcon("star", R.color.text_primary)
+        )
+        Type.Recent -> Pair(
+            stringResource(id = R.string.recent),
+            ObjectIcon.SimpleIcon("pencil", R.color.text_primary)
+        )
+        Type.RecentLocal -> Pair(
+            stringResource(id = R.string.recently_opened),
+            ObjectIcon.SimpleIcon("eye", R.color.text_primary)
+        )
+        Type.Bin -> Pair(
+            stringResource(R.string.bin),
+            ObjectIcon.SimpleIcon("calendar", R.color.text_primary)
         )
     }
 }

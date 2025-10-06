@@ -90,6 +90,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
+import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -250,7 +251,8 @@ class HomeScreenViewModel(
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
     private val scope: CoroutineScope,
-    private val stringResourceProvider : StringResourceProvider
+    private val stringResourceProvider : StringResourceProvider,
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -941,7 +943,32 @@ class HomeScreenViewModel(
         type: Int,
         target: Id?
     ) {
-        //DROID-3965 legacy logic, adding widgets only through "pin" button
+        viewModelScope.launch {
+            val params = CreateWidget.Params(
+                ctx = ctx,
+                source = source,
+                type = when (type) {
+                    Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                    Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                    Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                    Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
+                    Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                    else -> WidgetLayout.LINK
+                },
+                target = target,
+                position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+            )
+            createWidget.async(params).fold(
+                onFailure = {
+                    sendToast("Error while creating widget: ${it.message}")
+                    Timber.e(it, "Error while creating widget")
+                },
+                onSuccess = { payload ->
+                    Timber.d("Widget created successfully, dispatching payload")
+                    objectPayloadDispatcher.send(payload)
+                }
+            )
+        }
     }
 
     /**
@@ -1142,15 +1169,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetSourceClicked(widget: Id, source: Widget.Source) {
-        Timber.d("onWidgetSourceClicked: $source")
-        val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
-        when (source) {
+    fun onWidgetSourceClicked(widgetId: Id) {
+        Timber.d("onWidgetSourceClicked:")
+        val widget = widgets.value?.find { it.id == widgetId } ?: return
+        Timber.d("Widget source: ${widget.source}")
+        when (val source = widget.source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source,
-                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1165,8 +1192,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1181,8 +1207,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.RecentLocal -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1197,7 +1222,7 @@ class HomeScreenViewModel(
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
                     dispatchSelectHomeTabCustomSourceEvent(
-                        widget = widget,
+                        widget = widgetId,
                         source = source
                     )
                     proceedWithOpeningObject(source.obj)
@@ -1663,10 +1688,6 @@ class HomeScreenViewModel(
 
     private fun proceedWithExitingEditMode() {
         mode.value = InteractionMode.Default
-    }
-
-    private fun proceedWithEnteringEditMode() {
-        mode.value = InteractionMode.Edit
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
@@ -2905,7 +2926,8 @@ class HomeScreenViewModel(
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
         private val scope: CoroutineScope,
-        private val stringResourceProvider : StringResourceProvider
+        private val stringResourceProvider : StringResourceProvider,
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2966,7 +2988,8 @@ class HomeScreenViewModel(
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
             scope = scope,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds
         ) as T
     }
 

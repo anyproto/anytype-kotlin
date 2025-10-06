@@ -1209,4 +1209,8 @@ class BlockDataRepository(
     override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
         remote.spaceChangeInvite(command)
     }
+
+    override suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
+        return remote.objectTypesSetOrder(command)
+    }
 }

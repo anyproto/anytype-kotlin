@@ -462,6 +462,8 @@ interface BlockRemote {
     suspend fun setVersion(command: Command.VersionHistory.SetVersion)
     suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
 
+    suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String>
+
     //region CHATS
 
     suspend fun addChatMessage(command: Command.ChatCommand.AddMessage): Pair<Id, List<Event.Command.Chats>>

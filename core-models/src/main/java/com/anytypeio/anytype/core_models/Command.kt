@@ -756,4 +756,9 @@ sealed class Command {
             val objectId: Id
         ) : Publishing()
     }
+
+    data class ObjectTypesSetOrder(
+        val spaceId: Id,
+        val orderedIds: List<Id>
+    ) : Command()
 }

@@ -80,6 +80,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
+import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.MockObjectTypes.objectTypePage
@@ -212,6 +213,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var storeOfRelations: StoreOfRelations
+
+    @Mock
+    lateinit var updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
 
     @Mock
     lateinit var objectWatcher: ObjectWatcher
@@ -3011,7 +3015,8 @@ class HomeScreenViewModelTest {
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
         userSettingsRepository = userSettingsRepository,
         scope = GlobalScope,
-        stringResourceProvider = stringResourceProvider
+        stringResourceProvider = stringResourceProvider,
+        updateObjectTypesOrderIds = updateObjectTypesOrderIds
     )
 
     companion object {

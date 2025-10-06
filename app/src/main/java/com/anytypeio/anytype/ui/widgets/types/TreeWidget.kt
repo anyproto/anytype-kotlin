@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -10,19 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
@@ -39,6 +37,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun TreeWidgetCard(
@@ -46,49 +45,29 @@ fun TreeWidgetCard(
     item: WidgetView.Tree,
     onExpandElement: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit
+    onCreateElement: (WidgetView) -> Unit,
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
 ) {
-    val isCardMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.dashboard_card_background)
-            )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
-            )
-    ) {
+    Box(modifier = modifier) {
         Column(
             Modifier.padding(
                 top = 6.dp,
                 bottom = 6.dp,
             )
         ) {
+            val (title, icon) = getTitleAndIcon(item, item.icon)
             WidgetHeader(
-                title = item.getPrettyName(),
-                icon = item.icon,
+                title = title,
+                icon = icon,
                 isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id, item.source) },
+                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
                 isInEditMode = mode is InteractionMode.Edit,
@@ -120,7 +99,7 @@ fun TreeWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            widgetView = item,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )
@@ -232,6 +211,34 @@ private fun TreeWidgetTreeItems(
     }
 }
 
+@Composable
+private fun getTitleAndIcon(
+    item: WidgetView.Tree,
+    icon: ObjectIcon
+): Pair<String, ObjectIcon> {
+    return when (item.source) {
+        Widget.Source.Bundled.Favorites -> Pair(
+            stringResource(id = R.string.favorites),
+            ObjectIcon.SimpleIcon("star", R.color.text_primary)
+        )
+        Widget.Source.Bundled.Recent -> Pair(
+            stringResource(id = R.string.recent),
+            ObjectIcon.SimpleIcon("pencil", R.color.text_primary)
+        )
+        Widget.Source.Bundled.RecentLocal -> Pair(
+            stringResource(id = R.string.recently_opened),
+            ObjectIcon.SimpleIcon("eye", R.color.text_primary)
+        )
+        Widget.Source.Bundled.Bin -> Pair(
+            stringResource(R.string.bin),
+            ObjectIcon.SimpleIcon("calendar", R.color.text_primary)
+        )
+        else -> Pair(
+            item.getPrettyName(),
+            icon
+        )
+    }
+}
 
 
 @Immutable

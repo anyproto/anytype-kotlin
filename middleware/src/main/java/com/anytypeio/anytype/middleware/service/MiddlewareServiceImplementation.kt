@@ -238,6 +238,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectTypesSetOrder(request: Rpc.ObjectType.SetOrder.Request): Rpc.ObjectType.SetOrder.Response {
+        val encoded = Service.objectTypeSetOrder(
+            Rpc.ObjectType.SetOrder.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.SetOrder.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.SetOrder.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response {
         val encoded = Service.blockDataviewRelationAdd(
             Rpc.BlockDataview.Relation.Add.Request.ADAPTER.encode(request)

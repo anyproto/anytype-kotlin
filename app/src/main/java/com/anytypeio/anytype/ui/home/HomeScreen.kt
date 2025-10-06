@@ -2,8 +2,6 @@ package com.anytypeio.anytype.ui.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -11,6 +9,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,7 +25,10 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -52,14 +55,15 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
+import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -69,6 +73,7 @@ import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -81,8 +86,7 @@ fun HomeScreen(
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onBundledWidgetClicked: (WidgetId) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onCreateWidget: () -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -95,11 +99,10 @@ fun HomeScreen(
     onNavBarShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionClicked: (Id) -> Unit = {}
-    ) {
+) {
 
     Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
@@ -108,14 +111,12 @@ fun HomeScreen(
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
             onWidgetSourceClicked = onWidgetSourceClicked,
-            onBundledWidgetHeaderClicked = onBundledWidgetClicked,
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
             onMove = onMove,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateWidget = onCreateWidget,
-            onCreateDataViewObject = onCreateDataViewObject,
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateNewTypeClicked = onCreateNewTypeClicked,
@@ -177,16 +178,14 @@ private fun WidgetList(
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onBundledWidgetHeaderClicked: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateWidget: () -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionClicked: (Id) -> Unit = {}
@@ -237,195 +236,295 @@ private fun WidgetList(
         ) { index, item ->
             when (item) {
                 is WidgetView.Tree -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            TreeWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
-                                item = item,
-                                onExpand = onExpand,
-                                onWidgetMenuAction = onWidgetMenuAction,
-                                onWidgetElementClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onCreateElement = onCreateElement
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        TreeWidgetItem(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        TreeWidgetCard(
+                            modifier = modifier,
+                            mode = mode,
                             item = item,
-                            onExpand = onExpand,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onExpandElement = onExpand,
                             onWidgetElementClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
-                            onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
+                            onWidgetMenuClicked = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onCreateElement = onCreateElement
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            onCreateElement = onCreateElement,
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.Link -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            LinkWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
-                                item = item,
-                                onWidgetMenuAction = onWidgetMenuAction,
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        LinkWidgetItem(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        LinkWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetMenuAction = onWidgetMenuAction,
-                            onWidgetSourceClicked = onWidgetSourceClicked,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.SetOfObjects -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            SetOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
-                                item = item,
-                                onWidgetElementClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuAction = onWidgetMenuAction,
-                                onChangeWidgetView = onChangeWidgetView,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateDataViewObject = onCreateDataViewObject,
-                                onCreateElement = onCreateElement
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        SetOfObjectsItem(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        DataViewListWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onCreateDataViewObject = onCreateDataViewObject,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.Gallery -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            GalleryWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
-                                item = item,
-                                onWidgetElementClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuAction = onWidgetMenuAction,
-                                onChangeWidgetView = onChangeWidgetView,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        GalleryWidgetItem(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        GalleryWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.ListOfObjects -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            ListOfObjectsItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
-                                item = item,
-                                onWidgetElementClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onWidgetMenuAction = onWidgetMenuAction,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        ListOfObjectsItem(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        ListWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
                             onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.Bin -> {
                     BinWidgetCard(
                         item = item,
@@ -436,45 +535,57 @@ private fun WidgetList(
                         onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }
+
                 is WidgetView.AllContent -> {
-                    if (mode is InteractionMode.Edit) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            AllContentWidgetCard(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                onWidgetClicked = {
-                                    onWidgetSourceClicked(
-                                        item.id,
-                                        Widget.Source.Bundled.AllObjects
-                                    )
-                                },
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                alpha = alpha.value,
-                                widgetView = item
-                            )
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
+
+                        if (isReorderEnabled) {
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
                         }
-                    } else {
-                        AllContentWidgetCard(
-                            index = index,
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            onWidgetClicked = {
-                                onWidgetSourceClicked(
-                                    item.id,
-                                    Widget.Source.Bundled.AllObjects
-                                )
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
                             },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        )
+
+                        AllContentWidgetCard(
+                            modifier = modifier,
+                            widgetView = item,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            alpha = 1.0f,
-                            widgetView = item
+                            menuItems = menuItems,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
+
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
                         item = item,
@@ -482,12 +593,13 @@ private fun WidgetList(
                         unReadMentionCount = item.unreadMentionCount,
                         unReadMessageCount = item.unreadMessageCount,
                         isMuted = item.isMuted,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         }
                     )
                 }
+
                 is WidgetView.EmptyState -> {
                     if (mode !is InteractionMode.Edit) {
                         EmptyStateWidgetScreen(
@@ -505,6 +617,7 @@ private fun WidgetList(
                         onSectionClicked = { onSectionClicked(SECTION_OBJECT_TYPE) }
                     )
                 }
+
                 WidgetView.Section.Pinned -> {
                     PinnedSectionHeader(
                         onSectionClicked = { onSectionClicked(SECTION_PINNED) }
@@ -516,194 +629,6 @@ private fun WidgetList(
         item {
             Spacer(modifier = Modifier.height(200.dp))
         }
-    }
-}
-
-@Composable
-private fun ListOfObjectsItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.ListOfObjects,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        ListWidgetCard(
-            item = item,
-            mode = mode,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
-        )
-    }
-}
-
-@Composable
-private fun SetOfObjectsItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.SetOfObjects,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        DataViewListWidgetCard(
-            item = item,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onChangeWidgetView = onChangeWidgetView,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement
-        )
-    }
-}
-
-@Composable
-private fun GalleryWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Gallery,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        GalleryWidgetCard(
-            item = item,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onChangeWidgetView = onChangeWidgetView,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onCreateElement = onCreateElement
-        )
-    }
-}
-
-@Composable
-private fun LinkWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Link,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        LinkWidgetCard(
-            item = item,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-            onObjectCheckboxClicked = onObjectCheckboxClicked
-        )
-    }
-}
-
-@Composable
-private fun TreeWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Tree,
-    onExpand: (TreePath) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onCreateElement: (WidgetView) -> Unit
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        TreeWidgetCard(
-            item = item,
-            onExpandElement = onExpand,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onWidgetElementClicked = onWidgetElementClicked,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            onCreateElement = onCreateElement,
-            mode = mode,
-            onWidgetMenuClicked = onWidgetMenuTriggered
-        )
     }
 }
 
@@ -782,4 +707,51 @@ private fun PinnedSectionHeader(
             color = colorResource(id = R.color.control_transparent_secondary)
         )
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun WidgetCardModifier(
+    isMenuExpanded: Boolean,
+    mode: InteractionMode,
+    onWidgetClicked: () -> Unit,
+    onWidgetLongClicked: () -> Unit,
+    dragModifier: Modifier? = null,
+    shouldEnableLongClick: Boolean = true
+): Modifier {
+    val haptic = LocalHapticFeedback.current
+
+    var modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+        .alpha(if (isMenuExpanded) 0.8f else 1f)
+        .background(
+            shape = RoundedCornerShape(16.dp),
+            color = colorResource(id = R.color.dashboard_card_background)
+        )
+        .then(
+            if (mode is InteractionMode.ReadOnly) {
+                Modifier.noRippleClickable { onWidgetClicked() }
+            } else {
+                if (shouldEnableLongClick) {
+                    Modifier.combinedClickable(
+                        onClick = { onWidgetClicked() },
+                        onLongClick = {
+                            onWidgetLongClicked()
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                } else {
+                    Modifier.noRippleClickable { onWidgetClicked() }
+                }
+            }
+        )
+
+    if (dragModifier != null) {
+        modifier = modifier.then(dragModifier)
+    }
+
+    return modifier
 }

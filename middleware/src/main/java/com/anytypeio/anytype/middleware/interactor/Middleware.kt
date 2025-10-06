@@ -3218,6 +3218,18 @@ class Middleware @Inject constructor(
         logResponseIfDebug(response, time)
     }
 
+    @Throws(Exception::class)
+    fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
+        val request = Rpc.ObjectType.SetOrder.Request(
+            spaceId = command.spaceId,
+            typeIds = command.orderedIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypesSetOrder(request) }
+        logResponseIfDebug(response, time)
+        return response.orderIds
+    }
+
     private fun logRequestIfDebug(request: Any) {
         if (BuildConfig.DEBUG) {
             logger.logRequest(request).also {

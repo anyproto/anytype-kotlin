@@ -282,28 +282,29 @@ private fun WidgetList(
                 is WidgetView.Link -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            LinkWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
-                                mode = mode,
-                                alpha = alpha.value,
+                            LinkWidgetCard(
                                 item = item,
-                                onWidgetMenuAction = onWidgetMenuAction,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
+                                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
                                 isDragging = isDragged
                             )
                         }
                     } else {
-                        LinkWidgetItem(
-                            index = index,
-                            mode = mode,
-                            alpha = 1.0f,
+                        LinkWidgetCard(
                             item = item,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked
+                            hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            dragModifier = Modifier,
+                            isDragging = false
                         )
                     }
                 }
@@ -646,38 +647,6 @@ private fun GalleryWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateElement = onCreateElement,
-            isDragging = isDragging
-        )
-    }
-}
-
-@Composable
-private fun LinkWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Link,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    isDragging: Boolean = false
-) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        LinkWidgetCard(
-            item = item,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            dragModifier = modifier,
             isDragging = isDragging
         )
     }

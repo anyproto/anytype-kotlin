@@ -221,10 +221,8 @@ class HomeScreenFragment : Fragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onBundledWidgetClicked = vm::onBundledWidgetClicked,
             onMove = vm::onMove,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-            onCreateDataViewObject = {_, _ -> },
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
             onHomeButtonClicked = vm::onHomeButtonClicked,

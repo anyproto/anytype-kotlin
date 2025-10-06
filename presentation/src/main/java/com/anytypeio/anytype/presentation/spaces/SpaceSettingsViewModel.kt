@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -183,30 +182,6 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
-
-            var widgetAutoCreationPreference: UiSpaceSettingsItem.AutoCreateWidgets? = null
-
-            val config = spaceManager.getConfig(vmParams.space)
-
-            if (config != null) {
-                val widget = fetchObject.async(
-                    FetchObject.Params(
-                        space = vmParams.space,
-                        obj = config.widgets,
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.AUTO_WIDGET_DISABLED
-                        )
-                    )
-                ).getOrNull()
-
-                if (widget != null) {
-                    widgetAutoCreationPreference = UiSpaceSettingsItem.AutoCreateWidgets(
-                        widget = widget.id,
-                        isAutoCreateEnabled = widget.getValue<Boolean>(Relations.AUTO_WIDGET_DISABLED) != true
-                    )
-                }
-            }
 
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
@@ -427,10 +402,6 @@ class SpaceSettingsViewModel(
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
                     add(UiSpaceSettingsItem.Wallpapers(wallpaper = wallpaperResult, spaceIconView = spaceIcon))
-                    if (widgetAutoCreationPreference != null) {
-                        add(Spacer(height = 8))
-                        add(widgetAutoCreationPreference)
-                    }
 
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
@@ -566,19 +537,6 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
-            is UiEvent.OnAutoCreateWidgetSwitchChanged -> {
-                viewModelScope.launch {
-                    setObjectDetails.async(
-                        SetObjectDetails.Params(
-                            ctx = uiEvent.widget,
-                            details = mapOf(
-                                Relations.AUTO_WIDGET_DISABLED to !uiEvent.isAutoCreateEnabled
-                            )
-                        )
-                    )
-                }
-            }
-
             UiEvent.OnObjectTypesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenTypesScreen(vmParams.space))

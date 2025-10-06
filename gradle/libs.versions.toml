@@ -1,5 +1,5 @@
 [versions]
-middlewareVersion = "v0.44.1"
+middlewareVersion = "v0.44.2"
 kotlinVersion = '2.0.21'
 kspVersion = "2.0.21-1.0.25"
 

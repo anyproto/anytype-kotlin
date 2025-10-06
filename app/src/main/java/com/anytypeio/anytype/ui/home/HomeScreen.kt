@@ -238,7 +238,7 @@ private fun WidgetList(
                 is WidgetView.Tree -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -270,7 +270,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         TreeWidgetCard(
@@ -298,7 +298,7 @@ private fun WidgetList(
                 is WidgetView.Link -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -330,7 +330,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         LinkWidgetCard(
@@ -349,7 +349,7 @@ private fun WidgetList(
                 is WidgetView.SetOfObjects -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -381,7 +381,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         DataViewListWidgetCard(
@@ -409,7 +409,7 @@ private fun WidgetList(
                 is WidgetView.Gallery -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -441,7 +441,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         GalleryWidgetCard(
@@ -469,7 +469,7 @@ private fun WidgetList(
                 is WidgetView.ListOfObjects -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -501,7 +501,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         ListWidgetCard(
@@ -539,7 +539,7 @@ private fun WidgetList(
                 is WidgetView.AllContent -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -571,7 +571,7 @@ private fun WidgetList(
                                 view,
                                 onDragStoppedHandler
                             ) else null,
-                            shouldEnableLongClick = menuItems.isNotEmpty()
+                            shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                         )
 
                         AllContentWidgetCard(

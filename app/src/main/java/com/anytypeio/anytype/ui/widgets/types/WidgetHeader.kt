@@ -81,7 +81,7 @@ fun WidgetHeader(
             modifier = Modifier.weight(1f)
         )
 
-        if (canCreateObject) {
+        if (canCreateObject && !hasReadOnlyAccess) {
             Box(
                 Modifier
                     .size(18.dp)

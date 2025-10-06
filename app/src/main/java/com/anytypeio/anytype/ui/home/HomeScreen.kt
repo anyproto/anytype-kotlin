@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.FromIndex
+import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
@@ -237,7 +238,7 @@ private fun WidgetList(
         ) { index, item ->
             when (item) {
                 is WidgetView.Tree -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             TreeWidgetItem(
@@ -278,7 +279,7 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.Link -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             LinkWidgetItem(
@@ -305,7 +306,7 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.SetOfObjects -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             SetOfObjectsItem(
@@ -348,7 +349,7 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.Gallery -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             GalleryWidgetItem(
@@ -388,7 +389,7 @@ private fun WidgetList(
                     }
                 }
                 is WidgetView.ListOfObjects -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             ListOfObjectsItem(
@@ -437,7 +438,7 @@ private fun WidgetList(
                     )
                 }
                 is WidgetView.AllContent -> {
-                    if (mode is InteractionMode.Edit) {
+                    if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
                             AllContentWidgetCard(

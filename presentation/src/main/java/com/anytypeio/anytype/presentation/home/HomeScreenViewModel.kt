@@ -90,6 +90,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
+import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -250,7 +251,8 @@ class HomeScreenViewModel(
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
     private val scope: CoroutineScope,
-    private val stringResourceProvider : StringResourceProvider
+    private val stringResourceProvider : StringResourceProvider,
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -2905,7 +2907,8 @@ class HomeScreenViewModel(
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
         private val scope: CoroutineScope,
-        private val stringResourceProvider : StringResourceProvider
+        private val stringResourceProvider : StringResourceProvider,
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2966,7 +2969,8 @@ class HomeScreenViewModel(
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
             scope = scope,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds
         ) as T
     }
 

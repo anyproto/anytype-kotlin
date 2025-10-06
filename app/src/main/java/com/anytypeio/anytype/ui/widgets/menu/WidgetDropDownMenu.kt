@@ -238,6 +238,28 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
     }
 }
 
+/**
+ * Determines if the widget should show a long-click menu.
+ * Returns true if there are any menu items to display, false otherwise.
+ */
+fun WidgetView.shouldShowLongClickMenu(): Boolean {
+    return when (sectionType) {
+        SectionType.PINNED -> {
+            // PINNED widgets always have the "Unpin" option,
+            // plus optionally "Create Object" and "Change Type"
+            true
+        }
+        SectionType.TYPES -> {
+            // TYPES widgets only show menu if they can create objects
+            canCreateObjectOfType
+        }
+        null -> {
+            // No section type means no menu
+            false
+        }
+    }
+}
+
 @Composable
 fun BinWidgetMenu(
     widgetView: WidgetView,

@@ -65,6 +65,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.menu.shouldShowLongClickMenu
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
@@ -264,7 +265,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             TreeWidgetCard(
@@ -293,7 +295,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         TreeWidgetCard(
@@ -338,7 +341,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             LinkWidgetCard(
@@ -358,7 +362,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         LinkWidgetCard(
@@ -394,7 +399,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             DataViewListWidgetCard(
@@ -423,7 +429,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         DataViewListWidgetCard(
@@ -468,7 +475,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             GalleryWidgetCard(
@@ -497,7 +505,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         GalleryWidgetCard(
@@ -542,7 +551,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             ListWidgetCard(
@@ -570,7 +580,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         ListWidgetCard(
@@ -623,7 +634,8 @@ private fun WidgetList(
                                 mode = mode,
                                 onWidgetClicked = { onWidgetSourceClicked(item.id) },
                                 onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
+                                shouldEnableLongClick = item.shouldShowLongClickMenu()
                             )
 
                             AllContentWidgetCard(
@@ -642,7 +654,8 @@ private fun WidgetList(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            shouldEnableLongClick = item.shouldShowLongClickMenu()
                         )
 
                         AllContentWidgetCard(
@@ -783,7 +796,8 @@ private fun WidgetCardModifier(
     mode: InteractionMode,
     onWidgetClicked: () -> Unit,
     onWidgetLongClicked: () -> Unit,
-    dragModifier: Modifier? = null
+    dragModifier: Modifier? = null,
+    shouldEnableLongClick: Boolean = true
 ): Modifier {
     val haptic = LocalHapticFeedback.current
 
@@ -799,15 +813,19 @@ private fun WidgetCardModifier(
             if (mode is InteractionMode.ReadOnly) {
                 Modifier.noRippleClickable { onWidgetClicked() }
             } else {
-                Modifier.combinedClickable(
-                    onClick = { onWidgetClicked() },
-                    onLongClick = {
-                        onWidgetLongClicked()
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    },
-                    indication = null,
-                    interactionSource = remember { MutableInteractionSource() }
-                )
+                if (shouldEnableLongClick) {
+                    Modifier.combinedClickable(
+                        onClick = { onWidgetClicked() },
+                        onLongClick = {
+                            onWidgetLongClicked()
+                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                        },
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    )
+                } else {
+                    Modifier.noRippleClickable { onWidgetClicked() }
+                }
             }
         )
 

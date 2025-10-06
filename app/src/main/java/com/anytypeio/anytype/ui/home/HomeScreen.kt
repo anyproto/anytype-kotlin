@@ -256,7 +256,8 @@ private fun WidgetList(
                                 onWidgetSourceClicked = onWidgetSourceClicked,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onCreateElement = onCreateElement
+                                onCreateElement = onCreateElement,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -290,7 +291,8 @@ private fun WidgetList(
                                 item = item,
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -325,7 +327,8 @@ private fun WidgetList(
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateDataViewObject = onCreateDataViewObject,
-                                onCreateElement = onCreateElement
+                                onCreateElement = onCreateElement,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -366,7 +369,8 @@ private fun WidgetList(
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -406,7 +410,8 @@ private fun WidgetList(
                                 onWidgetMenuAction = onWidgetMenuAction,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement
+                                onCreateElement = onCreateElement,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -455,7 +460,8 @@ private fun WidgetList(
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 alpha = alpha.value,
-                                widgetView = item
+                                widgetView = item,
+                                isDragging = isDragged
                             )
                         }
                     } else {
@@ -533,7 +539,8 @@ private fun ListOfObjectsItem(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    isDragging: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -553,7 +560,8 @@ private fun ListOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement,
-            onWidgetMenuTriggered = onWidgetMenuTriggered
+            onWidgetMenuTriggered = onWidgetMenuTriggered,
+            isDragging = isDragging
         )
     }
 }
@@ -573,7 +581,8 @@ private fun SetOfObjectsItem(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateDataViewObject: (WidgetId, ViewId?) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    isDragging: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -594,7 +603,8 @@ private fun SetOfObjectsItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onCreateElement = onCreateElement
+            onCreateElement = onCreateElement,
+            isDragging = isDragging
         )
     }
 }
@@ -613,7 +623,8 @@ private fun GalleryWidgetItem(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    isDragging: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -634,7 +645,8 @@ private fun GalleryWidgetItem(
             mode = mode,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onCreateElement = onCreateElement
+            onCreateElement = onCreateElement,
+            isDragging = isDragging
         )
     }
 }
@@ -648,7 +660,8 @@ private fun LinkWidgetItem(
     item: WidgetView.Link,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    isDragging: Boolean = false
 ) {
     Box(
         modifier = Modifier
@@ -664,7 +677,8 @@ private fun LinkWidgetItem(
             onWidgetSourceClicked = onWidgetSourceClicked,
             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
-            dragModifier = modifier
+            dragModifier = modifier,
+            isDragging = isDragging
         )
     }
 }
@@ -683,7 +697,8 @@ private fun TreeWidgetItem(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onCreateElement: (WidgetView) -> Unit
+    onCreateElement: (WidgetView) -> Unit,
+    isDragging: Boolean = false
 ) {
     Box(
         modifier = modifier
@@ -704,7 +719,8 @@ private fun TreeWidgetItem(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             onCreateElement = onCreateElement,
             mode = mode,
-            onWidgetMenuClicked = onWidgetMenuTriggered
+            onWidgetMenuClicked = onWidgetMenuTriggered,
+            isDragging = isDragging
         )
     }
 }

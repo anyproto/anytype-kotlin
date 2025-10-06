@@ -15,6 +15,7 @@ import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -39,6 +40,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import kotlinx.coroutines.delay
 
 @Composable
 fun TreeWidgetCard(
@@ -51,31 +53,36 @@ fun TreeWidgetCard(
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit
+    onCreateElement: (WidgetView) -> Unit,
+    isDragging: Boolean = false
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
     }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
+
+    // Track if we've started dragging to manage menu state
+    val hasStartedDragging = remember { mutableStateOf(false) }
+
+    // Close menu when dragging starts (with delay to avoid accidental triggers)
+    LaunchedEffect(isDragging) {
+        if (isDragging) {
+            hasStartedDragging.value = true
+            // Add a small delay to avoid triggering on very short drags
+            delay(1000)
+            isCardMenuExpanded.value = false
+        } else if (hasStartedDragging.value) {
+            hasStartedDragging.value = false
+        }
     }
 
     Box(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
+            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
-            )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
             )
     ) {
         Column(

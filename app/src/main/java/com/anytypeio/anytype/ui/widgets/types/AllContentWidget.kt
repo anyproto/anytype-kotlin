@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -41,10 +42,26 @@ fun AllContentWidgetCard(
     onWidgetClicked: () -> Unit = {},
     onDropDownMenuAction: (DropDownMenuAction) -> Unit = {},
     alpha: Float,
+    isDragging: Boolean = false
 ) {
     val haptic = LocalHapticFeedback.current
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
+    }
+
+    // Track if we've started dragging to manage menu state
+    val hasStartedDragging = remember { mutableStateOf(false) }
+
+    // Close menu when dragging starts (with delay to avoid accidental triggers)
+    LaunchedEffect(isDragging) {
+        if (isDragging) {
+            hasStartedDragging.value = true
+            // Add a small delay to avoid triggering on very short drags
+            kotlinx.coroutines.delay(1000)
+            isCardMenuExpanded.value = false
+        } else if (hasStartedDragging.value) {
+            hasStartedDragging.value = false
+        }
     }
     Box(
         modifier = modifier

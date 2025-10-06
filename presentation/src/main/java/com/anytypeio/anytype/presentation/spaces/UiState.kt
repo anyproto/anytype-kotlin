@@ -65,10 +65,6 @@ sealed class UiSpaceSettingsItem {
     data object Fields : UiSpaceSettingsItem()
     data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
     data class Wallpapers(val wallpaper: WallpaperResult, val spaceIconView: SpaceIconView) : UiSpaceSettingsItem()
-    data class AutoCreateWidgets(
-        val widget: Id,
-        val isAutoCreateEnabled: Boolean
-    ) : UiSpaceSettingsItem()
     data object RemoteStorage : UiSpaceSettingsItem()
     data object Bin : UiSpaceSettingsItem()
     data object SpaceInfo : UiSpaceSettingsItem()

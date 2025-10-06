@@ -449,41 +449,74 @@ private fun WidgetList(
                 is WidgetView.Gallery -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            GalleryWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                alpha = alpha.value,
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
+
+                            GalleryWidgetCard(
+                                modifier = modifier,
                                 item = item,
-                                onWidgetElementClicked = { obj ->
+                                mode = mode,
+                                onWidgetObjectClicked = { obj ->
                                     onWidgetElementClicked(item.id, obj)
                                 },
                                 onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuAction = onWidgetMenuAction,
+                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
                                 onChangeWidgetView = onChangeWidgetView,
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                isDragging = isDragged
+                                onCreateElement = onCreateElement,
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
-                        GalleryWidgetItem(
-                            index = index,
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
+
+                        GalleryWidgetCard(
+                            modifier = modifier,
                             item = item,
-                            onWidgetElementClicked = { obj ->
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
                             onWidgetSourceClicked = onWidgetSourceClicked,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onWidgetMenuTriggered = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onChangeWidgetView = onChangeWidgetView,
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onCreateElement = onCreateElement
+                            onCreateElement = onCreateElement,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
@@ -651,47 +684,6 @@ private fun ListOfObjectsItem(
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             isDragging = isDragging
-        )
-    }
-}
-
-@Composable
-private fun GalleryWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Gallery,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {},
-    isDragging: Boolean = false
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        GalleryWidgetCard(
-            item = item,
-            onWidgetObjectClicked = onWidgetElementClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onChangeWidgetView = onChangeWidgetView,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            mode = mode,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onWidgetMenuTriggered = onWidgetMenuTriggered,
-            onCreateElement = onCreateElement
         )
     }
 }

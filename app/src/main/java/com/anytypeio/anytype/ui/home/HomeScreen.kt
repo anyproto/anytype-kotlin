@@ -11,6 +11,8 @@ import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -25,6 +27,8 @@ import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -286,6 +290,7 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
+                            val haptic = LocalHapticFeedback.current
 
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
@@ -298,30 +303,81 @@ private fun WidgetList(
                                 }
                             }
 
+                            val modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+                                .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
+                                .background(
+                                    shape = RoundedCornerShape(16.dp),
+                                    color = colorResource(id = R.color.dashboard_card_background)
+                                )
+                                .then(
+                                    if (mode is InteractionMode.ReadOnly) {
+                                        Modifier.noRippleClickable {
+                                            onWidgetSourceClicked(item.id, item.source)
+                                        }
+                                    } else {
+                                        Modifier.combinedClickable(
+                                            onClick = { onWidgetSourceClicked(item.id, item.source) },
+                                            onLongClick = {
+                                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                            },
+                                            indication = null,
+                                            interactionSource = remember { MutableInteractionSource() }
+                                        )
+                                    }
+                                )
+                                .then(DefaultDragAndDropModifier(view, onDragStoppedHandler))
+
                             LinkWidgetCard(
                                 item = item,
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                isCardMenuExpanded = isCardMenuExpanded
+                                isCardMenuExpanded = isCardMenuExpanded,
+                                modifier = modifier
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
+                        val haptic = LocalHapticFeedback.current
+
+                        val modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+                            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
+                            .background(
+                                shape = RoundedCornerShape(16.dp),
+                                color = colorResource(id = R.color.dashboard_card_background)
+                            )
+                            .then(
+                                if (mode is InteractionMode.ReadOnly) {
+                                    Modifier.noRippleClickable {
+                                        onWidgetSourceClicked(item.id, item.source)
+                                    }
+                                } else {
+                                    Modifier.combinedClickable(
+                                        onClick = { onWidgetSourceClicked(item.id, item.source) },
+                                        onLongClick = {
+                                            isCardMenuExpanded.value = !isCardMenuExpanded.value
+                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                                        },
+                                        indication = null,
+                                        interactionSource = remember { MutableInteractionSource() }
+                                    )
+                                }
+                            )
+
                         LinkWidgetCard(
                             item = item,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            onWidgetSourceClicked = onWidgetSourceClicked,
-                            hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            dragModifier = Modifier,
-                            isCardMenuExpanded = isCardMenuExpanded
+                            isCardMenuExpanded = isCardMenuExpanded,
+                            modifier = modifier
                         )
                     }
                 }

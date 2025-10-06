@@ -61,7 +61,6 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
-import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
@@ -246,42 +245,74 @@ private fun WidgetList(
                 is WidgetView.Tree -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            TreeWidgetItem(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                alpha = alpha.value,
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
+
+                            TreeWidgetCard(
+                                modifier = modifier,
+                                mode = mode,
                                 item = item,
-                                onExpand = onExpand,
-                                onWidgetMenuAction = onWidgetMenuAction,
+                                onExpandElement = onExpand,
                                 onWidgetElementClicked = { obj ->
                                     onWidgetElementClicked(item.id, obj)
                                 },
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onWidgetSourceClicked = onWidgetSourceClicked,
+                                onWidgetMenuClicked = onWidgetMenuTriggered,
+                                onDropDownMenuAction = { action ->
+                                    onWidgetMenuAction(item.id, action)
+                                },
                                 onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 onCreateElement = onCreateElement,
-                                isDragging = isDragged
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
-                        TreeWidgetItem(
-                            index = index,
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            alpha = 1.0f,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
+
+                        TreeWidgetCard(
+                            modifier = modifier,
+                            mode = mode,
                             item = item,
-                            onExpand = onExpand,
-                            onWidgetMenuAction = onWidgetMenuAction,
+                            onExpandElement = onExpand,
                             onWidgetElementClicked = { obj ->
                                 onWidgetElementClicked(item.id, obj)
                             },
-                            onObjectCheckboxClicked = onObjectCheckboxClicked,
                             onWidgetSourceClicked = onWidgetSourceClicked,
+                            onWidgetMenuClicked = onWidgetMenuTriggered,
+                            onDropDownMenuAction = { action ->
+                                onWidgetMenuAction(item.id, action)
+                            },
                             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                            onWidgetMenuTriggered = onWidgetMenuTriggered,
-                            onCreateElement = onCreateElement
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            onCreateElement = onCreateElement,
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
@@ -674,48 +705,6 @@ private fun GalleryWidgetItem(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateElement = onCreateElement,
-            isDragging = isDragging
-        )
-    }
-}
-
-@Composable
-private fun TreeWidgetItem(
-    modifier: Modifier = Modifier,
-    index: Int,
-    mode: InteractionMode,
-    alpha: Float,
-    item: WidgetView.Tree,
-    onExpand: (TreePath) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
-    onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
-    onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
-    onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onCreateElement: (WidgetView) -> Unit,
-    isDragging: Boolean = false
-) {
-    Box(
-        modifier = modifier
-            .animateContentSize()
-            .fillMaxWidth()
-            .padding(top = if (index == 0) 6.dp else 0.dp)
-            .alpha(alpha)
-    ) {
-        TreeWidgetCard(
-            item = item,
-            onExpandElement = onExpand,
-            onDropDownMenuAction = { action ->
-                onWidgetMenuAction(item.id, action)
-            },
-            onWidgetElementClicked = onWidgetElementClicked,
-            onObjectCheckboxClicked = onObjectCheckboxClicked,
-            onWidgetSourceClicked = onWidgetSourceClicked,
-            onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-            onCreateElement = onCreateElement,
-            mode = mode,
-            onWidgetMenuClicked = onWidgetMenuTriggered,
             isDragging = isDragging
         )
     }

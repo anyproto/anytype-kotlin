@@ -290,7 +290,6 @@ private fun WidgetList(
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
                             val isCardMenuExpanded = remember { mutableStateOf(false) }
                             val hasStartedDragging = remember { mutableStateOf(false) }
-                            val haptic = LocalHapticFeedback.current
 
                             // Close menu when dragging starts (with delay to avoid accidental triggers)
                             LaunchedEffect(isDragged) {
@@ -303,81 +302,42 @@ private fun WidgetList(
                                 }
                             }
 
-                            val modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-                                .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
-                                .background(
-                                    shape = RoundedCornerShape(16.dp),
-                                    color = colorResource(id = R.color.dashboard_card_background)
-                                )
-                                .then(
-                                    if (mode is InteractionMode.ReadOnly) {
-                                        Modifier.noRippleClickable {
-                                            onWidgetSourceClicked(item.id, item.source)
-                                        }
-                                    } else {
-                                        Modifier.combinedClickable(
-                                            onClick = { onWidgetSourceClicked(item.id, item.source) },
-                                            onLongClick = {
-                                                isCardMenuExpanded.value = !isCardMenuExpanded.value
-                                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                            },
-                                            indication = null,
-                                            interactionSource = remember { MutableInteractionSource() }
-                                        )
-                                    }
-                                )
-                                .then(DefaultDragAndDropModifier(view, onDragStoppedHandler))
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
+                                mode = mode,
+                                onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
 
                             LinkWidgetCard(
+                                modifier = modifier,
                                 item = item,
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                isCardMenuExpanded = isCardMenuExpanded,
-                                modifier = modifier
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
                         val isCardMenuExpanded = remember { mutableStateOf(false) }
-                        val haptic = LocalHapticFeedback.current
 
-                        val modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-                            .alpha(if (isCardMenuExpanded.value) 0.8f else 1f)
-                            .background(
-                                shape = RoundedCornerShape(16.dp),
-                                color = colorResource(id = R.color.dashboard_card_background)
-                            )
-                            .then(
-                                if (mode is InteractionMode.ReadOnly) {
-                                    Modifier.noRippleClickable {
-                                        onWidgetSourceClicked(item.id, item.source)
-                                    }
-                                } else {
-                                    Modifier.combinedClickable(
-                                        onClick = { onWidgetSourceClicked(item.id, item.source) },
-                                        onLongClick = {
-                                            isCardMenuExpanded.value = !isCardMenuExpanded.value
-                                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                        },
-                                        indication = null,
-                                        interactionSource = remember { MutableInteractionSource() }
-                                    )
-                                }
-                            )
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
+                            mode = mode,
+                            onWidgetClicked = { onWidgetSourceClicked(item.id, item.source) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
 
                         LinkWidgetCard(
+                            modifier = modifier,
                             item = item,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            isCardMenuExpanded = isCardMenuExpanded,
-                            modifier = modifier
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }
@@ -842,4 +802,46 @@ private fun PinnedSectionHeader(
             color = colorResource(id = R.color.control_transparent_secondary)
         )
     }
+}
+
+@OptIn(ExperimentalFoundationApi::class)
+@Composable
+private fun WidgetCardModifier(
+    isMenuExpanded: Boolean,
+    mode: InteractionMode,
+    onWidgetClicked: () -> Unit,
+    onWidgetLongClicked: () -> Unit,
+    dragModifier: Modifier? = null
+): Modifier {
+    val haptic = LocalHapticFeedback.current
+
+    var modifier = Modifier
+        .fillMaxWidth()
+        .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
+        .alpha(if (isMenuExpanded) 0.8f else 1f)
+        .background(
+            shape = RoundedCornerShape(16.dp),
+            color = colorResource(id = R.color.dashboard_card_background)
+        )
+        .then(
+            if (mode is InteractionMode.ReadOnly) {
+                Modifier.noRippleClickable { onWidgetClicked() }
+            } else {
+                Modifier.combinedClickable(
+                    onClick = { onWidgetClicked() },
+                    onLongClick = {
+                        onWidgetLongClicked()
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+            }
+        )
+
+    if (dragModifier != null) {
+        modifier = modifier.then(dragModifier)
+    }
+
+    return modifier
 }

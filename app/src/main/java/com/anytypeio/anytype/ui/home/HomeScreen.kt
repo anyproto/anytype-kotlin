@@ -2,8 +2,6 @@ package com.anytypeio.anytype.ui.home
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInVertically
@@ -104,7 +102,7 @@ fun HomeScreen(
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionClicked: (Id) -> Unit = {}
-    ) {
+) {
 
     Box(modifier = modifier.fillMaxSize()) {
         WidgetList(
@@ -238,14 +236,18 @@ private fun WidgetList(
         ) { index, item ->
             when (item) {
                 is WidgetView.Tree -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
-                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -255,46 +257,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            TreeWidgetCard(
-                                modifier = modifier,
-                                mode = mode,
-                                item = item,
-                                onExpandElement = onExpand,
-                                onWidgetElementClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuClicked = onWidgetMenuTriggered,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement,
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -319,15 +294,20 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.Link -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
-                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -337,37 +317,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            LinkWidgetCard(
-                                modifier = modifier,
-                                item = item,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -383,15 +345,20 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.SetOfObjects -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
-                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -401,46 +368,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            DataViewListWidgetCard(
-                                modifier = modifier,
-                                item = item,
-                                mode = mode,
-                                onWidgetObjectClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                onChangeWidgetView = onChangeWidgetView,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement,
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -465,15 +405,20 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.Gallery -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
-                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -483,46 +428,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            GalleryWidgetCard(
-                                modifier = modifier,
-                                item = item,
-                                mode = mode,
-                                onWidgetObjectClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                onChangeWidgetView = onChangeWidgetView,
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement,
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -547,15 +465,20 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.ListOfObjects -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
-                            // Close menu when dragging starts (with delay to avoid accidental triggers)
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -565,45 +488,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            ListWidgetCard(
-                                modifier = modifier,
-                                item = item,
-                                mode = mode,
-                                onWidgetObjectClicked = { obj ->
-                                    onWidgetElementClicked(item.id, obj)
-                                },
-                                onWidgetSourceClicked = onWidgetSourceClicked,
-                                onWidgetMenuTriggered = onWidgetMenuTriggered,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                                onObjectCheckboxClicked = onObjectCheckboxClicked,
-                                onCreateElement = onCreateElement,
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -627,6 +524,7 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.Bin -> {
                     BinWidgetCard(
                         item = item,
@@ -637,14 +535,20 @@ private fun WidgetList(
                         onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }
+
                 is WidgetView.AllContent -> {
-                    if (item.sectionType == SectionType.PINNED) {
-                        ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val isCardMenuExpanded = remember { mutableStateOf(false) }
-                            val hasStartedDragging = remember { mutableStateOf(false) }
+                    val isCardMenuExpanded = remember { mutableStateOf(false) }
+                    val menuItems = item.getWidgetMenuItems()
+                    val isReorderEnabled = item.sectionType == SectionType.PINNED
 
-                            val menuItems = item.getWidgetMenuItems()
+                    ReorderableItem(
+                        enabled = isReorderEnabled,
+                        state = reorderableLazyListState,
+                        key = item.id
+                    ) { isDragged ->
+                        val hasStartedDragging = remember { mutableStateOf(false) }
 
+                        if (isReorderEnabled) {
                             LaunchedEffect(isDragged) {
                                 if (isDragged) {
                                     hasStartedDragging.value = true
@@ -654,36 +558,19 @@ private fun WidgetList(
                                     hasStartedDragging.value = false
                                 }
                             }
-
-                            val modifier = WidgetCardModifier(
-                                isMenuExpanded = isCardMenuExpanded.value,
-                                mode = mode,
-                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
-                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                shouldEnableLongClick = menuItems.isNotEmpty()
-                            )
-
-                            AllContentWidgetCard(
-                                modifier = modifier,
-                                widgetView = item,
-                                onDropDownMenuAction = { action ->
-                                    onWidgetMenuAction(item.id, action)
-                                },
-                                menuItems = menuItems,
-                                isCardMenuExpanded = isCardMenuExpanded
-                            )
                         }
-                    } else {
-                        val isCardMenuExpanded = remember { mutableStateOf(false) }
-
-                        val menuItems = item.getWidgetMenuItems()
 
                         val modifier = WidgetCardModifier(
                             isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
                             onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                            onWidgetLongClicked = {
+                                isCardMenuExpanded.value = !isCardMenuExpanded.value
+                            },
+                            dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
+                                view,
+                                onDragStoppedHandler
+                            ) else null,
                             shouldEnableLongClick = menuItems.isNotEmpty()
                         )
 
@@ -698,6 +585,7 @@ private fun WidgetList(
                         )
                     }
                 }
+
                 is WidgetView.SpaceChat -> {
                     SpaceChatWidgetCard(
                         item = item,
@@ -711,6 +599,7 @@ private fun WidgetList(
                         }
                     )
                 }
+
                 is WidgetView.EmptyState -> {
                     if (mode !is InteractionMode.Edit) {
                         EmptyStateWidgetScreen(
@@ -728,6 +617,7 @@ private fun WidgetList(
                         onSectionClicked = { onSectionClicked(SECTION_OBJECT_TYPE) }
                     )
                 }
+
                 WidgetView.Section.Pinned -> {
                     PinnedSectionHeader(
                         onSectionClicked = { onSectionClicked(SECTION_PINNED) }

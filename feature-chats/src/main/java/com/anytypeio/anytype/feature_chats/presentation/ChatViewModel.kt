@@ -1296,8 +1296,12 @@ class ChatViewModel @Inject constructor(
 
         preloadingJobs += viewModelScope.launch {
             uris.forEach { info ->
-                val path = withContext(dispatchers.io) {
-                    copyFileToCacheDirectory.copy(info.uri)
+                val path = if (info.capturedByCamera) {
+                    withContext(dispatchers.io) {
+                        copyFileToCacheDirectory.copy(info.uri)
+                    }
+                } else {
+                    info.uri
                 }
                 if (path != null) {
                     preloadFile.async(

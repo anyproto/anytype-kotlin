@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -34,6 +35,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
+import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -68,6 +71,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -97,6 +101,8 @@ class ChatViewModel @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val discardPreloadedFile: DiscardPreloadedFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
@@ -111,6 +117,8 @@ class ChatViewModel @Inject constructor(
     private val getObject: GetObject,
     private val analytics: Analytics
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+
+    private val preloadingJobs = mutableListOf<Job>()
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
         replay = 0,
@@ -573,7 +581,13 @@ class ChatViewModel @Inject constructor(
         if (BuildConfig.DEBUG) {
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
+
         viewModelScope.launch {
+
+            // Cancelling preloading jobs if there are any:
+
+            preloadingJobs.cancel()
+
             // Use LinkDetector to find all types of links (URLs, emails, phones)
             val detectedLinkMarks = LinkDetector.addLinkMarksToText(
                 text = msg,
@@ -631,14 +645,24 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
                             }
-                            val path = if (attachment.capturedByCamera) {
-                                shouldClearChatTempFolder = true
-                                withContext(dispatchers.io) {
-                                    copyFileToCacheDirectory.copy(attachment.uri)
-                                }.orEmpty()
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String
+
+                            if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
                             } else {
-                                attachment.uri
+                                path = if (attachment.capturedByCamera) {
+                                    shouldClearChatTempFolder = true
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }.orEmpty()
+                                } else {
+                                    attachment.uri
+                                }
                             }
+
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -646,7 +670,8 @@ class ChatViewModel @Inject constructor(
                                     type = if (attachment.isVideo)
                                         Block.Content.File.Type.VIDEO
                                     else
-                                        Block.Content.File.Type.IMAGE
+                                        Block.Content.File.Type.IMAGE,
+                                    preloadFileId = preloadedFileId
                                 )
                             ).onSuccess { file ->
                                 withContext(dispatchers.io) {
@@ -680,7 +705,7 @@ class ChatViewModel @Inject constructor(
                                     set(
                                         index = idx,
                                         element = attachment.copy(
-                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                            state = ChatView.Message.ChatBoxAttachment.State.Failed
                                         )
                                     )
                                 }
@@ -716,8 +741,16 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
-                            val path = withContext(dispatchers.io) {
-                                copyFileToCacheDirectory.copy(attachment.uri)
+                            var preloadedFileId: Id? = null
+                            var path: String? = null
+                            val state = attachment.state
+                            if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }
                             }
                             if (path != null) {
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
@@ -732,7 +765,8 @@ class ChatViewModel @Inject constructor(
                                     UploadFile.Params(
                                         space = vmParams.space,
                                         path = path,
-                                        type = Block.Content.File.Type.NONE
+                                        type = Block.Content.File.Type.NONE,
+                                        preloadFileId = preloadedFileId
                                     )
                                 ).onSuccess { file ->
                                     copyFileToCacheDirectory.delete(path)
@@ -993,6 +1027,43 @@ class ChatViewModel @Inject constructor(
             it != attachment
         }
         viewModelScope.launch {
+            var path: String? = null
+            val preloaded = when(attachment) {
+                is ChatView.Message.ChatBoxAttachment.File -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                is ChatView.Message.ChatBoxAttachment.Media -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                else -> null
+            }
+
+            if (!preloaded.isNullOrEmpty()) {
+                discardPreloadedFile.async(
+                    params = preloaded
+                ).onSuccess {
+                    Timber.d("Successfully Discarded preloaded file: $preloaded")
+                }.onFailure {
+                    Timber.e("Error while discarding preloaded file: $preloaded")
+                }
+            }
+            if (!path.isNullOrEmpty()) {
+                copyFileToCacheDirectory.delete(path)
+            }
+        }
+        viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.chatDetachItemChat
             )
@@ -1212,12 +1283,55 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value += uris.map { uri ->
-            ChatView.Message.ChatBoxAttachment.Media(
-                uri = uri.uri,
-                isVideo = uri.isVideo,
-                capturedByCamera = uri.capturedByCamera
-            )
+        viewModelScope.launch {
+            chatBoxAttachments.value += uris.map { uri ->
+                ChatView.Message.ChatBoxAttachment.Media(
+                    uri = uri.uri,
+                    isVideo = uri.isVideo,
+                    capturedByCamera = uri.capturedByCamera
+                )
+            }
+        }
+        // Starting preloading files
+
+        preloadingJobs += viewModelScope.launch {
+            uris.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                if (path != null) {
+                    preloadFile.async(
+                        params = PreloadFile.Params(
+                            space = vmParams.space,
+                            path = path,
+                            type = Block.Content.File.Type.NONE
+                        )
+                    ).onSuccess { preloadedFileId: Id ->
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.Media && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Preloaded(
+                                        preloadedFileId = preloadedFileId,
+                                        path = path
+                                    )
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }.onFailure {
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.Media && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1227,8 +1341,49 @@ class ChatViewModel @Inject constructor(
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
-                size = info.size
+                size = info.size,
+                state = ChatView.Message.ChatBoxAttachment.State.Preloading
             )
+        }
+        // Starting preloading files
+        preloadingJobs += viewModelScope.launch {
+            infos.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                if (path != null) {
+                    preloadFile.async(
+                        params = PreloadFile.Params(
+                            space = vmParams.space,
+                            path = path,
+                            type = Block.Content.File.Type.NONE
+                        )
+                    ).onSuccess { preloadedFileId: Id ->
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.File && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Preloaded(
+                                        preloadedFileId = preloadedFileId,
+                                        path = path
+                                    )
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }.onFailure {
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.File && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 

@@ -943,7 +943,32 @@ class HomeScreenViewModel(
         type: Int,
         target: Id?
     ) {
-        //DROID-3965 legacy logic, adding widgets only through "pin" button
+        viewModelScope.launch {
+            val params = CreateWidget.Params(
+                ctx = ctx,
+                source = source,
+                type = when (type) {
+                    Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                    Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                    Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                    Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
+                    Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                    else -> WidgetLayout.LINK
+                },
+                target = target,
+                position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+            )
+            createWidget.async(params).fold(
+                onFailure = {
+                    sendToast("Error while creating widget: ${it.message}")
+                    Timber.e(it, "Error while creating widget")
+                },
+                onSuccess = { payload ->
+                    Timber.d("Widget created successfully, dispatching payload")
+                    objectPayloadDispatcher.send(payload)
+                }
+            )
+        }
     }
 
     /**
@@ -1663,10 +1688,6 @@ class HomeScreenViewModel(
 
     private fun proceedWithExitingEditMode() {
         mode.value = InteractionMode.Default
-    }
-
-    private fun proceedWithEnteringEditMode() {
-        mode.value = InteractionMode.Edit
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {

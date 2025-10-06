@@ -605,34 +605,53 @@ private fun WidgetList(
                 is WidgetView.AllContent -> {
                     if (item.sectionType == SectionType.PINNED) {
                         ReorderableItem(reorderableLazyListState, key = item.id) { isDragged ->
-                            val alpha = animateFloatAsState(if (isDragged) 0.8f else 1.0f)
-                            AllContentWidgetCard(
-                                modifier = DefaultDragAndDropModifier(view, onDragStoppedHandler),
-                                index = index,
+                            val isCardMenuExpanded = remember { mutableStateOf(false) }
+                            val hasStartedDragging = remember { mutableStateOf(false) }
+
+                            LaunchedEffect(isDragged) {
+                                if (isDragged) {
+                                    hasStartedDragging.value = true
+                                    delay(1000)
+                                    isCardMenuExpanded.value = false
+                                } else if (hasStartedDragging.value) {
+                                    hasStartedDragging.value = false
+                                }
+                            }
+
+                            val modifier = WidgetCardModifier(
+                                isMenuExpanded = isCardMenuExpanded.value,
                                 mode = mode,
-                                onWidgetClicked = {
-                                    onWidgetSourceClicked(item.id)
-                                },
+                                onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                                onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value },
+                                dragModifier = DefaultDragAndDropModifier(view, onDragStoppedHandler)
+                            )
+
+                            AllContentWidgetCard(
+                                modifier = modifier,
+                                widgetView = item,
                                 onDropDownMenuAction = { action ->
                                     onWidgetMenuAction(item.id, action)
                                 },
-                                alpha = alpha.value,
-                                widgetView = item,
-                                isDragging = isDragged
+                                isCardMenuExpanded = isCardMenuExpanded
                             )
                         }
                     } else {
-                        AllContentWidgetCard(
-                            index = index,
+                        val isCardMenuExpanded = remember { mutableStateOf(false) }
+
+                        val modifier = WidgetCardModifier(
+                            isMenuExpanded = isCardMenuExpanded.value,
                             mode = mode,
-                            onWidgetClicked = {
-                                onWidgetSourceClicked(item.id,)
-                            },
+                            onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                            onWidgetLongClicked = { isCardMenuExpanded.value = !isCardMenuExpanded.value }
+                        )
+
+                        AllContentWidgetCard(
+                            modifier = modifier,
+                            widgetView = item,
                             onDropDownMenuAction = { action ->
                                 onWidgetMenuAction(item.id, action)
                             },
-                            alpha = 1.0f,
-                            widgetView = item
+                            isCardMenuExpanded = isCardMenuExpanded
                         )
                     }
                 }

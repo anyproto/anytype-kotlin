@@ -651,7 +651,7 @@ private fun LinkWidgetItem(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit
 ) {
     Box(
-        modifier = modifier
+        modifier = Modifier
             .fillMaxWidth()
             .padding(top = if (index == 0) 6.dp else 0.dp)
             .alpha(alpha)
@@ -663,7 +663,8 @@ private fun LinkWidgetItem(
             },
             onWidgetSourceClicked = onWidgetSourceClicked,
             hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-            onObjectCheckboxClicked = onObjectCheckboxClicked
+            onObjectCheckboxClicked = onObjectCheckboxClicked,
+            dragModifier = modifier
         )
     }
 }

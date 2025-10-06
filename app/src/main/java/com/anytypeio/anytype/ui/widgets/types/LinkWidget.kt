@@ -40,7 +40,8 @@ fun LinkWidgetCard(
     onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     hasReadOnlyAccess: Boolean = false,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    dragModifier: Modifier = Modifier
 ) {
     val isCardMenuExpanded = remember {
         mutableStateOf(false)
@@ -75,6 +76,7 @@ fun LinkWidgetCard(
                     )
                 }
             )
+            .then(dragModifier)
     ) {
 
         Row (

@@ -2718,17 +2718,28 @@ class HomeScreenViewModel(
 
     //region Expanded Widgets
     /**
-     * Toggles widget collapse state and persists to preferences
+     * Toggles widget collapse state and persists to preferences.
+     *
+     * This function simply adds/removes the widget ID from the expandedIds set.
+     * The actual effect (collapse vs expand) depends on the widget's section type:
+     * - Pinned widgets: Adding to set = collapse, Removing from set = expand
+     * - Types widgets: Adding to set = expand, Removing from set = collapse
+     *
+     * See [isWidgetCollapsed] for detailed explanation of the inverted semantics.
      */
     fun onToggleWidgetExpandedState(widgetId: Id) {
         Timber.d("onToggleWidgetExpandedState, widgetId: $widgetId")
         viewModelScope.launch {
             val currentExpanded = expandedWidgetIds.value
+            // Simply toggle: if in set, remove it; if not in set, add it
+            // The meaning (collapsed vs expanded) depends on widget section type
             val newExpanded = if (currentExpanded.contains(widgetId)) {
                 currentExpanded - widgetId
             } else {
                 currentExpanded + widgetId
             }
+
+            Timber.d("Toggle widget $widgetId: inSet=${currentExpanded.contains(widgetId)} -> ${newExpanded.contains(widgetId)}, totalInSet=${newExpanded.size}")
             expandedWidgetIds.value = newExpanded
             saveExpandedWidgetState()
         }
@@ -2821,9 +2832,28 @@ class HomeScreenViewModel(
 
     /**
      * Determines if a widget should be collapsed based on section type defaults and user preferences.
+     *
      * Product logic:
-     * - Pinned section widgets: Expanded by default (collapsed only if section collapsed or explicitly removed from expandedIds)
-     * - Object Types section widgets: Collapsed by default (expanded only if explicitly in expandedIds)
+     * - Pinned section widgets: Expanded by default
+     * - Object Types section widgets: Collapsed by default
+     *
+     * IMPORTANT: expandedIds represents "widgets toggled from their default state", NOT "expanded widgets".
+     * The semantics are INVERTED based on section type:
+     *
+     * Pinned Section (default: expanded):
+     *   - Widget ID NOT in set → EXPANDED (using default)
+     *   - Widget ID IN set → COLLAPSED (user toggled from default)
+     *
+     * Types Section (default: collapsed):
+     *   - Widget ID NOT in set → COLLAPSED (using default)
+     *   - Widget ID IN set → EXPANDED (user toggled from default)
+     *
+     * Example scenario:
+     *   expandedIds = [widgetA, widgetB]
+     *   - widgetA (Pinned) → COLLAPSED (in set = toggled from default expanded)
+     *   - widgetB (Types) → EXPANDED (in set = toggled from default collapsed)
+     *   - widgetC (Pinned) → EXPANDED (not in set = using default)
+     *   - widgetD (Types) → COLLAPSED (not in set = using default)
      */
     private fun isWidgetCollapsed(
         widget: Widget,
@@ -2838,16 +2868,16 @@ class HomeScreenViewModel(
         return when (widget.sectionType) {
             SectionType.PINNED -> {
                 // Pinned widgets are expanded by default
-                // Collapsed only if expandedIds is initialized (not empty) AND widget is not in it
-                expandedIds.isNotEmpty() && !expandedIds.contains(widget.id)
+                // Being in expandedIds means user explicitly collapsed it
+                expandedIds.contains(widget.id)
             }
             SectionType.TYPES -> {
                 // Object Types widgets are collapsed by default
-                // Expanded only if explicitly in expandedIds
+                // Being in expandedIds means user explicitly expanded it
                 !expandedIds.contains(widget.id)
             }
             null -> {
-                // Fallback for widgets without section type
+                // Fallback for widgets without section type - collapsed by default
                 !expandedIds.contains(widget.id)
             }
         }

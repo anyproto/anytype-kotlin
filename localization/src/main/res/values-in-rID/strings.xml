@@ -10,7 +10,7 @@
     <string name="appearance">Penampilan</string>
     <string name="file_storage">Penyimpanan berkas</string>
     <string name="key">Kunci</string>
-    <string name="login_key">Kunci</string>
+    <string name="login_key">Kunci Masuk</string>
     <string name="clear_file_cache">Bersihkan tembolok</string>
     <string name="debug_sync_report">Laporan Sinkronisasi Debug</string>
     <string name="debug">Debug</string>
@@ -29,7 +29,9 @@
     <string name="dark">Gelap</string>
     <string name="system">Sistem</string>
     <string name="settings">Setelan</string>
+    <string name="vault_settings_section_misc">Lain-Lain</string>
     <string name="app_preferences">Setelan Aplikasi</string>
+    <string name="settings_application">Aplikasi</string>
     <string name="vault_key">Brankas &amp; Kunci</string>
     <string name="have_you_back_up_your_recovery_phrase">Sudahkah kamu mencadangkan Kuncimu?</string>
     <string name="you_will_need_to_sign_in">Anda membutuhkannya untuk masuk. Simplanlah dalam tempat yang aman. Jika hilang, kamu tidak akan bisa mengakses brankasmu.</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -562,6 +568,8 @@
     <string name="view_gallery">Galeri</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Page cover</string>
+    <string name="object_action_pin">Pin</string>
+    <string name="object_action_unpin">Lepas sematan</string>
     <string name="editor_toolbar">tombol</string>
     <string name="wait_a_bit_message">Mohon tunggu sebentar. Hampir selesai …</string>
     <string name="confirm">Konfirmasi</string>
@@ -801,10 +809,8 @@
     <string name="type_editing_title">Type settings</string>
     <string name="relation_editing_title">Pengaturan properti</string>
     <string name="type_editing_uninstall">Hapus</string>
-    <string name="empty_tree_widget">This object has no links to other objects.\nTry to create a new one.</string>
     <string name="empty_tree_widget_reader_access">Objek ini tidak punya tautan ke objek lain.</string>
-    <string name="empty_list_widget">This view has no objects.\nTry to create a new one.</string>
-    <string name="empty_list_widget_no_objects">Belum ada objek di gawit ini.</string>
+    <string name="empty_list_widget_no_objects">Tidak ada objek</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -993,7 +999,8 @@
     <string name="widget_type_view_description">Widget dengan tata letak Kuery atau Koleksi</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Ubah sumber</string>
-    <string name="widget_change_type">Change Type</string>
+    <string name="widget_change_type">Ubah tipe widget</string>
+    <string name="widget_unpin">Lepas sematan</string>
     <string name="widget_remove_widget">Hapus widget</string>
     <string name="widget_empty_bin">Tempat sampah kosong</string>
     <string name="widget_edit_widgets">Sunting widget</string>
@@ -1070,7 +1077,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Gandakan</string>
-    <string name="object_action_to_widgets">Ke widget</string>
+    <string name="object_action_to_widgets">Pin</string>
     <string name="object_action_download">Unduh</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1215,8 +1222,10 @@
     <string name="multiplayer_link_disabled">Tautan dinonaktifkan</string>
     <string name="multiplayer_link_disabled_desc">Hanya anggota yang sudah diundang yang memiliki akses</string>
     <string name="multiplayer_editor_access">Akses penyunting</string>
+    <string name="multiplayer_editor">Penyunting</string>
     <string name="multiplayer_editor_access_desc">Orang dengan tautan ini bisa menyunting dan menulis di obrolan</string>
     <string name="multiplayer_viewer_access">Akses pembaca</string>
+    <string name="multiplayer_viewer">Pembaca</string>
     <string name="multiplayer_viewer_access_desc">Orang dengan tautan ini bisa membaca obrolan</string>
     <string name="multiplayer_request_access">Minta akses</string>
     <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
@@ -1248,14 +1257,17 @@
     <string name="multiplayer_cant_add_members">Anda tidak dapat menambah anggota lagi</string>
     <string name="multiplayer_cant_add_editors">Kamu tidak bisa menambah penyunting lagi</string>
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
+    <string name="multiplayer_manage_spaces">Kelola Ruang</string>
     <string name="multiplayer_upgrade_button_request">✦ Tingkatkan untuk menambah lebih banyak anggota</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Tingkatkan untuk menambah lebih banyak ruang</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
-    <string name="multiplayer_approve_request">Terima</string>
+    <string name="multiplayer_approve_request">Atur akses</string>
     <string name="multiplayer_view_request">Lihat permintaan</string>
     <string name="multiplayer_owner">Pemilik</string>
+    <string name="multiplayer_no_permissions">Tidak ada izin</string>
+    <string name="multiplayer_pending">Menunggu</string>
     <string name="multiplayer_can_edit">Can edit</string>
     <string name="multiplayer_can_view">Dapat melihat</string>
     <string name="multiplayer_space_add_viewer">Tambah pembaca</string>
@@ -1330,7 +1342,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d permintaan</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Kamu</string>
+    <string name="multiplayer_you_as_member">kamu</string>
     <string name="multiplayer_spaces">Ruang</string>
     <string name="multiplayer_space_status_joining">Bergabung</string>
     <string name="multiplayer_space_status_active">Aktif</string>
@@ -1540,7 +1552,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="membership_upgrade_title">Gangguan pada status keanggotaan saat ini</string>
     <string name="membership_upgrade_description">Hubungi kami untuk penyimpanan ekstra, tambahan editor, atau lebih banyak ruang bersama. Tim Anytype akan memberikan detail dan ketentuan yang disesuaikan dengan kebutuhan Anda.</string>
     <string name="membership_upgrade_button">Hubungi Tim Anytype</string>
-    <string name="membership_space_settings_share_limit">Kamu telah mencapai batas %1$d ruang yang dapat dibagikan</string>
+    <string name="membership_space_settings_share_limit">Kamu telah mencapai batas %1$d ruang terbagi</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
     </plurals>
@@ -1796,6 +1809,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_qrcode">Kode QR</string>
     <string name="space_settings_members_button_members">Anggota</string>
     <string name="space_settings_types_button">Tipe Objek</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Tipe Objek Bawaan</string>
     <string name="space_settings_wallpaper_button">Latar belakang</string>
     <string name="space_settings_storage_button">Penyimpanan Jarak Jauh</string>
@@ -1934,7 +1948,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
     <string name="private_local_yours_forever">Pribadi, lokal, milikmu selamanya</string>
-    <string name="wallpaper_item_space_icon_color">Warna ikon \nruang</string>
+    <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1948,7 +1962,31 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_view_object">Lihat Objek</string>
     <string name="web_publishing_open_in_browser">Buka di Peramban</string>
     <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
+    <string name="widgets_section_pinned">Tersemat</string>
+    <string name="widgets_section_object_types">Tipe objek</string>
+    <string name="widgets_menu_new_object_type">Baru</string>
+    <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>
+    <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>
+    <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
+    <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
+    <string name="my_sites">Situsku</string>
+    <string name="my_sites_empty_state_text">Belum ada objek diterbitkan</string>
+    <string name="my_sites_it_s_empty_here">Di sini kosong</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Terbitkan situs web pertamamu untuk memulai.</string>
+    <string name="members_limits_incentive_editors">Kamu telah mencapai batas %1$d penyunting</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">Kamu telah mencapai batas %1$d pemirsa</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Obrolan</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Ruang</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Setujui</string>
 </resources>

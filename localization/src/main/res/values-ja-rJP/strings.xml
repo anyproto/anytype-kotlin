@@ -10,7 +10,7 @@
     <string name="appearance">外観</string>
     <string name="file_storage">ファイルストレージ</string>
     <string name="key">鍵</string>
-    <string name="login_key">鍵</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">ファイルキャッシュを消去</string>
     <string name="debug_sync_report">デバッグ同期レポート</string>
     <string name="debug">デバッグ</string>
@@ -29,7 +29,9 @@
     <string name="dark">ダーク</string>
     <string name="system">標準</string>
     <string name="settings">設定</string>
+    <string name="vault_settings_section_misc">その他</string>
     <string name="app_preferences">アプリ設定</string>
+    <string name="settings_application">アプリ</string>
     <string name="vault_key">保管庫と鍵</string>
     <string name="have_you_back_up_your_recovery_phrase">鍵をバックアップしましたか？</string>
     <string name="you_will_need_to_sign_in">保管庫へのログインに必要です。紛失しないようにご自身で大切に保管してください。紛失した場合、保管庫に入ることができなくなります。</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">さらに多くのスペースを入手</string>
     <string name="account_name">名前</string>
     <string name="space_settings">スペース設定</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">データ管理</string>
     <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
@@ -562,6 +568,8 @@
     <string name="view_gallery">ギャラリー</string>
     <string name="view_kanban">ボード</string>
     <string name="page_cover">カバー画像</string>
+    <string name="object_action_pin">ピン留め</string>
+    <string name="object_action_unpin">ピン留め解除</string>
     <string name="editor_toolbar">ボタン</string>
     <string name="wait_a_bit_message">少々お待ちください。まもなくです…</string>
     <string name="confirm">確定</string>
@@ -801,10 +809,8 @@
     <string name="type_editing_title">タイプ設定</string>
     <string name="relation_editing_title">プロパティ設定</string>
     <string name="type_editing_uninstall">削除</string>
-    <string name="empty_tree_widget">他のオブジェクトとのリンクがありません。\n新しく作成してみましょう。</string>
     <string name="empty_tree_widget_reader_access">他のオブジェクトとのリンクがありません。</string>
-    <string name="empty_list_widget">オブジェクトがありません。\n新しく作成してみましょう。</string>
-    <string name="empty_list_widget_no_objects">まだオブジェクトがありません。</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="this_widget_has_no_object">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="emoji">絵文字</string>
@@ -993,7 +999,8 @@
     <string name="widget_type_view_description">クエリやコレクションのレイアウトで表示します</string>
     <string name="widget_type_compact_list">コンパクトリスト</string>
     <string name="widget_change_source">ソースを変更</string>
-    <string name="widget_change_type">種類を変更</string>
+    <string name="widget_change_type">ウィジェットの種類を変更</string>
+    <string name="widget_unpin">ピン留め解除</string>
     <string name="widget_remove_widget">ウィジェットを削除</string>
     <string name="widget_empty_bin">空のごみ箱</string>
     <string name="widget_edit_widgets">ウィジェットを編集</string>
@@ -1070,7 +1077,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">複製</string>
-    <string name="object_action_to_widgets">ウィジェット作成</string>
+    <string name="object_action_to_widgets">ピン留め</string>
     <string name="object_action_download">ダウンロード</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1215,8 +1222,10 @@
     <string name="multiplayer_link_disabled">招待リンクの無効化</string>
     <string name="multiplayer_link_disabled_desc">すでに招待されたメンバー以外は参加できません</string>
     <string name="multiplayer_editor_access">編集メンバー</string>
+    <string name="multiplayer_editor">編集可能</string>
     <string name="multiplayer_editor_access_desc">編集やチャットに参加することができます</string>
     <string name="multiplayer_viewer_access">閲覧メンバー</string>
+    <string name="multiplayer_viewer">閲覧可能</string>
     <string name="multiplayer_viewer_access_desc">スペースやチャットを閲覧することができます</string>
     <string name="multiplayer_request_access">参加リクエスト</string>
     <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
@@ -1248,14 +1257,17 @@
     <string name="multiplayer_cant_add_members">これ以上、閲覧権限のメンバーを追加できません。</string>
     <string name="multiplayer_cant_add_editors">これ以上、編集権限のメンバーを追加できません。</string>
     <string name="multiplayer_upgrade_button">✦ アップグレード</string>
+    <string name="multiplayer_manage_spaces">スペース管理</string>
     <string name="multiplayer_upgrade_button_request">✦ アップグレードしてさらに多くのメンバーを追加</string>
     <string name="multiplayer_upgrade_spaces_button">✦ アップグレードしてさらにスペースを追加</string>
     <string name="multiplayer_members">メンバー</string>
     <string name="multiplayer_leave_request">退出リクエスト</string>
     <string name="multiplayer_join_request">参加リクエスト</string>
-    <string name="multiplayer_approve_request">承認</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">リクエストを確認</string>
     <string name="multiplayer_owner">所有者</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">編集可能</string>
     <string name="multiplayer_can_view">閲覧可能</string>
     <string name="multiplayer_space_add_viewer">閲覧のみ許可</string>
@@ -1330,7 +1342,7 @@
     <plurals name="multiplayer_number_of_join_requests">
         <item quantity="other">%1$d件のリクエスト</item>
     </plurals>
-    <string name="multiplayer_you_as_member">あなた</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">スペース</string>
     <string name="multiplayer_space_status_joining">参加中</string>
     <string name="multiplayer_space_status_active">有効</string>
@@ -1541,7 +1553,8 @@
     <string name="membership_upgrade_title">メンバーシップをアップグレード</string>
     <string name="membership_upgrade_description">ストレージ容量の追加、スペースエディターに関するご質問、または共有スペースの増設については、お気軽にお問い合わせください。Anytypeがお客様のニーズに合わせた詳細と条件をご案内いたします。</string>
     <string name="membership_upgrade_button">Anytypeへのお問い合わせ</string>
-    <string name="membership_space_settings_share_limit">共有スペースの上限数である%1$dつに達しました。</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="other">%d 年間</item>
     </plurals>
@@ -1797,6 +1810,7 @@
     <string name="space_settings_qrcode">QRコード</string>
     <string name="space_settings_members_button_members">メンバー</string>
     <string name="space_settings_types_button">タイプ</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">デフォルトのタイプ</string>
     <string name="space_settings_wallpaper_button">壁紙</string>
     <string name="space_settings_storage_button">リモートストレージ</string>
@@ -1936,7 +1950,7 @@
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Web公開</string>
     <string name="preferences">環境設定</string>
     <string name="web_publishing_customize_url">URLをカスタマイズ</string>
@@ -1950,7 +1964,31 @@
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">ピン留め</string>
+    <string name="widgets_section_object_types">タイプ</string>
+    <string name="widgets_menu_new_object_type">新規</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
+    <string name="my_sites">サイト</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">まずは、Webサイトを公開しましょう。</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">チャット</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">スペース</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

@@ -97,7 +97,18 @@ class SelectWidgetTypeViewModel(
                     objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
                         listOf(
                             WidgetTypeView.CompactList(),
-                            WidgetTypeView.List(),
+                            WidgetTypeView.Link()
+                        )
+                    }
+
+                    objectLayout in listOf(
+                        ObjectType.Layout.BASIC,
+                        ObjectType.Layout.NOTE,
+                        ObjectType.Layout.TODO,
+                        ObjectType.Layout.PROFILE
+                    ) -> {
+                        listOf(
+                            WidgetTypeView.Tree(),
                             WidgetTypeView.Link()
                         )
                     }

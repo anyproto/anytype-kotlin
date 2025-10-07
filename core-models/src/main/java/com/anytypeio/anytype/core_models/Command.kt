@@ -37,7 +37,18 @@ sealed class Command {
     class UploadFile(
         val space: SpaceId,
         val path: String,
+        val type: Block.Content.File.Type?,
+        val preloadFileId: Id? = null
+    )
+
+    class PreloadFile(
+        val space: SpaceId,
+        val path: String,
         val type: Block.Content.File.Type?
+    )
+
+    class DiscardPreloadedFile(
+        val preloadedFileId: Id
     )
 
     class FileDrop(
@@ -745,4 +756,9 @@ sealed class Command {
             val objectId: Id
         ) : Publishing()
     }
+
+    data class ObjectTypesSetOrder(
+        val spaceId: Id,
+        val orderedIds: List<Id>
+    ) : Command()
 }

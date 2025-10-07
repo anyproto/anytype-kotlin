@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -13,7 +15,10 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -651,6 +656,108 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
+        )
+    }
+}
+
+@Composable
+@DefaultPreviews
+fun ChatWithMention() {
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultChatCard(
+            title = "B&O Museum",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            creatorName = "John Doe",
+            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+            messageTime = "18:32",
+            unreadMentionCount = 1,
+            isMuted = true,
+            maxPinnedSpaces = 6,
+            chatPreview = Chat.Preview(
+                space = SpaceId("space-id"),
+                chat = "chat-id",
+                message = Chat.Message(
+                    id = "message-id",
+                    createdAt = System.currentTimeMillis(),
+                    modifiedAt = 0L,
+                    attachments = emptyList(),
+                    reactions = emptyMap(),
+                    creator = "creator-id",
+                    replyToMessageId = "",
+                    content = Chat.Message.Content(
+                        text = "Hello, this is a preview message.",
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    order = "order-id",
+                    synced = false
+                )
+            ),
+            currentPinnedCount = 3,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
+        )
+    }
+}
+
+@Composable
+@DefaultPreviews
+fun ChatPreview() {
+    Column {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(32.dp)
+        )
+        VaultChatCard(
+            title = "B&O Museum",
+            icon = SpaceIconView.ChatSpace.Placeholder(),
+            creatorName = "John Doe",
+            messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
+            messageTime = "18:32",
+            isMuted = false,
+            isPinned = true,
+            maxPinnedSpaces = 6,
+            chatPreview = Chat.Preview(
+                space = SpaceId("space-id"),
+                chat = "chat-id",
+                message = Chat.Message(
+                    id = "message-id",
+                    createdAt = System.currentTimeMillis(),
+                    modifiedAt = 0L,
+                    attachments = emptyList(),
+                    reactions = emptyMap(),
+                    creator = "creator-id",
+                    replyToMessageId = "",
+                    content = Chat.Message.Content(
+                        text = "Hello, this is a preview message.",
+                        marks = emptyList(),
+                        style = Block.Content.Text.Style.P
+                    ),
+                    order = "order-id",
+                    synced = false
+                )
+            ),
+            currentPinnedCount = 3,
+            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
+            spaceView = VaultSpaceView.Space(
+                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
+                isMuted = false,
+                icon = SpaceIconView.ChatSpace.Placeholder(),
+                isOwner = true,
+                accessType = "Owner"
+            ),
         )
     }
 }

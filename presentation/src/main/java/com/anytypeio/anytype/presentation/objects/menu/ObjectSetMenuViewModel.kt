@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
@@ -20,6 +19,7 @@ import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
@@ -36,6 +37,7 @@ import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
 import com.anytypeio.anytype.presentation.objects.ObjectAction
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.*
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -71,7 +73,9 @@ class ObjectSetMenuViewModel(
     private val userPermissionProvider: UserPermissionProvider,
     private val deleteRelationFromObject: DeleteRelationFromObject,
     private val updateFields: UpdateFields,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val showObject: GetObject,
+    private val deleteWidget: DeleteWidget
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -91,7 +95,9 @@ class ObjectSetMenuViewModel(
     fieldParser = fieldParser,
     deepLinkResolver = deepLinkResolver,
     spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-    getSpaceInviteLink = getSpaceInviteLink
+    getSpaceInviteLink = getSpaceInviteLink,
+    showObject = showObject,
+    deleteWidget = deleteWidget
 ) {
 
     init {
@@ -125,7 +131,9 @@ class ObjectSetMenuViewModel(
         private val userPermissionProvider: UserPermissionProvider,
         private val deleteRelationFromObject: DeleteRelationFromObject,
         private val updateFields: UpdateFields,
-        private val setObjectDetails: SetObjectDetails
+        private val setObjectDetails: SetObjectDetails,
+        private val showObject: GetObject,
+        private val deleteWidget: DeleteWidget
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectSetMenuViewModel(
@@ -154,7 +162,9 @@ class ObjectSetMenuViewModel(
                 userPermissionProvider = userPermissionProvider,
                 deleteRelationFromObject = deleteRelationFromObject,
                 updateFields = updateFields,
-                setObjectDetails = setObjectDetails
+                setObjectDetails = setObjectDetails,
+                showObject = showObject,
+                deleteWidget = deleteWidget
             ) as T
         }
     }
@@ -245,7 +255,8 @@ class ObjectSetMenuViewModel(
         isFavorite: Boolean,
         isTemplate: Boolean,
         isLocked: Boolean,
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        isCurrentObjectPinned: Boolean
     ): List<ObjectAction> = buildList {
         if (!isReadOnly) {
             if (isArchived) {
@@ -253,11 +264,10 @@ class ObjectSetMenuViewModel(
             } else {
                 add(ObjectAction.MOVE_TO_BIN)
             }
-            add(ObjectAction.CREATE_WIDGET)
-            if (isFavorite) {
-                add(ObjectAction.REMOVE_FROM_FAVOURITE)
+            if (isCurrentObjectPinned) {
+                add(ObjectAction.UNPIN)
             } else {
-                add(ObjectAction.ADD_TO_FAVOURITE)
+                add(ObjectAction.PIN)
             }
             val dataViewState = objectState.value.dataViewState()
             if (dataViewState != null && !dataViewState.objectRestrictions.contains(
@@ -296,9 +306,12 @@ class ObjectSetMenuViewModel(
                     details = state.details.details
                 )
             }
-            ObjectAction.CREATE_WIDGET -> {
+            ObjectAction.PIN -> {
                 val wrapper = state.details.getObject(ctx)
                 if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
+            }
+            ObjectAction.UNPIN -> {
+                proceedWithRemovingWidget()
             }
             ObjectAction.COPY_LINK -> {
                 viewModelScope.launch {
@@ -306,7 +319,7 @@ class ObjectSetMenuViewModel(
                         space = SpaceId(space),
                         ctx = ctx
                     )
-                    commands.emit(Command.ShareDeeplinkToObject(link))
+                    commands.emit(ShareDeeplinkToObject(link))
                 }
             }
             ObjectAction.MOVE_TO,

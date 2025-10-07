@@ -24,10 +24,8 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
@@ -41,7 +39,6 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
@@ -58,46 +55,26 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.ui.widgets.menu.WidgetMenu
-import com.anytypeio.anytype.ui.widgets.menu.WidgetObjectTypeMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
 @Composable
 fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit = {}
+    onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
 ) {
-    val isCardMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.dashboard_card_background)
-            )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
-            )
-    ) {
+    Box(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -109,7 +86,7 @@ fun DataViewListWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id, item.source)
+                        onWidgetSourceClicked(item.id)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -171,46 +148,10 @@ fun DataViewListWidgetCard(
         }
 
         WidgetLongClickMenu(
-            source = item.source,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
-            item = item,
-            mode = mode,
             onDropDownMenuAction = onDropDownMenuAction
         )
-    }
-}
-
-@Composable
-private fun WidgetLongClickMenu(
-    source: Widget.Source,
-    isCardMenuExpanded: MutableState<Boolean>,
-    item: WidgetView,
-    mode: InteractionMode,
-    onDropDownMenuAction: (DropDownMenuAction) -> Unit
-) {
-    when (source) {
-        is Widget.Source.Default -> {
-            if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE && item.canCreateObjectOfType) {
-                WidgetObjectTypeMenu(
-                    isExpanded = isCardMenuExpanded,
-                    canCreateObjectOfType = item.canCreateObjectOfType,
-                    onCreateObjectOfTypeClicked = {
-                        onDropDownMenuAction.invoke(DropDownMenuAction.CreateObjectOfType(source))
-                    }
-                )
-            } else {
-                // Handle regular Default sources - show standard menu
-                WidgetMenu(
-                    isExpanded = isCardMenuExpanded,
-                    onDropDownMenuAction = onDropDownMenuAction,
-                    canEditWidgets = mode is InteractionMode.Default
-                )
-            }
-        }
-
-        else -> {
-            // no op
-        }
     }
 }
 
@@ -219,38 +160,18 @@ fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId, Widget.Source) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onCreateElement: (WidgetView) -> Unit
+    onCreateElement: (WidgetView) -> Unit,
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
 ) {
-    val isCardMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    val isHeaderMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
-            .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
-            .background(
-                shape = RoundedCornerShape(16.dp),
-                color = colorResource(id = R.color.dashboard_card_background)
-            )
-            .then(
-                if (mode is InteractionMode.Edit)
-                    Modifier.noRippleClickable {
-                        isCardMenuExpanded.value = !isCardMenuExpanded.value
-                    }
-                else
-                    Modifier
-            )
-    ) {
+    Box(modifier = modifier) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
@@ -262,7 +183,7 @@ fun GalleryWidgetCard(
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = {
                     if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id, item.source)
+                        onWidgetSourceClicked(item.id)
                     }
                 },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
@@ -314,7 +235,7 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.id, item.source)
+                                            onWidgetSourceClicked(item.id)
                                         }
                                 ) {
                                     Text(
@@ -347,10 +268,8 @@ fun GalleryWidgetCard(
             }
         }
         WidgetLongClickMenu(
-            source = item.source,
+            menuItems = menuItems,
             isCardMenuExpanded = isCardMenuExpanded,
-            item = item,
-            mode = mode,
             onDropDownMenuAction = onDropDownMenuAction
         )
     }

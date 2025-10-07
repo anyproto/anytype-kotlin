@@ -1938,7 +1938,7 @@ fun CoroutineScope.sendDeleteWidgetEvent(
 fun CoroutineScope.sendClickWidgetTitleEvent(
     analytics: Analytics,
     bundled: Widget.Source.Bundled,
-    isAutoCreated: Boolean?
+    isAutoCreated: Boolean? = null
 ) {
     sendEvent(
         analytics = analytics,

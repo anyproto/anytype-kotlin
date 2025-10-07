@@ -204,6 +204,9 @@ interface MiddlewareService {
     fun fileUpload(request: Rpc.File.Upload.Request): Rpc.File.Upload.Response
 
     @Throws(Exception::class)
+    fun fileDiscardPreload(request: Rpc.File.DiscardPreload.Request): Rpc.File.DiscardPreload.Response
+
+    @Throws(Exception::class)
     fun fileDownload(request: Rpc.File.Download.Request): Rpc.File.Download.Response
 
     @Throws(Exception::class)
@@ -477,6 +480,9 @@ interface MiddlewareService {
     @Throws(Exception::class)
     fun blockWidgetSetViewId(request: Rpc.BlockWidget.SetViewId.Request) : Rpc.BlockWidget.SetViewId.Response
 
+    @Throws(Exception::class)
+    fun objectTypesSetOrder(request: Rpc.ObjectType.SetOrder.Request) : Rpc.ObjectType.SetOrder.Response
+
     //endregion
 
     //region WORKSPACE
@@ -680,4 +686,7 @@ interface MiddlewareService {
     fun publishingList(request: Rpc.Publishing.List.Request): Rpc.Publishing.List.Response
 
     //endregion
+
+    @Throws(Exception::class)
+    fun appShutdown(request: Rpc.App.Shutdown.Request): Rpc.App.Shutdown.Response
 }

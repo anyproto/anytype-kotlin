@@ -100,6 +100,8 @@ interface BlockRemote {
     suspend fun copy(command: Command.Copy): Response.Clipboard.Copy
 
     suspend fun uploadFile(command: Command.UploadFile): ObjectWrapper.File
+    suspend fun preloadFile(command: Command.PreloadFile): Id
+    suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile)
     suspend fun fileDrop(command: Command.FileDrop): Payload
     suspend fun downloadFile(command: Command.DownloadFile): String
 
@@ -459,6 +461,8 @@ interface BlockRemote {
     suspend fun showVersion(command: Command.VersionHistory.ShowVersion): ShowVersionResponse
     suspend fun setVersion(command: Command.VersionHistory.SetVersion)
     suspend fun diffVersions(command: Command.VersionHistory.DiffVersions): DiffVersionResponse
+
+    suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String>
 
     //region CHATS
 

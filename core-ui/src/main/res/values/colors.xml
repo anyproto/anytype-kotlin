@@ -52,6 +52,8 @@
     <color name="text_white">#FFFFFF</color>
     <color name="text_label_inversion">#FFFFFF</color>
     <color name="text_button_label">#FFFFFF</color>
+    <color name="text_transparent_secondary">#99252525</color> <!-- #252525 60% -->
+    <color name="text_transparent_tertiary">#4D252525</color> <!-- #252525 30% -->
 
     <color name="background_primary">#FFFFFF</color>
     <color name="background_notification_primary">#26000000</color>
@@ -360,5 +362,8 @@
 
     <color name="yellowEnd">#ECD91B</color>
     <color name="yellowStart">#FFB522</color>
+
+    <color name="incentive_gradient_start">#FEE7E0</color>
+    <color name="incentive_gradient_end">#FFF6F3</color>
 
 </resources>

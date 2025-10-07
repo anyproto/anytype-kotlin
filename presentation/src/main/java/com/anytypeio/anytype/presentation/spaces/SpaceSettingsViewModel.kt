@@ -16,7 +16,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -24,10 +23,12 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
@@ -57,7 +58,9 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.mapper.toView
+import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
+import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
+import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
@@ -122,7 +125,8 @@ class SpaceSettingsViewModel(
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val getGradients: GetCoverGradientCollection,
-    private val setWallpaper: SetWallpaper
+    private val setWallpaper: SetWallpaper,
+    private val stringResourceProvider: StringResourceProvider
 ): BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
@@ -137,9 +141,11 @@ class SpaceSettingsViewModel(
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
     
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
+
+    val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -176,30 +182,6 @@ class SpaceSettingsViewModel(
         }
 
         viewModelScope.launch {
-
-            var widgetAutoCreationPreference: UiSpaceSettingsItem.AutoCreateWidgets? = null
-
-            val config = spaceManager.getConfig(vmParams.space)
-
-            if (config != null) {
-                val widget = fetchObject.async(
-                    FetchObject.Params(
-                        space = vmParams.space,
-                        obj = config.widgets,
-                        keys = listOf(
-                            Relations.ID,
-                            Relations.AUTO_WIDGET_DISABLED
-                        )
-                    )
-                ).getOrNull()
-
-                if (widget != null) {
-                    widgetAutoCreationPreference = UiSpaceSettingsItem.AutoCreateWidgets(
-                        widget = widget.id,
-                        isAutoCreateEnabled = widget.getValue<Boolean>(Relations.AUTO_WIDGET_DISABLED) != true
-                    )
-                }
-            }
 
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
@@ -276,15 +258,21 @@ class SpaceSettingsViewModel(
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
-                val spaceMemberCount = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.toView(
+                val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                    spaceMembers.members.toSpaceMemberView(
                         spaceView = spaceView,
                         urlBuilder = urlBuilder,
                         isCurrentUserOwner = permission?.isOwner() == true,
-                        account = account
-                    ).size
+                        account = account,
+                        stringResourceProvider = stringResourceProvider
+                    ).size to spaceView.spaceLimitsState(
+                        spaceMembers = spaceMembers.members,
+                        isCurrentUserOwner = permission?.isOwner() == true,
+                        sharedSpaceCount = sharedSpaceCount,
+                        sharedSpaceLimit = sharedSpaceLimit
+                    )
                 } else {
-                    0
+                    0 to SpaceLimitsState.Init
                 }
 
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
@@ -339,28 +327,54 @@ class SpaceSettingsViewModel(
                     }
 
                     if (spaceView.isPossibleToShare) {
+                        val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
+                        val membersCountWithColor = permission?.isOwner() == true
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = membersCountWithColor,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = membersCountWithColor,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount, withColor = true))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = membersCountWithColor,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
-                            SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(Members(count = spaceMemberCount))
+                                add(
+                                    Members(
+                                        count = spaceMemberCount,
+                                        withColor = membersCountWithColor,
+                                        editorLimit = isEditorLimitReached
+                                    )
+                                )
                             }
                         }
                     }
@@ -368,6 +382,15 @@ class SpaceSettingsViewModel(
                     if (spaceView.isShared) {
                         add(Spacer(height = 8))
                         add(Notifications)
+                    }
+
+
+                    if (shouldShowChangeTypeOption(permission, spaceView)) {
+                        add(Spacer(height = 8))
+                        when (spaceView.spaceUxType) {
+                            SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
+                            else -> add(UiSpaceSettingsItem.ChangeType.Data(isEnabled = true))
+                        }
                     }
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
@@ -379,10 +402,6 @@ class SpaceSettingsViewModel(
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
                     add(UiSpaceSettingsItem.Wallpapers(wallpaper = wallpaperResult, spaceIconView = spaceIcon))
-                    if (widgetAutoCreationPreference != null) {
-                        add(Spacer(height = 8))
-                        add(widgetAutoCreationPreference)
-                    }
 
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
@@ -394,7 +413,11 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.DeleteSpace)
+                    if (permission?.isOwner() == true) {
+                        add(UiSpaceSettingsItem.DeleteSpace)
+                    } else {
+                        add(UiSpaceSettingsItem.LeaveSpace)
+                    }
                     add(Spacer(height = 32))
                 }
 
@@ -514,19 +537,6 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
-            is UiEvent.OnAutoCreateWidgetSwitchChanged -> {
-                viewModelScope.launch {
-                    setObjectDetails.async(
-                        SetObjectDetails.Params(
-                            ctx = uiEvent.widget,
-                            details = mapOf(
-                                Relations.AUTO_WIDGET_DISABLED to !uiEvent.isAutoCreateEnabled
-                            )
-                        )
-                    )
-                }
-            }
-
             UiEvent.OnObjectTypesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenTypesScreen(vmParams.space))
@@ -584,6 +594,47 @@ class SpaceSettingsViewModel(
             is UiEvent.OnUpdateWallpaperClicked -> {
                 proceedWithWallpaperUpdate(uiEvent)
             }
+            UiEvent.OnAddMoreSpacesClicked -> {
+                viewModelScope.launch {
+                    commands.emit(Command.NavigateToMembership)
+                }
+            }
+            UiEvent.OnChangeTypeClicked -> {
+                // This event opens the bottom sheet, no action needed in ViewModel
+            }
+            is UiEvent.OnChangeSpaceType -> {
+                when (uiEvent) {
+                    is UiEvent.OnChangeSpaceType.ToChat -> {
+                        proceedWithChangingSpaceType(SpaceUxType.CHAT)
+                    }
+                    is UiEvent.OnChangeSpaceType.ToSpace -> {
+                        proceedWithChangingSpaceType(SpaceUxType.DATA)
+                    }
+                }
+            }
+        }
+    }
+
+    private fun proceedWithChangingSpaceType(newType: SpaceUxType) {
+        Timber.d("Changing space type to: $newType")
+        viewModelScope.launch {
+            setSpaceDetails.async(
+                params = Params(
+                    space = vmParams.space,
+                    details = mapOf(
+                        Relations.SPACE_UX_TYPE to newType.code.toDouble()
+                    )
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully changed space type to: $newType")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error while changing space type")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.ChangeSpaceTypeFailed
+                }
+            )
         }
     }
 
@@ -611,9 +662,11 @@ class SpaceSettingsViewModel(
             setWallpaper.async(params).fold(
                 onSuccess = {
                     Timber.d("Wallpaper updated")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
                 },
-                onFailure = {
-                    Timber.w(it, "Failed to update wallpaper")
+                onFailure = { error ->
+                    Timber.w(error, "Failed to update wallpaper")
+                    spaceSettingsErrors.value = SpaceSettingsErrors.WallpaperUpdateFailed
                 }
             )
         }
@@ -900,7 +953,7 @@ class SpaceSettingsViewModel(
                 .catch {
                     Timber.e(it, "Error observing invite link access level")
                     // Emit default value on error
-                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled()
                 }
                 .collect { accessLevel ->
                     Timber.d("Invite link access level updated: $accessLevel")
@@ -909,22 +962,28 @@ class SpaceSettingsViewModel(
         }
     }
 
-    data class SpaceData(
-        val spaceId: Id?,
-        val createdDateInMillis: Long?,
-        val createdBy: Id?,
-        val network: Id?,
-        val name: String,
-        val description: String,
-        val icon: SpaceIconView,
-        val isDeletable: Boolean = false,
-        val spaceType: SpaceType,
-        val shareLimitReached: ShareLimitsState,
-        val requests: Int = 0,
-        val isEditEnabled: Boolean,
-        val isUserOwner: Boolean,
-        val permissions: SpaceMemberPermissions,
-    )
+    /**
+     * Determines whether the "Change Type" option should be shown in space settings.
+     *
+     * The change type option is only available when:
+     * 1. The current user is the owner of the space
+     * 2. The space has a defined UX type (Chat or Data)
+     * 3. The space is shared (not private or default)
+     * 4. The space has a valid chat ID (not null or empty)
+     *
+     * @param permission The current user's permissions in the space
+     * @param spaceView The space view data containing space configuration
+     * @return true if the change type option should be shown, false otherwise
+     */
+    internal fun shouldShowChangeTypeOption(
+        permission: SpaceMemberPermissions?,
+        spaceView: ObjectWrapper.SpaceView
+    ): Boolean {
+        return permission?.isOwner() == true
+            && spaceView.spaceUxType != null
+            && spaceView.spaceAccessType == SpaceAccessType.SHARED
+            && !spaceView.chatId.isNullOrEmpty()
+    }
 
     data class ShareLimitsState(
         val shareLimitReached: Boolean = false,
@@ -950,6 +1009,19 @@ class SpaceSettingsViewModel(
         data class OpenTypesScreen(val spaceId: SpaceId) : Command()
         data class OpenDebugScreen(val spaceId: String) : Command()
         data object RequestNotificationPermission : Command()
+    }
+
+    sealed class SpaceSettingsErrors {
+        data object Hidden : SpaceSettingsErrors()
+        data object ChangeSpaceTypeFailed : SpaceSettingsErrors()
+        data object WallpaperUpdateFailed : SpaceSettingsErrors()
+        data object NameUpdateFailed : SpaceSettingsErrors()
+        data object IconUpdateFailed : SpaceSettingsErrors()
+        data class GenericError(val message: String) : SpaceSettingsErrors()
+    }
+
+    fun clearSpaceSettingsError() {
+        spaceSettingsErrors.value = SpaceSettingsErrors.Hidden
     }
 
     class Factory @Inject constructor(
@@ -981,7 +1053,8 @@ class SpaceSettingsViewModel(
         private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
         private val spaceInviteLinkStore: SpaceInviteLinkStore,
         private val getGradients: GetCoverGradientCollection,
-        private val setWallpaper: SetWallpaper
+        private val setWallpaper: SetWallpaper,
+        private val stringResourceProvider: StringResourceProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -1015,7 +1088,8 @@ class SpaceSettingsViewModel(
             getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
             spaceInviteLinkStore = spaceInviteLinkStore,
             getGradients = getGradients,
-            setWallpaper = setWallpaper
+            setWallpaper = setWallpaper,
+            stringResourceProvider = stringResourceProvider
         ) as T
     }
 

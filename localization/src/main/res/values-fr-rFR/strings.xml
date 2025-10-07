@@ -10,7 +10,7 @@
     <string name="appearance">Apparence</string>
     <string name="file_storage">Stockage de fichiers</string>
     <string name="key">Clé</string>
-    <string name="login_key">Clé</string>
+    <string name="login_key">Login Key</string>
     <string name="clear_file_cache">Vider le cache des fichiers</string>
     <string name="debug_sync_report">Rapport de débogage de synchronisation</string>
     <string name="debug">Débogage</string>
@@ -29,7 +29,9 @@
     <string name="dark">Sombre</string>
     <string name="system">Système</string>
     <string name="settings">Paramètres</string>
+    <string name="vault_settings_section_misc">Divers</string>
     <string name="app_preferences">App Preferences</string>
+    <string name="settings_application">Application</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Avez-vous sauvegardé votre Clé ?</string>
     <string name="you_will_need_to_sign_in">Vous en aurez besoin pour accéder à votre coffre. Conservez-la dans un lieu sûr. Si vous la perdez, vous ne pourrez plus accéder à votre coffre.</string>
@@ -66,6 +68,10 @@
     <string name="get_more_space">Obtenir plus d’espace</string>
     <string name="account_name">Nom</string>
     <string name="space_settings">Paramètres de l\'espace</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
+    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Gestion des données</string>
     <string name="deleted_account_danger_zone_msg">Une fois que vous avez demandé la suppression de votre coffre, vous avez 30 jours pour annuler cette demande. Après 30 jours, les données chiffrées de votre coffre sont définitivement supprimées du nœud de sauvegarde et vous ne pourrez plus vous connecter à Anytype sur de nouveaux appareils.</string>
     <string name="danger_zone">Zone de danger</string>
@@ -563,6 +569,8 @@
     <string name="view_gallery">Galerie</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Page cover</string>
+    <string name="object_action_pin">Épingler</string>
+    <string name="object_action_unpin">Désépingler</string>
     <string name="editor_toolbar">button</string>
     <string name="wait_a_bit_message">Veuillez nous donner un instant. Nous sommes presque là…</string>
     <string name="confirm">Confirm</string>
@@ -803,10 +811,8 @@
     <string name="type_editing_title">Paramètres de type</string>
     <string name="relation_editing_title">Paramètres de la propriété</string>
     <string name="type_editing_uninstall">Supprimer</string>
-    <string name="empty_tree_widget">Cet objet n\'a pas de liens vers d\'autres objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="empty_tree_widget_reader_access">Cet objet n\'a pas de liens vers d\'autres objets.</string>
-    <string name="empty_list_widget">Cette vue n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
-    <string name="empty_list_widget_no_objects">Il n\'y a pas encore d\'objets dans ce widget.</string>
+    <string name="empty_list_widget_no_objects">No objects inside</string>
     <string name="empty_list_widget_no_view">Cette vue de données n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
     <string name="this_widget_has_no_object">Ce widget n\'a pas d\'objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="emoji">Emoji</string>
@@ -995,7 +1001,8 @@
     <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Changer la Source</string>
-    <string name="widget_change_type">Changer le type</string>
+    <string name="widget_change_type">Modifier le type de widget</string>
+    <string name="widget_unpin">Désépingler</string>
     <string name="widget_remove_widget">Supprimer le Widget</string>
     <string name="widget_empty_bin">Vider la poubelle</string>
     <string name="widget_edit_widgets">Modifier les widgets</string>
@@ -1072,7 +1079,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Dupliquer</string>
-    <string name="object_action_to_widgets">Vers les widgets</string>
+    <string name="object_action_to_widgets">Épingler</string>
     <string name="object_action_download">Télécharger</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1219,8 +1226,10 @@
     <string name="multiplayer_link_disabled">Link disabled</string>
     <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
     <string name="multiplayer_editor_access">Editor access</string>
+    <string name="multiplayer_editor">Éditeur</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
+    <string name="multiplayer_viewer">Visionneuse</string>
     <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
@@ -1252,14 +1261,17 @@
     <string name="multiplayer_cant_add_members">Vous ne pouvez plus ajouter de membres</string>
     <string name="multiplayer_cant_add_editors">Vous ne pouvez pas ajouter plus d\'éditeurs</string>
     <string name="multiplayer_upgrade_button">✦ Passer à un abonnement supérieur</string>
+    <string name="multiplayer_manage_spaces">Gérer les espaces</string>
     <string name="multiplayer_upgrade_button_request">✦ Mettre à niveau pour ajouter plus de membres</string>
     <string name="multiplayer_upgrade_spaces_button">✦ Mettre à niveau pour ajouter plus d’espaces</string>
     <string name="multiplayer_members">Membres</string>
     <string name="multiplayer_leave_request">Annuler la demande</string>
     <string name="multiplayer_join_request">Demande d\'admission !</string>
-    <string name="multiplayer_approve_request">Approuver</string>
+    <string name="multiplayer_approve_request">Set access</string>
     <string name="multiplayer_view_request">Afficher la demande</string>
     <string name="multiplayer_owner">Propriétaire</string>
+    <string name="multiplayer_no_permissions">No permissions</string>
+    <string name="multiplayer_pending">Pending</string>
     <string name="multiplayer_can_edit">Peut modifier</string>
     <string name="multiplayer_can_view">Peut voir</string>
     <string name="multiplayer_space_add_viewer">Ajouter une visionneuse</string>
@@ -1336,7 +1348,7 @@
         <item quantity="one">%1$d requête</item>
         <item quantity="other">%1$d requêtes</item>
     </plurals>
-    <string name="multiplayer_you_as_member">Vous</string>
+    <string name="multiplayer_you_as_member">you</string>
     <string name="multiplayer_spaces">Espaces</string>
     <string name="multiplayer_space_status_joining">Connexion</string>
     <string name="multiplayer_space_status_active">Actif</string>
@@ -1543,7 +1555,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="membership_upgrade_title">Mise à niveau de l\'abonnement</string>
     <string name="membership_upgrade_description">Contactez-nous pour obtenir du stockage supplémentaire, plus de rédacteurs, ou davantage d\'espaces partagés. L\'équipe d\'Anytype vous fournira l\'offre adaptée à vos besoins.</string>
     <string name="membership_upgrade_button">Contacter l\'équipe d\'Anytype</string>
-    <string name="membership_space_settings_share_limit">Vous avez atteint la limite de %1$d espaces pouvant être partagés</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
     <plurals name="period_years">
         <item quantity="one">année</item>
         <item quantity="other">%d années</item>
@@ -1806,6 +1819,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="space_settings_qrcode">Code QR</string>
     <string name="space_settings_members_button_members">Membres</string>
     <string name="space_settings_types_button">Types d\'objets</string>
+    <string name="space_settings_space_types_button">Channel Type</string>
     <string name="space_settings_default_type_button">Type d\'objet par défaut</string>
     <string name="space_settings_wallpaper_button">Fond d\'écran</string>
     <string name="space_settings_storage_button">Stockage à distance</string>
@@ -1945,7 +1959,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="private_local_yours_forever">Private, local, yours forever</string>
-    <string name="wallpaper_item_space_icon_color">Space icon \ncolor</string>
+    <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Préférences</string>
     <string name="web_publishing_customize_url">Customize URL</string>
@@ -1959,8 +1973,32 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
+    <string name="widgets_section_pinned">Épinglé</string>
+    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_menu_new_object_type">Nouveau</string>
+    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
+    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_button_unpin">Désépingler</string>
+    <string name="my_sites">My Sites</string>
+    <string name="my_sites_empty_state_text">There are no published objects yet</string>
+    <string name="my_sites_it_s_empty_here">It\'s empty here</string>
+    <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
+    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
+    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_item_title">Messagerie</string>
+    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_space_item_title">Espace</string>
+    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <!-- Multiplayer actions -->
+    <string name="multiplayer_approve">Approve</string>
 </resources>

@@ -15,7 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -52,6 +53,7 @@ import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.Move
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -77,6 +79,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -87,6 +90,7 @@ import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
+import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
@@ -98,18 +102,21 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendEditWidgetsEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
-import com.anytypeio.anytype.presentation.home.Command.*
+import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.*
+import com.anytypeio.anytype.presentation.home.Command.ShareSpace
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.ExpandWidget
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
+import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
+import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
@@ -119,22 +126,23 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
-import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
+import com.anytypeio.anytype.presentation.widgets.BinWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceBinWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.SectionType
+import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
+import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
@@ -143,17 +151,11 @@ import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.buildWidgets
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
-import com.anytypeio.anytype.presentation.widgets.forceChatPosition
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
-import com.anytypeio.anytype.presentation.widgets.parseWidgets
-import com.anytypeio.anytype.presentation.widgets.toBasic
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
-import kotlin.collections.orEmpty
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -162,24 +164,24 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -192,7 +194,7 @@ import timber.log.Timber
  * Change subscription IDs for bundled widgets?
  */
 class HomeScreenViewModel(
-    private val vmParams: VmParams,
+    private val vmParams: HomeScreenVmParams,
     private val openObject: OpenObject,
     private val closeObject: CloseObject,
     private val createWidget: CreateWidget,
@@ -206,7 +208,6 @@ class HomeScreenViewModel(
     private val interceptEvents: InterceptEvents,
     private val widgetSessionStateHolder: WidgetSessionStateHolder,
     private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
-    private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
     private val urlBuilder: UrlBuilder,
     private val createObject: CreateObject,
     private val createDataViewObject: CreateDataViewObject,
@@ -221,7 +222,6 @@ class HomeScreenViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
-    private val spaceWidgetContainer: SpaceWidgetContainer,
     private val setWidgetActiveView: SetWidgetActiveView,
     private val setObjectDetails: SetObjectDetails,
     private val getSpaceView: GetSpaceView,
@@ -237,7 +237,6 @@ class HomeScreenViewModel(
     private val dateProvider: DateProvider,
     private val addObjectToCollection: AddObjectToCollection,
     private val clearLastOpenedObject: ClearLastOpenedObject,
-    private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
     private val featureToggles: FeatureToggles,
     private val fieldParser: FieldParser,
     private val spaceInviteResolver: SpaceInviteResolver,
@@ -250,21 +249,19 @@ class HomeScreenViewModel(
     private val chatPreviews: ChatPreviewContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-    private val scope: CoroutineScope
+    private val userSettingsRepository: UserSettingsRepository,
+    private val scope: CoroutineScope,
+    private val stringResourceProvider : StringResourceProvider,
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
     WidgetSessionStateHolder by widgetSessionStateHolder,
-    CollapsedWidgetStateHolder by collapsedWidgetStateHolder,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate,
     Unsubscriber by unsubscriber,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     ExitToVaultDelegate by exitToVaultDelegate
 {
-
-    data class VmParams(
-        val spaceId: SpaceId
-    )
 
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
@@ -273,16 +270,12 @@ class HomeScreenViewModel(
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
-    private var isWidgetSessionRestored = false
-
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val widgets = MutableStateFlow<Widgets>(null)
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
-
-    private val spaceWidgetView = spaceWidgetContainer.view
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
@@ -295,13 +288,21 @@ class HomeScreenViewModel(
 
     val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
 
+    // Expanded widget IDs for persistence across app restarts
+    private val expandedWidgetIds = MutableStateFlow<Set<Id>>(emptySet())
+
+    // State for bundled widget deletion warning
+    val pendingBundledWidgetDeletion = MutableStateFlow<Id?>(null)
+
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
+
+
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
-    private val _systemTypes = MutableStateFlow<List<SystemTypeView>>(emptyList())
-    val systemTypes: StateFlow<List<SystemTypeView>> = _systemTypes.asStateFlow()
+    private val _spaceViewState = MutableStateFlow<SpaceViewState>(SpaceViewState.Init)
+    val spaceViewState: StateFlow<SpaceViewState> = _spaceViewState
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -416,105 +417,74 @@ class HomeScreenViewModel(
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
-        proceedWithNavPanelState()
+        proceedWithNavigationPanelState()
+        proceedWithSpaceViewSubscription()
     }
 
-    private fun proceedWithNavPanelState() {
+    private fun proceedWithSpaceViewSubscription() {
         viewModelScope.launch {
-            val spaceAccessType = views
-                .map {
-                    val space = it.firstOrNull { it is WidgetView.SpaceWidget.View }
-                    if (space is WidgetView.SpaceWidget.View) {
-                        space.space
-                            .spaceAccessType
-                    } else {
-                        null
-                    }
-                }
-                .distinctUntilChanged()
             combine(
-                spaceAccessType,
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+                spaceMembers.observe(vmParams.spaceId),
                 userPermissions
-            ) { type, permission ->
-                val spaceId = vmParams.spaceId.id
-                val spaceUxType =
-                    spaceViewSubscriptionContainer.get(space = SpaceId(spaceId))?.spaceUxType
-                        ?: SpaceUxType.DATA
-                NavPanelState.fromPermission(
-                    permission = permission,
-                    forceHome = false,
-                    spaceAccess = type,
-                    spaceUxType = spaceUxType
-                )
+            ) { spaceView, spaceMembers, permissions ->
+                Triple(spaceView, spaceMembers, permissions)
+            }
+                .collect { (spaceView, members, permissions) ->
+                    val spaceMemberCount = if (members is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        members.members.toSpaceMemberView(
+                            spaceView = spaceView,
+                            urlBuilder = urlBuilder,
+                            isCurrentUserOwner = permissions?.isOwner() == true,
+                            stringResourceProvider = stringResourceProvider
+                        ).size
+                    } else {
+                        0
+                    }
+                    val spaceIcon = spaceView.spaceIcon(urlBuilder)
+                    val name = spaceView.name
+                    val spaceName = if (name.isNullOrEmpty()) {
+                        stringResourceProvider.getUntitledObjectTitle()
+                    } else {
+                        name
+                    }
+                    _spaceViewState.value = SpaceViewState.Success(
+                        spaceName = spaceName,
+                        spaceIcon = spaceIcon,
+                        membersCount = spaceMemberCount,
+                        spaceChatId = spaceView.getSingleValue<String>(Relations.CHAT_ID),
+                        spaceUxType = spaceView.spaceUxType ?: SpaceUxType.DATA,
+                        spaceAccessType = spaceView.spaceAccessType ?: SpaceAccessType.PRIVATE
+                    )
+                }
+        }
+    }
+
+
+    private fun proceedWithNavigationPanelState() {
+        viewModelScope.launch {
+            combine(
+                spaceViewState,
+                userPermissions
+            ) { spaceView, permission ->
+                if (spaceView is SpaceViewState.Success && permission != null) {
+                    NavPanelState.fromPermission(
+                        permission = permission,
+                        forceHome = false,
+                        spaceAccess = spaceView.spaceAccessType,
+                        spaceUxType = spaceView.spaceUxType
+                    )
+                } else {
+                    NavPanelState.Init
+                }
             }.collect {
                 navPanelState.value = it
             }
         }
     }
 
-    private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config): List<Widget> {
-        val allTypes = storeOfObjectTypes.getAll()
-        val filteredObjectTypes = allTypes
-            .mapNotNull { objectType ->
-                if (!objectType.isValid ||
-                    SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
-                    objectType.isArchived == true ||
-                    objectType.isDeleted == true ||
-                    objectType.uniqueKey == ObjectTypeIds.TEMPLATE
-                ) {
-                    return@mapNotNull null
-                } else {
-                    objectType
-                }
-            }
-
-        Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
-
-        // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
-        val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
-            !objectType.restrictions.contains(ObjectRestriction.DELETE)
-        }
-
-        val allTypeWidgetIds = mutableListOf<Id>()
-
-        val widgetList = buildList {
-            // Add user-created types first (deletable)
-            for (objectType in myTypes) {
-                val widget = createWidgetViewFromType(objectType, config)
-                add(widget)
-                // Track all type widgets for initial collapsed state
-                allTypeWidgetIds.add(widget.id)
-            }
-
-            // Add system types (not deletable)
-            for (objectType in systemTypes) {
-                val widget = createWidgetViewFromType(objectType, config)
-                add(widget)
-                // Track all type widgets for initial collapsed state
-                allTypeWidgetIds.add(widget.id)
-            }
-        }
-
-        // Set all type widgets to collapsed state initially
-        if (allTypeWidgetIds.isNotEmpty()) {
-            val currentCollapsed = collapsedWidgetStateHolder.get()
-            val newCollapsed = (currentCollapsed + allTypeWidgetIds).distinct()
-            collapsedWidgetStateHolder.set(newCollapsed)
-        }
-
-        return widgetList
-    }
-
     private fun proceedWithViewStatePipeline() {
         widgetObjectPipelineJobs += viewModelScope.launch {
-            if (!isWidgetSessionRestored) {
-                val session = withContext(appCoroutineDispatchers.io) {
-                    getWidgetSession.async(Unit).getOrNull()
-                }
-                if (session != null) {
-                    collapsedWidgetStateHolder.set(session.collapsed)
-                }
-            }
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }
@@ -524,19 +494,18 @@ class HomeScreenViewModel(
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithUserPermissions() {
         viewModelScope.launch {
-            spaceManager
-                .observe()
-                .flatMapLatest { config ->
-                    userPermissionProvider.observe(SpaceId(config.space))
-                }.collect { permission ->
+            userPermissionProvider
+                .observe(space = vmParams.spaceId)
+                .collect { permission ->
                     userPermissions.value = permission
-                    when(permission) {
+                    when (permission) {
                         SpaceMemberPermissions.WRITER,
                         SpaceMemberPermissions.OWNER -> {
                             if (mode.value == InteractionMode.ReadOnly) {
                                 mode.value = InteractionMode.Default
                             }
                         }
+
                         else -> {
                             mode.value = InteractionMode.ReadOnly
                         }
@@ -555,14 +524,15 @@ class HomeScreenViewModel(
             containers.filterNotNull().flatMapLatest { list ->
                 combine(
                     flows = buildList<Flow<WidgetView>> {
-                        add(spaceWidgetView)
                         addAll(list.map { m -> m.view })
                     }
                 ) { array ->
                     array.toList()
                 }
             }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                buildListOfWidgets(hasEditAccess, widgets)
+                widgets.ifEmpty {
+                    listOf(WidgetView.EmptyState)
+                }
             }.catch {
                 Timber.e(it, "Error while rendering widgets")
             }.flowOn(appCoroutineDispatchers.io).collect {
@@ -571,31 +541,11 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun buildListOfWidgets(
-        hasEditAccess: Boolean,
-        widgets: List<WidgetView>
-    ): List<WidgetView> {
-        return buildList {
-            val filtered = widgets.filterNot { view ->
-                (view is WidgetView.Bin && (view.isEmpty || view.isLoading))
-            }
-            addAll(filtered)
-            if (hasEditAccess) {
-                // >1, and not >0, because space widget view is always there.
-                if (widgets.size > 1) {
-                    //addAll(actions)
-                } else {
-                    add(WidgetView.EmptyState)
-                }
-            }
-        }
-    }
-
     private fun proceedWithWidgetContainerPipeline() {
         viewModelScope.launch {
-            widgets.filterNotNull().map { widgets ->
+            widgets.filterNotNull().mapNotNull { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.forceChatPosition().map { widget ->
+                widgets.map { widget ->
                     Timber.d("Creating container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(
@@ -612,7 +562,12 @@ class HomeScreenViewModel(
                             widget = widget,
                             container = storelessSubscriptionContainer,
                             expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = isCollapsed(widget.id),
+                            isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
                             objectWatcher = objectWatcher,
@@ -632,7 +587,12 @@ class HomeScreenViewModel(
                                 widget = widget,
                                 subscription = widget.source.id,
                                 storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 urlBuilder = urlBuilder,
                                 isSessionActive = isSessionActive,
                                 objectWatcher = objectWatcher,
@@ -654,7 +614,12 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -677,7 +642,12 @@ class HomeScreenViewModel(
                                 storage = storelessSubscriptionContainer,
                                 getObject = getObject,
                                 activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = isCollapsed(widget.id),
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                            },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
@@ -705,6 +675,12 @@ class HomeScreenViewModel(
                         is Widget.Section.Pinned -> {
                             SectionWidgetContainer.Pinned
                         }
+
+                        is Widget.Bin -> {
+                            BinWidgetContainer(
+                                widget = widget
+                            )
+                        }
                     }
                 }
             }.collect {
@@ -714,9 +690,36 @@ class HomeScreenViewModel(
         }
     }
 
+    /**
+     * Applies payload events to the object view state.
+     * Only Success states get payload scanning; other states pass through unchanged.
+     */
     @OptIn(ExperimentalCoroutinesApi::class)
-    private fun proceedWithObjectViewStatePipeline() {
-        val externalChannelEvents = spaceManager.observe().flatMapLatest {  config ->
+    private fun Flow<ObjectViewState>.applyPayloadEvents(
+        payloads: Flow<Payload>
+    ): Flow<ObjectViewState> {
+        return flatMapLatest { state ->
+            when (state) {
+                is ObjectViewState.Idle,
+                is ObjectViewState.Failure,
+                is ObjectViewState.Loading -> flowOf(state)
+
+                is ObjectViewState.Success -> {
+                    payloads.scan(state) { currentState, payload ->
+                        currentState.copy(obj = reduce(state = currentState.obj, event = payload))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Observes external payload events from the space manager.
+     * Merges intercepted events with delegated payloads for the current widget context.
+     */
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun observeExternalPayloadEvents(): Flow<Payload> {
+        return spaceManager.observe().flatMapLatest { config ->
             merge(
                 interceptEvents.build(
                     InterceptEvents.Params(config.widgets)
@@ -728,89 +731,82 @@ class HomeScreenViewModel(
                 },
                 payloadDelegator.intercept(ctx = config.widgets)
             )
-
         }
+    }
 
+    /**
+     * Observes expanded widget IDs with error handling.
+     * Returns an empty list as default if fetching fails.
+     */
+    private fun observeExpandedWidgetIds(): Flow<List<Id>> {
+        return userSettingsRepository.getExpandedWidgetIds(vmParams.spaceId)
+            .distinctUntilChanged()
+            .catch { e ->
+                Timber.e(e, "Failed to get expanded widget IDs, using defaults")
+                emit(emptyList())
+            }
+    }
+
+    /**
+     * Observes collapsed section IDs with error handling.
+     * Returns an empty list as default if fetching fails.
+     */
+    private fun observeCollapsedSectionIds(): Flow<List<Id>> {
+        return userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
+            .distinctUntilChanged()
+            .catch { e ->
+                Timber.e(e, "Failed to get collapsed section IDs, using defaults")
+                emit(emptyList())
+            }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    private fun proceedWithObjectViewStatePipeline() {
+        val externalChannelEvents = observeExternalPayloadEvents()
         val internalChannelEvents = objectPayloadDispatcher.flow()
-
         val payloads = merge(externalChannelEvents, internalChannelEvents)
 
         viewModelScope.launch {
             combine(
                 storeOfObjectTypes.trackChanges(),
-                objectViewState,
-                hasEditAccess
-            ) { _, state, isOwnerOrEditor ->
-                val s = when (state) {
-                    is ObjectViewState.Idle -> flowOf(state)
-                    is ObjectViewState.Failure -> flowOf(state)
-                    is ObjectViewState.Loading -> flowOf(state)
-                    is ObjectViewState.Success -> {
-                        payloads.scan(state) { s, p ->
-                            s.copy(obj = reduce(state = s.obj, event = p))
-                        }
-                    }
-                }
-                s to isOwnerOrEditor
-            }.flatMapLatest { (stateFlow, isOwnerOrEditor) ->
-                stateFlow.map { state ->
-                    if (state is ObjectViewState.Success) {
-                        buildList {
-                            add(Widget.Section.Pinned(config = state.config))
-                            addAll(
-                                state.obj.blocks.parseWidgets(
-                                    root = state.obj.root,
-                                    details = state.obj.details,
-                                    config = state.config,
-                                    urlBuilder = urlBuilder
-                                )
-                            )
-                            add(Widget.Section.ObjectType(config = state.config))
-                            val types = mapSpaceTypesToWidgets(
-                                isOwnerOrEditor = isOwnerOrEditor,
-                                config = state.config
-                            )
-                            addAll(types)
-                        }.also { allWidgets ->
-                            // Initialize active views for all widgets
-                            // First get active views from bundled widgets (parsed from blocks)
-                            val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
+                objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
+                hasEditAccess.distinctUntilChanged(),
+                observeExpandedWidgetIds(),
+                observeCollapsedSectionIds()
+            ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
+                val params = WidgetUiParams(
+                    isOwnerOrEditor = isOwnerOrEditor,
+                    expandedIds = savedExpandedIds.toSet(),
+                    collapsedSections = savedCollapsedSections.toSet()
+                )
+                if (state is ObjectViewState.Success) {
+                    val allWidgets = buildWidgets(state, params, urlBuilder, storeOfObjectTypes)
+                    // Initialize active views for all widgets
+                    val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
 
-                            // For ObjectType widgets, preserve any existing active view state
-                            // since they don't have persistent storage in blocks
-                            val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
-                            val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
-                                allWidgets
-                                    .filter { it !is Widget.Section }
-                                    .any { widget ->
-                                        widget.id == widgetId && widget.source is Widget.Source.Default &&
-                                                (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
-                                    }
+                    // Preserve ObjectType active views (not stored in WidgetsObj blocks)
+                    val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                    val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
+                        allWidgets
+                            .filter { it !is Widget.Section }
+                            .any { widget ->
+                                widget.id == widgetId && widget.source is Widget.Source.Default &&
+                                        (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
                             }
-
-                            // Combine bundled widget active views with preserved ObjectType active views
-                            val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
-                            widgetActiveViewStateHolder.init(combinedActiveViews)
-                        }
-                    } else {
-                        emptyList()
                     }
+
+                    val combinedActiveViews = bundledWidgetActiveViews + objectTypeActiveViews
+                    widgetActiveViewStateHolder.init(combinedActiveViews)
+
+                    // Update expanded IDs from persistence
+                    expandedWidgetIds.value = params.expandedIds
+                    allWidgets
+                } else {
+                    emptyList()
                 }
             }.collect { widgetList ->
                 Timber.d("Emitting list of widgets: ${widgetList.size}")
                 widgets.value = widgetList
-            }
-        }
-
-        viewModelScope.launch {
-            payloads.collect { payload ->
-                payload.events.forEach { e ->
-                    if (e is Event.Command.Widgets.AutoWidgetAdded) {
-                        commands.emit(
-                            Command.ShowWidgetAutoCreatedToast(name = e.targetName)
-                        )
-                    }
-                }
             }
         }
     }
@@ -822,7 +818,6 @@ class HomeScreenViewModel(
         saveWidgetSession.async(
             SaveWidgetSession.Params(
                 WidgetSession(
-                    collapsed = collapsedWidgetStateHolder.get(),
                     widgetsToActiveViews = emptyMap()
                 )
             )
@@ -837,7 +832,6 @@ class HomeScreenViewModel(
                     }
                 }
             )
-            add(SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION)
         }
         if (subscriptionIds.isNotEmpty()) {
             storelessSubscriptionContainer.unsubscribe(subscriptionIds)
@@ -950,36 +944,30 @@ class HomeScreenViewModel(
         target: Id?
     ) {
         viewModelScope.launch {
-            createWidget(
-                CreateWidget.Params(
-                    ctx = ctx,
-                    source = source,
-                    type = when (type) {
-                        Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
-                        Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
-                        Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
-                        Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
-                        Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
-                        else -> WidgetLayout.LINK
-                    },
-                    target = target,
-                    position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
-                )
-            ).flowOn(appCoroutineDispatchers.io).collect { status ->
-                Timber.d("Status while creating widget: $status")
-                when (status) {
-                    is Resultat.Failure -> {
-                        sendToast("Error while creating widget: ${status.exception}")
-                        Timber.e(status.exception, "Error while creating widget")
-                    }
-                    is Resultat.Loading -> {
-                        // Do nothing?
-                    }
-                    is Resultat.Success -> {
-                        objectPayloadDispatcher.send(status.value)
-                    }
+            val params = CreateWidget.Params(
+                ctx = ctx,
+                source = source,
+                type = when (type) {
+                    Command.ChangeWidgetType.TYPE_LINK -> WidgetLayout.LINK
+                    Command.ChangeWidgetType.TYPE_TREE -> WidgetLayout.TREE
+                    Command.ChangeWidgetType.TYPE_LIST -> WidgetLayout.LIST
+                    Command.ChangeWidgetType.TYPE_VIEW -> WidgetLayout.VIEW
+                    Command.ChangeWidgetType.TYPE_COMPACT_LIST -> WidgetLayout.COMPACT_LIST
+                    else -> WidgetLayout.LINK
+                },
+                target = target,
+                position = if (!target.isNullOrEmpty()) Position.BOTTOM else Position.NONE
+            )
+            createWidget.async(params).fold(
+                onFailure = {
+                    sendToast("Error while creating widget: ${it.message}")
+                    Timber.e(it, "Error while creating widget")
+                },
+                onSuccess = { payload ->
+                    Timber.d("Widget created successfully, dispatching payload")
+                    objectPayloadDispatcher.send(payload)
                 }
-            }
+            )
         }
     }
 
@@ -1029,7 +1017,7 @@ class HomeScreenViewModel(
         }
     }
 
-    private fun proceedWithDeletingWidget(widget: Id) {
+    fun proceedWithDeletingWidget(widget: Id) {
         Timber.d("Proceeding with widget deletion: $widget")
         viewModelScope.launch {
             val config = spaceManager.getConfig()
@@ -1110,15 +1098,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onEditWidgets() {
-        viewModelScope.launch {
-            if (userPermissions.value?.isOwnerOrEditor() ==  true) {
-                proceedWithEnteringEditMode()
-                sendEditWidgetsEvent(analytics)
-            }
-        }
-    }
-
     fun onExitEditMode() {
         proceedWithExitingEditMode()
     }
@@ -1153,84 +1132,7 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
-     */
-    private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
-        val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
-        val icon = objectType.objectIcon()
-        val widgetLimit = objectType.widgetLimit ?: 0
 
-        return when (objectType.widgetLayout) {
-            Block.Content.Widget.Layout.TREE -> {
-                Widget.Tree(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                )
-            }
-            Block.Content.Widget.Layout.LIST -> {
-                Widget.List(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit
-                )
-            }
-            Block.Content.Widget.Layout.COMPACT_LIST -> {
-                Widget.List(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit,
-                    isCompact = true
-                )
-            }
-            Block.Content.Widget.Layout.VIEW -> {
-                Widget.View(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon,
-                    limit = widgetLimit
-                )
-            }
-            Block.Content.Widget.Layout.LINK -> {
-                Widget.Link(
-                    id = objectType.id,
-                    source = widgetSource,
-                    config = config,
-                    icon = icon
-                )
-            }
-            null -> {
-                if (objectType.uniqueKey == ObjectTypeIds.IMAGE) {
-                    // Image type widgets default to gallery view
-                    Widget.View(
-                        id = objectType.id,
-                        source = widgetSource,
-                        config = config,
-                        icon = icon,
-                        limit = widgetLimit
-                    )
-                } else {
-                    // Default to compact list for other types
-                    Widget.List(
-                        id = objectType.id,
-                        source = widgetSource,
-                        config = config,
-                        icon = icon,
-                        limit = widgetLimit,
-                        isCompact = true
-                    )
-                }
-            }
-        }
-    }
 
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
@@ -1267,15 +1169,15 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetSourceClicked(widget: Id, source: Widget.Source) {
-        Timber.d("onWidgetSourceClicked: $source")
-        val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
-        when (source) {
+    fun onWidgetSourceClicked(widgetId: Id) {
+        Timber.d("onWidgetSourceClicked:")
+        val widget = widgets.value?.find { it.id == widgetId } ?: return
+        Timber.d("Widget source: ${widget.source}")
+        when (val source = widget.source) {
             is Widget.Source.Bundled.Favorites -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
                     bundled = source,
-                    isAutoCreated = isAutoCreated
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1290,8 +1192,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.Recent -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1306,8 +1207,7 @@ class HomeScreenViewModel(
             is Widget.Source.Bundled.RecentLocal -> {
                 viewModelScope.sendClickWidgetTitleEvent(
                     analytics = analytics,
-                    bundled = source,
-                    isAutoCreated = isAutoCreated
+                    bundled = source
                 )
                 // TODO switch to bundled widgets id
                 viewModelScope.launch {
@@ -1322,7 +1222,7 @@ class HomeScreenViewModel(
             is Widget.Source.Default -> {
                 if (source.obj.isArchived != true) {
                     dispatchSelectHomeTabCustomSourceEvent(
-                        widget = widget,
+                        widget = widgetId,
                         source = source
                     )
                     proceedWithOpeningObject(source.obj)
@@ -1380,30 +1280,30 @@ class HomeScreenViewModel(
 
     fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
         when (action) {
-            DropDownMenuAction.ChangeWidgetSource -> {
-                proceedWithChangingSource(widget)
-            }
             DropDownMenuAction.ChangeWidgetType -> {
                 proceedWithChangingType(widget)
             }
-            DropDownMenuAction.EditWidgets -> {
-                proceedWithEnteringEditMode()
-            }
             DropDownMenuAction.RemoveWidget -> {
-                proceedWithDeletingWidget(widget)
+                // Check if this is a bundled widget that needs a warning
+                val targetWidget = widgets.value.orEmpty().find { it.id == widget }
+                if (targetWidget?.source is Widget.Source.Bundled) {
+                    // Show warning modal for bundled widgets
+                    pendingBundledWidgetDeletion.value = widget
+                } else {
+                    // Proceed directly for non-bundled widgets
+                    proceedWithDeletingWidget(widget)
+                }
             }
             DropDownMenuAction.EmptyBin -> {
                 proceedWithEmptyingBin()
             }
-            DropDownMenuAction.AddBelow -> {
-                proceedWithAddingWidgetBelow(widget)
-            }
             is DropDownMenuAction.CreateObjectOfType -> {
-                // Convert Basic wrapper to Type wrapper for ObjectType objects
-                val typeWrapper = ObjectWrapper.Type(action.source.obj.map)
-                onCreateNewObjectClicked(
-                    objType = typeWrapper
-                )
+                val widgetView = views.value.find { it.id == action.widgetId }
+                if (widgetView == null) {
+                    Timber.w("Widget view not found for id: ${action.widgetId}")
+                    return
+                }
+                onCreateWidgetElementClicked(widgetView)
             }
         }
     }
@@ -1460,23 +1360,17 @@ class HomeScreenViewModel(
         if (mode.value == InteractionMode.Edit) {
             return
         }
-        val view = views.value.find { it is WidgetView.SpaceWidget.View }
-        if (view != null) {
-            val spaceView = (view as WidgetView.SpaceWidget.View)
-            val chat = spaceView.space.getValue<Id?>(Relations.CHAT_ID)
-            val space = spaceView.space.targetSpaceId
-            if (chat != null && space != null) {
-                navigation(
-                    Navigation.OpenChat(
-                        space = space,
-                        ctx = chat
-                    )
+        val spaceView = (spaceViewState.value as? SpaceViewState.Success) ?: return
+        val chat = spaceView.spaceChatId
+        if (chat != null) {
+            navigation(
+                Navigation.OpenChat(
+                    space = vmParams.spaceId.id,
+                    ctx = chat
                 )
-            } else {
-                Timber.w("Chat or space not found - not able to open space chat")
-            }
+            )
         } else {
-            Timber.w("Space widget not found")
+            Timber.w("Chat or space not found - not able to open space chat")
         }
     }
 
@@ -1563,20 +1457,21 @@ class HomeScreenViewModel(
     }
 
     private fun parseWidgetType(curr: Widget) = when (curr) {
-        is Widget.Link -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Tree -> Command.ChangeWidgetType.TYPE_TREE
-        is Widget.View -> Command.ChangeWidgetType.TYPE_VIEW
+        is Widget.Link -> ChangeWidgetType.TYPE_LINK
+        is Widget.Tree -> ChangeWidgetType.TYPE_TREE
+        is Widget.View -> ChangeWidgetType.TYPE_VIEW
         is Widget.List -> {
             if (curr.isCompact)
-                Command.ChangeWidgetType.TYPE_COMPACT_LIST
+                ChangeWidgetType.TYPE_COMPACT_LIST
             else
-                Command.ChangeWidgetType.TYPE_LIST
+                ChangeWidgetType.TYPE_LIST
         }
         // All-objects widget has link appearance.
-        is Widget.AllObjects -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Chat -> Command.ChangeWidgetType.TYPE_LINK
-        is Widget.Section.ObjectType -> ChangeWidgetType.TYPE_LINK
-        is Widget.Section.Pinned -> ChangeWidgetType.TYPE_LINK
+        is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
+        is Widget.Chat -> ChangeWidgetType.TYPE_LINK
+        is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -1683,9 +1578,10 @@ class HomeScreenViewModel(
         }
         if (deletedWidgets.isNotEmpty()) {
             viewModelScope.launch {
-                collapsedWidgetStateHolder.onWidgetDeleted(
-                    widgets = deletedWidgets.map { it.id }
-                )
+                // Update expanded state when widgets are deleted
+                val deletedIds = deletedWidgets.map { it.id }.toSet()
+                expandedWidgetIds.value = expandedWidgetIds.value - deletedIds
+                saveExpandedWidgetState()
                 unsubscriber.unsubscribe(expiredSubscriptions)
             }
         }
@@ -1782,7 +1678,7 @@ class HomeScreenViewModel(
             saveWidgetSession.async(
                 SaveWidgetSession.Params(
                     WidgetSession(
-                        collapsed = collapsedWidgetStateHolder.get(),
+                        collapsed = emptyList(),  // No longer using session for collapsed state
                         widgetsToActiveViews = emptyMap()
                     )
                 )
@@ -1792,10 +1688,6 @@ class HomeScreenViewModel(
 
     private fun proceedWithExitingEditMode() {
         mode.value = InteractionMode.Default
-    }
-
-    private fun proceedWithEnteringEditMode() {
-        mode.value = InteractionMode.Edit
     }
 
     private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
@@ -2037,6 +1929,18 @@ class HomeScreenViewModel(
 
     private fun isInEditMode() = mode.value == InteractionMode.Edit
 
+    fun onBundledWidgetDeletionConfirmed() {
+        val widgetId = pendingBundledWidgetDeletion.value
+        if (widgetId != null) {
+            proceedWithDeletingWidget(widgetId)
+            pendingBundledWidgetDeletion.value = null
+        }
+    }
+
+    fun onBundledWidgetDeletionCanceled() {
+        pendingBundledWidgetDeletion.value = null
+    }
+
     private fun dispatchSelectHomeTabCustomSourceEvent(widget: Id, source: Widget.Source) {
         viewModelScope.launch {
             val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
@@ -2128,17 +2032,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onSpaceWidgetShareIconClicked(spaceView: ObjectWrapper.SpaceView) {
-        viewModelScope.launch {
-            val space = spaceView.targetSpaceId
-            if (space != null) {
-                commands.emit(Command.ShareSpace(SpaceId(space)))
-            } else {
-                sendToast("Space not found")
-            }
-        }
-    }
-
     fun onNavBarShareIconClicked() {
         viewModelScope.launch {
             navPanelState.value.leftButtonClickAnalytics(analytics)
@@ -2152,21 +2045,24 @@ class HomeScreenViewModel(
         // Do nothing, as home button is not visible on space home screen.
     }
 
-    fun onSpaceWidgetClicked() {
-        viewModelScope.launch {
-            commands.emit(
-                Command.OpenSpaceSettings(
-                    spaceId = vmParams.spaceId
-                )
-            )
-        }
-    }
-
     fun onBackClicked() {
         proceedWithCloseOpenObjects()
         viewModelScope.launch {
+            val currentSpaceView = _spaceViewState.value
+            val (spaceUxType, spaceChatId) = when (currentSpaceView) {
+                is SpaceViewState.Success -> {
+                    currentSpaceView.spaceUxType to currentSpaceView.spaceChatId
+                }
+                else -> {
+                    // Default to DATA type if space view not loaded
+                    SpaceUxType.DATA to null
+                }
+            }
             commands.emit(
-                Command.HandleChatSpaceBackNavigation
+                Command.HandleChatSpaceBackNavigation(
+                    spaceUxType = spaceUxType,
+                    spaceChatId = spaceChatId
+                )
             )
         }
     }
@@ -2196,6 +2092,7 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
+        val currentWidgets = widgets.value.orEmpty()
 
         // Cancel existing jobs first to stop any ongoing work
         jobs.cancel()
@@ -2205,8 +2102,18 @@ class HomeScreenViewModel(
         // Using injected scope ensures proper lifecycle management
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
+            val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
+                if (widget is Widget.Section) return@mapNotNull null
+                if (widget.source is Widget.Source.Bundled)
+                    widget.source.id
+                else
+                    widget.id
+            }
+            Timber.d("Unsubscribing from widgets: $widgetSubscriptions")
             kotlin.runCatching {
-                unsubscriber.unsubscribe(listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION))
+                storelessSubscriptionContainer.unsubscribe(
+                    subscriptions = widgetSubscriptions + listOf(HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION)
+                )
             }.onFailure { Timber.w(it, "Error unsubscribing profile object") }
 
             val widgetObjectId = cachedWidgetObjectId
@@ -2423,7 +2330,11 @@ class HomeScreenViewModel(
                 is WidgetView.Tree -> {
                     getDefaultObjectType.async(vmParams.spaceId).getOrNull()?.type?.let { typeKey ->
                         storeOfObjectTypes.getByKey(key = typeKey.key)?.let {
-                            onCreateObjectForWidget(type = it, source = widget.source.id)
+                            onCreateObjectForTreeWidget(
+                                type = it,
+                                widgetId = widget.id,
+                                treeWidgetSourceId = widget.source.id
+                            )
                         }
                     }
                 }
@@ -2694,19 +2605,35 @@ class HomeScreenViewModel(
         )
     }
 
-    fun onCreateObjectForWidget(
+    fun onCreateObjectForTreeWidget(
         type: ObjectWrapper.Type,
-        source: Id
+        widgetId: Id,
+        treeWidgetSourceId: Id
     ) {
         viewModelScope.launch {
+            val flags = buildList {
+                add(InternalFlags.ShouldSelectTemplate)
+                add(InternalFlags.ShouldSelectType)
+            }
             createObject.async(
                 params = CreateObject.Param(
                     space = vmParams.spaceId,
-                    type = TypeKey(type.uniqueKey)
+                    type = TypeKey(type.uniqueKey),
+                    internalFlags = flags
                 )
             ).fold(
                 onSuccess = { result ->
-                    proceedWithCreatingLinkToNewObject(source, result)
+                    proceedWithCreatingLinkToNewObject(
+                        source = treeWidgetSourceId,
+                        result = result,
+                        position = Position.BOTTOM
+                    )
+                    // Ensure the tree widget source remains expanded after creating the object
+                    val sourcePath = "$widgetId/$treeWidgetSourceId"
+                    val currentExpanded = treeWidgetBranchStateHolder.stream(widgetId).first()
+                    if (!currentExpanded.contains(sourcePath)) {
+                        treeWidgetBranchStateHolder.onExpand(sourcePath)
+                    }
                     proceedWithNavigation(result.obj.navigation())
                 },
                 onFailure = {
@@ -2718,13 +2645,14 @@ class HomeScreenViewModel(
 
     private suspend fun proceedWithCreatingLinkToNewObject(
         source: Id,
-        result: CreateObject.Result
+        result: CreateObject.Result,
+        position: Position = Position.NONE
     ) {
         createBlock.async(
             params = CreateBlock.Params(
                 context = source,
                 target = "",
-                position = Position.NONE,
+                position = position,
                 prototype = Block.Prototype.Link(
                     target = result.objectId
                 )
@@ -2781,6 +2709,119 @@ class HomeScreenViewModel(
     }
     //endregion
 
+    //region Expanded Widgets
+    /**
+     * Toggles widget collapse state and persists to preferences
+     */
+    fun onToggleWidgetExpandedState(widgetId: Id) {
+        Timber.d("onToggleWidgetExpandedState, widgetId: $widgetId")
+        viewModelScope.launch {
+            val currentExpanded = expandedWidgetIds.value
+            val newExpanded = if (currentExpanded.contains(widgetId)) {
+                currentExpanded - widgetId
+            } else {
+                currentExpanded + widgetId
+            }
+            expandedWidgetIds.value = newExpanded
+            saveExpandedWidgetState()
+        }
+    }
+
+    /**
+     * Handles section header clicks to collapse/expand all widgets in the section
+     */
+    fun onSectionClicked(sectionId: Id) {
+        viewModelScope.launch {
+            when (sectionId) {
+                Widget.Source.SECTION_OBJECT_TYPE -> {
+                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+
+                    val newCollapsedSections = if (isCurrentlyCollapsed) {
+                        // Expand section - remove from collapsed sections
+                        currentCollapsedSections.minus(sectionId)
+                    } else {
+                        // Collapse section - add to collapsed sections and collapse all type widgets
+                        collapseAllObjectTypeWidgets()
+                        currentCollapsedSections.plus(sectionId)
+                    }
+
+                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+                }
+                Widget.Source.SECTION_PINNED -> {
+                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+
+                    val newCollapsedSections = if (isCurrentlyCollapsed) {
+                        // Expand section - remove from collapsed sections
+                        currentCollapsedSections.minus(sectionId)
+                    } else {
+                        // Collapse section - add to collapsed sections and collapse all pinned widgets
+                        collapseAllPinnedWidgets()
+                        currentCollapsedSections.plus(sectionId)
+                    }
+
+                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+                }
+            }
+        }
+    }
+
+    /**
+     * Collapses all ObjectType widgets by removing them from expandedWidgetIds
+     */
+    private suspend fun collapseAllObjectTypeWidgets() {
+        val currentWidgets = widgets.value.orEmpty()
+        val objectTypeWidgetIds = currentWidgets
+            .filter { widget ->
+                widget !is Widget.Section && widget.sectionType == SectionType.TYPES
+            }
+            .map { it.id }
+
+        // Remove all ObjectType widget IDs from expanded set
+        expandedWidgetIds.value = expandedWidgetIds.value - objectTypeWidgetIds.toSet()
+        saveExpandedWidgetState()
+    }
+
+    /**
+     * Collapses all Pinned widgets by removing them from expandedWidgetIds
+     */
+    private suspend fun collapseAllPinnedWidgets() {
+        val currentWidgets = widgets.value.orEmpty()
+        val pinnedWidgetIds = currentWidgets
+            .filter { widget ->
+                widget !is Widget.Section && widget.sectionType == SectionType.PINNED
+            }
+            .map { it.id }
+
+        // Remove all Pinned widget IDs from expanded set
+        expandedWidgetIds.value = expandedWidgetIds.value - pinnedWidgetIds.toSet()
+        saveExpandedWidgetState()
+    }
+
+
+    /**
+     * Determines if a widget should be collapsed due to its section being collapsed
+     */
+    private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
+        return when {
+            widget is Widget.Section -> false // Sections themselves are not collapsed by section state
+            widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
+            widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+            else -> false
+        }
+    }
+
+    /**
+     * Saves current expanded widget state to preferences
+     */
+    private suspend fun saveExpandedWidgetState() {
+        val expandedIds = expandedWidgetIds.value.toList()
+        userSettingsRepository.setExpandedWidgetIds(vmParams.spaceId, expandedIds)
+        Timber.d("Saved expanded widget state: ${expandedIds.size} expanded widgets")
+    }
+    //endregion
+
     fun proceedWithExitingToVault() {
         viewModelScope.launch {
             proceedWithClearingSpaceBeforeExitingToVault()
@@ -2812,8 +2853,22 @@ class HomeScreenViewModel(
         ) : ViewerSpaceSettingsState()
     }
 
+    sealed class SpaceViewState {
+        data object Init : SpaceViewState()
+        data class Success(
+            val spaceIcon: SpaceIconView,
+            val spaceName: String,
+            val membersCount: Int,
+            val spaceChatId: Id? = null,
+            val spaceAccessType: SpaceAccessType,
+            val spaceUxType: SpaceUxType
+        ) : SpaceViewState()
+
+        data class Failure(val e: Throwable) : SpaceViewState()
+    }
+
     class Factory @Inject constructor(
-        private val vmParams: VmParams,
+        private val vmParams: HomeScreenVmParams,
         private val openObject: OpenObject,
         private val closeObject: CloseObject,
         private val createObject: CreateObject,
@@ -2828,7 +2883,6 @@ class HomeScreenViewModel(
         private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
         private val widgetSessionStateHolder: WidgetSessionStateHolder,
         private val widgetActiveViewStateHolder: WidgetActiveViewStateHolder,
-        private val collapsedWidgetStateHolder: CollapsedWidgetStateHolder,
         private val urlBuilder: UrlBuilder,
         private val getObject: GetObject,
         private val move: Move,
@@ -2844,7 +2898,6 @@ class HomeScreenViewModel(
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
         private val spaceManager: SpaceManager,
-        private val spaceWidgetContainer: SpaceWidgetContainer,
         private val setObjectDetails: SetObjectDetails,
         private val getSpaceView: GetSpaceView,
         private val searchObjects: SearchObjects,
@@ -2859,7 +2912,6 @@ class HomeScreenViewModel(
         private val addObjectToCollection: AddObjectToCollection,
         private val clearLastOpenedSpace: ClearLastOpenedSpace,
         private val clearLastOpenedObject: ClearLastOpenedObject,
-        private val spaceBinWidgetContainer: SpaceBinWidgetContainer,
         private val featureToggles: FeatureToggles,
         private val fieldParser: FieldParser,
         private val spaceInviteResolver: SpaceInviteResolver,
@@ -2872,7 +2924,10 @@ class HomeScreenViewModel(
         private val chatPreviews: ChatPreviewContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-        private val scope: CoroutineScope
+        private val userRepo: UserSettingsRepository,
+        private val scope: CoroutineScope,
+        private val stringResourceProvider : StringResourceProvider,
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -2891,7 +2946,6 @@ class HomeScreenViewModel(
             storelessSubscriptionContainer = storelessSubscriptionContainer,
             widgetSessionStateHolder = widgetSessionStateHolder,
             widgetActiveViewStateHolder = widgetActiveViewStateHolder,
-            collapsedWidgetStateHolder = collapsedWidgetStateHolder,
             getObject = getObject,
             urlBuilder = urlBuilder,
             move = move,
@@ -2907,7 +2961,6 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
             spaceManager = spaceManager,
-            spaceWidgetContainer = spaceWidgetContainer,
             setObjectDetails = setObjectDetails,
             getSpaceView = getSpaceView,
             searchObjects = searchObjects,
@@ -2921,7 +2974,6 @@ class HomeScreenViewModel(
             dateProvider = dateProvider,
             addObjectToCollection = addObjectToCollection,
             clearLastOpenedObject = clearLastOpenedObject,
-            spaceBinWidgetContainer = spaceBinWidgetContainer,
             featureToggles = featureToggles,
             fieldParser = fieldParser,
             spaceInviteResolver = spaceInviteResolver,
@@ -2934,15 +2986,14 @@ class HomeScreenViewModel(
             chatPreviews = chatPreviews,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
-            scope = scope
+            userSettingsRepository = userRepo,
+            scope = scope,
+            stringResourceProvider = stringResourceProvider,
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds
         ) as T
     }
 
     companion object {
-        val actions = listOf(
-            WidgetView.Action.EditWidgets
-        )
-
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
     }
 }
@@ -2979,8 +3030,6 @@ sealed class Command {
         val isInEditMode: Boolean,
         val space: Id
     ) : Command()
-
-    data class ShowWidgetAutoCreatedToast(val name: String) : Command()
 
     data class OpenSpaceSettings(val spaceId: SpaceId) : Command()
 
@@ -3026,11 +3075,6 @@ sealed class Command {
     }
 
     data class CreateSourceForNewWidget(val space: SpaceId, val widgets: Id) : Command()
-    data class CreateObjectForWidget(
-        val space: SpaceId,
-        val widget: Id,
-        val source: Id
-    ) : Command()
 
     data class ShareSpace(val space: SpaceId) : Command()
 
@@ -3046,7 +3090,10 @@ sealed class Command {
 
     data object ShowLeaveSpaceWarning : Command()
 
-    data object HandleChatSpaceBackNavigation : Command()
+    data class HandleChatSpaceBackNavigation(
+        val spaceUxType: SpaceUxType,
+        val spaceChatId: Id?
+    ) : Command()
 
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
@@ -3189,14 +3236,7 @@ fun ObjectWrapper.Basic.navigation(
     }
 }
 
-data class SystemTypeView(
-    val id: Id,
-    val name: String,
-    val icon: ObjectIcon.TypeIcon,
-    val isCreateObjectAllowed: Boolean = true,
-    val isDeletable: Boolean = false,
-    val widgetView: WidgetView
-)
+data class HomeScreenVmParams(val spaceId: SpaceId)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3

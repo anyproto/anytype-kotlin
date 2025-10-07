@@ -275,6 +275,14 @@ class BlockDataRepository(
         command: Command.UploadFile
     ): ObjectWrapper.File = remote.uploadFile(command)
 
+    override suspend fun preloadFile(command: Command.PreloadFile): Id {
+        return remote.preloadFile(command)
+    }
+
+    override suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile) {
+        remote.discardPreloadedFile(command)
+    }
+
     override suspend fun fileDrop(command: Command.FileDrop): Payload {
         return remote.fileDrop(command)
     }
@@ -1200,5 +1208,9 @@ class BlockDataRepository(
 
     override suspend fun spaceChangeInvite(command: Command.SpaceChangeInvite) {
         remote.spaceChangeInvite(command)
+    }
+
+    override suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
+        return remote.objectTypesSetOrder(command)
     }
 }

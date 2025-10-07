@@ -238,6 +238,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun objectTypesSetOrder(request: Rpc.ObjectType.SetOrder.Request): Rpc.ObjectType.SetOrder.Response {
+        val encoded = Service.objectTypeSetOrder(
+            Rpc.ObjectType.SetOrder.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.ObjectType.SetOrder.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectType.SetOrder.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun blockDataViewRelationAdd(request: Rpc.BlockDataview.Relation.Add.Request): Rpc.BlockDataview.Relation.Add.Response {
         val encoded = Service.blockDataviewRelationAdd(
             Rpc.BlockDataview.Relation.Add.Request.ADAPTER.encode(request)
@@ -680,6 +693,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.File.Upload.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.File.Upload.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun fileDiscardPreload(request: Rpc.File.DiscardPreload.Request): Rpc.File.DiscardPreload.Response {
+        val encoded = Service.fileDiscardPreload(Rpc.File.DiscardPreload.Request.ADAPTER.encode(request))
+        val response = Rpc.File.DiscardPreload.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.File.DiscardPreload.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response
@@ -2828,6 +2852,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.Publishing.List.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.Publishing.List.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun appShutdown(request: Rpc.App.Shutdown.Request): Rpc.App.Shutdown.Response {
+        val encoded = Service.appShutdown(
+            Rpc.App.Shutdown.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.App.Shutdown.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.App.Shutdown.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

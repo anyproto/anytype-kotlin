@@ -36,18 +36,20 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplate
 import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.*
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
@@ -85,7 +87,9 @@ class ObjectMenuViewModel(
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
     private val userPermissionProvider: UserPermissionProvider,
-    private val deleteRelationFromObject: DeleteRelationFromObject
+    private val deleteRelationFromObject: DeleteRelationFromObject,
+    private val showObject: GetObject,
+    private val deleteWidget: DeleteWidget
 ) : ObjectMenuViewModelBase(
     setObjectIsArchived = setObjectIsArchived,
     addBackLinkToObject = addBackLinkToObject,
@@ -105,7 +109,9 @@ class ObjectMenuViewModel(
     fieldParser = fieldParser,
     spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
     deepLinkResolver = deepLinkResolver,
-    getSpaceInviteLink = getSpaceInviteLink
+    getSpaceInviteLink = getSpaceInviteLink,
+    showObject = showObject,
+    deleteWidget = deleteWidget
 ) {
 
     init {
@@ -131,7 +137,8 @@ class ObjectMenuViewModel(
         isFavorite: Boolean,
         isTemplate: Boolean,
         isLocked: Boolean,
-        isReadOnly: Boolean
+        isReadOnly: Boolean,
+        isCurrentObjectPinned: Boolean
     ): List<ObjectAction> = buildList {
 
         val wrapper = storage.details.current().getObject(ctx)
@@ -154,14 +161,10 @@ class ObjectMenuViewModel(
             }
 
             if (!isTemplate && !systemLayouts.contains(layout) && !fileLayouts.contains(layout)) {
-                add(ObjectAction.CREATE_WIDGET)
-            }
-
-            if (!isTemplate) {
-                if (isFavorite) {
-                    add(ObjectAction.REMOVE_FROM_FAVOURITE)
+                if (isCurrentObjectPinned) {
+                    add(ObjectAction.UNPIN)
                 } else {
-                    add(ObjectAction.ADD_TO_FAVOURITE)
+                    add(ObjectAction.PIN)
                 }
             }
 
@@ -206,12 +209,11 @@ class ObjectMenuViewModel(
                 clear()
                 add(ObjectAction.MOVE_TO_BIN)
                 add(ObjectAction.DOWNLOAD_FILE)
-                if (isFavorite) {
-                    add(ObjectAction.REMOVE_FROM_FAVOURITE)
+                if (isCurrentObjectPinned) {
+                    add(ObjectAction.UNPIN)
                 } else {
-                    add(ObjectAction.ADD_TO_FAVOURITE)
+                    add(ObjectAction.PIN)
                 }
-                add(ObjectAction.CREATE_WIDGET)
                 add(ObjectAction.LINK_TO)
                 add(ObjectAction.COPY_LINK)
             }
@@ -360,7 +362,7 @@ class ObjectMenuViewModel(
                         space = SpaceId(space),
                         ctx = ctx
                     )
-                    commands.emit(Command.ShareDeeplinkToObject(link))
+                    commands.emit(ShareDeeplinkToObject(link))
                 }
             }
             ObjectAction.UNLOCK -> {
@@ -390,9 +392,12 @@ class ObjectMenuViewModel(
             ObjectAction.SET_AS_DEFAULT -> {
                 proceedWithSettingAsDefaultTemplate(ctx = ctx)
             }
-            ObjectAction.CREATE_WIDGET -> {
+            ObjectAction.PIN -> {
                 val wrapper = storage.details.current().getObject(ctx)
                 if (wrapper != null) proceedWithCreatingWidget(obj = wrapper)
+            }
+            ObjectAction.UNPIN -> {
+                proceedWithRemovingWidget()
             }
             ObjectAction.MOVE_TO,
             ObjectAction.DELETE,
@@ -646,7 +651,9 @@ class ObjectMenuViewModel(
         private val addToFeaturedRelations: AddToFeaturedRelations,
         private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
         private val userPermissionProvider: UserPermissionProvider,
-        private val deleteRelationFromObject: DeleteRelationFromObject
+        private val deleteRelationFromObject: DeleteRelationFromObject,
+        private val showObject: GetObject,
+        private val deleteWidget: DeleteWidget
     ) : ViewModelProvider.Factory {
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ObjectMenuViewModel(
@@ -677,7 +684,9 @@ class ObjectMenuViewModel(
                 addToFeaturedRelations = addToFeaturedRelations,
                 removeFromFeaturedRelations = removeFromFeaturedRelations,
                 userPermissionProvider = userPermissionProvider,
-                deleteRelationFromObject = deleteRelationFromObject
+                deleteRelationFromObject = deleteRelationFromObject,
+                showObject = showObject,
+                deleteWidget = deleteWidget
             ) as T
         }
     }

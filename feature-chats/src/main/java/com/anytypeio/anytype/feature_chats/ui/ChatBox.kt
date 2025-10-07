@@ -114,8 +114,9 @@ fun ChatBox(
     onValueChange: (TextFieldValue, List<ChatBoxSpan>) -> Unit,
     onUrlInserted: (Url) -> Unit,
     onImageCaptured: (Uri) -> Unit,
-    onVideoCaptured: (Uri) -> Unit
-) {
+    onVideoCaptured: (Uri) -> Unit,
+    onAttachmentMenuTriggered: () -> Unit
+    ) {
 
     val context = LocalContext.current
 
@@ -284,6 +285,7 @@ fun ChatBox(
                         .clickable {
                             scope.launch {
                                 showDropdownMenu = true
+                                onAttachmentMenuTriggered()
                             }
                         }
                 ) {
@@ -629,7 +631,8 @@ fun ChatBox(
                         onRecordVideoClicked = {
                             recordVideoPermissionLauncher.launch(Manifest.permission.CAMERA)
                         },
-                        onCreateAndAttachObject = onCreateAndAttachObject
+                        onCreateAndAttachObject = onCreateAndAttachObject,
+                        onAttachmentMenuTriggered = onAttachmentMenuTriggered
                     )
                 }
             }
@@ -990,7 +993,8 @@ fun ChatBoxEditPanel(
     onTakePhotoClicked: () -> Unit,
     onRecordVideoClicked: () -> Unit,
     onCreateAndAttachObject: () -> Unit,
-) {
+    onAttachmentMenuTriggered: () -> Unit,
+    ) {
 
     var showDropdownMenu by remember { mutableStateOf(false) }
 
@@ -1007,6 +1011,7 @@ fun ChatBoxEditPanel(
                 .clip(CircleShape)
                 .clickable {
                     showDropdownMenu = true
+                    onAttachmentMenuTriggered()
                 }
         ) {
             Image(
@@ -1229,6 +1234,7 @@ fun ChatBoxEditPanelPreview() {
         onUploadMediaClicked = {},
         onTakePhotoClicked = {},
         onRecordVideoClicked = {},
-        onCreateAndAttachObject = {}
+        onCreateAndAttachObject = {},
+        onAttachmentMenuTriggered = {}
     )
 }

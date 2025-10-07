@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Id
@@ -13,18 +18,16 @@ import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
-import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -32,15 +35,13 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
+import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
-import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
-import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -52,7 +53,6 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
-import com.anytypeio.anytype.feature_chats.tools.DummyMessageGenerator
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -71,6 +71,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -100,6 +101,8 @@ class ChatViewModel @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val discardPreloadedFile: DiscardPreloadedFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
@@ -108,15 +111,14 @@ class ChatViewModel @Inject constructor(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val spacePermissionProvider: UserPermissionProvider,
     private val notificationBuilder: NotificationBuilder,
-    private val generateSpaceInviteLink: GenerateSpaceInviteLink,
-    private val makeSpaceShareable: MakeSpaceShareable,
-    private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val analytics: Analytics
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+
+    private val preloadingJobs = mutableListOf<Job>()
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
         replay = 0,
@@ -134,8 +136,6 @@ class ChatViewModel @Inject constructor(
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val canCreateInviteLink = MutableStateFlow(false)
-    val inviteModalState = MutableStateFlow<InviteModalState>(InviteModalState.Hidden)
-    val isGeneratingInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
 
@@ -167,7 +167,6 @@ class ChatViewModel @Inject constructor(
                     } else if (permission == SpaceMemberPermissions.READER || permission == SpaceMemberPermissions.NO_PERMISSIONS) {
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
-                    // Update invite link creation permission (only owners can create invite links)
                     canCreateInviteLink.value = permission?.isOwner() == true
                 }
         }
@@ -218,7 +217,17 @@ class ChatViewModel @Inject constructor(
         }
 
         proceedWithSpaceSubscription()
-        checkIfShouldCreateInviteLink()
+
+        viewModelScope.launch {
+            val route = if (vmParams.triggeredByPush)
+                EventsDictionary.ChatRoute.PUSH.value
+            else
+                EventsDictionary.ChatRoute.NAVIGATION.value
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenChat,
+                props = Props(mapOf(EventsPropertiesKey.route to route))
+            )
+        }
     }
 
 
@@ -572,7 +581,13 @@ class ChatViewModel @Inject constructor(
         if (BuildConfig.DEBUG) {
             Timber.d("DROID-2635 OnMessageSent, markup: $markup}")
         }
+
         viewModelScope.launch {
+
+            // Cancelling preloading jobs if there are any:
+
+            preloadingJobs.cancel()
+
             // Use LinkDetector to find all types of links (URLs, emails, phones)
             val detectedLinkMarks = LinkDetector.addLinkMarksToText(
                 text = msg,
@@ -630,14 +645,24 @@ class ChatViewModel @Inject constructor(
                                     )
                                 )
                             }
-                            val path = if (attachment.capturedByCamera) {
-                                shouldClearChatTempFolder = true
-                                withContext(dispatchers.io) {
-                                    copyFileToCacheDirectory.copy(attachment.uri)
-                                }.orEmpty()
+                            val state = attachment.state
+                            var preloadedFileId: Id? = null
+                            var path: String
+
+                            if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
                             } else {
-                                attachment.uri
+                                path = if (attachment.capturedByCamera) {
+                                    shouldClearChatTempFolder = true
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }.orEmpty()
+                                } else {
+                                    attachment.uri
+                                }
                             }
+
                             uploadFile.async(
                                 UploadFile.Params(
                                     space = vmParams.space,
@@ -645,7 +670,8 @@ class ChatViewModel @Inject constructor(
                                     type = if (attachment.isVideo)
                                         Block.Content.File.Type.VIDEO
                                     else
-                                        Block.Content.File.Type.IMAGE
+                                        Block.Content.File.Type.IMAGE,
+                                    preloadFileId = preloadedFileId
                                 )
                             ).onSuccess { file ->
                                 withContext(dispatchers.io) {
@@ -679,7 +705,7 @@ class ChatViewModel @Inject constructor(
                                     set(
                                         index = idx,
                                         element = attachment.copy(
-                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
+                                            state = ChatView.Message.ChatBoxAttachment.State.Failed
                                         )
                                     )
                                 }
@@ -715,8 +741,16 @@ class ChatViewModel @Inject constructor(
                             }
                         }
                         is ChatView.Message.ChatBoxAttachment.File -> {
-                            val path = withContext(dispatchers.io) {
-                                copyFileToCacheDirectory.copy(attachment.uri)
+                            var preloadedFileId: Id? = null
+                            var path: String? = null
+                            val state = attachment.state
+                            if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                                preloadedFileId = state.preloadedFileId
+                                path = state.path
+                            } else {
+                                path = withContext(dispatchers.io) {
+                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                }
                             }
                             if (path != null) {
                                 chatBoxAttachments.value = currAttachments.toMutableList().apply {
@@ -731,7 +765,8 @@ class ChatViewModel @Inject constructor(
                                     UploadFile.Params(
                                         space = vmParams.space,
                                         path = path,
-                                        type = Block.Content.File.Type.NONE
+                                        type = Block.Content.File.Type.NONE,
+                                        preloadFileId = preloadedFileId
                                     )
                                 ).onSuccess { file ->
                                     copyFileToCacheDirectory.delete(path)
@@ -846,6 +881,22 @@ class ChatViewModel @Inject constructor(
                 }
             }
         }
+        viewModelScope.launch {
+            val hasAttachments = chatBoxAttachments.value.isNotEmpty()
+            val hasText = msg.isNotEmpty()
+            val type = when {
+                hasText && !hasAttachments -> EventsDictionary.ChatSentMessageType.TEXT
+                !hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.ATTACHMENT
+                hasText && hasAttachments -> EventsDictionary.ChatSentMessageType.MIXED
+                else -> null
+            }
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatSentMessage,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.type to type)
+                )
+            )
+        }
     }
 
     fun onRequestEditMessageClicked(msg: ChatView.Message) {
@@ -915,6 +966,11 @@ class ChatViewModel @Inject constructor(
             }
             chatBoxMode.value = ChatBoxMode.EditMessage(msg.id)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuEdit
+            )
+        }
     }
 
     fun onAttachObject(obj: GlobalSearchItemView) {
@@ -970,6 +1026,48 @@ class ChatViewModel @Inject constructor(
         chatBoxAttachments.value = chatBoxAttachments.value.filter {
             it != attachment
         }
+        viewModelScope.launch {
+            var path: String? = null
+            val preloaded = when(attachment) {
+                is ChatView.Message.ChatBoxAttachment.File -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                is ChatView.Message.ChatBoxAttachment.Media -> {
+                    val state = attachment.state
+                    if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
+                        path = state.path
+                        state.preloadedFileId
+                    } else {
+                        null
+                    }
+                }
+                else -> null
+            }
+
+            if (!preloaded.isNullOrEmpty()) {
+                discardPreloadedFile.async(
+                    params = preloaded
+                ).onSuccess {
+                    Timber.d("Successfully Discarded preloaded file: $preloaded")
+                }.onFailure {
+                    Timber.e("Error while discarding preloaded file: $preloaded")
+                }
+            }
+            if (!path.isNullOrEmpty()) {
+                copyFileToCacheDirectory.delete(path)
+            }
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDetachItemChat
+            )
+        }
     }
 
     fun onClearReplyClicked() {
@@ -991,6 +1089,24 @@ class ChatViewModel @Inject constructor(
                     )
                 ).onFailure {
                     Timber.e(it, "Error while toggling chat message reaction")
+                }.onSuccess {
+                    Timber.d("Toggled chat reaction")
+                }
+
+                // Sending analytics
+                if (message is ChatView.Message) {
+                    val hasAlreadyUserReaction = message.reactions.any { r ->
+                        r.emoji == reaction && r.isSelected
+                    }
+                    if (hasAlreadyUserReaction) {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatRemoveReaction
+                        )
+                    } else {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.chatAddReaction
+                        )
+                    }
                 }
             } else {
                 Timber.w("Target message not found for reaction")
@@ -999,6 +1115,11 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onReplyMessage(msg: ChatView.Message) {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReply
+            )
+        }
         viewModelScope.launch {
             chatBoxMode.value = ChatBoxMode.Reply(
                 msg = msg.id,
@@ -1052,6 +1173,11 @@ class ChatViewModel @Inject constructor(
     fun onDeleteMessage(msg: ChatView.Message) {
         Timber.d("onDeleteMessageClicked msg: ${msg.id}")
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatDeleteMessage
+            )
+        }
+        viewModelScope.launch {
             deleteChatMessage.async(
                 Command.ChatCommand.DeleteMessage(
                     chat = vmParams.ctx,
@@ -1061,6 +1187,30 @@ class ChatViewModel @Inject constructor(
                 Timber.e(it, "Error while deleting chat message")
             }
         }
+    }
+
+    fun onDeleteMessageWarningTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuDelete
+            )
+        }
+    }
+
+    fun onCopyMessageTextActionTriggered() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuCopy
+            )
+        }
+    }
+
+    fun onAttachmentMenuTriggered() {
+       viewModelScope.launch {
+           analytics.sendEvent(
+               eventName = EventsDictionary.chatScreenChatAttach
+           )
+       }
     }
 
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
@@ -1133,12 +1283,55 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
-        chatBoxAttachments.value += uris.map { uri ->
-            ChatView.Message.ChatBoxAttachment.Media(
-                uri = uri.uri,
-                isVideo = uri.isVideo,
-                capturedByCamera = uri.capturedByCamera
-            )
+        viewModelScope.launch {
+            chatBoxAttachments.value += uris.map { uri ->
+                ChatView.Message.ChatBoxAttachment.Media(
+                    uri = uri.uri,
+                    isVideo = uri.isVideo,
+                    capturedByCamera = uri.capturedByCamera
+                )
+            }
+        }
+        // Starting preloading files
+
+        preloadingJobs += viewModelScope.launch {
+            uris.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                if (path != null) {
+                    preloadFile.async(
+                        params = PreloadFile.Params(
+                            space = vmParams.space,
+                            path = path,
+                            type = Block.Content.File.Type.NONE
+                        )
+                    ).onSuccess { preloadedFileId: Id ->
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.Media && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Preloaded(
+                                        preloadedFileId = preloadedFileId,
+                                        path = path
+                                    )
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }.onFailure {
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.Media && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1148,8 +1341,49 @@ class ChatViewModel @Inject constructor(
             ChatView.Message.ChatBoxAttachment.File(
                 uri = info.uri,
                 name = info.name,
-                size = info.size
+                size = info.size,
+                state = ChatView.Message.ChatBoxAttachment.State.Preloading
             )
+        }
+        // Starting preloading files
+        preloadingJobs += viewModelScope.launch {
+            infos.forEach { info ->
+                val path = withContext(dispatchers.io) {
+                    copyFileToCacheDirectory.copy(info.uri)
+                }
+                if (path != null) {
+                    preloadFile.async(
+                        params = PreloadFile.Params(
+                            space = vmParams.space,
+                            path = path,
+                            type = Block.Content.File.Type.NONE
+                        )
+                    ).onSuccess { preloadedFileId: Id ->
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.File && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Preloaded(
+                                        preloadedFileId = preloadedFileId,
+                                        path = path
+                                    )
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }.onFailure {
+                        chatBoxAttachments.value = chatBoxAttachments.value.map { a ->
+                            if (a is ChatView.Message.ChatBoxAttachment.File && a.uri == info.uri) {
+                                a.copy(
+                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                )
+                            } else {
+                                a
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -1214,6 +1448,11 @@ class ChatViewModel @Inject constructor(
                 )
             )
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickMessageMenuReaction
+            )
+        }
     }
 
     fun onViewChatReaction(
@@ -1247,142 +1486,9 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onInviteModalDismissed() {
-        Timber.d("onInviteModalDismissed")
-        inviteModalState.value = InviteModalState.Hidden
-    }
-
-    fun onGenerateInviteLinkClicked() {
-        Timber.d("onGenerateInviteLinkClicked")
-        viewModelScope.launch {
-            isGeneratingInviteLink.value = true
-            proceedWithGeneratingInviteLink()
-        }
-    }
-
-    private suspend fun proceedWithGeneratingInviteLink(
-        inviteType: InviteType = InviteType.MEMBER,
-        permissions: SpaceMemberPermissions = SpaceMemberPermissions.READER
-    ) {
-        if (spaceAccessType.value == SpaceAccessType.PRIVATE) {
-            makeSpaceShareable.async(
-                params = vmParams.space
-            ).fold(
-                onSuccess = {
-                    Timber.d("Successfully made space shareable")
-                    generateInviteLink(
-                        inviteType = inviteType,
-                        permissions = permissions
-                    )
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Error while making space shareable")
-                    isGeneratingInviteLink.value = false
-                    inviteModalState.value = InviteModalState.Hidden
-                    errorState.value = UiErrorState.Show(
-                        "Failed to make space shareable. Please try again."
-                    )
-                }
-            )
-        } else {
-            generateInviteLink(
-                inviteType = inviteType,
-                permissions = permissions
-            )
-        }
-    }
-
-    private suspend fun generateInviteLink(
-        inviteType: InviteType,
-        permissions: SpaceMemberPermissions
-    ) {
-        generateSpaceInviteLink.async(
-            params = GenerateSpaceInviteLink.Params(
-                space = vmParams.space,
-                inviteType = inviteType,
-                permissions = permissions
-            )
-        ).fold(
-            onSuccess = { inviteLink ->
-                Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
-                isGeneratingInviteLink.value = false
-            },
-            onFailure = { error ->
-                Timber.e(error, "Error while generating invite link")
-                isGeneratingInviteLink.value = false
-                inviteModalState.value = InviteModalState.Hidden
-                errorState.value = UiErrorState.Show(
-                    "Failed to generate invite link. Please try again."
-                )
-            }
-        )
-    }
-
     fun onEmptyStateAction() {
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
-        }
-    }
-
-    fun onShareInviteLinkFromCardClicked() {
-        viewModelScope.launch {
-            when (val state = inviteModalState.value) {
-                is InviteModalState.ShowShareCard -> {
-                    commands.emit(ViewModelCommand.ShareInviteLink(state.link))
-                }
-                else -> {
-                    Timber.w("Ignoring share invite click while in state: $state")
-                }
-            }
-        }
-    }
-
-    fun onShareQrCodeClicked() {
-        viewModelScope.launch {
-            when (val state = inviteModalState.value) {
-                is InviteModalState.ShowShareCard -> {
-                    commands.emit(ViewModelCommand.ShareQrCode(state.link))
-                }
-                else -> {
-                    Timber.w("Ignoring QR-code click while in state: $state")
-                }
-            }
-        }
-    }
-
-    fun onDeleteLinkClicked() {
-        Timber.d("onDeleteLinkClicked")
-        viewModelScope.launch {
-            if (canCreateInviteLink.value) {
-                commands.emit(ViewModelCommand.ShowDeleteLinkWarning)
-            } else {
-                Timber.w("Something wrong with permissions.")
-            }
-        }
-    }
-
-    fun onDeleteLinkAccepted() {
-        Timber.d("onDeleteLinkAccepted")
-        viewModelScope.launch {
-            if (canCreateInviteLink.value) {
-                revokeSpaceInviteLink.async(
-                    params = vmParams.space
-                ).fold(
-                    onSuccess = {
-                        Timber.d("Revoked space invite link")
-                        inviteModalState.value = InviteModalState.Hidden
-                    },
-                    onFailure = { e ->
-                        Timber.e(e, "Error while revoking space invite link")
-                        inviteModalState.value = InviteModalState.Hidden
-                        errorState.value = UiErrorState.Show(
-                            "Failed to delete invite link. Please try again."
-                        )
-                    }
-                )
-            } else {
-                Timber.w("Something wrong with permissions.")
-            }
         }
     }
 
@@ -1474,6 +1580,11 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onGoToMention()
         }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToMention
+            )
+        }
     }
 
     fun onChatScrollToReply(replyMessage: Id) {
@@ -1481,12 +1592,20 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatContainer.onLoadToReply(replyMessage = replyMessage)
         }
+        viewModelScope.launch {
+            analytics.sendEvent(eventName = EventsDictionary.chatClickScrollToReply)
+        }
     }
 
     fun onScrollToBottomClicked(lastVisibleMessage: Id?) {
         Timber.d("DROID-2966 onScrollToBottom")
         viewModelScope.launch {
             chatContainer.onLoadChatTail(lastVisibleMessage)
+        }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToBottom
+            )
         }
     }
 
@@ -1559,31 +1678,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Used for testing. Will be deleted.
-     */
-    private fun generateDummyChatHistory() {
-        viewModelScope.launch {
-            var replyTo: Id? = null
-            repeat(100) { idx ->
-
-                addChatMessage.async(
-                    Command.ChatCommand.AddMessage(
-                        chat = vmParams.ctx,
-                        message = DummyMessageGenerator.generateMessage(
-                            text = idx.toString(),
-                            replyTo = if (idx == 99) replyTo else null
-                        )
-                    )
-                ).onSuccess { (msg, payload) ->
-                    if (idx == 0) {
-                       replyTo = msg
-                    }
-                }
-            }
-        }
-    }
-
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
@@ -1599,44 +1693,6 @@ class ChatViewModel @Inject constructor(
                 spaceAccessType.value = space?.spaceAccessType
             }
         }
-    }
-
-    //region Invite Link Screen
-
-    // Check if we should create invite link
-    fun checkIfShouldCreateInviteLink() {
-        viewModelScope.launch {
-            val inviteLink = getSpaceInviteLink
-                .async(vmParams.space)
-                .onFailure { Timber.e(it, "Error while getting space invite link") }
-                .getOrNull()
-
-            combine(
-                spaceViews.observe(vmParams.space),
-                canCreateInviteLink,
-                uiState
-            ) { spaceView, canCreateInvite, ui ->
-                spaceView.spaceUxType == SpaceUxType.CHAT
-                        && canCreateInvite
-                        && inviteLink == null
-                        && ui.messages.isEmpty()
-            }.collect { shouldGenerate ->
-                Timber.d("DROID-3943, Should generate new Invite link without approve: $shouldGenerate")
-                if (shouldGenerate) {
-                    proceedWithGeneratingInviteLink(
-                        inviteType = InviteType.WITHOUT_APPROVE,
-                        permissions = SpaceMemberPermissions.WRITER
-                    )
-                }
-            }
-        }
-    }
-    //endregion
-
-    sealed class InviteModalState {
-        data object Hidden : InviteModalState()
-        data object ShowGenerateCard : InviteModalState()
-        data class ShowShareCard(val link: String) : InviteModalState()
     }
 
     data class ChatBoxMediaUri(
@@ -1657,7 +1713,6 @@ class ChatViewModel @Inject constructor(
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
-        data object ShowDeleteLinkWarning : ViewModelCommand()
     }
 
     sealed class UXCommand {
@@ -1740,7 +1795,8 @@ class ChatViewModel @Inject constructor(
         abstract val space: Space
         data class Default(
             val ctx: Id,
-            override val space: Space
+            override val space: Space,
+            val triggeredByPush: Boolean = false
         ) : Params()
     }
 

@@ -30,11 +30,6 @@ sealed class UiEvent {
 
     data class OnUpdateWallpaperClicked(val wallpaperView: WallpaperView) : UiEvent()
 
-    data class OnAutoCreateWidgetSwitchChanged(
-        val widget: Id,
-        val isAutoCreateEnabled: Boolean
-    ) : UiEvent()
-
     sealed class IconMenu : UiEvent() {
         data object OnRemoveIconClicked : IconMenu()
         data object OnChangeIconColorClicked : IconMenu()
@@ -45,5 +40,14 @@ sealed class UiEvent {
         data class All(override val targetSpaceId: Id?) : OnNotificationsSetting()
         data class Mentions(override val targetSpaceId: Id?) : OnNotificationsSetting()
         data class None(override val targetSpaceId: Id?) : OnNotificationsSetting()
+    }
+
+    data object OnAddMoreSpacesClicked : UiEvent()
+
+    data object OnChangeTypeClicked : UiEvent()
+
+    sealed class OnChangeSpaceType : UiEvent() {
+        data object ToChat : OnChangeSpaceType()
+        data object ToSpace : OnChangeSpaceType()
     }
 }

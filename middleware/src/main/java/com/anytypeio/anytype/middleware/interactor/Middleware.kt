@@ -829,16 +829,41 @@ class Middleware @Inject constructor(
 
     @Throws(Exception::class)
     fun fileUpload(command: Command.UploadFile): ObjectWrapper.File {
-        val type = command.type.toMiddlewareModel()
         val request = Rpc.File.Upload.Request(
             localPath = command.path,
-            type = type,
+            type = command.type.toMiddlewareModel(),
             spaceId = command.space.id,
+            preloadFileId = command.preloadFileId.orEmpty(),
+            preloadOnly = false
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
         logResponseIfDebug(response, time)
         return ObjectWrapper.File(response.details.orEmpty())
+    }
+
+    @Throws(Exception::class)
+    fun filePreload(command: Command.PreloadFile): Id {
+        val request = Rpc.File.Upload.Request(
+            localPath = command.path,
+            type = command.type.toMiddlewareModel(),
+            spaceId = command.space.id,
+            preloadOnly = true
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileUpload(request) }
+        logResponseIfDebug(response, time)
+        return response.preloadFileId
+    }
+
+    @Throws(Exception::class)
+    fun fileDiscardPreload(command: Command.DiscardPreloadedFile) {
+        val request = Rpc.File.DiscardPreload.Request(
+            fileId = command.preloadedFileId
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.fileDiscardPreload(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -3183,6 +3208,26 @@ class Middleware @Inject constructor(
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.spaceChangeInvite(request) }
         logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun appShutdown() {
+        val request = Rpc.App.Shutdown.Request()
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.appShutdown(request)}
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
+    fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String> {
+        val request = Rpc.ObjectType.SetOrder.Request(
+            spaceId = command.spaceId,
+            typeIds = command.orderedIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectTypesSetOrder(request) }
+        logResponseIfDebug(response, time)
+        return response.orderIds
     }
 
     private fun logRequestIfDebug(request: Any) {

@@ -35,9 +35,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.colorResource
@@ -81,13 +83,22 @@ fun MembersItem(
     modifier: Modifier = Modifier,
     item: UiSpaceSettingsItem.Members
 ) {
-    BaseButton(
-        modifier = modifier,
-        title = stringResource(id = R.string.space_settings_members_button_members),
-        icon = R.drawable.ic_members_24,
-        count = item.count.toString(),
-        countIsColored = item.withColor
-    )
+    if (item.editorLimit) {
+        BaseButton(
+            modifier = modifier,
+            title = stringResource(id = R.string.space_settings_members_button_members),
+            icon = R.drawable.ic_members_24,
+            errorIcon = R.drawable.ic_counter_error_20
+        )
+    } else {
+        BaseButton(
+            modifier = modifier,
+            title = stringResource(id = R.string.space_settings_members_button_members),
+            icon = R.drawable.ic_members_24,
+            count = item.count.toString(),
+            countIsColored = item.withColor
+        )
+    }
 }
 
 @Composable
@@ -101,6 +112,25 @@ fun NotificationsItem(
         title = stringResource(id = R.string.notifications_title),
         icon = icon,
         count = supportText
+    )
+}
+
+@Composable
+fun ChangeTypeItem(
+    modifier: Modifier = Modifier,
+    currentType: UiSpaceSettingsItem.ChangeType
+) {
+    val (supportText, icon) = when (currentType) {
+        is UiSpaceSettingsItem.ChangeType.Chat -> stringResource(R.string.chat) to R.drawable.ic_chat_type_24
+        is UiSpaceSettingsItem.ChangeType.Data -> stringResource(R.string.space) to R.drawable.ic_space_type_24
+    }
+
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.space_settings_space_types_button),
+        icon = icon,
+        count = supportText,
+        isEnabled = currentType.isEnabled
     )
 }
 
@@ -313,13 +343,26 @@ fun DeleteSpaceItem(
 }
 
 @Composable
+fun LeaveSpaceItem(
+    modifier: Modifier = Modifier
+) {
+    BaseButton(
+        modifier = modifier,
+        title = stringResource(id = R.string.multiplayer_leave_space),
+        textColor = R.color.palette_system_red
+    )
+}
+
+@Composable
 fun BaseButton(
     modifier: Modifier = Modifier,
     icon: Int? = null,
     title: String,
     count: String? = null,
     textColor: Int = R.color.text_primary,
-    countIsColored: Boolean = false
+    countIsColored: Boolean = false,
+    errorIcon: Int? = null,
+    isEnabled: Boolean = true
 ) {
     Row(
         modifier = modifier
@@ -330,7 +373,8 @@ fun BaseButton(
             )
             .padding(vertical = 20.dp)
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
+            .padding(horizontal = 16.dp)
+            .alpha(if (isEnabled) 1f else 0.3f),
         verticalAlignment = Alignment.CenterVertically
     ) {
         if (icon != null) {
@@ -347,16 +391,23 @@ fun BaseButton(
             style = PreviewTitle1Regular,
             color = colorResource(id = textColor),
         )
+        if (errorIcon != null && count == null) {
+            Image(
+                painter = painterResource(id = errorIcon),
+                contentDescription = "Error icon",
+                modifier = Modifier.size(20.dp)
+            )
+        }
         if (count != null) {
-            val (shape, color, textColor) = when {
+            val (shape, color, textColor, textStyle) = when {
                 countIsColored && count.length > 2 -> {
-                    Triple(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                    MembersIconParams(RoundedCornerShape(100.dp), colorResource(R.color.control_accent), colorResource(id = R.color.text_white), Caption1Regular)
                 }
                 countIsColored -> {
-                    Triple(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white))
+                    MembersIconParams(CircleShape, colorResource(R.color.control_accent), colorResource(id = R.color.text_white), Caption1Regular)
                 }
                 else -> {
-                    Triple(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary))
+                    MembersIconParams(RoundedCornerShape(100.dp), Color.Transparent, colorResource(id = R.color.text_secondary), BodyRegular)
                 }
             }
             val horizontalPadding = if (count.length > 1) 5.dp else 0.dp
@@ -375,7 +426,7 @@ fun BaseButton(
                         .padding(horizontal = horizontalPadding),
                     text = count,
                     textAlign = TextAlign.Center,
-                    style = Caption1Regular,
+                    style = textStyle,
                     color = textColor
                 )
             }
@@ -387,6 +438,13 @@ fun BaseButton(
         )
     }
 }
+
+data class MembersIconParams(
+    val shape: Shape,
+    val backgroundColor: Color,
+    val textColor: Color,
+    val textStyle: TextStyle
+)
 
 @DefaultPreviews
 @Composable
@@ -637,7 +695,9 @@ private fun RowScope.LinkItem(onClick:() -> Unit, text: String, description: Str
             )
         }
         Text(
-            modifier = Modifier.wrapContentSize().padding(top = 6.dp),
+            modifier = Modifier
+                .wrapContentSize()
+                .padding(top = 6.dp),
             text = text,
             style = Caption2Regular,
             color = colorResource(id = R.color.text_primary)
@@ -670,66 +730,5 @@ fun SpaceSettingsSection(
         modifier = modifier,
         title = text,
         textPaddingStart = 0.dp
-    )
-}
-
-@Composable
-fun AutoCreateWidgetItem(
-    onCheckedStatusChanged: (Boolean) -> Unit,
-    isChecked: Boolean
-) {
-
-    val checked = remember { mutableStateOf(isChecked) }
-
-    Row(
-        modifier = Modifier
-            .border(
-                shape = RoundedCornerShape(16.dp),
-                width = 0.5.dp,
-                color = colorResource(id = R.color.shape_primary)
-            )
-            .height(64.dp)
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text(
-            modifier = Modifier.weight(1f),
-            text = stringResource(id = R.string.space_settings_auto_create_widgets),
-            style = PreviewTitle1Regular,
-            color = colorResource(id = R.color.text_primary),
-        )
-        Switch(
-            checked = checked.value,
-            onCheckedChange = {
-                checked.value = it
-                onCheckedStatusChanged(it)
-            },
-            colors = SwitchDefaults.colors().copy(
-                checkedBorderColor = Color.Transparent,
-                uncheckedBorderColor = Color.Transparent,
-                checkedTrackColor = colorResource(R.color.control_accent_80),
-                uncheckedTrackColor = colorResource(R.color.shape_secondary)
-            )
-        )
-
-    }
-}
-
-@DefaultPreviews
-@Composable
-private fun AutoCreateWidgetItemPreview() {
-    AutoCreateWidgetItem(
-        onCheckedStatusChanged = {},
-        isChecked = true
-    )
-}
-
-@DefaultPreviews
-@Composable
-private fun AutoCreateWidgetItemUncheckedPreview() {
-    AutoCreateWidgetItem(
-        onCheckedStatusChanged = {},
-        isChecked = false
     )
 }

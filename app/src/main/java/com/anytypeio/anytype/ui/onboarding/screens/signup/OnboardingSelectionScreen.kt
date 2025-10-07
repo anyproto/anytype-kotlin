@@ -34,9 +34,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingLinkLarge
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
@@ -48,17 +50,17 @@ import com.anytypeio.anytype.presentation.onboarding.signup.ProfessionItem
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSelectionItem
 
 private val professionItems = listOf(
-    ProfessionItem("✍️", R.string.onboarding_selection_writer, "Writer"),
-    ProfessionItem("💻", R.string.onboarding_selection_developer, "SoftwareDeveloper"),
-    ProfessionItem("🎓", R.string.onboarding_selection_student, "Student"),
-    ProfessionItem("📈", R.string.onboarding_selection_marketer, "Marketer"),
-    ProfessionItem("✅", R.string.onboarding_selection_manager, "Manager"),
-    ProfessionItem("🔬", R.string.onboarding_selection_researcher, "Researcher"),
-    ProfessionItem("🎯", R.string.onboarding_selection_designer, "Designer"),
-    ProfessionItem("🎨", R.string.onboarding_selection_artist, "Artist"),
-    ProfessionItem("💡", R.string.onboarding_selection_entrepreneur, "Entrepreneur"),
-    ProfessionItem("💼", R.string.onboarding_selection_consultant, "Consultant"),
-    ProfessionItem("👻", R.string.onboarding_selection_other, "Other")
+    ProfessionItem(R.drawable.ic_onboarding_role_writer, R.string.onboarding_selection_writer, "Writer"),
+    ProfessionItem(R.drawable.ic_onboarding_role_dev, R.string.onboarding_selection_developer, "SoftwareDeveloper"),
+    ProfessionItem(R.drawable.ic_onboarding_role_student, R.string.onboarding_selection_student, "Student"),
+    ProfessionItem(R.drawable.ic_onboarding_role_marketer, R.string.onboarding_selection_marketer, "Marketer"),
+    ProfessionItem(R.drawable.ic_onboarding_role_manager, R.string.onboarding_selection_manager, "Manager"),
+    ProfessionItem(R.drawable.ic_onboarding_role_scientist, R.string.onboarding_selection_researcher, "Researcher"),
+    ProfessionItem(R.drawable.ic_onboarding_role_designer, R.string.onboarding_selection_designer, "Designer"),
+    ProfessionItem(R.drawable.ic_onboarding_role_artist, R.string.onboarding_selection_artist, "Artist"),
+    ProfessionItem(R.drawable.ic_onboarding_role_enrt, R.string.onboarding_selection_entrepreneur, "Entrepreneur"),
+    ProfessionItem(R.drawable.ic_onboarding_role_consultant, R.string.onboarding_selection_consultant, "Consultant"),
+    ProfessionItem(R.drawable.ic_onboarding_role_other, R.string.onboarding_selection_other, "Other")
 )
 
 @Composable
@@ -212,9 +214,10 @@ private fun ProfessionSelectionItem(
                     modifier = Modifier.size(24.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        text = profession.emoji,
-                        style = BodyCalloutRegular,
+                    Image(
+                        modifier = Modifier.size(24.dp),
+                        painter = painterResource(id = profession.iconRes),
+                        contentDescription = "Profession icon"
                     )
                 }
                 Spacer(modifier = Modifier.width(6.dp))
@@ -237,6 +240,145 @@ private fun ProfessionSelectionItem(
                     .size(24.dp)
                     .align(Alignment.TopEnd)
                     .offset(x = 8.dp, y = (-8).dp), // Offset to position outside the box
+            )
+        }
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun OnboardingSelectionScreenPreview() {
+    OnboardingSelectionScreenContent(
+        isLoading = false,
+        onBackClicked = {},
+        onContinueClicked = {},
+        onSkipClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun OnboardingSelectionScreenLoadingPreview() {
+    OnboardingSelectionScreenContent(
+        isLoading = true,
+        onBackClicked = {},
+        onContinueClicked = {},
+        onSkipClicked = {}
+    )
+}
+
+@Composable
+private fun OnboardingSelectionScreenContent(
+    isLoading: Boolean,
+    onBackClicked: () -> Unit,
+    onContinueClicked: (ProfessionItem) -> Unit = {},
+    onSkipClicked: () -> Unit = {}
+) {
+    var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
+
+    Box(
+        modifier = Modifier.fillMaxSize()
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Image(
+                modifier = Modifier
+                    .padding(start = 16.dp)
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable {
+                        onBackClicked()
+                    },
+                painter = painterResource(id = R.drawable.ic_back_24),
+                contentDescription = "Back button"
+            )
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .padding(horizontal = 20.dp)
+                .padding(top = 81.dp)
+                .fillMaxWidth()
+                .verticalScroll(rememberScrollState())
+        ) {
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.onboarding_selection_title),
+                color = colorResource(id = R.color.text_primary),
+                style = HeadlineTitleSemibold,
+                textAlign = TextAlign.Center,
+                letterSpacing = (-0.48).sp
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(R.string.onboarding_selection_description),
+                style = BodyCalloutRegular,
+                color = colorResource(id = R.color.text_secondary),
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            FlowRow(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(0.dp),
+                horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
+                content = {
+                    professionItems.forEach { profession ->
+                        ProfessionSelectionItem(
+                            profession = profession,
+                            isSelected = selectedProfession == profession,
+                            onSelected = {
+                                selectedProfession = if (selectedProfession == profession) {
+                                    null // Deselect if already selected
+                                } else {
+                                    profession // Select if not selected
+                                }
+                            }
+                        )
+                    }
+                }
+            )
+            // Bottom padding to ensure items aren't hidden behind buttons
+            Spacer(modifier = Modifier.height(160.dp))
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 20.dp
+                )
+                .align(Alignment.BottomCenter)
+        ) {
+            ButtonOnboardingPrimaryLarge(
+                text = stringResource(id = R.string.onboarding_button_continue),
+                onClick = {
+                    selectedProfession?.let { profession ->
+                        onContinueClicked(profession)
+                    }
+                },
+                size = ButtonSize.Large,
+                modifierBox = Modifier.fillMaxWidth(),
+                loading = isLoading,
+                enabled = selectedProfession != null
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            ButtonOnboardingLinkLarge(
+                text = stringResource(id = R.string.onboarding_button_skip),
+                onClick = {
+                    onSkipClicked()
+                },
+                size = ButtonSize.Large,
+                modifierBox = Modifier.fillMaxWidth(),
             )
         }
     }

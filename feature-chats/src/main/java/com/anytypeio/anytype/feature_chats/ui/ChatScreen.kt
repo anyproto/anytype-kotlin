@@ -166,9 +166,12 @@ fun ChatScreenWrapper(
             onReacted = vm::onReacted,
             onCopyMessage = { msg ->
                 clipboard.setText(AnnotatedString(text = msg.content.msg))
+                vm.onCopyMessageTextActionTriggered()
             },
             onDeleteMessage = vm::onDeleteMessage,
+            onDeleteMessageWarningTriggered = vm::onDeleteMessageWarningTriggered,
             onEditMessage = vm::onRequestEditMessageClicked,
+            onAttachmentMenuTriggered = vm::onAttachmentMenuTriggered,
             onAttachmentClicked = vm::onAttachmentClicked,
             onExitEditMessageMode = vm::onExitEditMessageMode,
             onMarkupLinkClicked = onMarkupLinkClicked,
@@ -371,10 +374,12 @@ fun ChatScreen(
     onClearReplyClicked: () -> Unit,
     onReacted: (Id, String) -> Unit,
     onDeleteMessage: (ChatView.Message) -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: (ChatView.Message) -> Unit,
     onEditMessage: (ChatView.Message) -> Unit,
     onReplyMessage: (ChatView.Message) -> Unit,
     onAttachmentClicked: (ChatView.Message, ChatView.Message.Attachment) -> Unit,
+    onAttachmentMenuTriggered: () -> Unit,
     onExitEditMessageMode: () -> Unit,
     onMarkupLinkClicked: (String) -> Unit,
     onAttachObjectClicked: () -> Unit,
@@ -641,7 +646,8 @@ fun ChatScreen(
                 canCreateInviteLink = canCreateInviteLink,
                 onRequestVideoPlayer = onRequestVideoPlayer,
                 highlightedMessageId = highlightedMessageId,
-                onHighlightMessage = triggerHighlight
+                onHighlightMessage = triggerHighlight,
+                onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
             )
 
             GoToMentionButton(
@@ -894,7 +900,8 @@ fun ChatScreen(
                 onImageCaptured = onImageCaptured,
                 onVideoCaptured = onVideoCaptured,
                 onCreateAndAttachObject = onCreateAndAttachObject,
-                onCameraPermissionDenied = onCameraPermissionDenied
+                onCameraPermissionDenied = onCameraPermissionDenied,
+                onAttachmentMenuTriggered = onAttachmentMenuTriggered
             )
         }
     }

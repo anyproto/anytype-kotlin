@@ -19,25 +19,25 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.ModalTitle
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
+import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import timber.log.Timber
 
 @Composable
 fun HomeScreenToolbar(
     modifier: Modifier = Modifier,
-    spaceIconView: SpaceIconView,
+    spaceViewState: HomeScreenViewModel.SpaceViewState.Success,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onSettingsClicked: () -> Unit,
-    name: String,
-    membersCount: Int
+    onSettingsClicked: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -66,7 +66,7 @@ fun HomeScreenToolbar(
             modifier = Modifier
                 .padding(start = 60.dp)
                 .align(Alignment.CenterStart),
-            icon = spaceIconView,
+            icon = spaceViewState.spaceIcon,
             onSpaceIconClick = {
                 onSpaceIconClicked()
             },
@@ -74,7 +74,7 @@ fun HomeScreenToolbar(
         )
 
         Text(
-            text = name.ifEmpty { stringResource(R.string.untitled) },
+            text = spaceViewState.spaceName,
             style = Title2,
             color = colorResource(R.color.text_primary),
             modifier = Modifier
@@ -94,12 +94,12 @@ fun HomeScreenToolbar(
 
         val context = LocalContext.current
         val locale = context.resources.configuration.locales[0]
-        val text = if (locale != null && membersCount > 0) {
+        val text = if (locale != null && spaceViewState.membersCount > 0) {
             pluralStringResource(
                 id = R.plurals.multiplayer_number_of_space_members,
-                membersCount,
-                membersCount,
-                membersCount
+                spaceViewState.membersCount,
+                spaceViewState.membersCount,
+                spaceViewState.membersCount
             )
         } else {
             if (locale == null) {
@@ -146,10 +146,14 @@ fun HomeScreenToolbar(
 @Composable
 fun HomeScreenToolbarPreview() {
     HomeScreenToolbar(
-        spaceIconView = SpaceIconView.DataSpace.Placeholder(name = "A"),
+        spaceViewState = HomeScreenViewModel.SpaceViewState.Success(
+            spaceName = "Personal",
+            spaceIcon = SpaceIconView.DataSpace.Placeholder(name = "P"),
+            membersCount = 1,
+            spaceAccessType = SpaceAccessType.PRIVATE,
+            spaceUxType = SpaceUxType.CHAT
+        ),
         onSpaceIconClicked = {},
-        membersCount = 74,
-        name = "Test space",
         onBackButtonClicked = {},
         onSettingsClicked = {}
     )

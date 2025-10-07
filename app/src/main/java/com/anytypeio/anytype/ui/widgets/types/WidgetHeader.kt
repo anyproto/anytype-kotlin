@@ -68,7 +68,8 @@ fun WidgetHeader(
             iconSize = 18.dp,
             icon = icon,
             modifier = Modifier.padding(end = 12.dp),
-            onTaskIconClicked = onObjectCheckboxClicked
+            onTaskIconClicked = onObjectCheckboxClicked,
+            emojiFontSize = 18f
         )
 
         Text(
@@ -77,32 +78,10 @@ fun WidgetHeader(
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            modifier = Modifier
-                .weight(1f)
-                .then(
-                    if (isInEditMode)
-                        Modifier
-                    else if (hasReadOnlyAccess) {
-                        Modifier.noRippleClickable {
-                            onWidgetHeaderClicked()
-                        }
-                    } else
-                        Modifier.combinedClickable(
-                            onClick = onWidgetHeaderClicked,
-                            onLongClick = {
-                                isCardMenuExpanded.value = !isCardMenuExpanded.value
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                if (isCardMenuExpanded.value) {
-                                    onWidgetMenuTriggered()
-                                }
-                            },
-                            indication = null,
-                            interactionSource = remember { MutableInteractionSource() }
-                        )
-                )
+            modifier = Modifier.weight(1f)
         )
 
-        if (canCreateObject) {
+        if (canCreateObject && !hasReadOnlyAccess) {
             Box(
                 Modifier
                     .size(18.dp)

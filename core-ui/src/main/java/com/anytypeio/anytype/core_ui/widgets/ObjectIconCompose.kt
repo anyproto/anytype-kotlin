@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.DeletedIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.EmojiIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ImageIconView
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SimpleIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -36,7 +37,8 @@ fun ListWidgetObjectIcon(
     iconSize: Dp = 48.dp,
     iconWithoutBackgroundMaxSize: Dp = 31.dp,
     onTaskIconClicked: (Boolean) -> Unit = {},
-    backgroundColor: Int = R.color.shape_tertiary
+    backgroundColor: Int = R.color.shape_tertiary,
+    emojiFontSize: Float? = null
 ) {
     when (icon) {
         is ObjectIcon.Profile -> {
@@ -53,7 +55,8 @@ fun ListWidgetObjectIcon(
                 backgroundSize = iconSize,
                 modifier = modifier,
                 backgroundColor = backgroundColor,
-                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize
+                iconWithoutBackgroundMaxSize = iconWithoutBackgroundMaxSize,
+                emojiFontSize = emojiFontSize ?: iconSize.value
             )
         }
 
@@ -121,6 +124,14 @@ fun ListWidgetObjectIcon(
                 mime = icon.mime,
                 modifier = modifier,
                 iconSize = iconSize,
+            )
+        }
+
+        is ObjectIcon.SimpleIcon -> {
+            SimpleIcon(
+                modifier = modifier,
+                icon = icon,
+                backgroundSize = iconSize
             )
         }
     }

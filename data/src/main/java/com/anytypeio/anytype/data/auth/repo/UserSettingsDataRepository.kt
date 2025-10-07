@@ -132,4 +132,23 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override fun observeRecentlyUsedChatReactions(account: Account,): Flow<List<String>> {
         return cache.observeRecentlyUsedChatReactions(account)
     }
+
+    override suspend fun setExpandedWidgetIds(space: SpaceId, widgetIds: List<Id>) {
+        cache.setExpandedWidgetIds(space, widgetIds)
+    }
+
+    override fun getExpandedWidgetIds(space: SpaceId): Flow<List<Id>> {
+        return cache.getExpandedWidgetIds(space)
+    }
+
+    override suspend fun setCollapsedSectionIds(
+        space: SpaceId,
+        sectionIds: List<Id>
+    ) {
+        return cache.setCollapsedSectionIds(space, sectionIds)
+    }
+
+    override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
+        return cache.getCollapsedSectionIds(space)
+    }
 }

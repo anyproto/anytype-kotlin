@@ -6,8 +6,9 @@ package com.anytypeio.anytype.core_models
 enum class SpaceCreationUseCase(val value: Int) {
     NONE(0),
     GET_STARTED(1),
-    EMPTY(2),
+    DATA_SPACE(2),
     GUIDE_ONLY(3),
     GET_STARTED_MOBILE(4),
-    EMPTY_MOBILE(5)
+    CHAT_SPACE(5),
+    DATA_SPACE_MOBILE(6),
 } 

@@ -31,6 +31,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import coil3.load
+import coil3.request.CachePolicy
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.*
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(
@@ -161,22 +163,22 @@ class ObjectIconWidget @JvmOverloads constructor(
                 setCheckbox(icon.isChecked)
             }
 
-            is ObjectIcon.TypeIcon.Fallback -> {
+            is TypeIcon.Fallback -> {
                 setTypeIcon(icon)
             }
 
-            is ObjectIcon.TypeIcon.Default -> {
+            is TypeIcon.Default -> {
                 setTypeIcon(icon)
             }
 
-            ObjectIcon.TypeIcon.Deleted -> {
+            TypeIcon.Deleted -> {
                 setDeletedIcon()
             }
 
-            is ObjectIcon.TypeIcon.Emoji -> {
+            is TypeIcon.Emoji -> {
                 setEmoji(
                     emoji = icon.unicode,
-                    fallback = TypeIcon.Fallback(rawValue = icon.rawValue)
+                    fallback = Fallback(rawValue = icon.rawValue)
                 )
             }
 
@@ -184,6 +186,8 @@ class ObjectIconWidget @JvmOverloads constructor(
                 val iconRes = icon.mime.getMimeIcon()
                 setFileIconWithBackground(iconRes)
             }
+
+            is ObjectIcon.SimpleIcon -> {}
         }
     }
 

@@ -93,6 +93,7 @@ fun Bubble(
     reactions: List<ChatView.Message.Reaction> = emptyList(),
     onReacted: (String) -> Unit,
     onDeleteMessage: () -> Unit,
+    onDeleteMessageWarningTriggered: () -> Unit,
     onCopyMessage: () -> Unit,
     onEditMessage: () -> Unit,
     onReply: () -> Unit,
@@ -427,6 +428,7 @@ fun Bubble(
                             onClick = {
                                 showDeleteMessageWarning = true
                                 showDropdownMenu = false
+                                onDeleteMessageWarningTriggered()
                             }
                         )
                     }

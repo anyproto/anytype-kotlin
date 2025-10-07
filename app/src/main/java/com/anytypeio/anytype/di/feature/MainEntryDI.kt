@@ -2,9 +2,11 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
+import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
@@ -36,6 +38,8 @@ import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicatorImpl
 import dagger.Module
 import dagger.Provides
 import dagger.Subcomponent
+import javax.inject.Named
+import kotlinx.coroutines.CoroutineScope
 
 @Subcomponent(
     modules = [MainEntryModule::class]
@@ -53,6 +57,11 @@ interface MainEntrySubComponent {
 
 @Module
 object MainEntryModule {
+
+    @Provides
+    fun provideUnqualifiedScope(
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): CoroutineScope = scope
 
     @JvmStatic
     @PerScreen
@@ -77,7 +86,9 @@ object MainEntryModule {
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         pendingIntentStore: PendingIntentStore,
         observeSpaceWallpaper: ObserveSpaceWallpaper,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        appShutdown: AppShutdown,
+        scope: CoroutineScope
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -98,7 +109,9 @@ object MainEntryModule {
         spaceViews = spaceViewSubscriptionContainer,
         pendingIntentStore = pendingIntentStore,
         observeSpaceWallpaper = observeSpaceWallpaper,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        appShutdown = appShutdown,
+        scope = scope
     )
 
     @JvmStatic

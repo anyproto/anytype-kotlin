@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_chats.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -9,14 +10,12 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
+import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
-import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
-import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
@@ -44,6 +43,8 @@ class ChatViewModelFactory @Inject constructor(
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val dispatchers: AppCoroutineDispatchers,
     private val uploadFile: UploadFile,
+    private val preloadFile: PreloadFile,
+    private val discardPreloadedFile: DiscardPreloadedFile,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val copyFileToCacheDirectory: CopyFileToCacheDirectory,
     private val exitToVaultDelegate: ExitToVaultDelegate,
@@ -52,14 +53,11 @@ class ChatViewModelFactory @Inject constructor(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val spacePermissionProvider: UserPermissionProvider,
     private val notificationBuilder: NotificationBuilder,
-    private val generateSpaceInviteLink: GenerateSpaceInviteLink,
-    private val makeSpaceShareable: MakeSpaceShareable,
-    private val getSpaceInviteLink: GetSpaceInviteLink,
-    private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val clearChatsTempFolder: ClearChatsTempFolder,
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val analytics: Analytics
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -83,13 +81,12 @@ class ChatViewModelFactory @Inject constructor(
         notificationPermissionManager = notificationPermissionManager,
         spacePermissionProvider = spacePermissionProvider,
         notificationBuilder = notificationBuilder,
-        generateSpaceInviteLink = generateSpaceInviteLink,
-        makeSpaceShareable = makeSpaceShareable,
-        getSpaceInviteLink = getSpaceInviteLink,
-        revokeSpaceInviteLink = revokeSpaceInviteLink,
         clearChatsTempFolder = clearChatsTempFolder,
         objectWatcher = objectWatcher,
         createObject = createObject,
-        getObject = getObject
+        getObject = getObject,
+        analytics = analytics,
+        preloadFile = preloadFile,
+        discardPreloadedFile = discardPreloadedFile
     ) as T
 }

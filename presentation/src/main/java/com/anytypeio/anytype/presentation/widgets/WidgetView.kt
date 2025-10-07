@@ -2,12 +2,9 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.SHARED_SPACE_TYPE
-import com.anytypeio.anytype.core_models.SpaceType
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class WidgetView {
 
@@ -26,6 +23,7 @@ sealed class WidgetView {
     abstract val id: Id
     abstract val isLoading: Boolean
     abstract val canCreateObjectOfType: Boolean
+    abstract val sectionType: SectionType?
 
     data class Tree(
         override val id: Id,
@@ -35,11 +33,12 @@ sealed class WidgetView {
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
-        val isEditable: Boolean = true
+        val isEditable: Boolean = true,
+        override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
-            get() = source.canCreateObjectOfType()
+            get() = false
 
         /**
          * @property [obj] is deprecated
@@ -68,6 +67,7 @@ sealed class WidgetView {
         val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
+        override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -82,7 +82,8 @@ sealed class WidgetView {
         val elements: List<Element>,
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
-        val name: Name
+        val name: Name,
+        override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
@@ -113,7 +114,8 @@ sealed class WidgetView {
         val elements: List<SetOfObjects.Element>,
         val isExpanded: Boolean,
         val showIcon: Boolean = false,
-        val showCover: Boolean = false
+        val showCover: Boolean = false,
+        override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
@@ -128,7 +130,8 @@ sealed class WidgetView {
         val type: Type,
         val elements: List<Element>,
         val isExpanded: Boolean,
-        val isCompact: Boolean = false
+        val isCompact: Boolean = false,
+        override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
@@ -152,12 +155,15 @@ sealed class WidgetView {
         override val id: Id,
         override val isLoading: Boolean = false,
         override val canCreateObjectOfType: Boolean = false,
-        val isEmpty: Boolean = false
+        val source: Widget.Source,
+        val isEmpty: Boolean = false,
+        override val sectionType: SectionType? = null
     ) : WidgetView()
 
     data class AllContent(
         override val id: Id,
         override val canCreateObjectOfType: Boolean = false,
+        override val sectionType: SectionType? = null
     ) : WidgetView() {
         override val isLoading: Boolean = false
     }
@@ -168,38 +174,17 @@ sealed class WidgetView {
         val unreadMessageCount: Int = 0,
         val unreadMentionCount: Int = 0,
         override val canCreateObjectOfType: Boolean = false,
-        val isMuted: Boolean = false
+        val isMuted: Boolean = false,
+        override val sectionType: SectionType? = null
     ) : WidgetView() {
         override val isLoading: Boolean = false
-    }
-
-    sealed class SpaceWidget : WidgetView() {
-        override val id: Id get() = SpaceWidgetContainer.SPACE_WIDGET_SUBSCRIPTION
-        override val canCreateObjectOfType: Boolean = false
-
-        data class View(
-            val space: ObjectWrapper.SpaceView,
-            val icon: SpaceIconView,
-            val type: SpaceType,
-            val membersCount: Int
-        ) : SpaceWidget() {
-            val isShared: Boolean get() = type == SHARED_SPACE_TYPE
-            override val isLoading: Boolean = false
-        }
-    }
-
-    sealed class Action : WidgetView() {
-        data object EditWidgets : Action() {
-            override val id: Id get() = "id.action.edit-widgets"
-            override val isLoading: Boolean = false
-            override val canCreateObjectOfType: Boolean = false
-        }
     }
 
     data object EmptyState : WidgetView() {
         override val id: Id get() = "id.widgets.empty.state"
         override val isLoading: Boolean = false
         override val canCreateObjectOfType: Boolean = false
+        override val sectionType: SectionType? = null
     }
 
     sealed class Section : WidgetView() {
@@ -207,12 +192,14 @@ sealed class WidgetView {
             override val id: Id get() = "id.section.pinned"
             override val isLoading: Boolean = false
             override val canCreateObjectOfType: Boolean = false
+            override val sectionType: SectionType = SectionType.PINNED
         }
 
         data object ObjectTypes : Section() {
             override val id: Id get() = "id.section.object-type"
             override val isLoading: Boolean = false
             override val canCreateObjectOfType: Boolean = false
+            override val sectionType: SectionType = SectionType.TYPES
         }
     }
 
@@ -221,10 +208,7 @@ sealed class WidgetView {
 
 sealed class DropDownMenuAction {
     data object ChangeWidgetType : DropDownMenuAction()
-    data object ChangeWidgetSource : DropDownMenuAction()
     data object RemoveWidget : DropDownMenuAction()
-    data object AddBelow : DropDownMenuAction()
-    data object EditWidgets : DropDownMenuAction()
     data object EmptyBin : DropDownMenuAction()
-    data class CreateObjectOfType(val source: Widget.Source.Default) : DropDownMenuAction()
+    data class CreateObjectOfType(val widgetId: WidgetId) : DropDownMenuAction()
 }

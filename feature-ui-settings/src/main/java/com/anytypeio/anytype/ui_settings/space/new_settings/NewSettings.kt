@@ -43,6 +43,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_ui.features.multiplayer.SharedSpacesIncentiveItem
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -52,7 +53,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.UiEvent
-import com.anytypeio.anytype.presentation.spaces.UiEvent.OnAutoCreateWidgetSwitchChanged
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.*
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
@@ -78,6 +79,13 @@ fun NewSpaceSettingsScreen(
     var showEditTitle by remember { mutableStateOf(false) }
     var showTechInfo by remember { mutableStateOf(false) }
     var showNotificationsSettings by remember { mutableStateOf(false) }
+    var showChangeTypeSheet by remember { mutableStateOf(false) }
+    var showChangeTypeConfirmation by remember { mutableStateOf(false) }
+    var selectedSpaceType by remember {
+        mutableStateOf<UiSpaceSettingsItem.ChangeType>(
+            UiSpaceSettingsItem.ChangeType.Data()
+        )
+    }
     val showWallpaperPicker = remember { mutableStateOf(false) }
     val wallpaperSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
@@ -278,6 +286,18 @@ fun NewSpaceSettingsScreen(
                             }
                         }
 
+                        UiSpaceSettingsItem.LeaveSpace -> {
+                            item {
+                                LeaveSpaceItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable { uiEvent(UiEvent.OnLeaveSpaceClicked) },
+                                )
+                            }
+                        }
+
                         is UiSpaceSettingsItem.Members -> {
                             item {
                                 MembersItem(
@@ -395,21 +415,6 @@ fun NewSpaceSettingsScreen(
                                 )
                             }
                         }
-                        is UiSpaceSettingsItem.AutoCreateWidgets -> {
-                            item {
-                                AutoCreateWidgetItem(
-                                    onCheckedStatusChanged = { isChecked ->
-                                        uiEvent(
-                                            OnAutoCreateWidgetSwitchChanged(
-                                                widget = item.widget,
-                                                isAutoCreateEnabled = isChecked
-                                            )
-                                        )
-                                    },
-                                    isChecked = item.isAutoCreateEnabled
-                                )
-                            }
-                        }
                         is UiSpaceSettingsItem.Spacer -> {
                             item {
                                 Spacer(modifier = Modifier.height(item.height.dp))
@@ -433,6 +438,23 @@ fun NewSpaceSettingsScreen(
                                         },
                                     icon = icon,
                                     supportText = supportText
+                                )
+                            }
+                        }
+
+                        is UiSpaceSettingsItem.ChangeType -> {
+                            item {
+                                ChangeTypeItem(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem()
+                                        .clip(RoundedCornerShape(16.dp))
+                                        .clickable {
+                                            if (item.isEnabled) {
+                                                showChangeTypeSheet = true
+                                            }
+                                        },
+                                    currentType = item
                                 )
                             }
                         }
@@ -561,6 +583,41 @@ fun NewSpaceSettingsScreen(
             },
             onDismiss = {
                 showNotificationsSettings = false
+            }
+        )
+    }
+
+    if (showChangeTypeSheet) {
+        val changeTypeItem = uiState.items.filterIsInstance<UiSpaceSettingsItem.ChangeType>().firstOrNull()
+        if (changeTypeItem != null) {
+            ChannelTypeBottomSheet(
+                currentType = changeTypeItem,
+                onTypeSelected = { selectedType ->
+                    selectedSpaceType = selectedType
+                    showChangeTypeSheet = false
+                    showChangeTypeConfirmation = true
+                },
+                onDismiss = {
+                    showChangeTypeSheet = false
+                }
+            )
+        }
+    }
+
+    if (showChangeTypeConfirmation) {
+        ChangeTypeConfirmationDialog(
+            onConfirm = {
+                showChangeTypeConfirmation = false
+                when (selectedSpaceType) {
+                    is UiSpaceSettingsItem.ChangeType.Chat -> uiEvent(ToChat)
+                    is UiSpaceSettingsItem.ChangeType.Data -> uiEvent(ToSpace)
+                }
+            },
+            onCancel = {
+                showChangeTypeConfirmation = false
+            },
+            onDismiss = {
+                showChangeTypeConfirmation = false
             }
         )
     }

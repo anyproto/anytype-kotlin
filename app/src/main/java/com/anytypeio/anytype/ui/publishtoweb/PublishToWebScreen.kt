@@ -1,6 +1,9 @@
 package com.anytypeio.anytype.ui.publishtoweb
 
 import android.os.Build
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -22,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
@@ -57,7 +61,9 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceNameInputField
 import timber.log.Timber
@@ -78,6 +84,7 @@ fun PublishToWebScreen(
 
     val initialUrl = if (viewState is PublishToWebViewState.Init) "" else "/${viewState.uri}"
     var url by rememberSaveable(viewState.uri) { mutableStateOf(initialUrl) }
+    val isLoading = viewState is PublishToWebViewState.Loading
 
     Box(
         modifier = Modifier.fillMaxSize()
@@ -93,6 +100,7 @@ fun PublishToWebScreen(
             Header(
                 text = stringResource(R.string.publish_to_web)
             )
+
             Section(
                 title = stringResource(R.string.web_publishing_customize_url)
             )
@@ -196,7 +204,15 @@ fun PublishToWebScreen(
                     objectName = viewState.objectName,
                     spaceName = viewState.spaceName,
                     onPreviewClicked = onPreviewClicked,
-                    showSpaceHeader = showJoinSpaceBannerChecked
+                    showSpaceHeader = showJoinSpaceBannerChecked,
+                    objectIcon = when(viewState) {
+                        is PublishToWebViewState.NotPublished -> viewState.icon
+                        is PublishToWebViewState.Published -> viewState.icon
+                        is PublishToWebViewState.Publishing -> viewState.icon
+                        is PublishToWebViewState.FailedToPublish -> viewState.icon
+                        is PublishToWebViewState.FailedToUpdate -> viewState.icon
+                        else -> ObjectIcon.None
+                    }
                 )
                 Spacer(modifier = Modifier.height(12.dp))
                 when(viewState) {
@@ -330,6 +346,28 @@ fun PublishToWebScreen(
             }
         }
 
+        AnimatedVisibility(
+            visible = isLoading,
+            enter = fadeIn(),
+            exit = fadeOut()
+        ) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 64.dp)
+                    .background(color = colorResource(R.color.background_secondary))
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(32.dp),
+                    color = colorResource(R.color.glyph_active),
+                    trackColor = colorResource(R.color.glyph_active).copy(alpha = 0.5f),
+                    strokeWidth = 2.dp
+                )
+            }
+        }
+
         if (showEditUrl) {
             ModalBottomSheet(
                 sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
@@ -413,6 +451,7 @@ fun PublishToWebScreenPublishingPreview() {
 private fun PreviewCard(
     objectName: String,
     spaceName: String,
+    objectIcon: ObjectIcon = ObjectIcon.None,
     showSpaceHeader: Boolean = false,
     onPreviewClicked: () -> Unit
 ) {
@@ -499,6 +538,17 @@ private fun PreviewCard(
             Spacer(modifier = Modifier.height(32.dp))
         }
 
+        if (objectIcon != ObjectIcon.None) {
+            ListWidgetObjectIcon(
+                icon = objectIcon,
+                iconSize = 40.dp,
+                modifier = Modifier.padding(
+                    start = 32.dp,
+                    bottom = 8.dp
+                )
+            )
+        }
+
         Text(
             modifier = Modifier
                 .fillMaxWidth()
@@ -539,7 +589,10 @@ private fun PreviewCardPreview() {
         objectName = "What I Learned as a Product Designersigner What I Learned as a Product Designer",
         spaceName = "Anytype Design",
         onPreviewClicked = {},
-        showSpaceHeader = false
+        showSpaceHeader = false,
+        objectIcon = ObjectIcon.Basic.Emoji(
+            unicode = "❤️"
+        )
     )
 }
 

@@ -55,6 +55,8 @@ import com.anytypeio.anytype.domain.page.Undo
 interface BlockRepository {
 
     suspend fun uploadFile(command: Command.UploadFile): ObjectWrapper.File
+    suspend fun preloadFile(command: Command.PreloadFile): Id
+    suspend fun discardPreloadedFile(command: Command.DiscardPreloadedFile)
     suspend fun fileDrop(command: Command.FileDrop): Payload
     suspend fun downloadFile(command: Command.DownloadFile): String
 
@@ -550,4 +552,6 @@ interface BlockRepository {
     suspend fun publishingGetList(command: Command.Publishing.GetList): List<Publishing.State>
     suspend fun publishingCreate(command: Command.Publishing.Create): String
     suspend fun publishingRemove(command: Command.Publishing.Remove)
+
+    suspend fun objectTypesSetOrder(command: Command.ObjectTypesSetOrder): List<String>
 }

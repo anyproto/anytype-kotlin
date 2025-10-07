@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper.SpaceMember
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 fun SpaceView.canAddWriters(
     isCurrentUserOwner: Boolean,
@@ -15,6 +16,7 @@ fun SpaceView.canAddWriters(
     if (!isCurrentUserOwner) return false
     if (spaceAccessType != SpaceAccessType.SHARED) return false
     if (newMember.status != ParticipantStatus.JOINING ) return false
+    if (spaceUxType == SpaceUxType.CHAT) return true
     val isWritersLimitReached =
         isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
     return !isWritersLimitReached
@@ -28,6 +30,7 @@ fun SpaceView.canAddReaders(
     if (!isCurrentUserOwner) return false
     if (spaceAccessType != SpaceAccessType.SHARED) return false
     if (newMember.status != ParticipantStatus.JOINING ) return false
+    if (spaceUxType == SpaceUxType.CHAT) return true
     val isReadersLimitReached =
         isSubscriberLimitReached(activeReaders(participants), readersLimit?.toInt())
     return !isReadersLimitReached
@@ -38,6 +41,7 @@ fun SpaceView.canChangeWriterToReader(participants: List<SpaceMember>): Boolean 
 }
 
 fun SpaceView.canChangeReaderToWriter(participants: List<SpaceMember>): Boolean {
+    if (spaceUxType == SpaceUxType.CHAT) return true
     return !isSubscriberLimitReached(activeWriters(participants), writersLimit?.toInt())
 }
 

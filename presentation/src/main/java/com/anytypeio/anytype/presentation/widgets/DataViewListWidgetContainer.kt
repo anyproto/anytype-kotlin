@@ -26,6 +26,7 @@ import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Section
@@ -275,7 +276,7 @@ class DataViewListWidgetContainer(
             limit = when (widget) {
                 is Widget.List -> widget.limit
                 is Widget.View -> widget.limit
-                is Widget.Tree, is Widget.Link, is Widget.AllObjects, is Widget.Chat, is Widget.Section -> {
+                else -> {
                     throw IllegalStateException("Incompatible widget type.")
                 }
             }
@@ -285,11 +286,12 @@ class DataViewListWidgetContainer(
         val params = if (struct.isValidObject()) {
             val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
+            val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
             StoreSearchParams(
                 space = space,
                 subscription = obj.root,
-                sorts = targetView?.sorts.orEmpty(),
+                sorts = sorts,
                 keys = buildList {
                     addAll(defaultKeys)
                     addAll(dataViewKeys)
@@ -442,7 +444,8 @@ class DataViewListWidgetContainer(
                 showIcon = withIcon,
                 showCover = withCover,
                 icon = widget.icon,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
         }
     }
@@ -483,7 +486,8 @@ class DataViewListWidgetContainer(
                 isExpanded = true,
                 isCompact = isCompact,
                 icon = widget.icon,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
         }
     }
@@ -506,7 +510,8 @@ class DataViewListWidgetContainer(
                 isCompact = widget.isCompact,
                 icon = widget.icon,
                 isLoading = isLoading,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
 
             is Widget.View -> Gallery(
@@ -518,13 +523,14 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isLoading = isLoading,
                 view = null,
-                name = widget.source.getPrettyName(fieldParser)
+                name = widget.source.getPrettyName(fieldParser),
+                sectionType = widget.sectionType
             )
 
             is Widget.Section.ObjectType -> Section.ObjectTypes
             is Widget.Section.Pinned -> Section.Pinned
 
-            is Widget.Link, is Widget.Tree, is Widget.AllObjects, is Widget.Chat -> {
+            else -> {
                 throw IllegalStateException("Incompatible widget type.")
             }
         }

@@ -7,6 +7,9 @@ class AllContentWidgetContainer(
     widget: Widget.AllObjects
 ) : WidgetContainer {
     override val view: Flow<WidgetView> = flowOf(
-        WidgetView.AllContent(widget.id)
+        WidgetView.AllContent(
+            id = widget.id,
+            sectionType = widget.sectionType
+        )
     )
 }

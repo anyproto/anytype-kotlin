@@ -7,6 +7,7 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -266,7 +267,7 @@ fun BubbleAttachments(
                 val title = if (attachment.isDeleted) {
                     stringResource(R.string.non_existent_object)
                 } else {
-                    attachment.wrapper?.name.orEmpty().ifEmpty {
+                    attachment.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
                 }
@@ -321,6 +322,81 @@ fun AttachedObject(
     Box(
         modifier = modifier
             .height(72.dp)
+            .defaultMinSize(minWidth = 228.dp)
+            .clip(RoundedCornerShape(12.dp))
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_secondary),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .background(
+                color = colorResource(id = R.color.background_secondary)
+            )
+            .combinedClickable(
+                onClick = onAttachmentClicked,
+                onLongClick = onAttachmentLongClicked
+            )
+    ) {
+        ListWidgetObjectIcon(
+            icon = icon,
+            iconSize = 48.dp,
+            modifier = Modifier
+                .padding(
+                    start = 12.dp
+                )
+                .align(alignment = Alignment.CenterStart),
+            onTaskIconClicked = {
+                onAttachmentClicked()
+            }
+        )
+        Text(
+            text = title.ifEmpty { stringResource(R.string.untitled) },
+            modifier = Modifier.padding(
+                start = if (icon != ObjectIcon.None)
+                    72.dp
+                else
+                    12.dp,
+                top = 17.5.dp,
+                end = 12.dp
+            ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = PreviewTitle2Medium,
+            color = colorResource(id = R.color.text_primary)
+        )
+        Text(
+            text = type.ifEmpty { stringResource(R.string.unknown_type) },
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(
+                    start = if (icon != ObjectIcon.None)
+                        72.dp
+                    else
+                        12.dp,
+                    bottom = 17.5.dp,
+                    end = 12.dp
+                ),
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            style = Relations3,
+            color = colorResource(id = R.color.text_secondary)
+        )
+    }
+}
+
+@Composable
+fun AttachedFile(
+    modifier: Modifier,
+    title: String,
+    type: String,
+    icon: ObjectIcon,
+    onAttachmentClicked: () -> Unit = {},
+    onAttachmentLongClicked: () -> Unit = {}
+) {
+    Box(
+        modifier = modifier
+            .height(72.dp)
+            .defaultMinSize(minWidth = 228.dp)
             .clip(RoundedCornerShape(12.dp))
             .border(
                 width = 1.dp,

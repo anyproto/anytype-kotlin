@@ -51,16 +51,13 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 ShareSpaceScreen(
-                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onShareInviteLinkClicked = vm::onShareInviteLinkClicked,
                     members = vm.members.collectAsStateWithLifecycle().value,
-                    onViewRequestClicked = vm::onViewRequestClicked,
-                    onCanEditClicked = vm::onCanEditClicked,
-                    onCanViewClicked = vm::onCanViewClicked,
-                    onRemoveMemberClicked = vm::onRemoveMemberClicked,
+                    onContextActionClicked = vm::onContextActionClicked,
                     onShareQrCodeClicked = vm::onShareQrCodeClicked,
-                    incentiveState = vm.showIncentive.collectAsStateWithLifecycle().value,
+                    incentiveState = vm.spaceLimitsState.collectAsStateWithLifecycle().value,
                     onIncentiveClicked = vm::onIncentiveClicked,
+                    onManageSpacesClicked = vm::onManageSpacesClicked,
                     isLoadingInProgress = vm.isLoadingInProgress.collectAsStateWithLifecycle().value,
                     onMemberClicked = vm::onMemberClicked,
                     inviteLinkAccessLevel = vm.inviteLinkAccessLevel.collectAsStateWithLifecycle().value,
@@ -69,7 +66,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onInviteLinkAccessLevelSelected = vm::onInviteLinkAccessLevelSelected,
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
-                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked
+                    onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
+                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -260,6 +258,13 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                             objectId = command.objectId
                         )
                     )
+                }.onFailure {
+                    Timber.e(it, "Error while navigation: $command")
+                }
+            }
+            Command.ShowManageSpacesScreen -> {
+                runCatching {
+                    findNavController().navigate(R.id.spaceListScreen)
                 }.onFailure {
                     Timber.e(it, "Error while navigation: $command")
                 }

@@ -254,7 +254,7 @@ val BodyCalloutRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 15.sp,
     lineHeight = 22.sp,
-    letterSpacing = (-0.014).em
+    letterSpacing = (-0.024).sp
 )
 
 val UxSmallTextRegular = TextStyle(
@@ -263,6 +263,14 @@ val UxSmallTextRegular = TextStyle(
     fontSize = 14.sp,
     lineHeight = 22.sp,
     letterSpacing = (-0.014).em
+)
+
+val UxSmallTextMedium = TextStyle(
+    fontFamily = fontInterMedium,
+    fontWeight = FontWeight.W500,
+    fontSize = 14.sp,
+    lineHeight = 22.sp,
+    letterSpacing = (-0.12).sp
 )
 
 //UX/Caption 1/Medium
@@ -315,7 +323,7 @@ val ButtonMedium = TextStyle(
     fontWeight = FontWeight.W500,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).em
+    letterSpacing = (-0.41).sp
 )
 
 //UX/Button/Regular
@@ -324,7 +332,7 @@ val ButtonRegular = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).em
+    letterSpacing = (-0.41).sp
 )
 
 val ModalTitle = TextStyle(

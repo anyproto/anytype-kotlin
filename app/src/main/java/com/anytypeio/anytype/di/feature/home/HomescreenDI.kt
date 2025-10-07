@@ -38,6 +38,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -48,13 +49,13 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.home.Unsubscriber
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.CollapsedWidgetStateHolder
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
@@ -82,7 +83,7 @@ interface HomeScreenComponent {
     @Component.Factory
     interface Factory {
         fun create(
-            @BindsInstance vmParams: HomeScreenViewModel.VmParams,
+            @BindsInstance vmParams: HomeScreenVmParams,
             dependencies: HomeScreenDependencies
         ): HomeScreenComponent
     }
@@ -264,12 +265,6 @@ object HomeScreenModule {
 
         @PerScreen
         @Binds
-        fun collapsedWidgetStateHolder(
-            holder: CollapsedWidgetStateHolder.Impl
-        ): CollapsedWidgetStateHolder
-
-        @PerScreen
-        @Binds
         fun widgetSessionStateHolder(
             holder: WidgetSessionStateHolder.Impl
         ): WidgetSessionStateHolder
@@ -320,4 +315,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun provideChatPreviewContainer(): ChatPreviewContainer
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
+    fun stringResProvider() : StringResourceProvider
 }

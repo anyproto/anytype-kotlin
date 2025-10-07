@@ -566,7 +566,7 @@ class HomeScreenViewModel(
                                 expandedWidgetIds,
                                 userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
                             ) { expanded, collapsedSecs ->
-                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
                             },
                             isSessionActive = isSessionActive,
                             urlBuilder = urlBuilder,
@@ -591,7 +591,7 @@ class HomeScreenViewModel(
                                 expandedWidgetIds,
                                 userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
                             ) { expanded, collapsedSecs ->
-                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
                             },
                                 urlBuilder = urlBuilder,
                                 isSessionActive = isSessionActive,
@@ -618,7 +618,7 @@ class HomeScreenViewModel(
                                 expandedWidgetIds,
                                 userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
                             ) { expanded, collapsedSecs ->
-                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
                             },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
@@ -646,7 +646,7 @@ class HomeScreenViewModel(
                                 expandedWidgetIds,
                                 userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
                             ) { expanded, collapsedSecs ->
-                                !expanded.contains(widget.id) || isWidgetInCollapsedSection(widget, collapsedSecs)
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
                             },
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
@@ -2809,6 +2809,40 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
+        }
+    }
+
+    /**
+     * Determines if a widget should be collapsed based on section type defaults and user preferences.
+     * Product logic:
+     * - Pinned section widgets: Expanded by default (collapsed only if section collapsed or explicitly removed from expandedIds)
+     * - Object Types section widgets: Collapsed by default (expanded only if explicitly in expandedIds)
+     */
+    private fun isWidgetCollapsed(
+        widget: Widget,
+        expandedIds: Set<Id>,
+        collapsedSections: Set<Id>
+    ): Boolean {
+        // First check if the entire section is collapsed
+        if (isWidgetInCollapsedSection(widget, collapsedSections)) {
+            return true
+        }
+
+        return when (widget.sectionType) {
+            SectionType.PINNED -> {
+                // Pinned widgets are expanded by default
+                // Collapsed only if expandedIds is initialized (not empty) AND widget is not in it
+                expandedIds.isNotEmpty() && !expandedIds.contains(widget.id)
+            }
+            SectionType.TYPES -> {
+                // Object Types widgets are collapsed by default
+                // Expanded only if explicitly in expandedIds
+                !expandedIds.contains(widget.id)
+            }
+            null -> {
+                // Fallback for widgets without section type
+                !expandedIds.contains(widget.id)
+            }
         }
     }
 

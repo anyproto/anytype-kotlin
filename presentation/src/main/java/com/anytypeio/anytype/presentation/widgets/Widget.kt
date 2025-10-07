@@ -462,15 +462,17 @@ suspend fun buildWidgets(
                 storeOfObjectTypes = storeOfObjectTypes
             )
             addAll(types)
-            add(
-                Widget.Bin(
-                    id = WIDGET_BIN_ID,
-                    source = Widget.Source.Bundled.Bin,
-                    config = state.config,
-                    icon = ObjectIcon.None,
-                    sectionType = SectionType.PINNED
+            if (params.isOwnerOrEditor) {
+                add(
+                    Widget.Bin(
+                        id = WIDGET_BIN_ID,
+                        source = Widget.Source.Bundled.Bin,
+                        config = state.config,
+                        icon = ObjectIcon.None,
+                        sectionType = SectionType.PINNED
+                    )
                 )
-            )
+            }
             Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
         } else {
             Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")

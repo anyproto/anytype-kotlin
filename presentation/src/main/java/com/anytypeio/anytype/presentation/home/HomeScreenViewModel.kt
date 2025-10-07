@@ -651,13 +651,14 @@ class HomeScreenViewModel(
                                 isSessionActiveFlow = isSessionActive,
                                 urlBuilder = urlBuilder,
                                 coverImageHashProvider = coverImageHashProvider,
-                                // TODO handle cached item type.
                                 onRequestCache = {
                                     currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
+                                        when (view) {
+                                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
+                                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
+                                            else -> false
+                                        }
+                                    }
                                 },
                                 storeOfRelations = storeOfRelations,
                                 fieldParser = fieldParser,

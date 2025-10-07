@@ -308,7 +308,6 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             emptyList()
         }
     }
-    Timber.d("Menu items for widget ${this::class.java.canonicalName}: $menuItems")
     return menuItems
 }
 

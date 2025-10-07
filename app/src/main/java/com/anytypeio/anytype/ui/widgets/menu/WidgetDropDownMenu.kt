@@ -35,7 +35,7 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import timber.log.Timber
+import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem.*
 
 /**
  * Represents a menu item that can be displayed in the widget long-click menu.
@@ -237,7 +237,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     WidgetView.EmptyState -> {}
                     is WidgetView.Gallery -> {
                         if (canCreateObjectOfType) {
-                            add(WidgetMenuItem.CreateObjectOfType(id))
+                            add(CreateObjectOfType(id))
                         }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
@@ -252,7 +252,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     }
                     is WidgetView.ListOfObjects -> {
                         if (canCreateObjectOfType) {
-                            add(WidgetMenuItem.CreateObjectOfType(id))
+                            add(CreateObjectOfType(id))
                         }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
@@ -261,7 +261,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     }
                     WidgetView.Section.ObjectTypes -> {
                         if (canCreateObjectOfType) {
-                            add(WidgetMenuItem.CreateObjectOfType(id))
+                            add(CreateObjectOfType(id))
                         }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
@@ -273,7 +273,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     }
                     is WidgetView.SetOfObjects -> {
                         if (canCreateObjectOfType) {
-                            add(WidgetMenuItem.CreateObjectOfType(id))
+                            add(CreateObjectOfType(id))
                         }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
@@ -283,7 +283,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     is WidgetView.SpaceChat -> {}
                     is WidgetView.Tree -> {
                         if (canCreateObjectOfType) {
-                            add(WidgetMenuItem.CreateObjectOfType(id))
+                            add(CreateObjectOfType(id))
                         }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
@@ -297,7 +297,7 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             buildList {
                 // TYPES widgets only show menu if they can create objects
                 if (canCreateObjectOfType) {
-                    listOf(WidgetMenuItem.CreateObjectOfType(id))
+                    listOf(CreateObjectOfType(id))
                 } else {
                     emptyList()
                 }
@@ -305,6 +305,11 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
         }
         null -> {
             // No section type means no menu
+            emptyList()
+        }
+
+        SectionType.NONE -> {
+            // No section means no menu
             emptyList()
         }
     }

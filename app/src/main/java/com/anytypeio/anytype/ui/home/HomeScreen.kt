@@ -531,7 +531,6 @@ private fun WidgetList(
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
-                        mode = mode,
                         onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }

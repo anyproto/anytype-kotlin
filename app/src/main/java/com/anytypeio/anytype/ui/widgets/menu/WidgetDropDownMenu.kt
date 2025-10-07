@@ -314,7 +314,6 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
 
 @Composable
 fun BinWidgetMenu(
-    widgetView: WidgetView,
     isCardMenuExpanded: MutableState<Boolean>,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
 ) {

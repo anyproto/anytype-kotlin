@@ -306,16 +306,8 @@ suspend fun List<Block>.parseWidgets(
                             }
 
                             is Widget.Source.Bundled.Chat -> {
-                                add(
-                                    Widget.Chat(
-                                        id = w.id,
-                                        source = source,
-                                        config = config,
-                                        icon = icon,
-                                        isAutoCreated = widgetContent.isAutoAdded,
-                                        sectionType = SectionType.PINNED
-                                    )
-                                )
+                                Timber.d("DROID-4016, Skipping chat widget in pinned section")
+                                //DROID-4016 skip chat widget
                             }
 
                             else -> {

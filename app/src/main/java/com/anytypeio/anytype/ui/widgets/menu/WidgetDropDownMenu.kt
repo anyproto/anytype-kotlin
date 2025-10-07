@@ -223,16 +223,88 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
     return when (sectionType) {
         SectionType.PINNED -> {
             buildList {
-                // Add "Create Object of Type" if applicable
-                if (canCreateObjectOfType) {
-                    add(WidgetMenuItem.CreateObjectOfType(id))
+                when (this@getWidgetMenuItems) {
+                    is WidgetView.AllContent -> {
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.Bin -> {
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    WidgetView.EmptyState -> {}
+                    is WidgetView.Gallery -> {
+                        // Add "Create Object of Type" if applicable
+                        if (canCreateObjectOfType) {
+                            add(WidgetMenuItem.CreateObjectOfType(id))
+                        }
+                    }
+                    is WidgetView.Link -> {
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.ListOfObjects -> {
+                        // Add "Create Object of Type" if applicable
+                        if (canCreateObjectOfType) {
+                            add(WidgetMenuItem.CreateObjectOfType(id))
+                        }
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    WidgetView.Section.ObjectTypes -> {
+                        // Add "Create Object of Type" if applicable
+                        if (canCreateObjectOfType) {
+                            add(WidgetMenuItem.CreateObjectOfType(id))
+                        }
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    WidgetView.Section.Pinned -> {
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.SetOfObjects -> {
+                        // Add "Create Object of Type" if applicable
+                        if (canCreateObjectOfType) {
+                            add(WidgetMenuItem.CreateObjectOfType(id))
+                        }
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.SpaceChat -> {}
+                    is WidgetView.Tree -> {
+                        // Add "Create Object of Type" if applicable
+                        if (canCreateObjectOfType) {
+                            add(WidgetMenuItem.CreateObjectOfType(id))
+                        }
+                        // Add "Change Widget Type" if applicable
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
                 }
-                // Add "Change Widget Type" if applicable
-                if (canChangeWidgetType()) {
-                    add(WidgetMenuItem.ChangeWidgetType)
-                }
-                // Always add "Unpin" for pinned widgets
-                add(WidgetMenuItem.RemoveWidget)
             }
         }
         SectionType.TYPES -> {

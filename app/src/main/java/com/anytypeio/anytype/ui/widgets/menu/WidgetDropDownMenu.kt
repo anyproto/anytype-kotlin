@@ -35,6 +35,7 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import timber.log.Timber
 
 /**
  * Represents a menu item that can be displayed in the widget long-click menu.
@@ -220,99 +221,86 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
  * Returns a list of menu items, or an empty list if no menu should be displayed.
  */
 fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
-    return when (sectionType) {
+    val menuItems = when (sectionType) {
         SectionType.PINNED -> {
             buildList {
                 when (this@getWidgetMenuItems) {
                     is WidgetView.AllContent -> {
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Bin -> {
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     WidgetView.EmptyState -> {}
                     is WidgetView.Gallery -> {
-                        // Add "Create Object of Type" if applicable
                         if (canCreateObjectOfType) {
                             add(WidgetMenuItem.CreateObjectOfType(id))
                         }
-                    }
-                    is WidgetView.Link -> {
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.Link -> {
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.ListOfObjects -> {
-                        // Add "Create Object of Type" if applicable
                         if (canCreateObjectOfType) {
                             add(WidgetMenuItem.CreateObjectOfType(id))
                         }
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     WidgetView.Section.ObjectTypes -> {
-                        // Add "Create Object of Type" if applicable
                         if (canCreateObjectOfType) {
                             add(WidgetMenuItem.CreateObjectOfType(id))
                         }
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     WidgetView.Section.Pinned -> {
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SetOfObjects -> {
-                        // Add "Create Object of Type" if applicable
                         if (canCreateObjectOfType) {
                             add(WidgetMenuItem.CreateObjectOfType(id))
                         }
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SpaceChat -> {}
                     is WidgetView.Tree -> {
-                        // Add "Create Object of Type" if applicable
                         if (canCreateObjectOfType) {
                             add(WidgetMenuItem.CreateObjectOfType(id))
                         }
-                        // Add "Change Widget Type" if applicable
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }
-                        // Always add "Unpin" for pinned widgets
                         add(WidgetMenuItem.RemoveWidget)
                     }
                 }
             }
         }
         SectionType.TYPES -> {
-            // TYPES widgets only show menu if they can create objects
-            if (canCreateObjectOfType) {
-                listOf(WidgetMenuItem.CreateObjectOfType(id))
-            } else {
-                emptyList()
+            buildList {
+                // TYPES widgets only show menu if they can create objects
+                if (canCreateObjectOfType) {
+                    listOf(WidgetMenuItem.CreateObjectOfType(id))
+                } else {
+                    emptyList()
+                }
             }
         }
         null -> {
@@ -320,6 +308,8 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             emptyList()
         }
     }
+    Timber.d("Menu items for widget ${this::class.java.canonicalName}: $menuItems")
+    return menuItems
 }
 
 @Composable

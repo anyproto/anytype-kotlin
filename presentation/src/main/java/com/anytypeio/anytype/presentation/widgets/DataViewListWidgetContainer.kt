@@ -64,13 +64,16 @@ class DataViewListWidgetContainer(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     isSessionActiveFlow: Flow<Boolean>,
-    onRequestCache: () -> WidgetView.SetOfObjects? = { null },
+    onRequestCache: () -> WidgetView? = { null },
 ) : WidgetContainer {
 
     // Cache to prevent duplicate computeViewerContext calls
     private var cachedContext: ViewerContext? = null
     private var cachedContextKey: ContextKey? = null
     private val ctxMutex = Mutex()
+
+    // Track the viewer type to create correct widget view during loading/collapsed states
+    private var lastKnownViewerType: DVViewerType? = null
 
     private data class ContextKey(
         val widgetSourceId: String,
@@ -98,13 +101,33 @@ class DataViewListWidgetContainer(
                             .collect { isCollapsed ->
                                 val cached = onRequestCache()
                                 if (cached != null) {
+                                    // Update cached viewer type from cache
+                                    when (cached) {
+                                        is WidgetView.Gallery -> lastKnownViewerType = DVViewerType.GALLERY
+                                        is WidgetView.SetOfObjects -> {
+                                            // SetOfObjects could be from non-gallery views
+                                            if (lastKnownViewerType == null) {
+                                                lastKnownViewerType = DVViewerType.LIST
+                                            }
+                                        }
+                                        else -> {
+                                            // No action needed for other widget types.
+                                        }
+                                    }
+
                                     // Adjust cached state to reflect current collapsed flag
-                                    emit(
-                                        cached.copy(
+                                    val adjustedCache = when (cached) {
+                                        is WidgetView.SetOfObjects -> cached.copy(
                                             isExpanded = !isCollapsed,
                                             isLoading = false
                                         )
-                                    )
+                                        is WidgetView.Gallery -> cached.copy(
+                                            isExpanded = !isCollapsed,
+                                            isLoading = false
+                                        )
+                                        else -> cached
+                                    }
+                                    emit(adjustedCache)
                                 } else {
                                     emit(
                                         createWidgetView(
@@ -165,6 +188,9 @@ class DataViewListWidgetContainer(
                                     activeView = activeView,
                                     isCompact = isCompact
                                 )
+
+                                // Cache the viewer type for use in loading/collapsed states
+                                lastKnownViewerType = ctx.target?.type
 
                                 if (ctx.params != null) {
                                     if (widget is Widget.View && ctx.target?.type == DVViewerType.GALLERY) {
@@ -514,18 +540,37 @@ class DataViewListWidgetContainer(
                 sectionType = widget.sectionType
             )
 
-            is Widget.View -> Gallery(
-                id = widget.id,
-                source = widget.source,
-                icon = widget.icon,
-                tabs = emptyList(),
-                elements = emptyList(),
-                isExpanded = !isCollapsed,
-                isLoading = isLoading,
-                view = null,
-                name = widget.source.getPrettyName(fieldParser),
-                sectionType = widget.sectionType
-            )
+            is Widget.View -> {
+                // Use cached viewer type to determine if this should be Gallery or SetOfObjects
+                // Default to SetOfObjects if viewer type is unknown (first load)
+                if (lastKnownViewerType == DVViewerType.GALLERY) {
+                    Gallery(
+                        id = widget.id,
+                        source = widget.source,
+                        icon = widget.icon,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isLoading = isLoading,
+                        view = null,
+                        name = widget.source.getPrettyName(fieldParser),
+                        sectionType = widget.sectionType
+                    )
+                } else {
+                    SetOfObjects(
+                        id = widget.id,
+                        source = widget.source,
+                        tabs = emptyList(),
+                        elements = emptyList(),
+                        isExpanded = !isCollapsed,
+                        isCompact = false,
+                        icon = widget.icon,
+                        isLoading = isLoading,
+                        name = widget.source.getPrettyName(fieldParser),
+                        sectionType = widget.sectionType
+                    )
+                }
+            }
 
             is Widget.Section.ObjectType -> Section.ObjectTypes
             is Widget.Section.Pinned -> Section.Pinned

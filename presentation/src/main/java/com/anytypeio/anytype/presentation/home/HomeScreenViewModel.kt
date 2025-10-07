@@ -780,7 +780,14 @@ class HomeScreenViewModel(
                     collapsedSections = savedCollapsedSections.toSet()
                 )
                 if (state is ObjectViewState.Success) {
-                    val allWidgets = buildWidgets(state, params, urlBuilder, storeOfObjectTypes)
+
+                    // Build widgets List<Widget> from the current object state
+                    val allWidgets = buildWidgets(
+                        state = state,
+                        params = params,
+                        urlBuilder = urlBuilder,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
                     // Initialize active views for all widgets
                     val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
 

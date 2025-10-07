@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -394,7 +395,7 @@ private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
     onItemClicked: () -> Unit
 ) {
-    val isImageType = item.obj.type.firstOrNull() == ObjectTypeIds.IMAGE
+    val isImageType = item.obj.layout == ObjectType.Layout.IMAGE
     val hasCover = item.cover != null
 
     Box(

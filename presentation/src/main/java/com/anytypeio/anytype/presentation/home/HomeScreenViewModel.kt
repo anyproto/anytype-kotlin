@@ -2895,7 +2895,7 @@ class HomeScreenViewModel(
                 !expandedIds.contains(widget.id)
             }
             SectionType.NONE -> {
-                return true
+                true
             }
         }
     }

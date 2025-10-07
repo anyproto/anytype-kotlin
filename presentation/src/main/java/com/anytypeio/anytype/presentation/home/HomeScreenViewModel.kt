@@ -2711,7 +2711,14 @@ class HomeScreenViewModel(
 
     //region Expanded Widgets
     /**
-     * Toggles widget collapse state and persists to preferences
+     * Toggles widget collapse state and persists to preferences.
+     *
+     * This function simply adds/removes the widget ID from the expandedIds set.
+     * The actual effect (collapse vs expand) depends on the widget's section type:
+     * - Pinned widgets: Adding to set = collapse, Removing from set = expand
+     * - Types widgets: Adding to set = expand, Removing from set = collapse
+     *
+     * See [isWidgetCollapsed] for detailed explanation of the inverted semantics.
      */
     fun onToggleWidgetExpandedState(widgetId: Id) {
         Timber.d("onToggleWidgetExpandedState, widgetId: $widgetId")
@@ -2818,13 +2825,28 @@ class HomeScreenViewModel(
 
     /**
      * Determines if a widget should be collapsed based on section type defaults and user preferences.
+     *
      * Product logic:
      * - Pinned section widgets: Expanded by default
      * - Object Types section widgets: Collapsed by default
      *
-     * expandedIds semantics:
-     * - For Pinned widgets: Being IN the set means COLLAPSED (opposite of default)
-     * - For Types widgets: Being IN the set means EXPANDED (opposite of default)
+     * IMPORTANT: expandedIds represents "widgets toggled from their default state", NOT "expanded widgets".
+     * The semantics are INVERTED based on section type:
+     *
+     * Pinned Section (default: expanded):
+     *   - Widget ID NOT in set → EXPANDED (using default)
+     *   - Widget ID IN set → COLLAPSED (user toggled from default)
+     *
+     * Types Section (default: collapsed):
+     *   - Widget ID NOT in set → COLLAPSED (using default)
+     *   - Widget ID IN set → EXPANDED (user toggled from default)
+     *
+     * Example scenario:
+     *   expandedIds = [widgetA, widgetB]
+     *   - widgetA (Pinned) → COLLAPSED (in set = toggled from default expanded)
+     *   - widgetB (Types) → EXPANDED (in set = toggled from default collapsed)
+     *   - widgetC (Pinned) → EXPANDED (not in set = using default)
+     *   - widgetD (Types) → COLLAPSED (not in set = using default)
      */
     private fun isWidgetCollapsed(
         widget: Widget,

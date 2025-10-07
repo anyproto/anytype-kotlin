@@ -753,7 +753,6 @@ class HomeScreenViewModel(
      */
     private fun observeCollapsedSectionIds(): Flow<List<Id>> {
         return userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId)
-            .distinctUntilChanged()
             .catch { e ->
                 Timber.e(e, "Failed to get collapsed section IDs, using defaults")
                 emit(emptyList())

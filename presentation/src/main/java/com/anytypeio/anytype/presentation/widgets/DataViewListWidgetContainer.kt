@@ -110,7 +110,9 @@ class DataViewListWidgetContainer(
                                                 lastKnownViewerType = DVViewerType.LIST
                                             }
                                         }
-                                        else -> {}
+                                        else -> {
+                                            // No action needed for other widget types.
+                                        }
                                     }
 
                                     // Adjust cached state to reflect current collapsed flag

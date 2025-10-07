@@ -760,27 +760,52 @@ class HomeScreenViewModel(
             }
     }
 
+    /**
+     * Observes both expanded widget IDs and collapsed section IDs as a single data class.
+     * This provides a clean way to access both pieces of state together in combine() calls.
+     */
+    private fun observeWidgetPreferences(): Flow<WidgetPreferences> {
+        return combine(
+            observeExpandedWidgetIds(),
+            observeCollapsedSectionIds()
+        ) { expandedIds, collapsedSections ->
+            WidgetPreferences(
+                expandedWidgetIds = expandedIds,
+                collapsedSectionIds = collapsedSections
+            )
+        }
+    }
+
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithObjectViewStatePipeline() {
         val externalChannelEvents = observeExternalPayloadEvents()
         val internalChannelEvents = objectPayloadDispatcher.flow()
         val payloads = merge(externalChannelEvents, internalChannelEvents)
+        val widgetPreferences = observeWidgetPreferences()
 
         viewModelScope.launch {
             combine(
                 storeOfObjectTypes.trackChanges(),
                 objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
                 hasEditAccess.distinctUntilChanged(),
-                observeExpandedWidgetIds(),
-                observeCollapsedSectionIds()
-            ) { _, state, isOwnerOrEditor, savedExpandedIds, savedCollapsedSections ->
+                widgetPreferences,
+                spaceViewSubscriptionContainer.observe(vmParams.spaceId),
+            ) { _, state, isOwnerOrEditor, preferences, spaceView ->
                 val params = WidgetUiParams(
                     isOwnerOrEditor = isOwnerOrEditor,
-                    expandedIds = savedExpandedIds.toSet(),
-                    collapsedSections = savedCollapsedSections.toSet()
+                    expandedIds = preferences.expandedWidgetIds.toSet(),
+                    collapsedSections = preferences.collapsedSectionIds.toSet()
                 )
                 if (state is ObjectViewState.Success) {
-                    val allWidgets = buildWidgets(state, params, urlBuilder, storeOfObjectTypes)
+
+                    // Build widgets List<Widget> from the current object state
+                    val allWidgets = buildWidgets(
+                        state = state,
+                        params = params,
+                        urlBuilder = urlBuilder,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        spaceView = spaceView
+                    )
                     // Initialize active views for all widgets
                     val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
 
@@ -2869,9 +2894,8 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly expanded it
                 !expandedIds.contains(widget.id)
             }
-            null -> {
-                // Fallback for widgets without section type - collapsed by default
-                !expandedIds.contains(widget.id)
+            SectionType.NONE -> {
+                true
             }
         }
     }
@@ -3077,6 +3101,18 @@ sealed class InteractionMode {
     data object Edit : InteractionMode()
     data object ReadOnly: InteractionMode()
 }
+
+/**
+ * Contains user preferences for widget display state.
+ * Used to combine both expanded widget IDs and collapsed section IDs into a single flow.
+ *
+ * @property expandedWidgetIds List of widget IDs that have been toggled from their default state
+ * @property collapsedSectionIds List of section IDs that are currently collapsed
+ */
+data class WidgetPreferences(
+    val expandedWidgetIds: List<Id>,
+    val collapsedSectionIds: List<Id>
+)
 
 data class OpenObjectHistoryItem(
     val obj: Id,

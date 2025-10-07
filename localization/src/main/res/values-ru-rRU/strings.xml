@@ -1243,7 +1243,7 @@
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">QR-код</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated">Текущая ссылка перестанет работать.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
     <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
@@ -1763,7 +1763,7 @@
     <string name="object_type_fields_btn_save">Сохранить</string>
     <string name="object_type_fields_menu_delete">Отвязать от типа</string>
     <string name="object_type_fields_menu_remove_from_type">Remove from Type</string>
-    <string name="object_type_fields_menu_move_to_bin">Move to Bin</string>
+    <string name="object_type_fields_menu_move_to_bin">Переместить в Корзину</string>
     <string name="object_type_fields_menu_add_to_type">Add to the current type</string>
     <string name="object_type_fields_menu_remove">Удалить</string>
     <string name="object_type_fields_local_info_title">Found in objects</string>
@@ -1928,10 +1928,10 @@
     <string name="onboarding_soul_creation_description">Только люди, с которыми Вы чем-то поделились, смогут его увидеть. Централизованного реестра имён не существует.</string>
     <string name="onboarding_email_add_title">Stay in the loop</string>
     <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
-    <string name="onboarding_enter_email">Enter your email</string>
+    <string name="onboarding_enter_email">Введите ваш email</string>
     <string name="onboarding_button_continue">Продолжить</string>
     <string name="onboarding_button_skip">Пропустить</string>
-    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_email_error">Неправильный email</string>
     <string name="onboarding_name_error">Введите название</string>
     <string name="notifications_modal_title">Turn on push notifications</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>

@@ -298,13 +298,17 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView {
-        return when (space.spaceUxType) {
-            SpaceUxType.CHAT -> {
-                // Always create chat view for chat spaces, even without preview
+        return when {
+            // CHAT spaces always use chat view
+            space.spaceUxType == SpaceUxType.CHAT -> {
                 createChatView(space, chatPreview, permissions, wallpapers)
             }
+            // DATA/STREAM spaces with chatId also use chat view
+            !space.chatId.isNullOrEmpty() -> {
+                createChatView(space, chatPreview, permissions, wallpapers)
+            }
+            // Other spaces use standard space view
             else -> {
-                // For DATA, STREAM, NONE, or null - treat as data space
                 createStandardSpaceView(space, permissions, wallpapers)
             }
         }

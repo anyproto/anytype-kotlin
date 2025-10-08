@@ -12,11 +12,11 @@ object NotificationStateCalculator {
     /**
      * Calculate muted state for a space based on both space-level and app-level notification settings
      *
-     * For chat spaces (SpaceUxType.CHAT), only considers space-level notification settings,
-     * ignoring app-level notification permission. This ensures the mute/unmute state is always
-     * visible for chat spaces regardless of app notification settings.
+     * For spaces with chat functionality (SpaceUxType.CHAT or spaces with chatId), only considers
+     * space-level notification settings, ignoring app-level notification permission. This ensures
+     * the mute/unmute state is always visible for chat-enabled spaces regardless of app notification settings.
      *
-     * For other spaces, considers both space-level and app-level notification settings.
+     * For other spaces (without chat), considers both space-level and app-level notification settings.
      */
     fun calculateMutedState(
         spaceView: ObjectWrapper.SpaceView?,
@@ -28,9 +28,12 @@ object NotificationStateCalculator {
         val isSpaceMuted = spaceView.spacePushNotificationMode == NotificationState.DISABLE
                 || spaceView.spacePushNotificationMode == NotificationState.MENTIONS
 
-        // For chat spaces, only return space-level mute state
+        // Check if this space has chat functionality
+        val hasChat = spaceView.spaceUxType == SpaceUxType.CHAT || !spaceView.chatId.isNullOrEmpty()
+
+        // For spaces with chat, only return space-level mute state
         // For other spaces, also consider app-level notification permission
-        return if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+        return if (hasChat) {
             isSpaceMuted
         } else {
             val isAppNotificationsDisabled = !notificationPermissionManager.areNotificationsEnabled()

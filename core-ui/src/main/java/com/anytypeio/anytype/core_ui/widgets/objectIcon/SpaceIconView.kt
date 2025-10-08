@@ -147,7 +147,7 @@ private fun SpacePlaceholder(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = name
-                .ifEmpty { stringResource(id = R.string.u) }
+                .ifEmpty { stringResource(id = R.string.untitled) }
                 .take(1)
                 .uppercase(),
             fontSize = fontSize,

@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.HomeScreenFragment

@@ -192,13 +192,12 @@ private fun OnboardingEmailScreen(
                             isFocused = focusState.isFocused
                         },
                     placeholder = {
-                        if (innerValue.text.isEmpty() && !isFocused) {
-                            Text(
-                                text = stringResource(id = R.string.onboarding_enter_email),
-                                style = PreviewTitle1Regular,
-                                color = colorResource(id = R.color.text_tertiary)
-                            )
-                        }
+                        Text(
+                            modifier = Modifier.padding(start = 1.dp),
+                            text = stringResource(id = R.string.onboarding_enter_email),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_tertiary)
+                        )
                     },
                     textStyle = PreviewTitle1Regular.copy(
                         color = colorResource(id = R.color.text_primary)

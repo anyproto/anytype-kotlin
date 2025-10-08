@@ -569,7 +569,7 @@
     <string name="view_gallery">Galerie</string>
     <string name="view_kanban">Kanban</string>
     <string name="page_cover">Seitencover</string>
-    <string name="object_action_pin">Pin</string>
+    <string name="object_action_pin">Anheften</string>
     <string name="object_action_unpin">Loslösen</string>
     <string name="editor_toolbar">Knopf</string>
     <string name="wait_a_bit_message">Bitte gib uns einen Moment. Wir sind fast da…</string>
@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget_reader_access">Dieses Objekt ist mit keinem anderen Objekt verlinkt</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Keine Objekte innerhalb</string>
     <string name="empty_list_widget_no_view">Diese Datenansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="this_widget_has_no_object">Dieses Widget hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="emoji">Emoji</string>
@@ -956,30 +956,30 @@
     <string name="slash_widget_lime_color_title">Grün</string>
     <string name="slash_widget_background_item">%1$ser Hintergrund</string>
     <!-- Onboarding: persona selection & use cases (iOS parity) -->
-    <string name="onboarding_selection_title">Tell Us About Yourself</string>
+    <string name="onboarding_selection_title">Erzähl uns etwas über dich</string>
     <string name="onboarding_selection_description">Select one role or background that best fits you</string>
     <!-- Persona options -->
-    <string name="onboarding_selection_artist">Artist / Content Creator</string>
-    <string name="onboarding_selection_consultant">Consultant</string>
-    <string name="onboarding_selection_designer">Designer</string>
-    <string name="onboarding_selection_developer">Software Developer</string>
-    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
-    <string name="onboarding_selection_manager">Manager / IT Professional</string>
-    <string name="onboarding_selection_marketer">Marketer</string>
-    <string name="onboarding_selection_researcher">Researcher / Academic</string>
+    <string name="onboarding_selection_artist">Künstler(in) / Medienschaffender</string>
+    <string name="onboarding_selection_consultant">Berater(in)</string>
+    <string name="onboarding_selection_designer">Designer(in)</string>
+    <string name="onboarding_selection_developer">Softwareentwickler(in)</string>
+    <string name="onboarding_selection_entrepreneur">Gründer(in) / Unternehmer(in)</string>
+    <string name="onboarding_selection_manager">Manager / IT-Fachkraft</string>
+    <string name="onboarding_selection_marketer">Vermarkter(in)</string>
+    <string name="onboarding_selection_researcher">Forscher(in) / Akademiker(in)</string>
     <string name="onboarding_selection_student">Student</string>
-    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_writer">Autor(in) / Journalist(in)</string>
     <string name="onboarding_selection_other">Weitere</string>
     <!-- Use case options -->
-    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
+    <string name="onboarding_usecase_title">Wofür möchtest du Anytype verwenden?</string>
     <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
-    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
-    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
-    <string name="onboarding_usecase_life_planning">Life planning</string>
+    <string name="onboarding_usecase_habit_tracking">Gewohnheitsverfolgung</string>
+    <string name="onboarding_usecase_knowledge">Persönliche Wissensdatenbank / PKM</string>
+    <string name="onboarding_usecase_life_planning">Lebensplanung</string>
     <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
-    <string name="onboarding_usecase_notes">Personal note-taking</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_notes">Persönliche Notizmachung</string>
+    <string name="onboarding_usecase_projects">Projekte &amp; Aufgabenverwaltung</string>
+    <string name="onboarding_usecase_team_work">Teamarbeit &amp; gemeinsame Dokumente</string>
     <string name="onboarding_usecase_other">Weitere</string>
     <!--endregion-->
     <!--region WIDGETS -->
@@ -1033,9 +1033,9 @@
     <string name="type_creation_placeholder">Typname</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">Encrypted, local,</string>
-    <string name="onboarding_auth_subtitle">yours forever</string>
-    <string name="onboarding_auth_description">Encrypted, local,</string>
+    <string name="onboarding_auth_title">Verschlüsselt, lokal,</string>
+    <string name="onboarding_auth_subtitle">für immer deins</string>
+    <string name="onboarding_auth_description">Verschlüsselt, lokal,</string>
     <string name="onboarding_terms_and_policy_prefix">"Indem Sie fortfahren, stimmen Sie unseren"</string>
     <string name="onboarding_terms_and_policy_terms">Nutzungsbedingungen</string>
     <string name="onboarding_terms_and_policy_infix">" und "</string>
@@ -1058,7 +1058,7 @@
     <string name="onboarding_soul_creation_placeholder">Anytype-Identität</string>
     <string name="onboarding_soul_creation">Identität wird erstellt...</string>
     <string name="onboarding_type_your_key">Gib deinen Schlüssel ein</string>
-    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_or">oder eingeben mit</string>
     <string name="onboarding_login_qr">QR-Code</string>
     <string name="onboarding_entering_void_title">Leere betreten</string>
     <string name="onboarding_your_key_can_t_be_empty">Dein Schlüssel darf nicht leer sein</string>
@@ -1079,7 +1079,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">Duplizieren</string>
-    <string name="object_action_to_widgets">Pin</string>
+    <string name="object_action_to_widgets">Anheften</string>
     <string name="object_action_download">Herunterladen</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1223,24 +1223,24 @@
     <string name="multiplayer_share_invite_link_description">Teilen Sie diesen Einladungslink, damit andere Ihrem Space beitreten können. Sobald sie auf Ihren Link klicken und Zugriff anfordern, können Sie deren Zugriffsrechte festlegen.</string>
     <string name="multiplayer_invite_link">Einladungslink</string>
     <string name="multiplayer_invite_link_access">Invite link access</string>
-    <string name="multiplayer_link_disabled">Link disabled</string>
-    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_link_disabled">Link deaktiviert</string>
+    <string name="multiplayer_link_disabled_desc">Nur bereits eingeladene Mitglieder haben Zugriff</string>
     <string name="multiplayer_editor_access">Editor access</string>
     <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
     <string name="multiplayer_viewer_access">Viewer access</string>
     <string name="multiplayer_viewer">Leser</string>
-    <string name="multiplayer_viewer_access_desc">People with link can view and read chat</string>
-    <string name="multiplayer_request_access">Request access</string>
-    <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
+    <string name="multiplayer_viewer_access_desc">Personen mit Link können den Chat ansehen und lesen</string>
+    <string name="multiplayer_request_access">Zugriff anfragen</string>
+    <string name="multiplayer_request_access_desc">Eigentümer muss jede Beitrittsanfrage genehmigen</string>
     <string name="multiplayer_qr_code">QR-Code</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
-    <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
+    <string name="multiplayer_link_will_be_invalidated">Der aktuelle Link wird nicht mehr funktionieren.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
     <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
-    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Privater Kommentar für einen Space-Eigentümer</string>
@@ -1267,7 +1267,7 @@
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>
-    <string name="multiplayer_approve_request">Set access</string>
+    <string name="multiplayer_approve_request">Zugriff festlegen</string>
     <string name="multiplayer_view_request">Anfrage ansehen</string>
     <string name="multiplayer_owner">Eigentümer</string>
     <string name="multiplayer_no_permissions">Keine Berechtigungen</string>
@@ -1327,7 +1327,7 @@
     <string name="multiplayer_notification_member_permission_change_read">Deine Zugriffsrechte wurden im Space %1$s auf „Nur Lesen“ geändert.</string>
     <string name="multiplayer_notification_member_permission_change_edit">Deine Zugriffsrechte wurden im Space %1$s auf „Bearbeiten“  geändert.</string>
     <string name="multiplayer_notification_member_join_request_declined">Deine Anfrage, dem Space %1$s beizutreten, wurde abgelehnt.</string>
-    <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
+    <string name="multiplayer_notification_member_join_without_approval">Du bist %1$s beigetreten.</string>
     <string name="multiplayer_notification_request_declined">Anfrage abgelehnt</string>
     <string name="multiplayer_notification_view_request">Ansicht</string>
     <string name="multiplayer_notification_go_to_space">Gehe zum Space</string>
@@ -1348,7 +1348,7 @@
         <item quantity="one">%1$d Anfrage</item>
         <item quantity="other">%1$d Anfragen</item>
     </plurals>
-    <string name="multiplayer_you_as_member">you</string>
+    <string name="multiplayer_you_as_member">du</string>
     <string name="multiplayer_spaces">Spaces</string>
     <string name="multiplayer_space_status_joining">Beitreten</string>
     <string name="multiplayer_space_status_active">Aktiv</string>
@@ -1630,7 +1630,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_unread_section_title">Ungelesen</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="vault_pinned_section_title">Angeheftet</string>
-    <string name="vault_pin_space">Pin</string>
+    <string name="vault_pin_space">Anheften</string>
     <string name="vault_unpin_space">Loslösen</string>
     <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">Alle Objekte</string>
@@ -1747,7 +1747,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
     <string name="object_properties_empty_state">Noch keine Eigenschaften. Füge welche zu diesem Typ hinzu</string>
     <string name="object_type_open_type_error">Fehler beim Öffnen des Objekttyps</string>
-    <string name="object_type_edit_type_details_error">Editing this type is not allowed.</string>
+    <string name="object_type_edit_type_details_error">Die Bearbeitung dieses Typs ist nicht zulässig.</string>
     <string name="day_of_week_monday">Montag</string>
     <string name="day_of_week_tuesday">Dienstag</string>
     <string name="day_of_week_wednesday">Mittwoch</string>
@@ -1822,7 +1822,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_qrcode">QR-Code</string>
     <string name="space_settings_members_button_members">Mitglieder</string>
     <string name="space_settings_types_button">Objekttypen</string>
-    <string name="space_settings_space_types_button">Channel Type</string>
+    <string name="space_settings_space_types_button">Kanaltyp</string>
     <string name="space_settings_default_type_button">Standard-Objekttyp</string>
     <string name="space_settings_wallpaper_button">Hintergrundbild</string>
     <string name="space_settings_storage_button">Entfernte Speicherung</string>
@@ -1897,12 +1897,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
-    <string name="onboarding_email_add_title">Stay in the loop</string>
+    <string name="onboarding_email_add_title">Bleib auf dem Laufenden</string>
     <string name="onboarding_email_add_description">We’d love to share tips, tricks and product updates with you. Your email is never linked to your identity. We won’t share your data. Ever.</string>
-    <string name="onboarding_enter_email">Enter your email</string>
+    <string name="onboarding_enter_email">Gib deine E-Mail-Adresse ein</string>
     <string name="onboarding_button_continue">Fortfahren</string>
     <string name="onboarding_button_skip">Überspringen</string>
-    <string name="onboarding_email_error">Incorrect email</string>
+    <string name="onboarding_email_error">Falsche E-Mail-Adresse</string>
     <string name="onboarding_name_error">Name eingeben</string>
     <string name="notifications_modal_title">Push-Benachrichtigungen einschalten</string>
     <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
@@ -1941,12 +1941,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
-    <string name="vault_qr_scan_error_title">Couldn\'t scan the QR code</string>
+    <string name="vault_qr_scan_error_title">QR-Code konnte nicht gescannt werden</string>
     <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
-    <string name="vault_qr_invalid_title">Invalid QR code</string>
+    <string name="vault_qr_invalid_title">Ungültiger QR-Code</string>
     <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
     <string name="vault_qr_try_again">Erneut versuchen</string>
-    <string name="camera_permission_required_title">Camera permission required</string>
+    <string name="camera_permission_required_title">Kameraberechtigung erforderlich</string>
     <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
     <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
     <string name="open_settings">Einstellungen öffnen</string>
@@ -1961,16 +1961,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="private_local_yours_forever">Privat, lokal, für immer deins</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
-    <string name="publish_to_web">Publish to Web</string>
+    <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>
     <string name="web_publishing_customize_url">URL anpassen</string>
     <string name="web_publishing_join_space_button">Join Space Button</string>
-    <string name="web_publishing_unpublish">Unpublish</string>
+    <string name="web_publishing_unpublish">Veröffentlichung zurückziehen</string>
     <string name="web_publishing_update">Update</string>
-    <string name="web_publishing_publish">Publish</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_publish">Veröffentlichen</string>
+    <string name="web_publishing_failed_to_update">Aktualisierung fehlgeschlagen: %1$s</string>
     <string name="web_publishing_join">Beitreten</string>
     <string name="settings_my_sites">Meine Seiten</string>
     <string name="web_publishing_view_object">Objekt ansehen</string>
@@ -1979,25 +1979,25 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_object_types">Objekttypen</string>
     <string name="widgets_menu_new_object_type">Neu</string>
-    <string name="widgets_menu_delete_object_type">Delete Object Type</string>
+    <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
-    <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
+    <string name="widget_unpin_alert_title">Dieses Widget kann nicht wiederhergestellt werden</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
-    <string name="my_sites">My Sites</string>
-    <string name="my_sites_empty_state_text">There are no published objects yet</string>
+    <string name="my_sites">Meine Seiten</string>
+    <string name="my_sites_empty_state_text">Es gibt noch keine veröffentlichten Objekte</string>
     <string name="my_sites_it_s_empty_here">Hier ist es leer</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Publish your first web site to get started.</string>
     <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
-    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_title">Kanaltyp</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
     <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
     <string name="space_settings_space_type_space_item_title">Space</string>
     <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
-    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_title">Kanaltyp konvertieren?</string>
     <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
-    <string name="alert_change_space_type_button">Yes, convert</string>
+    <string name="alert_change_space_type_button">Ja, konvertieren</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d neue Nachricht</item>
         <item quantity="other">%d neue Nachrichten</item>

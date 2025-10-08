@@ -1790,16 +1790,78 @@ class VaultViewModelTest {
     }
 
     @Test
-    fun `data spaces should show muted when app notifications are disabled`() = runTest {
+    fun `data spaces with chat should show unmuted when space is unmuted even if app notifications disabled`() = runTest {
         turbineScope {
-            // Given - Data space with space-level notifications enabled, but app notifications disabled
+            // Given - Data space with chat and space-level notifications enabled, but app notifications disabled
             val dataSpaceId = "data_space"
 
             val dataSpace = StubSpaceView(
                 id = dataSpaceId,
                 targetSpaceId = dataSpaceId,
                 spaceUxType = SpaceUxType.DATA,
-                chatId = "chat_id", // Has chat ID
+                chatId = "chat_id", // Has chat ID - should be treated as Chat view
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                spacePushNotificationMode = com.anytypeio.anytype.core_models.chats.NotificationState.ALL
+            )
+
+            val spaceViews = listOf(dataSpace)
+            val chatPreviews = emptyList<Chat.Preview>()
+            val permissions = emptyMap<String, SpaceMemberPermissions>()
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(spaceViews))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(chatPreviews))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Denied)
+            )
+            whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(false) // App notifications disabled
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+            whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Unknown")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers
+            )
+
+            // When
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val allSpaces = sections.pinnedSpaces + sections.mainSpaces
+
+                // Then - Data space with chat should be treated as Chat view and show unmuted (space-level state)
+                val dataSpaceView = allSpaces.find { it.space.id == dataSpaceId }
+                assertTrue("Data space should exist", dataSpaceView != null)
+                assertTrue("Data space with chat should be VaultSpaceView.Chat", dataSpaceView is VaultSpaceView.Chat)
+
+                val chatViewTyped = dataSpaceView as VaultSpaceView.Chat
+                assertEquals(
+                    "Data space with chat should show unmuted (space-level state), ignoring app notification state",
+                    false,
+                    chatViewTyped.isMuted
+                )
+            }
+        }
+    }
+
+    @Test
+    fun `data spaces without chat should show muted when app notifications are disabled`() = runTest {
+        turbineScope {
+            // Given - Data space WITHOUT chat, space-level notifications enabled, but app notifications disabled
+            val dataSpaceId = "data_space_no_chat"
+
+            val dataSpace = StubSpaceView(
+                id = dataSpaceId,
+                targetSpaceId = dataSpaceId,
+                spaceUxType = SpaceUxType.DATA,
+                chatId = null, // NO chat ID - should be treated as Space view
                 spaceAccountStatus = SpaceStatus.OK,
                 spaceLocalStatus = SpaceStatus.OK,
                 spacePushNotificationMode = com.anytypeio.anytype.core_models.chats.NotificationState.ALL
@@ -1835,15 +1897,15 @@ class VaultViewModelTest {
                 val sections = awaitItem() as VaultUiState.Sections
                 val allSpaces = sections.pinnedSpaces + sections.mainSpaces
 
-                // Then - Data space should show muted state (true) because app notifications are disabled
+                // Then - Data space without chat should be VaultSpaceView.Space and isMuted should be null
                 val dataSpaceView = allSpaces.find { it.space.id == dataSpaceId }
                 assertTrue("Data space should exist", dataSpaceView != null)
-                assertTrue("Data space should be VaultSpaceView.Space", dataSpaceView is VaultSpaceView.Space)
+                assertTrue("Data space without chat should be VaultSpaceView.Space", dataSpaceView is VaultSpaceView.Space)
 
                 val dataSpaceTyped = dataSpaceView as VaultSpaceView.Space
                 assertEquals(
-                    "Data space should be muted because app notifications are disabled",
-                    true,
+                    "Data space without chat should have null isMuted (no chat functionality)",
+                    null,
                     dataSpaceTyped.isMuted
                 )
             }

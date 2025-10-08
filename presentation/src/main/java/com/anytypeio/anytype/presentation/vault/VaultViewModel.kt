@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -298,15 +299,12 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView {
-        return when (space.spaceUxType) {
-            SpaceUxType.CHAT -> {
-                // Always create chat view for chat spaces, even without preview
-                createChatView(space, chatPreview, permissions, wallpapers)
-            }
-            else -> {
-                // For DATA, STREAM, NONE, or null - treat as data space
-                createStandardSpaceView(space, permissions, wallpapers)
-            }
+        return if (space.hasChatFunctionality()) {
+            // Spaces with chat functionality (CHAT spaces or DATA/STREAM spaces with chatId)
+            createChatView(space, chatPreview, permissions, wallpapers)
+        } else {
+            // Other spaces without chat use standard space view
+            createStandardSpaceView(space, permissions, wallpapers)
         }
     }
 
@@ -445,7 +443,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
+        val isMuted = NotificationStateCalculator.calculateMutedState(space)
 
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
@@ -477,22 +475,20 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = if (space.chatId == null) {
-            null
-        } else {
-            NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
-        }
+
+        // Standard spaces without chat functionality have no notification/mute state
+        val isMuted = null
 
         val icon = space.spaceIcon(urlBuilder)
 
         val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
-        
+
         val wallpaper = space.targetSpaceId?.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
             icon = icon,
             wallpaper = wallpaper
         )
-        
+
         return VaultSpaceView.Space(
             space = space,
             icon = icon,

@@ -976,7 +976,7 @@
     <string name="onboarding_usecase_habit_tracking">Gewohnheitsverfolgung</string>
     <string name="onboarding_usecase_knowledge">Persönliche Wissensdatenbank / PKM</string>
     <string name="onboarding_usecase_life_planning">Lebensplanung</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
+    <string name="onboarding_usecase_messaging">Nachrichten &amp; Gruppenchats</string>
     <string name="onboarding_usecase_notes">Persönliche Notizmachung</string>
     <string name="onboarding_usecase_projects">Projekte &amp; Aufgabenverwaltung</string>
     <string name="onboarding_usecase_team_work">Teamarbeit &amp; gemeinsame Dokumente</string>
@@ -1068,7 +1068,7 @@
     <string name="onboarding_what_is_the_key">Wie der Schlüssel funktioniert?</string>
     <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
     <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Wer den Schlüssel hat, hat Zugang</string>
     <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
     <string name="onboarding_recovery_phrase_description_3_title">Nur du bist dafür verantwortlich</string>
     <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>

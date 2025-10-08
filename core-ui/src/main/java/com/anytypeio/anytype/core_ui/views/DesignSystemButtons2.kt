@@ -18,6 +18,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -64,6 +65,39 @@ fun ButtonUpgrade(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ButtonUpgradeBlack(
+    text: String = "",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: TextStyle = BodyCalloutRegular
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val backgroundColor = colorResource(id = R.color.black)
+
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(color = backgroundColor, shape = RoundedCornerShape(100.dp))
+                .clickable(
+                    interactionSource = interactionSource,
+                    onClick = onClick,
+                    indication = null
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier.wrapContentSize(),
+                text = text,
+                style = style,
+                color = colorResource(id = R.color.white)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ButtonIncentiveSecond(
     text: String = "",
     onClick: () -> Unit,
@@ -72,10 +106,7 @@ fun ButtonIncentiveSecond(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
-    val backgroundColor =
-        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
-            id = R.color.shape_transparent_primary
-        )
+    val backgroundColor = Color(0x1C000000)
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(
@@ -94,7 +125,7 @@ fun ButtonIncentiveSecond(
                 modifier = Modifier.wrapContentSize(),
                 text = text,
                 style = style,
-                color = colorResource(id = R.color.text_primary)
+                color = colorResource(id = R.color.black)
             )
         }
     }
@@ -118,6 +149,18 @@ fun MyButtonIncentiveSecond() {
     ButtonIncentiveSecond(
         onClick = {},
         text = "Manage Spaces",
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .height(36.dp)
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun MyButtonUpgradeBlackPreview() {
+    ButtonUpgradeBlack(
+        onClick = {},
+        text = "✦ Upgrade",
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .height(36.dp)

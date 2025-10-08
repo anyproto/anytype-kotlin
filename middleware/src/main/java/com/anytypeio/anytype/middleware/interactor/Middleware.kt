@@ -1250,7 +1250,7 @@ class Middleware @Inject constructor(
     fun objectRemoveCover(ctx: String): Payload {
         val coverIdDetail = MDetail(
             key = coverIdKey,
-            value_ = null
+            value_ = ""
         )
         val coverTypeDetail = MDetail(
             key = coverTypeKey,
@@ -1270,11 +1270,11 @@ class Middleware @Inject constructor(
     fun objectRemoveIcon(ctx: String): Payload {
         val imageDetail = MDetail(
             key = Relations.ICON_IMAGE,
-            value_ = null
+            value_ = ""
         )
         val emojiDetail = MDetail(
             key = Relations.ICON_EMOJI,
-            value_ = null
+            value_ = ""
         )
 
         val request = Rpc.Object.SetDetails.Request(
@@ -1510,7 +1510,7 @@ class Middleware @Inject constructor(
 
         val imageDetail = MDetail(
             key = Relations.ICON_IMAGE,
-            value_ = null
+            value_ = ""
         )
 
         val request = Rpc.Object.SetDetails.Request(
@@ -1534,7 +1534,7 @@ class Middleware @Inject constructor(
         )
         val emojiDetail = MDetail(
             key = Relations.ICON_EMOJI,
-            value_ = null
+            value_ = ""
         )
 
         val request = Rpc.Object.SetDetails.Request(

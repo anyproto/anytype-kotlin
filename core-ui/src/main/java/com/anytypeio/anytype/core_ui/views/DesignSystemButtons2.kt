@@ -64,6 +64,41 @@ fun ButtonUpgrade(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+fun ButtonUpgradeBlack(
+    text: String = "",
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    style: TextStyle = BodyCalloutRegular
+) {
+    val interactionSource = remember { MutableInteractionSource() }
+    val isPressed = interactionSource.collectIsPressedAsState()
+    val backgroundColor = colorResource(id = R.color.black)
+
+    CompositionLocalProvider(LocalRippleConfiguration provides null) {
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(color = backgroundColor, shape = RoundedCornerShape(100.dp))
+                .clickable(
+                    interactionSource = interactionSource,
+                    onClick = onClick,
+                    indication = null
+                )
+            ,
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                modifier = Modifier.wrapContentSize(),
+                text = text,
+                style = style,
+                color = colorResource(id = R.color.white)
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
 fun ButtonIncentiveSecond(
     text: String = "",
     onClick: () -> Unit,
@@ -118,6 +153,18 @@ fun MyButtonIncentiveSecond() {
     ButtonIncentiveSecond(
         onClick = {},
         text = "Manage Spaces",
+        modifier = Modifier
+            .padding(start = 16.dp, end = 16.dp)
+            .height(36.dp)
+    )
+}
+
+@Composable
+@DefaultPreviews
+fun MyButtonUpgradeBlackPreview() {
+    ButtonUpgradeBlack(
+        onClick = {},
+        text = "✦ Upgrade",
         modifier = Modifier
             .padding(start = 16.dp, end = 16.dp)
             .height(36.dp)

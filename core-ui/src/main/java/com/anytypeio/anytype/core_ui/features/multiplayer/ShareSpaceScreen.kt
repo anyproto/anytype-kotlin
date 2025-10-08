@@ -86,6 +86,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
+import com.anytypeio.anytype.core_ui.views.ButtonUpgradeBlack
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -499,16 +500,16 @@ private fun AddEditorsIncentive(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = text,
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.members_limits_incentive_editors_sub),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title3
         )
-        ButtonUpgrade(
+        ButtonUpgradeBlack(
             modifier = Modifier
                 .padding(top = 12.dp)
                 .height(36.dp),
@@ -966,7 +967,7 @@ fun SpaceLeaveRequestPreview() {
     uiMode = Configuration.UI_MODE_NIGHT_YES,
     name = "Dark Mode"
 )
-fun ShareSpaceScreenPreview() {
+fun ShareSpaceScreenPreview1() {
     ShareSpaceScreen(
         onShareInviteLinkClicked = {},
         members = buildList {

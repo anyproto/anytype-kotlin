@@ -531,7 +531,6 @@ private fun WidgetList(
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
-                        mode = mode,
                         onWidgetSourceClicked = onWidgetSourceClicked,
                     )
                 }
@@ -613,6 +612,7 @@ private fun WidgetList(
 
                 WidgetView.Section.ObjectTypes -> {
                     SpaceObjectTypesSectionHeader(
+                        mode = mode,
                         onCreateNewTypeClicked = onCreateNewTypeClicked,
                         onSectionClicked = { onSectionClicked(SECTION_OBJECT_TYPE) }
                     )
@@ -658,6 +658,7 @@ fun WidgetEditModeButton(
 
 @Composable
 private fun SpaceObjectTypesSectionHeader(
+    mode: InteractionMode,
     onSectionClicked: () -> Unit,
     onCreateNewTypeClicked: () -> Unit
 ) {
@@ -675,16 +676,18 @@ private fun SpaceObjectTypesSectionHeader(
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
-        Image(
-            painter = painterResource(id = R.drawable.ic_default_plus),
-            contentDescription = "Create new type",
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .padding(end = 20.dp, bottom = 12.dp)
-                .size(18.dp)
-                .noRippleClickable { onCreateNewTypeClicked() },
-            contentScale = ContentScale.Inside
-        )
+        if (mode !is InteractionMode.ReadOnly) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_default_plus),
+                contentDescription = "Create new type",
+                modifier = Modifier
+                    .align(Alignment.BottomEnd)
+                    .padding(end = 20.dp, bottom = 12.dp)
+                    .size(18.dp)
+                    .noRippleClickable { onCreateNewTypeClicked() },
+                contentScale = ContentScale.Inside
+            )
+        }
     }
 }
 

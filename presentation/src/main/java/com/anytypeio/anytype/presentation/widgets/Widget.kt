@@ -12,9 +12,11 @@ import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -33,7 +35,8 @@ import timber.log.Timber
 
 enum class SectionType {
     PINNED,
-    TYPES
+    TYPES,
+    NONE
 }
 
 sealed class Widget {
@@ -109,12 +112,12 @@ sealed class Widget {
     ) : Widget()
 
     data class Chat(
-        override val id: Id,
-        override val source: Source.Bundled.Chat,
+        override val id: Id = BundledWidgetSourceIds.CHAT,
+        override val source: Source.Bundled.Chat = Source.Bundled.Chat,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
-        override val icon: ObjectIcon,
-        override val sectionType: SectionType
+        override val icon: ObjectIcon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary),
+        override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
     sealed class Section : Widget() {
@@ -306,16 +309,8 @@ suspend fun List<Block>.parseWidgets(
                             }
 
                             is Widget.Source.Bundled.Chat -> {
-                                add(
-                                    Widget.Chat(
-                                        id = w.id,
-                                        source = source,
-                                        config = config,
-                                        icon = icon,
-                                        isAutoCreated = widgetContent.isAutoAdded,
-                                        sectionType = SectionType.PINNED
-                                    )
-                                )
+                                Timber.d("DROID-4016, Skipping chat widget in pinned section")
+                                //DROID-4016 skip chat widget
                             }
 
                             else -> {
@@ -413,6 +408,7 @@ data class WidgetUiParams(
  * No side effects; suitable for unit testing.
  */
 suspend fun buildWidgets(
+    spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success,
     params: WidgetUiParams,
     urlBuilder: UrlBuilder,
@@ -420,6 +416,16 @@ suspend fun buildWidgets(
 ): List<Widget> {
     val currentCollapsedSections = params.collapsedSections
     return buildList {
+
+        //Space chat widget for Shared Data Spaces
+        val spaceChatId = state.config.spaceChatId
+        if (!spaceChatId.isNullOrEmpty()
+            && spaceView.isShared
+            && spaceView.spaceUxType != SpaceUxType.CHAT
+        ) {
+            add(Widget.Chat(config = state.config))
+        }
+
         // Pinned widgets (from blocks)
         val pinnedWidgets = state.obj.blocks.parseWidgets(
             root = state.obj.root,
@@ -462,15 +468,17 @@ suspend fun buildWidgets(
                 storeOfObjectTypes = storeOfObjectTypes
             )
             addAll(types)
-            add(
-                Widget.Bin(
-                    id = WIDGET_BIN_ID,
-                    source = Widget.Source.Bundled.Bin,
-                    config = state.config,
-                    icon = ObjectIcon.None,
-                    sectionType = SectionType.PINNED
+            if (params.isOwnerOrEditor) {
+                add(
+                    Widget.Bin(
+                        id = WIDGET_BIN_ID,
+                        source = Widget.Source.Bundled.Bin,
+                        config = state.config,
+                        icon = ObjectIcon.None,
+                        sectionType = SectionType.PINNED
+                    )
                 )
-            )
+            }
             Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
         } else {
             Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")

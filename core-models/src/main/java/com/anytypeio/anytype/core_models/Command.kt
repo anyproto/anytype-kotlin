@@ -514,7 +514,7 @@ sealed class Command {
 
     data class DeleteRelationOptions(val optionIds: List<Id>)
 
-    data class RelationListWithValue(val space: SpaceId, val value: Any?)
+    data class RelationListWithValue(val space: SpaceId, val value: String)
 
     data class ObjectDateByTimestamp(val space: SpaceId, val timeInSeconds: TimeInSeconds)
 

@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
@@ -55,4 +57,6 @@ interface CreateSpaceDependencies : ComponentDependencies {
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun spaceViews(): SpaceViewSubscriptionContainer
     fun userSettingsRepo(): UserSettingsRepository
+    fun permissions(): UserPermissionProvider
+    fun profileContainer(): ProfileSubscriptionManager
 }

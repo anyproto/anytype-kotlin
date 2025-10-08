@@ -70,6 +70,7 @@ import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -425,13 +426,13 @@ fun SharedSpacesIncentiveItem(
                 id = R.string.membership_space_settings_share_limit,
                 count
             ),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.membership_space_settings_share_limit_2),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title3
         )
         Row(
@@ -450,7 +451,7 @@ fun SharedSpacesIncentiveItem(
                 text = stringResource(id = R.string.multiplayer_manage_spaces),
                 style = UxSmallTextMedium
             )
-            ButtonUpgrade(
+            ButtonUpgradeBlack(
                 modifier = Modifier
                     .weight(1f)
                     .padding(top = 12.dp)
@@ -465,7 +466,7 @@ fun SharedSpacesIncentiveItem(
     }
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 private fun PrivateSpaceSharingPreview() {
     SharedSpacesIncentiveItem(
@@ -878,7 +879,7 @@ fun InviteLinkDisplay(
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceJoinRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -907,7 +908,7 @@ fun SpaceJoinRequestPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceJoinLongTitleRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -931,7 +932,7 @@ fun SpaceJoinLongTitleRequestPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceLeaveRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -955,18 +956,7 @@ fun SpaceLeaveRequestPreview() {
 }
 
 @Composable
-@Preview(
-    backgroundColor = 0xFFFFFFFF,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Light Mode"
-)
-@Preview(
-    backgroundColor = 0x000000,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Mode"
-)
+@DefaultPreviews
 fun ShareSpaceScreenPreview1() {
     ShareSpaceScreen(
         onShareInviteLinkClicked = {},
@@ -1055,7 +1045,7 @@ fun ShareSpaceScreenPreview1() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceOwnerMemberPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -1078,7 +1068,7 @@ private fun SpaceOwnerMemberPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceEditorMemberPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -1117,7 +1107,7 @@ private fun SpaceEditorMemberPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceMemberLongNamePreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(

@@ -18,6 +18,7 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -107,10 +108,7 @@ fun ButtonIncentiveSecond(
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed = interactionSource.collectIsPressedAsState()
-    val backgroundColor =
-        if (isPressed.value) colorResource(id = R.color.button_pressed) else colorResource(
-            id = R.color.shape_transparent_primary
-        )
+    val backgroundColor = Color(0x1C000000)
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(
@@ -129,7 +127,7 @@ fun ButtonIncentiveSecond(
                 modifier = Modifier.wrapContentSize(),
                 text = text,
                 style = style,
-                color = colorResource(id = R.color.text_primary)
+                color = colorResource(id = R.color.black)
             )
         }
     }

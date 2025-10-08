@@ -20,12 +20,10 @@ object NotificationStateCalculator {
      * If called for a space without chat functionality, returns false (unmuted) as a safe default.
      *
      * @param spaceView The space view to check. Should have chat functionality.
-     * @param notificationPermissionManager Not used for spaces with chat, kept for API compatibility.
      * @return true if the space is muted (notifications disabled or mentions-only), false otherwise
      */
     fun calculateMutedState(
-        spaceView: ObjectWrapper.SpaceView?,
-        @Suppress("UNUSED_PARAMETER") notificationPermissionManager: NotificationPermissionManager
+        spaceView: ObjectWrapper.SpaceView?
     ): Boolean {
         // Return false (unmuted) as safe default for null or non-chat spaces
         if (spaceView == null || !spaceView.hasChatFunctionality()) {

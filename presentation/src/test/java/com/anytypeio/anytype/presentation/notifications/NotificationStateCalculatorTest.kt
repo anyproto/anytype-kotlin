@@ -14,9 +14,6 @@ import org.mockito.MockitoAnnotations
 class NotificationStateCalculatorTest {
 
     @Mock
-    private lateinit var mockNotificationPermissionManager: NotificationPermissionManager
-
-    @Mock
     private lateinit var mockSpaceView: ObjectWrapper.SpaceView
 
     @Before
@@ -28,10 +25,9 @@ class NotificationStateCalculatorTest {
     fun `calculateMutedState should return false when spaceView is null`() {
         // Given
         val spaceView: ObjectWrapper.SpaceView? = null
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(spaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(spaceView)
 
         // Then
         assertFalse("Should return false when spaceView is null", result)
@@ -42,10 +38,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat functionality and notifications enabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.ALL)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertFalse("Should return false when space allows all notifications", result)
@@ -56,10 +51,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat functionality but notifications disabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Should return true when space notifications are disabled", result)
@@ -70,10 +64,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat functionality set to mentions only
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.MENTIONS)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Should return true when space is set to mentions only", result)
@@ -84,10 +77,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat and space notifications enabled, but app notifications disabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.ALL)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(false)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertFalse("Should return false - app notification state is ignored for chat spaces", result)
@@ -98,10 +90,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat and space notifications disabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(false)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Should return true when space notifications are disabled", result)
@@ -112,10 +103,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat and mentions-only mode
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.MENTIONS)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(false)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Should return true when space is mentions only", result)
@@ -127,10 +117,9 @@ class NotificationStateCalculatorTest {
         // Given - Space with chat but null notification mode
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(null)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertFalse("Should return false when spacePushNotificationMode is null (treated as unmuted)", result)
@@ -143,7 +132,7 @@ class NotificationStateCalculatorTest {
         `when`(mockSpaceView.chatId).thenReturn(null)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then - Should return false (unmuted) as safe default
         assertFalse("Should return false (unmuted) for non-chat spaces as safe default", result)
@@ -155,10 +144,9 @@ class NotificationStateCalculatorTest {
         // Given - Chat space with space-level notifications enabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.ALL)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(false)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertFalse("Chat space should show unmuted state (false) when space notifications are enabled, regardless of app notification state", result)
@@ -169,10 +157,9 @@ class NotificationStateCalculatorTest {
         // Given - Chat space with space-level notifications disabled
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.DISABLE)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Chat space should show muted state (true) when space notifications are disabled", result)
@@ -183,10 +170,9 @@ class NotificationStateCalculatorTest {
         // Given - Chat space with mentions-only notifications
         `when`(mockSpaceView.spaceUxType).thenReturn(SpaceUxType.CHAT)
         `when`(mockSpaceView.spacePushNotificationMode).thenReturn(NotificationState.MENTIONS)
-        `when`(mockNotificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
 
         // When
-        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView, mockNotificationPermissionManager)
+        val result = NotificationStateCalculator.calculateMutedState(mockSpaceView)
 
         // Then
         assertTrue("Chat space should show muted state (true) when space is set to mentions only", result)

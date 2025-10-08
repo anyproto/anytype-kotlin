@@ -72,7 +72,6 @@ fun ButtonUpgradeBlack(
     style: TextStyle = BodyCalloutRegular
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed = interactionSource.collectIsPressedAsState()
     val backgroundColor = colorResource(id = R.color.black)
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
@@ -84,8 +83,7 @@ fun ButtonUpgradeBlack(
                     interactionSource = interactionSource,
                     onClick = onClick,
                     indication = null
-                )
-            ,
+                ),
             contentAlignment = Alignment.Center
         ) {
             Text(

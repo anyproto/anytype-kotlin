@@ -343,7 +343,9 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
     }
 
     private fun showVersion() {
-        binding.version.text = getVersionText()
+        if (BuildConfig.DEBUG) {
+            binding.version.text = getVersionText()
+        }
     }
 
     private fun getVersionText(): String {

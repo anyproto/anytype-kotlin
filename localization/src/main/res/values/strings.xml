@@ -933,6 +933,8 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">Change icon</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">Space name</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>

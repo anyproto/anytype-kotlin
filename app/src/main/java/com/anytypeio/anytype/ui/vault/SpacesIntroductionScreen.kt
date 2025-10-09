@@ -37,25 +37,16 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.ui.draw.clip
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import kotlinx.coroutines.launch
 
-/**
- * Spaces Introduction screen following iOS design specifications.
- *
- * Design spacing (from iOS):
- * - 48dp top spacing after DragIndicator
- * - 34dp between carousel and page indicator
- * - 16dp between page indicator and button
- * - 20dp bottom spacing after button
- * - 40dp between image and title
- * - 9dp between title and description
- * - 24dp horizontal padding for text content
- */
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SpacesIntroductionScreen(
@@ -103,22 +94,29 @@ fun SpacesIntroductionScreen(
             ) { page ->
                 when (page) {
                     0 -> IntroductionPage(
-                        imageRes = R.drawable.introduce_chat_2,
+                        imageLightRes = R.drawable.introduce_chat_1,
+                        imageDarkRes = R.drawable.introduce_chat_1_dark,
                         titleRes = R.string.spaces_introduction_page1_title,
                         descriptionRes = R.string.spaces_introduction_page1_description
                     )
+
                     1 -> IntroductionPage(
-                        imageRes = R.drawable.introduce_chat_2,
+                        imageLightRes = R.drawable.introduce_chat_2,
+                        imageDarkRes = R.drawable.introduce_chat_2_dark,
                         titleRes = R.string.spaces_introduction_page2_title,
                         descriptionRes = R.string.spaces_introduction_page2_description
                     )
+
                     2 -> IntroductionPage(
-                        imageRes = R.drawable.introduce_chat_3,
+                        imageLightRes = R.drawable.introduce_chat_3,
+                        imageDarkRes = R.drawable.introduce_chat_3_dark,
                         titleRes = R.string.spaces_introduction_page3_title,
                         descriptionRes = R.string.spaces_introduction_page3_description
                     )
+
                     3 -> IntroductionPage(
-                        imageRes = R.drawable.introduce_chat_4,
+                        imageLightRes = R.drawable.introduce_chat_4,
+                        imageDarkRes = R.drawable.introduce_chat_4_dark,
                         titleRes = R.string.spaces_introduction_page4_title,
                         descriptionRes = R.string.spaces_introduction_page4_description
                     )
@@ -156,7 +154,7 @@ fun SpacesIntroductionScreen(
             Spacer(modifier = Modifier.height(16.dp))
 
             // Action button
-            ButtonOnboardingPrimaryLarge(
+            ButtonSecondary(
                 onClick = {
                     if (pagerState.currentPage < 3) {
                         scope.launch {
@@ -172,7 +170,7 @@ fun SpacesIntroductionScreen(
                     stringResource(id = R.string.spaces_introduction_try_it)
                 },
                 size = ButtonSize.Large,
-                modifierBox = Modifier
+                modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 24.dp)
             )
@@ -188,13 +186,20 @@ fun SpacesIntroductionScreen(
  * - 40dp between image and title
  * - 9dp between title and description
  * - 24dp horizontal padding for text
+ *
+ * @param imageLightRes Image resource for light theme
+ * @param imageDarkRes Image resource for dark theme
+ * @param titleRes Title string resource
+ * @param descriptionRes Description string resource
  */
 @Composable
 private fun IntroductionPage(
-    imageRes: Int,
+    imageLightRes: Int,
+    imageDarkRes: Int,
     titleRes: Int,
     descriptionRes: Int
 ) {
+    val imageRes = if (isSystemInDarkTheme()) imageDarkRes else imageLightRes
     Column(
         modifier = Modifier
             .fillMaxWidth()

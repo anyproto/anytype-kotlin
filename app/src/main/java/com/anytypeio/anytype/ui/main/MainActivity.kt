@@ -791,7 +791,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         findViewById<ComposeView>(R.id.composeOverlay).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                val showSpacesIntroduction by viewModel.showSpacesIntroduction.collectAsState()
+                val showSpacesIntroduction by vm.showSpacesIntroduction.collectAsState()
                 if (showSpacesIntroduction != null) {
                     SpacesIntroductionScreen(
                         onDismiss = {

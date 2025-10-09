@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -39,9 +40,21 @@ import com.anytypeio.anytype.core_ui.views.BodyCallout
 import androidx.compose.ui.draw.clip
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import kotlinx.coroutines.launch
 
+/**
+ * Spaces Introduction screen following iOS design specifications.
+ *
+ * Design spacing (from iOS):
+ * - 48dp top spacing after DragIndicator
+ * - 34dp between carousel and page indicator
+ * - 16dp between page indicator and button
+ * - 20dp bottom spacing after button
+ * - 40dp between image and title
+ * - 9dp between title and description
+ * - 24dp horizontal padding for text content
+ */
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
 fun SpacesIntroductionScreen(
@@ -64,43 +77,65 @@ fun SpacesIntroductionScreen(
     ) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 8.dp)
+                .fillMaxSize()
                 .background(
                     shape = RoundedCornerShape(16.dp),
                     color = colorResource(id = R.color.background_secondary)
                 )
         ) {
+            // Drag indicator
             Dragger(
                 modifier = Modifier
                     .align(Alignment.CenterHorizontally)
                     .padding(vertical = 8.dp)
             )
 
+            // 48dp spacing after drag indicator (matching iOS)
+            Spacer(modifier = Modifier.height(48.dp))
+
+            // Carousel
             HorizontalPager(
                 state = pagerState,
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .weight(0.7f),
             ) { page ->
                 when (page) {
-                    0 -> IntroductionPageOne()
-                    1 -> IntroductionPageTwo()
-                    2 -> IntroductionPageThree()
-                    3 -> IntroductionPageFour()
+                    0 -> IntroductionPage(
+                        imageRes = R.drawable.introduce_chat_2,
+                        titleRes = R.string.spaces_introduction_page1_title,
+                        descriptionRes = R.string.spaces_introduction_page1_description
+                    )
+                    1 -> IntroductionPage(
+                        imageRes = R.drawable.introduce_chat_2,
+                        titleRes = R.string.spaces_introduction_page2_title,
+                        descriptionRes = R.string.spaces_introduction_page2_description
+                    )
+                    2 -> IntroductionPage(
+                        imageRes = R.drawable.introduce_chat_3,
+                        titleRes = R.string.spaces_introduction_page3_title,
+                        descriptionRes = R.string.spaces_introduction_page3_description
+                    )
+                    3 -> IntroductionPage(
+                        imageRes = R.drawable.introduce_chat_4,
+                        titleRes = R.string.spaces_introduction_page4_title,
+                        descriptionRes = R.string.spaces_introduction_page4_description
+                    )
                 }
             }
 
+            // 34dp spacing between carousel and page indicator (matching iOS)
+            Spacer(modifier = Modifier.height(34.dp))
+
             // Page indicator
             Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 16.dp),
+                modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 repeat(4) { index ->
                     Box(
                         modifier = Modifier
-                            .size(if (pagerState.currentPage == index) 8.dp else 6.dp)
+                            .size(6.dp)
                             .clip(CircleShape)
                             .background(
                                 if (pagerState.currentPage == index)
@@ -114,6 +149,9 @@ fun SpacesIntroductionScreen(
                     }
                 }
             }
+
+            // 16dp spacing between page indicator and button (matching iOS)
+            Spacer(modifier = Modifier.height(16.dp))
 
             // Action button
             ButtonOnboardingPrimaryLarge(
@@ -134,141 +172,65 @@ fun SpacesIntroductionScreen(
                 size = ButtonSize.Large,
                 modifierBox = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .padding(bottom = 16.dp)
+                    .padding(horizontal = 24.dp)
             )
+
+            // 20dp bottom spacing (matching iOS)
+            Spacer(modifier = Modifier.height(20.dp))
         }
     }
 }
 
+/**
+ * Single page content following iOS spacing specifications:
+ * - 40dp between image and title
+ * - 9dp between title and description
+ * - 24dp horizontal padding for text
+ */
 @Composable
-private fun IntroductionPageOne() {
+private fun IntroductionPage(
+    imageRes: Int,
+    titleRes: Int,
+    descriptionRes: Int
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp),
+            .fillMaxHeight()
+            .padding(horizontal = 20.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Image - takes maximum available height
         Image(
-            painter = painterResource(id = R.drawable.ic_space_type_space),
+            painter = painterResource(id = imageRes),
             contentDescription = null,
             modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 24.dp)
+                .fillMaxWidth()
+                .weight(1f)
         )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page1_title),
-            style = Title1,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page1_description),
-            style = BodyCallout,
-            color = colorResource(id = R.color.text_secondary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-    }
-}
 
-@Composable
-private fun IntroductionPageTwo() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_space_type_chat),
-            contentDescription = null,
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 24.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page2_title),
-            style = Title1,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page2_description),
-            style = BodyCallout,
-            color = colorResource(id = R.color.text_secondary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-    }
-}
+        // 40dp spacing between image and title (matching iOS)
+        Spacer(modifier = Modifier.height(40.dp))
 
-@Composable
-private fun IntroductionPageThree() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_plus_18),
-            contentDescription = null,
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 24.dp)
-        )
+        // Title
         Text(
-            text = stringResource(id = R.string.spaces_introduction_page3_title),
-            style = Title1,
+            text = stringResource(id = titleRes),
+            style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 12.dp)
+            textAlign = TextAlign.Center
         )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page3_description),
-            style = BodyCallout,
-            color = colorResource(id = R.color.text_secondary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
-    }
-}
 
-@Composable
-private fun IntroductionPageFour() {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 20.dp)
-            .padding(top = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
-            contentDescription = null,
-            modifier = Modifier
-                .size(120.dp)
-                .padding(bottom = 24.dp)
-        )
+        // 9dp spacing between title and description (matching iOS)
+        Spacer(modifier = Modifier.height(9.dp))
+
+        // Description with 24dp horizontal padding (matching iOS)
         Text(
-            text = stringResource(id = R.string.spaces_introduction_page4_title),
-            style = Title1,
+            text = stringResource(id = descriptionRes),
+            style = BodyCallout,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-        Text(
-            text = stringResource(id = R.string.spaces_introduction_page4_description),
-            style = BodyCallout,
-            color = colorResource(id = R.color.text_secondary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier.padding(bottom = 32.dp)
+            modifier = Modifier.padding(horizontal = 24.dp),
+            maxLines = 3
         )
     }
 }

@@ -8,7 +8,7 @@ sealed class SpaceInviteLinkAccessLevel {
     /**
      * Link is disabled - no active invitation link, possibleToUpdate indicates if user can change invite link type
      */
-    data class LinkDisabled(val possibleToUpdate: Boolean = false) : SpaceInviteLinkAccessLevel()
+    data class LinkDisabled(val possibleToUpdate: Boolean = true) : SpaceInviteLinkAccessLevel()
 
     /**
      * Editor access - users can edit the space content

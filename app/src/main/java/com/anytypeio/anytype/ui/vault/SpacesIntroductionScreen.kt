@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -36,8 +37,8 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.views.BodyCallout
 import androidx.compose.ui.draw.clip
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
@@ -77,9 +78,10 @@ fun SpacesIntroductionScreen(
     ) {
         Column(
             modifier = Modifier
+                .systemBarsPadding()
                 .fillMaxSize()
                 .background(
-                    shape = RoundedCornerShape(16.dp),
+                    shape = RoundedCornerShape(12.dp),
                     color = colorResource(id = R.color.background_secondary)
                 )
         ) {
@@ -226,7 +228,7 @@ private fun IntroductionPage(
         // Description with 24dp horizontal padding (matching iOS)
         Text(
             text = stringResource(id = descriptionRes),
-            style = BodyCallout,
+            style = BodyRegular,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 24.dp),

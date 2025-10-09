@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.updateUserProperties
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
@@ -24,8 +25,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.config.InitializeAppInstallationData
-import com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -48,6 +47,10 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
+import com.anytypeio.anytype.presentation.main.MainViewModel.Command.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -89,10 +92,8 @@ class MainViewModel(
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
     private val scope: CoroutineScope,
-    private val authRepository: com.anytypeio.anytype.domain.auth.repo.AuthRepository,
-    private val initializeAppInstallationData: InitializeAppInstallationData,
-    private val shouldShowFeatureIntroduction: ShouldShowFeatureIntroduction,
-    private val userSettingsRepository: com.anytypeio.anytype.domain.config.UserSettingsRepository,
+    private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
+    private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
     private val appInfo: AppInfo
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
@@ -104,17 +105,17 @@ class MainViewModel(
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
-    val showSpacesIntroduction: MutableStateFlow<Boolean> = MutableStateFlow(false)
+    val showSpacesIntroduction: MutableStateFlow<Account?> = MutableStateFlow(null)
 
     init {
+        subscribeToShowSpacesIntroduction()
         subscribeToActiveSpaceWallpaper()
-        checkFeatureIntroductions()
         viewModelScope.launch {
             interceptAccountStatus.build().collect { status ->
                 when (status) {
                     is AccountStatus.PendingDeletion -> {
                         commands.emit(
-                            Command.ShowDeletedAccountScreen(
+                            ShowDeletedAccountScreen(
                                 deadline = status.deadline
                             )
                         )
@@ -284,9 +285,9 @@ class MainViewModel(
     fun onIntentCreateObject(type: Id) {
         Timber.d("onIntentCreateObject: $type")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.OpenCreateNewType(type))
                     }
@@ -297,9 +298,9 @@ class MainViewModel(
 
     fun onIntentTextShare(data: String) {
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.Sharing.Text(data))
                     }
@@ -311,9 +312,9 @@ class MainViewModel(
     fun onIntentMultipleFilesShare(uris: List<String>) {
         Timber.d("onIntentFileShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.File(uris.first()))
@@ -329,9 +330,9 @@ class MainViewModel(
     fun onIntentMultipleImageShare(uris: List<String>) {
         Timber.d("onIntentImageShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.Image(uris.first()))
@@ -347,9 +348,9 @@ class MainViewModel(
     fun onIntentMultipleVideoShare(uris: List<String>) {
         Timber.d("onIntentVideoShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.Sharing.Videos(uris))
                     }
@@ -367,9 +368,9 @@ class MainViewModel(
     fun handleNewDeepLink(deeplink: DeepLinkResolver.Action) {
         deepLinkJobs.cancel()
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { Timber.e(it, "Failed to check authentication status") },
-                success = { authStatus -> processDeepLinkBasedOnAuth(authStatus, deeplink) }
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { Timber.e(it, "Failed to check authentication status") },
+                onSuccess = { (authStatus, account) -> processDeepLinkBasedOnAuth(authStatus, deeplink) }
             )
         }
     }
@@ -574,70 +575,60 @@ class MainViewModel(
     }
 
     /**
-     * Checks and shows feature introductions (like Spaces Introduction) after account starts.
-     * Only shows to existing users (not fresh installs).
+     * Subscribes to feature introduction checks. Follows the same pattern as
+     * [subscribeToActiveSpaceWallpaper] for consistency with the codebase.
+     *
+     * Uses [ObserveShowSpacesIntroduction] which:
+     * - Waits for account start on Dispatchers.IO
+     * - Checks if should show (existing users only, not fresh installs)
+     * - Emits a single boolean result
      */
-    private fun checkFeatureIntroductions() {
+    private fun subscribeToShowSpacesIntroduction() {
         viewModelScope.launch {
-            try {
-                // Step 1: Wait for account to start
-                Timber.d("FeatureIntroduction: Waiting for account to start...")
-                awaitAccountStartManager.awaitStart().take(1).collect {
-                    Timber.d("FeatureIntroduction: Account started")
-
-                    // Step 2: Get current account
-                    val account = authRepository.getCurrentAccount()
-                    Timber.d("FeatureIntroduction: Got account: ${account.id}")
-
-                    // Step 3: Initialize installation data
-                    val installData = initializeAppInstallationData.run(
-                        com.anytypeio.anytype.domain.config.InitializeAppInstallationData.Params(
-                            account = account,
-                            currentAppVersion = appInfo.versionName
-                        )
-                    )
-                    Timber.d("FeatureIntroduction: isFirstLaunch = ${installData.isFirstLaunch}")
-
-                    // Step 4: Check if should show spaces introduction
-                    val result = shouldShowFeatureIntroduction.run(
-                        com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction.Params(
-                            account = account,
-                            currentAppVersion = appInfo.versionName,
-                            featureType = ShouldShowFeatureIntroduction.FeatureType.SPACES_INTRODUCTION
-                        )
-                    )
-
-                    Timber.d("FeatureIntroduction: result = ${result::class.simpleName}")
-
-                    // Step 5: Show if needed
-                    if (result.shouldDisplay()) {
-                        Timber.d("FeatureIntroduction: Showing spaces introduction")
-                        showSpacesIntroduction.value = true
-                    } else {
-                        Timber.d("FeatureIntroduction: Not showing - ${result::class.simpleName}")
-                        // Always mark as shown for fresh installs so they never see it
-                        userSettingsRepository.setHasShownSpacesIntroduction(account, true)
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
+                    if (status == AuthStatus.AUTHORIZED && account != null) {
+                        observeShowSpacesIntroduction.flow(
+                            ObserveShowSpacesIntroduction.Params(
+                                currentAppVersion = appInfo.versionName,
+                                account = account
+                            )
+                        ).collect { shouldShow ->
+                            if (shouldShow) {
+                                showSpacesIntroduction.value = account
+                            } else {
+                                showSpacesIntroduction.value = null
+                            }
+                        }
                     }
                 }
-            } catch (e: Exception) {
-                Timber.e(e, "FeatureIntroduction: Error checking feature introductions")
-            }
+            )
         }
     }
 
     /**
      * Called when user dismisses or completes the Spaces Introduction screen.
+     * Marks the feature as shown so it won't appear again.
      */
     fun onSpacesIntroductionDismissed() {
         viewModelScope.launch {
-            try {
-                val account = authRepository.getCurrentAccount()
-                userSettingsRepository.setHasShownSpacesIntroduction(account, true)
-                showSpacesIntroduction.value = false
-                Timber.d("FeatureIntroduction: Marked as shown and dismissed")
-            } catch (e: Exception) {
-                Timber.e(e, "FeatureIntroduction: Error marking spaces introduction as shown")
+            val account = showSpacesIntroduction.value
+            if (account == null) {
+                Timber.w("Tried to mark spaces introduction as shown, but account is null")
+                return@launch
             }
+            val params = SetSpacesIntroductionShown.Params(account)
+            setSpacesIntroductionShown.async(params).fold(
+                onFailure = { e ->
+                    Timber.e(e, "Error while marking spaces introduction as shown")
+                    showSpacesIntroduction.value = null
+                },
+                onSuccess = {
+                    Timber.d("Marked spaces introduction as shown for account ${account.id}")
+                    showSpacesIntroduction.value = null
+                }
+            )
         }
     }
 

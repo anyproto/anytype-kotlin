@@ -25,10 +25,8 @@ import com.anytypeio.anytype.presentation.notifications.NotificationActionDelega
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.config.InitializeAppInstallationData
-import com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 
 class MainViewModelFactory @Inject constructor(
@@ -54,10 +52,8 @@ class MainViewModelFactory @Inject constructor(
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
     private val scope: CoroutineScope,
-    private val authRepository: AuthRepository,
-    private val initializeAppInstallationData: InitializeAppInstallationData,
-    private val shouldShowFeatureIntroduction: ShouldShowFeatureIntroduction,
-    private val userSettingsRepository: UserSettingsRepository,
+    private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
+    private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
     private val appInfo: AppInfo
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
@@ -86,10 +82,8 @@ class MainViewModelFactory @Inject constructor(
         urlBuilder = urlBuilder,
         appShutdown = appShutdown,
         scope = scope,
-        authRepository = authRepository,
-        initializeAppInstallationData = initializeAppInstallationData,
-        shouldShowFeatureIntroduction = shouldShowFeatureIntroduction,
-        userSettingsRepository = userSettingsRepository,
+        observeShowSpacesIntroduction = observeShowSpacesIntroduction,
+        setSpacesIntroductionShown = setSpacesIntroductionShown,
         appInfo = appInfo
     ) as T
 }

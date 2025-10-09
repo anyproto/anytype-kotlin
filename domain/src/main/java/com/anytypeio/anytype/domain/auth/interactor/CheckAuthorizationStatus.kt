@@ -1,8 +1,10 @@
 package com.anytypeio.anytype.domain.auth.interactor
 
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import javax.inject.Inject
 
 /**
@@ -11,16 +13,17 @@ import javax.inject.Inject
  * @param repository repository containing information about available accounts
  */
 class CheckAuthorizationStatus @Inject constructor(
-    private val repository: AuthRepository
-) : BaseUseCase<AuthStatus, Unit>() {
+    private val repository: AuthRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<Unit, Pair<AuthStatus, Account?>>(dispatchers.io) {
 
-    override suspend fun run(params: Unit) = safe {
-        repository.getAccounts().let { accounts ->
-            val mnemonic= repository.getMnemonic()
+    override suspend fun doWork(params: Unit): Pair<AuthStatus, Account?> {
+        return repository.getAccounts().let { accounts ->
+            val mnemonic = repository.getMnemonic()
             if (accounts.isNotEmpty() && !mnemonic.isNullOrBlank())
-                AuthStatus.AUTHORIZED
+                AuthStatus.AUTHORIZED to accounts.firstOrNull()
             else
-                AuthStatus.UNAUTHORIZED
+                AuthStatus.UNAUTHORIZED to null
         }
     }
 }

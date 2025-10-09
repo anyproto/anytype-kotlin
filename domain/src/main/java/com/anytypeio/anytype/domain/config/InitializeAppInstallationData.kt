@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.ResultInteractor
 import javax.inject.Inject
 
 /**
- * Use case for initializing and tracking app installation data, similar to iOS storeData() logic.
+ * Use case for initializing and tracking app installation data.
  *
  * This use case:
  * 1. Checks if installedAtDate exists (to determine if this is a fresh install)

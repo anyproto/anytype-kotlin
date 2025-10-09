@@ -21,7 +21,7 @@ class CheckAuthorizationStatus @Inject constructor(
         return repository.getAccounts().let { accounts ->
             val mnemonic = repository.getMnemonic()
             if (accounts.isNotEmpty() && !mnemonic.isNullOrBlank())
-                AuthStatus.AUTHORIZED to accounts[0]
+                AuthStatus.AUTHORIZED to accounts.firstOrNull()
             else
                 AuthStatus.UNAUTHORIZED to null
         }

@@ -11,6 +11,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.ImageView
+import androidx.compose.ui.unit.dp
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_ui.R
@@ -50,6 +51,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private var imageCornerRadius: Float = 0F
     private var isImageWithCorners: Boolean = false
     private val density = context.resources.displayMetrics.density
+    private var withBackgrounds: Boolean = false
 
     init {
         setupAttributeValues(attrs)
@@ -64,6 +66,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         val emojiSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_emojiSize, DEFAULT_SIZE)
+        withBackgrounds = attrs.getBoolean(R.styleable.ObjectIconWidget_emojiContainerBackground, false)
         val imageSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageSize, DEFAULT_SIZE)
         val checkboxSize =
@@ -107,7 +110,13 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     fun setIcon(icon: ObjectIcon) {
         // Reset backgrounds
-        binding.emojiContainer.background = null
+        if (withBackgrounds) {
+            binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
+            binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
+        } else {
+            binding.root.background = null
+            binding.emojiContainer.background = null
+        }
         binding.ivImage.background = null
 
         when (icon) {
@@ -216,7 +225,13 @@ class ObjectIconWidget @JvmOverloads constructor(
         emoji: String?,
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
-        binding.emojiContainer.background = null
+        if (withBackgrounds) {
+            binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
+            binding.emojiContainer.setBackgroundResource(R.drawable.bg_object_header_emoji_container)
+        } else {
+            binding.root.background = null
+            binding.emojiContainer.background = null
+        }
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()
@@ -232,10 +247,7 @@ class ObjectIconWidget @JvmOverloads constructor(
                 if (adapted != Emojifier.Config.EMPTY_URI) {
                     binding.tvEmojiFallback.gone()
                     binding.ivEmoji.visible()
-                    binding.ivEmoji.load(adapted) {
-                        diskCachePolicy(CachePolicy.ENABLED)
-                        memoryCachePolicy(CachePolicy.ENABLED)
-                    }
+                    binding.ivEmoji.load(adapted)
                 } else {
                     setTypeIcon(fallback)
                 }
@@ -298,7 +310,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private fun setTask(isChecked: Boolean?) {
         with(binding) {
             ivCheckbox.visible()
-            ivCheckbox.background = context.drawable(R.drawable.ic_data_view_grid_checkbox_selector)
+            ivCheckbox.background = context.drawable(R.drawable.ic_object_icon_task_selector)
             ivCheckbox.isActivated = isChecked ?: false
             initialContainer.invisible()
             emojiContainer.invisible()
@@ -392,7 +404,10 @@ class ObjectIconWidget @JvmOverloads constructor(
                 val backgroundDrawable = GradientDrawable().apply {
                     shape = GradientDrawable.RECTANGLE
                     setColor(context.color(R.color.shape_transparent_secondary))
-                    cornerRadius = getCornerRadiusInPx()
+                    cornerRadius = if (imageCornerRadius > 2)
+                        imageCornerRadius
+                    else
+                        getCornerRadiusInPx()
                 }
 
                 val layers = arrayOf(backgroundDrawable, iconDrawable)

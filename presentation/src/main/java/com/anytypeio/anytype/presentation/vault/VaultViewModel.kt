@@ -102,7 +102,9 @@ class VaultViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
     private val setSpaceOrder: SetSpaceOrder,
-    private val getSpaceWallpapers: GetSpaceWallpapers
+    private val getSpaceWallpapers: GetSpaceWallpapers,
+    private val shouldShowCreateSpaceBadge: com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge,
+    private val setCreateSpaceBadgeSeen: com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -114,6 +116,9 @@ class VaultViewModel(
 
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
+
+    // Track whether to show the blue dot badge on "Create a new space" button
+    val showCreateSpaceBadge = MutableStateFlow(false)
 
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
@@ -183,7 +188,7 @@ class VaultViewModel(
             try {
                 // Check notification permission status on app launch
                 updateNotificationBadgeState()
-                
+
                 // Observe permission state changes
                 notificationPermissionManager.permissionState().collect { permissionState ->
                     try {
@@ -195,6 +200,20 @@ class VaultViewModel(
             } catch (e: Exception) {
                 Timber.w(e, "Error initializing notification permission monitoring")
             }
+        }
+
+        // Track whether to show blue dot badge on "Create a new space" button
+        viewModelScope.launch {
+            shouldShowCreateSpaceBadge.async(Unit).fold(
+                onSuccess = { shouldShow ->
+                    showCreateSpaceBadge.value = shouldShow
+                    Timber.d("Create space badge visibility: $shouldShow")
+                },
+                onFailure = { e ->
+                    Timber.w(e, "Error checking create space badge visibility")
+                    showCreateSpaceBadge.value = false
+                }
+            )
         }
     }
 
@@ -551,6 +570,19 @@ class VaultViewModel(
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = true
+            if (showCreateSpaceBadge.value) {
+                // Mark the badge as seen when user clicks the create space button
+                setCreateSpaceBadgeSeen.async(Unit).fold(
+                    onSuccess = {
+                        Timber.d("Create space badge marked as seen")
+                    },
+                    onFailure = { e ->
+                        Timber.w(e, "Error marking create space badge as seen")
+                    }
+                )
+                showCreateSpaceBadge.value = false
+                Timber.d("Create space badge dismissed")
+            }
         }
     }
 

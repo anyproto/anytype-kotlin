@@ -42,6 +42,7 @@ fun VaultScreen(
     profile: AccountProfile,
     uiState: VaultUiState,
     showNotificationBadge: Boolean = false,
+    showCreateSpaceBadge: Boolean = false,
     onSpaceClicked: (VaultSpaceView) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
@@ -69,6 +70,7 @@ fun VaultScreen(
                 uiState = uiState,
                 searchQuery = searchQuery,
                 showNotificationBadge = showNotificationBadge,
+                showCreateSpaceBadge = showCreateSpaceBadge,
                 onCreateSpaceClicked = onCreateSpaceClicked,
                 onSettingsClicked = onSettingsClicked,
                 onUpdateSearchQuery = { query ->

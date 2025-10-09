@@ -10,6 +10,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -76,6 +78,7 @@ import kotlinx.coroutines.runBlocking
 import timber.log.Timber
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
@@ -783,13 +786,22 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     /**
      * Sets up feature introductions using Compose.
      * Shows SpacesIntroductionScreen only after account starts and only to existing users.
-     * The logic is managed by MainViewModel.
      */
     private fun setupFeatureIntroductions() {
         findViewById<ComposeView>(R.id.composeOverlay).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
-                FeatureIntroductionManager(viewModel = vm)
+                val showSpacesIntroduction by viewModel.showSpacesIntroduction.collectAsState()
+                if (showSpacesIntroduction != null) {
+                    SpacesIntroductionScreen(
+                        onDismiss = {
+                            vm.onSpacesIntroductionDismissed()
+                        },
+                        onComplete = {
+                            vm.onSpacesIntroductionDismissed()
+                        }
+                    )
+                }
             }
         }
     }

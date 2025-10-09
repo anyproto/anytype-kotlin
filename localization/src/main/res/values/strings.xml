@@ -2214,6 +2214,17 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Welcome to Spaces</string>
+    <string name="spaces_introduction_page1_description">Organize your content across multiple spaces. Each space is a separate environment with its own objects and settings.</string>
+    <string name="spaces_introduction_page2_title">Chats for Conversations</string>
+    <string name="spaces_introduction_page2_description">Create dedicated chat spaces for real-time communication with your team or community.</string>
+    <string name="spaces_introduction_page3_title">Easy Space Management</string>
+    <string name="spaces_introduction_page3_description">Tap the + button to create new spaces or join existing ones via QR code.</string>
+    <string name="spaces_introduction_page4_title">Collaborate Seamlessly</string>
+    <string name="spaces_introduction_page4_description">Join spaces via QR code to collaborate with others instantly.</string>
+    <string name="spaces_introduction_try_it">Let\'s try it</string>
+
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>

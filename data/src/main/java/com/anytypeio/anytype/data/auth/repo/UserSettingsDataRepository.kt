@@ -151,4 +151,26 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
         return cache.getCollapsedSectionIds(space)
     }
+
+    override suspend fun getHasShownSpacesIntroduction(account: Account): Boolean {
+        return cache.getHasShownSpacesIntroduction(account)
+    }
+
+    override suspend fun setHasShownSpacesIntroduction(
+        account: Account,
+        hasShown: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean {
+        TODO("Not yet implemented")
+    }
+
+    override suspend fun setHasSeenCreateSpaceBadge(
+        account: Account,
+        hasSeen: Boolean
+    ) {
+        TODO("Not yet implemented")
+    }
 }

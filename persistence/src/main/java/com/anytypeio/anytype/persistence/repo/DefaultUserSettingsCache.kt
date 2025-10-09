@@ -637,6 +637,56 @@ class DefaultUserSettingsCache(
             }
     }
 
+    override suspend fun getHasShownSpacesIntroduction(account: Account): Boolean {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.hasShownSpacesIntroduction ?: false
+            }
+            .first()
+    }
+
+    override suspend fun setHasShownSpacesIntroduction(account: Account, hasShown: Boolean) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        hasShownSpacesIntroduction = hasShown
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.hasSeenCreateSpaceBadge ?: false
+            }
+            .first()
+    }
+
+    override suspend fun setHasSeenCreateSpaceBadge(account: Account, hasSeen: Boolean) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        hasSeenCreateSpaceBadge = hasSeen
+                    )
+                )
+            )
+        }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"

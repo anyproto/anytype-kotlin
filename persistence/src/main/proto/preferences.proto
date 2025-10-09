@@ -19,6 +19,8 @@ message VaultPreference {
   bool isRelativeDates = 3;
   optional string dateFormat = 4;
   repeated string recentlyUsedChatReactions = 5;
+  bool hasShownSpacesIntroduction = 6;
+  bool hasSeenCreateSpaceBadge = 7;
 }
 
 message SpacePreference {

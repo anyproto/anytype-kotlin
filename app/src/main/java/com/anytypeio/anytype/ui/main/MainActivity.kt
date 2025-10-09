@@ -74,6 +74,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
@@ -116,6 +118,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         )
         inject()
         setupTheme()
+        setupFeatureIntroductions()
 
         if (savedInstanceState != null) vm.onRestore()
 
@@ -776,6 +779,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     override fun nav(): AppNavigation = navigator
+
+    /**
+     * Sets up feature introductions using Compose.
+     * Shows SpacesIntroductionScreen only after account starts and only to existing users.
+     * The logic is managed by MainViewModel.
+     */
+    private fun setupFeatureIntroductions() {
+        findViewById<ComposeView>(R.id.composeOverlay).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                FeatureIntroductionManager(viewModel = vm)
+            }
+        }
+    }
 
     fun inject() {
         componentManager().mainEntryComponent.get().inject(this)

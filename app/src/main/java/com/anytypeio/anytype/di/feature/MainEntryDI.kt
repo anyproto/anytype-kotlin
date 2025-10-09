@@ -88,7 +88,12 @@ object MainEntryModule {
         observeSpaceWallpaper: ObserveSpaceWallpaper,
         urlBuilder: UrlBuilder,
         appShutdown: AppShutdown,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        authRepository: com.anytypeio.anytype.domain.auth.repo.AuthRepository,
+        initializeAppInstallationData: com.anytypeio.anytype.domain.config.InitializeAppInstallationData,
+        shouldShowFeatureIntroduction: com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction,
+        userSettingsRepository: com.anytypeio.anytype.domain.config.UserSettingsRepository,
+        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -111,7 +116,12 @@ object MainEntryModule {
         observeSpaceWallpaper = observeSpaceWallpaper,
         urlBuilder = urlBuilder,
         appShutdown = appShutdown,
-        scope = scope
+        scope = scope,
+        authRepository = authRepository,
+        initializeAppInstallationData = initializeAppInstallationData,
+        shouldShowFeatureIntroduction = shouldShowFeatureIntroduction,
+        userSettingsRepository = userSettingsRepository,
+        appInfo = appInfo
     )
 
     @JvmStatic

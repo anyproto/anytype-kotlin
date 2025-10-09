@@ -25,6 +25,11 @@ import com.anytypeio.anytype.presentation.notifications.NotificationActionDelega
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import com.anytypeio.anytype.domain.auth.repo.AuthRepository
+import com.anytypeio.anytype.domain.config.InitializeAppInstallationData
+import com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
@@ -48,7 +53,12 @@ class MainViewModelFactory @Inject constructor(
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val authRepository: AuthRepository,
+    private val initializeAppInstallationData: InitializeAppInstallationData,
+    private val shouldShowFeatureIntroduction: ShouldShowFeatureIntroduction,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val appInfo: AppInfo
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -75,6 +85,11 @@ class MainViewModelFactory @Inject constructor(
         observeSpaceWallpaper = observeSpaceWallpaper,
         urlBuilder = urlBuilder,
         appShutdown = appShutdown,
-        scope = scope
+        scope = scope,
+        authRepository = authRepository,
+        initializeAppInstallationData = initializeAppInstallationData,
+        shouldShowFeatureIntroduction = shouldShowFeatureIntroduction,
+        userSettingsRepository = userSettingsRepository,
+        appInfo = appInfo
     ) as T
 }

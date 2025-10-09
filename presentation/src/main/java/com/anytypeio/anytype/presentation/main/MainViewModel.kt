@@ -24,6 +24,8 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.InitializeAppInstallationData
+import com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -45,6 +47,7 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -85,7 +88,12 @@ class MainViewModel(
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val authRepository: com.anytypeio.anytype.domain.auth.repo.AuthRepository,
+    private val initializeAppInstallationData: InitializeAppInstallationData,
+    private val shouldShowFeatureIntroduction: ShouldShowFeatureIntroduction,
+    private val userSettingsRepository: com.anytypeio.anytype.domain.config.UserSettingsRepository,
+    private val appInfo: AppInfo
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -96,9 +104,11 @@ class MainViewModel(
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
+    val showSpacesIntroduction: MutableStateFlow<Boolean> = MutableStateFlow(false)
 
     init {
         subscribeToActiveSpaceWallpaper()
+        checkFeatureIntroductions()
         viewModelScope.launch {
             interceptAccountStatus.build().collect { status ->
                 when (status) {
@@ -559,6 +569,74 @@ class MainViewModel(
                         triggeredByPush = true
                     )
                 )
+            }
+        }
+    }
+
+    /**
+     * Checks and shows feature introductions (like Spaces Introduction) after account starts.
+     * Only shows to existing users (not fresh installs).
+     */
+    private fun checkFeatureIntroductions() {
+        viewModelScope.launch {
+            try {
+                // Step 1: Wait for account to start
+                Timber.d("FeatureIntroduction: Waiting for account to start...")
+                awaitAccountStartManager.awaitStart().take(1).collect {
+                    Timber.d("FeatureIntroduction: Account started")
+
+                    // Step 2: Get current account
+                    val account = authRepository.getCurrentAccount()
+                    Timber.d("FeatureIntroduction: Got account: ${account.id}")
+
+                    // Step 3: Initialize installation data
+                    val installData = initializeAppInstallationData.run(
+                        com.anytypeio.anytype.domain.config.InitializeAppInstallationData.Params(
+                            account = account,
+                            currentAppVersion = appInfo.versionName
+                        )
+                    )
+                    Timber.d("FeatureIntroduction: isFirstLaunch = ${installData.isFirstLaunch}")
+
+                    // Step 4: Check if should show spaces introduction
+                    val result = shouldShowFeatureIntroduction.run(
+                        com.anytypeio.anytype.domain.config.ShouldShowFeatureIntroduction.Params(
+                            account = account,
+                            currentAppVersion = appInfo.versionName,
+                            featureType = ShouldShowFeatureIntroduction.FeatureType.SPACES_INTRODUCTION
+                        )
+                    )
+
+                    Timber.d("FeatureIntroduction: result = ${result::class.simpleName}")
+
+                    // Step 5: Show if needed
+                    if (result.shouldDisplay()) {
+                        Timber.d("FeatureIntroduction: Showing spaces introduction")
+                        showSpacesIntroduction.value = true
+                    } else {
+                        Timber.d("FeatureIntroduction: Not showing - ${result::class.simpleName}")
+                        // Always mark as shown for fresh installs so they never see it
+                        userSettingsRepository.setHasShownSpacesIntroduction(account, true)
+                    }
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "FeatureIntroduction: Error checking feature introductions")
+            }
+        }
+    }
+
+    /**
+     * Called when user dismisses or completes the Spaces Introduction screen.
+     */
+    fun onSpacesIntroductionDismissed() {
+        viewModelScope.launch {
+            try {
+                val account = authRepository.getCurrentAccount()
+                userSettingsRepository.setHasShownSpacesIntroduction(account, true)
+                showSpacesIntroduction.value = false
+                Timber.d("FeatureIntroduction: Marked as shown and dismissed")
+            } catch (e: Exception) {
+                Timber.e(e, "FeatureIntroduction: Error marking spaces introduction as shown")
             }
         }
     }

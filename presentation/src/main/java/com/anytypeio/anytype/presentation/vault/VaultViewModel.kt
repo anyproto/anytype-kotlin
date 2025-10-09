@@ -570,13 +570,18 @@ class VaultViewModel(
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {
             showChooseSpaceType.value = true
-            // Mark the badge as seen when user clicks the create space button
-            try {
-                setCreateSpaceBadgeSeen.async(Unit)
+            if (showCreateSpaceBadge.value) {
+                // Mark the badge as seen when user clicks the create space button
+                setCreateSpaceBadgeSeen.async(Unit).fold(
+                    onSuccess = {
+                        Timber.d("Create space badge marked as seen")
+                    },
+                    onFailure = { e ->
+                        Timber.w(e, "Error marking create space badge as seen")
+                    }
+                )
                 showCreateSpaceBadge.value = false
                 Timber.d("Create space badge dismissed")
-            } catch (e: Exception) {
-                Timber.w(e, "Error dismissing create space badge")
             }
         }
     }

@@ -93,6 +93,7 @@ class VaultFragment : BaseComposeFragment() {
             VaultScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
+                showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
                 onSpaceClicked = vm::onSpaceClicked,
                 onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                 onSettingsClicked = vm::onSettingsClicked,

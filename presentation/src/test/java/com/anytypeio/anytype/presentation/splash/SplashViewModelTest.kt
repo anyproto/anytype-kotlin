@@ -4,6 +4,7 @@ import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.test
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -142,7 +143,7 @@ class SplashViewModelTest {
     fun `should not execute use case when view model is created`() {
 
         val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         stubCheckAuthStatus(response)
         stubLaunchWallet()
@@ -152,7 +153,7 @@ class SplashViewModelTest {
         initViewModel()
 
         runBlocking {
-            verify(checkAuthorizationStatus, times(1)).invoke(any())
+            verify(checkAuthorizationStatus, times(1)).async(any())
             verifyNoMoreInteractions(checkAuthorizationStatus)
         }
     }
@@ -162,7 +163,7 @@ class SplashViewModelTest {
 
         val status = AuthStatus.AUTHORIZED
 
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         stubCheckAuthStatus(response)
         stubLaunchWallet()
@@ -181,7 +182,7 @@ class SplashViewModelTest {
 
         val status = AuthStatus.AUTHORIZED
 
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         stubCheckAuthStatus(response)
         stubLaunchWallet()
@@ -203,7 +204,7 @@ class SplashViewModelTest {
         val deeplink = "test-deeplink"
 
         val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         val space = defaultSpaceConfig.space
 
@@ -255,7 +256,7 @@ class SplashViewModelTest {
         val deeplink = "test-deeplink"
 
         val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         val space = defaultSpaceConfig.space
 
@@ -309,7 +310,7 @@ class SplashViewModelTest {
         // GIVEN
         val deeplink = "test-deeplink"
         val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         val space = defaultSpaceConfig.space
         val chatId = "chat-id"
@@ -362,7 +363,7 @@ class SplashViewModelTest {
         // GIVEN
         val deeplink = "test-deeplink"
         val status = AuthStatus.AUTHORIZED
-        val response = Either.Right(status)
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
 
         val space = defaultSpaceConfig.space
         val chatId = "chat-id"
@@ -409,9 +410,9 @@ class SplashViewModelTest {
         }
     }
 
-    private fun stubCheckAuthStatus(response: Either.Right<AuthStatus>) {
+    private fun stubCheckAuthStatus(response: Resultat.Success<Pair<AuthStatus, Account?>>) {
         checkAuthorizationStatus.stub {
-            onBlocking { invoke(eq(Unit)) } doReturn response
+            onBlocking { async(eq(Unit)) } doReturn response
         }
     }
 

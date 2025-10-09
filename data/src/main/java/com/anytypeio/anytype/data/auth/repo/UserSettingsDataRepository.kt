@@ -160,17 +160,41 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         account: Account,
         hasShown: Boolean
     ) {
-        TODO("Not yet implemented")
+        cache.setHasShownSpacesIntroduction(account, hasShown)
     }
 
     override suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean {
-        TODO("Not yet implemented")
+        return cache.getHasSeenCreateSpaceBadge(account)
     }
 
     override suspend fun setHasSeenCreateSpaceBadge(
         account: Account,
         hasSeen: Boolean
     ) {
-        TODO("Not yet implemented")
+        cache.setHasSeenCreateSpaceBadge(account, hasSeen)
+    }
+
+    override suspend fun getInstalledAtDate(account: Account): Long? {
+        return cache.getInstalledAtDate(account)
+    }
+
+    override suspend fun setInstalledAtDate(account: Account, timestamp: Long) {
+        cache.setInstalledAtDate(account, timestamp)
+    }
+
+    override suspend fun getCurrentAppVersion(account: Account): String? {
+        return cache.getCurrentAppVersion(account)
+    }
+
+    override suspend fun setCurrentAppVersion(account: Account, version: String) {
+        cache.setCurrentAppVersion(account, version)
+    }
+
+    override suspend fun getPreviousAppVersion(account: Account): String? {
+        return cache.getPreviousAppVersion(account)
+    }
+
+    override suspend fun setPreviousAppVersion(account: Account, version: String) {
+        cache.setPreviousAppVersion(account, version)
     }
 }

@@ -687,6 +687,81 @@ class DefaultUserSettingsCache(
         }
     }
 
+    override suspend fun getInstalledAtDate(account: Account): Long? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.installedAtDate
+            }
+            .first()
+    }
+
+    override suspend fun setInstalledAtDate(account: Account, timestamp: Long) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        installedAtDate = timestamp
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getCurrentAppVersion(account: Account): String? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.currentAppVersion
+            }
+            .first()
+    }
+
+    override suspend fun setCurrentAppVersion(account: Account, version: String) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        currentAppVersion = version
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getPreviousAppVersion(account: Account): String? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.previousAppVersion
+            }
+            .first()
+    }
+
+    override suspend fun setPreviousAppVersion(account: Account, version: String) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        previousAppVersion = version
+                    )
+                )
+            )
+        }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"

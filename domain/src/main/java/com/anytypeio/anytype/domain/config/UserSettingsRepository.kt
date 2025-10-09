@@ -67,4 +67,11 @@ interface UserSettingsRepository {
 
     suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean
     suspend fun setHasSeenCreateSpaceBadge(account: Account, hasSeen: Boolean)
+
+    suspend fun getInstalledAtDate(account: Account): Long?
+    suspend fun setInstalledAtDate(account: Account, timestamp: Long)
+    suspend fun getCurrentAppVersion(account: Account): String?
+    suspend fun setCurrentAppVersion(account: Account, version: String)
+    suspend fun getPreviousAppVersion(account: Account): String?
+    suspend fun setPreviousAppVersion(account: Account, version: String)
 }

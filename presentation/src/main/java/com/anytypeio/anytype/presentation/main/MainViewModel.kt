@@ -605,6 +605,7 @@ class MainViewModel(
                         )
                         .take(1) // Only take first emission, prevents re-showing on app restore
                         .collect { shouldShow ->
+                            Timber.d("DROID-3864, Should show spaces introduction: $shouldShow")
                             // Safety check: only show once per session
                             if (shouldShow && !hasShownSpacesIntroductionInSession) {
                                 hasShownSpacesIntroductionInSession = true
@@ -613,7 +614,7 @@ class MainViewModel(
                             } else {
                                 showSpacesIntroduction.value = null
                                 if (hasShownSpacesIntroductionInSession) {
-                                    Timber.d("Skipping spaces introduction - already shown in this session")
+                                    Timber.d("DROID-3864, Skipping spaces introduction - already shown in this session")
                                 }
                             }
                         }

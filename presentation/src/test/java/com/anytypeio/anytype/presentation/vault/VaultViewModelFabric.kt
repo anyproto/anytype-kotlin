@@ -16,10 +16,13 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import org.mockito.kotlin.mock
@@ -47,7 +50,10 @@ object VaultViewModelFabric {
         notificationPermissionManager: NotificationPermissionManager = mock(),
         unpinSpace: UnpinSpace = mock(),
         setSpaceOrder: SetSpaceOrder = mock(),
-        getSpaceWallpaper: GetSpaceWallpapers = mock()
+        getSpaceWallpaper: GetSpaceWallpapers = mock(),
+        shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock(),
+        setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen = mock(),
+        appInfo: AppInfo = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -70,6 +76,9 @@ object VaultViewModelFabric {
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
         setSpaceOrder = setSpaceOrder,
-        getSpaceWallpapers = getSpaceWallpaper
+        getSpaceWallpapers = getSpaceWallpaper,
+        shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
+        setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
+        appInfo = appInfo
     )
 } 

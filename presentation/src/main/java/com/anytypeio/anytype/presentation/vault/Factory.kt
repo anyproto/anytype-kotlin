@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import javax.inject.Inject
 
 class VaultViewModelFactory @Inject constructor(
@@ -52,7 +53,8 @@ class VaultViewModelFactory @Inject constructor(
     private val setSpaceOrder: SetSpaceOrder,
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
-    private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen
+    private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val appInfo: AppInfo
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -81,6 +83,7 @@ class VaultViewModelFactory @Inject constructor(
         setSpaceOrder = setSpaceOrder,
         getSpaceWallpapers = getSpaceWallpapers,
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
-        setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen
+        setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
+        appInfo = appInfo
     ) as T
 }

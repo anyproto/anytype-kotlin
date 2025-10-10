@@ -101,6 +101,9 @@ class MainViewModel(
 
     private val deepLinkJobs = mutableListOf<Job>()
 
+    // Safety flag to ensure spaces introduction is only shown once per ViewModel lifecycle
+    private var hasShownSpacesIntroductionInSession = false
+
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
@@ -582,6 +585,11 @@ class MainViewModel(
      * - Waits for account start on Dispatchers.IO
      * - Checks if should show (existing users only, not fresh installs)
      * - Emits a single boolean result
+     *
+     * Takes only the first emission to prevent showing multiple times when account
+     * lifecycle events occur (app minimize/restore, account switch).
+     * Additionally uses a session flag to ensure the screen is never shown more than once
+     * per app session, even if the dismiss callback fails to fire.
      */
     private fun subscribeToShowSpacesIntroduction() {
         viewModelScope.launch {
@@ -594,11 +602,19 @@ class MainViewModel(
                                 currentAppVersion = appInfo.versionName,
                                 account = account
                             )
-                        ).collect { shouldShow ->
-                            if (shouldShow) {
+                        )
+                        .take(1) // Only take first emission, prevents re-showing on app restore
+                        .collect { shouldShow ->
+                            // Safety check: only show once per session
+                            if (shouldShow && !hasShownSpacesIntroductionInSession) {
+                                hasShownSpacesIntroductionInSession = true
                                 showSpacesIntroduction.value = account
+                                Timber.d("Showing spaces introduction for account ${account.id}")
                             } else {
                                 showSpacesIntroduction.value = null
+                                if (hasShownSpacesIntroductionInSession) {
+                                    Timber.d("Skipping spaces introduction - already shown in this session")
+                                }
                             }
                         }
                     }

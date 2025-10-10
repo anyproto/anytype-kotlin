@@ -16,9 +16,12 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -53,6 +56,9 @@ class VaultViewModelTest {
     private lateinit var unpinSpace: UnpinSpace
     private lateinit var analytics: Analytics
     private lateinit var getSpaceWallpapers: GetSpaceWallpapers
+    private lateinit var shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge
+    private lateinit var setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen
+    private lateinit var appInfo: AppInfo
 
     @Before
     fun setup() {
@@ -65,9 +71,17 @@ class VaultViewModelTest {
         unpinSpace = mock()
         analytics = mock()
         getSpaceWallpapers = mock()
+        shouldShowCreateSpaceBadge = mock()
+        setCreateSpaceBadgeSeen = mock()
+        appInfo = mock()
+
         getSpaceWallpapers.stub {
             onBlocking { async(Unit) }.thenReturn(Resultat.Success(emptyMap()))
         }
+        shouldShowCreateSpaceBadge.stub {
+            onBlocking { async(any()) }.thenReturn(Resultat.Success(false))
+        }
+        whenever(appInfo.versionName).thenReturn("1.0.0")
     }
 
     @Test

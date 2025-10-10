@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -37,7 +38,9 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -103,8 +106,9 @@ class VaultViewModel(
     private val unpinSpace: UnpinSpace,
     private val setSpaceOrder: SetSpaceOrder,
     private val getSpaceWallpapers: GetSpaceWallpapers,
-    private val shouldShowCreateSpaceBadge: com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge,
-    private val setCreateSpaceBadgeSeen: com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
+    private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
+    private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val appInfo: AppInfo
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -204,13 +208,17 @@ class VaultViewModel(
 
         // Track whether to show blue dot badge on "Create a new space" button
         viewModelScope.launch {
-            shouldShowCreateSpaceBadge.async(Unit).fold(
+            shouldShowCreateSpaceBadge.async(
+                ShouldShowCreateSpaceBadge.Params(
+                    currentAppVersion = appInfo.versionName
+                )
+            ).fold(
                 onSuccess = { shouldShow ->
                     showCreateSpaceBadge.value = shouldShow
-                    Timber.d("Create space badge visibility: $shouldShow")
+                    Timber.d("DROID-3864, Create space badge visibility: $shouldShow")
                 },
                 onFailure = { e ->
-                    Timber.w(e, "Error checking create space badge visibility")
+                    Timber.w(e, "DROID-3864, Error checking create space badge visibility")
                     showCreateSpaceBadge.value = false
                 }
             )

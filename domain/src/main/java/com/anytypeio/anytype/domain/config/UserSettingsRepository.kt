@@ -62,11 +62,11 @@ interface UserSettingsRepository {
     suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>)
     fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>>
 
-    suspend fun getHasShownSpacesIntroduction(account: Account): Boolean
-    suspend fun setHasShownSpacesIntroduction(account: Account, hasShown: Boolean)
+    suspend fun getHasShownSpacesIntroduction(): Boolean
+    suspend fun setHasShownSpacesIntroduction(hasShown: Boolean)
 
-    suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean
-    suspend fun setHasSeenCreateSpaceBadge(account: Account, hasSeen: Boolean)
+    suspend fun getHasSeenCreateSpaceBadge(): Boolean
+    suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean)
 
     suspend fun getInstalledAtDate(account: Account): Long?
     suspend fun setInstalledAtDate(account: Account, timestamp: Long)

@@ -28,9 +28,9 @@ class ShouldShowFeatureIntroduction @Inject constructor(
         // Check if already shown
         val hasShownBefore = when (featureType) {
             FeatureType.SPACES_INTRODUCTION ->
-                userSettingsRepository.getHasShownSpacesIntroduction(account)
+                userSettingsRepository.getHasShownSpacesIntroduction()
             FeatureType.CREATE_SPACE_BADGE ->
-                userSettingsRepository.getHasSeenCreateSpaceBadge(account)
+                userSettingsRepository.getHasSeenCreateSpaceBadge()
         }
 
         if (hasShownBefore) {

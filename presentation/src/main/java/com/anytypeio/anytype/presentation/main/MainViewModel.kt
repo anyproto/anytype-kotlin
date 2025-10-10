@@ -614,8 +614,7 @@ class MainViewModel(
                                 // Mark as shown immediately to prevent race conditions
                                 // This ensures if the app is killed before dismiss callback,
                                 // the popup won't show again on restore
-                                val params = SetSpacesIntroductionShown.Params(account)
-                                setSpacesIntroductionShown.async(params).fold(
+                                setSpacesIntroductionShown.async(Unit).fold(
                                     onFailure = { e ->
                                         Timber.e(e, "Error while marking spaces introduction as shown (immediate)")
                                     },

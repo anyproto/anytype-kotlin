@@ -203,7 +203,7 @@ private fun IntroductionPage(
         modifier = Modifier
             .fillMaxWidth()
             .fillMaxHeight()
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // Image - takes maximum available height
@@ -245,4 +245,15 @@ private fun IntroductionPage(
 @Composable
 private fun SpacesIntroductionScreenPreview() {
     SpacesIntroductionScreen()
+}
+
+@DefaultPreviews
+@Composable
+private fun Introduction1ScreenPreview() {
+    IntroductionPage(
+        imageLightRes = R.drawable.introduce_chat_1,
+        imageDarkRes = R.drawable.introduce_chat_1_dark,
+        titleRes = R.string.spaces_introduction_page1_title,
+        descriptionRes = R.string.spaces_introduction_page1_description
+    )
 }

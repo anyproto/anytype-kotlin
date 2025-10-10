@@ -25,6 +25,8 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import kotlinx.coroutines.runBlocking
+import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 
 object VaultViewModelFabric {
@@ -51,9 +53,13 @@ object VaultViewModelFabric {
         unpinSpace: UnpinSpace = mock(),
         setSpaceOrder: SetSpaceOrder = mock(),
         getSpaceWallpaper: GetSpaceWallpapers = mock(),
-        shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock(),
+        shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock {
+            on { runBlocking { async(any()) } }.thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(false))
+        },
         setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen = mock(),
-        appInfo: AppInfo = mock()
+        appInfo: AppInfo = mock {
+            on { versionName }.thenReturn("1.0.0-test")
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,

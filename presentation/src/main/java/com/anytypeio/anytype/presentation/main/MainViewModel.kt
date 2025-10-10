@@ -611,6 +611,17 @@ class MainViewModel(
                                 hasShownSpacesIntroductionInSession = true
                                 showSpacesIntroduction.value = account
                                 Timber.d("Showing spaces introduction for account ${account.id}")
+                                // Mark as shown immediately to prevent race conditions
+                                // This ensures if the app is killed before dismiss callback,
+                                // the popup won't show again on restore
+                                setSpacesIntroductionShown.async(Unit).fold(
+                                    onFailure = { e ->
+                                        Timber.e(e, "Error while marking spaces introduction as shown (immediate)")
+                                    },
+                                    onSuccess = {
+                                        Timber.d("DROID-3864, Marked spaces introduction as shown immediately for account ${account.id}")
+                                    }
+                                )
                             } else {
                                 showSpacesIntroduction.value = null
                                 if (hasShownSpacesIntroductionInSession) {
@@ -626,27 +637,11 @@ class MainViewModel(
 
     /**
      * Called when user dismisses or completes the Spaces Introduction screen.
-     * Marks the feature as shown so it won't appear again.
+     * Simply clears the UI state since we already marked it as shown when we displayed it.
      */
     fun onSpacesIntroductionDismissed() {
-        viewModelScope.launch {
-            val account = showSpacesIntroduction.value
-            if (account == null) {
-                Timber.w("Tried to mark spaces introduction as shown, but account is null")
-                return@launch
-            }
-            val params = SetSpacesIntroductionShown.Params(account)
-            setSpacesIntroductionShown.async(params).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while marking spaces introduction as shown")
-                    showSpacesIntroduction.value = null
-                },
-                onSuccess = {
-                    Timber.d("Marked spaces introduction as shown for account ${account.id}")
-                    showSpacesIntroduction.value = null
-                }
-            )
-        }
+        Timber.d("DROID-3864, User dismissed spaces introduction")
+        showSpacesIntroduction.value = null
     }
 
     override fun onCleared() {

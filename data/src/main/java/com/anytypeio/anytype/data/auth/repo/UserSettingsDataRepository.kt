@@ -152,26 +152,20 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         return cache.getCollapsedSectionIds(space)
     }
 
-    override suspend fun getHasShownSpacesIntroduction(account: Account): Boolean {
-        return cache.getHasShownSpacesIntroduction(account)
+    override suspend fun getHasShownSpacesIntroduction(): Boolean {
+        return cache.getHasShownSpacesIntroduction()
     }
 
-    override suspend fun setHasShownSpacesIntroduction(
-        account: Account,
-        hasShown: Boolean
-    ) {
-        cache.setHasShownSpacesIntroduction(account, hasShown)
+    override suspend fun setHasShownSpacesIntroduction(hasShown: Boolean) {
+        cache.setHasShownSpacesIntroduction(hasShown)
     }
 
-    override suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean {
-        return cache.getHasSeenCreateSpaceBadge(account)
+    override suspend fun getHasSeenCreateSpaceBadge(): Boolean {
+        return cache.getHasSeenCreateSpaceBadge()
     }
 
-    override suspend fun setHasSeenCreateSpaceBadge(
-        account: Account,
-        hasSeen: Boolean
-    ) {
-        cache.setHasSeenCreateSpaceBadge(account, hasSeen)
+    override suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean) {
+        cache.setHasSeenCreateSpaceBadge(hasSeen)
     }
 
     override suspend fun getInstalledAtDate(account: Account): Long? {

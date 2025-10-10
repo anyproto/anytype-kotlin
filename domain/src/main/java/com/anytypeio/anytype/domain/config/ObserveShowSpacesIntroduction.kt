@@ -63,8 +63,7 @@ class ObserveShowSpacesIntroduction @Inject constructor(
 
                 // Mark as shown for fresh installs so they never see it
                 if (result is ShouldShowFeatureIntroduction.Result.SkipForFreshInstall) {
-                    val params = SetSpacesIntroductionShown.Params(account = account)
-                    setSpacesIntroductionShown.async(params)
+                    setSpacesIntroductionShown.async(Unit)
                 }
 
                 emit(result.shouldDisplay())

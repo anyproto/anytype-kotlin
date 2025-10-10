@@ -637,54 +637,24 @@ class DefaultUserSettingsCache(
             }
     }
 
-    override suspend fun getHasShownSpacesIntroduction(account: Account): Boolean {
-        return context.vaultPrefsStore
-            .data
-            .map { prefs ->
-                prefs.preferences[account.id]?.hasShownSpacesIntroduction ?: false
-            }
-            .first()
+    override suspend fun getHasShownSpacesIntroduction(): Boolean {
+        return prefs.getBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, false)
     }
 
-    override suspend fun setHasShownSpacesIntroduction(account: Account, hasShown: Boolean) {
-        context.vaultPrefsStore.updateData { existingPreferences ->
-            val curr = existingPreferences.preferences.getOrDefault(
-                key = account.id,
-                defaultValue = initialVaultSettings()
-            )
-            existingPreferences.copy(
-                preferences = existingPreferences.preferences + mapOf(
-                    account.id to curr.copy(
-                        hasShownSpacesIntroduction = hasShown
-                    )
-                )
-            )
-        }
+    override suspend fun setHasShownSpacesIntroduction(hasShown: Boolean) {
+        prefs.edit()
+            .putBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, hasShown)
+            .apply()
     }
 
-    override suspend fun getHasSeenCreateSpaceBadge(account: Account): Boolean {
-        return context.vaultPrefsStore
-            .data
-            .map { prefs ->
-                prefs.preferences[account.id]?.hasSeenCreateSpaceBadge ?: false
-            }
-            .first()
+    override suspend fun getHasSeenCreateSpaceBadge(): Boolean {
+        return prefs.getBoolean(HAS_SEEN_CREATE_SPACE_BADGE_KEY, false)
     }
 
-    override suspend fun setHasSeenCreateSpaceBadge(account: Account, hasSeen: Boolean) {
-        context.vaultPrefsStore.updateData { existingPreferences ->
-            val curr = existingPreferences.preferences.getOrDefault(
-                key = account.id,
-                defaultValue = initialVaultSettings()
-            )
-            existingPreferences.copy(
-                preferences = existingPreferences.preferences + mapOf(
-                    account.id to curr.copy(
-                        hasSeenCreateSpaceBadge = hasSeen
-                    )
-                )
-            )
-        }
+    override suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean) {
+        prefs.edit()
+            .putBoolean(HAS_SEEN_CREATE_SPACE_BADGE_KEY, hasSeen)
+            .apply()
     }
 
     override suspend fun getInstalledAtDate(account: Account): Long? {
@@ -777,5 +747,8 @@ class DefaultUserSettingsCache(
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
         const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
+
+        const val HAS_SHOWN_SPACES_INTRODUCTION_KEY = "prefs.device.has_shown_spaces_introduction"
+        const val HAS_SEEN_CREATE_SPACE_BADGE_KEY = "prefs.device.has_seen_create_space_badge"
     }
 }

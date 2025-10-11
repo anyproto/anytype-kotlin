@@ -147,7 +147,13 @@ class CreateSpaceViewModel(
         analytics.sendEvent(
             eventName = EventsDictionary.createSpace,
             props = Props(
-                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
+                mapOf(
+                    EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                    if (isChatSpace)
+                        EventsPropertiesKey.uxType to "Chat"
+                    else
+                        EventsPropertiesKey.uxType to "Space"
+                )
             )
         )
 

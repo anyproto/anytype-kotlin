@@ -3,7 +3,11 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountStatus
@@ -633,6 +637,27 @@ class MainViewModel(
                 }
             )
         }
+    }
+
+    /**
+     * Sends OnboardingTooltip analytics event for the Spaces Introduction screen.
+     * Maps step numbers to the corresponding tooltip text:
+     * 1 - "Ideas need conversations"
+     * 2 - "Your Vault just leveled up"
+     * 3 - "Chats that do more"
+     * 4 - "Everything in Its Right Place"
+     */
+    fun sendOnboardingTooltipEvent(step: Int) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.onboardingTooltip,
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.id to "Chats",
+                    EventsPropertiesKey.step to step
+                )
+            )
+        )
     }
 
     /**

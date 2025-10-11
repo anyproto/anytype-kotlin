@@ -180,6 +180,7 @@ object EventsDictionary {
     const val clickLogin = "ClickLogin"
     const val screenOnboardingEnterEmail = "ScreenOnboardingEnterEmail"
     const val screenOnboardingSkipEmail = "ScreenOnboardingSkipEmail"
+    const val onboardingTooltip = "OnboardingTooltip"
 
     //Primitives
     const val logScreenEditType = "ScreenEditType"

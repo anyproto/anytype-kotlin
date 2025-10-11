@@ -6,13 +6,16 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteView
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_utils.ext.msg
@@ -89,6 +92,20 @@ class RequestJoinSpaceViewModel(
                         } else {
                             val spaceView = spaceViewContainer.get(view.space)
                             if (spaceView != null && spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
+                                analytics.sendEvent(
+                                    eventName = screenInviteRequest,
+                                    props = Props(
+                                        map = when(spaceView.spaceUxType) {
+                                            SpaceUxType.DATA -> mapOf(
+                                                EventsPropertiesKey.uxType to "Space"
+                                            )
+                                            SpaceUxType.CHAT -> mapOf(
+                                                EventsPropertiesKey.uxType to "Chat"
+                                            )
+                                            else -> emptyMap()
+                                        }
+                                    )
+                                )
                                 state.value = TypedViewState.Error(ErrorView.RequestAlreadySent)
                             } else {
                                 state.value = TypedViewState.Success(view)
@@ -128,9 +145,6 @@ class RequestJoinSpaceViewModel(
         } else {
             Timber.w("Could not parse invite link: ${params.link}")
             state.value = TypedViewState.Error(ErrorView.InvalidLink)
-        }
-        viewModelScope.launch {
-            analytics.sendEvent(eventName = screenInviteRequest)
         }
     }
 
@@ -180,7 +194,24 @@ class RequestJoinSpaceViewModel(
     }
 
     private suspend fun handleJoinRequestSuccess(data: SpaceInviteView) {
-        analytics.sendEvent(eventName = screenRequestSent)
+
+        val spaceView = spaceViewContainer.get(data.space)
+        val spaceUxType = spaceView?.spaceUxType
+
+        analytics.sendEvent(
+            eventName = screenRequestSent,
+            props = Props(
+                map = when(spaceUxType) {
+                    SpaceUxType.DATA -> mapOf(
+                        EventsPropertiesKey.uxType to "Space"
+                    )
+                    SpaceUxType.CHAT -> mapOf(
+                        EventsPropertiesKey.uxType to "Chat"
+                    )
+                    else -> emptyMap()
+                }
+            )
+        )
 
         val shouldNotify = data.withoutApprove
         val notificationsEnabled = notificator.areNotificationsEnabled

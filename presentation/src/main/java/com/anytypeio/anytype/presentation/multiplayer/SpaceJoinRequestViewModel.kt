@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.base.fold
@@ -388,6 +389,8 @@ class SpaceJoinRequestViewModel(
     private fun onJoinClicked(newMember: Id, permissions: SpaceMemberPermissions) {
         Timber.d("onJoinClicked, newMember: $newMember, permissions: $permissions")
         viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.space)
+            val spaceUxType = spaceView?.spaceUxType
             approveJoinSpaceRequest.async(
                 ApproveJoinSpaceRequest.Params(
                     space = vmParams.space,
@@ -396,7 +399,10 @@ class SpaceJoinRequestViewModel(
                 )
             ).fold(
                 onSuccess = {
-                    analytics.sendAnalyticsApproveInvite(permissions)
+                    analytics.sendAnalyticsApproveInvite(
+                        permissions = permissions,
+                        spaceUxType = spaceUxType
+                    )
                     isDismissed.value = true
                 },
                 onFailure = { e ->

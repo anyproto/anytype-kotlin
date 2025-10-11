@@ -462,6 +462,7 @@ object EventsPropertiesKey {
     const val tab = "tab"
     const val route = "route"
     const val type = "type"
+    const val uxType = "uxType"
     const val format = "format"
     const val objectType = "objectType"
     const val length = "length"

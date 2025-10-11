@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -2442,18 +2443,25 @@ fun CoroutineScope.sendAnalyticsMembershipPurchaseEvent(
 //endregion
 
 suspend fun Analytics.sendAnalyticsApproveInvite(
-    permissions: SpaceMemberPermissions
+    permissions: SpaceMemberPermissions,
+    spaceUxType: SpaceUxType? = null
 ) {
     val type = when (permissions) {
         SpaceMemberPermissions.READER -> EventsDictionary.SharingInviteRequest.reader
         SpaceMemberPermissions.WRITER -> EventsDictionary.SharingInviteRequest.writer
         else -> ""
     }
+    val uxType = when(spaceUxType) {
+        SpaceUxType.CHAT -> "Chat"
+        SpaceUxType.DATA -> "Space"
+        else -> null
+    }
     sendEvent(
         eventName = EventsDictionary.approveInviteRequest,
         props = Props(
             mapOf(
-                EventsPropertiesKey.type to type
+                EventsPropertiesKey.type to type,
+                EventsPropertiesKey.uxType to uxType
             )
         )
     )

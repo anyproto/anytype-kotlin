@@ -799,6 +799,9 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         },
                         onComplete = {
                             vm.onSpacesIntroductionDismissed()
+                        },
+                        onPageChanged = { step ->
+                            vm.sendOnboardingTooltipEvent(step)
                         }
                     )
                 }

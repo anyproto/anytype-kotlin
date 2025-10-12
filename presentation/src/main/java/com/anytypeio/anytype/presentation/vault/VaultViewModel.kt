@@ -577,6 +577,9 @@ class VaultViewModel(
 
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenVaultCreateMenu
+            )
             showChooseSpaceType.value = true
             if (showCreateSpaceBadge.value) {
                 // Mark the badge as seen when user clicks the create space button
@@ -596,6 +599,11 @@ class VaultViewModel(
 
     fun onCreateSpaceClicked() {
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickVaultCreateMenuSpace
+            )
+        }
+        viewModelScope.launch {
             showChooseSpaceType.value = false
             commands.emit(
                 VaultCommand.CreateNewSpace(
@@ -606,6 +614,11 @@ class VaultViewModel(
     }
 
     fun onCreateChatClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickVaultCreateMenuChat
+            )
+        }
         viewModelScope.launch {
             showChooseSpaceType.value = false
             commands.emit(

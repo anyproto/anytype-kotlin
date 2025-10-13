@@ -1042,7 +1042,7 @@
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Burada yeniyim</string>
     <string name="onboarding_enter_my_vault">Devam et</string>
-    <string name="onboarding_have_key_button_text">Anahtara zaten sahibim</string>
+    <string name="onboarding_have_key_button_text">Mevcut anahtarım var</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
     <string name="onboarding_invite_code_description">Eğer sahip değilseniz anytype.io adresine gidin\n ve bekleme listesine kaydolun.</string>

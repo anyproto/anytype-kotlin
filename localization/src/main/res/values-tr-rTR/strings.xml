@@ -838,7 +838,7 @@
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Sohbet adı</string>
     <string name="create_space_space_name">Alan ismi</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
@@ -1973,7 +1973,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsiniz. Yardım için lütfen alan sahibiyle iletişime geçin.</string>
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
-    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
     <string name="wallpaper_item_space_icon_color">Varsayılan Renk</string>
     <string name="publish_to_web">Web\'de Yayınla</string>
     <string name="preferences">Tercihler</string>

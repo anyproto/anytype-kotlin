@@ -838,6 +838,8 @@
     <string name="create_space">Crear espacio</string>
     <string name="create_chat">Crear chat</string>
     <string name="create_space_change_icon">Cambiar icono</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">Nombre del espacio</string>
     <string name="generic_error">Algo ha salido mal. Inténtalo de nuevo.</string>
     <string name="type">Tipo:</string>
     <string name="format">Formato</string>
@@ -1912,6 +1914,16 @@ En concreto,
     <string name="vault_create_chat_description">Para conversaciones en tiempo real</string>
     <string name="vault_create_space">Nuevo espacio</string>
     <string name="vault_create_space_description">Para contenido y datos organizados</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Las ideas necesitan comunicación</string>
+    <string name="spaces_introduction_page1_description">Anytype permite ahora chatear en tiempo real en canales compartidos para que las ideas crezcan con el diálogo.</string>
+    <string name="spaces_introduction_page2_title">Tu arca acaba de subir de nivel</string>
+    <string name="spaces_introduction_page2_description">Ahora los espacios y chats muestran vistas previas dinámicas: un sitio para seguir lo que te importa.</string>
+    <string name="spaces_introduction_page3_title">Chats con algo más</string>
+    <string name="spaces_introduction_page3_description">Comparte ideas, comparte documentos, edita con otros… Todo fluye en tiempo real.</string>
+    <string name="spaces_introduction_page4_title">Todo en el lugar apropiado</string>
+    <string name="spaces_introduction_page4_description">Tus páginas, listas y archivos estructurados, visibles y siempre a mano.</string>
+    <string name="spaces_introduction_try_it">Vamos a probar</string>
     <string name="vault_empty_state_text">Aún no hay ningún espacio</string>
     <string name="vault_empty_search_state_text">No hay coincidencias</string>
     <string name="chat_new_messages_section_text">Mensajes nuevos</string>
@@ -1961,7 +1973,7 @@ En concreto,
     <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
     <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
     </string>
-    <string name="private_local_yours_forever">Privado, local, tuyo para siempre</string>
+    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>

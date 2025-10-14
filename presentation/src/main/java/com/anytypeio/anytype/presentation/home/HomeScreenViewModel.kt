@@ -151,7 +151,8 @@ import com.anytypeio.anytype.presentation.widgets.WidgetContainer
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.buildWidgets
+import com.anytypeio.anytype.presentation.widgets.buildWidgetSections
+import com.anytypeio.anytype.presentation.widgets.WidgetSections
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
@@ -163,7 +164,9 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
@@ -273,9 +276,37 @@ class HomeScreenViewModel(
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
-    private val widgets = MutableStateFlow<Widgets>(null)
+    private val widgetSections = MutableStateFlow<WidgetSections?>(null)
     private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
+
+    // Helper flow to access widgets as flat list (for backward compatibility in flows)
+    private val widgets: Flow<Widgets> = widgetSections.map { sections ->
+        sections?.let { sections.pinnedWidgets + sections.typeWidgets }
+    }
+
+    // Helper property for synchronous access to current widget list
+    private val currentWidgets: Widgets
+        get() = widgetSections.value?.let { sections ->
+            sections.pinnedWidgets + sections.typeWidgets
+        }
+
+    // Expose pinned and type widgets separately for UI
+    val pinnedWidgets: StateFlow<List<Widget>> = widgetSections.map { sections ->
+        sections?.pinnedWidgets ?: emptyList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    val typeWidgets: StateFlow<List<Widget>> = widgetSections.map { sections ->
+        sections?.typeWidgets ?: emptyList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
 
     private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
@@ -315,7 +346,7 @@ class HomeScreenViewModel(
                 val openObjectState = objectViewState.value
                 if (openObjectState is ObjectViewState.Success) {
                     val subscriptions = buildList {
-                        widgets.value.orEmpty().forEach { widget ->
+                        currentWidgets.orEmpty().forEach { widget ->
                             if (widget.config.space != newConfig.space) {
                                 if (widget.source is Widget.Source.Bundled)
                                     add(widget.source.id)
@@ -389,7 +420,7 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        widgets.value = null
+                        widgetSections.value = null
                     }
                 )
             }.map { result ->
@@ -684,9 +715,9 @@ class HomeScreenViewModel(
                         }
                     }
                 }
-            }.collect {
-                Timber.d("Emitting list of containers: ${it.size}")
-                containers.value = it
+            }.collect { containersList ->
+                Timber.d("Emitting list of containers: ${containersList.size}")
+                containers.value = containersList
             }
         }
     }
@@ -798,19 +829,21 @@ class HomeScreenViewModel(
                 )
                 if (state is ObjectViewState.Success) {
 
-                    // Build widgets List<Widget> from the current object state
-                    val allWidgets = buildWidgets(
+                    // Build widget sections from the current object state
+                    val sections = buildWidgetSections(
                         state = state,
                         params = params,
                         urlBuilder = urlBuilder,
                         storeOfObjectTypes = storeOfObjectTypes,
                         spaceView = spaceView
                     )
+
                     // Initialize active views for all widgets
                     val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
 
                     // Preserve ObjectType active views (not stored in WidgetsObj blocks)
                     val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                    val allWidgets = sections.pinnedWidgets + sections.typeWidgets
                     val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
                         allWidgets
                             .filter { it !is Widget.Section }
@@ -825,13 +858,16 @@ class HomeScreenViewModel(
 
                     // Update expanded IDs from persistence
                     expandedWidgetIds.value = params.expandedIds
-                    allWidgets
+                    sections
                 } else {
-                    emptyList()
+                    null
                 }
-            }.collect { widgetList ->
-                Timber.d("Emitting list of widgets: ${widgetList.size}")
-                widgets.value = widgetList
+            }.collect { sections ->
+                if (sections != null) {
+                    val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, total=$totalWidgets")
+                }
+                widgetSections.value = sections
             }
         }
     }
@@ -849,7 +885,7 @@ class HomeScreenViewModel(
         )
         val subscriptionIds = buildList {
             addAll(
-                widgets.value.orEmpty().mapNotNull { widget ->
+                currentWidgets.orEmpty().mapNotNull { widget ->
                     when (widget.source) {
                         is Widget.Source.Bundled -> widget.source.id
                         is Widget.Source.Default -> widget.source.id
@@ -1047,7 +1083,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
-                val target = widgets.value.orEmpty().find { it.id == widget }
+                val target = currentWidgets.orEmpty().find { it.id == widget }
                 deleteWidget.stream(
                     DeleteWidget.Params(
                         ctx = config.widgets,
@@ -1135,7 +1171,7 @@ class HomeScreenViewModel(
         Timber.d("With id: ${obj.id}")
         if (obj.isArchived != true) {
             viewModelScope.launch {
-                val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+                val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
                 analytics.sendOpenSidebarObjectEvent(
                     isAutoCreated = isAutoCreated
                 )
@@ -1162,7 +1198,7 @@ class HomeScreenViewModel(
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
             analytics.sendScreenWidgetMenuEvent(
                 isAutoCreated = isAutoCreated
             )
@@ -1196,7 +1232,7 @@ class HomeScreenViewModel(
 
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
-        val widget = widgets.value?.find { it.id == widgetId } ?: return
+        val widget = currentWidgets?.find { it.id == widgetId } ?: return
         Timber.d("Widget source: ${widget.source}")
         when (val source = widget.source) {
             is Widget.Source.Bundled.Favorites -> {
@@ -1310,7 +1346,7 @@ class HomeScreenViewModel(
             }
             DropDownMenuAction.RemoveWidget -> {
                 // Check if this is a bundled widget that needs a warning
-                val targetWidget = widgets.value.orEmpty().find { it.id == widget }
+                val targetWidget = currentWidgets.orEmpty().find { it.id == widget }
                 if (targetWidget?.source is Widget.Source.Bundled) {
                     // Show warning modal for bundled widgets
                     pendingBundledWidgetDeletion.value = widget
@@ -1421,7 +1457,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
-        val curr = widgets.value.orEmpty().find { it.id == widget }
+        val curr = currentWidgets.orEmpty().find { it.id == widget }
         val sourceId = curr?.source?.id
         if (curr != null && sourceId != null) {
             viewModelScope.launch {
@@ -1457,7 +1493,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithChangingSource(widget: Id) {
-        val curr = widgets.value.orEmpty().find { it.id == widget }
+        val curr = currentWidgets.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
@@ -1591,8 +1627,8 @@ class HomeScreenViewModel(
     private fun interceptWidgetDeletion(
         e: Event.Command.DeleteBlock
     ) {
-        val currentWidgets = widgets.value ?: emptyList()
-        val deletedWidgets = currentWidgets.filter { widget ->
+        val widgetList = currentWidgets ?: emptyList()
+        val deletedWidgets = widgetList.filter { widget ->
             e.targets.contains(widget.id)
         }
         val expiredSubscriptions = deletedWidgets.map { widget ->
@@ -1916,7 +1952,7 @@ class HomeScreenViewModel(
 
     private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == target?.id }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == target?.id }?.isAutoCreated
             when (val source = target?.source) {
                 is Widget.Source.Bundled -> {
                     sendDeleteWidgetEvent(
@@ -1968,7 +2004,7 @@ class HomeScreenViewModel(
 
     private fun dispatchSelectHomeTabCustomSourceEvent(widget: Id, source: Widget.Source) {
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
             val sourceObjectType = source.type
             if (sourceObjectType != null) {
                 val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
@@ -1999,7 +2035,7 @@ class HomeScreenViewModel(
             }
             when(source) {
                 is Widget.Source.Bundled -> {
-                    val isAutoCreated = widgets.value?.find { it.id == subject.id }?.isAutoCreated
+                    val isAutoCreated = currentWidgets?.find { it.id == subject.id }?.isAutoCreated
                     sendReorderWidgetEvent(
                         analytics = analytics,
                         bundled = source,
@@ -2117,7 +2153,7 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
-        val currentWidgets = widgets.value.orEmpty()
+        val currentWidgets = currentWidgets.orEmpty()
 
         // Cancel existing jobs first to stop any ongoing work
         jobs.cancel()
@@ -2807,7 +2843,7 @@ class HomeScreenViewModel(
      * Collapses all ObjectType widgets by removing them from expandedWidgetIds
      */
     private suspend fun collapseAllObjectTypeWidgets() {
-        val currentWidgets = widgets.value.orEmpty()
+        val currentWidgets = currentWidgets.orEmpty()
         val objectTypeWidgetIds = currentWidgets
             .filter { widget ->
                 widget !is Widget.Section && widget.sectionType == SectionType.TYPES
@@ -2823,7 +2859,7 @@ class HomeScreenViewModel(
      * Collapses all Pinned widgets by removing them from expandedWidgetIds
      */
     private suspend fun collapseAllPinnedWidgets() {
-        val currentWidgets = widgets.value.orEmpty()
+        val currentWidgets = currentWidgets.orEmpty()
         val pinnedWidgetIds = currentWidgets
             .filter { widget ->
                 widget !is Widget.Section && widget.sectionType == SectionType.PINNED

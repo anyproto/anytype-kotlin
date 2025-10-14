@@ -404,9 +404,145 @@ data class WidgetUiParams(
 )
 
 /**
- * Pure function: computes list of widgets from the current Success state and UI params.
+ * Result of building widgets, separated into pinned and type sections.
+ *
+ * @property pinnedWidgets Widgets from the pinned section (user-arranged, including chat)
+ * @property typeWidgets Widgets from the object type section (system-generated, including bin)
+ */
+data class WidgetSections(
+    val pinnedWidgets: List<Widget>,
+    val typeWidgets: List<Widget>
+)
+
+/**
+ * Pure function: computes widget sections from the current Success state and UI params.
+ * Returns separate lists for pinned and type widgets since they have different reordering mechanisms.
  * No side effects; suitable for unit testing.
  */
+suspend fun buildWidgetSections(
+    spaceView: ObjectWrapper.SpaceView,
+    state: ObjectViewState.Success,
+    params: WidgetUiParams,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): WidgetSections {
+    val currentCollapsedSections = params.collapsedSections
+
+    // Build pinned section
+    val pinnedWidgets = buildPinnedSection(
+        spaceView = spaceView,
+        state = state,
+        isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED),
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes
+    )
+
+    // Build type section
+    val typeWidgets = buildTypeSection(
+        state = state,
+        params = params,
+        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE),
+        storeOfObjectTypes = storeOfObjectTypes
+    )
+
+    return WidgetSections(
+        pinnedWidgets = pinnedWidgets,
+        typeWidgets = typeWidgets
+    )
+}
+
+/**
+ * Builds the pinned widgets section including chat widget and user-arranged widgets.
+ */
+private suspend fun buildPinnedSection(
+    spaceView: ObjectWrapper.SpaceView,
+    state: ObjectViewState.Success,
+    isPinnedSectionCollapsed: Boolean,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Widget> = buildList {
+    // Space chat widget for Shared Data Spaces
+    val spaceChatId = state.config.spaceChatId
+    if (!spaceChatId.isNullOrEmpty()
+        && spaceView.isShared
+        && spaceView.spaceUxType != SpaceUxType.CHAT
+    ) {
+        add(Widget.Chat(config = state.config))
+    }
+
+    // Pinned widgets (from blocks)
+    val userPinnedWidgets = state.obj.blocks.parseWidgets(
+        root = state.obj.root,
+        details = state.obj.details,
+        config = state.config,
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes
+    ).filterNot { widget ->
+        widget.source is Widget.Source.Bundled.Bin
+    }
+
+    if (userPinnedWidgets.isNotEmpty()) {
+        // Always add section header
+        add(Widget.Section.Pinned(config = state.config))
+
+        // Add widgets only if section is expanded
+        if (!isPinnedSectionCollapsed) {
+            addAll(userPinnedWidgets)
+        }
+    }
+}
+
+/**
+ * Builds the object type widgets section including type widgets and bin.
+ */
+private suspend fun buildTypeSection(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams,
+    isObjectTypeSectionCollapsed: Boolean,
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Widget> = buildList {
+    // Always add section header
+    add(Widget.Section.ObjectType(config = state.config))
+
+    val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+
+    if (!isObjectTypeSectionCollapsed) {
+        val types = mapSpaceTypesToWidgets(
+            isOwnerOrEditor = params.isOwnerOrEditor,
+            config = state.config,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+        addAll(types)
+
+        // Add bin widget for owners/editors
+        if (params.isOwnerOrEditor) {
+            add(
+                Widget.Bin(
+                    id = WIDGET_BIN_ID,
+                    source = Widget.Source.Bundled.Bin,
+                    config = state.config,
+                    icon = ObjectIcon.None,
+                    sectionType = SectionType.TYPES
+                )
+            )
+        }
+
+        Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
+    } else {
+        Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+    }
+}
+
+/**
+ * Legacy function for backward compatibility.
+ * Returns a flat list combining both pinned and type widgets.
+ *
+ * @deprecated Use buildWidgetSections() instead to handle sections separately.
+ */
+@Deprecated(
+    message = "Use buildWidgetSections() to handle pinned and type widgets separately",
+    replaceWith = ReplaceWith("buildWidgetSections(spaceView, state, params, urlBuilder, storeOfObjectTypes)")
+)
 suspend fun buildWidgets(
     spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success,
@@ -414,76 +550,8 @@ suspend fun buildWidgets(
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<Widget> {
-    val currentCollapsedSections = params.collapsedSections
-    return buildList {
-
-        //Space chat widget for Shared Data Spaces
-        val spaceChatId = state.config.spaceChatId
-        if (!spaceChatId.isNullOrEmpty()
-            && spaceView.isShared
-            && spaceView.spaceUxType != SpaceUxType.CHAT
-        ) {
-            add(Widget.Chat(config = state.config))
-        }
-
-        // Pinned widgets (from blocks)
-        val pinnedWidgets = state.obj.blocks.parseWidgets(
-            root = state.obj.root,
-            details = state.obj.details,
-            config = state.config,
-            urlBuilder = urlBuilder,
-            storeOfObjectTypes = storeOfObjectTypes
-        )
-            .filterNot { widget ->
-                widget.source is Widget.Source.Bundled.Bin
-            }
-
-        val isPinnedSectionCollapsed =
-            currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
-
-        if (pinnedWidgets.isNotEmpty()) {
-            if (!isPinnedSectionCollapsed) {
-                add(Widget.Section.Pinned(config = state.config))
-                addAll(pinnedWidgets)
-            } else {
-                add(Widget.Section.Pinned(config = state.config))
-            }
-        }
-
-        add(Widget.Section.ObjectType(config = state.config))
-
-        // ObjectType widgets
-        val isObjectTypeSectionCollapsed =
-            currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
-
-        val pinnedSectionStateDesc =
-            if (isPinnedSectionCollapsed) "collapsed" else "expanded"
-        val objectTypeSectionStateDesc =
-            if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
-
-        if (!isObjectTypeSectionCollapsed) {
-            val types = mapSpaceTypesToWidgets(
-                isOwnerOrEditor = params.isOwnerOrEditor,
-                config = state.config,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-            addAll(types)
-            if (params.isOwnerOrEditor) {
-                add(
-                    Widget.Bin(
-                        id = WIDGET_BIN_ID,
-                        source = Widget.Source.Bundled.Bin,
-                        config = state.config,
-                        icon = ObjectIcon.None,
-                        sectionType = SectionType.PINNED
-                    )
-                )
-            }
-            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
-        } else {
-            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
-        }
-    }
+    val sections = buildWidgetSections(spaceView, state, params, urlBuilder, storeOfObjectTypes)
+    return sections.pinnedWidgets + sections.typeWidgets
 }
 
 private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config, storeOfObjectTypes: StoreOfObjectTypes): List<Widget> {

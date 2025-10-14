@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -793,7 +794,7 @@ fun InviteLinkDisplay(
                     // Copy link
                     DropdownMenuItem(
                         onClick = {
-                            onCopyClicked(link, "Menu")
+                            onCopyClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -844,7 +845,7 @@ fun InviteLinkDisplay(
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
-                            onQrCodeClicked(link, "Menu")
+                            onQrCodeClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -871,7 +872,7 @@ fun InviteLinkDisplay(
             modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
-                onCopyClicked(link, "Button")
+                onCopyClicked(link, EventsDictionary.CopyLinkRoutes.BUTTON)
             },
             size = ButtonSize.Large,
         )

@@ -119,8 +119,8 @@ fun ShareSpaceScreen(
     onInviteLinkAccessChangeCancel: () -> Unit,
 
     onShareInviteLinkClicked: (String) -> Unit,
-    onCopyInviteLinkClicked: (String) -> Unit,
-    onShareQrCodeClicked: (String) -> Unit
+    onCopyInviteLinkClicked: (String, String) -> Unit,
+    onShareQrCodeClicked: (String, String) -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -736,9 +736,9 @@ fun SpaceMemberIcon(
 fun InviteLinkDisplay(
     modifier: Modifier = Modifier,
     link: String,
-    onCopyClicked: (String) -> Unit,
+    onCopyClicked: (String, String) -> Unit,
     onShareClicked: (String) -> Unit,
-    onQrCodeClicked: (String) -> Unit
+    onQrCodeClicked: (String, String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -793,7 +793,7 @@ fun InviteLinkDisplay(
                     // Copy link
                     DropdownMenuItem(
                         onClick = {
-                            onCopyClicked(link)
+                            onCopyClicked(link, "Menu")
                             showMenu = false
                         }
                     ) {
@@ -844,7 +844,7 @@ fun InviteLinkDisplay(
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
-                            onQrCodeClicked(link)
+                            onQrCodeClicked(link, "Menu")
                             showMenu = false
                         }
                     ) {
@@ -871,7 +871,7 @@ fun InviteLinkDisplay(
             modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
-                onCopyClicked(link)
+                onCopyClicked(link, "Button")
             },
             size = ButtonSize.Large,
         )
@@ -1027,7 +1027,7 @@ fun ShareSpaceScreenPreview1() {
             )
         },
         onContextActionClicked = { _, _ -> },
-        onShareQrCodeClicked = {},
+        onShareQrCodeClicked = { _, _ -> },
         incentiveState = SpaceLimitsState.EditorsLimit(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
@@ -1038,7 +1038,7 @@ fun ShareSpaceScreenPreview1() {
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
-        onCopyInviteLinkClicked = {},
+        onCopyInviteLinkClicked = { _, _ -> },
         isCurrentUserOwner = true,
         onManageSpacesClicked = {}
     )

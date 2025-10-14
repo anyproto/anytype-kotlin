@@ -5,7 +5,10 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickShareSpaceCopyLink
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickShareSpaceShareLink
 import com.anytypeio.anytype.analytics.base.EventsDictionary.defaultTypeChanged
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenQr
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
@@ -490,6 +493,14 @@ class SpaceSettingsViewModel(
                         spaceName = spaceName,
                         icon = spaceIcon
                     )
+
+                    // Analytics Event #3: ScreenQr with route property (from space settings)
+                    analytics.sendEvent(
+                        eventName = screenQr,
+                        props = Props(
+                            mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.SETTINGS_SPACE)
+                        )
+                    )
                 }
             }
             is UiEvent.OnSaveDescriptionClicked -> {
@@ -579,6 +590,15 @@ class SpaceSettingsViewModel(
                             },
                             success = {
                                 Timber.d("Invite link copied to clipboard: ${uiEvent.link}")
+
+                                // Analytics Event #4: ClickShareSpaceCopyLink with route property (from menu)
+                                analytics.sendEvent(
+                                    eventName = clickShareSpaceCopyLink,
+                                    props = Props(
+                                        mapOf(EventsPropertiesKey.route to EventsDictionary.CopyLinkRoutes.BUTTON)
+                                    )
+                                )
+
                                 sendToast("Invite link copied to clipboard")
                             }
                         )
@@ -586,6 +606,9 @@ class SpaceSettingsViewModel(
             }
             is UiEvent.OnShareLinkClicked -> {
                 viewModelScope.launch {
+                    // Analytics Event #6: ClickShareSpaceShareLink
+                    analytics.sendEvent(eventName = clickShareSpaceShareLink)
+
                     commands.emit(
                         ShareInviteLink(uiEvent.link)
                     )

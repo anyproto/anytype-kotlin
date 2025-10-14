@@ -82,7 +82,8 @@ fun HomeScreen(
     navPanelState: NavPanelState,
     modifier: Modifier,
     mode: InteractionMode,
-    widgets: List<WidgetView>,
+    pinnedWidgets: List<WidgetView>,
+    typeWidgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
@@ -98,15 +99,17 @@ fun HomeScreen(
     onCreateNewObjectLongClicked: () -> Unit,
     onNavBarShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMovePinned: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionClicked: (Id) -> Unit = {}
 ) {
 
     Box(modifier = modifier.fillMaxSize()) {
-        WidgetList(
-            widgets = widgets,
+        TwoSectionWidgetList(
+            pinnedWidgets = pinnedWidgets,
+            typeWidgets = typeWidgets,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
@@ -114,7 +117,8 @@ fun HomeScreen(
             onToggleExpandedWidgetState = onToggleExpandedWidgetState,
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
-            onMove = onMove,
+            onMovePinned = onMovePinned,
+            onMoveTypes = onMoveTypes,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateWidget = onCreateWidget,
             onCreateElement = onCreateElement,
@@ -173,8 +177,9 @@ fun HomeScreen(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun WidgetList(
-    widgets: List<WidgetView>,
+private fun TwoSectionWidgetList(
+    pinnedWidgets: List<WidgetView>,
+    typeWidgets: List<WidgetView>,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -183,13 +188,18 @@ private fun WidgetList(
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
-    onMove: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMovePinned: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateWidget: () -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionClicked: (Id) -> Unit = {}
 ) {
+    // Combine both lists for a single scrollable view
+    val widgets = remember(pinnedWidgets, typeWidgets) {
+        pinnedWidgets + typeWidgets
+    }
 
     val view = LocalView.current
 
@@ -218,7 +228,13 @@ private fun WidgetList(
         val from = lastFromIndex.value
         val to = lastToIndex.value
         if (from != null && to != null && from != to) {
-            onMove(views.value, from, to)
+            // Determine which section the reordering happened in
+            val fromWidget = views.value.getOrNull(from)
+            if (fromWidget?.sectionType == SectionType.PINNED) {
+                onMovePinned(views.value, from, to)
+            } else if (fromWidget?.sectionType == SectionType.TYPES) {
+                onMoveTypes(views.value, from, to)
+            }
         }
         // Reset after firing
         lastFromIndex.value = null

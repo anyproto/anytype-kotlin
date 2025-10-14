@@ -270,6 +270,7 @@ class HomeScreenViewModel(
     private val mutex = Mutex()
 
     val views = MutableStateFlow<List<WidgetView>>(emptyList())
+
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
@@ -302,6 +303,73 @@ class HomeScreenViewModel(
 
     val typeWidgets: StateFlow<List<Widget>> = widgetSections.map { sections ->
         sections?.typeWidgets ?: emptyList()
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    // Exposed flows for UI - widget views (WidgetView models) separated by section
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pinnedViews: StateFlow<List<WidgetView>> = combine(
+        widgetSections,
+        containers
+    ) { sections, containers ->
+        Pair(sections?.pinnedWidgets, containers)
+    }.flatMapLatest { (pinnedWidgets, containers) ->
+        if (containers.isNullOrEmpty() || pinnedWidgets.isNullOrEmpty()) {
+            flowOf(emptyList())
+        } else {
+            // Create a map of widget id to container for quick lookup
+            val widgetIds = pinnedWidgets.map { it.id }.toSet()
+            val relevantContainers = containers.filter { container ->
+                // We need to collect the view to get its id, but since containers
+                // are created from widgets in order, we can match by building
+                // a map. For now, let's use a simpler approach: filter by getting
+                // the first emission from each view to check its id
+                // This is a limitation - we'll need to match containers with their widgets
+                // using widget order. Since containers are built from all widgets in order:
+                // pinnedWidgets + typeWidgets, we take first N containers where N = pinnedWidgets.size
+                true
+            }.take(pinnedWidgets.size)
+
+            if (relevantContainers.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(relevantContainers.map { it.view }) { array ->
+                    array.toList()
+                }
+            }
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val typeViews: StateFlow<List<WidgetView>> = combine(
+        widgetSections,
+        containers
+    ) { sections, containers ->
+        Triple(sections?.pinnedWidgets?.size, sections?.typeWidgets, containers)
+    }.flatMapLatest { (pinnedCount, typeWidgets, containers) ->
+        if (containers.isNullOrEmpty() || typeWidgets.isNullOrEmpty()) {
+            flowOf(emptyList())
+        } else {
+            // Containers are built from pinnedWidgets + typeWidgets in order
+            // So type widget containers start at index pinnedCount
+            val skip = pinnedCount ?: 0
+            val relevantContainers = containers.drop(skip).take(typeWidgets.size)
+
+            if (relevantContainers.isEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(relevantContainers.map { it.view }) { array ->
+                    array.toList()
+                }
+            }
+        }
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -1860,6 +1928,24 @@ class HomeScreenViewModel(
             else
                 Timber.e("Failed to get config for move operation")
         }
+    }
+
+    /**
+     * Handles reordering of pinned widgets
+     */
+    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
+        // Pinned widgets support full drag-and-drop reordering
+        onMove(views, from, to)
+    }
+
+    /**
+     * Handles reordering of type widgets
+     * Note: Type widgets have system-managed ordering, so this might be restricted
+     */
+    fun onMoveTypes(views: List<WidgetView>, from: Int, to: Int) {
+        // For now, type widgets also support reordering
+        // In the future, this could be restricted or handled differently
+        onMove(views, from, to)
     }
 
     private fun proceedWithSettingUpShortcuts() {

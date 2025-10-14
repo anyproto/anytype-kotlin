@@ -45,6 +45,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -248,6 +250,7 @@ private fun ChatSubtitleRow(
             inlineContent = inlineContent,
             modifier = Modifier.weight(1f),
             maxLines = 2,
+            lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.text_transparent_secondary),
         )
@@ -456,8 +459,8 @@ private fun buildChatContentWithInlineIcons(
     fallbackSubtitle: String
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
-    val spanTitle2Medium = PreviewTitle2Medium.toSpanStyle()
-    val spanTitle2Regular = PreviewTitle2Regular.toSpanStyle()
+    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
+    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle()
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }

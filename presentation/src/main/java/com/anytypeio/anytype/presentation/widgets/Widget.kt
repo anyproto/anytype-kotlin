@@ -414,11 +414,6 @@ data class WidgetSections(
     val typeWidgets: List<Widget>
 )
 
-/**
- * Pure function: computes widget sections from the current Success state and UI params.
- * Returns separate lists for pinned and type widgets since they have different reordering mechanisms.
- * No side effects; suitable for unit testing.
- */
 suspend fun buildWidgetSections(
     spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success,
@@ -432,7 +427,7 @@ suspend fun buildWidgetSections(
     val pinnedWidgets = buildPinnedSection(
         spaceView = spaceView,
         state = state,
-        isPinnedSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_PINNED),
+        isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
         urlBuilder = urlBuilder,
         storeOfObjectTypes = storeOfObjectTypes
     )
@@ -441,7 +436,7 @@ suspend fun buildWidgetSections(
     val typeWidgets = buildTypeSection(
         state = state,
         params = params,
-        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE),
+        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
         storeOfObjectTypes = storeOfObjectTypes
     )
 
@@ -531,27 +526,6 @@ private suspend fun buildTypeSection(
     } else {
         Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
     }
-}
-
-/**
- * Legacy function for backward compatibility.
- * Returns a flat list combining both pinned and type widgets.
- *
- * @deprecated Use buildWidgetSections() instead to handle sections separately.
- */
-@Deprecated(
-    message = "Use buildWidgetSections() to handle pinned and type widgets separately",
-    replaceWith = ReplaceWith("buildWidgetSections(spaceView, state, params, urlBuilder, storeOfObjectTypes)")
-)
-suspend fun buildWidgets(
-    spaceView: ObjectWrapper.SpaceView,
-    state: ObjectViewState.Success,
-    params: WidgetUiParams,
-    urlBuilder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
-): List<Widget> {
-    val sections = buildWidgetSections(spaceView, state, params, urlBuilder, storeOfObjectTypes)
-    return sections.pinnedWidgets + sections.typeWidgets
 }
 
 private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config, storeOfObjectTypes: StoreOfObjectTypes): List<Widget> {

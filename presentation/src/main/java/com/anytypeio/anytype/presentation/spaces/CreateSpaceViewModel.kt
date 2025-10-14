@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.shareSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShareSpaceNewLink
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
@@ -309,6 +311,7 @@ class CreateSpaceViewModel(
         makeSpaceShareable.async(params = spaceId).fold(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
+                analytics.sendEvent(eventName = shareSpace)
                 generateInviteLink(
                     spaceId = spaceId,
                     startingObject = startingObject
@@ -356,6 +359,13 @@ class CreateSpaceViewModel(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
+
+                // Analytics: Track chat space invite link generation
+                analytics.sendAnalyticsShareSpaceNewLink(
+                    inviteType = CHAT_SPACE_INVITE_TYPE,
+                    permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
+                )
+
                 finishSpaceCreation(
                     spaceId = spaceId.id,
                     startingObject = startingObject

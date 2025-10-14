@@ -64,6 +64,7 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
@@ -119,8 +120,8 @@ fun ShareSpaceScreen(
     onInviteLinkAccessChangeCancel: () -> Unit,
 
     onShareInviteLinkClicked: (String) -> Unit,
-    onCopyInviteLinkClicked: (String) -> Unit,
-    onShareQrCodeClicked: (String) -> Unit
+    onCopyInviteLinkClicked: (String, String) -> Unit,
+    onShareQrCodeClicked: (String, String) -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -736,9 +737,9 @@ fun SpaceMemberIcon(
 fun InviteLinkDisplay(
     modifier: Modifier = Modifier,
     link: String,
-    onCopyClicked: (String) -> Unit,
+    onCopyClicked: (String, String) -> Unit,
     onShareClicked: (String) -> Unit,
-    onQrCodeClicked: (String) -> Unit
+    onQrCodeClicked: (String, String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -793,7 +794,7 @@ fun InviteLinkDisplay(
                     // Copy link
                     DropdownMenuItem(
                         onClick = {
-                            onCopyClicked(link)
+                            onCopyClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -844,7 +845,7 @@ fun InviteLinkDisplay(
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
-                            onQrCodeClicked(link)
+                            onQrCodeClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -871,7 +872,7 @@ fun InviteLinkDisplay(
             modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
-                onCopyClicked(link)
+                onCopyClicked(link, EventsDictionary.CopyLinkRoutes.BUTTON)
             },
             size = ButtonSize.Large,
         )
@@ -1027,7 +1028,7 @@ fun ShareSpaceScreenPreview1() {
             )
         },
         onContextActionClicked = { _, _ -> },
-        onShareQrCodeClicked = {},
+        onShareQrCodeClicked = { _, _ -> },
         incentiveState = SpaceLimitsState.EditorsLimit(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
@@ -1038,7 +1039,7 @@ fun ShareSpaceScreenPreview1() {
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
-        onCopyInviteLinkClicked = {},
+        onCopyInviteLinkClicked = { _, _ -> },
         isCurrentUserOwner = true,
         onManageSpacesClicked = {}
     )

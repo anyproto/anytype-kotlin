@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickJoinSpaceWithoutApproval
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenInviteRequest
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenRequestSent
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
@@ -95,19 +97,36 @@ class RequestJoinSpaceViewModel(
                                 analytics.sendEvent(
                                     eventName = screenInviteRequest,
                                     props = Props(
-                                        map = when(spaceView.spaceUxType) {
-                                            SpaceUxType.DATA -> mapOf(
-                                                EventsPropertiesKey.uxType to "Space"
-                                            )
-                                            SpaceUxType.CHAT -> mapOf(
-                                                EventsPropertiesKey.uxType to "Chat"
-                                            )
-                                            else -> emptyMap()
+                                        map = buildMap {
+                                            when(spaceView.spaceUxType) {
+                                                SpaceUxType.DATA -> put(EventsPropertiesKey.uxType, "Space")
+                                                SpaceUxType.CHAT -> put(EventsPropertiesKey.uxType, "Chat")
+                                                else -> {}
+                                            }
+                                            // Analytics Event #5: ScreenInviteRequest with type property
+                                            val inviteType = if (view.withoutApprove) {
+                                                EventsDictionary.InviteRequestTypes.WITHOUT_APPROVAL
+                                            } else {
+                                                EventsDictionary.InviteRequestTypes.APPROVAL
+                                            }
+                                            put(EventsPropertiesKey.type, inviteType)
                                         }
                                     )
                                 )
                                 state.value = TypedViewState.Error(ErrorView.RequestAlreadySent)
                             } else {
+                                // Analytics Event #5: ScreenInviteRequest with type property
+                                val inviteType = if (view.withoutApprove) {
+                                    EventsDictionary.InviteRequestTypes.WITHOUT_APPROVAL
+                                } else {
+                                    EventsDictionary.InviteRequestTypes.APPROVAL
+                                }
+                                analytics.sendEvent(
+                                    eventName = screenInviteRequest,
+                                    props = Props(
+                                        mapOf(EventsPropertiesKey.type to inviteType)
+                                    )
+                                )
                                 state.value = TypedViewState.Success(view)
                             }
                         }
@@ -212,6 +231,8 @@ class RequestJoinSpaceViewModel(
                 }
             )
         )
+
+        analytics.sendEvent(eventName = clickJoinSpaceWithoutApproval)
 
         val shouldNotify = data.withoutApprove
         val notificationsEnabled = notificator.areNotificationsEnabled

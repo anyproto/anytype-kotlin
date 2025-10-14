@@ -233,6 +233,13 @@ object EventsDictionary {
     const val leaveSpace = "LeaveSpace"
     const val approveLeaveRequest = "ApproveLeaveRequest"
 
+    // New sharing spaces events
+    const val clickShareSpaceNewLink = "ClickShareSpaceNewLink"
+    const val screenQr = "ScreenQr"
+    const val clickShareSpaceCopyLink = "ClickShareSpaceCopyLink"
+    const val clickJoinSpaceWithoutApproval = "ClickJoinSpaceWithoutApproval"
+    const val clickShareSpaceShareLink = "ClickShareSpaceShareLink"
+
     //Version history
     const val screenHistory = "ScreenHistory"
     const val screenHistoryVersion = "ScreenHistoryVersion"
@@ -271,6 +278,27 @@ object EventsDictionary {
         const val shareTypeRevoke = "Revoke"
         const val shareTypeShareLink = "ShareLink"
         const val shareTypeShareQr = "ShareQr"
+    }
+
+    object ShareSpaceLinkTypes {
+        const val EDITOR = "Editor"
+        const val VIEWER = "Viewer"
+        const val MANUAL = "Manual"
+    }
+
+    object ScreenQrRoutes {
+        const val INVITE_LINK = "InviteLink"
+        const val SETTINGS_SPACE = "SettingsSpace"
+    }
+
+    object CopyLinkRoutes {
+        const val BUTTON = "Button"
+        const val MENU = "Menu"
+    }
+
+    object InviteRequestTypes {
+        const val APPROVAL = "Approval"
+        const val WITHOUT_APPROVAL = "WithoutApproval"
     }
 
     object SharingInviteRequest {

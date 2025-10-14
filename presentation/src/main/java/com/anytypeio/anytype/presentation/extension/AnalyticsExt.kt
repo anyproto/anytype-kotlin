@@ -56,6 +56,7 @@ import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.getSingleValue
+import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
@@ -2463,6 +2464,32 @@ suspend fun Analytics.sendAnalyticsApproveInvite(
                 EventsPropertiesKey.type to type,
                 EventsPropertiesKey.uxType to uxType
             )
+        )
+    )
+}
+
+/**
+ * Send analytics event when a new space invite link is generated.
+ *
+ * @param inviteType The type of invite (MEMBER, GUEST, or WITHOUT_APPROVE)
+ * @param permissions The member permissions for the invite link (READER or WRITER)
+ */
+suspend fun Analytics.sendAnalyticsShareSpaceNewLink(
+    inviteType: InviteType?,
+    permissions: SpaceMemberPermissions?
+) {
+    val linkType = when {
+        permissions == SpaceMemberPermissions.WRITER && inviteType == InviteType.WITHOUT_APPROVE ->
+            EventsDictionary.ShareSpaceLinkTypes.EDITOR
+        permissions == SpaceMemberPermissions.READER && inviteType == InviteType.WITHOUT_APPROVE ->
+            EventsDictionary.ShareSpaceLinkTypes.VIEWER
+        else ->
+            EventsDictionary.ShareSpaceLinkTypes.MANUAL
+    }
+    sendEvent(
+        eventName = EventsDictionary.clickShareSpaceNewLink,
+        props = Props(
+            mapOf(EventsPropertiesKey.type to linkType)
         )
     )
 }

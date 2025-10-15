@@ -29,7 +29,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
-import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -39,7 +38,6 @@ import com.anytypeio.anytype.ui.widgets.menu.BinWidgetMenu
 @Composable
 fun BinWidgetCard(
     item: WidgetView.Bin,
-    mode: InteractionMode,
     hasReadOnlyAccess: Boolean = false,
     onWidgetSourceClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit
@@ -105,7 +103,6 @@ fun BinWidgetCard(
             )
         }
         BinWidgetMenu(
-            widgetView = item,
             isCardMenuExpanded = isCardMenuExpanded,
             onDropDownMenuAction = onDropDownMenuAction
         )

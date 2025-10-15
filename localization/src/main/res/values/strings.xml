@@ -933,6 +933,8 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">Change icon</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">Space name</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
@@ -2212,6 +2214,17 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ideas need conversations</string>
+    <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
+    <string name="spaces_introduction_page2_title">Your Vault just leveled up</string>
+    <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
+    <string name="spaces_introduction_page3_title">Chats that do more</string>
+    <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
+    <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
+    <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
+    <string name="spaces_introduction_try_it">Let\'s try it</string>
+
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
@@ -2267,7 +2280,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_no_such_space">
         The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
 
     <string name="publish_to_web">Publish to Web</string>

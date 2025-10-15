@@ -128,9 +128,9 @@ class SplashViewModel(
 
     private fun checkAuthorizationStatus() {
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     Timber.i("Authorization status: $status")
                     if (status == AuthStatus.UNAUTHORIZED) {
                         commands.emit(Command.NavigateToAuthStart)

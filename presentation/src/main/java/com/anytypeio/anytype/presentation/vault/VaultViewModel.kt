@@ -13,11 +13,13 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -36,7 +38,9 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -101,7 +105,10 @@ class VaultViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val unpinSpace: UnpinSpace,
     private val setSpaceOrder: SetSpaceOrder,
-    private val getSpaceWallpapers: GetSpaceWallpapers
+    private val getSpaceWallpapers: GetSpaceWallpapers,
+    private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
+    private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val appInfo: AppInfo
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -113,6 +120,9 @@ class VaultViewModel(
 
     // Track notification permission status for profile icon badge
     val isNotificationDisabled = MutableStateFlow(false)
+
+    // Track whether to show the blue dot badge on "Create a new space" button
+    val showCreateSpaceBadge = MutableStateFlow(false)
 
     private val previewFlow: StateFlow<ChatPreviewContainer.PreviewState> =
         chatPreviewContainer.observePreviewsWithAttachments()
@@ -182,7 +192,7 @@ class VaultViewModel(
             try {
                 // Check notification permission status on app launch
                 updateNotificationBadgeState()
-                
+
                 // Observe permission state changes
                 notificationPermissionManager.permissionState().collect { permissionState ->
                     try {
@@ -194,6 +204,24 @@ class VaultViewModel(
             } catch (e: Exception) {
                 Timber.w(e, "Error initializing notification permission monitoring")
             }
+        }
+
+        // Track whether to show blue dot badge on "Create a new space" button
+        viewModelScope.launch {
+            shouldShowCreateSpaceBadge.async(
+                ShouldShowCreateSpaceBadge.Params(
+                    currentAppVersion = appInfo.versionName
+                )
+            ).fold(
+                onSuccess = { shouldShow ->
+                    showCreateSpaceBadge.value = shouldShow
+                    Timber.d("DROID-3864, Create space badge visibility: $shouldShow")
+                },
+                onFailure = { e ->
+                    Timber.w(e, "DROID-3864, Error checking create space badge visibility")
+                    showCreateSpaceBadge.value = false
+                }
+            )
         }
     }
 
@@ -298,15 +326,12 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView {
-        return when (space.spaceUxType) {
-            SpaceUxType.CHAT -> {
-                // Always create chat view for chat spaces, even without preview
-                createChatView(space, chatPreview, permissions, wallpapers)
-            }
-            else -> {
-                // For DATA, STREAM, NONE, or null - treat as data space
-                createStandardSpaceView(space, permissions, wallpapers)
-            }
+        return if (space.hasChatFunctionality()) {
+            // Spaces with chat functionality (CHAT spaces or DATA/STREAM spaces with chatId)
+            createChatView(space, chatPreview, permissions, wallpapers)
+        } else {
+            // Other spaces without chat use standard space view
+            createStandardSpaceView(space, permissions, wallpapers)
         }
     }
 
@@ -445,7 +470,7 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
+        val isMuted = NotificationStateCalculator.calculateMutedState(space)
 
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
@@ -477,22 +502,20 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = if (space.chatId == null) {
-            null
-        } else {
-            NotificationStateCalculator.calculateMutedState(space, notificationPermissionManager)
-        }
+
+        // Standard spaces without chat functionality have no notification/mute state
+        val isMuted = null
 
         val icon = space.spaceIcon(urlBuilder)
 
         val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
-        
+
         val wallpaper = space.targetSpaceId?.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
             icon = icon,
             wallpaper = wallpaper
         )
-        
+
         return VaultSpaceView.Space(
             space = space,
             icon = icon,
@@ -554,11 +577,32 @@ class VaultViewModel(
 
     fun onChooseSpaceTypeClicked() {
         viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenVaultCreateMenu
+            )
             showChooseSpaceType.value = true
+            if (showCreateSpaceBadge.value) {
+                // Mark the badge as seen when user clicks the create space button
+                setCreateSpaceBadgeSeen.async(Unit).fold(
+                    onSuccess = {
+                        Timber.d("Create space badge marked as seen")
+                    },
+                    onFailure = { e ->
+                        Timber.w(e, "Error marking create space badge as seen")
+                    }
+                )
+                showCreateSpaceBadge.value = false
+                Timber.d("Create space badge dismissed")
+            }
         }
     }
 
     fun onCreateSpaceClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickVaultCreateMenuSpace
+            )
+        }
         viewModelScope.launch {
             showChooseSpaceType.value = false
             commands.emit(
@@ -570,6 +614,11 @@ class VaultViewModel(
     }
 
     fun onCreateChatClicked() {
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickVaultCreateMenuChat
+            )
+        }
         viewModelScope.launch {
             showChooseSpaceType.value = false
             commands.emit(

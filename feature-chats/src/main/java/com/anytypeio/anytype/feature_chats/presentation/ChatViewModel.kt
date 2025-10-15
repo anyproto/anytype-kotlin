@@ -176,7 +176,7 @@ class ChatViewModel @Inject constructor(
                 .observe(
                     vmParams.space
                 ).map { view ->
-                    val isMuted = NotificationStateCalculator.calculateMutedState(view, notificationPermissionManager)
+                    val isMuted = NotificationStateCalculator.calculateMutedState(view)
                     HeaderView.Default(
                         title = view.name.orEmpty(),
                         icon = view.spaceIcon(builder = urlBuilder),
@@ -1296,8 +1296,12 @@ class ChatViewModel @Inject constructor(
 
         preloadingJobs += viewModelScope.launch {
             uris.forEach { info ->
-                val path = withContext(dispatchers.io) {
-                    copyFileToCacheDirectory.copy(info.uri)
+                val path = if (info.capturedByCamera) {
+                    withContext(dispatchers.io) {
+                        copyFileToCacheDirectory.copy(info.uri)
+                    }
+                } else {
+                    info.uri
                 }
                 if (path != null) {
                     preloadFile.async(

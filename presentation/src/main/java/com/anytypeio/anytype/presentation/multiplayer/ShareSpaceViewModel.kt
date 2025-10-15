@@ -12,9 +12,11 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary.clickSettingsSpaceS
 import com.anytypeio.anytype.analytics.base.EventsDictionary.removeSpaceMember
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenSettingsSpaceMembers
 import com.anytypeio.anytype.analytics.base.EventsDictionary.screenSettingsSpaceShare
+import com.anytypeio.anytype.analytics.base.EventsDictionary.shareSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShareSpaceNewLink
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -255,6 +257,13 @@ class ShareSpaceViewModel(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link, link: ${inviteLink.scheme}")
+
+                // Analytics Event #1: ClickShareSpaceNewLink with type property
+                analytics.sendAnalyticsShareSpaceNewLink(
+                    inviteType = inviteType,
+                    permissions = permissions
+                )
+
                 proceedWithRequestCurrentInviteLink()
                 // Reset loading state and close confirmation dialog after successful generation
                 inviteLinkAccessLoading.value = false
@@ -272,6 +281,10 @@ class ShareSpaceViewModel(
         Timber.d("onShareInviteLinkClicked, link: $link")
         viewModelScope.launch {
             commands.emit(ShareInviteLink(link))
+
+            // Analytics Event #6: ClickShareSpaceShareLink
+            analytics.sendEvent(eventName = EventsDictionary.clickShareSpaceShareLink)
+
             analytics.sendEvent(
                 eventName = clickSettingsSpaceShare,
                 props = Props(
@@ -281,8 +294,8 @@ class ShareSpaceViewModel(
         }
     }
 
-    fun onShareQrCodeClicked(link: String) {
-        Timber.d("onShareQrCodeClicked, link: $link")
+    fun onShareQrCodeClicked(link: String, route: String = EventsDictionary.ScreenQrRoutes.INVITE_LINK) {
+        Timber.d("onShareQrCodeClicked, link: $link, route: $route")
         viewModelScope.launch {
             val spaceView = _spaceViews ?: return@launch
             uiQrCodeState.value = UiSpaceQrCodeState.SpaceInvite(
@@ -290,6 +303,15 @@ class ShareSpaceViewModel(
                 spaceName = spaceView.name.orEmpty(),
                 icon = spaceView.spaceIcon(urlBuilder)
             )
+
+            // Analytics Event #3: ScreenQr with route property
+            analytics.sendEvent(
+                eventName = EventsDictionary.screenQr,
+                props = Props(
+                    mapOf(EventsPropertiesKey.route to route)
+                )
+            )
+
             analytics.sendEvent(
                 eventName = clickSettingsSpaceShare,
                 props = Props(
@@ -503,13 +525,22 @@ class ShareSpaceViewModel(
         inviteLinkConfirmationDialog.value = null
     }
 
-    fun onCopyInviteLinkClicked(link: String) {
-        Timber.d("onCopyInviteLinkClicked, link: $link")
+    fun onCopyInviteLinkClicked(link: String, route: String = EventsDictionary.CopyLinkRoutes.BUTTON) {
+        Timber.d("onCopyInviteLinkClicked, link: $link, route: $route")
         viewModelScope.launch {
             try {
                 copyInviteLinkToClipboard.run(
                     CopyInviteLinkToClipboard.Params(link)
                 )
+
+                // Analytics Event #4: ClickShareSpaceCopyLink with route property
+                analytics.sendEvent(
+                    eventName = EventsDictionary.clickShareSpaceCopyLink,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.route to route)
+                    )
+                )
+
                 sendToast("Invite link copied to clipboard")
             } catch (error: Exception) {
                 Timber.e(error, "Failed to copy invite link to clipboard")
@@ -522,7 +553,10 @@ class ShareSpaceViewModel(
             viewModelScope.launch {
                 makeSpaceShareable(
                     space = vmParams.space,
-                    actionSuccess = { proceedWithUpdatingInviteLink(newLevel) },
+                    actionSuccess = {
+                        analytics.sendEvent(eventName = shareSpace)
+                        proceedWithUpdatingInviteLink(newLevel)
+                    },
                     actionFailure = { proceedWithMultiplayerError(it) }
                 )
             }

@@ -64,12 +64,14 @@ import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_PRIMARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -86,6 +88,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
+import com.anytypeio.anytype.core_ui.views.ButtonUpgradeBlack
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Title2
@@ -117,8 +120,8 @@ fun ShareSpaceScreen(
     onInviteLinkAccessChangeCancel: () -> Unit,
 
     onShareInviteLinkClicked: (String) -> Unit,
-    onCopyInviteLinkClicked: (String) -> Unit,
-    onShareQrCodeClicked: (String) -> Unit
+    onCopyInviteLinkClicked: (String, String) -> Unit,
+    onShareQrCodeClicked: (String, String) -> Unit
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -424,13 +427,13 @@ fun SharedSpacesIncentiveItem(
                 id = R.string.membership_space_settings_share_limit,
                 count
             ),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.membership_space_settings_share_limit_2),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title3
         )
         Row(
@@ -449,7 +452,7 @@ fun SharedSpacesIncentiveItem(
                 text = stringResource(id = R.string.multiplayer_manage_spaces),
                 style = UxSmallTextMedium
             )
-            ButtonUpgrade(
+            ButtonUpgradeBlack(
                 modifier = Modifier
                     .weight(1f)
                     .padding(top = 12.dp)
@@ -464,7 +467,7 @@ fun SharedSpacesIncentiveItem(
     }
 }
 
-@Preview
+@DefaultPreviews
 @Composable
 private fun PrivateSpaceSharingPreview() {
     SharedSpacesIncentiveItem(
@@ -499,16 +502,16 @@ private fun AddEditorsIncentive(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = text,
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.members_limits_incentive_editors_sub),
-            color = colorResource(id = R.color.text_primary),
+            color = colorResource(id = R.color.black),
             style = Title3
         )
-        ButtonUpgrade(
+        ButtonUpgradeBlack(
             modifier = Modifier
                 .padding(top = 12.dp)
                 .height(36.dp),
@@ -734,9 +737,9 @@ fun SpaceMemberIcon(
 fun InviteLinkDisplay(
     modifier: Modifier = Modifier,
     link: String,
-    onCopyClicked: (String) -> Unit,
+    onCopyClicked: (String, String) -> Unit,
     onShareClicked: (String) -> Unit,
-    onQrCodeClicked: (String) -> Unit
+    onQrCodeClicked: (String, String) -> Unit
 ) {
     var showMenu by remember { mutableStateOf(false) }
 
@@ -791,7 +794,7 @@ fun InviteLinkDisplay(
                     // Copy link
                     DropdownMenuItem(
                         onClick = {
-                            onCopyClicked(link)
+                            onCopyClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -842,7 +845,7 @@ fun InviteLinkDisplay(
                     // Show QR code
                     DropdownMenuItem(
                         onClick = {
-                            onQrCodeClicked(link)
+                            onQrCodeClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
                             showMenu = false
                         }
                     ) {
@@ -869,7 +872,7 @@ fun InviteLinkDisplay(
             modifierBox = Modifier.fillMaxWidth(),
             text = stringResource(R.string.copy_link),
             onClick = {
-                onCopyClicked(link)
+                onCopyClicked(link, EventsDictionary.CopyLinkRoutes.BUTTON)
             },
             size = ButtonSize.Large,
         )
@@ -877,7 +880,7 @@ fun InviteLinkDisplay(
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceJoinRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -906,7 +909,7 @@ fun SpaceJoinRequestPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceJoinLongTitleRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -930,7 +933,7 @@ fun SpaceJoinLongTitleRequestPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 fun SpaceLeaveRequestPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -954,19 +957,8 @@ fun SpaceLeaveRequestPreview() {
 }
 
 @Composable
-@Preview(
-    backgroundColor = 0xFFFFFFFF,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_NO,
-    name = "Light Mode"
-)
-@Preview(
-    backgroundColor = 0x000000,
-    showBackground = true,
-    uiMode = Configuration.UI_MODE_NIGHT_YES,
-    name = "Dark Mode"
-)
-fun ShareSpaceScreenPreview() {
+@DefaultPreviews
+fun ShareSpaceScreenPreview1() {
     ShareSpaceScreen(
         onShareInviteLinkClicked = {},
         members = buildList {
@@ -1036,7 +1028,7 @@ fun ShareSpaceScreenPreview() {
             )
         },
         onContextActionClicked = { _, _ -> },
-        onShareQrCodeClicked = {},
+        onShareQrCodeClicked = { _, _ -> },
         incentiveState = SpaceLimitsState.EditorsLimit(4),
         onIncentiveClicked = {},
         isLoadingInProgress = false,
@@ -1047,14 +1039,14 @@ fun ShareSpaceScreenPreview() {
         onInviteLinkAccessLevelSelected = {},
         onInviteLinkAccessChangeConfirmed = {},
         onInviteLinkAccessChangeCancel = {},
-        onCopyInviteLinkClicked = {},
+        onCopyInviteLinkClicked = { _, _ -> },
         isCurrentUserOwner = true,
         onManageSpacesClicked = {}
     )
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceOwnerMemberPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -1077,7 +1069,7 @@ private fun SpaceOwnerMemberPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceEditorMemberPreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(
@@ -1116,7 +1108,7 @@ private fun SpaceEditorMemberPreview() {
 }
 
 @Composable
-@Preview
+@DefaultPreviews
 private fun SpaceMemberLongNamePreview() {
     val memberView = SpaceMemberView(
         obj = ObjectWrapper.SpaceMember(

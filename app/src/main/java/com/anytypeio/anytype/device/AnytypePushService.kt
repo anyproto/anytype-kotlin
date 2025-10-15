@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -56,9 +57,9 @@ class AnytypePushService : FirebaseMessagingService() {
 
     private fun checkAuthorizationStatus(message: RemoteMessage) {
         scope.launch(dispatchers.io) {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.UNAUTHORIZED) {
                         Timber.w("User is unauthorized, skipping push message processing")
                         // If the user is unauthorized, we do not process push messages

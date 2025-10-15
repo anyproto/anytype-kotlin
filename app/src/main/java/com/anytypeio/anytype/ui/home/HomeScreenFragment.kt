@@ -202,7 +202,8 @@ class HomeScreenFragment : Fragment(),
     ) {
         HomeScreen(
             modifier = modifier,
-            widgets = vm.views.collectAsState().value,
+            pinnedWidgets = vm.pinnedViews.collectAsState().value,
+            typeWidgets = vm.typeViews.collectAsState().value,
             mode = vm.mode.collectAsState().value,
             onExpand = { path -> vm.onExpand(path) },
             onCreateWidget = vm::onCreateWidgetClicked,
@@ -221,7 +222,8 @@ class HomeScreenFragment : Fragment(),
             onCreateNewObjectLongClicked = throttledClick(
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
-            onMove = vm::onMove,
+            onMovePinned = vm::onMovePinned,
+            onMoveTypes = vm::onMoveTypes,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,

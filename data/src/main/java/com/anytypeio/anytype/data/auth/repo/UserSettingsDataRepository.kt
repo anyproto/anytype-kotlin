@@ -151,4 +151,44 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
     override fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>> {
         return cache.getCollapsedSectionIds(space)
     }
+
+    override suspend fun getHasShownSpacesIntroduction(): Boolean {
+        return cache.getHasShownSpacesIntroduction()
+    }
+
+    override suspend fun setHasShownSpacesIntroduction(hasShown: Boolean) {
+        cache.setHasShownSpacesIntroduction(hasShown)
+    }
+
+    override suspend fun getHasSeenCreateSpaceBadge(): Boolean {
+        return cache.getHasSeenCreateSpaceBadge()
+    }
+
+    override suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean) {
+        cache.setHasSeenCreateSpaceBadge(hasSeen)
+    }
+
+    override suspend fun getInstalledAtDate(account: Account): Long? {
+        return cache.getInstalledAtDate(account)
+    }
+
+    override suspend fun setInstalledAtDate(account: Account, timestamp: Long) {
+        cache.setInstalledAtDate(account, timestamp)
+    }
+
+    override suspend fun getCurrentAppVersion(account: Account): String? {
+        return cache.getCurrentAppVersion(account)
+    }
+
+    override suspend fun setCurrentAppVersion(account: Account, version: String) {
+        cache.setCurrentAppVersion(account, version)
+    }
+
+    override suspend fun getPreviousAppVersion(account: Account): String? {
+        return cache.getPreviousAppVersion(account)
+    }
+
+    override suspend fun setPreviousAppVersion(account: Account, version: String) {
+        cache.setPreviousAppVersion(account, version)
+    }
 }

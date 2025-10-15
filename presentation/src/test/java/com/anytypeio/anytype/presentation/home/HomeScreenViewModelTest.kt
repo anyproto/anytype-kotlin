@@ -113,6 +113,7 @@ import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
@@ -316,14 +317,14 @@ class HomeScreenViewModelTest {
     private val defaultSpaceConfig = StubConfig(
         widgets = WIDGET_OBJECT_ID
     )
-    
+
     val spaceId = SpaceId(defaultSpaceConfig.space)
 
     private val secondSpaceConfig = StubConfig(
         widgets = SECOND_WIDGET_OBJECT_ID
     )
 
-   lateinit var typeWidgets : List<WidgetView>
+    lateinit var typeWidgets: List<WidgetView>
 
     private lateinit var urlBuilder: UrlBuilder
 
@@ -342,7 +343,8 @@ class HomeScreenViewModelTest {
                 //listOf(objectTypePage)
             )
         }
-        fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
+        fieldParser =
+            FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         typeWidgets = buildList {
             add(WidgetView.Section.ObjectTypes)
             add(
@@ -396,7 +398,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -404,7 +406,9 @@ class HomeScreenViewModelTest {
 
         // TESTING
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
@@ -422,7 +426,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
-                    
+
                     add(WidgetView.EmptyState)
                 }
             )
@@ -453,7 +457,7 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            
+
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
@@ -463,7 +467,9 @@ class HomeScreenViewModelTest {
 
             vm.onStart()
 
-            vm.views.test {
+            combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+                pinned + types
+            }.test {
                 val firstTimeState = awaitItem()
                 assertEquals(
                     actual = firstTimeState,
@@ -472,7 +478,7 @@ class HomeScreenViewModelTest {
                 val secondTimeItem = awaitItem()
                 assertEquals(
                     expected = buildList {
-                        
+
                         add(WidgetView.EmptyState)
                     },
                     actual = secondTimeItem
@@ -548,7 +554,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmptyState = awaitItem()
             assertEquals(
                 actual = firstTimeEmptyState,
@@ -563,7 +571,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    
+
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
@@ -664,7 +672,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmptyState = awaitItem()
             assertEquals(
                 actual = firstTimeEmptyState,
@@ -679,7 +689,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    
+
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
@@ -785,7 +795,7 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -797,7 +807,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmpty = awaitItem()
             assertEquals(
                 actual = firstTimeEmpty,
@@ -811,7 +823,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    
+
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
@@ -897,7 +909,7 @@ class HomeScreenViewModelTest {
         stubWidgetActiveView(widgetBlock)
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -909,7 +921,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmpty = awaitItem()
             assertEquals(
                 actual = firstTimeEmpty,
@@ -924,7 +938,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    
+
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
@@ -1077,7 +1091,7 @@ class HomeScreenViewModelTest {
             stubWidgetActiveView(favoriteWidgetBlock)
 
             stubSpaceManager()
-            
+
             stubUserPermission()
             stubAnalyticSpaceHelperDelegate()
 
@@ -1089,7 +1103,9 @@ class HomeScreenViewModelTest {
 
             vm.onStart()
 
-            vm.views.test {
+            combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+                pinned + types
+            }.test {
                 val firstTimeEmpty = awaitItem()
                 assertEquals(
                     actual = firstTimeEmpty,
@@ -1124,7 +1140,7 @@ class HomeScreenViewModelTest {
 
                 assertEquals(
                     expected = buildList {
-                        
+
                         add(WidgetView.Section.Pinned)
                         add(
                             WidgetView.Tree(
@@ -1262,7 +1278,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
@@ -1272,7 +1290,7 @@ class HomeScreenViewModelTest {
             val secondTimeState = awaitItem()
             assertEquals(
                 expected = buildList {
-                    
+
                     add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Link(
@@ -1348,7 +1366,7 @@ class HomeScreenViewModelTest {
         stubSaveWidgetSession()
         stubGetDefaultPageType()
         stubSpaceManager()
-        
+
 
         storelessSubscriptionContainer.stub {
             onBlocking {
@@ -1471,7 +1489,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
         stubDeleteWidget(widgetBlock, givenPayload)
 
         val vm = buildViewModel()
@@ -1543,7 +1561,7 @@ class HomeScreenViewModelTest {
             stubGetWidgetSession()
             stubCloseObject()
             stubSpaceManager()
-            
+
 
             val vm = buildViewModel()
 
@@ -1676,7 +1694,7 @@ class HomeScreenViewModelTest {
             delay = delayBeforeSwitchingSpace
         )
 
-        
+
 
         stubObserveSpaceObject()
         stubUserPermission()
@@ -1739,204 +1757,207 @@ class HomeScreenViewModelTest {
 
     @Ignore
     @Test
-    fun `should close object and unsubscribe two bundled widgets with list layout on space switch`() = runTest {
+    fun `should close object and unsubscribe two bundled widgets with list layout on space switch`() =
+        runTest {
 
-        // SETUP
+            // SETUP
 
-        val firstLink = StubObject(
-            id = "First link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-        val secondLink = StubObject(
-            id = "Second link",
-            layout = ObjectType.Layout.BASIC.code.toDouble()
-        )
-
-        val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
-        val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
-
-        val favoriteLink = StubLinkToObjectBlock(target = favoriteSource.id)
-        val recentLink = StubLinkToObjectBlock(target = recentSource.id)
-
-        val layout = Block.Content.Widget.Layout.LIST
-
-        val favoriteWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(favoriteLink.id)
-        )
-
-        val recentWidgetBlock = StubWidgetBlock(
-            layout = layout,
-            children = listOf(recentLink.id)
-        )
-
-        val firstWidgetObjectSmartBlock = StubSmartBlock(
-            id = WIDGET_OBJECT_ID,
-            children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id)
-        )
-
-        val secondWidgetObjectSmartBlock = StubSmartBlock(
-            id = SECOND_WIDGET_OBJECT_ID,
-            children = emptyList()
-        )
-
-        val givenFirstSpaceObjectView = StubObjectView(
-            root = WIDGET_OBJECT_ID,
-            blocks = listOf(
-                firstWidgetObjectSmartBlock,
-                favoriteWidgetBlock,
-                favoriteLink,
-                recentWidgetBlock,
-                recentLink
+            val firstLink = StubObject(
+                id = "First link",
+                layout = ObjectType.Layout.BASIC.code.toDouble()
             )
-        )
+            val secondLink = StubObject(
+                id = "Second link",
+                layout = ObjectType.Layout.BASIC.code.toDouble()
+            )
 
-        val givenSecondSpaceObjectView = StubObjectView(
-            root = SECOND_WIDGET_OBJECT_ID,
-            blocks = listOf(secondWidgetObjectSmartBlock)
-        )
+            val favoriteSource = StubObject(id = BundledWidgetSourceIds.FAVORITE)
+            val recentSource = StubObject(id = BundledWidgetSourceIds.RECENT)
+
+            val favoriteLink = StubLinkToObjectBlock(target = favoriteSource.id)
+            val recentLink = StubLinkToObjectBlock(target = recentSource.id)
+
+            val layout = Block.Content.Widget.Layout.LIST
+
+            val favoriteWidgetBlock = StubWidgetBlock(
+                layout = layout,
+                children = listOf(favoriteLink.id)
+            )
+
+            val recentWidgetBlock = StubWidgetBlock(
+                layout = layout,
+                children = listOf(recentLink.id)
+            )
+
+            val firstWidgetObjectSmartBlock = StubSmartBlock(
+                id = WIDGET_OBJECT_ID,
+                children = listOf(favoriteWidgetBlock.id, recentWidgetBlock.id)
+            )
+
+            val secondWidgetObjectSmartBlock = StubSmartBlock(
+                id = SECOND_WIDGET_OBJECT_ID,
+                children = emptyList()
+            )
+
+            val givenFirstSpaceObjectView = StubObjectView(
+                root = WIDGET_OBJECT_ID,
+                blocks = listOf(
+                    firstWidgetObjectSmartBlock,
+                    favoriteWidgetBlock,
+                    favoriteLink,
+                    recentWidgetBlock,
+                    recentLink
+                )
+            )
+
+            val givenSecondSpaceObjectView = StubObjectView(
+                root = SECOND_WIDGET_OBJECT_ID,
+                blocks = listOf(secondWidgetObjectSmartBlock)
+            )
 
 
-        stubConfig()
+            stubConfig()
 
-        stubInterceptEvents(events = emptyFlow())
-        stubSecondWidgetObjectInterceptEvents(events = emptyFlow())
+            stubInterceptEvents(events = emptyFlow())
+            stubSecondWidgetObjectInterceptEvents(events = emptyFlow())
 
-        stubOpenWidgetObjects(
-            firstGivenObjectView = givenFirstSpaceObjectView,
-            secondGivenObjectView = givenSecondSpaceObjectView
-        )
+            stubOpenWidgetObjects(
+                firstGivenObjectView = givenFirstSpaceObjectView,
+                secondGivenObjectView = givenSecondSpaceObjectView
+            )
 
-        stubSearchByIds(
-            subscription = favoriteWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
+            stubSearchByIds(
+                subscription = favoriteWidgetBlock.id,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink)
+            )
 
-        stubSearchByIds(
-            subscription = recentWidgetBlock.id,
-            targets = listOf(firstLink.id, secondLink.id),
-            results = listOf(firstLink, secondLink)
-        )
+            stubSearchByIds(
+                subscription = recentWidgetBlock.id,
+                targets = listOf(firstLink.id, secondLink.id),
+                results = listOf(firstLink, secondLink)
+            )
 
-        stubSearchByIds(
-            subscription = favoriteSource.id,
-            keys = ListWidgetContainer.keys,
-            targets = emptyList()
-        )
-
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.FAVORITE,
-                space = spaceId.id,
+            stubSearchByIds(
+                subscription = favoriteSource.id,
                 keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
+                targets = emptyList()
+            )
 
-        stubDefaultSearch(
-            params = ListWidgetContainer.params(
-                subscription = BundledWidgetSourceIds.RECENT,
-                space = spaceId.id,
-                keys = ListWidgetContainer.keys,
-                limit = WidgetConfig.DEFAULT_LIST_LIMIT
-            ),
-            results = listOf(firstLink, secondLink)
-        )
+            stubDefaultSearch(
+                params = ListWidgetContainer.params(
+                    subscription = BundledWidgetSourceIds.FAVORITE,
+                    space = spaceId.id,
+                    keys = ListWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                ),
+                results = listOf(firstLink, secondLink)
+            )
 
-        stubGetSpaceView(defaultSpaceConfig.spaceView)
+            stubDefaultSearch(
+                params = ListWidgetContainer.params(
+                    subscription = BundledWidgetSourceIds.RECENT,
+                    space = spaceId.id,
+                    keys = ListWidgetContainer.keys,
+                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                ),
+                results = listOf(firstLink, secondLink)
+            )
 
-        stubCollapsedWidgetState(id = anyString())
-        stubGetWidgetSession()
-        stubWidgetActiveView(favoriteWidgetBlock)
-        stubFavoritesObjectWatcher()
-        stubCloseObject()
+            stubGetSpaceView(defaultSpaceConfig.spaceView)
 
-        val delayBeforeSwitchingSpace = 300L
+            stubCollapsedWidgetState(id = anyString())
+            stubGetWidgetSession()
+            stubWidgetActiveView(favoriteWidgetBlock)
+            stubFavoritesObjectWatcher()
+            stubCloseObject()
 
-        stubSpaceManagerWithSwitch(
-            delay = delayBeforeSwitchingSpace
-        )
+            val delayBeforeSwitchingSpace = 300L
 
-        
+            stubSpaceManagerWithSwitch(
+                delay = delayBeforeSwitchingSpace
+            )
 
-        stubObserveSpaceObject()
-        stubUserPermission()
-        stubAnalyticSpaceHelperDelegate()
 
-        unsubscriber.stub {
-            onBlocking { start() } doReturn Unit
-            onBlocking {
+
+            stubObserveSpaceObject()
+            stubUserPermission()
+            stubAnalyticSpaceHelperDelegate()
+
+            unsubscriber.stub {
+                onBlocking { start() } doReturn Unit
+                onBlocking {
+                    unsubscribe(
+                        listOf(
+                            favoriteSource.id,
+                            recentSource.id
+                        )
+                    )
+                } doReturn Unit
+            }
+
+            given(objectWatcher.watch(defaultSpaceConfig.home, spaceId)).willReturn(flowOf())
+            given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(
+                flowOf()
+            )
+            given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
+                flowOf()
+            )
+
+            val vm = buildViewModel()
+
+            // TESTING
+
+            // Verifying subscription on launch
+
+            vm.onStart()
+
+            advanceTimeBy(delayBeforeSwitchingSpace - 1)
+
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(
+                    StoreSearchByIdsParams(
+                        space = Space(spaceId.id),
+                        subscription = favoriteSource.id,
+                        keys = ListWidgetContainer.keys,
+                        targets = emptyList()
+                    )
+                )
+            }
+
+            verifyBlocking(storelessSubscriptionContainer, times(1)) {
+                subscribe(
+                    ListWidgetContainer.params(
+                        subscription = recentSource.id,
+                        space = spaceId.id,
+                        keys = ListWidgetContainer.keys,
+                        limit = WidgetConfig.DEFAULT_LIST_LIMIT
+                    )
+                )
+            }
+
+            advanceTimeBy(delayBeforeSwitchingSpace + 1)
+
+            // Verifying unsubscribe behavior
+
+            advanceUntilIdle()
+
+            verifyBlocking(unsubscriber, times(1)) {
                 unsubscribe(
-                    listOf(
+                    subscriptions = listOf(
                         favoriteSource.id,
                         recentSource.id
                     )
                 )
-            } doReturn Unit
-        }
+            }
 
-        given(objectWatcher.watch(defaultSpaceConfig.home, spaceId)).willReturn(flowOf())
-        given(storelessSubscriptionContainer.subscribe(any<StoreSearchParams>())).willReturn(flowOf())
-        given(storelessSubscriptionContainer.subscribe(any<StoreSearchByIdsParams>())).willReturn(
-            flowOf()
-        )
-
-        val vm = buildViewModel()
-
-        // TESTING
-
-        // Verifying subscription on launch
-
-        vm.onStart()
-
-        advanceTimeBy(delayBeforeSwitchingSpace - 1)
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                StoreSearchByIdsParams(
-                    space = Space(spaceId.id),
-                    subscription = favoriteSource.id,
-                    keys = ListWidgetContainer.keys,
-                    targets = emptyList()
+            verify(closeObject, times(1)).async(
+                params = CloseObject.Params(
+                    WIDGET_OBJECT_ID,
+                    spaceId
                 )
             )
         }
-
-        verifyBlocking(storelessSubscriptionContainer, times(1)) {
-            subscribe(
-                ListWidgetContainer.params(
-                    subscription = recentSource.id,
-                    space = spaceId.id,
-                    keys = ListWidgetContainer.keys,
-                    limit = WidgetConfig.DEFAULT_LIST_LIMIT
-                )
-            )
-        }
-
-        advanceTimeBy(delayBeforeSwitchingSpace + 1)
-
-        // Verifying unsubscribe behavior
-
-        advanceUntilIdle()
-
-        verifyBlocking(unsubscriber, times(1)) {
-            unsubscribe(
-                subscriptions = listOf(
-                    favoriteSource.id,
-                    recentSource.id
-                )
-            )
-        }
-
-        verify(closeObject, times(1)).async(
-            params = CloseObject.Params(
-                WIDGET_OBJECT_ID,
-                spaceId
-            )
-        )
-    }
 
     @Ignore
     @Test
@@ -1990,7 +2011,7 @@ class HomeScreenViewModelTest {
         stubObserveSpaceObject()
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
         stubUserPermission()
         stubAnalyticSpaceHelperDelegate()
 
@@ -2000,7 +2021,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
@@ -2011,7 +2034,7 @@ class HomeScreenViewModelTest {
             assertEquals(
                 actual = secondTimeState,
                 expected = buildList {
-                    
+
                     add(WidgetView.EmptyState)
                 }
             )
@@ -2068,7 +2091,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
 
         val vm = buildViewModel()
 
@@ -2076,7 +2099,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeState = awaitItem()
             assertEquals(
                 actual = firstTimeState,
@@ -2138,7 +2163,7 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            
+
 
             val vm = buildViewModel()
 
@@ -2146,7 +2171,9 @@ class HomeScreenViewModelTest {
 
             vm.onStart()
 
-            vm.views.test {
+            combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+                pinned + types
+            }.test {
                 val firstTimeState = awaitItem()
                 assertEquals(
                     actual = firstTimeState,
@@ -2161,7 +2188,8 @@ class HomeScreenViewModelTest {
 
     @Ignore
     @Test
-    fun `should react to change-widget-source event when source type is page for old and new source`() = runTest {
+    fun `should react to change-widget-source event when source type is page for old and new source`() =
+        runTest {
             val currentSourceObject = StubObject(
                 id = "SOURCE OBJECT 1",
                 links = emptyList(),
@@ -2230,17 +2258,19 @@ class HomeScreenViewModelTest {
             stubCollapsedWidgetState(id = anyString())
             stubGetWidgetSession()
             stubSpaceManager()
-            
+
 
             stubSpaceBinWidgetContainer()
 
-        val vm = buildViewModel()
+            val vm = buildViewModel()
 
             // TESTING
 
             vm.onStart()
 
-            vm.views.test {
+            combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+                pinned + types
+            }.test {
                 val firstTimeEmpty = awaitItem()
                 assertEquals(
                     actual = firstTimeEmpty,
@@ -2338,7 +2368,7 @@ class HomeScreenViewModelTest {
         stubCollapsedWidgetState(id = anyString())
         stubGetWidgetSession()
         stubSpaceManager()
-        
+
 
         stubSpaceBinWidgetContainer()
 
@@ -2348,7 +2378,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmpty = awaitItem()
             assertEquals(
                 actual = firstTimeEmpty,
@@ -2507,7 +2539,7 @@ class HomeScreenViewModelTest {
         }
 
         stubSpaceManager()
-        
+
 
         stubSpaceBinWidgetContainer()
 
@@ -2517,7 +2549,9 @@ class HomeScreenViewModelTest {
 
         vm.onStart()
 
-        vm.views.test {
+        combine(vm.pinnedViews, vm.typeViews) { pinned, types ->
+            pinned + types
+        }.test {
             val firstTimeEmpty = awaitItem()
             assertEquals(
                 actual = firstTimeEmpty,
@@ -2954,6 +2988,7 @@ class HomeScreenViewModelTest {
 
     @Mock
     private lateinit var copyInviteLinkToClipboard: CopyInviteLinkToClipboard
+
     @Mock
     private lateinit var userSettingsRepository: UserSettingsRepository
 

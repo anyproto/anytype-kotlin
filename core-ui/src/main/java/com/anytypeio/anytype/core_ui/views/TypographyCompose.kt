@@ -74,7 +74,7 @@ val BodySemiBold = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).em
+    letterSpacing = (-0.41).sp
 )
 
 //Content/Body/Bold Italic
@@ -193,6 +193,24 @@ val CodeBlock = TextStyle(
     fontSize = 15.sp,
     lineHeight = 22.sp,
     letterSpacing = (-0.016).em
+)
+
+//Content/Misc/Chat Preview Medium
+val CodeChatPreviewMedium = TextStyle(
+    fontFamily = fontInterMedium,
+    fontWeight = FontWeight.W500,
+    fontSize = 15.sp,
+    lineHeight = 18.sp,
+    letterSpacing = (-0.24).sp
+)
+
+//Content/Misc/Chat Preview Regular
+val CodeChatPreviewRegular = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W400,
+    fontSize = 15.sp,
+    lineHeight = 18.sp,
+    letterSpacing = (-0.24).sp
 )
 
 val TitleInter15 = TextStyle(

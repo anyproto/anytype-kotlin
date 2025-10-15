@@ -53,6 +53,10 @@ jobs:
             --project-path . \
             --who "CI" \
             --why "MIT (verified manually from anyproto/any-crypto-kotlin)"
+          license_finder permitted_licenses add "ML Kit Terms of Service" \
+            --project-path . \
+            --who "CI" \
+            --why "Google ML Kit components required; legal reviewed"
 
           # finally run the scan
           license_finder --gradle-command="./gradlew \

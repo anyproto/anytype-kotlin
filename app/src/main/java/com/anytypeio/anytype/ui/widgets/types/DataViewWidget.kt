@@ -39,6 +39,8 @@ import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
@@ -47,6 +49,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -392,6 +395,9 @@ private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
     onItemClicked: () -> Unit
 ) {
+    val isImageType = item.obj.layout == ObjectType.Layout.IMAGE
+    val hasCover = item.cover != null
+
     Box(
         modifier = Modifier
             .size(136.dp)
@@ -409,64 +415,268 @@ private fun GalleryWidgetItemCard(
                     shape = RoundedCornerShape(8.dp)
                 )
         )
-        when (val cover = item.cover) {
-            is CoverView.Color -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            color = Color(cover.coverColor.color),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+
+        when {
+            // Case 1: Image type - show full 136x136 image
+            isImageType -> {
+                when (val cover = item.cover) {
+                    is CoverView.Image -> {
+                        AsyncImage(
+                            model = cover.url,
+                            contentDescription = "Image object",
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .clip(RoundedCornerShape(8.dp)),
+                            contentScale = ContentScale.Crop,
                         )
-                )
+                    }
+                    else -> {
+                        // Fallback for image type without cover
+                        TitleOnlyContent(item)
+                    }
+                }
             }
 
-            is CoverView.Gradient -> {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = gradient(cover.gradient)
-                            ),
-                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+            // Case 2: Has cover - show 136x80 cover + title at bottom
+            hasCover -> {
+                Column(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    // Cover section (80dp height)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(80.dp)
+                    ) {
+                        when (val cover = item.cover) {
+                            is CoverView.Color -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            color = Color(cover.coverColor.color),
+                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                        )
+                                )
+                            }
+
+                            is CoverView.Gradient -> {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .background(
+                                            Brush.horizontalGradient(
+                                                colors = gradient(cover.gradient)
+                                            ),
+                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                        )
+                                )
+                            }
+
+                            is CoverView.Image -> {
+                                AsyncImage(
+                                    model = cover.url,
+                                    contentDescription = "Cover image",
+                                    modifier = Modifier
+                                        .fillMaxSize()
+                                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
+                                    contentScale = ContentScale.Crop,
+                                )
+                            }
+
+                            else -> {
+                                // Draw nothing.
+                            }
+                        }
+                    }
+
+                    // Title section (remaining 56dp height)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(56.dp)
+                            .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                        contentAlignment = Alignment.TopStart
+                    ) {
+                        Text(
+                            text = when (val name = item.name) {
+                                is WidgetView.Name.Default -> name.prettyPrintName
+                                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
+                                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+                            },
+                            style = Caption1Medium,
+                            color = colorResource(id = R.color.text_primary),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
-                )
+                    }
+                }
             }
 
-            is CoverView.Image -> {
-                AsyncImage(
-                    model = cover.url,
-                    contentDescription = "Cover image",
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)),
-                    contentScale = ContentScale.Crop,
-                )
-            }
-
+            // Case 3: No cover - show 136x136 with centered title
             else -> {
-                // Draw nothing.
+                TitleOnlyContent(item)
             }
         }
     }
 }
 
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Light Mode")
-@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Dark Mode")
 @Composable
-fun GalleryWidgetItemCardPreview() {
+private fun TitleOnlyContent(item: WidgetView.SetOfObjects.Element) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(top = 9.dp, start = 12.dp, end = 12.dp),
+        contentAlignment = Alignment.TopStart
+    ) {
+        Text(
+            text = when (val name = item.name) {
+                is WidgetView.Name.Default -> name.prettyPrintName
+                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
+                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+            },
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Start,
+            maxLines = 2,
+            overflow = TextOverflow.Ellipsis
+        )
+    }
+}
+
+// Preview 1: Image type object
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Image Type - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Image Type - Dark")
+@Composable
+fun GalleryWidgetItemCard_ImageType_Preview() {
     GalleryWidgetItemCard(
         item = WidgetView.SetOfObjects.Element(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
-                    Relations.NAME to "Stephen Bann"
+                    Relations.NAME to "Mountain Landscape.jpg",
+                    Relations.TYPE to ObjectTypeIds.IMAGE
                 )
             ),
             name = WidgetView.Name.Default(
-                prettyPrintName = "Stephen Bann"
-            )
+                prettyPrintName = "Mountain Landscape.jpg"
+            ),
+            cover = CoverView.Image(url = "https://picsum.photos/200")
+        ),
+        onItemClicked = {}
+    )
+}
+
+// Preview 2: Object with image cover
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "With Image Cover - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "With Image Cover - Dark")
+@Composable
+fun GalleryWidgetItemCard_WithImageCover_Preview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Travel Blog Post",
+                    Relations.TYPE to ObjectTypeIds.PAGE
+                )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Summer Vacation: Adventures in the Mountains"
+            ),
+            cover = CoverView.Image(url = "https://picsum.photos/200")
+        ),
+        onItemClicked = {}
+    )
+}
+
+// Preview 3: Object with color cover
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "With Color Cover - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "With Color Cover - Dark")
+@Composable
+fun GalleryWidgetItemCard_WithColorCover_Preview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Meeting Notes",
+                    Relations.TYPE to ObjectTypeIds.PAGE
+                )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Team Sync Meeting Notes"
+            ),
+            cover = CoverView.Color(coverColor = CoverColor.BLUE)
+        ),
+        onItemClicked = {}
+    )
+}
+
+// Preview 4: Object with gradient cover
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "With Gradient Cover - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "With Gradient Cover - Dark")
+@Composable
+fun GalleryWidgetItemCard_WithGradientCover_Preview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Project Plan",
+                    Relations.TYPE to ObjectTypeIds.PAGE
+                )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Q4 Product Roadmap"
+            ),
+            cover = CoverView.Gradient(gradient = "pinkOrange")
+        ),
+        onItemClicked = {}
+    )
+}
+
+// Preview 5: Object without cover
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "No Cover - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "No Cover - Dark")
+@Composable
+fun GalleryWidgetItemCard_NoCover_Preview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Quick Note",
+                    Relations.TYPE to ObjectTypeIds.NOTE
+                )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Important Reminders for Tomorrow's Presentation"
+            ),
+            cover = null
+        ),
+        onItemClicked = {}
+    )
+}
+
+// Preview 6: Object without cover - short title
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "No Cover Short - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "No Cover Short - Dark")
+@Composable
+fun GalleryWidgetItemCard_NoCoverShort_Preview() {
+    GalleryWidgetItemCard(
+        item = WidgetView.SetOfObjects.Element(
+            objectIcon = ObjectIcon.None,
+            obj = ObjectWrapper.Basic(
+                map = mapOf(
+                    Relations.NAME to "Tasks",
+                    Relations.TYPE to ObjectTypeIds.TASK
+                )
+            ),
+            name = WidgetView.Name.Default(
+                prettyPrintName = "Tasks"
+            ),
+            cover = null
         ),
         onItemClicked = {}
     )

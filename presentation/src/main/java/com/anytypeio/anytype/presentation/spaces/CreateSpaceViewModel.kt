@@ -5,9 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.shareSpace
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsShareSpaceNewLink
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
@@ -23,16 +25,25 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.multiplayer.GenerateSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
+import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -45,7 +56,10 @@ class CreateSpaceViewModel(
     private val setSpaceDetails: SetSpaceDetails,
     private val saveCurrentSpace: SaveCurrentSpace,
     private val makeSpaceShareable: MakeSpaceShareable,
-    private val generateSpaceInviteLink: GenerateSpaceInviteLink
+    private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val permissions: UserPermissionProvider,
+    private val profileContainer: ProfileSubscriptionManager
 ) : BaseViewModel() {
 
     val isInProgress = MutableStateFlow(false)
@@ -135,7 +149,13 @@ class CreateSpaceViewModel(
         analytics.sendEvent(
             eventName = EventsDictionary.createSpace,
             props = Props(
-                mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation)
+                mapOf(
+                    EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                    if (isChatSpace)
+                        EventsPropertiesKey.uxType to "Chat"
+                    else
+                        EventsPropertiesKey.uxType to "Space"
+                )
             )
         )
 
@@ -281,9 +301,17 @@ class CreateSpaceViewModel(
         spaceId: SpaceId,
         startingObject: Id?
     ) {
+        // Check if shareable space limit is reached
+        if (isSharableLimitReached()) {
+            Timber.d("Shareable space limit reached, skipping share and finishing creation")
+            finishSpaceCreation(spaceId = spaceId.id, startingObject = startingObject)
+            return
+        }
+
         makeSpaceShareable.async(params = spaceId).fold(
             onSuccess = {
                 Timber.d("Successfully made space shareable")
+                analytics.sendEvent(eventName = shareSpace)
                 generateInviteLink(
                     spaceId = spaceId,
                     startingObject = startingObject
@@ -294,6 +322,28 @@ class CreateSpaceViewModel(
                 onError(error)
             }
         )
+    }
+
+    /**
+     * Check if the shareable space limit has been reached.
+     * When the limit is reached, we cannot share any more spaces.
+     */
+    private suspend fun isSharableLimitReached(): Boolean {
+        val sharedSpaceCountFlow = spaceViews.sharedSpaceCount(permissions.all())
+        val sharedSpaceLimitFlow = profileContainer
+            .observe()
+            .map { wrapper ->
+                wrapper.getValue<Double?>(Relations.SHARED_SPACES_LIMIT)?.toInt() ?: 0
+            }
+
+        val (count, limit) = combine(
+            sharedSpaceCountFlow,
+            sharedSpaceLimitFlow
+        ) { count, limit ->
+            count to limit
+        }.first()
+
+        return limit > 0 && count >= limit
     }
 
     private suspend fun generateInviteLink(
@@ -309,6 +359,13 @@ class CreateSpaceViewModel(
         ).fold(
             onSuccess = { inviteLink ->
                 Timber.d("Successfully generated invite link: ${inviteLink.scheme}")
+
+                // Analytics: Track chat space invite link generation
+                analytics.sendAnalyticsShareSpaceNewLink(
+                    inviteType = CHAT_SPACE_INVITE_TYPE,
+                    permissions = CHAT_SPACE_DEFAULT_PERMISSIONS
+                )
+
                 finishSpaceCreation(
                     spaceId = spaceId.id,
                     startingObject = startingObject
@@ -332,7 +389,10 @@ class CreateSpaceViewModel(
         private val setSpaceDetails: SetSpaceDetails,
         private val saveCurrentSpace: SaveCurrentSpace,
         private val makeSpaceShareable: MakeSpaceShareable,
-        private val generateSpaceInviteLink: GenerateSpaceInviteLink
+        private val generateSpaceInviteLink: GenerateSpaceInviteLink,
+        private val spaceViews: SpaceViewSubscriptionContainer,
+        private val permissions: UserPermissionProvider,
+        private val profileContainer: ProfileSubscriptionManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -346,7 +406,10 @@ class CreateSpaceViewModel(
             vmParams = vmParams,
             saveCurrentSpace = saveCurrentSpace,
             makeSpaceShareable = makeSpaceShareable,
-            generateSpaceInviteLink = generateSpaceInviteLink
+            generateSpaceInviteLink = generateSpaceInviteLink,
+            spaceViews = spaceViews,
+            permissions = permissions,
+            profileContainer = profileContainer
         ) as T
     }
 

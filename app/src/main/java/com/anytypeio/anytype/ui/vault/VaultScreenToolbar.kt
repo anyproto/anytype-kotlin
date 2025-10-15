@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.CircularProgressIndicator
@@ -47,6 +48,7 @@ fun VaultScreenTopToolbar(
     profile: AccountProfile,
     uiState: VaultUiState,
     showNotificationBadge: Boolean = false,
+    showCreateSpaceBadge: Boolean = false,
     onUpdateSearchQuery: (String) -> Unit,
     onCreateSpaceClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
@@ -61,6 +63,7 @@ fun VaultScreenTopToolbar(
                 VaultScreenToolbar(
                     profile = profile,
                     showNotificationBadge = showNotificationBadge,
+                    showCreateSpaceBadge = showCreateSpaceBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
                     isLoading = true
@@ -82,6 +85,7 @@ fun VaultScreenTopToolbar(
                 VaultScreenToolbar(
                     profile = profile,
                     showNotificationBadge = showNotificationBadge,
+                    showCreateSpaceBadge = showCreateSpaceBadge,
                     onPlusClicked = onCreateSpaceClicked,
                     onSettingsClicked = onSettingsClicked,
                     isLoading = false
@@ -102,6 +106,7 @@ fun VaultScreenTopToolbar(
 fun VaultScreenToolbar(
     profile: AccountProfile,
     showNotificationBadge: Boolean = false,
+    showCreateSpaceBadge: Boolean = false,
     onPlusClicked: () -> Unit,
     onSettingsClicked: () -> Unit,
     isLoading: Boolean
@@ -176,11 +181,8 @@ fun VaultScreenToolbar(
                 contentAlignment = Alignment.Center
 
             ) {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_plus_18),
-                    contentDescription = stringResource(R.string.content_description_plus_button),
-                    modifier = Modifier.size(28.dp),
-                    contentScale = ContentScale.Fit
+                CreateSpaceButtonWithBadge(
+                    showBadge = showCreateSpaceBadge
                 )
             }
         }
@@ -316,6 +318,69 @@ fun VaultScreenToolbarScrolledPreview() {
             icon = ProfileIconView.Placeholder(name = "Jd")
         ),
         isLoading = false,
-        showNotificationBadge = true
+        showNotificationBadge = true,
+        showCreateSpaceBadge = true
     )
+}
+
+@Composable
+private fun CreateSpaceButtonWithBadge(
+    showBadge: Boolean = false
+) {
+    Box(
+        modifier = Modifier.height(34.dp).width(40.dp)
+    ) {
+        // Main "+" icon
+        Image(
+            painter = painterResource(id = R.drawable.ic_plus_18),
+            contentDescription = stringResource(R.string.content_description_plus_button),
+            modifier = Modifier.size(28.dp).align(Alignment.Center),
+            contentScale = ContentScale.Fit
+        )
+
+        // Blue dot badge positioned in top-right corner
+        if (showBadge) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_space_create_dot),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .size(16.dp)
+                    .background(
+                        color = colorResource(id = R.color.background_primary),
+                        shape = CircleShape
+                    ),
+                contentDescription = "Create space badge",
+            )
+        }
+    }
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - With Badge"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - With Badge"
+)
+private fun CreateSpaceButtonWithBadgePreview() {
+    CreateSpaceButtonWithBadge(showBadge = true)
+}
+
+@Composable
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_YES,
+    name = "Dark Mode - Without Badge"
+)
+@Preview(
+    showBackground = true,
+    uiMode = Configuration.UI_MODE_NIGHT_NO,
+    name = "Light Mode - Without Badge"
+)
+private fun CreateSpaceButtonNoBadgePreview() {
+    CreateSpaceButtonWithBadge(showBadge = false)
 }

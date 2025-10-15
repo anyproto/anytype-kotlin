@@ -25,6 +25,9 @@ import com.anytypeio.anytype.presentation.notifications.NotificationActionDelega
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,
@@ -48,7 +51,10 @@ class MainViewModelFactory @Inject constructor(
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
+    private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
+    private val appInfo: AppInfo
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -75,6 +81,9 @@ class MainViewModelFactory @Inject constructor(
         observeSpaceWallpaper = observeSpaceWallpaper,
         urlBuilder = urlBuilder,
         appShutdown = appShutdown,
-        scope = scope
+        scope = scope,
+        observeShowSpacesIntroduction = observeShowSpacesIntroduction,
+        setSpacesIntroductionShown = setSpacesIntroductionShown,
+        appInfo = appInfo
     ) as T
 }

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
@@ -88,7 +90,10 @@ object MainEntryModule {
         observeSpaceWallpaper: ObserveSpaceWallpaper,
         urlBuilder: UrlBuilder,
         appShutdown: AppShutdown,
-        scope: CoroutineScope
+        scope: CoroutineScope,
+        observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
+        setSpacesIntroductionShown: SetSpacesIntroductionShown,
+        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -111,7 +116,10 @@ object MainEntryModule {
         observeSpaceWallpaper = observeSpaceWallpaper,
         urlBuilder = urlBuilder,
         appShutdown = appShutdown,
-        scope = scope
+        scope = scope,
+        observeShowSpacesIntroduction = observeShowSpacesIntroduction,
+        setSpacesIntroductionShown = setSpacesIntroductionShown,
+        appInfo = appInfo
     )
 
     @JvmStatic
@@ -181,8 +189,9 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideCheckAuthStatus(
-        repo: AuthRepository
-    ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo)
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CheckAuthorizationStatus = CheckAuthorizationStatus(repo, dispatchers)
 
     @JvmStatic
     @PerScreen

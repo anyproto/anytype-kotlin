@@ -27,6 +27,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
+    implementation project(':analytics')
 
     implementation libs.kotlinxSerializationJson
     implementation libs.appcompat

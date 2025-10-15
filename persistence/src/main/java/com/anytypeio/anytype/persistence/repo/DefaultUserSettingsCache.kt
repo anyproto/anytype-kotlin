@@ -637,6 +637,101 @@ class DefaultUserSettingsCache(
             }
     }
 
+    override suspend fun getHasShownSpacesIntroduction(): Boolean {
+        return prefs.getBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, false)
+    }
+
+    override suspend fun setHasShownSpacesIntroduction(hasShown: Boolean) {
+        prefs.edit()
+            .putBoolean(HAS_SHOWN_SPACES_INTRODUCTION_KEY, hasShown)
+            .apply()
+    }
+
+    override suspend fun getHasSeenCreateSpaceBadge(): Boolean {
+        return prefs.getBoolean(HAS_SEEN_CREATE_SPACE_BADGE_KEY, false)
+    }
+
+    override suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean) {
+        prefs.edit()
+            .putBoolean(HAS_SEEN_CREATE_SPACE_BADGE_KEY, hasSeen)
+            .apply()
+    }
+
+    override suspend fun getInstalledAtDate(account: Account): Long? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.installedAtDate
+            }
+            .first()
+    }
+
+    override suspend fun setInstalledAtDate(account: Account, timestamp: Long) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        installedAtDate = timestamp
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getCurrentAppVersion(account: Account): String? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.currentAppVersion
+            }
+            .first()
+    }
+
+    override suspend fun setCurrentAppVersion(account: Account, version: String) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        currentAppVersion = version
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun getPreviousAppVersion(account: Account): String? {
+        return context.vaultPrefsStore
+            .data
+            .map { prefs ->
+                prefs.preferences[account.id]?.previousAppVersion
+            }
+            .first()
+    }
+
+    override suspend fun setPreviousAppVersion(account: Account, version: String) {
+        context.vaultPrefsStore.updateData { existingPreferences ->
+            val curr = existingPreferences.preferences.getOrDefault(
+                key = account.id,
+                defaultValue = initialVaultSettings()
+            )
+            existingPreferences.copy(
+                preferences = existingPreferences.preferences + mapOf(
+                    account.id to curr.copy(
+                        previousAppVersion = version
+                    )
+                )
+            )
+        }
+    }
+
     companion object {
         const val CURRENT_SPACE_KEY = "prefs.user_settings.current_space"
         const val DEFAULT_OBJECT_TYPE_ID_KEY = "prefs.user_settings.default_object_type.id"
@@ -652,5 +747,8 @@ class DefaultUserSettingsCache(
 
         const val COLLAPSED_WIDGETS_KEY = "prefs.user_settings.collapsed-widgets"
         const val ACTIVE_WIDGETS_VIEWS_KEY = "prefs.user_settings.active-widget-views"
+
+        const val HAS_SHOWN_SPACES_INTRODUCTION_KEY = "prefs.device.has_shown_spaces_introduction"
+        const val HAS_SEEN_CREATE_SPACE_BADGE_KEY = "prefs.device.has_seen_create_space_badge"
     }
 }

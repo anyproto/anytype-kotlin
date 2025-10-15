@@ -18,12 +18,15 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
+import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
+import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import javax.inject.Inject
 
 class VaultViewModelFactory @Inject constructor(
@@ -49,6 +52,9 @@ class VaultViewModelFactory @Inject constructor(
     private val unpinSpace: UnpinSpace,
     private val setSpaceOrder: SetSpaceOrder,
     private val getSpaceWallpapers: GetSpaceWallpapers,
+    private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
+    private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
+    private val appInfo: AppInfo
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -75,6 +81,9 @@ class VaultViewModelFactory @Inject constructor(
         notificationPermissionManager = notificationPermissionManager,
         unpinSpace = unpinSpace,
         setSpaceOrder = setSpaceOrder,
-        getSpaceWallpapers = getSpaceWallpapers
+        getSpaceWallpapers = getSpaceWallpapers,
+        shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
+        setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
+        appInfo = appInfo
     ) as T
 }

@@ -590,298 +590,183 @@ class HomeScreenViewModel(
 
 
     private fun proceedWithWidgetContainerPipeline() {
-        // Build containers for pinned widgets
+        buildPinnedContainerPipeline()
+        buildTypeContainerPipeline()
+    }
+
+    private fun buildPinnedContainerPipeline() {
         viewModelScope.launch {
             _pinnedWidgets.map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
+                widgets.mapNotNull { widget ->
                     Timber.d("Creating pinned container for widget: ${widget.id} of type ${widget::class.simpleName}")
-                    when (widget) {
-                        is Widget.Chat -> SpaceChatWidgetContainer(
-                            widget = widget,
-                            container = chatPreviews,
-                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-                            notificationPermissionManager = notificationPermissionManager
-                        )
-                        is Widget.Link -> LinkWidgetContainer(
-                            widget = widget,
-                            fieldParser = fieldParser
-                        )
-                        is Widget.Tree -> TreeWidgetContainer(
-                            widget = widget,
-                            container = storelessSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                            isSessionActive = isSessionActive,
-                            urlBuilder = urlBuilder,
-                            objectWatcher = objectWatcher,
-                            getSpaceView = getSpaceView,
-                            onRequestCache = {
-                                currentlyDisplayedViews.find { view ->
-                                    view.id == widget.id
-                                            && view is WidgetView.Tree
-                                            && view.source == widget.source
-                                } as? WidgetView.Tree
-                            },
-                            fieldParser = fieldParser,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-                            ListWidgetContainer(
-                                widget = widget,
-                                subscription = widget.source.id,
-                                storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                urlBuilder = urlBuilder,
-                                isSessionActive = isSessionActive,
-                                objectWatcher = objectWatcher,
-                                getSpaceView = getSpaceView,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.ListOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.ListOfObjects
-                                },
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        } else {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.View -> {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        when (view) {
-                                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
-                                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
-                                            else -> false
-                                        }
-                                    }
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.AllObjects -> {
-                            AllContentWidgetContainer(
-                                widget = widget
-                            )
-                        }
-                        is Widget.Section.Pinned -> {
-                            SectionWidgetContainer.Pinned
-                        }
-                        is Widget.Section.ObjectType,
-                        is Widget.Bin -> {
-                            // These belong to type widgets section, not pinned
-                            null
-                        }
-                    }
-                }.filterNotNull()
+                    createWidgetContainer(widget, currentlyDisplayedViews)
+                }
             }.collect { containersList ->
                 Timber.d("Emitting list of pinned containers: ${containersList.size}")
                 pinnedContainers.value = containersList
             }
         }
+    }
 
-        // Build containers for type widgets
+    private fun buildTypeContainerPipeline() {
         viewModelScope.launch {
             _typeWidgets.map { widgets ->
                 val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
+                widgets.mapNotNull { widget ->
                     Timber.d("Creating type container for widget: ${widget.id} of type ${widget::class.simpleName}")
-                    when (widget) {
-                        is Widget.Chat -> SpaceChatWidgetContainer(
-                            widget = widget,
-                            container = chatPreviews,
-                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-                            notificationPermissionManager = notificationPermissionManager
-                        )
-                        is Widget.Link -> LinkWidgetContainer(
-                            widget = widget,
-                            fieldParser = fieldParser
-                        )
-                        is Widget.Tree -> TreeWidgetContainer(
-                            widget = widget,
-                            container = storelessSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                            isSessionActive = isSessionActive,
-                            urlBuilder = urlBuilder,
-                            objectWatcher = objectWatcher,
-                            getSpaceView = getSpaceView,
-                            onRequestCache = {
-                                currentlyDisplayedViews.find { view ->
-                                    view.id == widget.id
-                                            && view is WidgetView.Tree
-                                            && view.source == widget.source
-                                } as? WidgetView.Tree
-                            },
-                            fieldParser = fieldParser,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-                            ListWidgetContainer(
-                                widget = widget,
-                                subscription = widget.source.id,
-                                storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                urlBuilder = urlBuilder,
-                                isSessionActive = isSessionActive,
-                                objectWatcher = objectWatcher,
-                                getSpaceView = getSpaceView,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.ListOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.ListOfObjects
-                                },
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        } else {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.View -> {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        when (view) {
-                                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
-                                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
-                                            else -> false
-                                        }
-                                    }
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.AllObjects -> {
-                            AllContentWidgetContainer(
-                                widget = widget
-                            )
-                        }
-                        is Widget.Section.ObjectType -> {
-                            SectionWidgetContainer.ObjectTypes
-                        }
-                        is Widget.Section.Pinned -> {
-                            SectionWidgetContainer.Pinned
-                        }
-                        is Widget.Bin -> {
-                            BinWidgetContainer(
-                                widget = widget
-                            )
-                        }
-                    }
-                }.filterNotNull()
+                    createWidgetContainer(widget, currentlyDisplayedViews)
+                }
             }.collect { containersList ->
                 Timber.d("Emitting list of type containers: ${containersList.size}")
                 typeContainers.value = containersList
             }
         }
+    }
+
+    /**
+     * Creates a widget container from a widget model.
+     * Returns null for widgets that don't belong in the calling section.
+     */
+    private fun createWidgetContainer(
+        widget: Widget,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer? {
+        return when (widget) {
+            is Widget.Chat -> SpaceChatWidgetContainer(
+                widget = widget,
+                container = chatPreviews,
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                notificationPermissionManager = notificationPermissionManager
+            )
+            is Widget.Link -> LinkWidgetContainer(
+                widget = widget,
+                fieldParser = fieldParser
+            )
+            is Widget.Tree -> TreeWidgetContainer(
+                widget = widget,
+                container = storelessSubscriptionContainer,
+                expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
+                isWidgetCollapsed = combine(
+                    expandedWidgetIds,
+                    userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                ) { expanded, collapsedSecs ->
+                    isWidgetCollapsed(widget, expanded, collapsedSecs)
+                },
+                isSessionActive = isSessionActive,
+                urlBuilder = urlBuilder,
+                objectWatcher = objectWatcher,
+                getSpaceView = getSpaceView,
+                onRequestCache = {
+                    currentlyDisplayedViews.find { view ->
+                        view.id == widget.id
+                                && view is WidgetView.Tree
+                                && view.source == widget.source
+                    } as? WidgetView.Tree
+                },
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+            is Widget.List -> createListWidgetContainer(widget, currentlyDisplayedViews)
+            is Widget.View -> createViewWidgetContainer(widget, currentlyDisplayedViews)
+            is Widget.AllObjects -> AllContentWidgetContainer(widget = widget)
+            is Widget.Section.Pinned -> SectionWidgetContainer.Pinned
+            is Widget.Section.ObjectType -> SectionWidgetContainer.ObjectTypes
+            is Widget.Bin -> BinWidgetContainer(widget = widget)
+        }
+    }
+
+    private fun createListWidgetContainer(
+        widget: Widget.List,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+            ListWidgetContainer(
+                widget = widget,
+                subscription = widget.source.id,
+                storage = storelessSubscriptionContainer,
+                isWidgetCollapsed = combine(
+                    expandedWidgetIds,
+                    userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                ) { expanded, collapsedSecs ->
+                    isWidgetCollapsed(widget, expanded, collapsedSecs)
+                },
+                urlBuilder = urlBuilder,
+                isSessionActive = isSessionActive,
+                objectWatcher = objectWatcher,
+                getSpaceView = getSpaceView,
+                onRequestCache = {
+                    currentlyDisplayedViews.find { view ->
+                        view.id == widget.id
+                                && view is WidgetView.ListOfObjects
+                                && view.source == widget.source
+                    } as? WidgetView.ListOfObjects
+                },
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        } else {
+            DataViewListWidgetContainer(
+                space = vmParams.spaceId,
+                widget = widget,
+                storage = storelessSubscriptionContainer,
+                getObject = getObject,
+                activeView = observeCurrentWidgetView(widget.id),
+                isWidgetCollapsed = combine(
+                    expandedWidgetIds,
+                    userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                ) { expanded, collapsedSecs ->
+                    isWidgetCollapsed(widget, expanded, collapsedSecs)
+                },
+                isSessionActiveFlow = isSessionActive,
+                urlBuilder = urlBuilder,
+                coverImageHashProvider = coverImageHashProvider,
+                onRequestCache = {
+                    currentlyDisplayedViews.find { view ->
+                        view.id == widget.id
+                                && view is WidgetView.SetOfObjects
+                                && view.source == widget.source
+                    } as? WidgetView.SetOfObjects
+                },
+                storeOfRelations = storeOfRelations,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        }
+    }
+
+    private fun createViewWidgetContainer(
+        widget: Widget.View,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return DataViewListWidgetContainer(
+            space = vmParams.spaceId,
+            widget = widget,
+            storage = storelessSubscriptionContainer,
+            getObject = getObject,
+            activeView = observeCurrentWidgetView(widget.id),
+            isWidgetCollapsed = combine(
+                expandedWidgetIds,
+                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+            ) { expanded, collapsedSecs ->
+                isWidgetCollapsed(widget, expanded, collapsedSecs)
+            },
+            isSessionActiveFlow = isSessionActive,
+            urlBuilder = urlBuilder,
+            coverImageHashProvider = coverImageHashProvider,
+            onRequestCache = {
+                currentlyDisplayedViews.find { view ->
+                    when (view) {
+                        is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
+                        is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
+                        else -> false
+                    }
+                }
+            },
+            storeOfRelations = storeOfRelations,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
     }
 
     /**

@@ -591,11 +591,14 @@ internal suspend fun mapSpaceTypesToWidgets(
     }
 }
 
-/**
- * Sorts ObjectWrapper.Type
+/** Sorts a list of ObjectWrapper.Type objects by priority.
  * 1. Primary: orderId (ascending, nulls at end)
  * 2. Secondary: customUniqueKeyOrder (position in list)
  * 3. Tertiary: name (ascending)
+ *
+ * @param types The list of ObjectWrapper.Type objects to sort.
+ * @param customUniqueKeyOrder The custom order of unique keys to use for secondary sorting.
+ * @return A new list of ObjectWrapper.Type objects sorted by the specified priority.
  */
 private fun sortObjectTypesByPriority(
     types: List<ObjectWrapper.Type>,

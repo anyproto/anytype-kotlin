@@ -38,7 +38,6 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -267,8 +266,8 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     // Separate StateFlows for pinned and type widgets
-    private val _pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
-    private val _typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
 
     // Separate containers for pinned and type widgets
     private val pinnedContainers = MutableStateFlow<Containers>(null)
@@ -276,7 +275,7 @@ class HomeScreenViewModel(
 
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
-        get() = _pinnedWidgets.value + _typeWidgets.value
+        get() = pinnedWidgets.value + typeWidgets.value
 
     // Exposed flows for UI - widget views (WidgetView models) separated by section
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -313,8 +312,10 @@ class HomeScreenViewModel(
             initialValue = emptyList()
         )
 
-    // Combined view for internal use (derived from pinnedViews + typeViews)
-    val views: StateFlow<List<WidgetView>> = combine(
+    // Combined view for internal use only (derived from pinnedViews + typeViews)
+    // This is used internally for cache optimization and widget lookup.
+    // UI should use pinnedViews and typeViews directly.
+    internal val views: StateFlow<List<WidgetView>> = combine(
         pinnedViews,
         typeViews
     ) { pinned, types ->
@@ -431,8 +432,8 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        _pinnedWidgets.value = emptyList()
-                        _typeWidgets.value = emptyList()
+                        pinnedWidgets.value = emptyList()
+                        typeWidgets.value = emptyList()
                     }
                 )
             }.map { result ->
@@ -568,7 +569,7 @@ class HomeScreenViewModel(
 
     private fun buildPinnedContainerPipeline() {
         viewModelScope.launch {
-            _pinnedWidgets.map { widgets ->
+            pinnedWidgets.map { widgets ->
                 val currentlyDisplayedViews = views.value
                 widgets.mapNotNull { widget ->
                     Timber.d("Creating pinned container for widget: ${widget.id} of type ${widget::class.simpleName}")
@@ -583,7 +584,7 @@ class HomeScreenViewModel(
 
     private fun buildTypeContainerPipeline() {
         viewModelScope.launch {
-            _typeWidgets.map { widgets ->
+            typeWidgets.map { widgets ->
                 val currentlyDisplayedViews = views.value
                 widgets.mapNotNull { widget ->
                     Timber.d("Creating type container for widget: ${widget.id} of type ${widget::class.simpleName}")
@@ -740,11 +741,11 @@ class HomeScreenViewModel(
                 if (sections != null) {
                      val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
                     Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, total=$totalWidgets")
-                    _pinnedWidgets.value = sections.pinnedWidgets
-                    _typeWidgets.value = sections.typeWidgets
+                    pinnedWidgets.value = sections.pinnedWidgets
+                    typeWidgets.value = sections.typeWidgets
                 } else {
-                    _pinnedWidgets.value = emptyList()
-                    _typeWidgets.value = emptyList()
+                    pinnedWidgets.value = emptyList()
+                    typeWidgets.value = emptyList()
                 }
             }
         }

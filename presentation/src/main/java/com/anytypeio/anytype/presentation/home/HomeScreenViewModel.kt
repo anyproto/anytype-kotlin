@@ -266,32 +266,6 @@ class HomeScreenViewModel(
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    // Delegate for creating widget containers
-    private val widgetContainerDelegate: WidgetContainerDelegate by lazy {
-        WidgetContainerDelegateImpl(
-            spaceId = vmParams.spaceId,
-            chatPreviews = chatPreviews,
-            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-            notificationPermissionManager = notificationPermissionManager,
-            fieldParser = fieldParser,
-            storelessSubscriptionContainer = storelessSubscriptionContainer,
-            treeWidgetBranchStateHolder = treeWidgetBranchStateHolder,
-            expandedWidgetIds = expandedWidgetIds,
-            userSettingsRepository = userSettingsRepository,
-            isSessionActive = isSessionActive,
-            urlBuilder = urlBuilder,
-            objectWatcher = objectWatcher,
-            getSpaceView = getSpaceView,
-            storeOfObjectTypes = storeOfObjectTypes,
-            getObject = getObject,
-            coverImageHashProvider = coverImageHashProvider,
-            storeOfRelations = storeOfRelations,
-            dispatchers = appCoroutineDispatchers,
-            observeCurrentWidgetView = ::observeCurrentWidgetView,
-            isWidgetCollapsed = ::isWidgetCollapsed
-        )
-    }
-
     // Separate StateFlows for pinned and type widgets
     private val _pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val _typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -358,8 +332,6 @@ class HomeScreenViewModel(
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
-    val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
-
     // Expanded widget IDs for persistence across app restarts
     private val expandedWidgetIds = MutableStateFlow<Set<Id>>(emptySet())
 
@@ -367,8 +339,6 @@ class HomeScreenViewModel(
     val pendingBundledWidgetDeletion = MutableStateFlow<Id?>(null)
 
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
-
-
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
@@ -722,12 +692,12 @@ class HomeScreenViewModel(
             combine(
                 storeOfObjectTypes.trackChanges(),
                 objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
-                hasEditAccess.distinctUntilChanged(),
+                userPermissions,
                 widgetPreferences,
                 spaceViewSubscriptionContainer.observe(vmParams.spaceId),
-            ) { _, state, isOwnerOrEditor, preferences, spaceView ->
+            ) { _, state, userPermission, preferences, spaceView ->
                 val params = WidgetUiParams(
-                    isOwnerOrEditor = isOwnerOrEditor,
+                    isOwnerOrEditor = userPermission?.isOwnerOrEditor() == true,
                     expandedIds = preferences.expandedWidgetIds.toSet(),
                     collapsedSections = preferences.collapsedSectionIds.toSet()
                 )
@@ -2912,6 +2882,32 @@ class HomeScreenViewModel(
         ) : SpaceViewState()
 
         data class Failure(val e: Throwable) : SpaceViewState()
+    }
+
+    // Delegate for creating widget containers
+    private val widgetContainerDelegate: WidgetContainerDelegate by lazy {
+        WidgetContainerDelegateImpl(
+            spaceId = vmParams.spaceId,
+            chatPreviews = chatPreviews,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            notificationPermissionManager = notificationPermissionManager,
+            fieldParser = fieldParser,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            treeWidgetBranchStateHolder = treeWidgetBranchStateHolder,
+            expandedWidgetIds = expandedWidgetIds,
+            userSettingsRepository = userSettingsRepository,
+            isSessionActive = isSessionActive,
+            urlBuilder = urlBuilder,
+            objectWatcher = objectWatcher,
+            getSpaceView = getSpaceView,
+            storeOfObjectTypes = storeOfObjectTypes,
+            getObject = getObject,
+            coverImageHashProvider = coverImageHashProvider,
+            storeOfRelations = storeOfRelations,
+            dispatchers = appCoroutineDispatchers,
+            observeCurrentWidgetView = ::observeCurrentWidgetView,
+            isWidgetCollapsed = ::isWidgetCollapsed
+        )
     }
 
     class Factory @Inject constructor(

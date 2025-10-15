@@ -152,7 +152,6 @@ import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -257,7 +256,6 @@ class HomeScreenViewModel(
     ExitToVaultDelegate by exitToVaultDelegate
 {
 
-    private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
 
     val commands = MutableSharedFlow<Command>()
@@ -352,8 +350,6 @@ class HomeScreenViewModel(
         started = SharingStarted.Eagerly,
         initialValue = emptyList()
     )
-
-    private val widgetObjectPipelineJobs = mutableListOf<Job>()
 
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
     private var cachedWidgetObjectId: String? = null
@@ -560,7 +556,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithViewStatePipeline() {
-        widgetObjectPipelineJobs += viewModelScope.launch {
+        viewModelScope.launch {
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }
@@ -2085,11 +2081,8 @@ class HomeScreenViewModel(
         Timber.d("onCleared")
         val currentWidgets = currentWidgets.orEmpty()
 
-        // Cancel existing jobs first to stop any ongoing work
-        jobs.cancel()
-        widgetObjectPipelineJobs.cancel()
-
         // Launch fire-and-forget cleanup coroutine
+        // Note: viewModelScope automatically cancels all its coroutines
         // Using injected scope ensures proper lifecycle management
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary

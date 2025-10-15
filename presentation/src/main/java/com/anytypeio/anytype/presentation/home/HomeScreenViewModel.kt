@@ -312,20 +312,6 @@ class HomeScreenViewModel(
             initialValue = emptyList()
         )
 
-    // Combined view for internal use only (derived from pinnedViews + typeViews)
-    // This is used internally for cache optimization and widget lookup.
-    // UI should use pinnedViews and typeViews directly.
-    internal val views: StateFlow<List<WidgetView>> = combine(
-        pinnedViews,
-        typeViews
-    ) { pinned, types ->
-        pinned + types
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
-    )
-
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
     private var cachedWidgetObjectId: String? = null
 
@@ -570,7 +556,8 @@ class HomeScreenViewModel(
     private fun buildPinnedContainerPipeline() {
         viewModelScope.launch {
             pinnedWidgets.map { widgets ->
-                val currentlyDisplayedViews = views.value
+                // Use section-specific views for cache optimization (avoids circular dependency)
+                val currentlyDisplayedViews = pinnedViews.value
                 widgets.mapNotNull { widget ->
                     Timber.d("Creating pinned container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     widgetContainerDelegate.createContainer(widget, currentlyDisplayedViews)
@@ -585,7 +572,8 @@ class HomeScreenViewModel(
     private fun buildTypeContainerPipeline() {
         viewModelScope.launch {
             typeWidgets.map { widgets ->
-                val currentlyDisplayedViews = views.value
+                // Use section-specific views for cache optimization (avoids circular dependency)
+                val currentlyDisplayedViews = typeViews.value
                 widgets.mapNotNull { widget ->
                     Timber.d("Creating type container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     widgetContainerDelegate.createContainer(widget, currentlyDisplayedViews)
@@ -1238,7 +1226,9 @@ class HomeScreenViewModel(
                 proceedWithEmptyingBin()
             }
             is DropDownMenuAction.CreateObjectOfType -> {
-                val widgetView = views.value.find { it.id == action.widgetId }
+                // Search in both pinned and type sections
+                val widgetView = pinnedViews.value.find { it.id == action.widgetId }
+                    ?: typeViews.value.find { it.id == action.widgetId }
                 if (widgetView == null) {
                     Timber.w("Widget view not found for id: ${action.widgetId}")
                     return

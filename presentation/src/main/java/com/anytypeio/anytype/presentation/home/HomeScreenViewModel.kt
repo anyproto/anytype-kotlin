@@ -312,24 +312,17 @@ class HomeScreenViewModel(
     // Exposed flows for UI - widget views (WidgetView models) separated by section
     @OptIn(ExperimentalCoroutinesApi::class)
     val pinnedViews: StateFlow<List<WidgetView>> = combine(
-        widgetSections,
+        pinnedWidgets,
         containers
-    ) { sections, containers ->
-        Pair(sections?.pinnedWidgets, containers)
+    ) { widgets, containers ->
+        Pair(widgets, containers)
     }.flatMapLatest { (pinnedWidgets, containers) ->
         if (containers.isNullOrEmpty() || pinnedWidgets.isNullOrEmpty()) {
             flowOf(emptyList())
         } else {
-            // Create a map of widget id to container for quick lookup
-            val widgetIds = pinnedWidgets.map { it.id }.toSet()
+            // Build a map from widget id to container for quick lookup
+            val containerByWidgetId = pinnedWidgets.map { it.id }.toSet()
             val relevantContainers = containers.filter { container ->
-                // We need to collect the view to get its id, but since containers
-                // are created from widgets in order, we can match by building
-                // a map. For now, let's use a simpler approach: filter by getting
-                // the first emission from each view to check its id
-                // This is a limitation - we'll need to match containers with their widgets
-                // using widget order. Since containers are built from all widgets in order:
-                // pinnedWidgets + typeWidgets, we take first N containers where N = pinnedWidgets.size
                 true
             }.take(pinnedWidgets.size)
 

@@ -785,7 +785,7 @@
     <string name="without_template">Ohne Vorlage</string>
     <string name="unsplash_generic_error">Fehler beim Suchen nach Bildern auf Unsplash. Bitte versuche es später erneut.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Vergiss nicht, deinen Schlüssel aus den Einstellungen zu entnehmen und zu speichern</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Entsperre dein Objekt, um eine neue Eigenschaft hinzuzufügen</string>
     <string name="unlock_your_object_to_edit_relations">Entsperre dein Objekt, um Beziehungen zu bearbeiten</string>
     <string name="fragment_relation_create_from_scratch_title">Eigenschaftstyp auswählen</string>
     <string name="fragment_dashboard_restore">Wiederherstellen</string>
@@ -1027,8 +1027,8 @@
     <string name="library_relations_empty">Es gibt keinen Typen namens „%1$s“</string>
     <string name="library_type_added">Typ „%1$s“ zu deiner Bibliothek hinzugefügt\"</string>
     <string name="library_type_removed">Typ „%1$s“ aus der Bibliothek entfernt\"</string>
-    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">Eigenschaft `%1$s` zu deiner Bibliothek hinzugefügt“</string>
+    <string name="library_relation_removed">Eigenschaft `%1$s` aus deiner Bibliothek entfernt“</string>
     <string name="library_something_went_wrong">Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.</string>
     <string name="type_creation_new_type">Neuer Typ</string>
     <string name="type_creation_done">Fertig</string>
@@ -1253,7 +1253,7 @@
     <string name="multiplayer_request_to_join_sent_title">Anfrage gesendet</string>
     <string name="multiplayer_request_to_join_sent_description">Sie erhalten eine Benachrichtigung, wenn der Spacebesitzer Ihre Anfrage angenommen hat.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Spaces verwalten</string>
-    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
+    <string name="multiplayer_request_to_join_loading_text"> Bitte bleib dran — wir richten alles für dich ein. Das sollte nur einen Moment dauern.</string>
     <string name="multiplayer_space_request_to_join">Beitrittsanfrage stellen</string>
     <string name="multiplayer_space_request_to_join_msg">Sie wurden eingeladen, dem Space %1$s, erstellt von %2$s beizutreten. Senden Sie eine Anfrage, damit der Spacebesitzer Sie einladen kann.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tippen, um deinen Kommentar zu schreiben</string>
@@ -1519,7 +1519,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_alert_error_internal">Es ist ein interner Fehler aufgetreten. Unser Team wurde benachrichtigt.</string>
     <string name="notifications_alert_error_no_objects_to_import">Keine Objekte zum Importieren gefunden. Bitte wähle gültige Objekte für den Import aus.</string>
     <string name="notifications_alert_error_import_canceled">Der Importvorgang wurde vom Benutzer abgebrochen.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">Das Importlimit für Zeilen oder Eigenschaften wurde überschritten. Bitte reduziere die Anzahl und versuche es erneut.</string>
     <string name="notifications_alert_error_file_load">Es ist ein Fehler beim Laden der Datei aufgetreten. Bitte überprüfe die Datei und versuche es erneut.</string>
     <string name="notifications_alert_error_insufficient_permissions">Du hast nicht die notwendigen Berechtigungen zum Durchführen dieser Aktion. Bitte überprüfe deine Berechtigungen und versuche es erneut.</string>
     <!-- Gallery Experience -->
@@ -1696,7 +1696,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
     <string name="chat_empty_state_title">Dieser Chat ist leer.</string>
-    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_subtitle">Lade Leute ein und beginne die Konversation!</string>
     <string name="chat_empty_state_share_invite_button">Mitglieder einladen</string>
     <string name="write_a_message">Eine Nachricht schreiben...</string>
     <string name="date_layout_mentioned_in">Erwähnungen</string>
@@ -2004,9 +2004,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
     <string name="space_settings_space_type_chat_title">Kanaltyp</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
-    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_chat_descr">Gruppenchat mit geteilten Daten. Am besten geeignet für kleine Gruppen oder eine einzelne fortlaufende Konversation.</string>
     <string name="space_settings_space_type_space_item_title">Space</string>
-    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="space_settings_space_type_space_descr">Hub für fortgeschrittene Datenverwaltung. Mehrfach-Chats nach Thema bald verfügbar. Ideal für größere Teams.</string>
     <string name="alert_change_space_type_title">Kanaltyp konvertieren?</string>
     <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
     <string name="alert_change_space_type_button">Ja, konvertieren</string>

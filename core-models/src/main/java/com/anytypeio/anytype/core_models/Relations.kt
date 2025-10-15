@@ -121,6 +121,8 @@ object Relations {
     const val WIDGET_LIMIT = "widgetLimit"
     const val WIDGET_VIEW_ID = "widgetViewId"
 
+    const val ORDER_ID = "orderId"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

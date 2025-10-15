@@ -232,6 +232,8 @@ sealed class ObjectWrapper {
         val widgetViewId: String?
             get() = getSingleValue(Relations.WIDGET_VIEW_ID)
 
+        val orderId: String? get() = getSingleValue(Relations.ORDER_ID)
+
         val allRecommendedRelations: List<Id>
             get() = recommendedFeaturedRelations + recommendedRelations + recommendedFileRelations + recommendedHiddenRelations
 

@@ -146,7 +146,7 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon = ObjectIcon.None,
-        override val sectionType: SectionType = SectionType.PINNED
+        override val sectionType: SectionType = SectionType.TYPES
     ) : Widget()
 
     sealed class Source {

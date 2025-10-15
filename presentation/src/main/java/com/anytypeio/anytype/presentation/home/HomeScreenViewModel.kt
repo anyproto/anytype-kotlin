@@ -269,100 +269,78 @@ class HomeScreenViewModel(
     private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
 
-    val views = MutableStateFlow<List<WidgetView>>(emptyList())
-
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
-    private val widgetSections = MutableStateFlow<WidgetSections?>(null)
-    private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
+    // Separate StateFlows for pinned and type widgets
+    private val _pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    val pinnedWidgets: StateFlow<List<Widget>> = _pinnedWidgets
+
+    private val _typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    val typeWidgets: StateFlow<List<Widget>> = _typeWidgets
+
+    // Separate containers for pinned and type widgets
+    private val pinnedContainers = MutableStateFlow<Containers>(null)
+    private val typeContainers = MutableStateFlow<Containers>(null)
+
     // Helper flow to access widgets as flat list (for backward compatibility in flows)
-    private val widgets: Flow<Widgets> = widgetSections.map { sections ->
-        sections?.let { sections.pinnedWidgets + sections.typeWidgets }
+    private val widgets: Flow<Widgets> = combine(
+        _pinnedWidgets,
+        _typeWidgets
+    ) { pinned, types ->
+        pinned + types
     }
 
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
-        get() = widgetSections.value?.let { sections ->
-            sections.pinnedWidgets + sections.typeWidgets
-        }
-
-    // Expose pinned and type widgets separately for UI
-    val pinnedWidgets: StateFlow<List<Widget>> = widgetSections.map { sections ->
-        sections?.pinnedWidgets ?: emptyList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
-    )
-
-    val typeWidgets: StateFlow<List<Widget>> = widgetSections.map { sections ->
-        sections?.typeWidgets ?: emptyList()
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
-    )
+        get() = _pinnedWidgets.value + _typeWidgets.value
 
     // Exposed flows for UI - widget views (WidgetView models) separated by section
     @OptIn(ExperimentalCoroutinesApi::class)
-    val pinnedViews: StateFlow<List<WidgetView>> = combine(
-        pinnedWidgets,
-        containers
-    ) { widgets, containers ->
-        Pair(widgets, containers)
-    }.flatMapLatest { (pinnedWidgets, containers) ->
-        if (containers.isNullOrEmpty() || pinnedWidgets.isNullOrEmpty()) {
-            flowOf(emptyList())
-        } else {
-            // Build a map from widget id to container for quick lookup
-            val containerByWidgetId = pinnedWidgets.map { it.id }.toSet()
-            val relevantContainers = containers.filter { container ->
-                true
-            }.take(pinnedWidgets.size)
-
-            if (relevantContainers.isEmpty()) {
+    val pinnedViews: StateFlow<List<WidgetView>> = pinnedContainers
+        .flatMapLatest { containers ->
+            if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
             } else {
-                combine(relevantContainers.map { it.view }) { array ->
+                combine(containers.map { it.view }) { array ->
                     array.toList()
                 }
             }
         }
-    }.stateIn(
-        scope = viewModelScope,
-        started = SharingStarted.Eagerly,
-        initialValue = emptyList()
-    )
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val typeViews: StateFlow<List<WidgetView>> = combine(
-        widgetSections,
-        containers
-    ) { sections, containers ->
-        Triple(sections?.pinnedWidgets?.size, sections?.typeWidgets, containers)
-    }.flatMapLatest { (pinnedCount, typeWidgets, containers) ->
-        if (containers.isNullOrEmpty() || typeWidgets.isNullOrEmpty()) {
-            flowOf(emptyList())
-        } else {
-            // Containers are built from pinnedWidgets + typeWidgets in order
-            // So type widget containers start at index pinnedCount
-            val skip = pinnedCount ?: 0
-            val relevantContainers = containers.drop(skip).take(typeWidgets.size)
-
-            if (relevantContainers.isEmpty()) {
+    val typeViews: StateFlow<List<WidgetView>> = typeContainers
+        .flatMapLatest { containers ->
+            if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
             } else {
-                combine(relevantContainers.map { it.view }) { array ->
+                combine(containers.map { it.view }) { array ->
                     array.toList()
                 }
             }
         }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+    // Combined view for internal use (derived from pinnedViews + typeViews)
+    val views: StateFlow<List<WidgetView>> = combine(
+        pinnedViews,
+        typeViews
+    ) { pinned, types ->
+        pinned + types
     }.stateIn(
         scope = viewModelScope,
         started = SharingStarted.Eagerly,
@@ -481,7 +459,8 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        widgetSections.value = null
+                        _pinnedWidgets.value = emptyList()
+                        _typeWidgets.value = emptyList()
                     }
                 )
             }.map { result ->
@@ -505,7 +484,6 @@ class HomeScreenViewModel(
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
-        proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
@@ -610,35 +588,159 @@ class HomeScreenViewModel(
         viewModelScope.launch { unsubscriber.start() }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun proceedWithRenderingPipeline() {
-        viewModelScope.launch {
-            containers.filterNotNull().flatMapLatest { list ->
-                combine(
-                    flows = buildList<Flow<WidgetView>> {
-                        addAll(list.map { m -> m.view })
-                    }
-                ) { array ->
-                    array.toList()
-                }
-            }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                widgets.ifEmpty {
-                    listOf(WidgetView.EmptyState)
-                }
-            }.catch {
-                Timber.e(it, "Error while rendering widgets")
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it
-            }
-        }
-    }
 
     private fun proceedWithWidgetContainerPipeline() {
+        // Build containers for pinned widgets
         viewModelScope.launch {
-            widgets.filterNotNull().mapNotNull { widgets ->
+            _pinnedWidgets.map { widgets ->
                 val currentlyDisplayedViews = views.value
                 widgets.map { widget ->
-                    Timber.d("Creating container for widget: ${widget.id} of type ${widget::class.simpleName}")
+                    Timber.d("Creating pinned container for widget: ${widget.id} of type ${widget::class.simpleName}")
+                    when (widget) {
+                        is Widget.Chat -> SpaceChatWidgetContainer(
+                            widget = widget,
+                            container = chatPreviews,
+                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                            notificationPermissionManager = notificationPermissionManager
+                        )
+                        is Widget.Link -> LinkWidgetContainer(
+                            widget = widget,
+                            fieldParser = fieldParser
+                        )
+                        is Widget.Tree -> TreeWidgetContainer(
+                            widget = widget,
+                            container = storelessSubscriptionContainer,
+                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
+                            isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
+                            },
+                            isSessionActive = isSessionActive,
+                            urlBuilder = urlBuilder,
+                            objectWatcher = objectWatcher,
+                            getSpaceView = getSpaceView,
+                            onRequestCache = {
+                                currentlyDisplayedViews.find { view ->
+                                    view.id == widget.id
+                                            && view is WidgetView.Tree
+                                            && view.source == widget.source
+                                } as? WidgetView.Tree
+                            },
+                            fieldParser = fieldParser,
+                            storeOfObjectTypes = storeOfObjectTypes
+                        )
+                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
+                            ListWidgetContainer(
+                                widget = widget,
+                                subscription = widget.source.id,
+                                storage = storelessSubscriptionContainer,
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
+                            },
+                                urlBuilder = urlBuilder,
+                                isSessionActive = isSessionActive,
+                                objectWatcher = objectWatcher,
+                                getSpaceView = getSpaceView,
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.ListOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.ListOfObjects
+                                },
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
+                            )
+                        } else {
+                            DataViewListWidgetContainer(
+                                space = vmParams.spaceId,
+                                widget = widget,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
+                            },
+                                isSessionActiveFlow = isSessionActive,
+                                urlBuilder = urlBuilder,
+                                coverImageHashProvider = coverImageHashProvider,
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        view.id == widget.id
+                                                && view is WidgetView.SetOfObjects
+                                                && view.source == widget.source
+                                    } as? WidgetView.SetOfObjects
+                                },
+                                storeOfRelations = storeOfRelations,
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
+                            )
+                        }
+                        is Widget.View -> {
+                            DataViewListWidgetContainer(
+                                space = vmParams.spaceId,
+                                widget = widget,
+                                storage = storelessSubscriptionContainer,
+                                getObject = getObject,
+                                activeView = observeCurrentWidgetView(widget.id),
+                                isWidgetCollapsed = combine(
+                                expandedWidgetIds,
+                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
+                            ) { expanded, collapsedSecs ->
+                                isWidgetCollapsed(widget, expanded, collapsedSecs)
+                            },
+                                isSessionActiveFlow = isSessionActive,
+                                urlBuilder = urlBuilder,
+                                coverImageHashProvider = coverImageHashProvider,
+                                onRequestCache = {
+                                    currentlyDisplayedViews.find { view ->
+                                        when (view) {
+                                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
+                                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
+                                            else -> false
+                                        }
+                                    }
+                                },
+                                storeOfRelations = storeOfRelations,
+                                fieldParser = fieldParser,
+                                storeOfObjectTypes = storeOfObjectTypes
+                            )
+                        }
+                        is Widget.AllObjects -> {
+                            AllContentWidgetContainer(
+                                widget = widget
+                            )
+                        }
+                        is Widget.Section.Pinned -> {
+                            SectionWidgetContainer.Pinned
+                        }
+                        is Widget.Section.ObjectType,
+                        is Widget.Bin -> {
+                            // These belong to type widgets section, not pinned
+                            null
+                        }
+                    }
+                }.filterNotNull()
+            }.collect { containersList ->
+                Timber.d("Emitting list of pinned containers: ${containersList.size}")
+                pinnedContainers.value = containersList
+            }
+        }
+
+        // Build containers for type widgets
+        viewModelScope.launch {
+            _typeWidgets.map { widgets ->
+                val currentlyDisplayedViews = views.value
+                widgets.map { widget ->
+                    Timber.d("Creating type container for widget: ${widget.id} of type ${widget::class.simpleName}")
                     when (widget) {
                         is Widget.Chat -> SpaceChatWidgetContainer(
                             widget = widget,
@@ -768,17 +870,16 @@ class HomeScreenViewModel(
                         is Widget.Section.Pinned -> {
                             SectionWidgetContainer.Pinned
                         }
-
                         is Widget.Bin -> {
                             BinWidgetContainer(
                                 widget = widget
                             )
                         }
                     }
-                }
+                }.filterNotNull()
             }.collect { containersList ->
-                Timber.d("Emitting list of containers: ${containersList.size}")
-                containers.value = containersList
+                Timber.d("Emitting list of type containers: ${containersList.size}")
+                typeContainers.value = containersList
             }
         }
     }
@@ -925,10 +1026,14 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                    val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
                     Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, total=$totalWidgets")
+                    _pinnedWidgets.value = sections.pinnedWidgets
+                    _typeWidgets.value = sections.typeWidgets
+                } else {
+                    _pinnedWidgets.value = emptyList()
+                    _typeWidgets.value = emptyList()
                 }
-                widgetSections.value = sections
             }
         }
     }

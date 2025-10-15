@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
@@ -437,7 +436,8 @@ suspend fun buildWidgetSections(
         state = state,
         params = params,
         isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
     )
 
     return WidgetSections(
@@ -494,7 +494,8 @@ private suspend fun buildTypeSection(
     state: ObjectViewState.Success,
     params: WidgetUiParams,
     isObjectTypeSectionCollapsed: Boolean,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    isChatSpace: Boolean
 ): List<Widget> = buildList {
     // Always add section header
     add(Widget.Section.ObjectType(config = state.config))
@@ -505,7 +506,8 @@ private suspend fun buildTypeSection(
         val types = mapSpaceTypesToWidgets(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            isChatSpace = isChatSpace
         )
         addAll(types)
 
@@ -528,7 +530,12 @@ private suspend fun buildTypeSection(
     }
 }
 
-private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config, storeOfObjectTypes: StoreOfObjectTypes): List<Widget> {
+internal suspend fun mapSpaceTypesToWidgets(
+    isOwnerOrEditor: Boolean,
+    config: Config,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    isChatSpace: Boolean
+): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
@@ -546,32 +553,70 @@ private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Con
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
-    // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
-    val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
-        !objectType.restrictions.contains(ObjectRestriction.DELETE)
+    // Define custom sort order based on uniqueKey
+    val customUniqueKeyOrder = if (!isChatSpace) {
+        listOf(
+            ObjectTypeIds.PAGE,
+            ObjectTypeIds.NOTE,
+            ObjectTypeIds.TASK,
+            ObjectTypeIds.COLLECTION,
+            ObjectTypeIds.SET,
+            ObjectTypeIds.BOOKMARK,
+            ObjectTypeIds.PROJECT,
+            ObjectTypeIds.IMAGE,
+            ObjectTypeIds.FILE,
+            ObjectTypeIds.VIDEO,
+            ObjectTypeIds.AUDIO
+        )
+    } else {
+        listOf(
+            ObjectTypeIds.IMAGE,
+            ObjectTypeIds.BOOKMARK,
+            ObjectTypeIds.FILE,
+            ObjectTypeIds.PAGE,
+            ObjectTypeIds.NOTE,
+            ObjectTypeIds.TASK,
+            ObjectTypeIds.COLLECTION,
+            ObjectTypeIds.SET,
+            ObjectTypeIds.PROJECT,
+            ObjectTypeIds.VIDEO,
+            ObjectTypeIds.AUDIO
+        )
     }
 
-    val allTypeWidgetIds = mutableListOf<Id>()
+    val sortedTypes = sortObjectTypesByPriority(filteredObjectTypes, customUniqueKeyOrder)
 
-    val widgetList = buildList {
-        // Add user-created types first (deletable)
-        for (objectType in myTypes) {
-            val widget = createWidgetViewFromType(objectType, config)
-            add(widget)
-            // Track all type widgets for initial collapsed state
-            allTypeWidgetIds.add(widget.id)
-        }
-
-        // Add system types (not deletable)
-        for (objectType in systemTypes) {
-            val widget = createWidgetViewFromType(objectType, config)
-            add(widget)
-            // Track all type widgets for initial collapsed state
-            allTypeWidgetIds.add(widget.id)
-        }
+    return sortedTypes.map { objectType ->
+        createWidgetViewFromType(objectType, config)
     }
+}
 
-    return widgetList
+/**
+ * Sorts ObjectWrapper.Type
+ * 1. Primary: orderId (ascending, nulls at end)
+ * 2. Secondary: customUniqueKeyOrder (position in list)
+ * 3. Tertiary: name (ascending)
+ */
+private fun sortObjectTypesByPriority(
+    types: List<ObjectWrapper.Type>,
+    customUniqueKeyOrder: List<String>
+): List<ObjectWrapper.Type> {
+    return types.sortedWith(
+        compareBy<ObjectWrapper.Type> { objectType ->
+            // Primary sort: orderId presence (items with orderId come first)
+            if (objectType.orderId != null) 0 else 1
+        }.thenBy { objectType ->
+            // Primary sort continuation: orderId value (for items that have orderId)
+            objectType.orderId ?: ""
+        }.thenBy { objectType ->
+            // Secondary sort: custom order by uniqueKey
+            val index = customUniqueKeyOrder.indexOf(objectType.uniqueKey)
+            if (index >= 0) index else Int.MAX_VALUE
+        }.thenBy { objectType ->
+            // Tertiary sort: name (case-insensitive)
+            objectType.name?.lowercase() ?: ""
+        }
+    )
 }
 
 /**

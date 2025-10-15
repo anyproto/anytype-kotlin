@@ -836,7 +836,7 @@
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>
     <string name="create_space_change_icon">Ubah ikon</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Nama obrolan</string>
     <string name="create_space_space_name">Nama Ruang</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
@@ -1959,7 +1959,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_generic">Terjadi galat tak terduga: %1$s. Silakan coba lagi nanti.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
-    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>

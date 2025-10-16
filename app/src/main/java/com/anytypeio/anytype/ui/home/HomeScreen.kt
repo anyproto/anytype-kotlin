@@ -106,7 +106,8 @@ fun HomeScreen(
     onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
-    onSectionClicked: (Id) -> Unit = {}
+    onSectionPinnedClicked: () -> Unit,
+    onSectionTypesClicked: () -> Unit
 ) {
 
     Box(modifier = modifier.fillMaxSize()) {
@@ -127,7 +128,8 @@ fun HomeScreen(
             onCreateElement = onCreateElement,
             onWidgetMenuTriggered = onWidgetMenuTriggered,
             onCreateNewTypeClicked = onCreateNewTypeClicked,
-            onSectionClicked = onSectionClicked
+            onSectionPinnedClicked = onSectionPinnedClicked,
+            onSectionTypesClicked = onSectionTypesClicked
         )
         AnimatedVisibility(
             visible = mode is InteractionMode.Edit,
@@ -197,7 +199,8 @@ private fun TwoSectionWidgetList(
     onCreateWidget: () -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
-    onSectionClicked: (Id) -> Unit = {}
+    onSectionPinnedClicked: () -> Unit,
+    onSectionTypesClicked: () -> Unit
 ) {
     val view = LocalView.current
     val lazyListState = rememberLazyListState()
@@ -267,6 +270,12 @@ private fun TwoSectionWidgetList(
         modifier = Modifier
             .fillMaxSize()
     ) {
+
+        item {
+            PinnedSectionHeader(
+                onSectionClicked = onSectionPinnedClicked
+            )
+        }
         // Pinned widgets section
         renderWidgetSection(
             widgets = pinnedViews.value,
@@ -284,10 +293,16 @@ private fun TwoSectionWidgetList(
             onChangeWidgetView = onChangeWidgetView,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement,
-            onCreateWidget = onCreateWidget,
-            onCreateNewTypeClicked = onCreateNewTypeClicked,
-            onSectionClicked = onSectionClicked
+            onCreateWidget = onCreateWidget
         )
+
+        item {
+            SpaceObjectTypesSectionHeader(
+                mode = mode,
+                onCreateNewTypeClicked = onCreateNewTypeClicked,
+                onSectionClicked = onSectionTypesClicked
+            )
+        }
 
         // Type widgets section
         renderWidgetSection(
@@ -307,8 +322,6 @@ private fun TwoSectionWidgetList(
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement,
             onCreateWidget = onCreateWidget,
-            onCreateNewTypeClicked = onCreateNewTypeClicked,
-            onSectionClicked = onSectionClicked
         )
 
         item {
@@ -334,9 +347,7 @@ private fun LazyListScope.renderWidgetSection(
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
-    onCreateWidget: () -> Unit,
-    onCreateNewTypeClicked: () -> Unit,
-    onSectionClicked: (Id) -> Unit
+    onCreateWidget: () -> Unit
 ) {
     itemsIndexed(
         items = widgets,
@@ -716,20 +727,6 @@ private fun LazyListScope.renderWidgetSection(
                         }
                     )
                 }
-            }
-
-            WidgetView.Section.ObjectTypes -> {
-                SpaceObjectTypesSectionHeader(
-                    mode = mode,
-                    onCreateNewTypeClicked = onCreateNewTypeClicked,
-                    onSectionClicked = { onSectionClicked(SECTION_OBJECT_TYPE) }
-                )
-            }
-
-            WidgetView.Section.Pinned -> {
-                PinnedSectionHeader(
-                    onSectionClicked = { onSectionClicked(SECTION_PINNED) }
-                )
             }
         }
     }

@@ -231,7 +231,8 @@ class HomeScreenFragment : Fragment(),
             onCreateElement = vm::onCreateWidgetElementClicked,
             onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
             onCreateNewTypeClicked = vm::onCreateNewTypeClicked,
-            onSectionClicked = vm::onSectionClicked
+            onSectionPinnedClicked = vm::onSectionPinnedClicked,
+            onSectionTypesClicked = vm::onSectionTypesClicked
         )
     }
 

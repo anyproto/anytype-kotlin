@@ -187,22 +187,6 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null
     }
 
-    sealed class Section : WidgetView() {
-        data object Pinned : Section() {
-            override val id: Id get() = "id.section.pinned"
-            override val isLoading: Boolean = false
-            override val canCreateObjectOfType: Boolean = false
-            override val sectionType: SectionType = SectionType.PINNED
-        }
-
-        data object ObjectTypes : Section() {
-            override val id: Id get() = "id.section.object-type"
-            override val isLoading: Boolean = false
-            override val canCreateObjectOfType: Boolean = false
-            override val sectionType: SectionType = SectionType.TYPES
-        }
-    }
-
     interface Draggable
 }
 

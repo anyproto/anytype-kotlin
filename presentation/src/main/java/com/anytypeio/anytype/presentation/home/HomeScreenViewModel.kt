@@ -135,6 +135,8 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
@@ -713,7 +715,6 @@ class HomeScreenViewModel(
                     val allWidgets = sections.pinnedWidgets + sections.typeWidgets
                     val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
                         allWidgets
-                            .filter { it !is Widget.Section }
                             .any { widget ->
                                 widget.id == widgetId && widget.source is Widget.Source.Default &&
                                         (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
@@ -1403,8 +1404,6 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
-        is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
-        is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
@@ -2092,7 +2091,6 @@ class HomeScreenViewModel(
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
             val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
-                if (widget is Widget.Section) return@mapNotNull null
                 if (widget.source is Widget.Source.Bundled)
                     widget.source.id
                 else
@@ -2727,43 +2725,39 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Handles section header clicks to collapse/expand all widgets in the section
-     */
-    fun onSectionClicked(sectionId: Id) {
+    fun onSectionPinnedClicked() {
         viewModelScope.launch {
-            when (sectionId) {
-                Widget.Source.SECTION_OBJECT_TYPE -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_PINNED)
 
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all type widgets
-                        collapseAllObjectTypeWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
-                Widget.Source.SECTION_PINNED -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
-
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all pinned widgets
-                        collapseAllPinnedWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                // Expand section - remove from collapsed sections
+                currentCollapsedSections.minus(SECTION_PINNED)
+            } else {
+                // Collapse section - add to collapsed sections and collapse all pinned widgets
+                collapseAllPinnedWidgets()
+                currentCollapsedSections.plus(SECTION_PINNED)
             }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
+    fun onSectionTypesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                // Expand section - remove from collapsed sections
+                currentCollapsedSections.minus(SECTION_OBJECT_TYPE)
+            } else {
+                // Collapse section - add to collapsed sections and collapse all type widgets
+                collapseAllObjectTypeWidgets()
+                currentCollapsedSections.plus(SECTION_OBJECT_TYPE)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
         }
     }
 
@@ -2773,9 +2767,7 @@ class HomeScreenViewModel(
     private suspend fun collapseAllObjectTypeWidgets() {
         val currentWidgets = currentWidgets.orEmpty()
         val objectTypeWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.TYPES
-            }
+            .filter { widget -> widget.sectionType == SectionType.TYPES }
             .map { it.id }
 
         // Remove all ObjectType widget IDs from expanded set
@@ -2789,9 +2781,7 @@ class HomeScreenViewModel(
     private suspend fun collapseAllPinnedWidgets() {
         val currentWidgets = currentWidgets.orEmpty()
         val pinnedWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.PINNED
-            }
+            .filter { widget -> widget.sectionType == SectionType.PINNED }
             .map { it.id }
 
         // Remove all Pinned widget IDs from expanded set
@@ -2805,7 +2795,6 @@ class HomeScreenViewModel(
      */
     private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
         return when {
-            widget is Widget.Section -> false // Sections themselves are not collapsed by section state
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
@@ -2894,7 +2883,7 @@ class HomeScreenViewModel(
 
         // Filter to only include actual type widgets (exclude sections, bin, etc.)
         val actualTypeWidgets = typeViews.value.filter { view ->
-            view.sectionType == SectionType.TYPES && view !is WidgetView.Section
+            view.sectionType == SectionType.TYPES
         }
 
         val from = actualTypeWidgets.indexOfFirst { it.id == fromWidgetId }

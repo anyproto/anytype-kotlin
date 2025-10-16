@@ -79,8 +79,6 @@ class WidgetContainerDelegateImpl(
             is Widget.List -> createListContainer(widget, currentlyDisplayedViews)
             is Widget.View -> createViewContainer(widget, currentlyDisplayedViews)
             is Widget.AllObjects -> createAllObjectsContainer(widget)
-            is Widget.Section.Pinned -> SectionWidgetContainer.Pinned
-            is Widget.Section.ObjectType -> SectionWidgetContainer.ObjectTypes
             is Widget.Bin -> createBinContainer(widget)
         }
     }

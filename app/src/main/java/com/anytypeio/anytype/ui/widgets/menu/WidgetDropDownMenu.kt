@@ -259,18 +259,6 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         }
                         add(WidgetMenuItem.RemoveWidget)
                     }
-                    WidgetView.Section.ObjectTypes -> {
-                        if (canCreateObjectOfType) {
-                            add(CreateObjectOfType(id))
-                        }
-                        if (canChangeWidgetType()) {
-                            add(WidgetMenuItem.ChangeWidgetType)
-                        }
-                        add(WidgetMenuItem.RemoveWidget)
-                    }
-                    WidgetView.Section.Pinned -> {
-                        add(WidgetMenuItem.RemoveWidget)
-                    }
                     is WidgetView.SetOfObjects -> {
                         if (canCreateObjectOfType) {
                             add(CreateObjectOfType(id))

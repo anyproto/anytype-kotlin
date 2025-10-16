@@ -119,26 +119,6 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
-    sealed class Section : Widget() {
-        data class Pinned(
-            override val id: Id = SECTION_PINNED,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.PINNED
-        ) : Section()
-
-        data class ObjectType(
-            override val id: Id = SECTION_OBJECT_TYPE,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.TYPES
-        ) : Section()
-    }
-
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
@@ -477,9 +457,6 @@ private suspend fun buildPinnedSection(
     }
 
     if (userPinnedWidgets.isNotEmpty()) {
-        // Always add section header
-        add(Widget.Section.Pinned(config = state.config))
-
         // Add widgets only if section is expanded
         if (!isPinnedSectionCollapsed) {
             addAll(userPinnedWidgets)
@@ -497,8 +474,6 @@ private suspend fun buildTypeSection(
     storeOfObjectTypes: StoreOfObjectTypes,
     isChatSpace: Boolean
 ): List<Widget> = buildList {
-    // Always add section header
-    add(Widget.Section.ObjectType(config = state.config))
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 

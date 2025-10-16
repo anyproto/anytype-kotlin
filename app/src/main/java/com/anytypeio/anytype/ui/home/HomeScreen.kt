@@ -60,8 +60,6 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.ToIndex
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
@@ -79,6 +77,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import android.view.View
+import timber.log.Timber
 
 @Composable
 fun HomeScreen(
@@ -205,20 +204,12 @@ private fun TwoSectionWidgetList(
     val view = LocalView.current
     val lazyListState = rememberLazyListState()
 
-    // Separate state management for pinned widgets
-    val pinnedViews = remember { mutableStateOf(pinnedWidgets) }
-    pinnedViews.value = pinnedWidgets
-
     val pinnedLastFromIndex = remember { mutableStateOf<Int?>(null) }
     val pinnedLastToIndex = remember { mutableStateOf<Int?>(null) }
 
     val pinnedReorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         pinnedLastFromIndex.value = from.index
         pinnedLastToIndex.value = to.index
-
-        pinnedViews.value = pinnedViews.value.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }
         ViewCompat.performHapticFeedback(
             view,
             HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
@@ -229,26 +220,18 @@ private fun TwoSectionWidgetList(
         val from = pinnedLastFromIndex.value
         val to = pinnedLastToIndex.value
         if (from != null && to != null && from != to) {
-            onMovePinned(pinnedViews.value, from, to)
+            onMovePinned(pinnedWidgets, from, to)
         }
         pinnedLastFromIndex.value = null
         pinnedLastToIndex.value = null
     }
-
-    // Separate state management for type widgets
-    val typeViews = remember { mutableStateOf(typeWidgets) }
-    typeViews.value = typeWidgets
-
+    
     val typeLastFromIndex = remember { mutableStateOf<Int?>(null) }
     val typeLastToIndex = remember { mutableStateOf<Int?>(null) }
 
     val typeReorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         typeLastFromIndex.value = from.index
         typeLastToIndex.value = to.index
-
-        typeViews.value = typeViews.value.toMutableList().apply {
-            add(to.index, removeAt(from.index))
-        }
         ViewCompat.performHapticFeedback(
             view,
             HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
@@ -259,7 +242,7 @@ private fun TwoSectionWidgetList(
         val from = typeLastFromIndex.value
         val to = typeLastToIndex.value
         if (from != null && to != null && from != to) {
-            onMoveTypes(typeViews.value, from, to)
+            onMoveTypes(typeWidgets, from, to)
         }
         typeLastFromIndex.value = null
         typeLastToIndex.value = null
@@ -278,7 +261,7 @@ private fun TwoSectionWidgetList(
         }
         // Pinned widgets section
         renderWidgetSection(
-            widgets = pinnedViews.value,
+            widgets = pinnedWidgets,
             reorderableState = pinnedReorderableState,
             onDragStopped = onPinnedDragStopped,
             view = view,
@@ -306,7 +289,9 @@ private fun TwoSectionWidgetList(
 
         // Type widgets section
         renderWidgetSection(
-            widgets = typeViews.value,
+            widgets = typeWidgets.also {
+                Timber.d("DROID-3965, Rendering type widgets: ${it.map { w -> w.id.take(4) }}")
+            },
             reorderableState = typeReorderableState,
             onDragStopped = onTypeDragStopped,
             view = view,

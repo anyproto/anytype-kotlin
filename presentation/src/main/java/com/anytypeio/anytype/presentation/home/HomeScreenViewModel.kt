@@ -273,6 +273,10 @@ class HomeScreenViewModel(
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
 
+    // Drag-and-drop state tracking for type widgets
+    private var pendingTypeWidgetOrder: List<Id>? = null
+    private var lastMovedTypeWidgetId: Id? = null
+
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
         get() = pinnedWidgets.value + typeWidgets.value
@@ -1740,13 +1744,53 @@ class HomeScreenViewModel(
     }
 
     /**
-     * Handles reordering of type widgets
-     * Note: Type widgets have system-managed ordering, so this might be restricted
+     * Handles reordering of type widgets.
+     *
+     * This method is called when a type widget is dragged and dropped to a new position.
+     * It extracts the widget IDs from the current order after the drag operation,
+     * then calls onTypeWidgetOrderChanged during the drag for immediate UI feedback
+     * and onTypeWidgetDragEnd to persist the changes.
+     *
+     * @param views The current list of all widgets after the drag operation
+     * @param from The original index of the dragged widget
+     * @param to The new index of the dragged widget
      */
     fun onMoveTypes(views: List<WidgetView>, from: Int, to: Int) {
-        // For now, type widgets also support reordering
-        // In the future, this could be restricted or handled differently
-        onMove(views, from, to)
+        Timber.d("HomeScreenViewModel - onMoveTypes called: from=$from, to=$to")
+
+        // Find the indices of the first and last type widget in the combined list
+        val typeWidgetIndices = views.indices.filter { index ->
+            views[index].sectionType == SectionType.TYPES
+        }
+
+        if (typeWidgetIndices.isEmpty()) {
+            Timber.w("HomeScreenViewModel - No type widgets found in views list")
+            return
+        }
+
+        val firstTypeIndex = typeWidgetIndices.first()
+        val lastTypeIndex = typeWidgetIndices.last()
+
+        // Validate that both from and to are within the type widgets section
+        if (from !in firstTypeIndex..lastTypeIndex || to !in firstTypeIndex..lastTypeIndex) {
+            Timber.w("HomeScreenViewModel - Drag indices out of type widget bounds: from=$from, to=$to, bounds=[$firstTypeIndex..$lastTypeIndex]")
+            return
+        }
+
+        // Extract only the type widgets from the views list
+        val typeWidgetsOnly = views.subList(firstTypeIndex, lastTypeIndex + 1)
+
+        // Get the IDs of the type widgets in their new order
+        val fromWidgetId = typeWidgetsOnly[from - firstTypeIndex].id
+        val toWidgetId = typeWidgetsOnly[to - firstTypeIndex].id
+
+        Timber.d("HomeScreenViewModel - Reordering type widgets: fromId=${fromWidgetId.take(8)}..., toId=${toWidgetId.take(8)}...")
+
+        // Update UI state immediately for smooth drag feedback
+        onTypeWidgetOrderChanged(fromWidgetId, toWidgetId)
+
+        // Persist the changes when drag ends
+        onTypeWidgetDragEnd()
     }
 
     private fun proceedWithSettingUpShortcuts() {
@@ -2827,6 +2871,96 @@ class HomeScreenViewModel(
         val expandedIds = expandedWidgetIds.value.toList()
         userSettingsRepository.setExpandedWidgetIds(vmParams.spaceId, expandedIds)
         Timber.d("Saved expanded widget state: ${expandedIds.size} expanded widgets")
+    }
+    //endregion
+
+    //region Type Widget Drag and Drop
+    /**
+     * Called when the order of type widgets changes during a drag operation.
+     *
+     * This method updates the UI state immediately to reflect the new order,
+     * allowing for instant visual feedback during the drag operation.
+     *
+     * @param fromWidgetId The ID of the type widget being dragged from.
+     * @param toWidgetId The ID of the type widget being dragged to.
+     */
+    fun onTypeWidgetOrderChanged(fromWidgetId: String, toWidgetId: String) {
+        Timber.d("HomeScreenViewModel - onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")
+
+        // Mark that we're starting a drag operation if we haven't already
+        if (pendingTypeWidgetOrder == null) {
+            Timber.d("HomeScreenViewModel - Starting type widget drag operation")
+        }
+
+        val currentTypeViews = typeViews.value
+        val from = currentTypeViews.indexOfFirst { it.id == fromWidgetId }
+        val to = currentTypeViews.indexOfFirst { it.id == toWidgetId }
+
+        if (from == -1 || to == -1 || from == to) {
+            Timber.d("HomeScreenViewModel - onTypeWidgetOrderChanged: Invalid indices (from=$from, to=$to), ignoring")
+            return
+        }
+
+        // Store the pending order for persistence on drag end
+        val currentOrder = typeViews.value.map { it.id }.toMutableList()
+        val movedItem = currentOrder.removeAt(from)
+        currentOrder.add(to, movedItem)
+
+        pendingTypeWidgetOrder = currentOrder
+        lastMovedTypeWidgetId = fromWidgetId
+
+        Timber.d("HomeScreenViewModel - onTypeWidgetOrderChanged: New pending order: ${currentOrder.map { it.take(8) + "..." }}")
+    }
+
+    /**
+     * Called when the drag operation for type widgets ends.
+     *
+     * This method persists the order changes made during the drag operation
+     * using the UpdateObjectTypesOrderIds use case and resets the local state.
+     */
+    fun onTypeWidgetDragEnd() {
+        Timber.d("HomeScreenViewModel - onTypeWidgetDragEnd called")
+
+        // Persist the order changes made during the drag operation
+        pendingTypeWidgetOrder?.let { newOrder ->
+            viewModelScope.launch {
+                Timber.d("HomeScreenViewModel - Persisting type widget order: ${newOrder.map { it.take(8) + "..." }}")
+
+                updateObjectTypesOrderIds.async(
+                    UpdateObjectTypesOrderIds.Params(
+                        spaceId = vmParams.spaceId,
+                        orderedIds = newOrder
+                    )
+                ).fold(
+                    onFailure = { error ->
+                        Timber.e(error, "HomeScreenViewModel - Failed to reorder type widgets: $newOrder")
+                        // Could emit error to UI here if needed
+                        clearTypeWidgetDragState()
+                    },
+                    onSuccess = { finalOrder ->
+                        Timber.d("HomeScreenViewModel - Successfully reordered type widgets with final order: $finalOrder")
+                        clearTypeWidgetDragState()
+                    }
+                )
+            }
+        } ?: run {
+            // No pending order changes, just clear drag state
+            Timber.d("HomeScreenViewModel - No pending type widget order changes, clearing drag state")
+            clearTypeWidgetDragState()
+        }
+    }
+
+    /**
+     * Clears the drag-and-drop state for type widgets.
+     *
+     * This method is called at the end of a drag-and-drop operation, regardless of whether
+     * the operation was successful or failed. It ensures that the local state is reset
+     * to avoid inconsistencies in subsequent drag-and-drop actions.
+     */
+    private fun clearTypeWidgetDragState() {
+        Timber.d("HomeScreenViewModel - Clearing type widget drag state")
+        pendingTypeWidgetOrder = null
+        lastMovedTypeWidgetId = null
     }
     //endregion
 

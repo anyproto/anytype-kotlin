@@ -254,7 +254,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.Tree -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -314,7 +314,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.Link -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -365,7 +365,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.SetOfObjects -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -425,7 +425,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.Gallery -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -485,7 +485,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.ListOfObjects -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,
@@ -554,7 +554,7 @@ private fun TwoSectionWidgetList(
                 is WidgetView.AllContent -> {
                     val isCardMenuExpanded = remember { mutableStateOf(false) }
                     val menuItems = item.getWidgetMenuItems()
-                    val isReorderEnabled = item.sectionType == SectionType.PINNED && mode !is InteractionMode.ReadOnly
+                    val isReorderEnabled = (item.sectionType == SectionType.PINNED || item.sectionType == SectionType.TYPES) && mode !is InteractionMode.ReadOnly
 
                     ReorderableItem(
                         enabled = isReorderEnabled,

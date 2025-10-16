@@ -1776,7 +1776,6 @@ class HomeScreenViewModel(
 
         // Store the pending order and persist it
         pendingTypeWidgetOrder = newOrder
-        onTypeWidgetDragEnd()
     }
 
     private fun proceedWithSettingUpShortcuts() {

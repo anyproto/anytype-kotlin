@@ -223,7 +223,9 @@ class HomeScreenFragment : Fragment(),
                 onClick = { vm.onCreateNewObjectLongClicked() }
             ),
             onMovePinned = vm::onMovePinned,
+            onMovePinnedEnd = {}, // Pinned widgets persist immediately via onMove
             onMoveTypes = vm::onMoveTypes,
+            onMoveTypesEnd = vm::onTypeWidgetDragEnd,
             onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
             onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
             navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,

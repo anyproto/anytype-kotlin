@@ -30,8 +30,10 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
@@ -77,6 +79,8 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import android.view.View
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
+import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import timber.log.Timber
 
 @Composable
@@ -102,7 +106,9 @@ fun HomeScreen(
     onNavBarShareButtonClicked: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onMovePinned: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMovePinnedEnd: () -> Unit,
     onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMoveTypesEnd: () -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionPinnedClicked: () -> Unit,
@@ -121,7 +127,9 @@ fun HomeScreen(
             mode = mode,
             onChangeWidgetView = onChangeWidgetView,
             onMovePinned = onMovePinned,
+            onMovePinnedEnd = onMovePinnedEnd,
             onMoveTypes = onMoveTypes,
+            onMoveTypesEnd = onMoveTypesEnd,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateWidget = onCreateWidget,
             onCreateElement = onCreateElement,
@@ -193,7 +201,9 @@ private fun TwoSectionWidgetList(
     mode: InteractionMode,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onMovePinned: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMovePinnedEnd: () -> Unit,
     onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
+    onMoveTypesEnd: () -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateWidget: () -> Unit,
     onCreateElement: (WidgetView) -> Unit = {},
@@ -203,44 +213,74 @@ private fun TwoSectionWidgetList(
 ) {
     val view = LocalView.current
     val lazyListState = rememberLazyListState()
+    val hapticFeedback = rememberReorderHapticFeedback()
+
+    // Local state for immediate visual updates during drag
+    // These sync with ViewModel state when not dragging
+    var localPinnedWidgets by remember { mutableStateOf(pinnedWidgets) }
+    var localTypeWidgets by remember { mutableStateOf(typeWidgets) }
+
+    var isDraggingPinned by remember { mutableStateOf(false) }
+    var isDraggingTypes by remember { mutableStateOf(false) }
+
+    // Sync local state with ViewModel state when not dragging
+    LaunchedEffect(pinnedWidgets, isDraggingPinned) {
+        if (!isDraggingPinned) {
+            localPinnedWidgets = pinnedWidgets
+        }
+    }
+
+    LaunchedEffect(typeWidgets, isDraggingTypes) {
+        if (!isDraggingTypes) {
+            localTypeWidgets = typeWidgets
+        }
+    }
 
     // Compute section ranges within the LazyColumn
     // [0] Pinned section header (not reorderable)
     val pinnedHeaderCount = 1
     val pinnedStart = pinnedHeaderCount
-    val pinnedEnd = pinnedStart + pinnedWidgets.size - 1
+    val pinnedEnd = pinnedStart + localPinnedWidgets.size - 1
 
     // [pinnedEnd + 1] Types section header (not reorderable)
     val typesHeaderCount = 1
-    val afterPinnedHeader = pinnedStart + pinnedWidgets.size + typesHeaderCount
+    val afterPinnedHeader = pinnedStart + localPinnedWidgets.size + typesHeaderCount
     val typesStart = afterPinnedHeader
-    val typesEnd = typesStart + typeWidgets.size - 1
-
-    // Track whether a drag is in progress and which section
-    val dragInProgress = remember { mutableStateOf(false) }
+    val typesEnd = typesStart + localTypeWidgets.size - 1
 
     // Single reorderable state for both sections
     val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        ViewCompat.performHapticFeedback(
-            view,
-            HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
-        )
-
         // Only process moves within the same section
         when {
             from.index in pinnedStart..pinnedEnd && to.index in pinnedStart..pinnedEnd -> {
                 val localFrom = from.index - pinnedStart
                 val localTo = to.index - pinnedStart
                 Timber.d("DROID-3965, Pinned move: globalFrom=${from.index}, globalTo=${to.index}, localFrom=$localFrom, localTo=$localTo")
-                onMovePinned(pinnedWidgets, localFrom, localTo)
-                dragInProgress.value = true
+
+                // Update local state immediately for smooth visual feedback
+                localPinnedWidgets = localPinnedWidgets.toMutableList().apply {
+                    add(localTo, removeAt(localFrom))
+                }
+
+                // Notify ViewModel about the move with the reordered list
+                onMovePinned(localPinnedWidgets, localFrom, localTo)
+                isDraggingPinned = true
+                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
             }
             from.index in typesStart..typesEnd && to.index in typesStart..typesEnd -> {
                 val localFrom = from.index - typesStart
                 val localTo = to.index - typesStart
                 Timber.d("DROID-3965, Types move: globalFrom=${from.index}, globalTo=${to.index}, localFrom=$localFrom, localTo=$localTo")
-                onMoveTypes(typeWidgets, localFrom, localTo)
-                dragInProgress.value = true
+
+                // Update local state immediately for smooth visual feedback
+                localTypeWidgets = localTypeWidgets.toMutableList().apply {
+                    add(localTo, removeAt(localFrom))
+                }
+
+                // Notify ViewModel about the move with the reordered list
+                onMoveTypes(localTypeWidgets, localFrom, localTo)
+                isDraggingTypes = true
+                hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
             }
             else -> {
                 // Cross-section drag - ignore
@@ -249,11 +289,26 @@ private fun TwoSectionWidgetList(
         }
     }
 
-    // Track drag completion
-    LaunchedEffect(reorderableState.isAnyItemDragging) {
-        if (!reorderableState.isAnyItemDragging && dragInProgress.value) {
-            dragInProgress.value = false
-            Timber.d("DROID-3965, Drag completed")
+    // Track drag completion for pinned widgets
+    LaunchedEffect(reorderableState.isAnyItemDragging, isDraggingPinned) {
+        if (!reorderableState.isAnyItemDragging && isDraggingPinned) {
+            Timber.d("DROID-3965, Pinned drag stopped, persisting final order")
+            // Call ViewModel to persist the final order
+            onMovePinnedEnd()
+            // Reset dragging flag AFTER persistence to avoid triggering sync too early
+            isDraggingPinned = false
+        }
+    }
+
+    // Track drag completion for type widgets
+    LaunchedEffect(reorderableState.isAnyItemDragging, isDraggingTypes) {
+        if (!reorderableState.isAnyItemDragging && isDraggingTypes) {
+            Timber.d("DROID-3965, Types drag stopped, persisting final order: ${localTypeWidgets.map { it.id.takeLast(4) }}")
+            // Pass the final reordered list to ViewModel
+            // onMoveTypes will store the order and call onTypeWidgetDragEnd internally
+            onMoveTypes(localTypeWidgets, 0, 1) // Dummy indices to bypass validation
+            // Reset dragging flag AFTER persistence to avoid triggering sync too early
+            isDraggingTypes = false
         }
     }
 
@@ -270,7 +325,7 @@ private fun TwoSectionWidgetList(
         }
         // Pinned widgets section
         renderWidgetSection(
-            widgets = pinnedWidgets,
+            widgets = localPinnedWidgets,
             reorderableState = reorderableState,
             view = view,
             mode = mode,
@@ -297,7 +352,7 @@ private fun TwoSectionWidgetList(
 
         // Type widgets section
         renderWidgetSection(
-            widgets = typeWidgets.also {
+            widgets = localTypeWidgets.also {
                 Timber.d("DROID-3965, Rendering type widgets: ${it.map { w -> w.id.takeLast(4) }}")
             },
             reorderableState = reorderableState,

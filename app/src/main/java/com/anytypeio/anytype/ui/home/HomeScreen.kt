@@ -204,48 +204,57 @@ private fun TwoSectionWidgetList(
     val view = LocalView.current
     val lazyListState = rememberLazyListState()
 
-    val pinnedLastFromIndex = remember { mutableStateOf<Int?>(null) }
-    val pinnedLastToIndex = remember { mutableStateOf<Int?>(null) }
+    // Compute section ranges within the LazyColumn
+    // [0] Pinned section header (not reorderable)
+    val pinnedHeaderCount = 1
+    val pinnedStart = pinnedHeaderCount
+    val pinnedEnd = pinnedStart + pinnedWidgets.size - 1
 
-    val pinnedReorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        pinnedLastFromIndex.value = from.index
-        pinnedLastToIndex.value = to.index
+    // [pinnedEnd + 1] Types section header (not reorderable)
+    val typesHeaderCount = 1
+    val afterPinnedHeader = pinnedStart + pinnedWidgets.size + typesHeaderCount
+    val typesStart = afterPinnedHeader
+    val typesEnd = typesStart + typeWidgets.size - 1
+
+    // Track whether a drag is in progress and which section
+    val dragInProgress = remember { mutableStateOf(false) }
+
+    // Single reorderable state for both sections
+    val reorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
         ViewCompat.performHapticFeedback(
             view,
             HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
         )
-    }
 
-    val onPinnedDragStopped = {
-        val from = pinnedLastFromIndex.value
-        val to = pinnedLastToIndex.value
-        if (from != null && to != null && from != to) {
-            onMovePinned(pinnedWidgets, from, to)
+        // Only process moves within the same section
+        when {
+            from.index in pinnedStart..pinnedEnd && to.index in pinnedStart..pinnedEnd -> {
+                val localFrom = from.index - pinnedStart
+                val localTo = to.index - pinnedStart
+                Timber.d("DROID-3965, Pinned move: globalFrom=${from.index}, globalTo=${to.index}, localFrom=$localFrom, localTo=$localTo")
+                onMovePinned(pinnedWidgets, localFrom, localTo)
+                dragInProgress.value = true
+            }
+            from.index in typesStart..typesEnd && to.index in typesStart..typesEnd -> {
+                val localFrom = from.index - typesStart
+                val localTo = to.index - typesStart
+                Timber.d("DROID-3965, Types move: globalFrom=${from.index}, globalTo=${to.index}, localFrom=$localFrom, localTo=$localTo")
+                onMoveTypes(typeWidgets, localFrom, localTo)
+                dragInProgress.value = true
+            }
+            else -> {
+                // Cross-section drag - ignore
+                Timber.d("DROID-3965, Ignoring cross-section drag: from=${from.index}, to=${to.index}")
+            }
         }
-        pinnedLastFromIndex.value = null
-        pinnedLastToIndex.value = null
-    }
-    
-    val typeLastFromIndex = remember { mutableStateOf<Int?>(null) }
-    val typeLastToIndex = remember { mutableStateOf<Int?>(null) }
-
-    val typeReorderableState = rememberReorderableLazyListState(lazyListState) { from, to ->
-        typeLastFromIndex.value = from.index
-        typeLastToIndex.value = to.index
-        ViewCompat.performHapticFeedback(
-            view,
-            HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
-        )
     }
 
-    val onTypeDragStopped = {
-        val from = typeLastFromIndex.value
-        val to = typeLastToIndex.value
-        if (from != null && to != null && from != to) {
-            onMoveTypes(typeWidgets, from, to)
+    // Track drag completion
+    LaunchedEffect(reorderableState.isAnyItemDragging) {
+        if (!reorderableState.isAnyItemDragging && dragInProgress.value) {
+            dragInProgress.value = false
+            Timber.d("DROID-3965, Drag completed")
         }
-        typeLastFromIndex.value = null
-        typeLastToIndex.value = null
     }
 
     LazyColumn(
@@ -262,8 +271,7 @@ private fun TwoSectionWidgetList(
         // Pinned widgets section
         renderWidgetSection(
             widgets = pinnedWidgets,
-            reorderableState = pinnedReorderableState,
-            onDragStopped = onPinnedDragStopped,
+            reorderableState = reorderableState,
             view = view,
             mode = mode,
             sectionType = SectionType.PINNED,
@@ -290,10 +298,9 @@ private fun TwoSectionWidgetList(
         // Type widgets section
         renderWidgetSection(
             widgets = typeWidgets.also {
-                Timber.d("DROID-3965, Rendering type widgets: ${it.map { w -> w.id.take(4) }}")
+                Timber.d("DROID-3965, Rendering type widgets: ${it.map { w -> w.id.takeLast(4) }}")
             },
-            reorderableState = typeReorderableState,
-            onDragStopped = onTypeDragStopped,
+            reorderableState = reorderableState,
             view = view,
             mode = mode,
             sectionType = SectionType.TYPES,
@@ -306,7 +313,7 @@ private fun TwoSectionWidgetList(
             onChangeWidgetView = onChangeWidgetView,
             onObjectCheckboxClicked = onObjectCheckboxClicked,
             onCreateElement = onCreateElement,
-            onCreateWidget = onCreateWidget,
+            onCreateWidget = onCreateWidget
         )
 
         item {
@@ -319,7 +326,6 @@ private fun TwoSectionWidgetList(
 private fun LazyListScope.renderWidgetSection(
     widgets: List<WidgetView>,
     reorderableState: ReorderableLazyListState,
-    onDragStopped: () -> Unit,
     view: View,
     mode: InteractionMode,
     sectionType: SectionType,
@@ -370,10 +376,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
@@ -430,10 +433,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
@@ -481,10 +481,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
@@ -541,10 +538,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
@@ -601,10 +595,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
@@ -670,10 +661,7 @@ private fun LazyListScope.renderWidgetSection(
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
-                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(
-                            view,
-                            onDragStopped
-                        ) else null,
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
                         shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 

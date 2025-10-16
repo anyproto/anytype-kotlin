@@ -1767,16 +1767,15 @@ class HomeScreenViewModel(
             return
         }
 
-        // Get the IDs of the widgets being reordered
-        val fromWidgetId = views[from].id
-        val toWidgetId = views[to].id
+        // Extract the new order directly from the views list
+        // The views list already reflects the new order after the drag operation
+        val newOrder = views.map { it.id }
 
-        Timber.d("DROID-3965, Reordering type widgets: fromId=${fromWidgetId.takeLast(4)}..., toId=${toWidgetId.takeLast(4)}...")
+        Timber.d("DROID-3965, Reordering type widgets from index $from to $to")
+        Timber.d("DROID-3965, New order after drag: ${newOrder.map { it.takeLast(4) + "..." }}")
 
-        // Update UI state immediately for smooth drag feedback
-        onTypeWidgetOrderChanged(fromWidgetId, toWidgetId)
-
-        // Persist the changes when drag ends
+        // Store the pending order and persist it
+        pendingTypeWidgetOrder = newOrder
         onTypeWidgetDragEnd()
     }
 

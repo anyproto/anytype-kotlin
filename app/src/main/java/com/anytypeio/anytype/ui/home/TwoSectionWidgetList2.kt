@@ -21,8 +21,11 @@ import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import kotlinx.coroutines.delay
+import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import timber.log.Timber
 
@@ -79,7 +82,6 @@ fun WidgetsScreen(
             val toType = to.contentType as? SectionType
             if (fromType == null || toType == null || fromType != toType) {
                 Timber.d("Ignoring cross-section move: ${from.contentType} -> ${to.contentType}")
-                return@rememberReorderableLazyListState
             }
 
             val fromId = from.key as? Id
@@ -126,9 +128,15 @@ fun WidgetsScreen(
         ) {
 
             item {
-                PinnedSectionHeader(
-                    onSectionClicked = viewModel::onSectionPinnedClicked
-                )
+                ReorderableItem(
+                    enabled = false,
+                    state = reorderableState,
+                    key = SECTION_PINNED,
+                ) {
+                    PinnedSectionHeader(
+                        onSectionClicked = viewModel::onSectionPinnedClicked
+                    )
+                }
             }
             // Pinned widgets section
             renderWidgetSection(
@@ -152,11 +160,17 @@ fun WidgetsScreen(
             )
 
             item {
-                SpaceObjectTypesSectionHeader(
-                    mode = mode,
-                    onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
-                    onSectionClicked = viewModel::onSectionTypesClicked
-                )
+                ReorderableItem(
+                    enabled = false,
+                    state = reorderableState,
+                    key = SECTION_OBJECT_TYPE,
+                ) {
+                    SpaceObjectTypesSectionHeader(
+                        mode = mode,
+                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
+                        onSectionClicked = viewModel::onSectionTypesClicked
+                    )
+                }
             }
 
             // Type widgets section

@@ -145,7 +145,7 @@ sealed class Widget {
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon = ObjectIcon.None,
-        override val sectionType: SectionType = SectionType.TYPES
+        override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
     sealed class Source {
@@ -519,7 +519,7 @@ private suspend fun buildTypeSection(
                     source = Widget.Source.Bundled.Bin,
                     config = state.config,
                     icon = ObjectIcon.None,
-                    sectionType = SectionType.TYPES
+                    sectionType = SectionType.NONE
                 )
             )
         }

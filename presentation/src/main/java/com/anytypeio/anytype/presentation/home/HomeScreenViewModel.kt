@@ -2892,17 +2892,21 @@ class HomeScreenViewModel(
             Timber.d("HomeScreenViewModel - Starting type widget drag operation")
         }
 
-        val currentTypeViews = typeViews.value
-        val from = currentTypeViews.indexOfFirst { it.id == fromWidgetId }
-        val to = currentTypeViews.indexOfFirst { it.id == toWidgetId }
+        // Filter to only include actual type widgets (exclude sections, bin, etc.)
+        val actualTypeWidgets = typeViews.value.filter { view ->
+            view.sectionType == SectionType.TYPES && view !is WidgetView.Section
+        }
+
+        val from = actualTypeWidgets.indexOfFirst { it.id == fromWidgetId }
+        val to = actualTypeWidgets.indexOfFirst { it.id == toWidgetId }
 
         if (from == -1 || to == -1 || from == to) {
             Timber.d("HomeScreenViewModel - onTypeWidgetOrderChanged: Invalid indices (from=$from, to=$to), ignoring")
             return
         }
 
-        // Store the pending order for persistence on drag end
-        val currentOrder = typeViews.value.map { it.id }.toMutableList()
+        // Store the pending order for persistence on drag end (only actual type widget IDs)
+        val currentOrder = actualTypeWidgets.map { it.id }.toMutableList()
         val movedItem = currentOrder.removeAt(from)
         currentOrder.add(to, movedItem)
 

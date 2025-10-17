@@ -46,11 +46,9 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
 
-    // UI-local lists for immediate mutation inside onMove (required by the library)
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
 
-    // Track which section is currently being dragged
     val isDraggingPinned = remember { mutableStateOf(false) }
     val isDraggingTypes = remember { mutableStateOf(false) }
 
@@ -183,7 +181,6 @@ fun WidgetsScreen(
                 onCreateWidget = viewModel::onCreateWidgetClicked
             )
 
-            // Bin widget at the bottom
             binWidget?.let { bin ->
                 item {
                     if (bin is WidgetView.Bin) {

@@ -24,6 +24,9 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
+import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -41,6 +44,7 @@ fun WidgetsScreen(
     val mode = viewModel.mode.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
+    val binWidget = viewModel.binView.collectAsState().value
 
     // UI-local lists for immediate mutation inside onMove (required by the library)
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
@@ -178,6 +182,29 @@ fun WidgetsScreen(
                 onCreateElement = viewModel::onCreateWidgetElementClicked,
                 onCreateWidget = viewModel::onCreateWidgetClicked
             )
+
+            // Bin widget at the bottom
+            binWidget?.let { bin ->
+                item {
+                    if (bin is WidgetView.Bin) {
+                        ReorderableItem(
+                            enabled = false,
+                            state = reorderableState,
+                            key = WIDGET_BIN_ID,
+                        ) {
+                            BinWidgetCard(
+                                item = bin,
+                                onDropDownMenuAction = { action ->
+                                    viewModel.onDropDownMenuAction(bin.id, action)
+                                },
+                                onWidgetSourceClicked = {
+                                    viewModel.onBinWidgetClicked()
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             item {
                 Box(

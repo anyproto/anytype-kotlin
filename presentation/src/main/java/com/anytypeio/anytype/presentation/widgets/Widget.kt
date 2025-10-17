@@ -383,14 +383,16 @@ data class WidgetUiParams(
 )
 
 /**
- * Result of building widgets, separated into pinned and type sections.
+ * Result of building widgets, separated into pinned, type sections, and bin widget.
  *
- * @property pinnedWidgets Widgets from the pinned section (user-arranged, including chat)
- * @property typeWidgets Widgets from the object type section (system-generated, including bin)
+ * @property pinnedWidgets Widgets from the pinned section (user-arranged, excluded chat widgets)
+ * @property typeWidgets Widgets from the object type section
+ * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
-    val typeWidgets: List<Widget>
+    val typeWidgets: List<Widget>,
+    val binWidget: Widget.Bin? = null
 )
 
 suspend fun buildWidgetSections(
@@ -420,9 +422,15 @@ suspend fun buildWidgetSections(
         isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
     )
 
+    val binWidget = buildBinWidget(
+        state = state,
+        params = params
+    )
+
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
-        typeWidgets = typeWidgets
+        typeWidgets = typeWidgets,
+        binWidget = binWidget
     )
 }
 
@@ -456,7 +464,7 @@ private suspend fun buildPinnedSection(
 }
 
 /**
- * Builds the object type widgets section including type widgets and bin.
+ * Builds the object type widgets section.
  */
 private suspend fun buildTypeSection(
     state: ObjectViewState.Success,
@@ -476,23 +484,26 @@ private suspend fun buildTypeSection(
             isChatSpace = isChatSpace
         )
         addAll(types)
-
-        // Add bin widget for owners/editors
-        if (params.isOwnerOrEditor) {
-            add(
-                Widget.Bin(
-                    id = WIDGET_BIN_ID,
-                    source = Widget.Source.Bundled.Bin,
-                    config = state.config,
-                    icon = ObjectIcon.None,
-                    sectionType = SectionType.NONE
-                )
-            )
-        }
-
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
     } else {
         Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+    }
+}
+
+private fun buildBinWidget(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams
+): Widget.Bin? {
+    return if (params.isOwnerOrEditor) {
+        Widget.Bin(
+            id = WIDGET_BIN_ID,
+            source = Widget.Source.Bundled.Bin,
+            config = state.config,
+            icon = ObjectIcon.None,
+            sectionType = SectionType.NONE
+        )
+    } else {
+        null
     }
 }
 

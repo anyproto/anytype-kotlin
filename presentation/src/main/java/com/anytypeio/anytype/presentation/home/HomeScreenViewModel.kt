@@ -270,6 +270,7 @@ class HomeScreenViewModel(
     // Separate StateFlows for pinned and type widgets
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
     private val pinnedContainers = MutableStateFlow<Containers>(null)
@@ -315,6 +316,23 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Exposed flow for bin widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val binView: StateFlow<WidgetView?> = binWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for bin widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
         )
 
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
@@ -731,13 +749,15 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
                     pinnedWidgets.value = sections.pinnedWidgets
                     typeWidgets.value = sections.typeWidgets
+                    binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
                     typeWidgets.value = emptyList()
+                    binWidget.value = null
                 }
             }
         }
@@ -1207,6 +1227,17 @@ class HomeScreenViewModel(
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
+        }
+    }
+
+    fun onBinWidgetClicked() {
+        viewModelScope.launch {
+            navigation(
+                ExpandWidget(
+                    subscription = Subscription.Bin,
+                    space = vmParams.spaceId.id
+                )
+            )
         }
     }
 

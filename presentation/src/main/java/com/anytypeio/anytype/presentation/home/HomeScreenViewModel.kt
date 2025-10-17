@@ -2747,11 +2747,8 @@ class HomeScreenViewModel(
             val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_PINNED)
 
             val newCollapsedSections = if (isCurrentlyCollapsed) {
-                // Expand section - remove from collapsed sections
                 currentCollapsedSections.minus(SECTION_PINNED)
             } else {
-                // Collapse section - add to collapsed sections and collapse all pinned widgets
-                collapseAllPinnedWidgets()
                 currentCollapsedSections.plus(SECTION_PINNED)
             }
 
@@ -2765,46 +2762,14 @@ class HomeScreenViewModel(
             val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE)
 
             val newCollapsedSections = if (isCurrentlyCollapsed) {
-                // Expand section - remove from collapsed sections
                 currentCollapsedSections.minus(SECTION_OBJECT_TYPE)
             } else {
-                // Collapse section - add to collapsed sections and collapse all type widgets
-                collapseAllObjectTypeWidgets()
                 currentCollapsedSections.plus(SECTION_OBJECT_TYPE)
             }
 
             userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
         }
     }
-
-    /**
-     * Collapses all ObjectType widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllObjectTypeWidgets() {
-        val currentWidgets = currentWidgets.orEmpty()
-        val objectTypeWidgetIds = currentWidgets
-            .filter { widget -> widget.sectionType == SectionType.TYPES }
-            .map { it.id }
-
-        // Remove all ObjectType widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - objectTypeWidgetIds.toSet()
-        saveExpandedWidgetState()
-    }
-
-    /**
-     * Collapses all Pinned widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllPinnedWidgets() {
-        val currentWidgets = currentWidgets.orEmpty()
-        val pinnedWidgetIds = currentWidgets
-            .filter { widget -> widget.sectionType == SectionType.PINNED }
-            .map { it.id }
-
-        // Remove all Pinned widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - pinnedWidgetIds.toSet()
-        saveExpandedWidgetState()
-    }
-
 
     /**
      * Determines if a widget should be collapsed due to its section being collapsed

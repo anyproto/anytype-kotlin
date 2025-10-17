@@ -64,7 +64,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeScreenFragment : Fragment(),
+class WidgetsScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
     WidgetSourceTypeListener {
 

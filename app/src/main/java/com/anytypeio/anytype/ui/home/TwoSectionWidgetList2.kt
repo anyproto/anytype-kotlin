@@ -17,6 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -52,6 +53,7 @@ fun WidgetsScreen(
     val reorderableState = rememberReorderableLazyListState(
         lazyListState = lazyListState,
         onMove = { from, to ->
+
             val fromType = from.contentType as? SectionType
 
             val fromId = from.key as? Id
@@ -66,6 +68,7 @@ fun WidgetsScreen(
                         val item = pinnedUi.removeAt(f)
                         pinnedUi.add(t, item)
                         viewModel.onMovePinned(pinnedUi, f, t)
+                        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
                     }
                 }
                 SectionType.TYPES -> {
@@ -76,6 +79,7 @@ fun WidgetsScreen(
                         val item = typesUi.removeAt(f)
                         typesUi.add(t, item)
                         viewModel.onTypeWidgetOrderChanged(fromId, toId)
+                        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
                     }
                 }
                 else -> Unit

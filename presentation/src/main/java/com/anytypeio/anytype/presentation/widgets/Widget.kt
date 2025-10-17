@@ -436,15 +436,6 @@ private suspend fun buildPinnedSection(
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<Widget> = buildList {
-    // Space chat widget for Shared Data Spaces
-    val spaceChatId = state.config.spaceChatId
-    if (!spaceChatId.isNullOrEmpty()
-        && spaceView.isShared
-        && spaceView.spaceUxType != SpaceUxType.CHAT
-    ) {
-        add(Widget.Chat(config = state.config))
-    }
-
     // Pinned widgets (from blocks)
     val userPinnedWidgets = state.obj.blocks.parseWidgets(
         root = state.obj.root,

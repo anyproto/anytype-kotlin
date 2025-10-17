@@ -108,7 +108,7 @@ fun HomeScreen(
     onMovePinned: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
     onMovePinnedEnd: () -> Unit,
     onMoveTypes: (List<WidgetView>, FromIndex, ToIndex) -> Unit,
-    onMoveTypesEnd: () -> Unit,
+    onMoveTypesEnd: () -> Unit = {},
     onCreateElement: (WidgetView) -> Unit = {},
     onCreateNewTypeClicked: () -> Unit,
     onSectionPinnedClicked: () -> Unit,
@@ -330,6 +330,7 @@ private fun TwoSectionWidgetList(
             view = view,
             mode = mode,
             sectionType = SectionType.PINNED,
+            isOtherSectionDragging = isDraggingTypes,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
@@ -359,6 +360,7 @@ private fun TwoSectionWidgetList(
             view = view,
             mode = mode,
             sectionType = SectionType.TYPES,
+            isOtherSectionDragging = isDraggingPinned,
             onExpand = onExpand,
             onWidgetMenuAction = onWidgetMenuAction,
             onWidgetElementClicked = onWidgetElementClicked,
@@ -378,12 +380,13 @@ private fun TwoSectionWidgetList(
 }
 
 @OptIn(ExperimentalFoundationApi::class)
-private fun LazyListScope.renderWidgetSection(
+fun LazyListScope.renderWidgetSection(
     widgets: List<WidgetView>,
     reorderableState: ReorderableLazyListState,
     view: View,
     mode: InteractionMode,
     sectionType: SectionType,
+    isOtherSectionDragging: Boolean = false,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -397,13 +400,14 @@ private fun LazyListScope.renderWidgetSection(
 ) {
     itemsIndexed(
         items = widgets,
-        key = { _, item -> item.id }
+        key = { _, item -> item.id },
+        contentType = { _, item -> sectionType } // Optimize recompositions based on item type
     ) { index, item ->
         when (item) {
             is WidgetView.Tree -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -460,7 +464,7 @@ private fun LazyListScope.renderWidgetSection(
             is WidgetView.Link -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -508,7 +512,7 @@ private fun LazyListScope.renderWidgetSection(
             is WidgetView.SetOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -565,7 +569,7 @@ private fun LazyListScope.renderWidgetSection(
             is WidgetView.Gallery -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -622,7 +626,7 @@ private fun LazyListScope.renderWidgetSection(
             is WidgetView.ListOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -688,7 +692,7 @@ private fun LazyListScope.renderWidgetSection(
             is WidgetView.AllContent -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = item.getWidgetMenuItems()
-                val isReorderEnabled = (item.sectionType == sectionType) && mode !is InteractionMode.ReadOnly
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
                     enabled = isReorderEnabled,
@@ -785,7 +789,7 @@ fun WidgetEditModeButton(
 }
 
 @Composable
-private fun SpaceObjectTypesSectionHeader(
+fun SpaceObjectTypesSectionHeader(
     mode: InteractionMode,
     onSectionClicked: () -> Unit,
     onCreateNewTypeClicked: () -> Unit
@@ -820,7 +824,7 @@ private fun SpaceObjectTypesSectionHeader(
 }
 
 @Composable
-private fun PinnedSectionHeader(
+fun PinnedSectionHeader(
     onSectionClicked: () -> Unit,
 ) {
     Box(

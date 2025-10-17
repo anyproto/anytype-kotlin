@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.home
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,6 +14,7 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
@@ -45,54 +47,25 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
 
     // UI-local lists for immediate mutation inside onMove (required by the library)
-    val pinnedUi = remember { mutableStateListOf<WidgetView>() }
-    val typesUi = remember { mutableStateListOf<WidgetView>() }
+    val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
+    val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
 
-    // Drag state tracking for debounced commit (since library has no onDragEnd)
-    val isDragging = remember { mutableStateOf(false) }
-    val lastMoveTick = remember { mutableStateOf(0L) }
-
-    // Keep UI lists in sync with VM when not dragging
-    LaunchedEffect(pinnedWidgets) {
-        if (!isDragging.value) {
-            pinnedUi.clear()
-            pinnedUi.addAll(pinnedWidgets)
-        }
-    }
-    LaunchedEffect(typeWidgets) {
-        if (!isDragging.value) {
-            typesUi.clear()
-            typesUi.addAll(typeWidgets)
-        }
-    }
-
-    // Debounce commit: if there are no moves for 200ms, treat as drag end and persist via VM
-    LaunchedEffect(lastMoveTick.value) {
-        if (lastMoveTick.value == 0L) return@LaunchedEffect
-        delay(200)
-        isDragging.value = false
-//        viewModel.onPinnedDragEnd()
-//        viewModel.onTypeDragEnd()
-    }
+    // Track which section is currently being dragged
+    val isDraggingPinned = remember { mutableStateOf(false) }
+    val isDraggingTypes = remember { mutableStateOf(false) }
 
     val reorderableState = rememberReorderableLazyListState(
         lazyListState = lazyListState,
         onMove = { from, to ->
             val fromType = from.contentType as? SectionType
             val toType = to.contentType as? SectionType
-            if (fromType == null || toType == null || fromType != toType) {
-                Timber.d("Ignoring cross-section move: ${from.contentType} -> ${to.contentType}")
-            }
 
             val fromId = from.key as? Id
             val toId = to.key as? Id
-            if (fromId == null || toId == null) return@rememberReorderableLazyListState
-
-            isDragging.value = true
-            lastMoveTick.value = System.currentTimeMillis()
 
             when (fromType) {
                 SectionType.PINNED -> {
+                    isDraggingPinned.value = true
                     val f = pinnedUi.indexOfFirst { it.id == fromId }
                     val t = pinnedUi.indexOfFirst { it.id == toId }
                     if (f != -1 && t != -1 && f != t) {
@@ -102,19 +75,33 @@ fun WidgetsScreen(
                     }
                 }
                 SectionType.TYPES -> {
+                    isDraggingTypes.value = true
                     val f = typesUi.indexOfFirst { it.id == fromId }
                     val t = typesUi.indexOfFirst { it.id == toId }
                     if (f != -1 && t != -1 && f != t) {
                         val item = typesUi.removeAt(f)
                         typesUi.add(t, item)
+                        viewModel.onTypeWidgetOrderChanged(fromId, toId)
                         //viewModel.onMoveTypes(fromId, toId) // VM tracks pending order / debounced persistence
                     }
                 }
                 else -> Unit
             }
-
         }
     )
+
+    LaunchedEffect(reorderableState.isAnyItemDragging) {
+        if (!reorderableState.isAnyItemDragging) {
+            if (isDraggingPinned.value) {
+                //viewModel.onReorderComplete(SectionType.PINNED, pinnedUi.map { it.id })
+                isDraggingPinned.value = false
+            }
+            if (isDraggingTypes.value) {
+                viewModel.onTypeWidgetDragEnd()
+                isDraggingTypes.value = false
+            }
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -145,6 +132,7 @@ fun WidgetsScreen(
                 view = view,
                 mode = mode,
                 sectionType = SectionType.PINNED,
+                isOtherSectionDragging = isDraggingTypes.value,
                 onExpand = viewModel::onExpand,
                 onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                     viewModel.onDropDownMenuAction(widget, action)
@@ -180,6 +168,7 @@ fun WidgetsScreen(
                 view = view,
                 mode = mode,
                 sectionType = SectionType.TYPES,
+                isOtherSectionDragging = isDraggingPinned.value,
                 onExpand = viewModel::onExpand,
                 onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                     viewModel.onDropDownMenuAction(widget, action)

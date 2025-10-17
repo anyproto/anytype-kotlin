@@ -2859,8 +2859,13 @@ class HomeScreenViewModel(
      * @param fromWidgetId The ID of the type widget being dragged from.
      * @param toWidgetId The ID of the type widget being dragged to.
      */
-    fun onTypeWidgetOrderChanged(fromWidgetId: String, toWidgetId: String) {
+    fun onTypeWidgetOrderChanged(fromWidgetId: String?, toWidgetId: String?) {
         Timber.d("DROID-3965, onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")
+
+        if (fromWidgetId.isNullOrEmpty() || toWidgetId.isNullOrEmpty()) {
+            Timber.d("DROID-3965, onTypeWidgetOrderChanged: One of the IDs is null or empty, ignoring")
+            return
+        }
 
         // Mark that we're starting a drag operation if we haven't already
         if (pendingTypeWidgetOrder == null) {
@@ -2868,9 +2873,7 @@ class HomeScreenViewModel(
         }
 
         // Filter to only include actual type widgets (exclude sections, bin, etc.)
-        val actualTypeWidgets = typeViews.value.filter { view ->
-            view.sectionType == SectionType.TYPES
-        }
+        val actualTypeWidgets = typeViews.value
 
         val from = actualTypeWidgets.indexOfFirst { it.id == fromWidgetId }
         val to = actualTypeWidgets.indexOfFirst { it.id == toWidgetId }

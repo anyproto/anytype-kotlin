@@ -335,6 +335,15 @@ class HomeScreenViewModel(
             initialValue = null
         )
 
+    // Exposed flow for collapsed sections
+    val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
+        .map { it.toSet() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptySet()
+        )
+
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
     private var cachedWidgetObjectId: String? = null
 

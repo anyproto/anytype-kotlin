@@ -45,9 +45,39 @@ fun WidgetsScreen(
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
+    val collapsedSections = viewModel.collapsedSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
+
+    // Determine if pinned section should be visible
+    val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
+
+    // Track previous collapse state to detect expand transitions
+    val wasCollapsed = remember { mutableStateOf(isPinnedSectionCollapsed) }
+    val hadPinnedItems = remember { mutableStateOf(pinnedUi.isNotEmpty()) }
+
+    // When section becomes expanded (transition from collapsed to expanded)
+    // Keep the flag true to prevent flicker until items load
+    if (!isPinnedSectionCollapsed && wasCollapsed.value) {
+        hadPinnedItems.value = true
+    }
+
+    // Update previous state for next composition
+    wasCollapsed.value = isPinnedSectionCollapsed
+
+    // Set flag when items are present
+    if (pinnedUi.isNotEmpty()) {
+        hadPinnedItems.value = true
+    }
+
+    // Reset flag when section is collapsed and has no items
+    if (isPinnedSectionCollapsed && pinnedUi.isEmpty()) {
+        hadPinnedItems.value = false
+    }
+
+    // Show header if: has items OR is collapsed OR was previously shown (prevents flicker on expand)
+    val shouldShowPinnedHeader = pinnedUi.isNotEmpty() || isPinnedSectionCollapsed || hadPinnedItems.value
 
     val isDraggingPinned = remember { mutableStateOf(false) }
     val isDraggingTypes = remember { mutableStateOf(false) }
@@ -112,15 +142,18 @@ fun WidgetsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            item {
-                ReorderableItem(
-                    enabled = false,
-                    state = reorderableState,
-                    key = SECTION_PINNED,
-                ) {
-                    PinnedSectionHeader(
-                        onSectionClicked = viewModel::onSectionPinnedClicked
-                    )
+            // Only show pinned section header if there are items or section is collapsed
+            if (shouldShowPinnedHeader) {
+                item {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = SECTION_PINNED,
+                    ) {
+                        PinnedSectionHeader(
+                            onSectionClicked = viewModel::onSectionPinnedClicked
+                        )
+                    }
                 }
             }
             // Pinned widgets section

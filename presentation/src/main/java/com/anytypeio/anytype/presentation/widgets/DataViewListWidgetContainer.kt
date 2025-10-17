@@ -81,10 +81,6 @@ class DataViewListWidgetContainer(
         val dvFingerprint: String = ""
     )
 
-    init {
-        Timber.d("Creating DataViewListWidgetContainer for widget with id ${widget.id}")
-    }
-
     /**
      * Reactive flow that emits widget view states based on session activity and collapsed state.
      * Provides loading states initially, then switches to actual data when available.

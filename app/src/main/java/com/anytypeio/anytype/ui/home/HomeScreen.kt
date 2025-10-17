@@ -79,6 +79,7 @@ import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 import sh.calvin.reorderable.rememberReorderableLazyListState
 import android.view.View
+import androidx.compose.foundation.lazy.LazyItemScope
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import timber.log.Timber
@@ -412,7 +413,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -469,7 +471,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -517,7 +520,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -574,7 +578,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -631,7 +636,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -697,7 +703,8 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id
+                    key = item.id,
+                    animateItemModifier = Modifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -846,7 +853,7 @@ fun PinnedSectionHeader(
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun WidgetCardModifier(
+private fun LazyItemScope.WidgetCardModifier(
     isMenuExpanded: Boolean,
     mode: InteractionMode,
     onWidgetClicked: () -> Unit,
@@ -857,6 +864,9 @@ private fun WidgetCardModifier(
     val haptic = LocalHapticFeedback.current
 
     var modifier = Modifier
+        .animateItem(
+            placementSpec = null
+        )
         .fillMaxWidth()
         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
         .alpha(if (isMenuExpanded) 0.8f else 1f)

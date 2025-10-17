@@ -277,7 +277,6 @@ class HomeScreenViewModel(
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
-    private var lastMovedTypeWidgetId: Id? = null
 
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
@@ -2889,7 +2888,6 @@ class HomeScreenViewModel(
         currentOrder.add(to, movedItem)
 
         pendingTypeWidgetOrder = currentOrder
-        lastMovedTypeWidgetId = fromWidgetId
 
         Timber.d("DROID-3965, onTypeWidgetOrderChanged: New pending order: ${currentOrder.map { it.takeLast(4) + "..." }}")
     }
@@ -2942,7 +2940,6 @@ class HomeScreenViewModel(
     private fun clearTypeWidgetDragState() {
         Timber.d("DROID-3965, Clearing type widget drag state")
         pendingTypeWidgetOrder = null
-        lastMovedTypeWidgetId = null
     }
     //endregion
 

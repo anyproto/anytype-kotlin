@@ -499,8 +499,7 @@ private fun buildBinWidget(
             id = WIDGET_BIN_ID,
             source = Widget.Source.Bundled.Bin,
             config = state.config,
-            icon = ObjectIcon.None,
-            sectionType = SectionType.NONE
+            icon = ObjectIcon.None
         )
     } else {
         null

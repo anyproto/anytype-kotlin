@@ -209,7 +209,6 @@ fun WidgetsScreen(
             item {
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
                         .height(200.dp)
                 )
             }

@@ -82,6 +82,7 @@ fun LazyListScope.renderWidgetSection(
         key = { _, item -> item.id },
         contentType = { _, item -> sectionType } // Optimize recompositions based on item type
     ) { index, item ->
+        val animateItemModifier = Modifier.animateItem()
         when (item) {
             is WidgetView.Tree -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
@@ -92,7 +93,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -150,7 +151,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -199,7 +200,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -257,7 +258,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -315,7 +316,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 
@@ -382,7 +383,7 @@ fun LazyListScope.renderWidgetSection(
                     enabled = isReorderEnabled,
                     state = reorderableState,
                     key = item.id,
-                    animateItemModifier = Modifier
+                    animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
 

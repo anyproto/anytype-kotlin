@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -13,12 +14,15 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.toMutableStateList
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
+import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
@@ -243,5 +247,18 @@ fun WidgetsScreen(
                 )
             }
         }
+
+        BottomNavigationMenu(
+            state = viewModel.navPanelState.collectAsStateWithLifecycle().value,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .navigationBarsPadding()
+                .padding(bottom = 20.dp),
+            onSearchClick = viewModel::onSearchIconClicked,
+            onAddDocClick = viewModel::onCreateNewObjectClicked,
+            onAddDocLongClick = viewModel::onCreateNewObjectLongClicked,
+            onShareButtonClicked = viewModel::onNavBarShareIconClicked,
+            onHomeButtonClicked = viewModel::onHomeButtonClicked
+        )
     }
 }

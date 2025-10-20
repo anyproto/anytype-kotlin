@@ -27,6 +27,7 @@ object ObjectTypeIds {
     const val SPACE = "ot-space"
     const val CHAT_DERIVED = "ot-chatDerived"
     const val CHAT = "ot-chat"
+    const val PROJECT = "ot-project"
 
     const val DEFAULT_OBJECT_TYPE = PAGE
 

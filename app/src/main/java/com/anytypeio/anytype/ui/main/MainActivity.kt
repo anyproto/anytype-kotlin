@@ -61,7 +61,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
@@ -229,7 +229,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     controller.popBackStack(R.id.vaultScreen, false)
                                     controller.navigate(
                                         R.id.actionOpenSpaceFromVault,
-                                        HomeScreenFragment.args(
+                                        WidgetsScreenFragment.args(
                                             space = command.space,
                                             deeplink = null
                                         )
@@ -265,7 +265,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             } else {
                                                 controller.navigate(
                                                     R.id.actionOpenSpaceFromVault,
-                                                    HomeScreenFragment.args(
+                                                    WidgetsScreenFragment.args(
                                                         space = command.space,
                                                         deeplink = null
                                                     )
@@ -724,7 +724,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     findNavController(R.id.fragment).popBackStack(R.id.vaultScreen, false)
                     findNavController(R.id.fragment).navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = command.space.id,
                             deeplink = null
                         )

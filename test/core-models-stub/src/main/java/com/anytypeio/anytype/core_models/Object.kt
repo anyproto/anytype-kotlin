@@ -110,7 +110,8 @@ fun StubObjectType(
     recommendedHiddenRelations: List<String> = emptyList(),
     recommendedFeaturedRelations: List<String> = emptyList(),
     recommendedFileRelations: List<String> = emptyList(),
-    space: Id? = null
+    space: Id? = null,
+    orderId: String? = null
 ): ObjectWrapper.Type = ObjectWrapper.Type(
     map = mapOf(
         Relations.ID to id,
@@ -131,6 +132,7 @@ fun StubObjectType(
         Relations.RECOMMENDED_HIDDEN_RELATIONS to recommendedHiddenRelations,
         Relations.RECOMMENDED_FEATURED_RELATIONS to recommendedFeaturedRelations,
         Relations.RECOMMENDED_FILE_RELATIONS to recommendedFileRelations,
-        Relations.SPACE_ID to space
+        Relations.SPACE_ID to space,
+        Relations.ORDER_ID to orderId
     )
 )

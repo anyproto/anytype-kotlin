@@ -198,9 +198,9 @@
 
     <fragment
         android:id="@+id/homeScreen"
-        android:name="com.anytypeio.anytype.ui.home.HomeScreenFragment"
-        android:label="Home screen"
-        tools:layout="@layout/fragment_home">
+        android:name="com.anytypeio.anytype.ui.home.WidgetsScreenFragment"
+        android:label="Widgets screen"
+        tools:layout="@layout/fragment_widgets">
         <action
             android:id="@+id/action_open_space_settings"
             app:destination="@id/spaceSettingsScreen" />

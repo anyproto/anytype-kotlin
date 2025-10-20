@@ -135,6 +135,8 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
@@ -268,10 +270,14 @@ class HomeScreenViewModel(
     // Separate StateFlows for pinned and type widgets
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
+
+    // Drag-and-drop state tracking for type widgets
+    private var pendingTypeWidgetOrder: List<Id>? = null
 
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
@@ -310,6 +316,32 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Exposed flow for bin widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val binView: StateFlow<WidgetView?> = binWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for bin widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for collapsed sections
+    val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
+        .map { it.toSet() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptySet()
         )
 
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
@@ -709,7 +741,6 @@ class HomeScreenViewModel(
                     val allWidgets = sections.pinnedWidgets + sections.typeWidgets
                     val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
                         allWidgets
-                            .filter { it !is Widget.Section }
                             .any { widget ->
                                 widget.id == widgetId && widget.source is Widget.Source.Default &&
                                         (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
@@ -727,13 +758,15 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
                     pinnedWidgets.value = sections.pinnedWidgets
                     typeWidgets.value = sections.typeWidgets
+                    binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
                     typeWidgets.value = emptyList()
+                    binWidget.value = null
                 }
             }
         }
@@ -1206,6 +1239,17 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onBinWidgetClicked() {
+        viewModelScope.launch {
+            navigation(
+                ExpandWidget(
+                    subscription = Subscription.Bin,
+                    space = vmParams.spaceId.id
+                )
+            )
+        }
+    }
+
     fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
         when (action) {
             DropDownMenuAction.ChangeWidgetType -> {
@@ -1399,8 +1443,6 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
-        is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
-        is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
@@ -1700,7 +1742,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onMove(views: List<WidgetView>, from: Int, to: Int) {
+    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
@@ -1731,24 +1773,7 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Handles reordering of pinned widgets
-     */
-    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
-        // Pinned widgets support full drag-and-drop reordering
-        onMove(views, from, to)
-    }
-
-    /**
-     * Handles reordering of type widgets
-     * Note: Type widgets have system-managed ordering, so this might be restricted
-     */
-    fun onMoveTypes(views: List<WidgetView>, from: Int, to: Int) {
-        // For now, type widgets also support reordering
-        // In the future, this could be restricted or handled differently
-        onMove(views, from, to)
-    }
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithSettingUpShortcuts() {
         spaceManager
             .observe()
@@ -2048,7 +2073,6 @@ class HomeScreenViewModel(
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
             val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
-                if (widget is Widget.Section) return@mapNotNull null
                 if (widget.source is Widget.Source.Bundled)
                     widget.source.id
                 else
@@ -2683,85 +2707,41 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Handles section header clicks to collapse/expand all widgets in the section
-     */
-    fun onSectionClicked(sectionId: Id) {
+    fun onSectionPinnedClicked() {
         viewModelScope.launch {
-            when (sectionId) {
-                Widget.Source.SECTION_OBJECT_TYPE -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_PINNED)
 
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all type widgets
-                        collapseAllObjectTypeWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
-                Widget.Source.SECTION_PINNED -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
-
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all pinned widgets
-                        collapseAllPinnedWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_PINNED)
+            } else {
+                currentCollapsedSections.plus(SECTION_PINNED)
             }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
         }
     }
 
-    /**
-     * Collapses all ObjectType widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllObjectTypeWidgets() {
-        val currentWidgets = currentWidgets.orEmpty()
-        val objectTypeWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.TYPES
+    fun onSectionTypesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_OBJECT_TYPE)
+            } else {
+                currentCollapsedSections.plus(SECTION_OBJECT_TYPE)
             }
-            .map { it.id }
 
-        // Remove all ObjectType widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - objectTypeWidgetIds.toSet()
-        saveExpandedWidgetState()
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
     }
-
-    /**
-     * Collapses all Pinned widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllPinnedWidgets() {
-        val currentWidgets = currentWidgets.orEmpty()
-        val pinnedWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.PINNED
-            }
-            .map { it.id }
-
-        // Remove all Pinned widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - pinnedWidgetIds.toSet()
-        saveExpandedWidgetState()
-    }
-
 
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
     private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
         return when {
-            widget is Widget.Section -> false // Sections themselves are not collapsed by section state
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
@@ -2827,6 +2807,99 @@ class HomeScreenViewModel(
         val expandedIds = expandedWidgetIds.value.toList()
         userSettingsRepository.setExpandedWidgetIds(vmParams.spaceId, expandedIds)
         Timber.d("Saved expanded widget state: ${expandedIds.size} expanded widgets")
+    }
+    //endregion
+
+    //region Type Widget Drag and Drop
+    /**
+     * Called when the order of type widgets changes during a drag operation.
+     *
+     * This method updates the UI state immediately to reflect the new order,
+     * allowing for instant visual feedback during the drag operation.
+     *
+     * @param fromWidgetId The ID of the type widget being dragged from.
+     * @param toWidgetId The ID of the type widget being dragged to.
+     */
+    fun onTypeWidgetOrderChanged(fromWidgetId: String?, toWidgetId: String?) {
+        Timber.d("DROID-3965, onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")
+
+        if (fromWidgetId.isNullOrEmpty() || toWidgetId.isNullOrEmpty()) {
+            Timber.d("DROID-3965, onTypeWidgetOrderChanged: One of the IDs is null or empty, ignoring")
+            return
+        }
+
+        // Mark that we're starting a drag operation if we haven't already
+        if (pendingTypeWidgetOrder == null) {
+            Timber.d("DROID-3965, Starting type widget drag operation")
+        }
+
+        // Filter to only include actual type widgets (exclude sections, bin, etc.)
+        val actualTypeWidgets = typeViews.value
+
+        val from = actualTypeWidgets.indexOfFirst { it.id == fromWidgetId }
+        val to = actualTypeWidgets.indexOfFirst { it.id == toWidgetId }
+
+        if (from == -1 || to == -1 || from == to) {
+            Timber.d("DROID-3965, onTypeWidgetOrderChanged: Invalid indices (from=$from, to=$to), ignoring")
+            return
+        }
+
+        // Store the pending order for persistence on drag end (only actual type widget IDs)
+        val currentOrder = actualTypeWidgets.map { it.id }.toMutableList()
+        val movedItem = currentOrder.removeAt(from)
+        currentOrder.add(to, movedItem)
+
+        pendingTypeWidgetOrder = currentOrder
+
+        Timber.d("DROID-3965, onTypeWidgetOrderChanged: New pending order: ${currentOrder.map { it.takeLast(4) + "..." }}")
+    }
+
+    /**
+     * Called when the drag operation for type widgets ends.
+     *
+     * This method persists the order changes made during the drag operation
+     * using the UpdateObjectTypesOrderIds use case and resets the local state.
+     */
+    fun onTypeWidgetDragEnd() {
+        Timber.d("DROID-3965, onTypeWidgetDragEnd called")
+
+        // Persist the order changes made during the drag operation
+        pendingTypeWidgetOrder?.let { newOrder ->
+            viewModelScope.launch {
+                Timber.d("DROID-3965, Persisting type widget order: ${newOrder.map { it.takeLast(4) + "..." }}")
+
+                updateObjectTypesOrderIds.async(
+                    UpdateObjectTypesOrderIds.Params(
+                        spaceId = vmParams.spaceId,
+                        orderedIds = newOrder
+                    )
+                ).fold(
+                    onFailure = { error ->
+                        Timber.e(error, "DROID-3965, Failed to reorder type widgets: $newOrder")
+                        clearTypeWidgetDragState()
+                    },
+                    onSuccess = { finalOrder ->
+                        Timber.d("DROID-3965, Successfully reordered type widgets with final order: $finalOrder")
+                        clearTypeWidgetDragState()
+                    }
+                )
+            }
+        } ?: run {
+            Timber.d("DROID-3965, No pending type widget order changes, clearing drag state")
+            clearTypeWidgetDragState()
+        }
+    }
+
+    /**
+     * Clears the drag-and-drop state for type widgets.
+     *
+     * This method is called at the end of a drag-and-drop operation, regardless of whether
+     * the operation was successful or failed. It ensures that the local state is reset
+     * to avoid inconsistencies in subsequent drag-and-drop actions.
+     */
+    private fun clearTypeWidgetDragState() {
+        Timber.d("DROID-3965, Clearing type widget drag state")
+        pendingTypeWidgetOrder = null
     }
     //endregion
 

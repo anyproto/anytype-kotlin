@@ -46,7 +46,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.common.TypedViewState
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel.ErrorView
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.notifications.NotificationPermissionPromptDialog
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -316,7 +316,7 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
                     findNavController().popBackStack(R.id.vaultScreen, false)
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = command.space.id,
                             deeplink = null
                         )

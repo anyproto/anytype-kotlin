@@ -50,8 +50,8 @@ fun Messages(
     onMentionClicked: (Id) -> Unit,
     onScrollToReplyClicked: (Id) -> Unit,
     onHighlightMessage: (Id) -> Unit,
-    onEmptyStateAction: () -> Unit,
-    canCreateInviteLink: Boolean = false,
+    onAddMembersClick: () -> Unit,
+    onShowQRCodeClick: () -> Unit,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     highlightedMessageId: Id?
@@ -214,8 +214,8 @@ fun Messages(
                 item {
                     EmptyState(
                         modifier = Modifier.fillParentMaxSize(),
-                        canCreateInviteLink = canCreateInviteLink,
-                        onAction = onEmptyStateAction
+                        onAddMembersClick = onAddMembersClick,
+                        onShowQRCodeClick = onShowQRCodeClick
                     )
                 }
             }

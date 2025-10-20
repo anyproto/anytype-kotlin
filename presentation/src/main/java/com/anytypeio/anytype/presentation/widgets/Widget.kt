@@ -119,33 +119,13 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
-    sealed class Section : Widget() {
-        data class Pinned(
-            override val id: Id = SECTION_PINNED,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.PINNED
-        ) : Section()
-
-        data class ObjectType(
-            override val id: Id = SECTION_OBJECT_TYPE,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.TYPES
-        ) : Section()
-    }
-
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon = ObjectIcon.None,
-        override val sectionType: SectionType = SectionType.TYPES
+        override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
     sealed class Source {
@@ -403,14 +383,16 @@ data class WidgetUiParams(
 )
 
 /**
- * Result of building widgets, separated into pinned and type sections.
+ * Result of building widgets, separated into pinned, type sections, and bin widget.
  *
- * @property pinnedWidgets Widgets from the pinned section (user-arranged, including chat)
- * @property typeWidgets Widgets from the object type section (system-generated, including bin)
+ * @property pinnedWidgets Widgets from the pinned section (user-arranged, excluded chat widgets)
+ * @property typeWidgets Widgets from the object type section
+ * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
-    val typeWidgets: List<Widget>
+    val typeWidgets: List<Widget>,
+    val binWidget: Widget.Bin? = null
 )
 
 suspend fun buildWidgetSections(
@@ -440,9 +422,15 @@ suspend fun buildWidgetSections(
         isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
     )
 
+    val binWidget = buildBinWidget(
+        state = state,
+        params = params
+    )
+
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
-        typeWidgets = typeWidgets
+        typeWidgets = typeWidgets,
+        binWidget = binWidget
     )
 }
 
@@ -456,15 +444,6 @@ private suspend fun buildPinnedSection(
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<Widget> = buildList {
-    // Space chat widget for Shared Data Spaces
-    val spaceChatId = state.config.spaceChatId
-    if (!spaceChatId.isNullOrEmpty()
-        && spaceView.isShared
-        && spaceView.spaceUxType != SpaceUxType.CHAT
-    ) {
-        add(Widget.Chat(config = state.config))
-    }
-
     // Pinned widgets (from blocks)
     val userPinnedWidgets = state.obj.blocks.parseWidgets(
         root = state.obj.root,
@@ -477,9 +456,6 @@ private suspend fun buildPinnedSection(
     }
 
     if (userPinnedWidgets.isNotEmpty()) {
-        // Always add section header
-        add(Widget.Section.Pinned(config = state.config))
-
         // Add widgets only if section is expanded
         if (!isPinnedSectionCollapsed) {
             addAll(userPinnedWidgets)
@@ -488,7 +464,7 @@ private suspend fun buildPinnedSection(
 }
 
 /**
- * Builds the object type widgets section including type widgets and bin.
+ * Builds the object type widgets section.
  */
 private suspend fun buildTypeSection(
     state: ObjectViewState.Success,
@@ -497,8 +473,6 @@ private suspend fun buildTypeSection(
     storeOfObjectTypes: StoreOfObjectTypes,
     isChatSpace: Boolean
 ): List<Widget> = buildList {
-    // Always add section header
-    add(Widget.Section.ObjectType(config = state.config))
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
@@ -510,23 +484,25 @@ private suspend fun buildTypeSection(
             isChatSpace = isChatSpace
         )
         addAll(types)
-
-        // Add bin widget for owners/editors
-        if (params.isOwnerOrEditor) {
-            add(
-                Widget.Bin(
-                    id = WIDGET_BIN_ID,
-                    source = Widget.Source.Bundled.Bin,
-                    config = state.config,
-                    icon = ObjectIcon.None,
-                    sectionType = SectionType.TYPES
-                )
-            )
-        }
-
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
     } else {
         Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+    }
+}
+
+private fun buildBinWidget(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams
+): Widget.Bin? {
+    return if (params.isOwnerOrEditor) {
+        Widget.Bin(
+            id = WIDGET_BIN_ID,
+            source = Widget.Source.Bundled.Bin,
+            config = state.config,
+            icon = ObjectIcon.None
+        )
+    } else {
+        null
     }
 }
 

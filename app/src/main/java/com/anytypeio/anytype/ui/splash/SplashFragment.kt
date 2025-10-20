@@ -31,7 +31,7 @@ import com.anytypeio.anytype.presentation.splash.SplashViewModelFactory
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.onboarding.OnboardingFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -139,7 +139,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
             is SplashViewModel.Command.NavigateToWidgets -> {
                 nav.safeNavigateOrLog(
                     id = R.id.homeScreen,
-                    args = HomeScreenFragment.args(
+                    args = WidgetsScreenFragment.args(
                         deeplink = command.deeplink,
                         space = command.space
                     ),
@@ -322,7 +322,7 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         if (chat.isNullOrBlank()) {
             nav.safeNavigateOrLog(
                 id = R.id.homeScreen,
-                args = HomeScreenFragment.args(deeplink = null, space = space)
+                args = WidgetsScreenFragment.args(deeplink = null, space = space)
             )
         } else {
             nav.safeNavigateOrLog(

@@ -15,7 +15,7 @@ import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
@@ -146,7 +146,7 @@ class Navigator : AppNavigation {
         if (popped == false) {
             navController?.navigate(
                 R.id.homeScreen,
-                HomeScreenFragment.args(space = space)
+                WidgetsScreenFragment.args(space = space)
             )
         }
     }
@@ -159,7 +159,7 @@ class Navigator : AppNavigation {
         if (popped == false) {
             navController?.navigate(
                 R.id.homeScreen,
-                HomeScreenFragment.args(space = space)
+                WidgetsScreenFragment.args(space = space)
             )
         }
     }

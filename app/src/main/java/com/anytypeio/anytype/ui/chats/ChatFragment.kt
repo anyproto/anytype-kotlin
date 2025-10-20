@@ -65,7 +65,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -311,7 +311,7 @@ class ChatFragment : Fragment() {
                         runCatching {
                             findNavController().navigate(
                                 R.id.actionOpenWidgetsFromChat,
-                                args = HomeScreenFragment.args(
+                                args = WidgetsScreenFragment.args(
                                     space = space,
                                     deeplink = null
                                 )

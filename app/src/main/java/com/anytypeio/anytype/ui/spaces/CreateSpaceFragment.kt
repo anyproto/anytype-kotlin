@@ -25,10 +25,9 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import timber.log.Timber
@@ -107,7 +106,7 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                                     // For regular spaces, use existing navigation logic
                                     findNavController().navigate(
                                         R.id.actionOpenSpaceFromVault,
-                                        args = HomeScreenFragment.args(
+                                        args = WidgetsScreenFragment.args(
                                             space = command.space.id,
                                             deeplink = null
                                         )

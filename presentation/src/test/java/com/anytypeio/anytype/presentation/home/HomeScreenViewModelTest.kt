@@ -346,7 +346,6 @@ class HomeScreenViewModelTest {
         fieldParser =
             FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         typeWidgets = buildList {
-            add(WidgetView.Section.ObjectTypes)
             add(
                 WidgetView.SetOfObjects(
                     id = objectTypePage.id,
@@ -572,7 +571,6 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
 
-                    add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -690,7 +688,6 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
 
-                    add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Tree(
                             id = widgetBlock.id,
@@ -824,7 +821,6 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
 
-                    add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -939,7 +935,6 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
 
-                    add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.SetOfObjects(
                             id = widgetBlock.id,
@@ -1140,8 +1135,6 @@ class HomeScreenViewModelTest {
 
                 assertEquals(
                     expected = buildList {
-
-                        add(WidgetView.Section.Pinned)
                         add(
                             WidgetView.Tree(
                                 id = favoriteWidgetBlock.id,
@@ -1291,7 +1284,6 @@ class HomeScreenViewModelTest {
             assertEquals(
                 expected = buildList {
 
-                    add(WidgetView.Section.Pinned)
                     add(
                         WidgetView.Link(
                             id = widgetBlock.id,

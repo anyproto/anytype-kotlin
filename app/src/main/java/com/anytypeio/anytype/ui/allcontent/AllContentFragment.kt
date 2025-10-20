@@ -33,7 +33,7 @@ import com.anytypeio.anytype.feature_allcontent.ui.AllContentWrapperScreen
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.base.navigation
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
@@ -298,7 +298,7 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                         runCatching {
                             findNavController().navigate(
                                 R.id.actionExitToSpaceWidgets,
-                                HomeScreenFragment.args(space = space)
+                                WidgetsScreenFragment.args(space = space)
                             )
                         }.onFailure {
                             Timber.e(it, "Error while opening space switcher from all-content screen")

@@ -86,7 +86,9 @@ fun LazyListScope.renderWidgetSection(
         when (item) {
             is WidgetView.Tree -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
@@ -144,7 +146,9 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.Link -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType, item.source) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
@@ -193,7 +197,9 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.SetOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
@@ -251,7 +257,9 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.Gallery -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
@@ -309,7 +317,9 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.ListOfObjects -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(
@@ -376,7 +386,9 @@ fun LazyListScope.renderWidgetSection(
 
             is WidgetView.AllContent -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
-                val menuItems = item.getWidgetMenuItems()
+                val menuItems = remember(item.id, item.sectionType) {
+                    item.getWidgetMenuItems()
+                }
                 val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
 
                 ReorderableItem(

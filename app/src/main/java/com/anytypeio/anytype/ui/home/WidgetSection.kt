@@ -80,7 +80,7 @@ fun LazyListScope.renderWidgetSection(
     itemsIndexed(
         items = widgets,
         key = { _, item -> item.id },
-        contentType = { _, item -> sectionType } // Optimize recompositions based on item type
+        contentType = { _, item -> sectionType }
     ) { index, item ->
         val animateItemModifier = Modifier.animateItem()
         when (item) {

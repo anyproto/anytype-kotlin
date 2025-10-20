@@ -838,7 +838,7 @@
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>
     <string name="create_space_change_icon">Wijzig icoon</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Gespreksnaam</string>
     <string name="create_space_space_name">Naam ruimte</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
@@ -1973,7 +1973,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_incorrect_permissions">Je hebt niet de benodigde machtigingen. Neem contact op met de eigenaar van de ruimte voor ondersteuning.</string>
     <string name="share_space_error_no_such_space">        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
     </string>
-    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
     <string name="wallpaper_item_space_icon_color">Standaardkleur</string>
     <string name="publish_to_web">Publiceer op het internet</string>
     <string name="preferences">Voorkeuren</string>

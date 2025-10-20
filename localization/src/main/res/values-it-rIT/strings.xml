@@ -838,7 +838,7 @@
     <string name="create_space">Crea spazio</string>
     <string name="create_chat">Crea una chat</string>
     <string name="create_space_change_icon">Cambia icona</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Nome chat</string>
     <string name="create_space_space_name">Nome dello Spazio</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipo</string>
@@ -1974,7 +1974,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
-    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>

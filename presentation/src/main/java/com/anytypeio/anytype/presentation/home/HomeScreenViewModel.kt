@@ -1742,7 +1742,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onMove(views: List<WidgetView>, from: Int, to: Int) {
+    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
@@ -1773,50 +1773,7 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Handles reordering of pinned widgets
-     */
-    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
-        // Pinned widgets support full drag-and-drop reordering
-        onMove(views, from, to)
-    }
-
-    /**
-     * Handles reordering of type widgets.
-     *
-     * After UI refactoring, this method now receives a list containing ONLY type widgets
-     * (not a combined list with pinned widgets). The indices are already relative to
-     * the type widgets list, so no filtering or index adjustment is needed.
-     *
-     * @param views The list of type widgets after the drag operation (already filtered)
-     * @param from The original index of the dragged widget (relative to type widgets list)
-     * @param to The new index of the dragged widget (relative to type widgets list)
-     */
-    fun onMoveTypes(views: List<WidgetView>, from: Int, to: Int) {
-        Timber.d("DROID-3965, onMoveTypes called: from=$from, to=$to, views.size=${views.size}")
-
-        // Validate indices
-        if (from < 0 || from >= views.size || to < 0 || to >= views.size) {
-            Timber.w("DROID-3965, Invalid drag indices: from=$from, to=$to, views.size=${views.size}")
-            return
-        }
-
-        if (from == to) {
-            Timber.d("DROID-3965, No reordering needed, from == to")
-            return
-        }
-
-        // Extract the new order directly from the views list
-        // The views list already reflects the new order after the drag operation
-        val newOrder = views.map { it.id }
-
-        Timber.d("DROID-3965, Reordering type widgets from index $from to $to")
-        Timber.d("DROID-3965, New order after drag: ${newOrder.map { it.takeLast(4) + "..." }}")
-
-        // Store the pending order and persist it
-        pendingTypeWidgetOrder = newOrder
-    }
-
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithSettingUpShortcuts() {
         spaceManager
             .observe()

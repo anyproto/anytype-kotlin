@@ -285,20 +285,18 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
             buildList {
                 // TYPES widgets only show menu if they can create objects
                 if (canCreateObjectOfType) {
-                    listOf(CreateObjectOfType(id))
-                } else {
-                    emptyList()
+                    add(CreateObjectOfType(id))
                 }
             }
         }
         null -> {
             // No section type means no menu
-            emptyList()
+            emptyList<WidgetMenuItem>()
         }
 
         SectionType.NONE -> {
             // No section means no menu
-            emptyList()
+            emptyList<WidgetMenuItem>()
         }
     }
     return menuItems

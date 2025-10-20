@@ -2876,7 +2876,6 @@ class HomeScreenViewModel(
                 ).fold(
                     onFailure = { error ->
                         Timber.e(error, "DROID-3965, Failed to reorder type widgets: $newOrder")
-                        // Could emit error to UI here if needed
                         clearTypeWidgetDragState()
                     },
                     onSuccess = { finalOrder ->
@@ -2886,7 +2885,6 @@ class HomeScreenViewModel(
                 )
             }
         } ?: run {
-            // No pending order changes, just clear drag state
             Timber.d("DROID-3965, No pending type widget order changes, clearing drag state")
             clearTypeWidgetDragState()
         }

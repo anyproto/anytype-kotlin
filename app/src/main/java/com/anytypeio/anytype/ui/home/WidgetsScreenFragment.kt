@@ -48,7 +48,7 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
-import com.anytypeio.anytype.ui.multiplayer.QrCodeScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment

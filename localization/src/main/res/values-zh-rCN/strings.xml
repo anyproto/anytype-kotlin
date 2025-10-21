@@ -1678,8 +1678,13 @@
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_title">尚无消息</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
+    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_show_qr_button">显示二维码</string>
     <string name="chat_empty_state_share_invite_button">邀请成员</string>
     <string name="write_a_message">写点什么...</string>
     <string name="date_layout_mentioned_in">提及</string>

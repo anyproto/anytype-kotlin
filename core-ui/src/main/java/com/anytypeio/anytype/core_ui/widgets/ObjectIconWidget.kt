@@ -68,6 +68,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageSize, DEFAULT_SIZE)
         val checkboxSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_checkboxSize, DEFAULT_SIZE)
+        val hasEmojiContainer =
+            attrs.getBoolean(R.styleable.ObjectIconWidget_hasEmojiContainer, false)
 
         ivEmoji.updateLayoutParams<LayoutParams> {
             this.height = emojiSize
@@ -102,12 +104,19 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         isImageWithCorners =
             attrs.getBoolean(R.styleable.ObjectIconWidget_isImageWithCorners, false)
+
+        if (hasEmojiContainer) {
+            emojiContainer.visibility = View.VISIBLE
+            emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+        } else {
+            emojiContainer.visibility = View.INVISIBLE
+        }
+
         attrs.recycle()
     }
 
     fun setIcon(icon: ObjectIcon) {
         // Reset backgrounds
-        binding.emojiContainer.background = null
         binding.ivImage.background = null
 
         when (icon) {
@@ -216,7 +225,6 @@ class ObjectIconWidget @JvmOverloads constructor(
         emoji: String?,
         fallback: ObjectIcon.TypeIcon.Fallback
     ) {
-        binding.emojiContainer.background = null
         if (!emoji.isNullOrBlank()) {
             with(binding) {
                 ivCheckbox.invisible()

@@ -206,7 +206,7 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
     private suspend fun observeCommands(
         showNotificationPermissionDialog: MutableState<Boolean>,
         showWallpaperPicker: MutableState<Boolean>
-        ) {
+    ) {
         vm.commands.collect { command ->
             when (command) {
                 is Command.ShareSpaceDebug -> {

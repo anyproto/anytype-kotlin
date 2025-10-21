@@ -1916,9 +1916,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">Not now</string>
     <string name="vault_create_chat">New Chat</string>
-    <string name="vault_create_chat_description">For real-time conversations</string>
+    <string name="vault_create_chat_description">Group chat with content organization</string>
     <string name="vault_create_space">New Space</string>
-    <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_space_description">Hub for advanced data management</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>

@@ -1698,7 +1698,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_empty_state_title">Henüz mesaj yok</string>
     <string name="chat_empty_state_subtitle">İnsanları davet edin ve sohbete başlayın!</string>
     <string name="chat_empty_state_feature_yours_forever">Sonsuza kadar sizin</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Mesajlar, belgeler &amp; dosyalar çevrimdışı kullanılabilir</string>
     <string name="chat_empty_state_feature_encrypted">Tamamen gizli ve şifreli</string>
     <string name="chat_empty_state_add_members_button">Üye ekle</string>
     <string name="chat_empty_state_show_qr_button">Kare kodu göster</string>

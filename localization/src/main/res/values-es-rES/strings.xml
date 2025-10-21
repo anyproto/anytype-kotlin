@@ -1695,8 +1695,13 @@ En concreto,
     <string name="chats_edit_message">Editar mensaje</string>
     <string name="chats_message_edited">editado</string>
     <string name="chat_empty_state_message">Aún no hay ningún mensaje.\nPuedes escribir tú el primero.</string>
-    <string name="chat_empty_state_title">Este chat está vacío.</string>
+    <string name="chat_empty_state_title">Chat fuera de la nube</string>
     <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
+    <string name="chat_empty_state_feature_yours_forever">Tuyo para siempre</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Completamente privado y cifrado</string>
+    <string name="chat_empty_state_add_members_button">Añadir miembros</string>
+    <string name="chat_empty_state_show_qr_button">Mostrar el código QR</string>
     <string name="chat_empty_state_share_invite_button">Invitar a miembros</string>
     <string name="write_a_message">Escribir mensaje…</string>
     <string name="date_layout_mentioned_in">Menciones</string>

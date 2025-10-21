@@ -196,7 +196,6 @@ class ChatViewModel @Inject constructor(
                     HeaderView.Default(
                         title = view.name.orEmpty(),
                         icon = view.spaceIcon(builder = urlBuilder),
-                        showIcon = true,
                         isMuted = isMuted
                     )
                 }.collect {
@@ -1467,6 +1466,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onInviteMembersClicked() {
+        Timber.d("onInviteMembersClicked")
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
+        }
+    }
+
     fun onMediaPreview(objects: List<Id>, index: Int) {
         Timber.d("onMediaPreview, objects: $objects")
         viewModelScope.launch {
@@ -1875,7 +1881,6 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val showIcon: Boolean,
             val isMuted: Boolean = false
         ) : HeaderView()
     }

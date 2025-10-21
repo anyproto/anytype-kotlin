@@ -16,6 +16,8 @@ import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -154,7 +156,12 @@ private fun SpacePlaceholder(
             fontFamily = fontInterRegular,
             fontWeight = FontWeight.W600,
             textAlign = TextAlign.Center,
-            color = colorResource(iconColor.resLightInt())
+            color = colorResource(iconColor.resLightInt()),
+            style = TextStyle(
+                platformStyle = PlatformTextStyle(
+                    includeFontPadding = false
+                )
+            )
         )
     }
 }
@@ -165,7 +172,7 @@ private fun SpacePlaceholder(
 private fun SpaceIconViewPreview() {
     SpaceIconView(
         icon = SpaceIconView.ChatSpace.Placeholder(
-            name = "U",
+            name = "MCS",
             color = SystemColor.YELLOW
         ),
         onSpaceIconClick = {}

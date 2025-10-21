@@ -128,7 +128,8 @@ class ChatFragment : Fragment() {
                         header = vm.header.collectAsStateWithLifecycle().value,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
-                        onSpaceIconClicked = vm::onSpaceIconClicked
+                        onSpaceIconClicked = vm::onSpaceIconClicked,
+                        onInviteMembersClicked = vm::onInviteMembersClicked,
                     )
                 }
             ) { paddingValues ->

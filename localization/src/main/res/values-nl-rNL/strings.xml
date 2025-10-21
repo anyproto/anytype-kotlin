@@ -1695,8 +1695,13 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
-    <string name="chat_empty_state_title">Deze chat is leeg.</string>
+    <string name="chat_empty_state_title">Nog geen berichten</string>
     <string name="chat_empty_state_subtitle">Nodig mensen uit en start het gesprek!</string>
+    <string name="chat_empty_state_feature_yours_forever">Voor altijd van jou</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Volledig privé en versleuteld</string>
+    <string name="chat_empty_state_add_members_button">Voeg leden toe</string>
+    <string name="chat_empty_state_show_qr_button">Toon QR-code</string>
     <string name="chat_empty_state_share_invite_button">Nodig leden uit</string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>

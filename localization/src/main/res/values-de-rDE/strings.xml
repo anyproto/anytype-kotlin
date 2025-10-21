@@ -1695,8 +1695,13 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
-    <string name="chat_empty_state_title">Dieser Chat ist leer.</string>
+    <string name="chat_empty_state_title">Noch keine Nachrichten</string>
     <string name="chat_empty_state_subtitle">Lade Leute ein und beginne die Konversation!</string>
+    <string name="chat_empty_state_feature_yours_forever">Für immer deins</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Vollständig privat und verschlüsselt</string>
+    <string name="chat_empty_state_add_members_button">Mitglieder hinzufügen</string>
+    <string name="chat_empty_state_show_qr_button">QR-Code anzeigen</string>
     <string name="chat_empty_state_share_invite_button">Mitglieder einladen</string>
     <string name="write_a_message">Eine Nachricht schreiben...</string>
     <string name="date_layout_mentioned_in">Erwähnungen</string>

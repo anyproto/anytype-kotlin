@@ -1698,7 +1698,7 @@ En concreto,
     <string name="chat_empty_state_title">Chat fuera de la nube</string>
     <string name="chat_empty_state_subtitle">¡Invita a alguien y empezad a conversar!</string>
     <string name="chat_empty_state_feature_yours_forever">Tuyo para siempre</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Mensajes, documentos y archivos disponibles sin conexión</string>
     <string name="chat_empty_state_feature_encrypted">Completamente privado y cifrado</string>
     <string name="chat_empty_state_add_members_button">Añadir miembros</string>
     <string name="chat_empty_state_show_qr_button">Mostrar el código QR</string>

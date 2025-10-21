@@ -166,7 +166,6 @@ private fun SpacePlaceholder(
                     trim = LineHeightStyle.Trim.Both
                 )
             ),
-            lineHeight = fontSize,
             letterSpacing = 0.sp
         )
     }

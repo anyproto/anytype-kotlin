@@ -62,7 +62,8 @@ fun ChatTopToolbar(
     ) {
         Image(
             modifier = Modifier
-                .size(52.dp)
+                .height(52.dp)
+                .width(56.dp)
                 .noRippleClickable {
                     onBackButtonClicked()
                 },

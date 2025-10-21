@@ -1682,8 +1682,13 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chats_edit_message">Suting pesan</string>
     <string name="chats_message_edited">disunting</string>
     <string name="chat_empty_state_message">Belum ada pesan.\nJadilah yang memulai diskusi!</string>
-    <string name="chat_empty_state_title">Obrolan ini kosong.</string>
+    <string name="chat_empty_state_title">Belum ada pesan</string>
     <string name="chat_empty_state_subtitle">Undang orang-orang dan mulai obrolannya!</string>
+    <string name="chat_empty_state_feature_yours_forever">Milikmu selamanya</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Sepenuhnya pribadi dan terenkripsi</string>
+    <string name="chat_empty_state_add_members_button">Tambahkan anggota</string>
+    <string name="chat_empty_state_show_qr_button">Tampilkan kode QR</string>
     <string name="chat_empty_state_share_invite_button">Undang anggota</string>
     <string name="write_a_message">Tulis pesan …</string>
     <string name="date_layout_mentioned_in">Sebutan</string>

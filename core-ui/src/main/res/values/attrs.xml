@@ -10,6 +10,7 @@
         <attr name="initialTextSize" format="dimension" />
         <attr name="imageCornerRadius" format="dimension" />
         <attr name="isImageWithCorners" format="boolean" />
+        <attr name="hasEmojiContainer" format="boolean" />
     </declare-styleable>
     <declare-styleable name="ObjectIconTextWidget">
         <attr name="nameTextSize" format="dimension" />

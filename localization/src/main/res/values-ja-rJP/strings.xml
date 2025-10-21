@@ -1683,8 +1683,13 @@
     <string name="chats_edit_message">メッセージを編集</string>
     <string name="chats_message_edited">編集済み</string>
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
-    <string name="chat_empty_state_title">まだメッセージがありません。</string>
+    <string name="chat_empty_state_title">まだメッセージはありません</string>
     <string name="chat_empty_state_subtitle">招待して会話を始めましょう！</string>
+    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
+    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_show_qr_button">QRコードを表示</string>
     <string name="chat_empty_state_share_invite_button">メンバーを招待</string>
     <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>

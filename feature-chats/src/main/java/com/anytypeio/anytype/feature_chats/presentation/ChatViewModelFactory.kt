@@ -10,6 +10,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
 import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -57,7 +59,9 @@ class ChatViewModelFactory @Inject constructor(
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceInviteLinkStore: SpaceInviteLinkStore,
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -87,6 +91,8 @@ class ChatViewModelFactory @Inject constructor(
         getObject = getObject,
         analytics = analytics,
         preloadFile = preloadFile,
-        discardPreloadedFile = discardPreloadedFile
+        discardPreloadedFile = discardPreloadedFile,
+        spaceInviteLinkStore = spaceInviteLinkStore,
+        getCurrentInviteAccessLevel = getCurrentInviteAccessLevel
     ) as T
 }

@@ -42,6 +42,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -127,7 +128,8 @@ class ChatFragment : Fragment() {
                         header = vm.header.collectAsStateWithLifecycle().value,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
-                        onSpaceIconClicked = vm::onSpaceIconClicked
+                        onSpaceIconClicked = vm::onSpaceIconClicked,
+                        onInviteMembersClicked = vm::onInviteMembersClicked,
                     )
                 }
             ) { paddingValues ->
@@ -439,6 +441,11 @@ class ChatFragment : Fragment() {
                 }
             }
         }
+        ShareSpaceQrCodeScreen(
+            qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value,
+            onShareLinkClicked = vm::onShareInviteLink,
+            onHideQrCodeScreen = vm::onHideQRCodeScreen
+        )
         BackHandler {
             vm.onBackButtonPressed()
         }

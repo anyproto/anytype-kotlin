@@ -106,6 +106,8 @@ fun ChatTopToolbar(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val isMuted = header is ChatViewModel.HeaderView.Default && header.isMuted
+
             Text(
                 text = when (header) {
                     is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
@@ -118,9 +120,10 @@ fun ChatTopToolbar(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                style = Title1
+                style = Title1,
+                modifier = if (isMuted) Modifier.weight(1f, fill = false) else Modifier
             )
-            if (header is ChatViewModel.HeaderView.Default && header.isMuted) {
+            if (isMuted) {
                 Spacer(modifier = Modifier.width(6.dp))
                 Image(
                     modifier = Modifier.size(18.dp),

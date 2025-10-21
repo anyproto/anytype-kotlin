@@ -1724,8 +1724,13 @@
     <string name="chats_edit_message">Редактировать сообщение</string>
     <string name="chats_message_edited">отредактировано</string>
     <string name="chat_empty_state_message">Пока нет сообщений. \nБудьте первыми, кто начнет обсуждение.</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_title">No messages yet</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
+    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_show_qr_button">Показать QR-код</string>
     <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Напишите сообщение...</string>
     <string name="date_layout_mentioned_in">Упоминания</string>

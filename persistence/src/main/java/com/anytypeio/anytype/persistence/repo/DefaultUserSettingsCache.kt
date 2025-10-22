@@ -182,6 +182,10 @@ class DefaultUserSettingsCache(
                     Wallpaper.Default
                 }
             }
+            .catch { e ->
+                Timber.e(e, "Error observing wallpaper for space $space, emitting default")
+                emit(Wallpaper.Default)
+            }
     }
 
     override suspend fun getWallpaper(space: Id): Wallpaper {
@@ -311,6 +315,10 @@ class DefaultUserSettingsCache(
                 preferences
                     .preferences[space.id]
                     ?.pinnedObjectTypeIds?.map { id -> TypeId(id) } ?: emptyList()
+            }
+            .catch { e ->
+                Timber.e(e, "Error fetching pinned object types for space ${space.id}")
+                emit(emptyList())
             }
     }
 
@@ -472,6 +480,13 @@ class DefaultUserSettingsCache(
                     dateFormat = curr.dateFormat ?: appDefaultDateFormatProvider.provide()
                 )
             }
+            .catch { e ->
+                Timber.e(e, "Error observing vault settings for account ${account.id}, emitting defaults")
+                emit(VaultSettings(
+                    isRelativeDates = DEFAULT_RELATIVE_DATES,
+                    dateFormat = appDefaultDateFormatProvider.provide()
+                ))
+            }
     }
 
     override suspend fun setRelativeDates(account: Account, enabled: Boolean) {
@@ -520,6 +535,10 @@ class DefaultUserSettingsCache(
                 } else {
                     emptyList()
                 }
+            }
+            .catch { e ->
+                Timber.e(e, "Error observing recently used chat reactions for account ${account.id}")
+                emit(emptyList())
             }
     }
 

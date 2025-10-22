@@ -16,6 +16,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -98,9 +100,12 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
             }
         }
 
+        val locale = LocalConfiguration.current.locales.get(0)
+
         NewSpaceSettingsScreen(
             uiState = vm.uiState.collectAsStateWithLifecycle().value,
             uiWallpaperState = vm.spaceWallpapers.collectAsStateWithLifecycle().value,
+            locale = locale,
             uiEvent = vm::onUiEvent
         )
 

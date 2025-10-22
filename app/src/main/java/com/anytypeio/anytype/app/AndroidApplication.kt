@@ -119,6 +119,13 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
             localNetworkAddressHandler.start()
             discoveryManager.setup()
             Timber.d("Local network address handler setup completed")
+        } catch (e: NoClassDefFoundError) {
+            // Service class initialization failed (likely fdsan/getaddrinfo crash in Go middleware)
+            // This can happen on Android 14+ with certain OEM devices (e.g., Realme)
+            Timber.e(e, "Go middleware Service class failed to initialize - P2P discovery disabled")
+        } catch (e: UnsatisfiedLinkError) {
+            // Native library loading failed
+            Timber.e(e, "Failed to load native library - P2P discovery disabled")
         } catch (e: Exception) {
             // Gracefully handle failures - app can continue without P2P discovery
             Timber.e(e, "Failed to setup local network address handler - P2P discovery will be limited")

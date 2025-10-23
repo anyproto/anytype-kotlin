@@ -2921,7 +2921,7 @@ class HomeScreenViewModel(
 
     /**
      * Activates the event lock for type widgets to prevent race conditions.
-     * Should be called after sending a drag-and-drop order change to middleware.
+     * Should be called before sending a drag-and-drop order change to middleware.
      */
     private fun activateTypeWidgetEventLock() {
         typeWidgetEventLockTimestamp = System.currentTimeMillis()

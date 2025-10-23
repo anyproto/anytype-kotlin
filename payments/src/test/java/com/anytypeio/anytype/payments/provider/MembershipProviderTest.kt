@@ -81,7 +81,7 @@ class MembershipProviderTest {
 
                 val dateEnds = 432331231L
                 val membership = StubMembership(dateEnds = dateEnds)
-                val tierData = StubMembershipTierData()
+                val tierData = StubMembershipTierData(androidProductId = "test.product.id")
                 val tierData2 = StubMembershipTierData(isTest = true)
 
                 val event1 = Membership.Event(StubMembership(dateEnds = dateEnds))

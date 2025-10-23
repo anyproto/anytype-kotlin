@@ -247,7 +247,9 @@ fun WidgetsScreen(
             if (BuildConfig.DEBUG) {
                 item {
                     Box(
-                        modifier = Modifier.fillMaxWidth().height(64.dp),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
                         contentAlignment = Alignment.Center
                     ) {
                         AddWidgetButton(

@@ -79,19 +79,10 @@ fun AddWidgetButton(modifier: Modifier, onAddWidgetClicked: () -> Unit) {
     Box(
         modifier = modifier
             .background(
-                shape = RoundedCornerShape(
-                    6.dp
-                ),
+                shape = RoundedCornerShape(6.dp),
                 color = colorResource(R.color.transparent_active)
             )
-            .clip(
-                RoundedCornerShape(
-                    6.dp
-                )
-            )
-            .clickable {
-                onAddWidgetClicked()
-            }
+            .clickable { onAddWidgetClicked() }
     ) {
         Text(
             modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),

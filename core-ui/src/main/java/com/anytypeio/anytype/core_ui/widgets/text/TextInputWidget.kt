@@ -280,8 +280,14 @@ class TextInputWidget : AppCompatEditText {
     }
 
     override fun onTouchEvent(event: MotionEvent?): Boolean {
-        if (hasFocus() && !inReadMode) return super.onTouchEvent(event)
-        return editorTouchProcessor.process(this, event)
+        try {
+            if (hasFocus() && !inReadMode) return super.onTouchEvent(event)
+            return editorTouchProcessor.process(this, event)
+        } catch (e: Exception) {
+            Timber.e(e, "Error processing touch event")
+            return false
+        }
+
     }
 
     override fun onDragEvent(event: DragEvent?): Boolean {

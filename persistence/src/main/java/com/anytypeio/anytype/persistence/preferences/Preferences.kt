@@ -5,12 +5,23 @@ import com.anytypeio.anytype.persistence.SpacePreferences
 import com.anytypeio.anytype.persistence.VaultPreferences
 import java.io.InputStream
 import java.io.OutputStream
+import timber.log.Timber
 
 object SpacePrefSerializer : Serializer<SpacePreferences> {
     override val defaultValue: SpacePreferences = SpacePreferences()
 
     override suspend fun readFrom(input: InputStream): SpacePreferences {
-        return SpacePreferences.ADAPTER.decode(input)
+        return try {
+            SpacePreferences.ADAPTER.decode(input)
+        } catch (e: Exception) {
+            // Handle corrupted protobuf files gracefully
+            // This can happen when:
+            // - File is corrupted
+            // - Schema has changed
+            // - File contains invalid data (e.g., "Unexpected tag 0")
+            Timber.e(e, "Failed to decode SpacePreferences, returning default value")
+            defaultValue
+        }
     }
 
     override suspend fun writeTo(t: SpacePreferences, output: OutputStream) {
@@ -27,7 +38,17 @@ object VaultPrefsSerializer : Serializer<VaultPreferences> {
     )
 
     override suspend fun readFrom(input: InputStream): VaultPreferences {
-        return VaultPreferences.ADAPTER.decode(input)
+        return try {
+            VaultPreferences.ADAPTER.decode(input)
+        } catch (e: Exception) {
+            // Handle corrupted protobuf files gracefully
+            // This can happen when:
+            // - File is corrupted
+            // - Schema has changed
+            // - File contains invalid data (e.g., "Unexpected tag 0")
+            Timber.e(e, "Failed to decode VaultPreferences, returning default value")
+            defaultValue
+        }
     }
 
     override suspend fun writeTo(t: VaultPreferences, output: OutputStream) {

@@ -12,6 +12,7 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import java.util.Locale
 
 @Composable
 @DefaultPreviews
@@ -71,6 +72,7 @@ fun NewSpaceSettingsScreenPreview() {
             WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.PINK.code),
             WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.PURPLE.code),
             WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.RED.code),
-        )
+        ),
+        locale = Locale.getDefault()
     )
 }

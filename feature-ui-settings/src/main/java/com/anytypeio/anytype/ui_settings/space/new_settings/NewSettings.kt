@@ -198,7 +198,6 @@ fun NewSpaceSettingsScreen(
                                     pluralStringResource(
                                         id = R.plurals.multiplayer_number_of_space_members,
                                         item.count,
-                                        item.count,
                                         item.count
                                     )
                                 } else {

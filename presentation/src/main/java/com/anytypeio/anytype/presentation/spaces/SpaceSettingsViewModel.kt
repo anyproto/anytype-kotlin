@@ -997,11 +997,16 @@ class SpaceSettingsViewModel(
      * @param permission The current user's permissions in the space
      * @param spaceView The space view data containing space configuration
      * @return true if the change type option should be shown, false otherwise
+     *
+     * upd. 23.10.25 DROID-4088: Disabled for now
      */
     internal fun shouldShowChangeTypeOption(
         permission: SpaceMemberPermissions?,
         spaceView: ObjectWrapper.SpaceView
     ): Boolean {
+        //DROID-4088: Disable changing space type for now
+        return false
+
         return permission?.isOwner() == true
             && spaceView.spaceUxType != null
             && spaceView.spaceAccessType == SpaceAccessType.SHARED

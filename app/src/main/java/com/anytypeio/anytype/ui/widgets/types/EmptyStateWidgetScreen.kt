@@ -74,6 +74,34 @@ fun EmptyStateWidgetScreen(
     }
 }
 
+@Composable
+fun AddWidgetButton(modifier: Modifier, onAddWidgetClicked: () -> Unit) {
+    Box(
+        modifier = modifier
+            .background(
+                shape = RoundedCornerShape(
+                    6.dp
+                ),
+                color = colorResource(R.color.transparent_active)
+            )
+            .clip(
+                RoundedCornerShape(
+                    6.dp
+                )
+            )
+            .clickable {
+                onAddWidgetClicked()
+            }
+    ) {
+        Text(
+            modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+            text = stringResource(R.string.empty_state_add_widget),
+            style = Caption1Medium,
+            color = colorResource(R.color.text_label_inversion)
+        )
+    }
+}
+
 @DefaultPreviews
 @Composable
 fun EmptyStateWidgetScreenPreview() {

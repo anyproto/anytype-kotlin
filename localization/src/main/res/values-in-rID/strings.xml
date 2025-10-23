@@ -1685,7 +1685,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_empty_state_title">Belum ada pesan</string>
     <string name="chat_empty_state_subtitle">Undang orang-orang dan mulai obrolannya!</string>
     <string name="chat_empty_state_feature_yours_forever">Milikmu selamanya</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Pesan, dokumen, dan berkas tersedia di luar jaringan</string>
     <string name="chat_empty_state_feature_encrypted">Sepenuhnya pribadi dan terenkripsi</string>
     <string name="chat_empty_state_add_members_button">Tambahkan anggota</string>
     <string name="chat_empty_state_show_qr_button">Tampilkan kode QR</string>

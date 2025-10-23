@@ -71,7 +71,9 @@ fun OnboardingSelectionScreen(
         vm.sendAnalyticsOnboardingSelectionScreen()
     }
     var selectedProfession by remember { mutableStateOf<ProfessionItem?>(null) }
-    val shuffledProfessions = remember { professionItems.shuffled() }
+    val shuffledProfessions = remember {
+        professionItems.dropLast(1).shuffled() + professionItems.last()
+    }
 
     Box(
         modifier = Modifier.fillMaxSize()

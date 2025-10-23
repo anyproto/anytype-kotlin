@@ -86,7 +86,15 @@ interface MembershipProvider {
                     events.lastOrNull()?.membership
                 }.filterNotNull()
                 .map { membership ->
-                    val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
+                    val tiers = proceedWithGettingTiers()
+                        .filter { !it.isTest }
+                        .filter { tier ->
+                            // Always show the user's currently active tier
+                            tier.id == membership.tier ||
+                            // Show tiers with androidProductId (purchasable on Play Store)
+                            !tier.androidProductId.isNullOrBlank()
+                        }
+                        .sortedBy { it.id }
                     val newStatus = toMembershipStatus(
                         membership = membership,
                         tiers = tiers
@@ -132,7 +140,6 @@ interface MembershipProvider {
         }
 
         companion object {
-            const val SHOW_TEST_TIERS = false
             const val DATE_FORMAT = "d MMM yyyy"
         }
     }

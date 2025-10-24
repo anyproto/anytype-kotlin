@@ -444,7 +444,7 @@ suspend fun buildWidgetSections(
 }
 
 /**
- * Builds the space chat widget for shared data spaces.
+ * Builds the space chat widget for data spaces with chat.
  * Displayed separately at the top, above all sections.
  */
 private fun buildChatWidget(
@@ -453,7 +453,6 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = state.config.spaceChatId
     return if (!spaceChatId.isNullOrEmpty()
-        && spaceView.isShared
         && spaceView.spaceUxType != SpaceUxType.CHAT
     ) {
         Widget.Chat(config = state.config)

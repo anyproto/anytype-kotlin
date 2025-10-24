@@ -155,17 +155,23 @@ fun WidgetsScreen(
             chatWidget?.let { chat ->
                 if (chat is WidgetView.SpaceChat) {
                     item {
-                        SpaceChatWidgetCard(
-                            item = chat,
-                            mode = mode,
-                            unReadMentionCount = chat.unreadMentionCount,
-                            unReadMessageCount = chat.unreadMessageCount,
-                            isMuted = chat.isMuted,
-                            onWidgetClicked = viewModel::onWidgetChatClicked,
-                            onDropDownMenuAction = { action ->
-                                viewModel.onDropDownMenuAction(chat.id, action)
-                            }
-                        )
+                        ReorderableItem(
+                            enabled = false,
+                            state = reorderableState,
+                            key = chat.id,
+                        ) {
+                            SpaceChatWidgetCard(
+                                item = chat,
+                                mode = mode,
+                                unReadMentionCount = chat.unreadMentionCount,
+                                unReadMessageCount = chat.unreadMessageCount,
+                                isMuted = chat.isMuted,
+                                onWidgetClicked = viewModel::onWidgetChatClicked,
+                                onDropDownMenuAction = { action ->
+                                    viewModel.onDropDownMenuAction(chat.id, action)
+                                }
+                            )
+                        }
                     }
                 }
             }

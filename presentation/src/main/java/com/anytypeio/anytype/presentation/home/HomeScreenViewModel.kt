@@ -1178,15 +1178,20 @@ class HomeScreenViewModel(
 
     fun onWidgetChatClicked() {
         Timber.d("onWidgetChatClicked:")
-        val chat = chatView.value?.id ?: return
         viewModelScope.launch {
             val space = vmParams.spaceId.id
-            navigation(
-                OpenChat(
-                    ctx = chat,
-                    space = space
+            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+            val chat = view?.chatId
+            if (chat != null) {
+                navigation(
+                    OpenChat(
+                        ctx = chat,
+                        space = space
+                    )
                 )
-            )
+            } else {
+                Timber.w("Failed to open chat from widget: chat not found")
+            }
         }
     }
 

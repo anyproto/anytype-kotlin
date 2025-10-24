@@ -838,6 +838,8 @@
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>
     <string name="create_space_change_icon">Wijzig icoon</string>
+    <string name="create_space_chat_name">Gespreksnaam</string>
+    <string name="create_space_space_name">Naam ruimte</string>
     <string name="generic_error">Er is iets misgegaan. Probeer het alsjeblieft opnieuw.</string>
     <string name="type">Type</string>
     <string name="format">Formaat</string>
@@ -1693,8 +1695,13 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chats_edit_message">Bericht bewerken</string>
     <string name="chats_message_edited">bewerkt</string>
     <string name="chat_empty_state_message">Er zijn nog geen berichten.\nWees de eerste die een discussie begint.</string>
-    <string name="chat_empty_state_title">Deze chat is leeg.</string>
+    <string name="chat_empty_state_title">Nog geen berichten</string>
     <string name="chat_empty_state_subtitle">Nodig mensen uit en start het gesprek!</string>
+    <string name="chat_empty_state_feature_yours_forever">Voor altijd van jou</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Volledig privé en versleuteld</string>
+    <string name="chat_empty_state_add_members_button">Voeg leden toe</string>
+    <string name="chat_empty_state_show_qr_button">Toon QR-code</string>
     <string name="chat_empty_state_share_invite_button">Nodig leden uit</string>
     <string name="write_a_message">Schrijf een bericht...</string>
     <string name="date_layout_mentioned_in">Vermeldingen</string>
@@ -1912,6 +1919,16 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="vault_create_chat_description">Voor real-time gesprekken</string>
     <string name="vault_create_space">Nieuwe ruimte</string>
     <string name="vault_create_space_description">Voor georganiseerde inhoud en gegevens</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ideeën vereisen gesprekken</string>
+    <string name="spaces_introduction_page1_description">Anytype ondersteunt nu realtime gesprekken in gedeelde kanalen - zodat jullie gedachten en dialogen samen kunnen groeien.</string>
+    <string name="spaces_introduction_page2_title">Jouw kluis is net een stap omhoog gegaan</string>
+    <string name="spaces_introduction_page2_description">Ruimten en gesprekken tonen nu live previews en updates - één plaats om alles te volgen wat belangrijk is.</string>
+    <string name="spaces_introduction_page3_title">Gesprekken die meer doen</string>
+    <string name="spaces_introduction_page3_description">Deel ideeën, deponeer documenten, bewerk samen - alles stroomt in realtime.</string>
+    <string name="spaces_introduction_page4_title">Alles op de juiste plaats</string>
+    <string name="spaces_introduction_page4_description">Jouw pagina\'s, lijsten en bestanden — gestructureerd, ondergebracht en altijd binnen handbereik.</string>
+    <string name="spaces_introduction_try_it">Laten we het proberen!</string>
     <string name="vault_empty_state_text">Er zijn nog geen ruimten</string>
     <string name="vault_empty_search_state_text">Geen overeenkomsten gevonden</string>
     <string name="chat_new_messages_section_text">Nieuwe berichten</string>
@@ -1961,7 +1978,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_incorrect_permissions">Je hebt niet de benodigde machtigingen. Neem contact op met de eigenaar van de ruimte voor ondersteuning.</string>
     <string name="share_space_error_no_such_space">        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
     </string>
-    <string name="private_local_yours_forever">Privé, lokaal, voor altijd van jou</string>
+    <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
     <string name="wallpaper_item_space_icon_color">Standaardkleur</string>
     <string name="publish_to_web">Publiceer op het internet</string>
     <string name="preferences">Voorkeuren</string>

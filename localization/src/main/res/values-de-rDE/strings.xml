@@ -785,7 +785,7 @@
     <string name="without_template">Ohne Vorlage</string>
     <string name="unsplash_generic_error">Fehler beim Suchen nach Bildern auf Unsplash. Bitte versuche es später erneut.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Vergiss nicht, deinen Schlüssel aus den Einstellungen zu entnehmen und zu speichern</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Entsperre dein Objekt, um eine neue Eigenschaft hinzuzufügen</string>
     <string name="unlock_your_object_to_edit_relations">Entsperre dein Objekt, um Beziehungen zu bearbeiten</string>
     <string name="fragment_relation_create_from_scratch_title">Eigenschaftstyp auswählen</string>
     <string name="fragment_dashboard_restore">Wiederherstellen</string>
@@ -838,6 +838,8 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Chat erstellen</string>
     <string name="create_space_change_icon">Symbol ändern</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">Space-Name</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
     <string name="format">Format</string>
@@ -957,7 +959,7 @@
     <string name="slash_widget_background_item">%1$ser Hintergrund</string>
     <!-- Onboarding: persona selection & use cases (iOS parity) -->
     <string name="onboarding_selection_title">Erzähl uns etwas über dich</string>
-    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <string name="onboarding_selection_description">Wähle eine Rolle oder einen Hintergrund aus, der am besten zu dir passt</string>
     <!-- Persona options -->
     <string name="onboarding_selection_artist">Künstler(in) / Medienschaffender</string>
     <string name="onboarding_selection_consultant">Berater(in)</string>
@@ -972,7 +974,7 @@
     <string name="onboarding_selection_other">Weitere</string>
     <!-- Use case options -->
     <string name="onboarding_usecase_title">Wofür möchtest du Anytype verwenden?</string>
-    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
+    <string name="onboarding_usecase_description">Wähle einen Anwendungsfall aus, der am besten zu dir passt</string>
     <string name="onboarding_usecase_habit_tracking">Gewohnheitsverfolgung</string>
     <string name="onboarding_usecase_knowledge">Persönliche Wissensdatenbank / PKM</string>
     <string name="onboarding_usecase_life_planning">Lebensplanung</string>
@@ -1025,8 +1027,8 @@
     <string name="library_relations_empty">Es gibt keinen Typen namens „%1$s“</string>
     <string name="library_type_added">Typ „%1$s“ zu deiner Bibliothek hinzugefügt\"</string>
     <string name="library_type_removed">Typ „%1$s“ aus der Bibliothek entfernt\"</string>
-    <string name="library_relation_added">Property `%1$s` added to your library\"</string>
-    <string name="library_relation_removed">Property `%1$s` removed from your library\"</string>
+    <string name="library_relation_added">Eigenschaft `%1$s` zu deiner Bibliothek hinzugefügt“</string>
+    <string name="library_relation_removed">Eigenschaft `%1$s` aus deiner Bibliothek entfernt“</string>
     <string name="library_something_went_wrong">Es ist ein Fehler aufgetreten. Bitte versuchen Sie es später erneut.</string>
     <string name="type_creation_new_type">Neuer Typ</string>
     <string name="type_creation_done">Fertig</string>
@@ -1049,7 +1051,7 @@
     <string name="onboarding_void_title">Das ist dein Void</string>
     <string name="onboarding_void_description">Es ist ein verschlüsselter Ort für alles, was du erstellst. Alles wird auf deinem Gerät gespeichert und im dezentralen Netzwerk gesichert.</string>
     <string name="onboarding_this_is_your_key_title">Dies ist dein Schlüssel</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Er ersetzt Benutzerabfrage und Passwort. Bewahre ihn sicher auf — nur du bist für deine Daten verantwortlich. Du findest diesen Schlüssel später in den App-Einstellungen.</string>
     <string name="onboarding_show_my_key">Meinen Schlüssel anzeigen</string>
     <string name="onboarding_tap_to_reveal">Enthüllen und kopieren</string>
     <string name="onboarding_key_skip">Überspringen</string>
@@ -1067,11 +1069,11 @@
     <string name="onboarding_key_additional_info">Du findest diesen Schlüssel später in den App-Einstellungen</string>
     <string name="onboarding_what_is_the_key">Wie der Schlüssel funktioniert?</string>
     <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
-    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
+    <string name="onboarding_recovery_phrase_description">Dein Schlüssel wird durch eine Wiederherstellungsphrase dargestellt — 12 zufällige Wörter, die deinen Tresor auf diesem Gerät generieren.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Wer den Schlüssel hat, hat Zugang</string>
-    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
+    <string name="onboarding_recovery_phrase_description_2">Jeder, der diese Wörter kennt, kann auf deinen Tresor zugreifen. Im Moment bist du die einzige Person auf der Welt, die sie kennt.</string>
     <string name="onboarding_recovery_phrase_description_3_title">Nur du bist dafür verantwortlich</string>
-    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
+    <string name="onboarding_recovery_phrase_description_3">Alle Computerressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du deinen Schlüssel verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn an einem sicheren Ort auf — in einem Passwort-Manager oder schriftlich auf Papier.</string>
     <string name="onboarding_recovery_phrase_description_4">Alle Rechenressourcen der Welt reichen nicht aus, um ihn zu knacken. Wenn du ihn verlierst, kann er nicht wiederhergestellt werden. Bewahre ihn also an einem sicheren Ort auf!</string>
     <string name="onboarding_how_to_save_my_phrase">Wie speicher ich meinen Schlüssel?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Am einfachsten speicherst du deinen Schlüssel in einem Password Manager</string>
@@ -1251,7 +1253,7 @@
     <string name="multiplayer_request_to_join_sent_title">Anfrage gesendet</string>
     <string name="multiplayer_request_to_join_sent_description">Sie erhalten eine Benachrichtigung, wenn der Spacebesitzer Ihre Anfrage angenommen hat.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Spaces verwalten</string>
-    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
+    <string name="multiplayer_request_to_join_loading_text"> Bitte bleib dran — wir richten alles für dich ein. Das sollte nur einen Moment dauern.</string>
     <string name="multiplayer_space_request_to_join">Beitrittsanfrage stellen</string>
     <string name="multiplayer_space_request_to_join_msg">Sie wurden eingeladen, dem Space %1$s, erstellt von %2$s beizutreten. Senden Sie eine Anfrage, damit der Spacebesitzer Sie einladen kann.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tippen, um deinen Kommentar zu schreiben</string>
@@ -1517,7 +1519,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_alert_error_internal">Es ist ein interner Fehler aufgetreten. Unser Team wurde benachrichtigt.</string>
     <string name="notifications_alert_error_no_objects_to_import">Keine Objekte zum Importieren gefunden. Bitte wähle gültige Objekte für den Import aus.</string>
     <string name="notifications_alert_error_import_canceled">Der Importvorgang wurde vom Benutzer abgebrochen.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">Das Importlimit für Zeilen oder Eigenschaften wurde überschritten. Bitte reduziere die Anzahl und versuche es erneut.</string>
     <string name="notifications_alert_error_file_load">Es ist ein Fehler beim Laden der Datei aufgetreten. Bitte überprüfe die Datei und versuche es erneut.</string>
     <string name="notifications_alert_error_insufficient_permissions">Du hast nicht die notwendigen Berechtigungen zum Durchführen dieser Aktion. Bitte überprüfe deine Berechtigungen und versuche es erneut.</string>
     <!-- Gallery Experience -->
@@ -1583,7 +1585,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="error_login_account_deleted_error">Dieses Konto wurde gelöscht. Versuche es mit einem anderen Konto oder erstelle ein neues.</string>
     <string name="error_login_account_need_update_error">Konto kann nicht abgerufen werden. Bitte aktualisiere Anytype auf die neueste Version.</string>
     <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
-    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
+    <string name="error_network_error">Netzwerkfehler aufgetreten. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="error_offline_device">Dein Gerät scheint offline zu sein. Bitte verbinde dich mit dem Internet und versuche es erneut.</string>
     <string name="global_search_related_to">"Zugehörig zu: "</string>
     <string name="global_search_no_related_objects_found">Keine zugehörigen Objekte gefunden</string>
@@ -1693,8 +1695,13 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chats_edit_message">Nachricht bearbeiten</string>
     <string name="chats_message_edited">bearbeitet</string>
     <string name="chat_empty_state_message">Es gibt noch keine Nachrichten.\nSei der Erste, der eine Diskussion beginnt.</string>
-    <string name="chat_empty_state_title">Dieser Chat ist leer.</string>
-    <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_title">Noch keine Nachrichten</string>
+    <string name="chat_empty_state_subtitle">Lade Leute ein und beginne die Konversation!</string>
+    <string name="chat_empty_state_feature_yours_forever">Für immer deins</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Vollständig privat und verschlüsselt</string>
+    <string name="chat_empty_state_add_members_button">Mitglieder hinzufügen</string>
+    <string name="chat_empty_state_show_qr_button">QR-Code anzeigen</string>
     <string name="chat_empty_state_share_invite_button">Mitglieder einladen</string>
     <string name="write_a_message">Eine Nachricht schreiben...</string>
     <string name="date_layout_mentioned_in">Erwähnungen</string>
@@ -1874,7 +1881,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_conflict_menu_item_title">Resolve layout conflict</string>
     <string name="widget_source_suggested">Vorgeschlagen</string>
     <string name="widgets_empty_state_message">Es gibt noch keine Widgets</string>
-    <string name="space_settings_auto_create_widgets">Auto Create Widgets</string>
+    <string name="space_settings_auto_create_widgets">Widgets automatisch erstellen</string>
     <string name="space_types_screen_title">Objekttypen</string>
     <string name="space_types_screen_section_my_types">Meine Typen</string>
     <string name="space_types_screen_section_system_types">Systemtypen</string>
@@ -1892,9 +1899,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
     <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
     <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
-    <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>
-    <string name="onboarding_error_config_file_network_id_mismatch">Network configuration mismatch. Please check your network settings.</string>
+    <string name="onboarding_error_config_file_not_found">Konfigurationsdatei nicht gefunden. Bitte die App neu installieren.</string>
+    <string name="onboarding_error_config_file_invalid">Ungültige Konfigurationsdatei. Bitte die App neu installieren.</string>
+    <string name="onboarding_error_config_file_network_id_mismatch">Netzwerkkonfiguration stimmt nicht überein. Bitte überprüfe deine Netzwerkeinstellungen.</string>
     <string name="onboarding_set_your_name_title">Add Your Name</string>
     <string name="onboarding_soul_creation_description">Only seen by people you share something with. There is no central registry for these names.</string>
     <string name="onboarding_email_add_title">Bleib auf dem Laufenden</string>
@@ -1912,6 +1919,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ideas need conversations</string>
+    <string name="spaces_introduction_page1_description">Anytype unterstützt jetzt Echtzeit-Chats in geteilten Kanälen — so können eure Gedanken und Dialoge gemeinsam wachsen.</string>
+    <string name="spaces_introduction_page2_title">Dein Tresor ist gerade aufgestiegen</string>
+    <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
+    <string name="spaces_introduction_page3_title">Chats, die mehr können</string>
+    <string name="spaces_introduction_page3_description">Ideen teilen, Dokumente ablegen, gemeinsam bearbeiten — alles läuft in Echtzeit ab.</string>
+    <string name="spaces_introduction_page4_title">Alles an seinem richtigen Platz</string>
+    <string name="spaces_introduction_page4_description">Deine Seiten, Listen und Dateien — strukturiert, übersichtlich und immer griffbereit.</string>
+    <string name="spaces_introduction_try_it">Let\'s try it</string>
     <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">Keine Übereinstimmungen gefunden</string>
     <string name="chat_new_messages_section_text">Neue Nachrichten</string>
@@ -1932,7 +1949,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="vault_space_settings">Space Settings</string>
     <string name="notification_settings_title">Benachrichtigungen</string>
     <string name="notification_settings_disabled">Benachrichtigungen sind deaktiviert</string>
-    <string name="notification_settings_disabled_subtitle">Receive notifications about new messages by enabling them in your device settings.</string>
+    <string name="notification_settings_disabled_subtitle">Erhalte Benachrichtigungen über neue Nachrichten, indem du diese in deinen Geräteeinstellungen aktivierst.</string>
     <string name="notification_settings_button_open">Einstellungen öffnen</string>
     <string name="notification_settings_state_title">Mitteilungsbenachrichtigungen</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
@@ -1942,12 +1959,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
     <string name="vault_qr_scan_error_title">QR-Code konnte nicht gescannt werden</string>
-    <string name="vault_qr_scan_error_description">Make sure it\'s clearly visible and try again.</string>
+    <string name="vault_qr_scan_error_description">Stelle sicher, dass es deutlich sichtbar ist und versuche es erneut.</string>
     <string name="vault_qr_invalid_title">Ungültiger QR-Code</string>
-    <string name="vault_qr_invalid_description">The scanned QR code doesn\'t match any valid invitation. Please check it and try again.</string>
+    <string name="vault_qr_invalid_description">Der gescannte QR-Code entspricht keiner gültigen Einladung. Bitte überprüfe ihn und versuche es erneut.</string>
     <string name="vault_qr_try_again">Erneut versuchen</string>
     <string name="camera_permission_required_title">Kameraberechtigung erforderlich</string>
-    <string name="camera_permission_rationale_message">To scan QR codes, Anytype needs access to your camera. This permission is only used for scanning QR codes.</string>
+    <string name="camera_permission_rationale_message">Um QR-Codes zu scannen, benötigt Anytype Zugriff auf deine Kamera. Diese Berechtigung wird ausschließlich zum Scannen von QR-Codes verwendet.</string>
     <string name="camera_permission_settings_message">To scan QR codes, you need to allow camera access in your device settings.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="allow">Zulassen</string>
@@ -1961,7 +1978,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="private_local_yours_forever">Privat, lokal, für immer deins</string>
+    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>
@@ -1992,9 +2009,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
     <string name="space_settings_space_type_chat_title">Kanaltyp</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
-    <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
+    <string name="space_settings_space_type_chat_descr">Gruppenchat mit geteilten Daten. Am besten geeignet für kleine Gruppen oder eine einzelne fortlaufende Konversation.</string>
     <string name="space_settings_space_type_space_item_title">Space</string>
-    <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
+    <string name="space_settings_space_type_space_descr">Hub für fortgeschrittene Datenverwaltung. Mehrfach-Chats nach Thema bald verfügbar. Ideal für größere Teams.</string>
     <string name="alert_change_space_type_title">Kanaltyp konvertieren?</string>
     <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
     <string name="alert_change_space_type_button">Ja, konvertieren</string>

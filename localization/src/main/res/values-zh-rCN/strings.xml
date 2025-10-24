@@ -836,6 +836,8 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">更改图标</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">空间名称</string>
     <string name="generic_error">出错了，请再试一次。</string>
     <string name="type">类型</string>
     <string name="format">格式</string>
@@ -1676,8 +1678,13 @@
     <string name="chats_edit_message">编辑消息</string>
     <string name="chats_message_edited">已编辑</string>
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
-    <string name="chat_empty_state_title">This chat is empty.</string>
+    <string name="chat_empty_state_title">尚无消息</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
+    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
+    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_show_qr_button">显示二维码</string>
     <string name="chat_empty_state_share_invite_button">邀请成员</string>
     <string name="write_a_message">写点什么...</string>
     <string name="date_layout_mentioned_in">提及</string>
@@ -1895,6 +1902,16 @@
     <string name="vault_create_chat_description">实时对话</string>
     <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">用于有组织的内容与数据</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ideas need conversations</string>
+    <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
+    <string name="spaces_introduction_page2_title">Your Vault just leveled up</string>
+    <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
+    <string name="spaces_introduction_page3_title">Chats that do more</string>
+    <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
+    <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
+    <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
+    <string name="spaces_introduction_try_it">Let\'s try it</string>
     <string name="vault_empty_state_text">还没有空间</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
@@ -1944,7 +1961,7 @@
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">首选项</string>

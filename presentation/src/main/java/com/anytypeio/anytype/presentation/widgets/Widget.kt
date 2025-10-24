@@ -453,7 +453,6 @@ private fun buildChatWidget(
 ): Widget.Chat? {
     val spaceChatId = state.config.spaceChatId
     return if (!spaceChatId.isNullOrEmpty()
-        && spaceView.isShared
         && spaceView.spaceUxType != SpaceUxType.CHAT
     ) {
         Widget.Chat(config = state.config)

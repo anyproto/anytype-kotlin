@@ -34,6 +34,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -49,6 +50,7 @@ fun WidgetsScreen(
     val hapticFeedback = rememberReorderHapticFeedback()
 
     val mode = viewModel.mode.collectAsState().value
+    val chatWidget = viewModel.chatView.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
@@ -148,6 +150,31 @@ fun WidgetsScreen(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            // Chat widget
+            chatWidget?.let { chat ->
+                if (chat is WidgetView.SpaceChat) {
+                    item {
+                        ReorderableItem(
+                            enabled = false,
+                            state = reorderableState,
+                            key = chat.id,
+                        ) {
+                            SpaceChatWidgetCard(
+                                item = chat,
+                                mode = mode,
+                                unReadMentionCount = chat.unreadMentionCount,
+                                unReadMessageCount = chat.unreadMessageCount,
+                                isMuted = chat.isMuted,
+                                onWidgetClicked = viewModel::onWidgetChatClicked,
+                                onDropDownMenuAction = { action ->
+                                    viewModel.onDropDownMenuAction(chat.id, action)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
 
             // Only show pinned section header if there are items or section is collapsed
             if (shouldShowPinnedHeader) {

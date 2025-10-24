@@ -267,7 +267,8 @@ class HomeScreenViewModel(
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    // Separate StateFlows for pinned and type widgets
+    // Separate StateFlows for different widget sections
+    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -322,6 +323,23 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Exposed flow for space chat widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatView: StateFlow<WidgetView?> = chatWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for chat widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -769,9 +787,10 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = (if (sections.chatWidget != null) 1 else 0) + sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: chat=${sections.chatWidget != null}, pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
 
+                    chatWidget.value = sections.chatWidget
                     pinnedWidgets.value = sections.pinnedWidgets
 
                     // Check event lock before updating type widgets to prevent race conditions during DnD
@@ -783,6 +802,7 @@ class HomeScreenViewModel(
 
                     binWidget.value = sections.binWidget
                 } else {
+                    chatWidget.value = null
                     pinnedWidgets.value = emptyList()
 
                     // Check event lock before clearing type widgets
@@ -1153,6 +1173,25 @@ class HomeScreenViewModel(
                     Timber.e(it, "Error while toggling object checkbox state")
                 }
             )
+        }
+    }
+
+    fun onWidgetChatClicked() {
+        Timber.d("onWidgetChatClicked:")
+        viewModelScope.launch {
+            val space = vmParams.spaceId.id
+            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+            val chat = view?.chatId
+            if (chat != null) {
+                navigation(
+                    OpenChat(
+                        ctx = chat,
+                        space = space
+                    )
+                )
+            } else {
+                Timber.w("Failed to open chat from widget: chat not found")
+            }
         }
     }
 

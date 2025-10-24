@@ -444,7 +444,7 @@ suspend fun buildWidgetSections(
 }
 
 /**
- * Builds the space chat widget for shared data spaces.
+ * Builds the space chat widget for data spaces with chat.
  * Displayed separately at the top, above all sections.
  */
 private fun buildChatWidget(

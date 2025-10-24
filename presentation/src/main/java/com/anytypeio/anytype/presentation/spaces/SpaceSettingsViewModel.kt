@@ -261,14 +261,12 @@ class SpaceSettingsViewModel(
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
+                // Calculate active members count (excluding JOINING) and limits state
                 val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.toSpaceMemberView(
-                        spaceView = spaceView,
-                        urlBuilder = urlBuilder,
-                        isCurrentUserOwner = permission?.isOwner() == true,
-                        account = account,
-                        stringResourceProvider = stringResourceProvider
-                    ).size to spaceView.spaceLimitsState(
+                    // Count only ACTIVE members for display
+                    val activeMemberCount = spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
+
+                    activeMemberCount to spaceView.spaceLimitsState(
                         spaceMembers = spaceMembers.members,
                         isCurrentUserOwner = permission?.isOwner() == true,
                         sharedSpaceCount = sharedSpaceCount,
@@ -278,6 +276,7 @@ class SpaceSettingsViewModel(
                     0 to SpaceLimitsState.Init
                 }
 
+                // Count members with JOINING status (pending join requests)
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
                 } else {
@@ -331,7 +330,8 @@ class SpaceSettingsViewModel(
 
                     if (spaceView.isPossibleToShare) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
-                        val membersCountWithColor = permission?.isOwner() == true
+                        // Show colored badge when owner has pending join requests
+                        val membersCountWithColor = permission?.isOwner() == true && requests > 0
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))

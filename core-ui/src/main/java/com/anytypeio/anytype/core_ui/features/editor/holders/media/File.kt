@@ -86,22 +86,41 @@ class File(val binding: ItemBlockFileBinding) : Media(binding.root), Decoratable
         val spannableText = SpannableStringBuilder("${name.text}")
         spannableText.removeSpans<SearchHighlightSpan>()
         spannableText.removeSpans<SearchTargetHighlightSpan>()
+
+        val textLength = spannableText.length
+
         field.highlights.forEach { highlight ->
-            spannableText.setSpan(
-                SearchHighlightSpan(),
-                highlight.first,
-                highlight.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            // Validate span bounds before applying
+            if (highlight.first >= 0 &&
+                highlight.last <= textLength &&
+                highlight.first <= highlight.last) {
+                spannableText.setSpan(
+                    SearchHighlightSpan(),
+                    highlight.first,
+                    highlight.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            } else {
+                Timber.w("Invalid highlight range [${highlight.first}, ${highlight.last}) for text length $textLength")
+            }
         }
+
         if (field.isTargeted) {
-            spannableText.setSpan(
-                SearchTargetHighlightSpan(),
-                field.target.first,
-                field.target.last,
-                Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
-            )
+            // Validate target span bounds before applying
+            if (field.target.first >= 0 &&
+                field.target.last <= textLength &&
+                field.target.first <= field.target.last) {
+                spannableText.setSpan(
+                    SearchTargetHighlightSpan(),
+                    field.target.first,
+                    field.target.last,
+                    Spannable.SPAN_EXCLUSIVE_EXCLUSIVE
+                )
+            } else {
+                Timber.w("Invalid target range [${field.target.first}, ${field.target.last}) for text length $textLength")
+            }
         }
+
         name.text = spannableText
     }
 

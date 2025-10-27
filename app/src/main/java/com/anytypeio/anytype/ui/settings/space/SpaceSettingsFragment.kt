@@ -16,6 +16,8 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
@@ -41,7 +43,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.SpaceSet
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
-import com.anytypeio.anytype.ui.multiplayer.ShareSpaceQrCodeScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.primitives.SpacePropertiesFragment
@@ -98,9 +100,12 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
             }
         }
 
+        val locale = LocalConfiguration.current.locales.get(0)
+
         NewSpaceSettingsScreen(
             uiState = vm.uiState.collectAsStateWithLifecycle().value,
             uiWallpaperState = vm.spaceWallpapers.collectAsStateWithLifecycle().value,
+            locale = locale,
             uiEvent = vm::onUiEvent
         )
 
@@ -206,7 +211,7 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
     private suspend fun observeCommands(
         showNotificationPermissionDialog: MutableState<Boolean>,
         showWallpaperPicker: MutableState<Boolean>
-        ) {
+    ) {
         vm.commands.collect { command ->
             when (command) {
                 is Command.ShareSpaceDebug -> {

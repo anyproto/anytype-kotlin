@@ -57,4 +57,16 @@ interface UserSettingsCache {
 
     suspend fun setCollapsedSectionIds(space: SpaceId, sectionIds: List<Id>)
     fun getCollapsedSectionIds(space: SpaceId): Flow<List<Id>>
+
+    suspend fun getHasShownSpacesIntroduction(): Boolean
+    suspend fun setHasShownSpacesIntroduction(hasShown: Boolean)
+    suspend fun getHasSeenCreateSpaceBadge(): Boolean
+    suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean)
+
+    suspend fun getInstalledAtDate(account: Account): Long?
+    suspend fun setInstalledAtDate(account: Account, timestamp: Long)
+    suspend fun getCurrentAppVersion(account: Account): String?
+    suspend fun setCurrentAppVersion(account: Account, version: String)
+    suspend fun getPreviousAppVersion(account: Account): String?
+    suspend fun setPreviousAppVersion(account: Account, version: String)
 }

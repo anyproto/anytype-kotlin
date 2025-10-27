@@ -43,7 +43,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_ui.features.multiplayer.SharedSpacesIncentiveItem
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -60,6 +59,8 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
+import java.util.Locale
+import timber.log.Timber
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -67,6 +68,7 @@ import com.anytypeio.anytype.ui_settings.R
 fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState,
     uiWallpaperState: List<WallpaperView>,
+    locale: Locale?,
     uiEvent: (UiEvent) -> Unit
 ) {
 
@@ -192,17 +194,24 @@ fun NewSpaceSettingsScreen(
                         }
                         is UiSpaceSettingsItem.MembersSmall -> {
                             item {
+                                val text = if (locale != null && item.count > 0) {
+                                    pluralStringResource(
+                                        id = R.plurals.multiplayer_number_of_space_members,
+                                        item.count,
+                                        item.count
+                                    )
+                                } else {
+                                    if (locale == null) {
+                                        Timber.e("Error getting the locale")
+                                    }
+                                    stringResource(id = R.string.three_dots_text_placeholder)
+                                }
                                 Text(
                                     modifier = Modifier
                                         .padding(horizontal = 32.dp)
                                         .fillMaxWidth()
                                         .animateItem(),
-                                    text = pluralStringResource(
-                                        id = R.plurals.multiplayer_number_of_space_members,
-                                        item.count,
-                                        item.count,
-                                        item.count
-                                    ),
+                                    text = text,
                                     style = Caption1Regular,
                                     color = colorResource(id = R.color.text_secondary),
                                     textAlign = TextAlign.Center

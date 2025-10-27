@@ -45,6 +45,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -192,7 +194,8 @@ private fun RowScope.ContentChat(
             TitleRow(
                 modifier = Modifier.weight(1f),
                 message = title,
-                messageTime = messageTime
+                messageTime = messageTime,
+                isMuted = isMuted
             )
 
             // Show pin icon when no content but is pinned
@@ -247,6 +250,7 @@ private fun ChatSubtitleRow(
             inlineContent = inlineContent,
             modifier = Modifier.weight(1f),
             maxLines = 2,
+            lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
             color = colorResource(id = R.color.text_transparent_secondary),
         )
@@ -332,7 +336,8 @@ private fun UnreadIndicatorsRow(
 fun TitleRow(
     modifier: Modifier,
     message: String,
-    messageTime: String?
+    messageTime: String?,
+    isMuted: Boolean?
 ) {
     val density = LocalDensity.current
 
@@ -350,6 +355,15 @@ fun TitleRow(
                     style = BodySemiBold,
                     color = colorResource(id = R.color.text_primary),
                 )
+                // 1: optional muted icon (only if isMuted == true)
+                if (isMuted == true) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_chat_muted_18),
+                        contentDescription = stringResource(R.string.content_desc_muted),
+                        modifier = Modifier.size(18.dp),
+                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
+                    )
+                }
                 // 2: optional time (only if messageTime != null)
                 messageTime?.let {
                     Text(
@@ -361,13 +375,13 @@ fun TitleRow(
             }
         ) { measurables, constraints ->
             // spacing constants in px
-            val iconTextGap = with(density) { 8.dp.roundToPx() }
+            val iconTextGap = with(density) { 4.dp.roundToPx() }
             val textTimeGap = with(density) { 8.dp.roundToPx() }
 
-            // measurables indices:
-            // 0 = text
-            // 1 = icon if isMuted else (possibly) time
-            // last = time only if messageTime != null
+            // measurables indices depend on what's present:
+            // 0 = text (always)
+            // 1 = muted icon (if isMuted == true)
+            // last = time (if messageTime != null)
 
             // 1) Measure time first (if any)
             val timePlaceable = if (messageTime != null) {
@@ -376,12 +390,22 @@ fun TitleRow(
                 )
             } else null
 
+            // 2) Measure muted icon (if present)
+            val mutedIconPlaceable = if (isMuted == true) {
+                measurables[1].measure(
+                    constraints.copy(minWidth = 0, minHeight = 0)
+                )
+            } else null
+
             // 3) Compute reserved width:
             //    time width + gap before time (if time exists)
             //  + icon width + gap before icon (if icon exists)
             val reserved = listOfNotNull(
+                mutedIconPlaceable?.width,
                 timePlaceable?.width
-            ).sum() + (if (timePlaceable != null) textTimeGap else 0)
+            ).sum() +
+            (if (mutedIconPlaceable != null) iconTextGap else 0) +
+            (if (timePlaceable != null) textTimeGap else 0)
 
             // 4) Measure text with remaining width
             val maxTextWidth = (constraints.maxWidth - reserved).coerceAtLeast(0)
@@ -395,18 +419,32 @@ fun TitleRow(
             // 5) Determine row height
             val rowHeight = listOfNotNull(
                 textPlaceable?.height,
+                mutedIconPlaceable?.height,
                 timePlaceable?.height
             ).maxOrNull() ?: 0
 
             // 6) Layout & place children
             layout(constraints.maxWidth, rowHeight) {
-                val textY = (rowHeight - (textPlaceable?.height ?: 0)) / 2
-                textPlaceable?.placeRelative(x = 0, y = textY)
+                var xOffset = 0
 
-                timePlaceable?.let {
-                    val timeY = (rowHeight - it.height) / 2
-                    val timeX = constraints.maxWidth - it.width
-                    it.placeRelative(x = timeX, y = timeY)
+                // Place text
+                val textY = (rowHeight - (textPlaceable?.height ?: 0)) / 2
+                textPlaceable?.placeRelative(x = xOffset, y = textY)
+                xOffset += (textPlaceable?.width ?: 0)
+
+                // Place muted icon after text (if present)
+                mutedIconPlaceable?.let { icon ->
+                    xOffset += iconTextGap
+                    val iconY = (rowHeight - icon.height) / 2
+                    icon.placeRelative(x = xOffset, y = iconY)
+                    xOffset += icon.width
+                }
+
+                // Place time at the end (if present)
+                timePlaceable?.let { time ->
+                    val timeY = (rowHeight - time.height) / 2
+                    val timeX = constraints.maxWidth - time.width
+                    time.placeRelative(x = timeX, y = timeY)
                 }
             }
         }
@@ -421,8 +459,8 @@ private fun buildChatContentWithInlineIcons(
     fallbackSubtitle: String
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
-    val spanTitle2Medium = PreviewTitle2Medium.toSpanStyle()
-    val spanTitle2Regular = PreviewTitle2Regular.toSpanStyle()
+    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
+    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle()
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }

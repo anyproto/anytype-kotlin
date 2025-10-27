@@ -1,74 +1,121 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.feature_chats.R
 
 @Composable
 internal fun EmptyState(
     modifier: Modifier,
-    canCreateInviteLink: Boolean,
-    onAction: () -> Unit
+    onAddMembersClick: () -> Unit,
+    onShowQRCodeClick: () -> Unit
 ) {
     Box(
-        modifier = modifier
+        modifier = modifier,
+        contentAlignment = Alignment.Center
     ) {
         Column(
             modifier = Modifier
-                .align(Alignment.CenterStart)
                 .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Image(
-                modifier = Modifier.size(56.dp),
-                painter = painterResource(id = R.drawable.ic_vault_create_space),
-                contentDescription = "Empty state icon",
-                colorFilter = ColorFilter.tint(colorResource(id = R.color.transparent_inactive))
-            )
             Text(
                 text = stringResource(R.string.chat_empty_state_title),
-                style = BodyRegular,
+                style = BodyBold,
                 color = colorResource(id = R.color.text_primary),
                 textAlign = TextAlign.Center,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            // Feature list
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(top = 10.dp)
-            )
-            Text(
-                text = stringResource(R.string.chat_empty_state_subtitle),
-                style = BodyRegular,
-                color = colorResource(id = R.color.control_transparent_secondary),
-                textAlign = TextAlign.Center,
+                    .padding(top = 22.dp)
+                    .padding(horizontal = 25.dp),
+            ) {
+                FeatureRow(
+                    icon = R.drawable.ic_chat_empty_1,
+                    text = stringResource(R.string.chat_empty_state_feature_yours_forever)
+                )
+                FeatureRow(
+                    icon = R.drawable.ic_chat_empty_2,
+                    text = stringResource(R.string.chat_empty_state_feature_offline),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+                FeatureRow(
+                    icon = R.drawable.ic_chat_empty_3,
+                    text = stringResource(R.string.chat_empty_state_feature_encrypted),
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+
+            // Buttons row
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-            )
-            if (canCreateInviteLink) {
+                    .padding(top = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(8.dp, alignment = Alignment.CenterHorizontally)
+            ) {
                 ButtonPrimary(
-                    text = stringResource(R.string.chat_empty_state_share_invite_button),
-                    onClick = { onAction() },
+                    text = stringResource(R.string.chat_empty_state_add_members_button),
+                    onClick = onAddMembersClick,
                     size = ButtonSize.SmallSecondary,
-                    modifier = Modifier.padding(top = 10.dp)
+                    modifier = Modifier
+                )
+                ButtonPrimary(
+                    text = stringResource(R.string.chat_empty_state_show_qr_button),
+                    onClick = onShowQRCodeClick,
+                    size = ButtonSize.SmallSecondary,
+                    modifier = Modifier
                 )
             }
         }
+    }
+}
+
+@Composable
+private fun FeatureRow(
+    icon: Int,
+    text: String,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier.fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Start
+    ) {
+        Image(
+            painter = painterResource(icon),
+            modifier = Modifier.padding(end = 12.dp),
+            contentDescription = null
+        )
+        Text(
+            text = text,
+            style = PreviewTitle2Regular,
+            color = colorResource(id = R.color.text_primary)
+        )
     }
 }
 
@@ -88,4 +135,22 @@ internal fun LoadingState(
             color = colorResource(R.color.text_secondary)
         )
     }
+}
+
+@Preview(name = "Empty State", showBackground = true)
+@Composable
+private fun EmptyStatePreview() {
+    EmptyState(
+        modifier = Modifier.fillMaxWidth(),
+        onAddMembersClick = {},
+        onShowQRCodeClick = {}
+    )
+}
+
+@Preview(name = "Loading State", showBackground = true)
+@Composable
+private fun LoadingStatePreview() {
+    LoadingState(
+        modifier = Modifier.fillMaxWidth()
+    )
 }

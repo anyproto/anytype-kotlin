@@ -29,7 +29,6 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
-import com.anytypeio.anytype.presentation.widgets.WidgetView.Section
 import com.anytypeio.anytype.presentation.widgets.WidgetView.SetOfObjects
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -81,10 +80,6 @@ class DataViewListWidgetContainer(
         val isCompact: Boolean,
         val dvFingerprint: String = ""
     )
-
-    init {
-        Timber.d("Creating DataViewListWidgetContainer for widget with id ${widget.id}")
-    }
 
     /**
      * Reactive flow that emits widget view states based on session activity and collapsed state.
@@ -571,9 +566,6 @@ class DataViewListWidgetContainer(
                     )
                 }
             }
-
-            is Widget.Section.ObjectType -> Section.ObjectTypes
-            is Widget.Section.Pinned -> Section.Pinned
 
             else -> {
                 throw IllegalStateException("Incompatible widget type.")

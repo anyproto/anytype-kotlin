@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.core_models
 
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
@@ -109,7 +110,8 @@ fun StubSpaceView(
     spaceUxType: SpaceUxType? = SpaceUxType.DATA,
     spaceOrder: String? = null,
     createdDate: Double = MockDataFactory.randomLong().toDouble(),
-    spaceJoinDate: Double = MockDataFactory.randomLong().toDouble()
+    spaceJoinDate: Double = MockDataFactory.randomLong().toDouble(),
+    spacePushNotificationMode: NotificationState? = null
 ) = ObjectWrapper.SpaceView(
     map = mapOf(
         Relations.ID to id,
@@ -122,6 +124,7 @@ fun StubSpaceView(
         Relations.SPACE_UX_TYPE to spaceUxType?.code?.toDouble(),
         Relations.SPACE_ORDER to spaceOrder,
         Relations.CREATED_DATE to createdDate,
-        Relations.SPACE_JOIN_DATE to spaceJoinDate
+        Relations.SPACE_JOIN_DATE to spaceJoinDate,
+        Relations.SPACE_PUSH_NOTIFICATION_MODE to spacePushNotificationMode?.code?.toDouble()
     )
 )

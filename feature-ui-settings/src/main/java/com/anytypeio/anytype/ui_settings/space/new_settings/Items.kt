@@ -91,13 +91,21 @@ fun MembersItem(
             errorIcon = R.drawable.ic_counter_error_20
         )
     } else {
-        BaseButton(
-            modifier = modifier,
-            title = stringResource(id = R.string.space_settings_members_button_members),
-            icon = R.drawable.ic_members_24,
-            count = item.count.toString(),
-            countIsColored = item.withColor
-        )
+        if (item.count != null) {
+            BaseButton(
+                modifier = modifier,
+                title = stringResource(id = R.string.space_settings_members_button_members),
+                icon = R.drawable.ic_members_24,
+                count = item.count.toString(),
+                countIsColored = item.withColor
+            )
+        } else {
+            BaseButton(
+                modifier = modifier,
+                title = stringResource(id = R.string.space_settings_members_button_members),
+                icon = R.drawable.ic_members_24
+            )
+        }
     }
 }
 

@@ -83,7 +83,7 @@ import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSe
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingMnemonicViewModel
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingSetProfileNameViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.onboarding.screens.AuthScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signin.RecoveryScreen
 import com.anytypeio.anytype.ui.onboarding.screens.signup.MnemonicPhraseScreenWrapper
@@ -678,7 +678,7 @@ class OnboardingFragment : Fragment() {
                             )
                             findNavController().navigate(
                                 R.id.actionOpenSpaceFromVault,
-                                HomeScreenFragment.args(
+                                WidgetsScreenFragment.args(
                                     space = command.space.id,
                                     deeplink = null
                                 )
@@ -799,7 +799,7 @@ class OnboardingFragment : Fragment() {
                             )
                             findNavController().navigate(
                                 R.id.actionOpenSpaceFromVault,
-                                HomeScreenFragment.args(
+                                WidgetsScreenFragment.args(
                                     space = command.space.id,
                                     deeplink = null
                                 )
@@ -980,7 +980,7 @@ class OnboardingFragment : Fragment() {
                             )
                             findNavController().navigate(
                                 R.id.actionOpenSpaceFromVault,
-                                HomeScreenFragment.args(
+                                WidgetsScreenFragment.args(
                                     space = command.space.id,
                                     deeplink = null
                                 )

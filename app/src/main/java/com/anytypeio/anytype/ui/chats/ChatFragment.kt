@@ -42,6 +42,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -65,7 +66,7 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
@@ -127,7 +128,8 @@ class ChatFragment : Fragment() {
                         header = vm.header.collectAsStateWithLifecycle().value,
                         onBackButtonClicked = vm::onBackButtonPressed,
                         onSpaceNameClicked = vm::onSpaceIconClicked,
-                        onSpaceIconClicked = vm::onSpaceIconClicked
+                        onSpaceIconClicked = vm::onSpaceIconClicked,
+                        onInviteMembersClicked = vm::onInviteMembersClicked,
                     )
                 }
             ) { paddingValues ->
@@ -311,7 +313,7 @@ class ChatFragment : Fragment() {
                         runCatching {
                             findNavController().navigate(
                                 R.id.actionOpenWidgetsFromChat,
-                                args = HomeScreenFragment.args(
+                                args = WidgetsScreenFragment.args(
                                     space = space,
                                     deeplink = null
                                 )
@@ -439,6 +441,11 @@ class ChatFragment : Fragment() {
                 }
             }
         }
+        ShareSpaceQrCodeScreen(
+            qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value,
+            onShareLinkClicked = vm::onShareInviteLink,
+            onHideQrCodeScreen = vm::onHideQRCodeScreen
+        )
         BackHandler {
             vm.onBackButtonPressed()
         }

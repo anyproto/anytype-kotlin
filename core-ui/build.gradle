@@ -27,6 +27,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
+    implementation project(':analytics')
 
     implementation libs.kotlinxSerializationJson
     implementation libs.appcompat
@@ -59,6 +60,7 @@ dependencies {
     implementation libs.coilVideo
     implementation libs.composeConstraintLayout
     implementation libs.composeReorderable
+    implementation libs.composeQrCode
 
     testImplementation libs.fragmentTesting
     testImplementation project(':test:android-utils')

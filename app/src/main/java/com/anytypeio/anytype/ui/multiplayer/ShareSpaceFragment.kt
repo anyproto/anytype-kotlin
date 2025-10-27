@@ -18,6 +18,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.multiplayer.MultiplayerError
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceScreen
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg

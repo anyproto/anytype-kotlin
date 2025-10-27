@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -25,6 +26,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.State
@@ -59,8 +62,10 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonPrimaryLoading
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -71,9 +76,9 @@ fun CreateSpaceScreen(
     onCreate: (Name) -> Unit,
     onSpaceIconUploadClicked: () -> Unit,
     onSpaceIconRemoveClicked: () -> Unit,
-    isLoading: State<Boolean>,
-    isChatSpace: Boolean = false
+    isLoading: State<Boolean>
 ) {
+    val isChatSpace = remember { spaceIconView is SpaceIconView.ChatSpace }
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(""))
     }
@@ -136,19 +141,13 @@ fun CreateSpaceScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .wrapContentHeight()
-                    .border(
-                        width = 0.5.dp,
-                        color = colorResource(R.color.shape_primary),
-                        shape = RoundedCornerShape(size = 12.dp)
-                    )
-                    .padding(start = 16.dp, end = 16.dp, top = 12.dp, bottom = 12.dp)
             ) {
                 Text(
-                    text = stringResource(id = R.string.name),
-                    style = Caption1Regular,
+                    text = if (isChatSpace) stringResource(id = R.string.create_space_chat_name) else stringResource(id = R.string.create_space_space_name),
+                    style = Caption1Medium,
                     color = colorResource(id = R.color.text_secondary)
                 )
-                BasicTextField(
+                OutlinedTextField(
                     value = innerValue,
                     onValueChange = {
                         innerValue = it
@@ -158,34 +157,39 @@ fun CreateSpaceScreen(
                     ),
                     singleLine = true,
                     enabled = true,
-                    cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
+                    colors = TextFieldDefaults.colors(
+                        disabledTextColor = colorResource(id = R.color.text_primary),
+                        cursorColor = colorResource(id = R.color.color_accent),
+                        focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                        errorIndicatorColor = Color.Transparent
+                    ),
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
-                        .padding(start = 0.dp, top = 4.dp)
+                        .padding(start = 0.dp, top = 12.dp)
                         .focusRequester(focusRequester),
-                    keyboardOptions = KeyboardOptions(
-                        imeAction = ImeAction.Done
-                    ),
-                    keyboardActions = KeyboardActions(
-                        onDone = {
-                            focusManager.clearFocus()
-                        }
-                    ),
-                    decorationBox = { innerTextField ->
-                        if (innerValue.text.isEmpty()) {
-                            Text(
-                                text = stringResource(id = R.string.untitled),
-                                style = BodySemiBold,
-                                color = colorResource(id = R.color.text_tertiary)
-                            )
-                        }
-                        innerTextField()
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions {
+                        keyboardController?.hide()
+                        focusManager.clearFocus()
+                    },
+                    shape = RoundedCornerShape(size = 26.dp),
+                    placeholder = {
+                        Text(
+                            modifier = Modifier.padding(start = 1.dp),
+                            text = stringResource(id = R.string.untitled),
+                            style = BodySemiBold,
+                            color = colorResource(id = R.color.text_tertiary)
+                        )
                     }
                 )
             }
         }
-        ButtonPrimaryLoading(
+        ButtonOnboardingPrimaryLarge(
             onClick = {
                 if (isChatSpace || innerValue.text.isNotEmpty()) {
                     focusManager.clearFocus()
@@ -198,11 +202,9 @@ fun CreateSpaceScreen(
             modifierBox = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .windowInsetsPadding(WindowInsets.navigationBars)
-                .padding(bottom = 8.dp),
-            modifierButton = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp),
+                .windowInsetsPadding(WindowInsets.ime)
+                .padding(horizontal = 16.dp)
+                .padding(bottom = 16.dp),
             loading = isLoading.value,
             enabled = isChatSpace || innerValue.text.isNotEmpty()
         )
@@ -340,14 +342,13 @@ fun UseCase() {
 fun CreateSpaceScreenPreview() {
     val state = remember { mutableStateOf(false) }
     CreateSpaceScreen(
-        spaceIconView = SpaceIconView.DataSpace.Placeholder(
+        spaceIconView = SpaceIconView.ChatSpace.Placeholder(
             color = SystemColor.RED,
             name = "My Space"
         ),
         onCreate = { },
         onSpaceIconUploadClicked = {},
         onSpaceIconRemoveClicked = {},
-        isChatSpace = true,
         isLoading = state
     )
 }

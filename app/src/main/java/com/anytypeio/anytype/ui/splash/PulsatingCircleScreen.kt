@@ -8,15 +8,21 @@ import androidx.compose.animation.core.animateValue
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
@@ -34,11 +40,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 
 @Composable
@@ -86,6 +94,19 @@ fun PulsatingCircleScreen() {
             .windowInsetsPadding(WindowInsets.systemBars)
             .padding(bottom = 32.dp)
     ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.TopCenter)
+                .fillMaxWidth()
+                .height(48.dp)
+        ) {
+            Image(
+                modifier = Modifier.align(Alignment.Center),
+                painter = painterResource(id = R.drawable.ic_anytype_logo),
+                contentDescription = "Anytype logo",
+            )
+        }
+
         SimpleCircleShape(
             modifier = Modifier
                 .align(Alignment.Center),
@@ -93,14 +114,23 @@ fun PulsatingCircleScreen() {
             gradient = finalBrush
         )
 
-        Text(
-            modifier = Modifier
-                .align(Alignment.BottomCenter)
-                .padding(horizontal = 32.dp),
-            text = stringResource(R.string.private_local_yours_forever),
-            color = colorResource(R.color.text_secondary),
-            style = PreviewTitle2Medium
-        )
+        Row(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_frame_18),
+                contentDescription = null,
+                modifier = Modifier.size(18.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                modifier = Modifier,
+                text = stringResource(R.string.private_local_yours_forever),
+                color = colorResource(R.color.text_secondary),
+                style = PreviewTitle2Medium
+            )
+        }
     }
 }
 

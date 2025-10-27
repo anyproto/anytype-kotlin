@@ -199,12 +199,10 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
         val deeplink = pendingIntentStore.getDeepLinkInvite()
         when {
             !deeplink.isNullOrEmpty() -> navigation.emit(Navigation.OpenVault)
-            !startingObject.isNullOrEmpty() -> navigation.emit(
-                Navigation.OpenStartingObject(
-                    space = SpaceId(space),
-                    startingObject = startingObject
-                )
-            )
+            !startingObject.isNullOrEmpty() -> {
+                //DROID-4065, Start from the Vault after onboarding
+                navigation.emit(Navigation.OpenVault)
+            }
             else -> navigation.emit(Navigation.OpenVault)
         }
     }

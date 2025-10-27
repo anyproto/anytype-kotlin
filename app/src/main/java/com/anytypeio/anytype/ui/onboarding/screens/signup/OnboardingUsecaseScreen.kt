@@ -71,6 +71,9 @@ fun OnboardingUsecaseScreen(
     }
 
     var selectedUsecase by remember { mutableStateOf<UsecaseItem?>(null) }
+    val shuffledUseCases = remember {
+        usecaseItems.dropLast(1).shuffled() + usecaseItems.last()
+    }
     
     Box(
         modifier = Modifier.fillMaxSize()
@@ -126,7 +129,7 @@ fun OnboardingUsecaseScreen(
                 verticalArrangement = Arrangement.spacedBy(0.dp),
                 horizontalArrangement = Arrangement.spacedBy(0.dp, alignment = Alignment.CenterHorizontally),
                 content = {
-                    usecaseItems.forEach { usecase ->
+                    shuffledUseCases.forEach { usecase ->
                         UsecaseSelectionItem(
                             usecase = usecase,
                             isSelected = selectedUsecase == usecase,

@@ -36,7 +36,7 @@ import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
@@ -93,6 +93,7 @@ class VaultFragment : BaseComposeFragment() {
             VaultScreen(
                 uiState = vm.uiState.collectAsStateWithLifecycle().value,
                 showNotificationBadge = vm.isNotificationDisabled.collectAsStateWithLifecycle().value,
+                showCreateSpaceBadge = vm.showCreateSpaceBadge.collectAsStateWithLifecycle().value,
                 onSpaceClicked = vm::onSpaceClicked,
                 onCreateSpaceClicked = vm::onChooseSpaceTypeClicked,
                 onSettingsClicked = vm::onSettingsClicked,
@@ -205,7 +206,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = command.space.id,
                             deeplink = null
                         )
@@ -345,7 +346,7 @@ class VaultFragment : BaseComposeFragment() {
             is VaultNavigation.OpenObject -> runCatching {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
-                    HomeScreenFragment.args(
+                    WidgetsScreenFragment.args(
                         space = destination.space,
                         deeplink = null
                     )
@@ -361,7 +362,7 @@ class VaultFragment : BaseComposeFragment() {
             is VaultNavigation.OpenSet -> runCatching {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
-                    HomeScreenFragment.args(
+                    WidgetsScreenFragment.args(
                         space = destination.space,
                         deeplink = null
                     )
@@ -378,7 +379,7 @@ class VaultFragment : BaseComposeFragment() {
             is VaultNavigation.OpenChat -> {
                 findNavController().navigate(
                     R.id.actionOpenSpaceFromVault,
-                    HomeScreenFragment.args(
+                    WidgetsScreenFragment.args(
                         space = destination.space,
                         deeplink = null
                     )
@@ -393,7 +394,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = destination.space,
                             deeplink = null
                         )
@@ -411,7 +412,7 @@ class VaultFragment : BaseComposeFragment() {
                 runCatching {
                     findNavController().navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = destination.space,
                             deeplink = null
                         )

@@ -3,8 +3,13 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.base.updateUserProperties
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
+import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountStatus
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
@@ -45,6 +50,11 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
+import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
+import com.anytypeio.anytype.presentation.main.MainViewModel.Command.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -85,26 +95,34 @@ class MainViewModel(
     private val observeSpaceWallpaper: ObserveSpaceWallpaper,
     private val urlBuilder: UrlBuilder,
     private val appShutdown: AppShutdown,
-    private val scope: CoroutineScope
+    private val scope: CoroutineScope,
+    private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
+    private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
+    private val appInfo: AppInfo
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
     private val deepLinkJobs = mutableListOf<Job>()
 
+    // Safety flag to ensure spaces introduction is only shown once per ViewModel lifecycle
+    private var hasShownSpacesIntroductionInSession = false
+
     val commands = MutableSharedFlow<Command>(replay = 0)
     val toasts = MutableSharedFlow<String>(replay = 0)
 
     val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
+    val showSpacesIntroduction: MutableStateFlow<Account?> = MutableStateFlow(null)
 
     init {
+        subscribeToShowSpacesIntroduction()
         subscribeToActiveSpaceWallpaper()
         viewModelScope.launch {
             interceptAccountStatus.build().collect { status ->
                 when (status) {
                     is AccountStatus.PendingDeletion -> {
                         commands.emit(
-                            Command.ShowDeletedAccountScreen(
+                            ShowDeletedAccountScreen(
                                 deadline = status.deadline
                             )
                         )
@@ -274,9 +292,9 @@ class MainViewModel(
     fun onIntentCreateObject(type: Id) {
         Timber.d("onIntentCreateObject: $type")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.OpenCreateNewType(type))
                     }
@@ -287,9 +305,9 @@ class MainViewModel(
 
     fun onIntentTextShare(data: String) {
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.Sharing.Text(data))
                     }
@@ -301,9 +319,9 @@ class MainViewModel(
     fun onIntentMultipleFilesShare(uris: List<String>) {
         Timber.d("onIntentFileShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.File(uris.first()))
@@ -319,9 +337,9 @@ class MainViewModel(
     fun onIntentMultipleImageShare(uris: List<String>) {
         Timber.d("onIntentImageShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.Image(uris.first()))
@@ -337,9 +355,9 @@ class MainViewModel(
     fun onIntentMultipleVideoShare(uris: List<String>) {
         Timber.d("onIntentVideoShare: $uris")
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { e -> Timber.e(e, "Error while checking auth status") },
-                success = { status ->
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
                         commands.emit(Command.Sharing.Videos(uris))
                     }
@@ -357,9 +375,9 @@ class MainViewModel(
     fun handleNewDeepLink(deeplink: DeepLinkResolver.Action) {
         deepLinkJobs.cancel()
         viewModelScope.launch {
-            checkAuthorizationStatus(Unit).process(
-                failure = { Timber.e(it, "Failed to check authentication status") },
-                success = { authStatus -> processDeepLinkBasedOnAuth(authStatus, deeplink) }
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { Timber.e(it, "Failed to check authentication status") },
+                onSuccess = { (authStatus, account) -> processDeepLinkBasedOnAuth(authStatus, deeplink) }
             )
         }
     }
@@ -561,6 +579,94 @@ class MainViewModel(
                 )
             }
         }
+    }
+
+    /**
+     * Subscribes to feature introduction checks. Follows the same pattern as
+     * [subscribeToActiveSpaceWallpaper] for consistency with the codebase.
+     *
+     * Uses [ObserveShowSpacesIntroduction] which:
+     * - Waits for account start on Dispatchers.IO
+     * - Checks if should show (existing users only, not fresh installs)
+     * - Emits a single boolean result
+     *
+     * Takes only the first emission to prevent showing multiple times when account
+     * lifecycle events occur (app minimize/restore, account switch).
+     * Additionally uses a session flag to ensure the screen is never shown more than once
+     * per app session, even if the dismiss callback fails to fire.
+     */
+    private fun subscribeToShowSpacesIntroduction() {
+        viewModelScope.launch {
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, account) ->
+                    if (status == AuthStatus.AUTHORIZED && account != null) {
+                        observeShowSpacesIntroduction.flow(
+                            ObserveShowSpacesIntroduction.Params(
+                                currentAppVersion = appInfo.versionName,
+                                account = account
+                            )
+                        )
+                        .take(1) // Only take first emission, prevents re-showing on app restore
+                        .collect { shouldShow ->
+                            Timber.d("DROID-3864, Should show spaces introduction: $shouldShow")
+                            // Safety check: only show once per session
+                            if (shouldShow && !hasShownSpacesIntroductionInSession) {
+                                hasShownSpacesIntroductionInSession = true
+                                showSpacesIntroduction.value = account
+                                Timber.d("Showing spaces introduction for account ${account.id}")
+                                // Mark as shown immediately to prevent race conditions
+                                // This ensures if the app is killed before dismiss callback,
+                                // the popup won't show again on restore
+                                setSpacesIntroductionShown.async(Unit).fold(
+                                    onFailure = { e ->
+                                        Timber.e(e, "Error while marking spaces introduction as shown (immediate)")
+                                    },
+                                    onSuccess = {
+                                        Timber.d("DROID-3864, Marked spaces introduction as shown immediately for account ${account.id}")
+                                    }
+                                )
+                            } else {
+                                showSpacesIntroduction.value = null
+                                if (hasShownSpacesIntroductionInSession) {
+                                    Timber.d("DROID-3864, Skipping spaces introduction - already shown in this session")
+                                }
+                            }
+                        }
+                    }
+                }
+            )
+        }
+    }
+
+    /**
+     * Sends OnboardingTooltip analytics event for the Spaces Introduction screen.
+     * Maps step numbers to the corresponding tooltip text:
+     * 1 - "Ideas need conversations"
+     * 2 - "Your Vault just leveled up"
+     * 3 - "Chats that do more"
+     * 4 - "Everything in Its Right Place"
+     */
+    fun sendOnboardingTooltipEvent(step: Int) {
+        viewModelScope.sendEvent(
+            analytics = analytics,
+            eventName = EventsDictionary.onboardingTooltip,
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.id to "Chats",
+                    EventsPropertiesKey.step to step
+                )
+            )
+        )
+    }
+
+    /**
+     * Called when user dismisses or completes the Spaces Introduction screen.
+     * Simply clears the UI state since we already marked it as shown when we displayed it.
+     */
+    fun onSpacesIntroductionDismissed() {
+        Timber.d("DROID-3864, User dismissed spaces introduction")
+        showSpacesIntroduction.value = null
     }
 
     override fun onCleared() {

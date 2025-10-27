@@ -10,6 +10,8 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -59,7 +61,7 @@ import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
-import com.anytypeio.anytype.ui.home.HomeScreenFragment
+import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.SpaceJoinRequestFragment
@@ -74,6 +76,9 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
@@ -116,6 +121,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         )
         inject()
         setupTheme()
+        setupFeatureIntroductions()
 
         if (savedInstanceState != null) vm.onRestore()
 
@@ -223,7 +229,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     controller.popBackStack(R.id.vaultScreen, false)
                                     controller.navigate(
                                         R.id.actionOpenSpaceFromVault,
-                                        HomeScreenFragment.args(
+                                        WidgetsScreenFragment.args(
                                             space = command.space,
                                             deeplink = null
                                         )
@@ -259,7 +265,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             } else {
                                                 controller.navigate(
                                                     R.id.actionOpenSpaceFromVault,
-                                                    HomeScreenFragment.args(
+                                                    WidgetsScreenFragment.args(
                                                         space = command.space,
                                                         deeplink = null
                                                     )
@@ -718,7 +724,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     findNavController(R.id.fragment).popBackStack(R.id.vaultScreen, false)
                     findNavController(R.id.fragment).navigate(
                         R.id.actionOpenSpaceFromVault,
-                        HomeScreenFragment.args(
+                        WidgetsScreenFragment.args(
                             space = command.space.id,
                             deeplink = null
                         )
@@ -776,6 +782,32 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     override fun nav(): AppNavigation = navigator
+
+    /**
+     * Sets up feature introductions using Compose.
+     * Shows SpacesIntroductionScreen only after account starts and only to existing users.
+     */
+    private fun setupFeatureIntroductions() {
+        findViewById<ComposeView>(R.id.composeOverlay).apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val showSpacesIntroduction by vm.showSpacesIntroduction.collectAsState()
+                if (showSpacesIntroduction != null) {
+                    SpacesIntroductionScreen(
+                        onDismiss = {
+                            vm.onSpacesIntroductionDismissed()
+                        },
+                        onComplete = {
+                            vm.onSpacesIntroductionDismissed()
+                        },
+                        onPageChanged = { step ->
+                            vm.sendOnboardingTooltipEvent(step)
+                        }
+                    )
+                }
+            }
+        }
+    }
 
     fun inject() {
         componentManager().mainEntryComponent.get().inject(this)

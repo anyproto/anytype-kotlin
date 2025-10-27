@@ -30,7 +30,6 @@
         android:id="@+id/initialContainer"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@drawable/rectangle_avatar_initial_background"
         android:visibility="invisible">
 
         <TextView

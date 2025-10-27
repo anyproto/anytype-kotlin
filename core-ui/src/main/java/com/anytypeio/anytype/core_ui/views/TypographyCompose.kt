@@ -47,7 +47,7 @@ val HeadlineHeading =
         fontWeight = FontWeight.W700,
         fontSize = 22.sp,
         lineHeight = 26.sp,
-        letterSpacing = (-0.016).em
+        letterSpacing = (-0.36).sp
     )
 
 //Content/Headlines/Subheading
@@ -74,7 +74,7 @@ val BodySemiBold = TextStyle(
     fontWeight = FontWeight.W600,
     fontSize = 17.sp,
     lineHeight = 24.sp,
-    letterSpacing = (-0.024).em
+    letterSpacing = (-0.41).sp
 )
 
 //Content/Body/Bold Italic
@@ -195,6 +195,24 @@ val CodeBlock = TextStyle(
     letterSpacing = (-0.016).em
 )
 
+//Content/Misc/Chat Preview Medium
+val CodeChatPreviewMedium = TextStyle(
+    fontFamily = fontInterMedium,
+    fontWeight = FontWeight.W500,
+    fontSize = 15.sp,
+    lineHeight = 18.sp,
+    letterSpacing = (-0.24).sp
+)
+
+//Content/Misc/Chat Preview Regular
+val CodeChatPreviewRegular = TextStyle(
+    fontFamily = fontInterRegular,
+    fontWeight = FontWeight.W400,
+    fontSize = 15.sp,
+    lineHeight = 18.sp,
+    letterSpacing = (-0.24).sp
+)
+
 val TitleInter15 = TextStyle(
     fontFamily = fontInterRegular,
     fontWeight = FontWeight.W600,
@@ -260,9 +278,9 @@ val BodyCalloutRegular = TextStyle(
 val UxSmallTextRegular = TextStyle(
     fontFamily = fontInterRegular,
     fontWeight = FontWeight.W400,
-    fontSize = 14.sp,
-    lineHeight = 22.sp,
-    letterSpacing = (-0.014).em
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = (-0.24).sp
 )
 
 val UxSmallTextMedium = TextStyle(

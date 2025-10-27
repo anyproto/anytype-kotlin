@@ -38,7 +38,6 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
-import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
@@ -130,55 +129,50 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.AllContentWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.BinWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.DataViewListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
-import com.anytypeio.anytype.presentation.widgets.LinkWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.ListWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.SectionType
-import com.anytypeio.anytype.presentation.widgets.SectionWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.SpaceChatWidgetContainer
 import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.TreeWidgetBranchStateHolder
-import com.anytypeio.anytype.presentation.widgets.TreeWidgetContainer
-import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
+import com.anytypeio.anytype.presentation.widgets.WidgetContainerDelegate
+import com.anytypeio.anytype.presentation.widgets.WidgetContainerDelegateImpl
 import com.anytypeio.anytype.presentation.widgets.WidgetDispatchEvent
 import com.anytypeio.anytype.presentation.widgets.WidgetSessionStateHolder
+import com.anytypeio.anytype.presentation.widgets.WidgetUiParams
 import com.anytypeio.anytype.presentation.widgets.WidgetView
-import com.anytypeio.anytype.presentation.widgets.buildWidgets
+import com.anytypeio.anytype.presentation.widgets.buildWidgetSections
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.presentation.widgets.parseActiveViews
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.merge
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.scan
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
@@ -263,21 +257,116 @@ class HomeScreenViewModel(
     ExitToVaultDelegate by exitToVaultDelegate
 {
 
-    private val jobs = mutableListOf<Job>()
     private val mutex = Mutex()
 
-    val views = MutableStateFlow<List<WidgetView>>(emptyList())
     val commands = MutableSharedFlow<Command>()
     val mode = MutableStateFlow<InteractionMode>(InteractionMode.Default)
 
     private val isEmptyingBinInProgress = MutableStateFlow(false)
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
-    private val widgets = MutableStateFlow<Widgets>(null)
-    private val containers = MutableStateFlow<Containers>(null)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    private val widgetObjectPipelineJobs = mutableListOf<Job>()
+    // Separate StateFlows for different widget sections
+    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
+    private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val binWidget = MutableStateFlow<Widget.Bin?>(null)
+
+    // Separate containers for pinned and type widgets
+    private val pinnedContainers = MutableStateFlow<Containers>(null)
+    private val typeContainers = MutableStateFlow<Containers>(null)
+
+    // Drag-and-drop state tracking for type widgets
+    private var pendingTypeWidgetOrder: List<Id>? = null
+
+    // Lock mechanism to prevent race conditions during DnD operations
+    // When a drag operation completes, we optimistically update the UI and send to middleware
+    // We then lock event processing for a short period to prevent incoming events from
+    // overwriting our optimistic update before middleware confirms the change
+    private var typeWidgetEventLockTimestamp: Long? = null
+
+    // Helper property for synchronous access to current widget list
+    private val currentWidgets: Widgets
+        get() = pinnedWidgets.value + typeWidgets.value
+
+    // Exposed flows for UI - widget views (WidgetView models) separated by section
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pinnedViews: StateFlow<List<WidgetView>> = pinnedContainers
+        .flatMapLatest { containers ->
+            if (containers.isNullOrEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(containers.map { it.view }) { array ->
+                    array.toList()
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val typeViews: StateFlow<List<WidgetView>> = typeContainers
+        .flatMapLatest { containers ->
+            if (containers.isNullOrEmpty()) {
+                flowOf(emptyList())
+            } else {
+                combine(containers.map { it.view }) { array ->
+                    array.toList()
+                }
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptyList()
+        )
+
+    // Exposed flow for space chat widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatView: StateFlow<WidgetView?> = chatWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for chat widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for bin widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val binView: StateFlow<WidgetView?> = binWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for bin widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for collapsed sections
+    val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
+        .map { it.toSet() }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = emptySet()
+        )
 
     // Store Space widget object ID (from SpaceInfo) to use during cleanup when spaceManager might be empty
     private var cachedWidgetObjectId: String? = null
@@ -286,8 +375,6 @@ class HomeScreenViewModel(
 
     private val userPermissions = MutableStateFlow<SpaceMemberPermissions?>(null)
 
-    val hasEditAccess = userPermissions.map { it?.isOwnerOrEditor() == true }
-
     // Expanded widget IDs for persistence across app restarts
     private val expandedWidgetIds = MutableStateFlow<Set<Id>>(emptySet())
 
@@ -295,8 +382,6 @@ class HomeScreenViewModel(
     val pendingBundledWidgetDeletion = MutableStateFlow<Id?>(null)
 
     val navPanelState = MutableStateFlow<NavPanelState>(NavPanelState.Init)
-
-
 
     val viewerSpaceSettingsState = MutableStateFlow<ViewerSpaceSettingsState>(ViewerSpaceSettingsState.Init)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
@@ -315,7 +400,7 @@ class HomeScreenViewModel(
                 val openObjectState = objectViewState.value
                 if (openObjectState is ObjectViewState.Success) {
                     val subscriptions = buildList {
-                        widgets.value.orEmpty().forEach { widget ->
+                        currentWidgets.orEmpty().forEach { widget ->
                             if (widget.config.space != newConfig.space) {
                                 if (widget.source is Widget.Source.Bundled)
                                     add(widget.source.id)
@@ -389,7 +474,13 @@ class HomeScreenViewModel(
                         }
                     },
                     onLoading = {
-                        widgets.value = null
+                        pinnedWidgets.value = emptyList()
+                        // Check event lock before clearing type widgets during loading
+                        if (isTypeWidgetEventLockActive()) {
+                            Timber.d("DROID-3951, Type widget event lock is active, ignoring loading state clear")
+                        } else {
+                            typeWidgets.value = emptyList()
+                        }
                     }
                 )
             }.map { result ->
@@ -413,7 +504,6 @@ class HomeScreenViewModel(
         proceedWithLaunchingUnsubscriber()
         proceedWithObjectViewStatePipeline()
         proceedWithWidgetContainerPipeline()
-        proceedWithRenderingPipeline()
         proceedWithObservingDispatches()
         proceedWithSettingUpShortcuts()
         proceedWithViewStatePipeline()
@@ -484,7 +574,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithViewStatePipeline() {
-        widgetObjectPipelineJobs += viewModelScope.launch {
+        viewModelScope.launch {
             widgetObjectPipeline.collect {
                 objectViewState.value = it
             }
@@ -518,175 +608,40 @@ class HomeScreenViewModel(
         viewModelScope.launch { unsubscriber.start() }
     }
 
-    @OptIn(ExperimentalCoroutinesApi::class)
-    private fun proceedWithRenderingPipeline() {
+
+    private fun proceedWithWidgetContainerPipeline() {
+        buildPinnedContainerPipeline()
+        buildTypeContainerPipeline()
+    }
+
+    private fun buildPinnedContainerPipeline() {
         viewModelScope.launch {
-            containers.filterNotNull().flatMapLatest { list ->
-                combine(
-                    flows = buildList<Flow<WidgetView>> {
-                        addAll(list.map { m -> m.view })
-                    }
-                ) { array ->
-                    array.toList()
+            pinnedWidgets.map { widgets ->
+                // Use section-specific views for cache optimization (avoids circular dependency)
+                val currentlyDisplayedViews = pinnedViews.value
+                widgets.mapNotNull { widget ->
+                    Timber.d("Creating pinned container for widget: ${widget.id} of type ${widget::class.simpleName}")
+                    widgetContainerDelegate.createContainer(widget, currentlyDisplayedViews)
                 }
-            }.combine(hasEditAccess) { widgets, hasEditAccess ->
-                widgets.ifEmpty {
-                    listOf(WidgetView.EmptyState)
-                }
-            }.catch {
-                Timber.e(it, "Error while rendering widgets")
-            }.flowOn(appCoroutineDispatchers.io).collect {
-                views.value = it
+            }.collect { containersList ->
+                Timber.d("Emitting list of pinned containers: ${containersList.size}")
+                pinnedContainers.value = containersList
             }
         }
     }
 
-    private fun proceedWithWidgetContainerPipeline() {
+    private fun buildTypeContainerPipeline() {
         viewModelScope.launch {
-            widgets.filterNotNull().mapNotNull { widgets ->
-                val currentlyDisplayedViews = views.value
-                widgets.map { widget ->
-                    Timber.d("Creating container for widget: ${widget.id} of type ${widget::class.simpleName}")
-                    when (widget) {
-                        is Widget.Chat -> SpaceChatWidgetContainer(
-                            widget = widget,
-                            container = chatPreviews,
-                            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
-                            notificationPermissionManager = notificationPermissionManager
-                        )
-                        is Widget.Link -> LinkWidgetContainer(
-                            widget = widget,
-                            fieldParser = fieldParser
-                        )
-                        is Widget.Tree -> TreeWidgetContainer(
-                            widget = widget,
-                            container = storelessSubscriptionContainer,
-                            expandedBranches = treeWidgetBranchStateHolder.stream(widget.id),
-                            isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                            isSessionActive = isSessionActive,
-                            urlBuilder = urlBuilder,
-                            objectWatcher = objectWatcher,
-                            getSpaceView = getSpaceView,
-                            onRequestCache = {
-                                currentlyDisplayedViews.find { view ->
-                                    view.id == widget.id
-                                            && view is WidgetView.Tree
-                                            && view.source == widget.source
-                                } as? WidgetView.Tree
-                            },
-                            fieldParser = fieldParser,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
-                        is Widget.List -> if (BundledWidgetSourceIds.ids.contains(widget.source.id)) {
-                            ListWidgetContainer(
-                                widget = widget,
-                                subscription = widget.source.id,
-                                storage = storelessSubscriptionContainer,
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                urlBuilder = urlBuilder,
-                                isSessionActive = isSessionActive,
-                                objectWatcher = objectWatcher,
-                                getSpaceView = getSpaceView,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.ListOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.ListOfObjects
-                                },
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        } else {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        view.id == widget.id
-                                                && view is WidgetView.SetOfObjects
-                                                && view.source == widget.source
-                                    } as? WidgetView.SetOfObjects
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.View -> {
-                            DataViewListWidgetContainer(
-                                space = vmParams.spaceId,
-                                widget = widget,
-                                storage = storelessSubscriptionContainer,
-                                getObject = getObject,
-                                activeView = observeCurrentWidgetView(widget.id),
-                                isWidgetCollapsed = combine(
-                                expandedWidgetIds,
-                                userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).map { it.toSet() }
-                            ) { expanded, collapsedSecs ->
-                                isWidgetCollapsed(widget, expanded, collapsedSecs)
-                            },
-                                isSessionActiveFlow = isSessionActive,
-                                urlBuilder = urlBuilder,
-                                coverImageHashProvider = coverImageHashProvider,
-                                onRequestCache = {
-                                    currentlyDisplayedViews.find { view ->
-                                        when (view) {
-                                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
-                                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
-                                            else -> false
-                                        }
-                                    }
-                                },
-                                storeOfRelations = storeOfRelations,
-                                fieldParser = fieldParser,
-                                storeOfObjectTypes = storeOfObjectTypes
-                            )
-                        }
-                        is Widget.AllObjects -> {
-                            AllContentWidgetContainer(
-                                widget = widget
-                            )
-                        }
-                        is Widget.Section.ObjectType -> {
-                            SectionWidgetContainer.ObjectTypes
-                        }
-                        is Widget.Section.Pinned -> {
-                            SectionWidgetContainer.Pinned
-                        }
-
-                        is Widget.Bin -> {
-                            BinWidgetContainer(
-                                widget = widget
-                            )
-                        }
-                    }
+            typeWidgets.map { widgets ->
+                // Use section-specific views for cache optimization (avoids circular dependency)
+                val currentlyDisplayedViews = typeViews.value
+                widgets.mapNotNull { widget ->
+                    Timber.d("Creating type container for widget: ${widget.id} of type ${widget::class.simpleName}")
+                    widgetContainerDelegate.createContainer(widget, currentlyDisplayedViews)
                 }
-            }.collect {
-                Timber.d("Emitting list of containers: ${it.size}")
-                containers.value = it
+            }.collect { containersList ->
+                Timber.d("Emitting list of type containers: ${containersList.size}")
+                typeContainers.value = containersList
             }
         }
     }
@@ -787,33 +742,34 @@ class HomeScreenViewModel(
             combine(
                 storeOfObjectTypes.trackChanges(),
                 objectViewState.applyPayloadEvents(payloads).distinctUntilChanged(),
-                hasEditAccess.distinctUntilChanged(),
+                userPermissions,
                 widgetPreferences,
                 spaceViewSubscriptionContainer.observe(vmParams.spaceId),
-            ) { _, state, isOwnerOrEditor, preferences, spaceView ->
+            ) { _, state, userPermission, preferences, spaceView ->
                 val params = WidgetUiParams(
-                    isOwnerOrEditor = isOwnerOrEditor,
+                    isOwnerOrEditor = userPermission?.isOwnerOrEditor() == true,
                     expandedIds = preferences.expandedWidgetIds.toSet(),
                     collapsedSections = preferences.collapsedSectionIds.toSet()
                 )
                 if (state is ObjectViewState.Success) {
 
-                    // Build widgets List<Widget> from the current object state
-                    val allWidgets = buildWidgets(
+                    // Build widget sections from the current object state
+                    val sections = buildWidgetSections(
                         state = state,
                         params = params,
                         urlBuilder = urlBuilder,
                         storeOfObjectTypes = storeOfObjectTypes,
                         spaceView = spaceView
                     )
+
                     // Initialize active views for all widgets
                     val bundledWidgetActiveViews = state.obj.blocks.parseActiveViews()
 
                     // Preserve ObjectType active views (not stored in WidgetsObj blocks)
                     val currentActiveViews = widgetActiveViewStateHolder.getActiveViews()
+                    val allWidgets = sections.pinnedWidgets + sections.typeWidgets
                     val objectTypeActiveViews = currentActiveViews.filterKeys { widgetId ->
                         allWidgets
-                            .filter { it !is Widget.Section }
                             .any { widget ->
                                 widget.id == widgetId && widget.source is Widget.Source.Default &&
                                         (widget.source as Widget.Source.Default).obj.layout == ObjectType.Layout.OBJECT_TYPE
@@ -825,13 +781,39 @@ class HomeScreenViewModel(
 
                     // Update expanded IDs from persistence
                     expandedWidgetIds.value = params.expandedIds
-                    allWidgets
+                    sections
                 } else {
-                    emptyList()
+                    null
                 }
-            }.collect { widgetList ->
-                Timber.d("Emitting list of widgets: ${widgetList.size}")
-                widgets.value = widgetList
+            }.collect { sections ->
+                if (sections != null) {
+                     val totalWidgets = (if (sections.chatWidget != null) 1 else 0) + sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: chat=${sections.chatWidget != null}, pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+
+                    chatWidget.value = sections.chatWidget
+                    pinnedWidgets.value = sections.pinnedWidgets
+
+                    // Check event lock before updating type widgets to prevent race conditions during DnD
+                    if (isTypeWidgetEventLockActive()) {
+                        Timber.d("DROID-3951, Type widget event lock is active, ignoring incoming type widget update")
+                    } else {
+                        typeWidgets.value = sections.typeWidgets
+                    }
+
+                    binWidget.value = sections.binWidget
+                } else {
+                    chatWidget.value = null
+                    pinnedWidgets.value = emptyList()
+
+                    // Check event lock before clearing type widgets
+                    if (isTypeWidgetEventLockActive()) {
+                        Timber.d("DROID-3951, Type widget event lock is active, ignoring incoming type widget clear")
+                    } else {
+                        typeWidgets.value = emptyList()
+                    }
+
+                    binWidget.value = null
+                }
             }
         }
     }
@@ -849,7 +831,7 @@ class HomeScreenViewModel(
         )
         val subscriptionIds = buildList {
             addAll(
-                widgets.value.orEmpty().mapNotNull { widget ->
+                currentWidgets.orEmpty().mapNotNull { widget ->
                     when (widget.source) {
                         is Widget.Source.Bundled -> widget.source.id
                         is Widget.Source.Default -> widget.source.id
@@ -1047,7 +1029,7 @@ class HomeScreenViewModel(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
-                val target = widgets.value.orEmpty().find { it.id == widget }
+                val target = currentWidgets.orEmpty().find { it.id == widget }
                 deleteWidget.stream(
                     DeleteWidget.Params(
                         ctx = config.widgets,
@@ -1135,7 +1117,7 @@ class HomeScreenViewModel(
         Timber.d("With id: ${obj.id}")
         if (obj.isArchived != true) {
             viewModelScope.launch {
-                val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+                val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
                 analytics.sendOpenSidebarObjectEvent(
                     isAutoCreated = isAutoCreated
                 )
@@ -1162,7 +1144,7 @@ class HomeScreenViewModel(
     fun onWidgetMenuTriggered(widget: Id) {
         Timber.d("onWidgetMenuTriggered: $widget")
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
             analytics.sendScreenWidgetMenuEvent(
                 isAutoCreated = isAutoCreated
             )
@@ -1194,9 +1176,28 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onWidgetChatClicked() {
+        Timber.d("onWidgetChatClicked:")
+        viewModelScope.launch {
+            val space = vmParams.spaceId.id
+            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+            val chat = view?.chatId
+            if (chat != null) {
+                navigation(
+                    OpenChat(
+                        ctx = chat,
+                        space = space
+                    )
+                )
+            } else {
+                Timber.w("Failed to open chat from widget: chat not found")
+            }
+        }
+    }
+
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
-        val widget = widgets.value?.find { it.id == widgetId } ?: return
+        val widget = currentWidgets?.find { it.id == widgetId } ?: return
         Timber.d("Widget source: ${widget.source}")
         when (val source = widget.source) {
             is Widget.Source.Bundled.Favorites -> {
@@ -1303,6 +1304,17 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onBinWidgetClicked() {
+        viewModelScope.launch {
+            navigation(
+                ExpandWidget(
+                    subscription = Subscription.Bin,
+                    space = vmParams.spaceId.id
+                )
+            )
+        }
+    }
+
     fun onDropDownMenuAction(widget: Id, action: DropDownMenuAction) {
         when (action) {
             DropDownMenuAction.ChangeWidgetType -> {
@@ -1310,7 +1322,7 @@ class HomeScreenViewModel(
             }
             DropDownMenuAction.RemoveWidget -> {
                 // Check if this is a bundled widget that needs a warning
-                val targetWidget = widgets.value.orEmpty().find { it.id == widget }
+                val targetWidget = currentWidgets.orEmpty().find { it.id == widget }
                 if (targetWidget?.source is Widget.Source.Bundled) {
                     // Show warning modal for bundled widgets
                     pendingBundledWidgetDeletion.value = widget
@@ -1323,7 +1335,9 @@ class HomeScreenViewModel(
                 proceedWithEmptyingBin()
             }
             is DropDownMenuAction.CreateObjectOfType -> {
-                val widgetView = views.value.find { it.id == action.widgetId }
+                // Search in both pinned and type sections
+                val widgetView = pinnedViews.value.find { it.id == action.widgetId }
+                    ?: typeViews.value.find { it.id == action.widgetId }
                 if (widgetView == null) {
                     Timber.w("Widget view not found for id: ${action.widgetId}")
                     return
@@ -1421,7 +1435,7 @@ class HomeScreenViewModel(
 
     private fun proceedWithChangingType(widget: Id) {
         Timber.d("onChangeWidgetSourceClicked, widget:[$widget]")
-        val curr = widgets.value.orEmpty().find { it.id == widget }
+        val curr = currentWidgets.orEmpty().find { it.id == widget }
         val sourceId = curr?.source?.id
         if (curr != null && sourceId != null) {
             viewModelScope.launch {
@@ -1457,7 +1471,7 @@ class HomeScreenViewModel(
     }
 
     private fun proceedWithChangingSource(widget: Id) {
-        val curr = widgets.value.orEmpty().find { it.id == widget }
+        val curr = currentWidgets.orEmpty().find { it.id == widget }
         if (curr != null) {
             viewModelScope.launch {
                 val config = spaceManager.getConfig()
@@ -1494,8 +1508,6 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
-        is Widget.Section.ObjectType -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
-        is Widget.Section.Pinned -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
@@ -1591,8 +1603,8 @@ class HomeScreenViewModel(
     private fun interceptWidgetDeletion(
         e: Event.Command.DeleteBlock
     ) {
-        val currentWidgets = widgets.value ?: emptyList()
-        val deletedWidgets = currentWidgets.filter { widget ->
+        val widgetList = currentWidgets ?: emptyList()
+        val deletedWidgets = widgetList.filter { widget ->
             e.targets.contains(widget.id)
         }
         val expiredSubscriptions = deletedWidgets.map { widget ->
@@ -1795,7 +1807,7 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onMove(views: List<WidgetView>, from: Int, to: Int) {
+    fun onMovePinned(views: List<WidgetView>, from: Int, to: Int) {
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null) {
@@ -1826,6 +1838,7 @@ class HomeScreenViewModel(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun proceedWithSettingUpShortcuts() {
         spaceManager
             .observe()
@@ -1916,7 +1929,7 @@ class HomeScreenViewModel(
 
     private fun dispatchDeleteWidgetAnalyticsEvent(target: Widget?) {
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == target?.id }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == target?.id }?.isAutoCreated
             when (val source = target?.source) {
                 is Widget.Source.Bundled -> {
                     sendDeleteWidgetEvent(
@@ -1968,7 +1981,7 @@ class HomeScreenViewModel(
 
     private fun dispatchSelectHomeTabCustomSourceEvent(widget: Id, source: Widget.Source) {
         viewModelScope.launch {
-            val isAutoCreated = widgets.value?.find { it.id == widget }?.isAutoCreated
+            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
             val sourceObjectType = source.type
             if (sourceObjectType != null) {
                 val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
@@ -1999,7 +2012,7 @@ class HomeScreenViewModel(
             }
             when(source) {
                 is Widget.Source.Bundled -> {
-                    val isAutoCreated = widgets.value?.find { it.id == subject.id }?.isAutoCreated
+                    val isAutoCreated = currentWidgets?.find { it.id == subject.id }?.isAutoCreated
                     sendReorderWidgetEvent(
                         analytics = analytics,
                         bundled = source,
@@ -2117,18 +2130,14 @@ class HomeScreenViewModel(
 
     override fun onCleared() {
         Timber.d("onCleared")
-        val currentWidgets = widgets.value.orEmpty()
-
-        // Cancel existing jobs first to stop any ongoing work
-        jobs.cancel()
-        widgetObjectPipelineJobs.cancel()
+        val currentWidgets = currentWidgets.orEmpty()
 
         // Launch fire-and-forget cleanup coroutine
+        // Note: viewModelScope automatically cancels all its coroutines
         // Using injected scope ensures proper lifecycle management
         scope.launch(appCoroutineDispatchers.io) {
             // Best-effort cleanup: never throw past this boundary
             val widgetSubscriptions = currentWidgets.mapNotNull { widget ->
-                if (widget is Widget.Section) return@mapNotNull null
                 if (widget.source is Widget.Source.Bundled)
                     widget.source.id
                 else
@@ -2763,85 +2772,41 @@ class HomeScreenViewModel(
         }
     }
 
-    /**
-     * Handles section header clicks to collapse/expand all widgets in the section
-     */
-    fun onSectionClicked(sectionId: Id) {
+    fun onSectionPinnedClicked() {
         viewModelScope.launch {
-            when (sectionId) {
-                Widget.Source.SECTION_OBJECT_TYPE -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_PINNED)
 
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all type widgets
-                        collapseAllObjectTypeWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
-                Widget.Source.SECTION_PINNED -> {
-                    val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
-                    val isCurrentlyCollapsed = currentCollapsedSections.contains(sectionId)
-
-                    val newCollapsedSections = if (isCurrentlyCollapsed) {
-                        // Expand section - remove from collapsed sections
-                        currentCollapsedSections.minus(sectionId)
-                    } else {
-                        // Collapse section - add to collapsed sections and collapse all pinned widgets
-                        collapseAllPinnedWidgets()
-                        currentCollapsedSections.plus(sectionId)
-                    }
-
-                    userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
-                }
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_PINNED)
+            } else {
+                currentCollapsedSections.plus(SECTION_PINNED)
             }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
         }
     }
 
-    /**
-     * Collapses all ObjectType widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllObjectTypeWidgets() {
-        val currentWidgets = widgets.value.orEmpty()
-        val objectTypeWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.TYPES
+    fun onSectionTypesClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_OBJECT_TYPE)
+            } else {
+                currentCollapsedSections.plus(SECTION_OBJECT_TYPE)
             }
-            .map { it.id }
 
-        // Remove all ObjectType widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - objectTypeWidgetIds.toSet()
-        saveExpandedWidgetState()
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
     }
-
-    /**
-     * Collapses all Pinned widgets by removing them from expandedWidgetIds
-     */
-    private suspend fun collapseAllPinnedWidgets() {
-        val currentWidgets = widgets.value.orEmpty()
-        val pinnedWidgetIds = currentWidgets
-            .filter { widget ->
-                widget !is Widget.Section && widget.sectionType == SectionType.PINNED
-            }
-            .map { it.id }
-
-        // Remove all Pinned widget IDs from expanded set
-        expandedWidgetIds.value = expandedWidgetIds.value - pinnedWidgetIds.toSet()
-        saveExpandedWidgetState()
-    }
-
 
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
     private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
         return when {
-            widget is Widget.Section -> false // Sections themselves are not collapsed by section state
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
@@ -2910,6 +2875,136 @@ class HomeScreenViewModel(
     }
     //endregion
 
+    //region Type Widget Drag and Drop
+    /**
+     * Called when the order of type widgets changes during a drag operation.
+     *
+     * This method updates the UI state immediately to reflect the new order,
+     * allowing for instant visual feedback during the drag operation.
+     *
+     * @param fromWidgetId The ID of the type widget being dragged from.
+     * @param toWidgetId The ID of the type widget being dragged to.
+     */
+    fun onTypeWidgetOrderChanged(fromWidgetId: String?, toWidgetId: String?) {
+        Timber.d("DROID-3965, onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")
+
+        if (fromWidgetId.isNullOrEmpty() || toWidgetId.isNullOrEmpty()) {
+            Timber.d("DROID-3965, onTypeWidgetOrderChanged: One of the IDs is null or empty, ignoring")
+            return
+        }
+
+        // Mark that we're starting a drag operation if we haven't already
+        if (pendingTypeWidgetOrder == null) {
+            Timber.d("DROID-3965, Starting type widget drag operation")
+        }
+
+        // Filter to only include actual type widgets (exclude sections, bin, etc.)
+        val actualTypeWidgets = typeViews.value
+
+        val from = actualTypeWidgets.indexOfFirst { it.id == fromWidgetId }
+        val to = actualTypeWidgets.indexOfFirst { it.id == toWidgetId }
+
+        if (from == -1 || to == -1 || from == to) {
+            Timber.d("DROID-3965, onTypeWidgetOrderChanged: Invalid indices (from=$from, to=$to), ignoring")
+            return
+        }
+
+        // Store the pending order for persistence on drag end (only actual type widget IDs)
+        val currentOrder = actualTypeWidgets.map { it.id }.toMutableList()
+        val movedItem = currentOrder.removeAt(from)
+        currentOrder.add(to, movedItem)
+
+        pendingTypeWidgetOrder = currentOrder
+
+        Timber.d("DROID-3965, onTypeWidgetOrderChanged: New pending order: ${currentOrder.map { it.takeLast(4) + "..." }}")
+    }
+
+    /**
+     * Called when the drag operation for type widgets ends.
+     *
+     * This method persists the order changes made during the drag operation
+     * using the UpdateObjectTypesOrderIds use case and resets the local state.
+     */
+    fun onTypeWidgetDragEnd() {
+        Timber.d("DROID-3965, onTypeWidgetDragEnd called")
+
+        // Persist the order changes made during the drag operation
+        pendingTypeWidgetOrder?.let { newOrder ->
+            viewModelScope.launch {
+                Timber.d("DROID-3965, Persisting type widget order: ${newOrder.map { it.takeLast(4) + "..." }}")
+
+                // Activate event lock before sending to middleware to prevent race conditions
+                activateTypeWidgetEventLock()
+
+                updateObjectTypesOrderIds.async(
+                    UpdateObjectTypesOrderIds.Params(
+                        spaceId = vmParams.spaceId,
+                        orderedIds = newOrder
+                    )
+                ).fold(
+                    onFailure = { error ->
+                        Timber.e(error, "DROID-3965, Failed to reorder type widgets: $newOrder")
+                        clearTypeWidgetDragState()
+                    },
+                    onSuccess = { finalOrder ->
+                        Timber.d("DROID-3965, Successfully reordered type widgets with final order: $finalOrder")
+                        clearTypeWidgetDragState()
+                    }
+                )
+            }
+        } ?: run {
+            Timber.d("DROID-3965, No pending type widget order changes, clearing drag state")
+            clearTypeWidgetDragState()
+        }
+    }
+
+    /**
+     * Activates the event lock for type widgets to prevent race conditions.
+     * Should be called before sending a drag-and-drop order change to middleware.
+     */
+    private fun activateTypeWidgetEventLock() {
+        typeWidgetEventLockTimestamp = System.currentTimeMillis()
+        Timber.d("DROID-3951, Type widget event lock activated at $typeWidgetEventLockTimestamp")
+    }
+
+    /**
+     * Checks if the type widget event lock is currently active.
+     * The lock is active if it was set within the last TYPE_WIDGET_EVENT_LOCK_DURATION_MS milliseconds.
+     */
+    private fun isTypeWidgetEventLockActive(): Boolean {
+        val lockTimestamp = typeWidgetEventLockTimestamp ?: return false
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - lockTimestamp
+        val isActive = elapsedTime < TYPE_WIDGET_EVENT_LOCK_DURATION_MS
+
+        if (!isActive) {
+            Timber.d("DROID-3951, Type widget event lock expired (elapsed: ${elapsedTime}ms)")
+            typeWidgetEventLockTimestamp = null
+        }
+
+        return isActive
+    }
+
+    /**
+     * Clears the drag-and-drop state for type widgets.
+     *
+     * This method is called after the middleware responds to a drag-and-drop operation.
+     * It clears the pending order but DOES NOT clear the event lock timestamp.
+     *
+     * The lock must remain active for its full duration (TYPE_WIDGET_EVENT_LOCK_DURATION_MS)
+     * because events can arrive AFTER the middleware response. These post-response events
+     * need to be ignored to prevent overwriting the optimistic UI update.
+     *
+     * The lock will expire automatically via isTypeWidgetEventLockActive() checks.
+     */
+    private fun clearTypeWidgetDragState() {
+        Timber.d("DROID-3965, Clearing type widget drag state (lock remains active)")
+        pendingTypeWidgetOrder = null
+        // NOTE: We do NOT clear typeWidgetEventLockTimestamp here
+        // The lock must remain active for the full duration to block post-response events
+    }
+    //endregion
+
     fun proceedWithExitingToVault() {
         viewModelScope.launch {
             proceedWithClearingSpaceBeforeExitingToVault()
@@ -2953,6 +3048,32 @@ class HomeScreenViewModel(
         ) : SpaceViewState()
 
         data class Failure(val e: Throwable) : SpaceViewState()
+    }
+
+    // Delegate for creating widget containers
+    private val widgetContainerDelegate: WidgetContainerDelegate by lazy {
+        WidgetContainerDelegateImpl(
+            spaceId = vmParams.spaceId,
+            chatPreviews = chatPreviews,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            notificationPermissionManager = notificationPermissionManager,
+            fieldParser = fieldParser,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            treeWidgetBranchStateHolder = treeWidgetBranchStateHolder,
+            expandedWidgetIds = expandedWidgetIds,
+            userSettingsRepository = userSettingsRepository,
+            isSessionActive = isSessionActive,
+            urlBuilder = urlBuilder,
+            objectWatcher = objectWatcher,
+            getSpaceView = getSpaceView,
+            storeOfObjectTypes = storeOfObjectTypes,
+            getObject = getObject,
+            coverImageHashProvider = coverImageHashProvider,
+            storeOfRelations = storeOfRelations,
+            dispatchers = appCoroutineDispatchers,
+            observeCurrentWidgetView = ::observeCurrentWidgetView,
+            isWidgetCollapsed = ::isWidgetCollapsed
+        )
     }
 
     class Factory @Inject constructor(
@@ -3083,6 +3204,10 @@ class HomeScreenViewModel(
 
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
+
+        // Duration in milliseconds to lock type widget event processing after a drag operation
+        // This prevents incoming middleware events from overwriting optimistic UI updates
+        private const val TYPE_WIDGET_EVENT_LOCK_DURATION_MS = 1500L
     }
 }
 

@@ -9,14 +9,10 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -35,7 +31,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -50,11 +45,10 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.ViewerSpaceSe
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
-import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
-import com.anytypeio.anytype.ui.multiplayer.QrCodeScreen
+import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
@@ -70,7 +64,7 @@ import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
-class HomeScreenFragment : Fragment(),
+class WidgetsScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
     WidgetSourceTypeListener {
 
@@ -129,11 +123,9 @@ class HomeScreenFragment : Fragment(),
                 }
             }
         ) { paddingValues ->
-            PageWithWidgets(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues)
-                    .navigationBarsPadding()
+            WidgetsScreen(
+                viewModel = vm,
+                paddingValues = paddingValues
             )
         }
 
@@ -194,43 +186,6 @@ class HomeScreenFragment : Fragment(),
         BackHandler {
             vm.onBackClicked()
         }
-    }
-
-    @Composable
-    fun PageWithWidgets(
-        modifier: Modifier = Modifier
-    ) {
-        HomeScreen(
-            modifier = modifier,
-            widgets = vm.views.collectAsState().value,
-            mode = vm.mode.collectAsState().value,
-            onExpand = { path -> vm.onExpand(path) },
-            onCreateWidget = vm::onCreateWidgetClicked,
-            onExitEditMode = vm::onExitEditMode,
-            onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                vm.onDropDownMenuAction(widget, action)
-            },
-            onWidgetElementClicked = vm::onWidgetElementClicked,
-            onWidgetSourceClicked = vm::onWidgetSourceClicked,
-            onChangeWidgetView = vm::onChangeCurrentWidgetView,
-            onToggleExpandedWidgetState = vm::onToggleWidgetExpandedState,
-            onSearchClicked = vm::onSearchIconClicked,
-            onCreateNewObjectClicked = throttledClick(
-                onClick = { vm.onCreateNewObjectClicked() }
-            ),
-            onCreateNewObjectLongClicked = throttledClick(
-                onClick = { vm.onCreateNewObjectLongClicked() }
-            ),
-            onMove = vm::onMove,
-            onObjectCheckboxClicked = vm::onObjectCheckboxClicked,
-            onNavBarShareButtonClicked = vm::onNavBarShareIconClicked,
-            navPanelState = vm.navPanelState.collectAsStateWithLifecycle().value,
-            onHomeButtonClicked = vm::onHomeButtonClicked,
-            onCreateElement = vm::onCreateWidgetElementClicked,
-            onWidgetMenuTriggered = vm::onWidgetMenuTriggered,
-            onCreateNewTypeClicked = vm::onCreateNewTypeClicked,
-            onSectionClicked = vm::onSectionClicked
-        )
     }
 
     override fun onStart() {

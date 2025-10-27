@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
@@ -120,33 +119,13 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
-    sealed class Section : Widget() {
-        data class Pinned(
-            override val id: Id = SECTION_PINNED,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.PINNED
-        ) : Section()
-
-        data class ObjectType(
-            override val id: Id = SECTION_OBJECT_TYPE,
-            override val source: Source = Source.Other,
-            override val config: Config,
-            override val isAutoCreated: Boolean = false,
-            override val icon: ObjectIcon = ObjectIcon.None,
-            override val sectionType: SectionType = SectionType.TYPES
-        ) : Section()
-    }
-
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
         override val config: Config,
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon = ObjectIcon.None,
-        override val sectionType: SectionType = SectionType.PINNED
+        override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
     sealed class Source {
@@ -404,89 +383,161 @@ data class WidgetUiParams(
 )
 
 /**
- * Pure function: computes list of widgets from the current Success state and UI params.
- * No side effects; suitable for unit testing.
+ * Result of building widgets, separated into sections.
+ *
+ * @property chatWidget The space chat widget, displayed separately at the top (for shared spaces)
+ * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
+ * @property typeWidgets Widgets from the object type section
+ * @property binWidget The bin widget, displayed separately at the bottom
  */
-suspend fun buildWidgets(
+data class WidgetSections(
+    val chatWidget: Widget.Chat? = null,
+    val pinnedWidgets: List<Widget>,
+    val typeWidgets: List<Widget>,
+    val binWidget: Widget.Bin? = null
+)
+
+suspend fun buildWidgetSections(
     spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success,
     params: WidgetUiParams,
     urlBuilder: UrlBuilder,
     storeOfObjectTypes: StoreOfObjectTypes
-): List<Widget> {
+): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
-    return buildList {
 
-        //Space chat widget for Shared Data Spaces
-        val spaceChatId = state.config.spaceChatId
-        if (!spaceChatId.isNullOrEmpty()
-            && spaceView.isShared
-            && spaceView.spaceUxType != SpaceUxType.CHAT
-        ) {
-            add(Widget.Chat(config = state.config))
-        }
+    // Build space chat widget (displayed separately at top for shared spaces)
+    val chatWidget = buildChatWidget(
+        spaceView = spaceView,
+        state = state
+    )
 
-        // Pinned widgets (from blocks)
-        val pinnedWidgets = state.obj.blocks.parseWidgets(
-            root = state.obj.root,
-            details = state.obj.details,
-            config = state.config,
-            urlBuilder = urlBuilder,
-            storeOfObjectTypes = storeOfObjectTypes
-        )
-            .filterNot { widget ->
-                widget.source is Widget.Source.Bundled.Bin
-            }
+    // Build pinned section
+    val pinnedWidgets = buildPinnedSection(
+        state = state,
+        isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes
+    )
 
-        val isPinnedSectionCollapsed =
-            currentCollapsedSections.contains(Widget.Source.SECTION_PINNED)
+    // Build type section
+    val typeWidgets = buildTypeSection(
+        state = state,
+        params = params,
+        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
+        storeOfObjectTypes = storeOfObjectTypes,
+        isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
+    )
 
-        if (pinnedWidgets.isNotEmpty()) {
-            if (!isPinnedSectionCollapsed) {
-                add(Widget.Section.Pinned(config = state.config))
-                addAll(pinnedWidgets)
-            } else {
-                add(Widget.Section.Pinned(config = state.config))
-            }
-        }
+    // Build bin widget (displayed separately at bottom)
+    val binWidget = buildBinWidget(
+        state = state,
+        params = params
+    )
 
-        add(Widget.Section.ObjectType(config = state.config))
+    return WidgetSections(
+        chatWidget = chatWidget,
+        pinnedWidgets = pinnedWidgets,
+        typeWidgets = typeWidgets,
+        binWidget = binWidget
+    )
+}
 
-        // ObjectType widgets
-        val isObjectTypeSectionCollapsed =
-            currentCollapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+/**
+ * Builds the space chat widget for data spaces with chat.
+ * Displayed separately at the top, above all sections.
+ */
+private fun buildChatWidget(
+    spaceView: ObjectWrapper.SpaceView,
+    state: ObjectViewState.Success
+): Widget.Chat? {
+    val spaceChatId = spaceView.chatId
+    return if (!spaceChatId.isNullOrEmpty()
+        && spaceView.spaceUxType != SpaceUxType.CHAT
+    ) {
+        Widget.Chat(config = state.config)
+    } else {
+        null
+    }
+}
 
-        val pinnedSectionStateDesc =
-            if (isPinnedSectionCollapsed) "collapsed" else "expanded"
-        val objectTypeSectionStateDesc =
-            if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+/**
+ * Builds the pinned widgets section with user-arranged widgets.
+ */
+private suspend fun buildPinnedSection(
+    state: ObjectViewState.Success,
+    isPinnedSectionCollapsed: Boolean,
+    urlBuilder: UrlBuilder,
+    storeOfObjectTypes: StoreOfObjectTypes
+): List<Widget> = buildList {
+    // Pinned widgets (from blocks)
+    val userPinnedWidgets = state.obj.blocks.parseWidgets(
+        root = state.obj.root,
+        details = state.obj.details,
+        config = state.config,
+        urlBuilder = urlBuilder,
+        storeOfObjectTypes = storeOfObjectTypes
+    ).filterNot { widget ->
+        widget.source is Widget.Source.Bundled.Bin
+    }
 
-        if (!isObjectTypeSectionCollapsed) {
-            val types = mapSpaceTypesToWidgets(
-                isOwnerOrEditor = params.isOwnerOrEditor,
-                config = state.config,
-                storeOfObjectTypes = storeOfObjectTypes
-            )
-            addAll(types)
-            if (params.isOwnerOrEditor) {
-                add(
-                    Widget.Bin(
-                        id = WIDGET_BIN_ID,
-                        source = Widget.Source.Bundled.Bin,
-                        config = state.config,
-                        icon = ObjectIcon.None,
-                        sectionType = SectionType.PINNED
-                    )
-                )
-            }
-            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets added: ${types.size}")
-        } else {
-            Timber.d("Section states - Pinned: $pinnedSectionStateDesc, ObjectType: $objectTypeSectionStateDesc, ObjectType widgets: 0 (section collapsed)")
+    if (userPinnedWidgets.isNotEmpty()) {
+        // Add widgets only if section is expanded
+        if (!isPinnedSectionCollapsed) {
+            addAll(userPinnedWidgets)
         }
     }
 }
 
-private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Config, storeOfObjectTypes: StoreOfObjectTypes): List<Widget> {
+/**
+ * Builds the object type widgets section.
+ */
+private suspend fun buildTypeSection(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams,
+    isObjectTypeSectionCollapsed: Boolean,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    isChatSpace: Boolean
+): List<Widget> = buildList {
+
+    val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
+
+    if (!isObjectTypeSectionCollapsed) {
+        val types = mapSpaceTypesToWidgets(
+            isOwnerOrEditor = params.isOwnerOrEditor,
+            config = state.config,
+            storeOfObjectTypes = storeOfObjectTypes,
+            isChatSpace = isChatSpace
+        )
+        addAll(types)
+        Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
+    } else {
+        Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+    }
+}
+
+private fun buildBinWidget(
+    state: ObjectViewState.Success,
+    params: WidgetUiParams
+): Widget.Bin? {
+    return if (params.isOwnerOrEditor) {
+        Widget.Bin(
+            id = WIDGET_BIN_ID,
+            source = Widget.Source.Bundled.Bin,
+            config = state.config,
+            icon = ObjectIcon.None
+        )
+    } else {
+        null
+    }
+}
+
+internal suspend fun mapSpaceTypesToWidgets(
+    isOwnerOrEditor: Boolean,
+    config: Config,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    isChatSpace: Boolean
+): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
@@ -504,32 +555,73 @@ private suspend fun mapSpaceTypesToWidgets(isOwnerOrEditor: Boolean, config: Con
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
-    // Partition types like SpaceTypesViewModel: myTypes can be deleted, systemTypes cannot
-    val (myTypes, systemTypes) = filteredObjectTypes.partition { objectType ->
-        !objectType.restrictions.contains(ObjectRestriction.DELETE)
+    // Define custom sort order based on uniqueKey
+    val customUniqueKeyOrder = if (!isChatSpace) {
+        listOf(
+            ObjectTypeIds.PAGE,
+            ObjectTypeIds.NOTE,
+            ObjectTypeIds.TASK,
+            ObjectTypeIds.COLLECTION,
+            ObjectTypeIds.SET,
+            ObjectTypeIds.BOOKMARK,
+            ObjectTypeIds.PROJECT,
+            ObjectTypeIds.IMAGE,
+            ObjectTypeIds.FILE,
+            ObjectTypeIds.VIDEO,
+            ObjectTypeIds.AUDIO
+        )
+    } else {
+        listOf(
+            ObjectTypeIds.IMAGE,
+            ObjectTypeIds.BOOKMARK,
+            ObjectTypeIds.FILE,
+            ObjectTypeIds.PAGE,
+            ObjectTypeIds.NOTE,
+            ObjectTypeIds.TASK,
+            ObjectTypeIds.COLLECTION,
+            ObjectTypeIds.SET,
+            ObjectTypeIds.PROJECT,
+            ObjectTypeIds.VIDEO,
+            ObjectTypeIds.AUDIO
+        )
     }
 
-    val allTypeWidgetIds = mutableListOf<Id>()
+    val sortedTypes = sortObjectTypesByPriority(filteredObjectTypes, customUniqueKeyOrder)
 
-    val widgetList = buildList {
-        // Add user-created types first (deletable)
-        for (objectType in myTypes) {
-            val widget = createWidgetViewFromType(objectType, config)
-            add(widget)
-            // Track all type widgets for initial collapsed state
-            allTypeWidgetIds.add(widget.id)
-        }
-
-        // Add system types (not deletable)
-        for (objectType in systemTypes) {
-            val widget = createWidgetViewFromType(objectType, config)
-            add(widget)
-            // Track all type widgets for initial collapsed state
-            allTypeWidgetIds.add(widget.id)
-        }
+    return sortedTypes.map { objectType ->
+        createWidgetViewFromType(objectType, config)
     }
+}
 
-    return widgetList
+/** Sorts a list of ObjectWrapper.Type objects by priority.
+ * 1. Primary: orderId (ascending, nulls at end)
+ * 2. Secondary: customUniqueKeyOrder (position in list)
+ * 3. Tertiary: name (ascending)
+ *
+ * @param types The list of ObjectWrapper.Type objects to sort.
+ * @param customUniqueKeyOrder The custom order of unique keys to use for secondary sorting.
+ * @return A new list of ObjectWrapper.Type objects sorted by the specified priority.
+ */
+private fun sortObjectTypesByPriority(
+    types: List<ObjectWrapper.Type>,
+    customUniqueKeyOrder: List<String>
+): List<ObjectWrapper.Type> {
+    return types.sortedWith(
+        compareBy<ObjectWrapper.Type> { objectType ->
+            // Primary sort: orderId presence (items with orderId come first)
+            if (objectType.orderId != null) 0 else 1
+        }.thenBy { objectType ->
+            // Primary sort continuation: orderId value (for items that have orderId)
+            objectType.orderId ?: ""
+        }.thenBy { objectType ->
+            // Secondary sort: custom order by uniqueKey
+            val index = customUniqueKeyOrder.indexOf(objectType.uniqueKey)
+            if (index >= 0) index else Int.MAX_VALUE
+        }.thenBy { objectType ->
+            // Tertiary sort: name (case-insensitive)
+            objectType.name?.lowercase() ?: ""
+        }
+    )
 }
 
 /**

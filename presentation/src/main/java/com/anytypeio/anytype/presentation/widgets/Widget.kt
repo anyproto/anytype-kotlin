@@ -451,7 +451,7 @@ private fun buildChatWidget(
     spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success
 ): Widget.Chat? {
-    val spaceChatId = state.config.spaceChatId
+    val spaceChatId = spaceView.chatId
     return if (!spaceChatId.isNullOrEmpty()
         && spaceView.spaceUxType != SpaceUxType.CHAT
     ) {

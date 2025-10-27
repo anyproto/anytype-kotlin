@@ -199,7 +199,8 @@ class OnboardingStartViewModel @Inject constructor(
                 navigateTo(
                     AuthNavigation.ProceedWithSignUp(
                         spaceId = space,
-                        startingObjectId = result.startingObject,
+                        //DROID-4065, Start from the Vault after onboarding
+                        startingObjectId = null,
                         profileId = profileId
                     )
                 )

@@ -203,7 +203,6 @@ class OnboardingEmailAndSelectionViewModel @Inject constructor(
                 //DROID-4065, Start from the Vault after onboarding
                 navigation.emit(Navigation.OpenVault)
             }
-
             else -> navigation.emit(Navigation.OpenVault)
         }
     }

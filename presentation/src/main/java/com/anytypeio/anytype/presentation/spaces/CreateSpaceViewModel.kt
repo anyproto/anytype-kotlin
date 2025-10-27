@@ -237,7 +237,7 @@ class CreateSpaceViewModel(
                 } else {
                     finishDataSpaceCreation(
                         spaceId = spaceId,
-                        //DROID-4065: open Data Space from Widget's Screen
+                        //DROID-4065: opens Data Space from Widget's Screen
                         startingObject = null
                     )
                 }

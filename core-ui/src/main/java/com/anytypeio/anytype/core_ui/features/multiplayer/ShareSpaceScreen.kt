@@ -530,6 +530,8 @@ private fun SpaceMember(
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit = {}
 ) {
+    val isViewRequest = memberView.contextActions.any { it.actionType == SpaceMemberView.ActionType.VIEW_REQUEST }
+
     Row(
         modifier = Modifier
             .height(72.dp)
@@ -537,10 +539,35 @@ private fun SpaceMember(
             .noRippleThrottledClickable { onMemberClicked(memberView.obj) }
     ) {
         Spacer(modifier = Modifier.width(16.dp))
-        SpaceMemberIcon(
-            icon = memberView.icon,
+        Box(
             modifier = Modifier.align(Alignment.CenterVertically)
-        )
+        ) {
+            SpaceMemberIcon(
+                icon = memberView.icon,
+                modifier = Modifier
+            )
+            if (isViewRequest) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .align(Alignment.TopEnd)
+                        .background(
+                            color = colorResource(id = R.color.background_primary),
+                            shape = CircleShape
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(8.dp)
+                            .background(
+                                color = colorResource(id = R.color.control_accent),
+                                shape = CircleShape
+                            )
+                    )
+                }
+            }
+        }
         Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier
@@ -586,7 +613,8 @@ private fun SpaceMember(
             contextActions = memberView.contextActions,
             memberView = memberView,
             onContextActionClicked = onContextActionClicked,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically),
+            isViewRequest = isViewRequest
         )
         Spacer(modifier = Modifier.width(16.dp))
     }
@@ -598,7 +626,8 @@ private fun MemberStatusWithDropdown(
     contextActions: List<SpaceMemberView.ContextAction>,
     memberView: SpaceMemberView,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isViewRequest: Boolean
 ) {
     var isMemberMenuExpanded by remember { mutableStateOf(false) }
 
@@ -615,7 +644,13 @@ private fun MemberStatusWithDropdown(
                     Text(
                         text = text,
                         style = Title3,
-                        color = colorResource(id = R.color.text_primary)
+                        color = colorResource(
+                            id = if (isViewRequest) {
+                                R.color.text_secondary
+                            } else {
+                                R.color.text_primary
+                            }
+                        )
                     )
                 }
 
@@ -624,7 +659,15 @@ private fun MemberStatusWithDropdown(
                 Image(
                     painter = painterResource(id = R.drawable.ic_arrow_down_18),
                     contentDescription = "Menu button",
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary))
+                    colorFilter = ColorFilter.tint(
+                        colorResource(
+                            id = if (isViewRequest) {
+                                R.color.text_secondary
+                            } else {
+                                R.color.text_primary
+                            }
+                        )
+                    )
                 )
             }
 
@@ -701,7 +744,7 @@ fun SpaceMemberIcon(
                 modifier = modifier
                     .size(iconSize)
                     .clip(CircleShape)
-                    .background(color = colorResource(id = R.color.text_tertiary))
+                    .background(color = colorResource(id = R.color.shape_tertiary))
             ) {
                 Text(
                     text = icon
@@ -713,7 +756,7 @@ fun SpaceMemberIcon(
                     style = TextStyle(
                         fontSize = textSize,
                         fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.text_white)
+                        color = colorResource(id = R.color.control_secondary)
                     )
                 )
             }

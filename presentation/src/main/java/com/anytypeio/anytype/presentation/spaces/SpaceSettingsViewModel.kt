@@ -330,8 +330,8 @@ class SpaceSettingsViewModel(
 
                     if (spaceView.isPossibleToShare) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
-                        // Show colored badge when owner has pending join requests
-                        val membersCountWithColor = permission?.isOwner() == true && requests > 0
+                        val requestsCount =
+                            if (permission?.isOwner() == true && requests > 0) requests else null
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))
@@ -339,8 +339,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -351,8 +351,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -363,8 +363,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -373,8 +373,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = null,
+                                        withColor = false,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )

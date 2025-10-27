@@ -838,6 +838,8 @@
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
     <string name="create_space_change_icon">Simgeyi değiştir</string>
+    <string name="create_space_chat_name">Sohbet adı</string>
+    <string name="create_space_space_name">Alan ismi</string>
     <string name="generic_error">Bir şeyler yanlış gitti. Lütfen tekrar deneyin.</string>
     <string name="type">Tür</string>
     <string name="format">Biçim</string>
@@ -1042,7 +1044,7 @@
     <string name="onboarding_terms_and_policy_privacy">Gizlilik\u00A0Politika</string>
     <string name="onboarding_new_vault_button_text">Burada yeniyim</string>
     <string name="onboarding_enter_my_vault">Devam et</string>
-    <string name="onboarding_have_key_button_text">Anahtara zaten sahibim</string>
+    <string name="onboarding_have_key_button_text">Mevcut anahtarım var</string>
     <string name="onboarding_get_my_key_button_text">Anahtarımı getir</string>
     <string name="onboarding_invite_code_title">Davet kodunuzu girin</string>
     <string name="onboarding_invite_code_description">Eğer sahip değilseniz anytype.io adresine gidin\n ve bekleme listesine kaydolun.</string>
@@ -1693,8 +1695,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chats_edit_message">Mesajı düzenle</string>
     <string name="chats_message_edited">düzenlendi</string>
     <string name="chat_empty_state_message">Burada henüz bir mesaj yok.\nTartışma başlatan ilk kişi siz olun.</string>
-    <string name="chat_empty_state_title">Bu sohbet boş.</string>
+    <string name="chat_empty_state_title">Henüz mesaj yok</string>
     <string name="chat_empty_state_subtitle">İnsanları davet edin ve sohbete başlayın!</string>
+    <string name="chat_empty_state_feature_yours_forever">Sonsuza kadar sizin</string>
+    <string name="chat_empty_state_feature_offline">Mesajlar, belgeler &amp; dosyalar çevrimdışı kullanılabilir</string>
+    <string name="chat_empty_state_feature_encrypted">Tamamen gizli ve şifreli</string>
+    <string name="chat_empty_state_add_members_button">Üye ekle</string>
+    <string name="chat_empty_state_show_qr_button">Kare kodu göster</string>
     <string name="chat_empty_state_share_invite_button">Üyeleri davet edin</string>
     <string name="write_a_message">Bir mesaj yazın...</string>
     <string name="date_layout_mentioned_in">Bahsetmeler</string>
@@ -1912,6 +1919,16 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_create_chat_description">Gerçek zamanlı görüşmeler için</string>
     <string name="vault_create_space">Yeni Alan</string>
     <string name="vault_create_space_description">Düzenli içerik ve veriler için</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Fikirler konuşulmaya ihtiyaç duyar</string>
+    <string name="spaces_introduction_page1_description">Anytype artık Paylaşılan Kanallarda gerçek zamanlı sohbeti destekliyor — böylece düşünceleriniz ve diyaloglarınız birlikte gelişebilir.</string>
+    <string name="spaces_introduction_page2_title">Kasanız seviye atladı</string>
+    <string name="spaces_introduction_page2_description">Alanlar ve Sohbetler artık canlı önizlemeleri ve güncellemeleri gösteriyor — önemli olan her şeyi takip edebileceğiniz tek yer.</string>
+    <string name="spaces_introduction_page3_title">Daha fazlasını yapan sohbetler</string>
+    <string name="spaces_introduction_page3_description">Fikirlerinizi paylaşın, belgeler yollayın, birlikte düzenleyin — her şey gerçek zamanlı olarak akar.</string>
+    <string name="spaces_introduction_page4_title">Her şey yerli yerinde</string>
+    <string name="spaces_introduction_page4_description">Sayfalarınız, listeleriniz ve dosyalarınız — yapılandırılmış, görünür ve her zaman ulaşılabilir.</string>
+    <string name="spaces_introduction_try_it">Hadi deneyelim</string>
     <string name="vault_empty_state_text">Henüz alan yok</string>
     <string name="vault_empty_search_state_text">Eşleşme bulunamadı</string>
     <string name="chat_new_messages_section_text">Yeni mesajlar</string>
@@ -1961,7 +1978,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsiniz. Yardım için lütfen alan sahibiyle iletişime geçin.</string>
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
-    <string name="private_local_yours_forever">Gizli, yerel, sonsuza kadar sizin</string>
+    <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
     <string name="wallpaper_item_space_icon_color">Varsayılan Renk</string>
     <string name="publish_to_web">Web\'de Yayınla</string>
     <string name="preferences">Tercihler</string>

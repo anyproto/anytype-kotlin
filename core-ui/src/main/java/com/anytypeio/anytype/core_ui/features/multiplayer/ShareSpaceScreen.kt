@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
@@ -57,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
@@ -87,7 +85,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.ButtonUpgradeBlack
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium

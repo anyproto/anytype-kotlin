@@ -524,6 +524,32 @@ private fun AddEditorsIncentive(
 
 enum class DragValue { DRAGGED_DOWN, DRAGGED_UP }
 
+/**
+ * Displays a notification badge for pending join requests.
+ * The badge consists of a white background circle (12dp) with a blue dot (8dp) centered inside.
+ */
+@Composable
+private fun PendingRequestBadge(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(12.dp)
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(
+                    color = colorResource(id = R.color.control_accent),
+                    shape = CircleShape
+                )
+        )
+    }
+}
+
 @Composable
 private fun SpaceMember(
     memberView: SpaceMemberView,
@@ -547,25 +573,9 @@ private fun SpaceMember(
                 modifier = Modifier
             )
             if (isViewRequest) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .align(Alignment.TopEnd)
-                        .background(
-                            color = colorResource(id = R.color.background_primary),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(8.dp)
-                            .background(
-                                color = colorResource(id = R.color.control_accent),
-                                shape = CircleShape
-                            )
-                    )
-                }
+                PendingRequestBadge(
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
             }
         }
         Spacer(modifier = Modifier.width(12.dp))

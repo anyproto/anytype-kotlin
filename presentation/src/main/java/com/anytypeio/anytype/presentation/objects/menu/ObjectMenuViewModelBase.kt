@@ -9,12 +9,14 @@ import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -47,6 +49,7 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
+import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -433,6 +436,21 @@ abstract class ObjectMenuViewModelBase(
         viewModelScope.launch {
             val config = spaceManager.getConfig()
             if (config != null && obj.isValid) {
+
+                var target: Id?  = null
+
+                showObject.async(
+                    GetObject.Params(
+                        target = config.widgets,
+                        space = SpaceId(config.space),
+                        saveAsLastOpened = false
+                    )
+                ).onSuccess { objectView ->
+                    objectView.blocks.find { it.content is Block.Content.Widget }?.let {
+                        target = it.id
+                    }
+                }
+
                 val params = CreateWidget.Params(
                     ctx = config.widgets,
                     source = obj.id,
@@ -446,7 +464,9 @@ abstract class ObjectMenuViewModelBase(
                         else -> {
                             WidgetLayout.TREE
                         }
-                    }
+                    },
+                    position = Position.TOP,
+                    target = target
                 )
                 createWidget.async(params).fold(
                     onSuccess = { payload ->

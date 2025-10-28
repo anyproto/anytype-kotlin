@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget_reader_access">Dieses Objekt ist mit keinem anderen Objekt verlinkt</string>
-    <string name="empty_list_widget_no_objects">Keine Objekte innerhalb</string>
+    <string name="empty_list_widget_no_objects">Hier gibt es keine Objekte</string>
     <string name="empty_list_widget_no_view">Diese Datenansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="this_widget_has_no_object">Dieses Widget hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="emoji">Emoji</string>

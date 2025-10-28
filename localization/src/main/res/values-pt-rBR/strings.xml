@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Configurações da propriedade</string>
     <string name="type_editing_uninstall">Remover</string>
     <string name="empty_tree_widget_reader_access">Esse objeto não possui ligações para outros objetos.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Não há objetos aqui</string>
     <string name="empty_list_widget_no_view">Esta visualização de dados não tem objetos. \nTente criar objetos.</string>
     <string name="this_widget_has_no_object">Esse componente não tem objetos. \nTente criar um objeto.</string>
     <string name="emoji">Emoji</string>

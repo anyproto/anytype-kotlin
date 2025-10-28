@@ -751,7 +751,6 @@ fun DataViewListWidgetCard_Compact_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-2",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Quick Access"))
@@ -831,7 +830,6 @@ fun DataViewListWidgetCard_Empty_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-4",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Empty Collection"))
@@ -861,7 +859,6 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-5",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "My Library"))
@@ -897,7 +894,6 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-6",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Project Tasks"))
@@ -960,7 +956,6 @@ fun DataViewListWidgetCard_EditMode_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-7",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Editable List"))
@@ -1001,7 +996,6 @@ fun DataViewListWidgetCard_Favorites_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-8",
-
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Bundled.Favorites,
             tabs = emptyList(),

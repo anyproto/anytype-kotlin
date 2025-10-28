@@ -330,7 +330,7 @@ class DataViewListWidgetContainer(
                 // Sets: use setOf as source (only if not empty)
                 val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
                 if (setOf.isEmpty()) {
-                    Timber.w("Widget ${widget.id}: setOf is empty, skipping subscription to avoid loading state")
+                    Timber.w("Widget ${widget.id}: setOf is empty, cannot create subscription parameters for Query widget")
                     null
                 } else {
                     StoreSearchParams(

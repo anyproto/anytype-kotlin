@@ -682,6 +682,368 @@ fun GalleryWidgetItemCard_NoCoverShort_Preview() {
     )
 }
 
+// ========================================
+// DataViewListWidgetCard Previews
+// ========================================
+
+// Preview 1: Standard expanded list with multiple elements
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Standard List - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Standard List - Dark")
+@Composable
+fun DataViewListWidgetCard_Standard_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-1",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "My Notes"))
+            ),
+            tabs = emptyList(),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("💡"),
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "obj-1",
+                            Relations.NAME to "Product Ideas",
+                            Relations.DESCRIPTION to "Brainstorming session notes"
+                        )
+                    ),
+                    name = WidgetView.Name.Default("Product Ideas")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📊"),
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "obj-2",
+                            Relations.NAME to "Q4 Planning",
+                            Relations.DESCRIPTION to ""
+                        )
+                    ),
+                    name = WidgetView.Name.Default("Q4 Planning")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("✅"),
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "obj-3",
+                            Relations.NAME to "Weekly Tasks"
+                        )
+                    ),
+                    name = WidgetView.Name.Default("Weekly Tasks")
+                )
+            ),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Default("My Notes")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 2: Compact view
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Compact List - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Compact List - Dark")
+@Composable
+fun DataViewListWidgetCard_Compact_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-2",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Quick Access"))
+            ),
+            tabs = emptyList(),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("🏠"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Home Dashboard")),
+                    name = WidgetView.Name.Default("Home Dashboard")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📁"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Projects Folder")),
+                    name = WidgetView.Name.Default("Projects Folder")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📖"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Reading List")),
+                    name = WidgetView.Name.Default("Reading List")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("🔖"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-4", Relations.NAME to "Bookmarks")),
+                    name = WidgetView.Name.Default("Bookmarks")
+                )
+            ),
+            isExpanded = true,
+            isCompact = true,
+            name = WidgetView.Name.Default("Quick Access")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 3: Loading state
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Loading State - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Loading State - Dark")
+@Composable
+fun DataViewListWidgetCard_Loading_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-3",
+            isLoading = true,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Loading Widget"))
+            ),
+            tabs = emptyList(),
+            elements = emptyList(),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Default("Loading Widget")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 4: Empty state (no loading)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Empty State - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Empty State - Dark")
+@Composable
+fun DataViewListWidgetCard_Empty_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-4",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Empty Collection"))
+            ),
+            tabs = emptyList(),
+            elements = emptyList(),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Default("Empty Collection")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 5: Collapsed state
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Collapsed - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Collapsed - Dark")
+@Composable
+fun DataViewListWidgetCard_Collapsed_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-5",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "My Library"))
+            ),
+            tabs = emptyList(),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📖"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Book 1")),
+                    name = WidgetView.Name.Default("Book 1")
+                )
+            ),
+            isExpanded = false,
+            isCompact = false,
+            name = WidgetView.Name.Default("My Library")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 6: With multiple tabs (views)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Multiple Tabs - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Multiple Tabs - Dark")
+@Composable
+fun DataViewListWidgetCard_WithTabs_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-6",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Project Tasks"))
+            ),
+            tabs = listOf(
+                WidgetView.SetOfObjects.Tab(
+                    id = "view-1",
+                    name = "All Tasks",
+                    isSelected = true
+                ),
+                WidgetView.SetOfObjects.Tab(
+                    id = "view-2",
+                    name = "In Progress",
+                    isSelected = false
+                ),
+                WidgetView.SetOfObjects.Tab(
+                    id = "view-3",
+                    name = "Completed",
+                    isSelected = false
+                )
+            ),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Task(isChecked = false),
+                    obj = ObjectWrapper.Basic(
+                        mapOf(
+                            Relations.ID to "task-1",
+                            Relations.NAME to "Design mockups",
+                            Relations.DESCRIPTION to "Create UI designs for new feature"
+                        )
+                    ),
+                    name = WidgetView.Name.Default("Design mockups")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Task(isChecked = false),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "task-2", Relations.NAME to "Code review")),
+                    name = WidgetView.Name.Default("Code review")
+                )
+            ),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Default("Project Tasks")
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 7: Edit mode
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Edit Mode - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Edit Mode - Dark")
+@Composable
+fun DataViewListWidgetCard_EditMode_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-7",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Default(
+                obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Editable List"))
+            ),
+            tabs = emptyList(),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📄"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Document 1")),
+                    name = WidgetView.Name.Default("Document 1")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("📝"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Document 2")),
+                    name = WidgetView.Name.Default("Document 2")
+                )
+            ),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Default("Editable List")
+        ),
+        mode = InteractionMode.Edit,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
+// Preview 8: Bundled source (Favorites)
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_NO, name = "Favorites Widget - Light")
+@Preview(showBackground = true, uiMode = UI_MODE_NIGHT_YES, name = "Favorites Widget - Dark")
+@Composable
+fun DataViewListWidgetCard_Favorites_Preview() {
+    DataViewListWidgetCard(
+        item = WidgetView.SetOfObjects(
+            id = "widget-8",
+            isLoading = false,
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+            source = Widget.Source.Bundled.Favorites,
+            tabs = emptyList(),
+            elements = listOf(
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("💼"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Work Notes")),
+                    name = WidgetView.Name.Default("Work Notes")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("🎨"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Design System")),
+                    name = WidgetView.Name.Default("Design System")
+                ),
+                WidgetView.SetOfObjects.Element(
+                    objectIcon = ObjectIcon.Basic.Emoji("🚀"),
+                    obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Launch Plan")),
+                    name = WidgetView.Name.Default("Launch Plan")
+                )
+            ),
+            isExpanded = true,
+            isCompact = false,
+            name = WidgetView.Name.Bundled(Widget.Source.Bundled.Favorites)
+        ),
+        mode = InteractionMode.Default,
+        onWidgetObjectClicked = {},
+        onWidgetSourceClicked = {},
+        onWidgetMenuTriggered = {},
+        onDropDownMenuAction = {},
+        onChangeWidgetView = { _, _ -> },
+        onToggleExpandedWidgetState = {},
+        onObjectCheckboxClicked = { _, _ -> }
+    )
+}
+
 @StringRes
 fun Widget.Source.Bundled.res(): Int = when (this) {
     Widget.Source.Bundled.Favorites -> R.string.favorites

@@ -62,7 +62,6 @@ class TreeWidgetContainer(
                         source = widget.source,
                         isExpanded = !isCollapsed,
                         elements = emptyList(),
-                        isLoading = true,
                         icon = widget.icon,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType

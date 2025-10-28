@@ -57,7 +57,7 @@ val HeadlineSubheading =
         fontWeight = FontWeight.W700,
         fontSize = 17.sp,
         lineHeight = 24.sp,
-        letterSpacing = (-0.016).em
+        letterSpacing = (-0.28).sp
     )
 
 //Content/Body/Bold
@@ -175,7 +175,7 @@ val Relations2 = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 13.sp,
     lineHeight = 18.sp,
-    letterSpacing = (-0.006).em
+    letterSpacing = (-0.08).sp
 )
 
 //Content/Relation 3/Regular

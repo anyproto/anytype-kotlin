@@ -9,7 +9,6 @@ class BinWidgetContainer(
     override val view: Flow<WidgetView.Bin> = flowOf(
         WidgetView.Bin(
             id = widget.id,
-            isLoading = false,
             canCreateObjectOfType = false,
             isEmpty = false,
             sectionType = widget.sectionType,

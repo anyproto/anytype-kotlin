@@ -113,12 +113,10 @@ class DataViewListWidgetContainer(
                                     // Adjust cached state to reflect current collapsed flag
                                     val adjustedCache = when (cached) {
                                         is WidgetView.SetOfObjects -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         is WidgetView.Gallery -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         else -> cached
                                     }
@@ -126,8 +124,7 @@ class DataViewListWidgetContainer(
                                 } else {
                                     emit(
                                         createWidgetView(
-                                            isCollapsed = isCollapsed,
-                                            isLoading = true
+                                            isCollapsed = isCollapsed
                                         )
                                     )
                                 }
@@ -148,7 +145,7 @@ class DataViewListWidgetContainer(
     ): Flow<WidgetView> =
         isCollapsedFlow.distinctUntilChanged().flatMapLatest { isCollapsed ->
             if (isCollapsed) {
-                flowOf(createWidgetView(isCollapsed = true, isLoading = false))
+                flowOf(createWidgetView(isCollapsed = true))
             } else {
                 buildData()
             }
@@ -305,29 +302,55 @@ class DataViewListWidgetContainer(
 
         val struct = obj.details[obj.root] ?: emptyMap()
         val params = if (struct.isValidObject()) {
-            val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
             val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-            StoreSearchParams(
-                space = space,
-                subscription = obj.root,
-                sorts = sorts,
-                keys = buildList {
-                    addAll(defaultKeys)
-                    addAll(dataViewKeys)
-                }.distinct(),
-                filters = buildList {
-                    addAll(targetView?.filters.orEmpty())
-                    addAll(ObjectSearchConstants.defaultDataViewFilters())
-                },
-                limit = limit,
-                source = listOf(setOf),
-                collection = if (obj.isCollection())
-                    obj.root
-                else
+
+            // Collections and Sets require different subscription parameters
+            // (following the pattern from ObjectSetViewModel's DataViewSubscription)
+            if (obj.isCollection()) {
+                // Collections: use collection parameter with empty sources
+                StoreSearchParams(
+                    space = space,
+                    subscription = obj.root,
+                    sorts = sorts,
+                    keys = buildList {
+                        addAll(defaultKeys)
+                        addAll(dataViewKeys)
+                    }.distinct(),
+                    filters = buildList {
+                        addAll(targetView?.filters.orEmpty())
+                        addAll(ObjectSearchConstants.defaultDataViewFilters())
+                    },
+                    limit = limit,
+                    source = emptyList(),
+                    collection = obj.root
+                )
+            } else {
+                // Sets: use setOf as source (only if not empty)
+                val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
+                if (setOf.isEmpty()) {
+                    Timber.w("Widget ${widget.id}: setOf is empty, cannot create subscription parameters for Query widget")
                     null
-            )
+                } else {
+                    StoreSearchParams(
+                        space = space,
+                        subscription = obj.root,
+                        sorts = sorts,
+                        keys = buildList {
+                            addAll(defaultKeys)
+                            addAll(dataViewKeys)
+                        }.distinct(),
+                        filters = buildList {
+                            addAll(targetView?.filters.orEmpty())
+                            addAll(ObjectSearchConstants.defaultDataViewFilters())
+                        },
+                        limit = limit,
+                        source = listOf(setOf),
+                        collection = null
+                    )
+                }
+            }
         } else {
             null
         }
@@ -518,8 +541,7 @@ class DataViewListWidgetContainer(
      * Handles collapsed and loading states for List, View, and Section widgets.
      */
     private fun createWidgetView(
-        isCollapsed: Boolean = false,
-        isLoading: Boolean = false
+        isCollapsed: Boolean = false
     ): WidgetView {
         return when (widget) {
             is Widget.List -> SetOfObjects(
@@ -530,7 +552,6 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isCompact = widget.isCompact,
                 icon = widget.icon,
-                isLoading = isLoading,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType
             )
@@ -546,7 +567,6 @@ class DataViewListWidgetContainer(
                         tabs = emptyList(),
                         elements = emptyList(),
                         isExpanded = !isCollapsed,
-                        isLoading = isLoading,
                         view = null,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
@@ -560,7 +580,6 @@ class DataViewListWidgetContainer(
                         isExpanded = !isCollapsed,
                         isCompact = false,
                         icon = widget.icon,
-                        isLoading = isLoading,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
                     )
@@ -577,7 +596,7 @@ class DataViewListWidgetContainer(
      * Returns a default empty widget view state for error handling and initial states.
      */
     private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
-        return createWidgetView(isCollapsed = isCollapsed, isLoading = false)
+        return createWidgetView(isCollapsed = isCollapsed)
     }
 }
 

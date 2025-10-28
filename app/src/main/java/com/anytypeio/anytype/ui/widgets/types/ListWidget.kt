@@ -100,14 +100,10 @@ fun ListWidgetCard(
                 }
             } else {
                 if (item.isExpanded) {
-                    if (item.isLoading) {
-                        EmptyWidgetPlaceholder(R.string.loading)
+                    if (item.type is Type.Bin) {
+                        EmptyWidgetPlaceholder(R.string.bin_empty_title)
                     } else {
-                        if (item.type is Type.Bin) {
-                            EmptyWidgetPlaceholder(R.string.bin_empty_title)
-                        } else {
-                            EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
-                        }
+                        EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     }
                     Spacer(modifier = Modifier.height(2.dp))
                 }

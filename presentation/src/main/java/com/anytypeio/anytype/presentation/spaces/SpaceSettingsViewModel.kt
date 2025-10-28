@@ -261,14 +261,12 @@ class SpaceSettingsViewModel(
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
+                // Calculate active members count (excluding JOINING) and limits state
                 val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.toSpaceMemberView(
-                        spaceView = spaceView,
-                        urlBuilder = urlBuilder,
-                        isCurrentUserOwner = permission?.isOwner() == true,
-                        account = account,
-                        stringResourceProvider = stringResourceProvider
-                    ).size to spaceView.spaceLimitsState(
+                    // Count only ACTIVE members for display
+                    val activeMemberCount = spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
+
+                    activeMemberCount to spaceView.spaceLimitsState(
                         spaceMembers = spaceMembers.members,
                         isCurrentUserOwner = permission?.isOwner() == true,
                         sharedSpaceCount = sharedSpaceCount,
@@ -278,6 +276,7 @@ class SpaceSettingsViewModel(
                     0 to SpaceLimitsState.Init
                 }
 
+                // Count members with JOINING status (pending join requests)
                 val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
                 } else {
@@ -331,7 +330,8 @@ class SpaceSettingsViewModel(
 
                     if (spaceView.isPossibleToShare) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
-                        val membersCountWithColor = permission?.isOwner() == true
+                        val requestsCount =
+                            if (permission?.isOwner() == true && requests > 0) requests else null
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
                                 add(Spacer(height = 24))
@@ -339,8 +339,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -351,8 +351,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -363,8 +363,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = requestsCount,
+                                        withColor = requestsCount != null,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -373,8 +373,8 @@ class SpaceSettingsViewModel(
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
                                     Members(
-                                        count = spaceMemberCount,
-                                        withColor = membersCountWithColor,
+                                        count = null,
+                                        withColor = false,
                                         editorLimit = isEditorLimitReached
                                     )
                                 )
@@ -997,11 +997,16 @@ class SpaceSettingsViewModel(
      * @param permission The current user's permissions in the space
      * @param spaceView The space view data containing space configuration
      * @return true if the change type option should be shown, false otherwise
+     *
+     * upd. 23.10.25 DROID-4088: Disabled for now
      */
     internal fun shouldShowChangeTypeOption(
         permission: SpaceMemberPermissions?,
         spaceView: ObjectWrapper.SpaceView
     ): Boolean {
+        //DROID-4088: Disable changing space type for now
+        return false
+
         return permission?.isOwner() == true
             && spaceView.spaceUxType != null
             && spaceView.spaceAccessType == SpaceAccessType.SHARED

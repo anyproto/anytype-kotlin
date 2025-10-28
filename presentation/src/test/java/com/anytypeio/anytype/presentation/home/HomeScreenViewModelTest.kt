@@ -362,7 +362,7 @@ class HomeScreenViewModelTest {
                             objectTypePage
                         )
                     ),
-                    isLoading = true
+
                 )
             )
         }
@@ -565,7 +565,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[2]
-                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
+                thirdWidget is WidgetView.Tree
             }
             val secondTimeState = awaitItem()
             assertEquals(
@@ -682,7 +682,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[2]
-                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
+                thirdWidget is WidgetView.Tree
             }
             val secondTimeState = awaitItem()
             assertEquals(
@@ -815,7 +815,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[1]
-                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
+                thirdWidget is WidgetView.SetOfObjects
             }
             val secondTimeState = awaitItem()
             assertEquals(
@@ -929,7 +929,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[2]
-                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
+                thirdWidget is WidgetView.SetOfObjects
             }
             val secondTimeState = awaitItem()
             assertEquals(
@@ -1110,11 +1110,11 @@ class HomeScreenViewModelTest {
                 val firstTimeLoadingState1 = awaitItem()
                 assertTrue {
                     val firstWidget = firstTimeLoadingState1[2]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
+                    firstWidget is WidgetView.Tree
                 }
                 assertTrue {
                     val secondWidget = firstTimeLoadingState1[3]
-                    secondWidget is WidgetView.Tree && secondWidget.isLoading
+                    secondWidget is WidgetView.Tree
                 }
 
                 advanceUntilIdle()
@@ -1122,11 +1122,11 @@ class HomeScreenViewModelTest {
                 val firstTimeLoadingState2 = awaitItem()
                 assertTrue {
                     val firstWidget = firstTimeLoadingState2[2]
-                    firstWidget is WidgetView.Tree && firstWidget.isLoading
+                    firstWidget is WidgetView.Tree
                 }
                 assertTrue {
                     val secondWidget = firstTimeLoadingState2[3]
-                    secondWidget is WidgetView.Tree && !secondWidget.isLoading
+                    secondWidget is WidgetView.Tree
                 }
 
                 val secondTimeState = awaitItem()
@@ -2271,14 +2271,14 @@ class HomeScreenViewModelTest {
                 val firstTimeLoadingState = awaitItem()
                 assertTrue {
                     val thirdWidget = firstTimeLoadingState[2]
-                    thirdWidget is WidgetView.Tree && thirdWidget.isLoading
+                    thirdWidget is WidgetView.Tree
                 }
                 delay(1)
                 val secondTimeItem = awaitItem()
                 assertTrue {
                     val secondWidget = secondTimeItem[1]
                     (secondWidget is WidgetView.Tree
-                            && secondWidget.source.id == currentSourceObject.id && !secondWidget.isLoading)
+                            && secondWidget.source.id == currentSourceObject.id)
                 }
                 val thirdTimeItem = awaitItem()
                 advanceUntilIdle()
@@ -2286,7 +2286,7 @@ class HomeScreenViewModelTest {
                     val thirdWidget = thirdTimeItem[1]
                     thirdWidget is WidgetView.Tree
                             && thirdWidget.source.id == newSourceObject.id
-                            && thirdWidget.isLoading
+
                 }
                 advanceUntilIdle()
                 val fourthTimeItem = awaitItem()
@@ -2294,7 +2294,6 @@ class HomeScreenViewModelTest {
                     val thirdWidget = fourthTimeItem[1]
                     thirdWidget is WidgetView.Tree
                             && thirdWidget.source.id == newSourceObject.id
-                            && !thirdWidget.isLoading
                 }
             }
         }
@@ -2381,7 +2380,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[2]
-                thirdWidget is WidgetView.Tree && thirdWidget.isLoading
+                thirdWidget is WidgetView.Tree
             }
             delay(1)
             val secondTimeItem = awaitItem()
@@ -2553,7 +2552,7 @@ class HomeScreenViewModelTest {
             val firstTimeLoadingState = awaitItem()
             assertTrue {
                 val thirdWidget = firstTimeLoadingState[2]
-                thirdWidget is WidgetView.SetOfObjects && thirdWidget.isLoading
+                thirdWidget is WidgetView.SetOfObjects
             }
             val secondTimeItem = awaitItem()
             assertTrue {

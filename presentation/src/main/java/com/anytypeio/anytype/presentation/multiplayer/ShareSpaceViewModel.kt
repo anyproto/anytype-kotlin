@@ -232,7 +232,7 @@ class ShareSpaceViewModel(
                     isCurrentUserOwner = result.isCurrentUserOwner,
                     account = account,
                     stringResourceProvider = stringResourceProvider
-                )
+                ).sortedByDescending { it.isUser }
 
                 spaceLimitsState.value = spaceView.spaceLimitsState(
                     spaceMembers = spaceMembers,

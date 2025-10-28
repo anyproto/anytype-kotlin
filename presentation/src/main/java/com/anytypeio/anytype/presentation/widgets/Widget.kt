@@ -383,13 +383,15 @@ data class WidgetUiParams(
 )
 
 /**
- * Result of building widgets, separated into pinned, type sections, and bin widget.
+ * Result of building widgets, separated into sections.
  *
- * @property pinnedWidgets Widgets from the pinned section (user-arranged, excluded chat widgets)
+ * @property chatWidget The space chat widget, displayed separately at the top (for shared spaces)
+ * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
+    val chatWidget: Widget.Chat? = null,
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
     val binWidget: Widget.Bin? = null
@@ -404,9 +406,14 @@ suspend fun buildWidgetSections(
 ): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
 
+    // Build space chat widget (displayed separately at top for shared spaces)
+    val chatWidget = buildChatWidget(
+        spaceView = spaceView,
+        state = state
+    )
+
     // Build pinned section
     val pinnedWidgets = buildPinnedSection(
-        spaceView = spaceView,
         state = state,
         isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
         urlBuilder = urlBuilder,
@@ -422,12 +429,14 @@ suspend fun buildWidgetSections(
         isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
     )
 
+    // Build bin widget (displayed separately at bottom)
     val binWidget = buildBinWidget(
         state = state,
         params = params
     )
 
     return WidgetSections(
+        chatWidget = chatWidget,
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
         binWidget = binWidget
@@ -435,10 +444,27 @@ suspend fun buildWidgetSections(
 }
 
 /**
- * Builds the pinned widgets section including chat widget and user-arranged widgets.
+ * Builds the space chat widget for data spaces with chat.
+ * Displayed separately at the top, above all sections.
+ */
+private fun buildChatWidget(
+    spaceView: ObjectWrapper.SpaceView,
+    state: ObjectViewState.Success
+): Widget.Chat? {
+    val spaceChatId = spaceView.chatId
+    return if (!spaceChatId.isNullOrEmpty()
+        && spaceView.spaceUxType != SpaceUxType.CHAT
+    ) {
+        Widget.Chat(config = state.config)
+    } else {
+        null
+    }
+}
+
+/**
+ * Builds the pinned widgets section with user-arranged widgets.
  */
 private suspend fun buildPinnedSection(
-    spaceView: ObjectWrapper.SpaceView,
     state: ObjectViewState.Success,
     isPinnedSectionCollapsed: Boolean,
     urlBuilder: UrlBuilder,

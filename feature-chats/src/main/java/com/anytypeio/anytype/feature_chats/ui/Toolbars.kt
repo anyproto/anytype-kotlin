@@ -29,6 +29,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -52,48 +53,78 @@ fun ChatTopToolbar(
     header: ChatViewModel.HeaderView,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onSpaceNameClicked: () -> Unit
+    onSpaceNameClicked: () -> Unit,
+    onInviteMembersClicked: () -> Unit
 ) {
-    Row(
-        modifier = modifier
-            .height(52.dp),
-        verticalAlignment = Alignment.CenterVertically
+
+    Box(
+        modifier = modifier.height(52.dp)
     ) {
-        Box(
+        Image(
             modifier = Modifier
+                .height(52.dp)
                 .width(56.dp)
-                .fillMaxHeight()
                 .noRippleClickable {
                     onBackButtonClicked()
-                }
-        ) {
+                },
+            painter = painterResource(R.drawable.ic_default_top_back),
+            contentDescription = stringResource(R.string.content_desc_back_button),
+            contentScale = ContentScale.Inside
+        )
+        if (header is ChatViewModel.HeaderView.Default) {
             Image(
-                modifier = Modifier.align(Alignment.Center),
-                painter = painterResource(R.drawable.ic_default_top_back),
-                contentDescription = stringResource(R.string.content_desc_back_button)
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 48.dp)
+                    .height(52.dp)
+                    .width(40.dp)
+                    .noRippleClickable {
+                        onInviteMembersClicked()
+                    },
+                contentScale = ContentScale.Inside,
+                painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
+                contentDescription = "Invite members icon",
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
+            )
+            SpaceIconView(
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp),
+                mainSize = 28.dp,
+                icon = header.icon,
+                onSpaceIconClick = {
+                    onSpaceIconClicked()
+                }
             )
         }
+
         Row(
             modifier = Modifier
-                .weight(1f)
+                .fillMaxHeight()
+                .padding(horizontal = 100.dp)
+                .fillMaxWidth()
                 .noRippleClickable { onSpaceNameClicked() },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val isMuted = header is ChatViewModel.HeaderView.Default && header.isMuted
+
             Text(
-                text = when(header) {
+                text = when (header) {
                     is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
+
                     is ChatViewModel.HeaderView.Init -> ""
                 },
                 color = colorResource(R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 textAlign = TextAlign.Center,
-                style = Title1
+                style = Title1,
+                modifier = if (isMuted) Modifier.weight(1f, fill = false) else Modifier
             )
-            if (header is ChatViewModel.HeaderView.Default && header.isMuted) {
+            if (isMuted) {
                 Spacer(modifier = Modifier.width(6.dp))
                 Image(
                     modifier = Modifier.size(18.dp),
@@ -103,30 +134,6 @@ fun ChatTopToolbar(
                 )
             }
         }
-        if (header is ChatViewModel.HeaderView.Default && header.showIcon) {
-            Box(
-                modifier = Modifier
-                    .width(60.dp)
-                    .fillMaxHeight()
-                    .noRippleClickable {
-                        onSpaceIconClicked()
-                    }
-            ) {
-                SpaceIconView(
-                    modifier = Modifier.align(Alignment.Center),
-                    mainSize = 28.dp,
-                    icon = header.icon,
-                    onSpaceIconClick = {
-                        onSpaceIconClicked()
-                    }
-                )
-            }
-        } else {
-            Spacer(
-                modifier = Modifier.width(60.dp)
-            )
-        }
-
     }
 }
 
@@ -138,12 +145,12 @@ fun ChatTopToolbarPreview() {
         header = ChatViewModel.HeaderView.Default(
             title = LoremIpsum(words = 10).values.joinToString(),
             icon = SpaceIconView.ChatSpace.Placeholder(name = "Us"),
-            showIcon = true,
-            isMuted = false
+            isMuted = true
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
-        onSpaceNameClicked = {}
+        onSpaceNameClicked = {},
+        onInviteMembersClicked = {}
     )
 }
 
@@ -155,12 +162,12 @@ fun ChatTopToolbarMutedPreview() {
         header = ChatViewModel.HeaderView.Default(
             title = "My Chat Space",
             icon = SpaceIconView.ChatSpace.Placeholder(name = "MCS"),
-            showIcon = true,
             isMuted = true
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
-        onSpaceNameClicked = {}
+        onSpaceNameClicked = {},
+        onInviteMembersClicked = {}
     )
 }
 
@@ -202,8 +209,7 @@ fun EditMessageToolbar(
                 )
                 .noRippleClickable {
                     onExitClicked()
-                }
-            ,
+                },
             painter = painterResource(id = R.drawable.ic_edit_message_close),
             contentDescription = "Close edit-message mode"
         )
@@ -324,57 +330,4 @@ fun FloatingDateHeaderPreview() {
         modifier = Modifier,
         text = "Today"
     )
-}
-
-@Composable
-fun TopDiscussionToolbar(
-    title: String? = null,
-    isHeaderVisible: Boolean = false
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(48.dp)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Box(
-                modifier = Modifier
-                    .size(10.dp)
-                    .align(Alignment.Center)
-                    .background(color = Color.Green, shape = CircleShape)
-            )
-        }
-        Text(
-            text = if (isHeaderVisible) "" else title ?: stringResource(id = R.string.untitled),
-            style = PreviewTitle2Regular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
-            modifier = Modifier
-                .align(Alignment.CenterVertically)
-                .weight(1f),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(48.dp)
-        ) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_toolbar_three_dots),
-                contentDescription = "Three dots menu",
-                modifier = Modifier.align(Alignment.Center)
-            )
-        }
-    }
-}
-
-@DefaultPreviews
-@Composable
-fun TopDiscussionToolbarPreview() {
-    TopDiscussionToolbar()
 }

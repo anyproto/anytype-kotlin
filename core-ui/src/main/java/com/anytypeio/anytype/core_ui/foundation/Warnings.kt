@@ -170,7 +170,7 @@ fun AlertDescription(description: String, style : TextStyle = UxSmallTextRegular
 }
 
 @Composable
-fun AlertTitle(title: String, style: TextStyle = HeadlineSubheading) {
+fun AlertTitle(title: String, style: TextStyle = HeadlineHeading) {
     Text(
         text = title,
         style = style,

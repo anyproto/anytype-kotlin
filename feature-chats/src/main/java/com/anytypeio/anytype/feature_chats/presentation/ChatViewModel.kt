@@ -3,6 +3,8 @@ package com.anytypeio.anytype.feature_chats.presentation
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsDictionary.clickShareSpaceShareLink
+import com.anytypeio.anytype.analytics.base.EventsDictionary.screenQr
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
@@ -19,6 +21,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -35,6 +38,8 @@ import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.domain.chats.DeleteChatMessage
 import com.anytypeio.anytype.domain.chats.EditChatMessage
 import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
+import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
+import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
 import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -66,6 +71,12 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
+import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -83,6 +94,7 @@ import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -115,7 +127,9 @@ class ChatViewModel @Inject constructor(
     private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject,
-    private val analytics: Analytics
+    private val analytics: Analytics,
+    private val spaceInviteLinkStore: SpaceInviteLinkStore,
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
 ) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
 
     private val preloadingJobs = mutableListOf<Job>()
@@ -138,6 +152,8 @@ class ChatViewModel @Inject constructor(
     val canCreateInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
+    val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
+    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -180,7 +196,6 @@ class ChatViewModel @Inject constructor(
                     HeaderView.Default(
                         title = view.name.orEmpty(),
                         icon = view.spaceIcon(builder = urlBuilder),
-                        showIcon = true,
                         isMuted = isMuted
                     )
                 }.collect {
@@ -228,8 +243,28 @@ class ChatViewModel @Inject constructor(
                 props = Props(mapOf(EventsPropertiesKey.route to route))
             )
         }
+        subscribeToInviteLinkState()
     }
 
+    private fun subscribeToInviteLinkState() {
+        viewModelScope.launch {
+            spaceInviteLinkStore
+                .observe(vmParams.space)
+                .onStart {
+                    val params = GetCurrentInviteAccessLevel.Params(space = vmParams.space)
+                    getCurrentInviteAccessLevel.async(params).getOrNull()
+                }
+                .catch {
+                    Timber.e(it, "Error observing invite link access level")
+                    // Emit default value on error
+                    inviteLinkAccessLevel.value = SpaceInviteLinkAccessLevel.LinkDisabled()
+                }
+                .collect { accessLevel ->
+                    Timber.d("Invite link access level updated: $accessLevel")
+                    inviteLinkAccessLevel.value = accessLevel
+                }
+        }
+    }
 
     fun onResume() {
         notificationBuilder.clearNotificationChannel(
@@ -1431,6 +1466,13 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onInviteMembersClicked() {
+        Timber.d("onInviteMembersClicked")
+        viewModelScope.launch {
+            commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
+        }
+    }
+
     fun onMediaPreview(objects: List<Id>, index: Int) {
         Timber.d("onMediaPreview, objects: $objects")
         viewModelScope.launch {
@@ -1493,6 +1535,61 @@ class ChatViewModel @Inject constructor(
     fun onEmptyStateAction() {
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
+        }
+    }
+
+    fun onShowQRCode() {
+        when (val inviteLinkState = inviteLinkAccessLevel.value) {
+            is SpaceInviteLinkAccessLevel.EditorAccess -> proceedWithShowingQRCode(inviteLinkState.link)
+            is SpaceInviteLinkAccessLevel.RequestAccess -> proceedWithShowingQRCode(inviteLinkState.link)
+            is SpaceInviteLinkAccessLevel.ViewerAccess -> proceedWithShowingQRCode(inviteLinkState.link)
+            is SpaceInviteLinkAccessLevel.LinkDisabled -> {
+                Timber.w("Invite link is not ready yet")
+                sendToast("Invite link is not available")
+                return
+            }
+        }
+    }
+
+    fun onShareInviteLink(link: String) {
+        viewModelScope.launch {
+            // Analytics Event #6: ClickShareSpaceShareLink
+            analytics.sendEvent(eventName = clickShareSpaceShareLink)
+
+            commands.emit(
+                ViewModelCommand.ShareInviteLink(link)
+            )
+        }
+    }
+
+    fun onHideQRCodeScreen() {
+        uiQrCodeState.value = UiSpaceQrCodeState.Hidden
+    }
+
+    private fun proceedWithShowingQRCode(link: String) {
+        viewModelScope.launch {
+            val (spaceName, spaceIcon) = when (val state = header.value) {
+                is HeaderView.Default -> {
+                    val name = state.title
+                    val icon = state.icon
+                    name to icon
+                }
+                HeaderView.Init -> {
+                    "" to null
+                }
+            }
+            uiQrCodeState.value = SpaceInvite(
+                link = link,
+                spaceName = spaceName,
+                icon = spaceIcon
+            )
+
+            analytics.sendEvent(
+                eventName = screenQr,
+                props = Props(
+                    mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.CHAT)
+                )
+            )
         }
     }
 
@@ -1784,7 +1881,6 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val showIcon: Boolean,
             val isMuted: Boolean = false
         ) : HeaderView()
     }

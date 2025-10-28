@@ -289,6 +289,7 @@ object EventsDictionary {
     object ScreenQrRoutes {
         const val INVITE_LINK = "InviteLink"
         const val SETTINGS_SPACE = "SettingsSpace"
+        const val CHAT = "Chat"
     }
 
     object CopyLinkRoutes {

@@ -838,6 +838,8 @@
     <string name="create_space">Crea spazio</string>
     <string name="create_chat">Crea una chat</string>
     <string name="create_space_change_icon">Cambia icona</string>
+    <string name="create_space_chat_name">Nome chat</string>
+    <string name="create_space_space_name">Nome dello Spazio</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipo</string>
     <string name="format">Formato</string>
@@ -1694,8 +1696,13 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Modifica messaggio</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
-    <string name="chat_empty_state_title">Questa chat è vuota.</string>
+    <string name="chat_empty_state_title">Nessun messaggio</string>
     <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
+    <string name="chat_empty_state_feature_yours_forever">Tuo per sempre</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Completamente privato e crittografato</string>
+    <string name="chat_empty_state_add_members_button">Aggiungi membri</string>
+    <string name="chat_empty_state_show_qr_button">Mostra codice QR</string>
     <string name="chat_empty_state_share_invite_button">Invita membri</string>
     <string name="write_a_message">Scrivi un messaggio...</string>
     <string name="date_layout_mentioned_in">Menzioni</string>
@@ -1913,6 +1920,16 @@ Please provide specific details of your needs here.</string>
     <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
     <string name="vault_create_space">Nuovo Spazio</string>
     <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Le idee hanno bisogno di conversazioni</string>
+    <string name="spaces_introduction_page1_description">Anytype ora supporta la chat in tempo reale nei Canali Condivisi — in modo che i tuoi pensieri e dialoghi possano crescere insieme.</string>
+    <string name="spaces_introduction_page2_title">La tua Cassaforte è appena salita di livello</string>
+    <string name="spaces_introduction_page2_description">Spazi e Chat ora mostrano anteprime e aggiornamenti in tempo reale -- un unico posto dove seguire tutto ciò che conta.</string>
+    <string name="spaces_introduction_page3_title">Chat che fanno di più</string>
+    <string name="spaces_introduction_page3_description">Condividi idee, invia documenti, modifica insieme agli altri -- tutto avviene in tempo reale.</string>
+    <string name="spaces_introduction_page4_title">Tutto al Posto Giusto</string>
+    <string name="spaces_introduction_page4_description">Le tue pagine, liste e file — strutturati, visibili e sempre a portata di mano.</string>
+    <string name="spaces_introduction_try_it">Proviamo</string>
     <string name="vault_empty_state_text">Non ci sono ancora Spazi</string>
     <string name="vault_empty_search_state_text">Nessuna corrispondenza trovata</string>
     <string name="chat_new_messages_section_text">Nuovi messaggi</string>
@@ -1962,7 +1979,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
-    <string name="private_local_yours_forever">Privato, locale, tuo per sempre</string>
+    <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>

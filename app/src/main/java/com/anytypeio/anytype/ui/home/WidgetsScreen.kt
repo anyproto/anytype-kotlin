@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.home
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
@@ -19,6 +20,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
@@ -30,7 +32,9 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -46,6 +50,7 @@ fun WidgetsScreen(
     val hapticFeedback = rememberReorderHapticFeedback()
 
     val mode = viewModel.mode.collectAsState().value
+    val chatWidget = viewModel.chatView.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
@@ -146,6 +151,31 @@ fun WidgetsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
+            // Chat widget
+            chatWidget?.let { chat ->
+                if (chat is WidgetView.SpaceChat) {
+                    item {
+                        ReorderableItem(
+                            enabled = false,
+                            state = reorderableState,
+                            key = chat.id,
+                        ) {
+                            SpaceChatWidgetCard(
+                                item = chat,
+                                mode = mode,
+                                unReadMentionCount = chat.unreadMentionCount,
+                                unReadMessageCount = chat.unreadMessageCount,
+                                isMuted = chat.isMuted,
+                                onWidgetClicked = viewModel::onWidgetChatClicked,
+                                onDropDownMenuAction = { action ->
+                                    viewModel.onDropDownMenuAction(chat.id, action)
+                                }
+                            )
+                        }
+                    }
+                }
+            }
+
             // Only show pinned section header if there are items or section is collapsed
             if (shouldShowPinnedHeader) {
                 item {
@@ -237,6 +267,24 @@ fun WidgetsScreen(
                             )
                         }
                     }
+                }
+            }
+
+            //only in debug mode
+            if (BuildConfig.DEBUG) {
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(64.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        AddWidgetButton(
+                            modifier = Modifier.padding(16.dp),
+                            onAddWidgetClicked = viewModel::onCreateWidgetClicked
+                        )
+                    }
+
                 }
             }
 

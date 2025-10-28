@@ -15,8 +15,6 @@ class ActionObjectFilter @Inject constructor() {
         return when (subscription) {
             Subscription.Recent, Subscription.RecentLocal, Subscription.Sets, Subscription.Collections ->
                 buildList {
-                    if (views.someNonFavorites()) add(ADD_TO_FAVOURITE)
-                    if (views.someFavorites()) add(REMOVE_FROM_FAVOURITE)
                     add(MOVE_TO_BIN)
                 }
 

@@ -836,6 +836,8 @@
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>
     <string name="create_space_change_icon">Ubah ikon</string>
+    <string name="create_space_chat_name">Nama obrolan</string>
+    <string name="create_space_space_name">Nama Ruang</string>
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Tipe</string>
     <string name="format">Format</string>
@@ -1680,8 +1682,13 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chats_edit_message">Suting pesan</string>
     <string name="chats_message_edited">disunting</string>
     <string name="chat_empty_state_message">Belum ada pesan.\nJadilah yang memulai diskusi!</string>
-    <string name="chat_empty_state_title">Obrolan ini kosong.</string>
+    <string name="chat_empty_state_title">Belum ada pesan</string>
     <string name="chat_empty_state_subtitle">Undang orang-orang dan mulai obrolannya!</string>
+    <string name="chat_empty_state_feature_yours_forever">Milikmu selamanya</string>
+    <string name="chat_empty_state_feature_offline">Pesan, dokumen, dan berkas tersedia di luar jaringan</string>
+    <string name="chat_empty_state_feature_encrypted">Sepenuhnya pribadi dan terenkripsi</string>
+    <string name="chat_empty_state_add_members_button">Tambahkan anggota</string>
+    <string name="chat_empty_state_show_qr_button">Tampilkan kode QR</string>
     <string name="chat_empty_state_share_invite_button">Undang anggota</string>
     <string name="write_a_message">Tulis pesan …</string>
     <string name="date_layout_mentioned_in">Sebutan</string>
@@ -1899,6 +1906,16 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
     <string name="vault_create_space">Ruang Baru</string>
     <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ide perlu konversasi</string>
+    <string name="spaces_introduction_page1_description">Anytype sekarang mendukung obrolan langsung di Ruang Terbagi—sehingga pikiran dan dialog kalian dapat berkembang bersama.</string>
+    <string name="spaces_introduction_page2_title">Brankasmu naik tingkat</string>
+    <string name="spaces_introduction_page2_description">Ruang dan Obrolan sekarang menampilkan pratinjau dan pembaruan langsung—satu tempat untuk mengikuti semua hal yang penting.</string>
+    <string name="spaces_introduction_page3_title">Lebih dari sekadar obrolan</string>
+    <string name="spaces_introduction_page3_description">Bagikan ide, kirimkan dokumen, edit bersama—semuanya secara langsung.</string>
+    <string name="spaces_introduction_page4_title">Semua pada tempatnya</string>
+    <string name="spaces_introduction_page4_description">Halaman, daftar, dan berkasmu—terstruktur, dan selalu mudah dicari.</string>
+    <string name="spaces_introduction_try_it">Ayo kita coba!</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">Pesan baru</string>
@@ -1947,7 +1964,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_generic">Terjadi galat tak terduga: %1$s. Silakan coba lagi nanti.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
-    <string name="private_local_yours_forever">Pribadi, lokal, milikmu selamanya</string>
+    <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>

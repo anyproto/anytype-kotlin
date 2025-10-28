@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.ui.multiplayer
+package com.anytypeio.anytype.core_ui.features.multiplayer
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -25,7 +25,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
@@ -49,6 +49,27 @@ fun ShareSpaceQrCodeScreen(viewModel: SpaceSettingsViewModel) {
                 icon = state.icon,
                 onShare = { viewModel.onUiEvent(UiEvent.OnShareLinkClicked(it)) },
                 onDismiss = { viewModel.onHideQrCodeScreen() }
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun ShareSpaceQrCodeScreen(
+    qrCodeState: UiSpaceQrCodeState,
+    onShareLinkClicked: (String) -> Unit,
+    onHideQrCodeScreen: () -> Unit
+) {
+    when (qrCodeState) {
+        UiSpaceQrCodeState.Hidden -> return
+        is UiSpaceQrCodeState.SpaceInvite -> {
+            QrCodeScreen(
+                spaceName = qrCodeState.spaceName,
+                link = qrCodeState.link,
+                icon = qrCodeState.icon,
+                onShare = onShareLinkClicked,
+                onDismiss = onHideQrCodeScreen
             )
         }
     }

@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Özellik ayarları</string>
     <string name="type_editing_uninstall">Kaldır</string>
     <string name="empty_tree_widget_reader_access">Bu nesnenin diğer nesnelerle bağlantısı yok.</string>
-    <string name="empty_list_widget_no_objects">İçinde nesne yok</string>
+    <string name="empty_list_widget_no_objects">Burada hiç nesne yok</string>
     <string name="empty_list_widget_no_view">Bu veri görünümünde nesne yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="this_widget_has_no_object">Bu widget\'ın nesnesi yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="emoji">Emoji</string>

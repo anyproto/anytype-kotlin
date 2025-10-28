@@ -305,29 +305,55 @@ class DataViewListWidgetContainer(
 
         val struct = obj.details[obj.root] ?: emptyMap()
         val params = if (struct.isValidObject()) {
-            val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
             val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-            StoreSearchParams(
-                space = space,
-                subscription = obj.root,
-                sorts = sorts,
-                keys = buildList {
-                    addAll(defaultKeys)
-                    addAll(dataViewKeys)
-                }.distinct(),
-                filters = buildList {
-                    addAll(targetView?.filters.orEmpty())
-                    addAll(ObjectSearchConstants.defaultDataViewFilters())
-                },
-                limit = limit,
-                source = listOf(setOf),
-                collection = if (obj.isCollection())
-                    obj.root
-                else
+
+            // Collections and Sets require different subscription parameters
+            // (following the pattern from ObjectSetViewModel's DataViewSubscription)
+            if (obj.isCollection()) {
+                // Collections: use collection parameter with empty sources
+                StoreSearchParams(
+                    space = space,
+                    subscription = obj.root,
+                    sorts = sorts,
+                    keys = buildList {
+                        addAll(defaultKeys)
+                        addAll(dataViewKeys)
+                    }.distinct(),
+                    filters = buildList {
+                        addAll(targetView?.filters.orEmpty())
+                        addAll(ObjectSearchConstants.defaultDataViewFilters())
+                    },
+                    limit = limit,
+                    source = emptyList(),
+                    collection = obj.root
+                )
+            } else {
+                // Sets: use setOf as source (only if not empty)
+                val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
+                if (setOf.isEmpty()) {
+                    Timber.w("Widget ${widget.id}: setOf is empty, skipping subscription to avoid loading state")
                     null
-            )
+                } else {
+                    StoreSearchParams(
+                        space = space,
+                        subscription = obj.root,
+                        sorts = sorts,
+                        keys = buildList {
+                            addAll(defaultKeys)
+                            addAll(dataViewKeys)
+                        }.distinct(),
+                        filters = buildList {
+                            addAll(targetView?.filters.orEmpty())
+                            addAll(ObjectSearchConstants.defaultDataViewFilters())
+                        },
+                        limit = limit,
+                        source = listOf(setOf),
+                        collection = null
+                    )
+                }
+            }
         } else {
             null
         }

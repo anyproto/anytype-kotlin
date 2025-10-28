@@ -219,7 +219,12 @@ fun Widget.Source.canCreateObjectOfType(): Boolean {
                 val wrapper = Type(obj.map)
                 canCreateObjectOfType(wrapper)
             } else {
-                createObjectLayouts.contains(obj.layout)
+                // For Sets: only allow object creation if setOf is not empty
+                if (obj.layout == ObjectType.Layout.SET) {
+                    obj.setOf.isNotEmpty() && createObjectLayouts.contains(obj.layout)
+                } else {
+                    createObjectLayouts.contains(obj.layout)
+                }
             }
         }
         Widget.Source.Bundled.AllObjects -> false

@@ -810,7 +810,7 @@
     <string name="relation_editing_title">プロパティ設定</string>
     <string name="type_editing_uninstall">削除</string>
     <string name="empty_tree_widget_reader_access">他のオブジェクトとのリンクがありません。</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">オブジェクトがありません</string>
     <string name="empty_list_widget_no_view">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="this_widget_has_no_object">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="emoji">絵文字</string>

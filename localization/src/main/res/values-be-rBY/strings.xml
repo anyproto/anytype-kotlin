@@ -816,7 +816,7 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">Выдаліць</string>
     <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Тут пакуль няма аб\'ектаў</string>
     <string name="empty_list_widget_no_view">Гэты выгляд даных не мае аб\'ектаў.\nПаспрабуйце стварыць новы.</string>
     <string name="this_widget_has_no_object">Гэты віджэт не мае аб\'ектаў.\nПаспрабуйце стварыць новы.</string>
     <string name="emoji">Эмодзі</string>

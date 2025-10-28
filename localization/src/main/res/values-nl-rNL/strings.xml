@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Eigenschap instellingen</string>
     <string name="type_editing_uninstall">Verwijder</string>
     <string name="empty_tree_widget_reader_access">Dit object heeft geen koppelingen naar andere objecten.</string>
-    <string name="empty_list_widget_no_objects">Bevat geen objecten</string>
+    <string name="empty_list_widget_no_objects">Er zijn hier geen objecten</string>
     <string name="empty_list_widget_no_view">Deze gegevensweergave heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="this_widget_has_no_object">Deze widget heeft geen objecten.\nProbeer een nieuwe te maken.</string>
     <string name="emoji">Emoji</string>

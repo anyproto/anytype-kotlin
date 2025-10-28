@@ -17,6 +17,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 
 @Composable
@@ -32,7 +33,7 @@ fun EmptyWidgetPlaceholder(
             modifier = Modifier
                 .align(Alignment.CenterHorizontally)
                 .padding(horizontal = 16.dp),
-            style = PreviewTitle2Medium.copy(
+            style = Relations2.copy(
                 color = colorResource(id = R.color.text_secondary),
             ),
             textAlign = TextAlign.Center

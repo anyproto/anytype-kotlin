@@ -59,7 +59,6 @@ class ListWidgetContainer(
                         elements = emptyList(),
                         isExpanded = !isCollapsed,
                         isCompact = widget.isCompact,
-                        isLoading = true,
                         icon = widget.icon,
                         sectionType = widget.sectionType
                     )

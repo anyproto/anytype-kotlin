@@ -113,12 +113,10 @@ class DataViewListWidgetContainer(
                                     // Adjust cached state to reflect current collapsed flag
                                     val adjustedCache = when (cached) {
                                         is WidgetView.SetOfObjects -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         is WidgetView.Gallery -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         else -> cached
                                     }
@@ -126,8 +124,7 @@ class DataViewListWidgetContainer(
                                 } else {
                                     emit(
                                         createWidgetView(
-                                            isCollapsed = isCollapsed,
-                                            isLoading = true
+                                            isCollapsed = isCollapsed
                                         )
                                     )
                                 }
@@ -148,7 +145,7 @@ class DataViewListWidgetContainer(
     ): Flow<WidgetView> =
         isCollapsedFlow.distinctUntilChanged().flatMapLatest { isCollapsed ->
             if (isCollapsed) {
-                flowOf(createWidgetView(isCollapsed = true, isLoading = false))
+                flowOf(createWidgetView(isCollapsed = true))
             } else {
                 buildData()
             }
@@ -544,8 +541,7 @@ class DataViewListWidgetContainer(
      * Handles collapsed and loading states for List, View, and Section widgets.
      */
     private fun createWidgetView(
-        isCollapsed: Boolean = false,
-        isLoading: Boolean = false
+        isCollapsed: Boolean = false
     ): WidgetView {
         return when (widget) {
             is Widget.List -> SetOfObjects(
@@ -556,7 +552,6 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isCompact = widget.isCompact,
                 icon = widget.icon,
-                isLoading = isLoading,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType
             )
@@ -572,7 +567,6 @@ class DataViewListWidgetContainer(
                         tabs = emptyList(),
                         elements = emptyList(),
                         isExpanded = !isCollapsed,
-                        isLoading = isLoading,
                         view = null,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
@@ -586,7 +580,6 @@ class DataViewListWidgetContainer(
                         isExpanded = !isCollapsed,
                         isCompact = false,
                         icon = widget.icon,
-                        isLoading = isLoading,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
                     )
@@ -603,7 +596,7 @@ class DataViewListWidgetContainer(
      * Returns a default empty widget view state for error handling and initial states.
      */
     private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
-        return createWidgetView(isCollapsed = isCollapsed, isLoading = false)
+        return createWidgetView(isCollapsed = isCollapsed)
     }
 }
 

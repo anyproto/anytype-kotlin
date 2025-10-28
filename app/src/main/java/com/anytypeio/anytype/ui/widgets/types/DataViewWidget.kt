@@ -140,11 +140,7 @@ fun DataViewListWidgetCard(
                 }
             } else {
                 if (item.isExpanded) {
-                    if (item.isLoading) {
-                        EmptyWidgetPlaceholder(R.string.loading)
-                    } else {
-                        EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
-                    }
+                    EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }
@@ -261,7 +257,6 @@ fun GalleryWidgetCard(
             } else {
                 if (item.isExpanded) {
                     when {
-                        item.isLoading -> EmptyWidgetPlaceholder(R.string.loading)
                         item.tabs.isNotEmpty() -> EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                         else -> EmptyWidgetPlaceholder(text = R.string.empty_list_widget_no_view)
                     }
@@ -694,7 +689,6 @@ fun DataViewListWidgetCard_Standard_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-1",
-            isLoading = false,
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "My Notes"))
@@ -757,7 +751,7 @@ fun DataViewListWidgetCard_Compact_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-2",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Quick Access"))
@@ -808,7 +802,6 @@ fun DataViewListWidgetCard_Loading_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-3",
-            isLoading = true,
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Loading Widget"))
@@ -838,7 +831,7 @@ fun DataViewListWidgetCard_Empty_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-4",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Empty Collection"))
@@ -868,7 +861,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-5",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "My Library"))
@@ -904,7 +897,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-6",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Project Tasks"))
@@ -967,7 +960,7 @@ fun DataViewListWidgetCard_EditMode_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-7",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Default(
                 obj = ObjectWrapper.Basic(mapOf(Relations.NAME to "Editable List"))
@@ -1008,7 +1001,7 @@ fun DataViewListWidgetCard_Favorites_Preview() {
     DataViewListWidgetCard(
         item = WidgetView.SetOfObjects(
             id = "widget-8",
-            isLoading = false,
+
             icon = ObjectIcon.TypeIcon.Default.DEFAULT,
             source = Widget.Source.Bundled.Favorites,
             tabs = emptyList(),

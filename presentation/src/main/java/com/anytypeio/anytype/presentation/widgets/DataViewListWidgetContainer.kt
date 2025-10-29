@@ -66,6 +66,10 @@ class DataViewListWidgetContainer(
     onRequestCache: () -> WidgetView? = { null },
 ) : WidgetContainer {
 
+    companion object {
+        const val DEFAULT_FALLBACK_WIDGET_LIMIT = 6
+    }
+
     // Cache to prevent duplicate computeViewerContext calls
     private var cachedContext: ViewerContext? = null
     private var cachedContextKey: ContextKey? = null
@@ -297,9 +301,7 @@ class DataViewListWidgetContainer(
             limit = when (widget) {
                 is Widget.List -> widget.limit
                 is Widget.View -> widget.limit
-                else -> {
-                    throw IllegalStateException("Incompatible widget type.")
-                }
+                else -> DEFAULT_FALLBACK_WIDGET_LIMIT
             }
         )
 

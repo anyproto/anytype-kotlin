@@ -50,8 +50,7 @@ class TreeWidgetContainer(
 
     private val mutex = Mutex()
 
-    // Always limit root level to 6 items to show "See all" button when 7+
-    private val rootLevelLimit = TREE_WIDGET_ROOT_LIMIT
+    private val rootLevelLimit = WidgetConfig.resolveTreeWidgetLimit(widget.limit)
 
     private val nodes = mutableMapOf<Id, List<Id>>()
 
@@ -359,7 +358,6 @@ class TreeWidgetContainer(
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
-        const val TREE_WIDGET_ROOT_LIMIT = 6
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

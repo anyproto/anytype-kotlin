@@ -63,7 +63,6 @@ import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenParticipant
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenSet
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenType
-import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
@@ -920,14 +919,7 @@ class VaultViewModel(
         viewModelScope.launch {
             val currentSections = state
             val pinnedSpaces = currentSections.pinnedSpaces
-            
-            if (!canPinSpace()) {
-                Timber.w("Max pinned spaces limit reached: ${MAX_PINNED_SPACES}")
-                // Show limit reached error
-                vaultErrors.value = VaultErrors.MaxPinnedSpacesReached
-                return@launch
-            }
-            
+
             // Filter out the space being pinned if it's already in the list
             val newOrder = pinnedSpaces.filter { it.space.id != spaceId }.map { it.space.id }.toMutableList()
             // Insert the space at the beginning (position 0)
@@ -1033,14 +1025,6 @@ class VaultViewModel(
         }
     }
 
-    /**
-     * Returns true if the user can pin a space (i.e., the max pinned spaces limit is not reached).
-     */
-    fun canPinSpace(): Boolean {
-        val state = uiState.value
-        if (state !is VaultUiState.Sections) return false
-        return state.pinnedSpaces.size < MAX_PINNED_SPACES
-    }
 
     //region Drag and Drop
     // Local state for tracking order changes during drag operations

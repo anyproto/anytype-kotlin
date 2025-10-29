@@ -138,6 +138,11 @@ fun DataViewListWidgetCard(
                         }
                     }
                 }
+                if (item.hasMore && item.isExpanded) {
+                    SeeAllButton(
+                        onClick = { onWidgetSourceClicked(item.id) }
+                    )
+                }
             } else {
                 if (item.isExpanded) {
                     EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)

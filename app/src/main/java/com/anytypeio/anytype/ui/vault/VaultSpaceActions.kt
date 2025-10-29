@@ -20,8 +20,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
-import com.anytypeio.anytype.presentation.vault.VaultUiState
 
 @Composable
 fun SpaceActionsDropdownMenu(
@@ -29,7 +27,6 @@ fun SpaceActionsDropdownMenu(
     onDismiss: () -> Unit,
     isMuted: Boolean?,
     isPinned: Boolean,
-    currentPinnedCount: Int,
     onMuteToggle: () -> Unit,
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
@@ -46,24 +43,7 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        // Show pin/unpin option or limit message
-        val canPin = currentPinnedCount < VaultUiState.MAX_PINNED_SPACES
-
-        if (!isPinned && !canPin) {
-            // Show info message when limit reached and space is not pinned
-            Row(modifier = Modifier.padding(16.dp)) {
-                Text(
-                    text = stringResource(
-                        R.string.vault_pinned_limit_message,
-                        VaultUiState.MAX_PINNED_SPACES
-                    ),
-                    style = PreviewTitle2Regular,
-                    color = colorResource(id = R.color.text_secondary)
-                )
-            }
-        } else {
-            // Show pin/unpin option when space is pinned or when there's room to pin
-            DropdownMenuItem(
+        DropdownMenuItem(
                 onClick = {
                     onPinToggle()
                     onDismiss()
@@ -91,7 +71,6 @@ fun SpaceActionsDropdownMenu(
                     }
                 }
             )
-        }
 
         // Mute/Unmute only if chat enabled
         if (isMuted != null) {

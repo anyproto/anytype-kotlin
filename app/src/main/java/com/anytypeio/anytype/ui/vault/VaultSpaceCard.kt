@@ -44,8 +44,7 @@ fun VaultSpaceCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {},
-    currentPinnedCount: Int
+    onSpaceSettings: (Id) -> Unit = {}
 ) {
     val updatedModifier = when (spaceBackground) {
         is SpaceBackground.SolidColor -> modifier
@@ -103,7 +102,6 @@ fun VaultSpaceCard(
             onDismiss = onDismissMenu,
             isMuted = spaceView.isMuted,
             isPinned = spaceView.isPinned,
-            currentPinnedCount = currentPinnedCount,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
                     if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
@@ -167,7 +165,6 @@ fun VaultDataSpaceCardPreview() {
             modifier = Modifier.fillMaxWidth(),
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
-            currentPinnedCount = 3,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
             spaceView = VaultSpaceView.Space(

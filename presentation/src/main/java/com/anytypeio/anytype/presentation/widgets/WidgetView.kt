@@ -32,6 +32,7 @@ sealed class WidgetView {
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -79,6 +80,7 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
         val name: Name,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -110,6 +112,7 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val showIcon: Boolean = false,
         val showCover: Boolean = false,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -125,6 +128,7 @@ sealed class WidgetView {
         val elements: List<Element>,
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 

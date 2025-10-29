@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.ui.widgets.types
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +17,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 
@@ -39,6 +41,27 @@ fun EmptyWidgetPlaceholder(
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(10.dp))
+    }
+}
+
+@Composable
+fun SeeAllButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier.fillMaxWidth(),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.widgets_see_all),
+            modifier = Modifier
+                .padding(horizontal = 16.dp, vertical = 8.dp)
+                .noRippleClickable { onClick() },
+            style = Caption1Medium,
+            color = colorResource(id = R.color.text_secondary),
+            textAlign = TextAlign.Center
+        )
     }
 }
 

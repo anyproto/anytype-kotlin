@@ -112,7 +112,7 @@ class ListWidgetContainer(
                                     objects = objects
                                         .filter { obj -> obj.notDeletedNorArchived }
                                         .sortedBy { obj -> order[obj.id] }
-                                        .take(resolveLimit())
+                                        .take(resolveSubscriptionLimit())
                                     ,
                                     fieldParser = fieldParser,
                                     storeOfObjectTypes = storeOfObjectTypes
@@ -161,28 +161,35 @@ class ListWidgetContainer(
         objects: List<ObjectWrapper.Basic>,
         fieldParser: FieldParser,
         storeOfObjectTypes: StoreOfObjectTypes
-    ) = WidgetView.ListOfObjects(
-        id = widget.id,
-        source = widget.source,
-        type = resolveType(),
-        elements = objects.map { obj ->
-            WidgetView.ListOfObjects.Element(
-                obj = obj,
-                objectIcon = obj.objectIcon(
-                    builder = urlBuilder,
-                    objType = storeOfObjectTypes.getTypeOfObject(obj)
-                ),
-                name = buildWidgetName(
+    ): WidgetView.ListOfObjects {
+        val limit = resolveLimit()
+        val hasMore = objects.size > limit
+        val displayObjects = objects.take(limit)
+
+        return WidgetView.ListOfObjects(
+            id = widget.id,
+            source = widget.source,
+            type = resolveType(),
+            elements = displayObjects.map { obj ->
+                WidgetView.ListOfObjects.Element(
                     obj = obj,
-                    fieldParser = fieldParser
-                ),
-            )
-        },
-        isExpanded = true,
-        isCompact = widget.isCompact,
-        icon = widget.icon,
-        sectionType = widget.sectionType
-    )
+                    objectIcon = obj.objectIcon(
+                        builder = urlBuilder,
+                        objType = storeOfObjectTypes.getTypeOfObject(obj)
+                    ),
+                    name = buildWidgetName(
+                        obj = obj,
+                        fieldParser = fieldParser
+                    ),
+                )
+            },
+            isExpanded = true,
+            isCompact = widget.isCompact,
+            icon = widget.icon,
+            hasMore = hasMore,
+            sectionType = widget.sectionType
+        )
+    }
 
     private fun buildParams(
         customFavoritesOrder: List<Id> = emptyList(),
@@ -191,7 +198,7 @@ class ListWidgetContainer(
         subscription = subscription,
         space = widget.config.space,
         keys = keys,
-        limit = resolveLimit(),
+        limit = resolveSubscriptionLimit(),
         customFavoritesOrder = customFavoritesOrder,
         spaceCreationDateInSeconds = spaceCreationDateInSeconds
     )
@@ -208,6 +215,8 @@ class ListWidgetContainer(
         isCompact = widget.isCompact,
         limit = widget.limit
     )
+
+    private fun resolveSubscriptionLimit(): Int = resolveLimit() + 1
 
     companion object {
 

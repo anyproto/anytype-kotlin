@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Tree
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -77,6 +78,7 @@ class TreeWidgetContainer(
             emptyFlow()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow() = combine(
         expandedBranches,
         isWidgetCollapsed
@@ -114,20 +116,22 @@ class TreeWidgetContainer(
                             putAll(valid.associate { obj -> obj.id to obj.links })
                         }
                     }
+                    val treeResult = buildTree(
+                        links = rootLevelLinks,
+                        level = ROOT_INDENT,
+                        expanded = paths,
+                        path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
+                        data = data,
+                        rootLimit = rootLevelLimit,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
                     Tree(
                         id = widget.id,
                         source = widget.source,
                         icon = widget.icon,
                         isExpanded = !isWidgetCollapsed,
-                        elements = buildTree(
-                            links = rootLevelLinks,
-                            level = ROOT_INDENT,
-                            expanded = paths,
-                            path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data,
-                            rootLimit = rootLevelLimit,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        ),
+                        elements = treeResult.elements,
+                        hasMore = treeResult.hasMore,
                         name = Bundled(source = source),
                         sectionType = widget.sectionType
                     )
@@ -157,19 +161,21 @@ class TreeWidgetContainer(
                             putAll(valid.associate { obj -> obj.id to obj.links })
                         }
                     }
+                    val treeResult = buildTree(
+                        links = source.obj.links,
+                        level = ROOT_INDENT,
+                        expanded = paths,
+                        path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
+                        data = data,
+                        rootLimit = rootLevelLimit,
+                        storeOfObjectTypes = storeOfObjectTypes
+                    )
                     Tree(
                         id = widget.id,
                         source = widget.source,
                         isExpanded = !isWidgetCollapsed,
-                        elements = buildTree(
-                            links = source.obj.links,
-                            level = ROOT_INDENT,
-                            expanded = paths,
-                            path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
-                            data = data,
-                            rootLimit = WidgetConfig.NO_LIMIT,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        ),
+                        elements = treeResult.elements,
+                        hasMore = treeResult.hasMore,
                         icon = widget.icon,
                         name = Default(
                             prettyPrintName = fieldParser.getObjectName(source.obj)
@@ -185,6 +191,7 @@ class TreeWidgetContainer(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
@@ -267,6 +274,11 @@ class TreeWidgetContainer(
         }
     }.distinct()
 
+    data class TreeResult(
+        val elements: List<WidgetView.Tree.Element>,
+        val hasMore: Boolean
+    )
+
     private suspend fun buildTree(
         links: List<Id>,
         expanded: List<TreePath>,
@@ -275,7 +287,9 @@ class TreeWidgetContainer(
         data: Map<Id, ObjectWrapper.Basic>,
         rootLimit: Int,
         storeOfObjectTypes: StoreOfObjectTypes
-    ): List<WidgetView.Tree.Element> = buildList {
+    ): TreeResult {
+        val hasMoreAtRoot = level == 0 && rootLimit > 0 && links.size > rootLimit
+        val elements = buildList {
         links.forEachIndexed { index, link ->
             // Applying limit only for root level:
             if (level == 0 && rootLimit > 0 && index == rootLimit) {
@@ -308,20 +322,21 @@ class TreeWidgetContainer(
                     )
                 )
                 if (isExpandable && expanded.contains(currentLinkPath)) {
-                    addAll(
-                        buildTree(
-                            links = obj.links,
-                            level = level.inc(),
-                            expanded = expanded,
-                            path = currentLinkPath + SEPARATOR,
-                            data = data,
-                            rootLimit = rootLimit,
-                            storeOfObjectTypes = storeOfObjectTypes
-                        )
+                    val childResult = buildTree(
+                        links = obj.links,
+                        level = level.inc(),
+                        expanded = expanded,
+                        path = currentLinkPath + SEPARATOR,
+                        data = data,
+                        rootLimit = rootLimit,
+                        storeOfObjectTypes = storeOfObjectTypes
                     )
+                    addAll(childResult.elements)
                 }
             }
         }
+        }
+        return TreeResult(elements = elements, hasMore = hasMoreAtRoot)
     }
 
     private fun resolveObjectIcon(

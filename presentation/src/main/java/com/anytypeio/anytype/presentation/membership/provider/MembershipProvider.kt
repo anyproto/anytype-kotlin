@@ -14,6 +14,7 @@ import com.anytypeio.anytype.domain.workspace.MembershipChannel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
@@ -24,7 +25,7 @@ import timber.log.Timber
 
 interface MembershipProvider {
 
-    fun status(): Flow<MembershipStatus>
+    fun status(forceRefresh: Boolean = false): Flow<MembershipStatus>
     fun activeTier(): Flow<TierId>
 
     class Default(
@@ -37,11 +38,12 @@ interface MembershipProvider {
     ) : MembershipProvider {
 
         @OptIn(ExperimentalCoroutinesApi::class)
-        override fun status(): Flow<MembershipStatus> {
+        override fun status(forceRefresh: Boolean): Flow<MembershipStatus> {
             return awaitAccountStartManager.state().flatMapLatest { state ->
                 when(state) {
                     AwaitAccountStartManager.State.Started -> buildStatusFlow(
-                        initial = proceedWithGettingMembership()
+                        initialMembership = proceedWithGettingMembership(noCache = forceRefresh),
+                        initialTiers = proceedWithGettingTiers(noCache = forceRefresh)
                     )
                     AwaitAccountStartManager.State.Init -> emptyFlow()
                     AwaitAccountStartManager.State.Stopped -> emptyFlow()
@@ -78,34 +80,42 @@ interface MembershipProvider {
         }
 
         private fun buildStatusFlow(
-            initial: Membership?
+            initialMembership: Membership?,
+            initialTiers: List<MembershipTierData>
         ): Flow<MembershipStatus> {
-            return membershipChannel
+            val membershipFlow = membershipChannel
                 .observe()
-                .scan(initial) { _, events ->
+                .scan(initialMembership) { _, events ->
                     events.lastOrNull()?.membership
                 }.filterNotNull()
-                .map { membership ->
-                    val tiers = proceedWithGettingTiers().filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
-                    val newStatus = toMembershipStatus(
-                        membership = membership,
-                        tiers = tiers
-                    )
-                    Timber.d("MembershipProvider, newState: $newStatus")
-                    newStatus
+
+            val tiersFlow = membershipChannel
+                .observeTiers()
+                .scan(initialTiers) { _, events ->
+                    events.lastOrNull()?.tiers ?: initialTiers
                 }
+
+            return combine(membershipFlow, tiersFlow) { membership, tiers ->
+                val filteredTiers = tiers.filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
+                val newStatus = toMembershipStatus(
+                    membership = membership,
+                    tiers = filteredTiers
+                )
+                Timber.d("MembershipProvider, newState: $newStatus")
+                newStatus
+            }
         }
 
-        private suspend fun proceedWithGettingMembership(): Membership? {
+        private suspend fun proceedWithGettingMembership(noCache: Boolean = false): Membership? {
             val command = Command.Membership.GetStatus(
-                noCache = true
+                noCache = noCache
             )
             return repo.membershipStatus(command)
         }
 
-        private suspend fun proceedWithGettingTiers(): List<MembershipTierData> {
+        private suspend fun proceedWithGettingTiers(noCache: Boolean = false): List<MembershipTierData> {
             val tiersParams = Command.Membership.GetTiers(
-                noCache = true,
+                noCache = noCache,
                 locale = localeProvider.language()
             )
             return repo.membershipGetTiers(tiersParams)

@@ -20,6 +20,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetConfig.isValidObject
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Bundled
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Tree
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
@@ -49,7 +50,8 @@ class TreeWidgetContainer(
 
     private val mutex = Mutex()
 
-    private val rootLevelLimit = WidgetConfig.resolveTreeWidgetLimit(widget.limit)
+    // Always limit root level to 6 items to show "See all" button when 7+
+    private val rootLevelLimit = TREE_WIDGET_ROOT_LIMIT
 
     private val nodes = mutableMapOf<Id, List<Id>>()
 
@@ -77,6 +79,7 @@ class TreeWidgetContainer(
             emptyFlow()
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow() = combine(
         expandedBranches,
         isWidgetCollapsed
@@ -165,7 +168,7 @@ class TreeWidgetContainer(
                         expanded = paths,
                         path = widget.id + SEPARATOR + widget.source.id + SEPARATOR,
                         data = data,
-                        rootLimit = WidgetConfig.NO_LIMIT,
+                        rootLimit = rootLevelLimit,
                         storeOfObjectTypes = storeOfObjectTypes
                     )
                     Tree(
@@ -189,6 +192,7 @@ class TreeWidgetContainer(
         }
     }
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun fetchRootLevelBundledSourceObjects(): Flow<List<ObjectWrapper.Basic>> {
         return when (widget.source.id) {
             BundledWidgetSourceIds.FAVORITE -> {
@@ -355,6 +359,7 @@ class TreeWidgetContainer(
         const val ROOT_INDENT = 0
         const val MAX_INDENT = 3
         const val SEPARATOR = "/"
+        const val TREE_WIDGET_ROOT_LIMIT = 6
         val keys = buildList {
             addAll(ObjectSearchConstants.defaultKeys)
             add(Relations.LINKS)

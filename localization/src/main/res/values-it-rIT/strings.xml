@@ -2001,6 +2001,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>
     <string name="widget_unpin_alert_title">Questo Widget Non Può Essere Ripristinato</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="widgets_see_all">Mostra tutto</string>
     <string name="my_sites">I miei Siti</string>
     <string name="my_sites_empty_state_text">Non ci sono ancora oggetti pubblicati</string>
     <string name="my_sites_it_s_empty_here">Qui è vuoto</string>

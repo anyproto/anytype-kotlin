@@ -36,8 +36,6 @@ fun ChatWithManyAttachmentsNoText() {
         title = "File Archive",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:30",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // No message text, so should show "5 Images"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -84,8 +82,6 @@ fun ChatWithManyMixedAttachmentsNoText() {
         title = "Mixed Files",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "14:15",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // No message text, should show "6 Attachments"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -139,8 +135,6 @@ fun ChatWithImageAttachments() {
         creatorName = "Alice",
         messageText = "Check out these designs",
         messageTime = "10:45",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -179,8 +173,6 @@ fun ChatWithFileAttachments() {
         creatorName = "Bob",
         messageText = "Here are the documents",
         messageTime = "14:22",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.FILE,
@@ -215,8 +207,6 @@ fun ChatWithLinkAttachments() {
         creatorName = "Charlie",
         messageText = "Found some useful links",
         messageTime = "11:30",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.LINK,
@@ -261,8 +251,6 @@ fun ChatWithMixedAttachments() {
         creatorName = "Dana",
         messageText = "Latest progress and resources",
         messageTime = "16:30",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -300,8 +288,6 @@ fun ChatWithAttachmentsNoText() {
         title = "Media Sharing",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "12:15",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
                 type = VaultSpaceView.AttachmentType.IMAGE,
@@ -335,8 +321,6 @@ fun ChatWithManyLinksNoText() {
         title = "Reference Links",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "15:45",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // No message text, should show "5 Attachments" for mixed link/file types
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -387,8 +371,6 @@ fun ChatWithSingleLinkNoText() {
         title = "Single Link",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "09:15",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // Single link should show object name instead of "1 Object"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -419,8 +401,6 @@ fun ChatWithMultipleLinksOnlyNoText() {
         title = "Multiple Links Only",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "10:30",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // Multiple links only should show "3 Objects"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -462,8 +442,6 @@ fun ChatWithSingleImageNoMessage() {
         icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Alice",
         messageTime = "09:00",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // Single image, no message: "Alice: [] Image"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -495,8 +473,6 @@ fun ChatWithSingleLinkWithMessage() {
         creatorName = "Bob",
         messageText = "Check this out",
         messageTime = "10:00",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // Single link with message: "Bob: [] API Documentation Check this out"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -528,8 +504,6 @@ fun ChatWithMultipleImagesNoMessage() {
         icon = SpaceIconView.ChatSpace.Placeholder(),
         creatorName = "Charlie",
         messageTime = "11:00",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
         spaceView = VaultSpaceView.Space(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
@@ -569,8 +543,6 @@ fun ChatWithMultipleObjectsWithMessage() {
         creatorName = "Dana",
         messageText = "Here are some resources",
         messageTime = "12:00",
-        maxPinnedSpaces = 6,
-        currentPinnedCount = 2,
         // Multiple objects with message: "Dana: [][][] 3 Objects Here are some resources"
         attachmentPreviews = listOf(
             VaultSpaceView.AttachmentPreview(
@@ -611,8 +583,6 @@ fun ChatEmpty() {
         title = "Empty Chat",
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "08:00",
-        currentPinnedCount = 2,
-        maxPinnedSpaces = 6,
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
         spaceView = VaultSpaceView.Space(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
@@ -634,7 +604,6 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
             onDismiss = { expanded = false },
             isMuted = true,
             isPinned = false,
-            currentPinnedCount = 3,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -652,7 +621,6 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
             onDismiss = { expanded = false },
             isMuted = false,
             isPinned = false,
-            currentPinnedCount = 6,
             onMuteToggle = {},
             onPinToggle = {},
             onSpaceSettings = {}
@@ -677,7 +645,6 @@ fun ChatWithMention() {
             messageTime = "18:32",
             unreadMentionCount = 1,
             isMuted = true,
-            maxPinnedSpaces = 6,
             chatPreview = Chat.Preview(
                 space = SpaceId("space-id"),
                 chat = "chat-id",
@@ -698,7 +665,6 @@ fun ChatWithMention() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
             spaceView = VaultSpaceView.Space(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
@@ -728,7 +694,6 @@ fun ChatPreview() {
             messageTime = "18:32",
             isMuted = false,
             isPinned = true,
-            maxPinnedSpaces = 6,
             chatPreview = Chat.Preview(
                 space = SpaceId("space-id"),
                 chat = "chat-id",
@@ -749,7 +714,6 @@ fun ChatPreview() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
             spaceView = VaultSpaceView.Space(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),

@@ -30,7 +30,6 @@ import com.anytypeio.anytype.other.DefaultDeepLinkResolver
 import com.anytypeio.anytype.presentation.vault.VaultCommand
 import com.anytypeio.anytype.presentation.vault.VaultErrors
 import com.anytypeio.anytype.presentation.vault.VaultNavigation
-import com.anytypeio.anytype.presentation.vault.VaultUiState.Companion.MAX_PINNED_SPACES
 import com.anytypeio.anytype.presentation.vault.VaultViewModel
 import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.base.navigation
@@ -119,18 +118,6 @@ class VaultFragment : BaseComposeFragment() {
 
             val vaultErrors = vm.vaultErrors.collectAsStateWithLifecycle().value
             when (vaultErrors) {
-                VaultErrors.MaxPinnedSpacesReached -> {
-                    BaseAlertDialog(
-                        dialogText = stringResource(
-                            R.string.vault_max_pinned_limit_reached,
-                            MAX_PINNED_SPACES
-                        ),
-                        buttonText = getString(R.string.button_ok),
-                        onButtonClick = { vm.clearVaultError() },
-                        onDismissRequest = { vm.clearVaultError() }
-                    )
-                }
-
                 VaultErrors.Hidden -> {
                     //do nothing
                 }

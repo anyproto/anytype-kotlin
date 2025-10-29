@@ -2000,6 +2000,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">Dieses Widget kann nicht wiederhergestellt werden</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">Meine Seiten</string>
     <string name="my_sites_empty_state_text">Es gibt noch keine veröffentlichten Objekte</string>
     <string name="my_sites_it_s_empty_here">Hier ist es leer</string>

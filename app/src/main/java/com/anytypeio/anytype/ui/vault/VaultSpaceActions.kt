@@ -43,7 +43,6 @@ fun SpaceActionsDropdownMenu(
             y = 8.dp
         )
     ) {
-        // Show pin/unpin option
         DropdownMenuItem(
                 onClick = {
                     onPinToggle()

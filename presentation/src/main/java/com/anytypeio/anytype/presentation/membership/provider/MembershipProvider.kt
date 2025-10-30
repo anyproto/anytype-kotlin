@@ -85,14 +85,14 @@ interface MembershipProvider {
         ): Flow<MembershipStatus> {
             val membershipFlow = membershipChannel
                 .observe()
-                .scan(initialMembership) { _, events ->
-                    events.lastOrNull()?.membership
+                .scan(initialMembership) { previous, events ->
+                    events.lastOrNull()?.membership ?: previous
                 }.filterNotNull()
 
             val tiersFlow = membershipChannel
                 .observeTiers()
-                .scan(initialTiers) { _, events ->
-                    events.lastOrNull()?.tiers ?: initialTiers
+                .scan(initialTiers) { previous, events ->
+                    events.lastOrNull()?.tiers ?: previous
                 }
 
             return combine(membershipFlow, tiersFlow) { membership, tiers ->

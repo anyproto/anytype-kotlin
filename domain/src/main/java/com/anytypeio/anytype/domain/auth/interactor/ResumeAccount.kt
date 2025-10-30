@@ -50,8 +50,10 @@ class ResumeAccount @Inject constructor(
             if (lastSessionSpace != null) {
                 val result = spaceManager.set(lastSessionSpace.id)
                 if (result.isFailure) {
-                    // Falling back to the default space
+                    // Falling back to the default space. TODO - check behavior
                     spaceManager.set(setup.config.space)
+                    // TODO clear settings to avoid inconsistent states.
+
                 }
             }
             setup.account.id

@@ -45,7 +45,6 @@ interface MembershipProvider {
                         initialMembership = proceedWithGettingMembership(noCache = forceRefresh),
                         initialTiers = proceedWithGettingTiers(noCache = forceRefresh)
                     )
-
                     AwaitAccountStartManager.State.Init -> emptyFlow()
                     AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
@@ -60,7 +59,6 @@ interface MembershipProvider {
                     AwaitAccountStartManager.State.Started -> buildActiveTierFlow(
                         initial = proceedWithGettingMembership()
                     )
-
                     AwaitAccountStartManager.State.Init -> emptyFlow()
                     AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
@@ -99,7 +97,8 @@ interface MembershipProvider {
 
             return combine(membershipFlow, tiersFlow) { membership, tiers ->
                 val filteredTiers = tiers
-                        .filter { tier -> shouldShowTier(tier, membership.tier) }.sortedBy { it.id }
+                        .filter { tier -> shouldShowTier(tier, membership.tier) }
+                        .sortedBy { it.id }
                 val newStatus = toMembershipStatus(
                     membership = membership,
                     tiers = filteredTiers

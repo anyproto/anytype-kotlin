@@ -154,12 +154,7 @@ class OnboardingFragment : Fragment() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .then(
-                            if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                                Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
-                            else
-                                Modifier
-                        )
+                        .windowInsetsPadding(insets = WindowInsets.systemBars)
                 ) {
                     val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
                     //BackgroundCircle()

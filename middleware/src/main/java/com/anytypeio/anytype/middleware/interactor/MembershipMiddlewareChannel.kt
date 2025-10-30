@@ -44,7 +44,7 @@ class MembershipMiddlewareChannel(
                         message.membershipTiersUpdate != null -> {
                             val event = message.membershipTiersUpdate
                             checkNotNull(event)
-                            val tiers = event.tiersList.map { it.toCoreModel() }
+                            val tiers = event.tiers.map { it.toCoreModel() }
                             MembershipTiers.Event(tiers = tiers)
                         }
                         else -> null

@@ -60,6 +60,7 @@
         android:adjustViewBounds="true"
         android:background="@color/shape_tertiary"
         android:padding="4dp"
+        android:scaleType="centerCrop"
         android:transitionName="@string/logo_transition"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"

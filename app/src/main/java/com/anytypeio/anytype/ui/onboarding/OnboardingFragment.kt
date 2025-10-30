@@ -11,9 +11,7 @@ import android.os.Build
 import android.os.Bundle
 import android.os.PersistableBundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
-import android.view.WindowManager
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -49,8 +47,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.core.os.bundleOf
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
@@ -71,8 +67,6 @@ import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.shareFirstFileFromPath
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.daggerViewModel
 import com.anytypeio.anytype.presentation.onboarding.OnboardingStartViewModel
@@ -154,12 +148,7 @@ class OnboardingFragment : Fragment() {
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .then(
-                            if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                                Modifier.windowInsetsPadding(insets = WindowInsets.systemBars)
-                            else
-                                Modifier
-                        )
+                        .windowInsetsPadding(insets = WindowInsets.systemBars)
                 ) {
                     val currentPage = remember { mutableStateOf(OnboardingPage.AUTH) }
                     //BackgroundCircle()
@@ -180,24 +169,6 @@ class OnboardingFragment : Fragment() {
                     signUpBackButtonCallback.value = null
                 }
             }
-        }
-    }
-
-    private fun onApplyWindowRootInsets(view: View) {
-        if ( Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-            return
-        }
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val deferringInsetsListener = RootViewDeferringInsetsCallback(
-                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
-                deferredInsetTypes = 0
-            )
-
-            ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
-            ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
-        } else {
-            // Enabling workaround to prevent background circle with video shrinking.
-            activity?.window?.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_NOTHING);
         }
     }
 

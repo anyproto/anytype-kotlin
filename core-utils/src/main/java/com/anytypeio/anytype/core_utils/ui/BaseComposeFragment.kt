@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_utils.ui
 
-import android.os.Build
 import android.os.Bundle
 import android.view.View
 import androidx.core.view.ViewCompat
@@ -8,7 +7,6 @@ import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
-import com.anytypeio.anytype.core_utils.BuildConfig
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.insets.RootViewDeferringInsetsCallback
 import kotlinx.coroutines.Job
@@ -43,14 +41,12 @@ abstract class BaseComposeFragment : Fragment() {
     }
 
     open fun onApplyWindowRootInsets(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val deferringInsetsListener = RootViewDeferringInsetsCallback(
-                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
-                deferredInsetTypes = WindowInsetsCompat.Type.ime()
-            )
-            ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
-            ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
-        }
+        val deferringInsetsListener = RootViewDeferringInsetsCallback(
+            persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+            deferredInsetTypes = WindowInsetsCompat.Type.ime()
+        )
+        ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
+        ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
     }
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {

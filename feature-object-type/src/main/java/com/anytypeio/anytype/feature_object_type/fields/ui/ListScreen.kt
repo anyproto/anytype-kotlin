@@ -21,6 +21,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
@@ -139,7 +140,9 @@ fun FieldsMainScreen(
         contentColor = colorResource(id = R.color.background_primary),
         topBar = {
             TopBar(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .systemBarsPadding(),
                 uiTitleState = uiTitleState,
                 uiIconState = uiIconState,
                 onBackClick = {

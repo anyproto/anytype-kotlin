@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_object_type.ui
 
-import android.os.Build
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,7 +16,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.syncstatus.SpaceSyncStatusScreen
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.feature_object_type.ui.header.TopToolbar
 import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 
@@ -28,13 +26,9 @@ fun TopBarContent(
     onTypeEvent: (TypeEvent) -> Unit
 ) {
     // Use windowInsetsPadding if running on a recent SDK
-    val modifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-        Modifier
-            .windowInsetsPadding(WindowInsets.statusBars)
-            .fillMaxWidth()
-    } else {
-        Modifier.fillMaxWidth()
-    }
+    val modifier = Modifier
+        .windowInsetsPadding(WindowInsets.statusBars)
+        .fillMaxWidth()
 
     Column(modifier = modifier) {
         TopToolbar(

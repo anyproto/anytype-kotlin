@@ -469,21 +469,19 @@ open class ObjectSetFragment :
     }
 
     private fun setupWindowInsetAnimation() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            binding.bottomToolbarBox.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            title.syncFocusWithImeVisibility()
-            binding.viewerEditWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            binding.templatesWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            binding.titleWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-        }
+        binding.bottomToolbarBox.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        title.syncFocusWithImeVisibility()
+        binding.viewerEditWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.templatesWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.titleWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
     }
 
     private fun setupGridAdapters() {

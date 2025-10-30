@@ -43,14 +43,12 @@ abstract class BaseComposeFragment : Fragment() {
     }
 
     open fun onApplyWindowRootInsets(view: View) {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val deferringInsetsListener = RootViewDeferringInsetsCallback(
-                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
-                deferredInsetTypes = WindowInsetsCompat.Type.ime()
-            )
-            ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
-            ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
-        }
+        val deferringInsetsListener = RootViewDeferringInsetsCallback(
+            persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+            deferredInsetTypes = WindowInsetsCompat.Type.ime()
+        )
+        ViewCompat.setWindowInsetsAnimationCallback(view, deferringInsetsListener)
+        ViewCompat.setOnApplyWindowInsetsListener(view, deferringInsetsListener)
     }
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {

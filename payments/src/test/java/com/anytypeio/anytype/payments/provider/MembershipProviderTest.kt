@@ -2,8 +2,8 @@ package com.anytypeio.anytype.payments.provider
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
 import app.cash.turbine.turbineScope
-import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTiers
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -91,8 +91,16 @@ class MembershipProviderTest {
                     emit(listOf(event2))
                 }
 
+                val tierEvent1 = MembershipTiers.Event(listOf(tierData2, tierData))
+                val tierEvent2 = MembershipTiers.Event(listOf(tierData2, tierData))
+                val tierEventList = flow {
+                    emit(listOf(tierEvent1))
+                    emit(listOf(tierEvent2))
+                }
+
                 membershipChannel.stub {
                     on { observe() } doReturn eventList
+                    on { observeTiers() } doReturn tierEventList
                 }
                 whenever(repo.membershipStatus(any())).thenReturn(membership)
                 whenever(
@@ -101,15 +109,8 @@ class MembershipProviderTest {
                         DATE_FORMAT
                     )
                 ).thenReturn("01-01-1970")
-                val command = Command.Membership.GetTiers(
-                    noCache = true,
-                    locale = "en"
-                )
-                repo.stub {
-                    onBlocking { membershipGetTiers(command) } doReturn listOf(tierData2, tierData)
-
-                }
                 whenever(localeProvider.language()).thenReturn("en")
+                whenever(repo.membershipGetTiers(any())).thenReturn(listOf(tierData2, tierData))
 
                 awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
                 val membershipProviderFlow = provider.status().testIn(backgroundScope)
@@ -135,7 +136,8 @@ class MembershipProviderTest {
                 membershipProviderFlow2.awaitItem()
                 membershipProviderFlow2.awaitItem()
 
-                verify(repo, times(6)).membershipGetTiers(command)
+                // Each call to status() fetches tiers once initially, then uses events for updates
+                verify(repo, times(2)).membershipGetTiers(any())
             }
         }
 }

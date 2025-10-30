@@ -51,6 +51,10 @@ data class MembershipTierData(
     val androidManageUrl: String?
 )
 
+class MembershipTiers {
+    data class Event(val tiers: List<MembershipTierData>)
+}
+
 enum class MembershipPeriodType {
     PERIOD_TYPE_UNKNOWN,
     PERIOD_TYPE_UNLIMITED,

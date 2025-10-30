@@ -50,6 +50,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -96,6 +97,8 @@ class MembershipViewModel(
 
     val anyEmailState = TextFieldState(initialText = "")
 
+    private val forceRefreshTrigger = MutableStateFlow(false)
+
     init {
         Timber.i("MembershipViewModel, init")
         viewModelScope.launch {
@@ -111,17 +114,19 @@ class MembershipViewModel(
         viewModelScope.launch {
             val account = getAccount.async(Unit)
             val accountId = account.getOrNull()?.id.orEmpty()
-            combine(
-                membershipProvider.status()
-                    .onEach { setupBillingClient(it) },
-                billingProducts,
-                billingPurchases
-            ) { membershipStatus, billingProducts, billingPurchases ->
-                Timber.d("TierResult: " +
-                        "\n----------------------------\nmembershipStatus:[$membershipStatus]," +
-                        "\n----------------------------\nbillingProducts:[$billingProducts]," +
-                        "\n----------------------------\nbillingPurchases:[$billingPurchases]")
-                MainResult(membershipStatus, billingProducts, billingPurchases)
+            forceRefreshTrigger.flatMapLatest { forceRefresh ->
+                combine(
+                    membershipProvider.status(forceRefresh = forceRefresh)
+                        .onEach { setupBillingClient(it) },
+                    billingProducts,
+                    billingPurchases
+                ) { membershipStatus, billingProducts, billingPurchases ->
+                    Timber.d("TierResult: " +
+                            "\n----------------------------\nmembershipStatus:[$membershipStatus]," +
+                            "\n----------------------------\nbillingProducts:[$billingProducts]," +
+                            "\n----------------------------\nbillingPurchases:[$billingPurchases]")
+                    MainResult(membershipStatus, billingProducts, billingPurchases)
+                }
             }.collect { (membershipStatus, billingClientState, purchases) ->
                 val newState = membershipStatus.toMainView(
                     billingClientState = billingClientState,
@@ -166,7 +171,9 @@ class MembershipViewModel(
     private fun checkPurchaseStatus(billingPurchaseState: BillingPurchaseState) {
         if (billingPurchaseState is BillingPurchaseState.HasPurchases && billingPurchaseState.isNewPurchase) {
             Timber.d("Billing purchase state: $billingPurchaseState")
-            //Got new purchase, show success screen
+            //Got new purchase, force refresh membership status and tiers
+            forceRefreshTrigger.value = true
+            //Show success screen
             val tierView = (tierState.value as? MembershipTierState.Visible)?.tier ?: return
             proceedWithHideTier()
             welcomeState.value = WelcomeState.Initial(tierView)
@@ -177,6 +184,11 @@ class MembershipViewModel(
                 )
             }
             proceedWithNavigation(MembershipNavigation.Welcome)
+            // Reset force refresh trigger after a delay to allow normal updates
+            viewModelScope.launch {
+                delay(FORCE_REFRESH_RESET_DELAY_MS)
+                forceRefreshTrigger.value = false
+            }
         }
     }
 
@@ -507,10 +519,17 @@ class MembershipViewModel(
             verifyMembershipEmailCode.async(VerifyMembershipEmailCode.Params(code)).fold(
                 onSuccess = {
                     Timber.d("Email code verified")
+                    // Force refresh membership status and tiers after email verification
+                    forceRefreshTrigger.value = true
                     codeState.value = MembershipEmailCodeState.Visible.Success
                     delay(500)
                     proceedWithNavigation(MembershipNavigation.Dismiss)
                     proceedWithGettingEmailStatus()
+                    // Reset force refresh trigger
+                    viewModelScope.launch {
+                        delay(FORCE_REFRESH_RESET_DELAY_MS)
+                        forceRefreshTrigger.value = false
+                    }
                 },
                 onFailure = { error ->
                     Timber.e("Error verifying email code: $error")
@@ -782,6 +801,7 @@ class MembershipViewModel(
 
 
     companion object {
+        const val FORCE_REFRESH_RESET_DELAY_MS = 1000L
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
         const val NAME_VALIDATION_DELAY = 300L
     }

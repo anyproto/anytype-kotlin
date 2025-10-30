@@ -186,7 +186,7 @@ class MembershipViewModel(
             proceedWithNavigation(MembershipNavigation.Welcome)
             // Reset force refresh trigger after a delay to allow normal updates
             viewModelScope.launch {
-                delay(1000)
+                delay(FORCE_REFRESH_RESET_DELAY_MS)
                 forceRefreshTrigger.value = false
             }
         }
@@ -527,7 +527,7 @@ class MembershipViewModel(
                     proceedWithGettingEmailStatus()
                     // Reset force refresh trigger
                     viewModelScope.launch {
-                        delay(1000)
+                        delay(FORCE_REFRESH_RESET_DELAY_MS)
                         forceRefreshTrigger.value = false
                     }
                 },
@@ -801,6 +801,7 @@ class MembershipViewModel(
 
 
     companion object {
+        const val FORCE_REFRESH_RESET_DELAY_MS = 1000L
         const val EXPECTED_SUBSCRIPTION_PURCHASE_LIST_SIZE = 1
         const val NAME_VALIDATION_DELAY = 300L
     }

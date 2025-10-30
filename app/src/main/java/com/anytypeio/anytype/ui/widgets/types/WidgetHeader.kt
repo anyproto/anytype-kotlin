@@ -25,6 +25,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -92,7 +93,8 @@ fun WidgetHeader(
                 Image(
                     painter = painterResource(R.drawable.ic_widget_system_plus_18),
                     contentDescription = stringResource(R.string.content_description_plus_button),
-                    modifier = Modifier.fillMaxSize()
+                    modifier = Modifier.fillMaxSize(),
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_primary))
                 )
             }
         }
@@ -109,7 +111,8 @@ fun WidgetHeader(
                 contentDescription = "Expand icon",
                 modifier = Modifier
                     .fillMaxSize()
-                    .graphicsLayer { rotationZ = rotation.value }
+                    .graphicsLayer { rotationZ = rotation.value },
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_primary))
             )
         }
     }

@@ -56,7 +56,7 @@ sealed class UiSpaceSettingsItem {
     data class Name(val name: String) : UiSpaceSettingsItem()
     data class Description(val description: String) : UiSpaceSettingsItem()
     data class InviteLink(val link: String) : UiSpaceSettingsItem()
-    data class Members(val count: Int, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem()
+    data class Members(val count: Int?, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem()
     data class MembersSmall(val count: Int) : UiSpaceSettingsItem()
     data object EntrySpace : UiSpaceSettingsItem()
     data object InviteMembers : UiSpaceSettingsItem()

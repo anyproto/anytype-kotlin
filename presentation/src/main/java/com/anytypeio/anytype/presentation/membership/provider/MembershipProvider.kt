@@ -40,11 +40,12 @@ interface MembershipProvider {
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun status(forceRefresh: Boolean): Flow<MembershipStatus> {
             return awaitAccountStartManager.state().flatMapLatest { state ->
-                when(state) {
+                when (state) {
                     AwaitAccountStartManager.State.Started -> buildStatusFlow(
                         initialMembership = proceedWithGettingMembership(noCache = forceRefresh),
                         initialTiers = proceedWithGettingTiers(noCache = forceRefresh)
                     )
+
                     AwaitAccountStartManager.State.Init -> emptyFlow()
                     AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
@@ -55,10 +56,11 @@ interface MembershipProvider {
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun activeTier(): Flow<TierId> {
             return awaitAccountStartManager.state().flatMapLatest { state ->
-                when(state) {
+                when (state) {
                     AwaitAccountStartManager.State.Started -> buildActiveTierFlow(
                         initial = proceedWithGettingMembership()
                     )
+
                     AwaitAccountStartManager.State.Init -> emptyFlow()
                     AwaitAccountStartManager.State.Stopped -> emptyFlow()
                 }
@@ -96,7 +98,8 @@ interface MembershipProvider {
                 }
 
             return combine(membershipFlow, tiersFlow) { membership, tiers ->
-                val filteredTiers = tiers.filter { SHOW_TEST_TIERS || !it.isTest }.sortedBy { it.id }
+                val filteredTiers = tiers
+                        .filter { tier -> shouldShowTier(tier, membership.tier) }.sortedBy { it.id }
                 val newStatus = toMembershipStatus(
                     membership = membership,
                     tiers = filteredTiers
@@ -104,6 +107,29 @@ interface MembershipProvider {
                 Timber.d("MembershipProvider, newState: $newStatus")
                 newStatus
             }
+        }
+
+        /**
+         * Determines whether a tier should be shown to the user on Android.
+         *
+         * Filtering rules:
+         * 1. Test tiers are hidden
+         * 2. Always show the user's currently active tier (ensures subscription visibility)
+         * 3. Only show tiers purchasable on Google Play Store (have androidProductId)
+         *
+         * @param tier The tier to evaluate
+         * @param activeTierId The user's currently active tier ID
+         * @return true if the tier should be displayed
+         */
+        private fun shouldShowTier(tier: MembershipTierData, activeTierId: Int): Boolean {
+            // Hide test tiers unless explicitly enabled
+            if (tier.isTest) return false
+
+            // Always show the user's currently active tier
+            if (tier.id == activeTierId) return true
+
+            // Only show tiers that are purchasable on Google Play Store
+            return !tier.androidProductId.isNullOrBlank()
         }
 
         private suspend fun proceedWithGettingMembership(noCache: Boolean = false): Membership? {
@@ -142,7 +168,6 @@ interface MembershipProvider {
         }
 
         companion object {
-            const val SHOW_TEST_TIERS = false
             const val DATE_FORMAT = "d MMM yyyy"
         }
     }

@@ -836,6 +836,8 @@
     <string name="create_space">スペースを作成</string>
     <string name="create_chat">チャットを作成</string>
     <string name="create_space_change_icon">アイコンを変更</string>
+    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_space_name">スペース名</string>
     <string name="generic_error">問題が発生しました。もう一度お試しください。</string>
     <string name="type">種類</string>
     <string name="format">種類</string>
@@ -1681,8 +1683,13 @@
     <string name="chats_edit_message">メッセージを編集</string>
     <string name="chats_message_edited">編集済み</string>
     <string name="chat_empty_state_message">メッセージはありません。\n会話を始めましょう。</string>
-    <string name="chat_empty_state_title">まだメッセージがありません。</string>
+    <string name="chat_empty_state_title">まだメッセージはありません</string>
     <string name="chat_empty_state_subtitle">招待して会話を始めましょう！</string>
+    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
+    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_show_qr_button">QRコードを表示</string>
     <string name="chat_empty_state_share_invite_button">メンバーを招待</string>
     <string name="write_a_message">メッセージを入力…</string>
     <string name="date_layout_mentioned_in">メンション</string>
@@ -1900,6 +1907,16 @@
     <string name="vault_create_chat_description">チームでの会話や共同作業に</string>
     <string name="vault_create_space">新しいスペース</string>
     <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
+    <!-- Spaces Introduction Popup -->
+    <string name="spaces_introduction_page1_title">Ideas need conversations</string>
+    <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
+    <string name="spaces_introduction_page2_title">Your Vault just leveled up</string>
+    <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
+    <string name="spaces_introduction_page3_title">Chats that do more</string>
+    <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
+    <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
+    <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
+    <string name="spaces_introduction_try_it">Let\'s try it</string>
     <string name="vault_empty_state_text">まだスペースがありません</string>
     <string name="vault_empty_search_state_text">一致するものが見つかりませんでした</string>
     <string name="chat_new_messages_section_text">新着メッセージ</string>
@@ -1949,7 +1966,7 @@
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
-    <string name="private_local_yours_forever">Private, local, yours forever</string>
+    <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Web公開</string>
     <string name="preferences">環境設定</string>

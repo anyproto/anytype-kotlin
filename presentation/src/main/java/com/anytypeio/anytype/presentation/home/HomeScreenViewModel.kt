@@ -267,7 +267,8 @@ class HomeScreenViewModel(
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
-    // Separate StateFlows for pinned and type widgets
+    // Separate StateFlows for different widget sections
+    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -278,6 +279,12 @@ class HomeScreenViewModel(
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
+
+    // Lock mechanism to prevent race conditions during DnD operations
+    // When a drag operation completes, we optimistically update the UI and send to middleware
+    // We then lock event processing for a short period to prevent incoming events from
+    // overwriting our optimistic update before middleware confirms the change
+    private var typeWidgetEventLockTimestamp: Long? = null
 
     // Helper property for synchronous access to current widget list
     private val currentWidgets: Widgets
@@ -316,6 +323,23 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Exposed flow for space chat widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatView: StateFlow<WidgetView?> = chatWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for chat widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -451,7 +475,12 @@ class HomeScreenViewModel(
                     },
                     onLoading = {
                         pinnedWidgets.value = emptyList()
-                        typeWidgets.value = emptyList()
+                        // Check event lock before clearing type widgets during loading
+                        if (isTypeWidgetEventLockActive()) {
+                            Timber.d("DROID-3951, Type widget event lock is active, ignoring loading state clear")
+                        } else {
+                            typeWidgets.value = emptyList()
+                        }
                     }
                 )
             }.map { result ->
@@ -758,14 +787,31 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = (if (sections.chatWidget != null) 1 else 0) + sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: chat=${sections.chatWidget != null}, pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+
+                    chatWidget.value = sections.chatWidget
                     pinnedWidgets.value = sections.pinnedWidgets
-                    typeWidgets.value = sections.typeWidgets
+
+                    // Check event lock before updating type widgets to prevent race conditions during DnD
+                    if (isTypeWidgetEventLockActive()) {
+                        Timber.d("DROID-3951, Type widget event lock is active, ignoring incoming type widget update")
+                    } else {
+                        typeWidgets.value = sections.typeWidgets
+                    }
+
                     binWidget.value = sections.binWidget
                 } else {
+                    chatWidget.value = null
                     pinnedWidgets.value = emptyList()
-                    typeWidgets.value = emptyList()
+
+                    // Check event lock before clearing type widgets
+                    if (isTypeWidgetEventLockActive()) {
+                        Timber.d("DROID-3951, Type widget event lock is active, ignoring incoming type widget clear")
+                    } else {
+                        typeWidgets.value = emptyList()
+                    }
+
                     binWidget.value = null
                 }
             }
@@ -1127,6 +1173,25 @@ class HomeScreenViewModel(
                     Timber.e(it, "Error while toggling object checkbox state")
                 }
             )
+        }
+    }
+
+    fun onWidgetChatClicked() {
+        Timber.d("onWidgetChatClicked:")
+        viewModelScope.launch {
+            val space = vmParams.spaceId.id
+            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+            val chat = view?.chatId
+            if (chat != null) {
+                navigation(
+                    OpenChat(
+                        ctx = chat,
+                        space = space
+                    )
+                )
+            } else {
+                Timber.w("Failed to open chat from widget: chat not found")
+            }
         }
     }
 
@@ -2868,6 +2933,9 @@ class HomeScreenViewModel(
             viewModelScope.launch {
                 Timber.d("DROID-3965, Persisting type widget order: ${newOrder.map { it.takeLast(4) + "..." }}")
 
+                // Activate event lock before sending to middleware to prevent race conditions
+                activateTypeWidgetEventLock()
+
                 updateObjectTypesOrderIds.async(
                     UpdateObjectTypesOrderIds.Params(
                         spaceId = vmParams.spaceId,
@@ -2891,15 +2959,49 @@ class HomeScreenViewModel(
     }
 
     /**
+     * Activates the event lock for type widgets to prevent race conditions.
+     * Should be called before sending a drag-and-drop order change to middleware.
+     */
+    private fun activateTypeWidgetEventLock() {
+        typeWidgetEventLockTimestamp = System.currentTimeMillis()
+        Timber.d("DROID-3951, Type widget event lock activated at $typeWidgetEventLockTimestamp")
+    }
+
+    /**
+     * Checks if the type widget event lock is currently active.
+     * The lock is active if it was set within the last TYPE_WIDGET_EVENT_LOCK_DURATION_MS milliseconds.
+     */
+    private fun isTypeWidgetEventLockActive(): Boolean {
+        val lockTimestamp = typeWidgetEventLockTimestamp ?: return false
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - lockTimestamp
+        val isActive = elapsedTime < TYPE_WIDGET_EVENT_LOCK_DURATION_MS
+
+        if (!isActive) {
+            Timber.d("DROID-3951, Type widget event lock expired (elapsed: ${elapsedTime}ms)")
+            typeWidgetEventLockTimestamp = null
+        }
+
+        return isActive
+    }
+
+    /**
      * Clears the drag-and-drop state for type widgets.
      *
-     * This method is called at the end of a drag-and-drop operation, regardless of whether
-     * the operation was successful or failed. It ensures that the local state is reset
-     * to avoid inconsistencies in subsequent drag-and-drop actions.
+     * This method is called after the middleware responds to a drag-and-drop operation.
+     * It clears the pending order but DOES NOT clear the event lock timestamp.
+     *
+     * The lock must remain active for its full duration (TYPE_WIDGET_EVENT_LOCK_DURATION_MS)
+     * because events can arrive AFTER the middleware response. These post-response events
+     * need to be ignored to prevent overwriting the optimistic UI update.
+     *
+     * The lock will expire automatically via isTypeWidgetEventLockActive() checks.
      */
     private fun clearTypeWidgetDragState() {
-        Timber.d("DROID-3965, Clearing type widget drag state")
+        Timber.d("DROID-3965, Clearing type widget drag state (lock remains active)")
         pendingTypeWidgetOrder = null
+        // NOTE: We do NOT clear typeWidgetEventLockTimestamp here
+        // The lock must remain active for the full duration to block post-response events
     }
     //endregion
 
@@ -3102,6 +3204,10 @@ class HomeScreenViewModel(
 
     companion object {
         const val HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION = "subscription.home-screen.profile-object"
+
+        // Duration in milliseconds to lock type widget event processing after a drag operation
+        // This prevents incoming middleware events from overwriting optimistic UI updates
+        private const val TYPE_WIDGET_EVENT_LOCK_DURATION_MS = 1500L
     }
 }
 

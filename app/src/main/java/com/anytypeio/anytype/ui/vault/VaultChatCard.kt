@@ -71,7 +71,6 @@ fun VaultChatCard(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     isPinned: Boolean = false,
-    maxPinnedSpaces: Int,
     spaceView: VaultSpaceView,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
@@ -79,8 +78,7 @@ fun VaultChatCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {},
-    currentPinnedCount: Int
+    onSpaceSettings: (Id) -> Unit = {}
 ) {
 
     val updatedModifier = when (spaceBackground) {
@@ -147,7 +145,6 @@ fun VaultChatCard(
             onDismiss = onDismissMenu,
             isMuted = spaceView.isMuted,
             isPinned = spaceView.isPinned,
-            currentPinnedCount = currentPinnedCount,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
                     if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
@@ -649,7 +646,6 @@ fun ChatWithMentionAndMessage() {
             unreadMessageCount = 32,
             unreadMentionCount = 1,
             isMuted = true,
-            maxPinnedSpaces = 6,
             chatPreview =
                 Chat.Preview(
                 space = SpaceId("space-id"),
@@ -671,7 +667,6 @@ fun ChatWithMentionAndMessage() {
                     synced = false
                 )
             ),
-            currentPinnedCount = 3,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
             spaceView = VaultSpaceView.Space(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),

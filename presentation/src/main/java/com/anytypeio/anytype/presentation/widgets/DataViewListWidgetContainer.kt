@@ -66,6 +66,10 @@ class DataViewListWidgetContainer(
     onRequestCache: () -> WidgetView? = { null },
 ) : WidgetContainer {
 
+    companion object {
+        const val DEFAULT_FALLBACK_WIDGET_LIMIT = 6
+    }
+
     // Cache to prevent duplicate computeViewerContext calls
     private var cachedContext: ViewerContext? = null
     private var cachedContextKey: ContextKey? = null
@@ -113,12 +117,10 @@ class DataViewListWidgetContainer(
                                     // Adjust cached state to reflect current collapsed flag
                                     val adjustedCache = when (cached) {
                                         is WidgetView.SetOfObjects -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         is WidgetView.Gallery -> cached.copy(
-                                            isExpanded = !isCollapsed,
-                                            isLoading = false
+                                            isExpanded = !isCollapsed
                                         )
                                         else -> cached
                                     }
@@ -126,8 +128,7 @@ class DataViewListWidgetContainer(
                                 } else {
                                     emit(
                                         createWidgetView(
-                                            isCollapsed = isCollapsed,
-                                            isLoading = true
+                                            isCollapsed = isCollapsed
                                         )
                                     )
                                 }
@@ -148,7 +149,7 @@ class DataViewListWidgetContainer(
     ): Flow<WidgetView> =
         isCollapsedFlow.distinctUntilChanged().flatMapLatest { isCollapsed ->
             if (isCollapsed) {
-                flowOf(createWidgetView(isCollapsed = true, isLoading = false))
+                flowOf(createWidgetView(isCollapsed = true))
             } else {
                 buildData()
             }
@@ -195,6 +196,7 @@ class DataViewListWidgetContainer(
                                                 activeView = activeView,
                                                 params = ctx.params,
                                                 target = ctx.target,
+                                                displayLimit = ctx.displayLimit,
                                                 storeOfObjectTypes = storeOfObjectTypes
                                             )
                                         )
@@ -205,6 +207,7 @@ class DataViewListWidgetContainer(
                                                 activeView = activeView,
                                                 params = ctx.params,
                                                 isCompact = isCompact,
+                                                displayLimit = ctx.displayLimit,
                                                 storeOfObjectTypes = storeOfObjectTypes
                                             )
                                         )
@@ -251,7 +254,8 @@ class DataViewListWidgetContainer(
     private data class ViewerContext(
         val obj: ObjectView,
         val target: Block.Content.DataView.Viewer?,
-        val params: StoreSearchParams?
+        val params: StoreSearchParams?,
+        val displayLimit: Int
     )
 
     /**
@@ -291,48 +295,75 @@ class DataViewListWidgetContainer(
         val dv = obj.blocks.find { it.content is DV }?.content as? DV
         val targetView = dv?.viewers?.find { it.id == activeViewerId } ?: dv?.viewers?.firstOrNull()
 
-        val limit = WidgetConfig.resolveListWidgetLimit(
+        val displayLimit = WidgetConfig.resolveListWidgetLimit(
             isCompact = isCompact,
             isGallery = targetView?.type == DVViewerType.GALLERY,
             limit = when (widget) {
                 is Widget.List -> widget.limit
                 is Widget.View -> widget.limit
-                else -> {
-                    throw IllegalStateException("Incompatible widget type.")
-                }
+                else -> DEFAULT_FALLBACK_WIDGET_LIMIT
             }
         )
 
+        // Fetch one extra item to determine if there are more
+        val subscriptionLimit = displayLimit + 1
+
         val struct = obj.details[obj.root] ?: emptyMap()
         val params = if (struct.isValidObject()) {
-            val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
             val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
-            StoreSearchParams(
-                space = space,
-                subscription = obj.root,
-                sorts = sorts,
-                keys = buildList {
-                    addAll(defaultKeys)
-                    addAll(dataViewKeys)
-                }.distinct(),
-                filters = buildList {
-                    addAll(targetView?.filters.orEmpty())
-                    addAll(ObjectSearchConstants.defaultDataViewFilters())
-                },
-                limit = limit,
-                source = listOf(setOf),
-                collection = if (obj.isCollection())
-                    obj.root
-                else
+
+            // Collections and Sets require different subscription parameters
+            // (following the pattern from ObjectSetViewModel's DataViewSubscription)
+            if (obj.isCollection()) {
+                // Collections: use collection parameter with empty sources
+                StoreSearchParams(
+                    space = space,
+                    subscription = obj.root,
+                    sorts = sorts,
+                    keys = buildList {
+                        addAll(defaultKeys)
+                        addAll(dataViewKeys)
+                    }.distinct(),
+                    filters = buildList {
+                        addAll(targetView?.filters.orEmpty())
+                        addAll(ObjectSearchConstants.defaultDataViewFilters())
+                    },
+                    limit = subscriptionLimit,
+                    source = emptyList(),
+                    collection = obj.root
+                )
+            } else {
+                // Sets: use setOf as source (only if not empty)
+                val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
+                if (setOf.isEmpty()) {
+                    Timber.w("Widget ${widget.id}: setOf is empty, cannot create subscription parameters for Query widget")
                     null
-            )
+                } else {
+                    StoreSearchParams(
+                        space = space,
+                        subscription = obj.root,
+                        sorts = sorts,
+                        keys = buildList {
+                            addAll(defaultKeys)
+                            addAll(dataViewKeys)
+                        }.distinct(),
+                        filters = buildList {
+                            addAll(targetView?.filters.orEmpty())
+                            addAll(ObjectSearchConstants.defaultDataViewFilters())
+                        },
+                        limit = subscriptionLimit,
+                        source = listOf(setOf),
+                        collection = null
+                    )
+                }
+            }
         } else {
             null
         }
 
-        return ViewerContext(obj = obj, target = targetView, params = params)
+        return ViewerContext(obj = obj, target = targetView, params = params, displayLimit = displayLimit)
     }
 
     /**
@@ -420,6 +451,7 @@ class DataViewListWidgetContainer(
         activeView: Id?,
         target: Block.Content.DataView.Viewer,
         params: StoreSearchParams,
+        displayLimit: Int,
         storeOfObjectTypes: StoreOfObjectTypes
     ): Flow<WidgetView.Gallery> {
         return storage.subscribeWithDependencies(params).map { response ->
@@ -428,6 +460,9 @@ class DataViewListWidgetContainer(
                 obj = obj,
                 activeView = activeView
             )
+            val filteredObjects = objects.filter { obj -> obj.isValid }
+            val hasMore = filteredObjects.size > displayLimit
+            val displayObjects = filteredObjects.take(displayLimit)
             val withCover = !target.coverRelationKey.isNullOrEmpty()
             val withIcon = !target.hideIcon
             WidgetView.Gallery(
@@ -435,7 +470,7 @@ class DataViewListWidgetContainer(
                 source = widget.source,
                 view = target.id,
                 tabs = obj.tabs(viewer = activeView),
-                elements = objects.filter { obj -> obj.isValid }.map { obj ->
+                elements = displayObjects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = if (withIcon) {
@@ -464,6 +499,7 @@ class DataViewListWidgetContainer(
                 isExpanded = true,
                 showIcon = withIcon,
                 showCover = withCover,
+                hasMore = hasMore,
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType
@@ -480,6 +516,7 @@ class DataViewListWidgetContainer(
         activeView: Id?,
         params: StoreSearchParams,
         isCompact: Boolean,
+        displayLimit: Int,
         storeOfObjectTypes: StoreOfObjectTypes
     ): Flow<WidgetView> {
         return storage.subscribe(params).map { results ->
@@ -488,11 +525,13 @@ class DataViewListWidgetContainer(
                 obj = obj,
                 activeView = activeView
             )
+            val hasMore = objects.size > displayLimit
+            val displayObjects = objects.take(displayLimit)
             WidgetView.SetOfObjects(
                 id = widget.id,
                 source = widget.source,
                 tabs = obj.tabs(viewer = activeView),
-                elements = objects.map { obj ->
+                elements = displayObjects.map { obj ->
                     WidgetView.SetOfObjects.Element(
                         obj = obj,
                         objectIcon = obj.objectIcon(
@@ -506,6 +545,7 @@ class DataViewListWidgetContainer(
                 },
                 isExpanded = true,
                 isCompact = isCompact,
+                hasMore = hasMore,
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType
@@ -518,8 +558,7 @@ class DataViewListWidgetContainer(
      * Handles collapsed and loading states for List, View, and Section widgets.
      */
     private fun createWidgetView(
-        isCollapsed: Boolean = false,
-        isLoading: Boolean = false
+        isCollapsed: Boolean = false
     ): WidgetView {
         return when (widget) {
             is Widget.List -> SetOfObjects(
@@ -530,7 +569,6 @@ class DataViewListWidgetContainer(
                 isExpanded = !isCollapsed,
                 isCompact = widget.isCompact,
                 icon = widget.icon,
-                isLoading = isLoading,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType
             )
@@ -546,7 +584,6 @@ class DataViewListWidgetContainer(
                         tabs = emptyList(),
                         elements = emptyList(),
                         isExpanded = !isCollapsed,
-                        isLoading = isLoading,
                         view = null,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
@@ -560,7 +597,6 @@ class DataViewListWidgetContainer(
                         isExpanded = !isCollapsed,
                         isCompact = false,
                         icon = widget.icon,
-                        isLoading = isLoading,
                         name = widget.source.getPrettyName(fieldParser),
                         sectionType = widget.sectionType
                     )
@@ -577,7 +613,7 @@ class DataViewListWidgetContainer(
      * Returns a default empty widget view state for error handling and initial states.
      */
     private fun defaultEmptyState(isCollapsed: Boolean = false): WidgetView {
-        return createWidgetView(isCollapsed = isCollapsed, isLoading = false)
+        return createWidgetView(isCollapsed = isCollapsed)
     }
 }
 

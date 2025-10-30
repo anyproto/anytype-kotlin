@@ -40,6 +40,10 @@ class ObjectActionAdapter(
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_archive)
                     tvActionTitle.setText(R.string.action_bar_to_bin)
                 }
+                ObjectAction.REMOVE_FROM_FAVOURITE -> {
+                    ivActionIcon.setImageResource(R.drawable.ic_object_action_unfavorite)
+                    tvActionTitle.setText(R.string.unfavorite)
+                }
                 ObjectAction.DUPLICATE -> {
                     ivActionIcon.setImageResource(R.drawable.ic_object_action_duplicate)
                     tvActionTitle.setText(R.string.object_action_duplicate)

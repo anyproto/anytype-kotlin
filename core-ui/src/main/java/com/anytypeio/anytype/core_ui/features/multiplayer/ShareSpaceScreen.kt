@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.multiplayer
 
-import android.content.res.Configuration
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.rememberSplineBasedDecay
@@ -57,7 +56,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.TextUnit
@@ -87,7 +85,6 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonIncentiveSecond
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.ButtonUpgrade
 import com.anytypeio.anytype.core_ui.views.ButtonUpgradeBlack
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
@@ -524,12 +521,40 @@ private fun AddEditorsIncentive(
 
 enum class DragValue { DRAGGED_DOWN, DRAGGED_UP }
 
+/**
+ * Displays a notification badge for pending join requests.
+ * The badge consists of a white background circle (12dp) with a blue dot (8dp) centered inside.
+ */
+@Composable
+private fun PendingRequestBadge(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier
+            .size(12.dp)
+            .background(
+                color = colorResource(id = R.color.background_primary),
+                shape = CircleShape
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Box(
+            modifier = Modifier
+                .size(8.dp)
+                .background(
+                    color = colorResource(id = R.color.control_accent),
+                    shape = CircleShape
+                )
+        )
+    }
+}
+
 @Composable
 private fun SpaceMember(
     memberView: SpaceMemberView,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
     onMemberClicked: (ObjectWrapper.SpaceMember) -> Unit = {}
 ) {
+    val isViewRequest = memberView.contextActions.any { it.actionType == SpaceMemberView.ActionType.VIEW_REQUEST }
+
     Row(
         modifier = Modifier
             .height(72.dp)
@@ -537,10 +562,19 @@ private fun SpaceMember(
             .noRippleThrottledClickable { onMemberClicked(memberView.obj) }
     ) {
         Spacer(modifier = Modifier.width(16.dp))
-        SpaceMemberIcon(
-            icon = memberView.icon,
+        Box(
             modifier = Modifier.align(Alignment.CenterVertically)
-        )
+        ) {
+            SpaceMemberIcon(
+                icon = memberView.icon,
+                modifier = Modifier
+            )
+            if (isViewRequest) {
+                PendingRequestBadge(
+                    modifier = Modifier.align(Alignment.TopEnd)
+                )
+            }
+        }
         Spacer(modifier = Modifier.width(12.dp))
         Column(
             modifier = Modifier
@@ -586,7 +620,8 @@ private fun SpaceMember(
             contextActions = memberView.contextActions,
             memberView = memberView,
             onContextActionClicked = onContextActionClicked,
-            modifier = Modifier.align(Alignment.CenterVertically)
+            modifier = Modifier.align(Alignment.CenterVertically),
+            isViewRequest = isViewRequest
         )
         Spacer(modifier = Modifier.width(16.dp))
     }
@@ -598,7 +633,8 @@ private fun MemberStatusWithDropdown(
     contextActions: List<SpaceMemberView.ContextAction>,
     memberView: SpaceMemberView,
     onContextActionClicked: (SpaceMemberView, SpaceMemberView.ActionType) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    isViewRequest: Boolean
 ) {
     var isMemberMenuExpanded by remember { mutableStateOf(false) }
 
@@ -615,7 +651,13 @@ private fun MemberStatusWithDropdown(
                     Text(
                         text = text,
                         style = Title3,
-                        color = colorResource(id = R.color.text_primary)
+                        color = colorResource(
+                            id = if (isViewRequest) {
+                                R.color.text_secondary
+                            } else {
+                                R.color.text_primary
+                            }
+                        )
                     )
                 }
 
@@ -624,7 +666,15 @@ private fun MemberStatusWithDropdown(
                 Image(
                     painter = painterResource(id = R.drawable.ic_arrow_down_18),
                     contentDescription = "Menu button",
-                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary))
+                    colorFilter = ColorFilter.tint(
+                        colorResource(
+                            id = if (isViewRequest) {
+                                R.color.text_secondary
+                            } else {
+                                R.color.text_primary
+                            }
+                        )
+                    )
                 )
             }
 
@@ -701,7 +751,7 @@ fun SpaceMemberIcon(
                 modifier = modifier
                     .size(iconSize)
                     .clip(CircleShape)
-                    .background(color = colorResource(id = R.color.text_tertiary))
+                    .background(color = colorResource(id = R.color.shape_tertiary))
             ) {
                 Text(
                     text = icon
@@ -713,7 +763,7 @@ fun SpaceMemberIcon(
                     style = TextStyle(
                         fontSize = textSize,
                         fontWeight = FontWeight.SemiBold,
-                        color = colorResource(id = R.color.text_white)
+                        color = colorResource(id = R.color.control_secondary)
                     )
                 )
             }

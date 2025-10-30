@@ -47,7 +47,7 @@ val HeadlineHeading =
         fontWeight = FontWeight.W700,
         fontSize = 22.sp,
         lineHeight = 26.sp,
-        letterSpacing = (-0.016).em
+        letterSpacing = (-0.36).sp
     )
 
 //Content/Headlines/Subheading
@@ -57,7 +57,7 @@ val HeadlineSubheading =
         fontWeight = FontWeight.W700,
         fontSize = 17.sp,
         lineHeight = 24.sp,
-        letterSpacing = (-0.016).em
+        letterSpacing = (-0.28).sp
     )
 
 //Content/Body/Bold
@@ -175,7 +175,7 @@ val Relations2 = TextStyle(
     fontWeight = FontWeight.W400,
     fontSize = 13.sp,
     lineHeight = 18.sp,
-    letterSpacing = (-0.006).em
+    letterSpacing = (-0.08).sp
 )
 
 //Content/Relation 3/Regular
@@ -278,9 +278,9 @@ val BodyCalloutRegular = TextStyle(
 val UxSmallTextRegular = TextStyle(
     fontFamily = fontInterRegular,
     fontWeight = FontWeight.W400,
-    fontSize = 14.sp,
-    lineHeight = 22.sp,
-    letterSpacing = (-0.014).em
+    fontSize = 15.sp,
+    lineHeight = 20.sp,
+    letterSpacing = (-0.24).sp
 )
 
 val UxSmallTextMedium = TextStyle(

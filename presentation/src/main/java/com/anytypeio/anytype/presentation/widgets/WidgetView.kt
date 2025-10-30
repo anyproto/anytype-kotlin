@@ -21,19 +21,18 @@ sealed class WidgetView {
     }
 
     abstract val id: Id
-    abstract val isLoading: Boolean
     abstract val canCreateObjectOfType: Boolean
     abstract val sectionType: SectionType?
 
     data class Tree(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val name: Name,
         val icon: ObjectIcon = ObjectIcon.None,
         val source: Widget.Source,
         val elements: List<Element> = emptyList(),
         val isExpanded: Boolean = false,
         val isEditable: Boolean = true,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -63,7 +62,6 @@ sealed class WidgetView {
 
     data class Link(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
@@ -75,7 +73,6 @@ sealed class WidgetView {
 
     data class SetOfObjects(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val icon: ObjectIcon = ObjectIcon.None,
         val source: Widget.Source,
         val tabs: List<Tab>,
@@ -83,6 +80,7 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
         val name: Name,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -105,7 +103,6 @@ sealed class WidgetView {
 
     data class Gallery(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val icon: ObjectIcon,
         val view: Id? = null,
         val name: Name,
@@ -115,6 +112,7 @@ sealed class WidgetView {
         val isExpanded: Boolean,
         val showIcon: Boolean = false,
         val showCover: Boolean = false,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -124,13 +122,13 @@ sealed class WidgetView {
 
     data class ListOfObjects(
         override val id: Id,
-        override val isLoading: Boolean = false,
         val icon: ObjectIcon,
         val source: Widget.Source,
         val type: Type,
         val elements: List<Element>,
         val isExpanded: Boolean,
         val isCompact: Boolean = false,
+        val hasMore: Boolean = false,
         override val sectionType: SectionType? = null
     ) : WidgetView(), Draggable {
 
@@ -153,7 +151,6 @@ sealed class WidgetView {
 
     data class Bin(
         override val id: Id,
-        override val isLoading: Boolean = false,
         override val canCreateObjectOfType: Boolean = false,
         val source: Widget.Source,
         val isEmpty: Boolean = false,
@@ -164,9 +161,7 @@ sealed class WidgetView {
         override val id: Id,
         override val canCreateObjectOfType: Boolean = false,
         override val sectionType: SectionType? = null
-    ) : WidgetView() {
-        override val isLoading: Boolean = false
-    }
+    ) : WidgetView()
 
     data class SpaceChat(
         override val id: Id,
@@ -176,13 +171,10 @@ sealed class WidgetView {
         override val canCreateObjectOfType: Boolean = false,
         val isMuted: Boolean = false,
         override val sectionType: SectionType? = null
-    ) : WidgetView() {
-        override val isLoading: Boolean = false
-    }
+    ) : WidgetView()
 
     data object EmptyState : WidgetView() {
         override val id: Id get() = "id.widgets.empty.state"
-        override val isLoading: Boolean = false
         override val canCreateObjectOfType: Boolean = false
         override val sectionType: SectionType? = null
     }

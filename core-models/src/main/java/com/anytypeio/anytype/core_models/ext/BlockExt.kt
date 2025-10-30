@@ -217,8 +217,8 @@ fun Block.addMention(
             color = content.color,
             isChecked = content.isChecked,
             align = content.align,
-            iconEmoji = null,
-            iconImage = null
+            iconEmoji = content.iconEmoji ?: "",
+            iconImage = content.iconImage ?: ""
         )
     )
 }

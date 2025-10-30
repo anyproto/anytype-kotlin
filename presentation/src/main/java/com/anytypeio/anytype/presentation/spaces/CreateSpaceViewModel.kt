@@ -235,7 +235,11 @@ class CreateSpaceViewModel(
                 if (vmParams.spaceUxType == SpaceUxType.CHAT) {
                     finishChatSpaceCreation(spaceId = spaceId)
                 } else {
-                    finishDataSpaceCreation(spaceId = spaceId, startingObject = startingObject)
+                    finishDataSpaceCreation(
+                        spaceId = spaceId,
+                        //DROID-4065: opens Data Space from Widget's Screen
+                        startingObject = null
+                    )
                 }
             },
             onFailure = { error ->

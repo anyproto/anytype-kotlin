@@ -87,13 +87,14 @@ fun TreeWidgetCard(
                     onWidgetElementClicked = onWidgetElementClicked,
                     onObjectCheckboxClicked = onObjectCheckboxClicked
                 )
+                if (item.hasMore && item.isExpanded) {
+                    SeeAllButton(
+                        onClick = { onWidgetSourceClicked(item.id) }
+                    )
+                }
             } else {
                 if (item.isExpanded) {
-                    if (item.isLoading) {
-                        EmptyWidgetPlaceholder(R.string.loading)
-                    } else {
-                        EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
-                    }
+                    EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
                     Spacer(modifier = Modifier.height(2.dp))
                 }
             }

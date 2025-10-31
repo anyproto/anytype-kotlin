@@ -108,22 +108,23 @@ fun Option(
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier
+            .fillMaxWidth()
             .height(52.dp)
+            .padding(horizontal = 16.dp)
             .clickable(onClick = onClick)
 
     ) {
         Image(
-            painterResource(image),
+            painter = painterResource(image),
             contentDescription = "Option icon",
-            modifier = Modifier.padding(
-                start = 20.dp
-            )
+            modifier = Modifier
+                .size(24.dp)
         )
         Text(
             text = text,
             color = colorResource(R.color.text_primary),
             modifier = Modifier.padding(
-                start = 12.dp
+                start = 10.dp
             ),
             style = BodyRegular
         )
@@ -131,7 +132,11 @@ fun Option(
             modifier = Modifier.weight(1.0f, true),
             contentAlignment = Alignment.CenterEnd
         ) {
-            Arrow()
+            Image(
+                painterResource(R.drawable.ic_arrow_forward),
+                contentDescription = "Arrow forward",
+                modifier = Modifier
+            )
         }
     }
 }
@@ -143,59 +148,72 @@ fun OptionMembership(
     onClick: () -> Unit = {},
     membershipStatus: MembershipStatus?
 ) {
-    Row(
-        verticalAlignment = Alignment.CenterVertically,
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .noRippleThrottledClickable { onClick() }
-
+    Box(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        Image(
-            painterResource(image),
-            contentDescription = "Option icon",
-            modifier = Modifier.padding(
-                start = 20.dp
-            )
-        )
-        Text(
-            text = text,
-            color = colorResource(R.color.text_primary),
-            modifier = Modifier.padding(
-                start = 12.dp
-            ),
-            style = BodyRegular
-        )
         when (membershipStatus?.status) {
             Status.STATUS_ACTIVE -> {
                 Box(
-                    modifier = Modifier.weight(1.0f, true),
-                    contentAlignment = Alignment.CenterEnd
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 34.dp)
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 38.dp),
-                        text = membershipStatus.tiers.firstOrNull { it.id == membershipStatus.activeTier?.value }?.name.orEmpty(),
+                        modifier = Modifier,
+                        text = membershipStatus.tiers.firstOrNull { it.id == membershipStatus.activeTier.value }?.name.orEmpty(),
                         color = colorResource(R.color.text_secondary),
                         style = BodyRegular
                     )
-                    Arrow()
                 }
             }
 
             else -> {
                 Box(
-                    modifier = Modifier.weight(1.0f, true),
-                    contentAlignment = Alignment.CenterEnd
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 34.dp)
                 ) {
                     Text(
-                        modifier = Modifier
-                            .padding(horizontal = 38.dp),
+                        modifier = Modifier,
                         text = stringResource(id = R.string.membership_price_pending),
                         color = colorResource(R.color.text_secondary),
                         style = BodyRegular
                     )
                 }
+            }
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 16.dp)
+                .clickable(onClick = onClick)
+
+        ) {
+            Image(
+                painter = painterResource(image),
+                contentDescription = "Option icon",
+                modifier = Modifier
+                    .size(24.dp)
+            )
+            Text(
+                text = text,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.padding(
+                    start = 10.dp
+                ),
+                style = BodyRegular
+            )
+            Box(
+                modifier = Modifier.weight(1.0f, true),
+                contentAlignment = Alignment.CenterEnd
+            ) {
+                Image(
+                    painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = "Arrow forward",
+                    modifier = Modifier
+                )
             }
         }
     }
@@ -207,7 +225,7 @@ fun Arrow() {
         painterResource(R.drawable.ic_arrow_forward),
         contentDescription = "Arrow forward",
         modifier = Modifier.padding(
-            end = 20.dp
+            end = 16.dp
         )
     )
 }
@@ -358,43 +376,51 @@ fun OptionWithBadge(
     onClick: () -> Unit = {}
 ) {
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(52.dp)
-            .clickable(onClick = onClick)
+        modifier = Modifier.fillMaxWidth()
     ) {
+        if (showBadge) {
+                Image(
+                    painter = painterResource(R.drawable.ic_attention_red_18),
+                    contentDescription = "Badge",
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 40.dp)
+                        .size(18.dp)
+                )
+            }
         Row(
-            modifier = Modifier.fillMaxHeight(),
             verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 16.dp)
+                .clickable(onClick = onClick)
+
         ) {
             Image(
                 painter = painterResource(image),
                 contentDescription = "Option icon",
                 modifier = Modifier
-                    .padding(start = 20.dp)
-                    .size(28.dp)
+                    .size(24.dp)
             )
             Text(
                 text = text,
                 color = colorResource(R.color.text_primary),
-                modifier = Modifier.padding(start = 12.dp),
+                modifier = Modifier.padding(
+                    start = 10.dp
+                ),
                 style = BodyRegular
             )
-        }
-        Row(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            if (showBadge) {
+            Box(
+                modifier = Modifier.weight(1.0f, true),
+                contentAlignment = Alignment.CenterEnd
+            ) {
                 Image(
-                    painter = painterResource(R.drawable.ic_attention_red_18),
-                    contentDescription = "Badge",
+                    painterResource(R.drawable.ic_arrow_forward),
+                    contentDescription = "Arrow forward",
                     modifier = Modifier
-                        .padding(end = 12.dp)
-                        .size(18.dp)
                 )
             }
-            Arrow()
         }
     }
 }

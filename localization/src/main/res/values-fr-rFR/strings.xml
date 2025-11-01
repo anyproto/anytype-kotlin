@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Paramètres de la propriété</string>
     <string name="type_editing_uninstall">Supprimer</string>
     <string name="empty_tree_widget_reader_access">Cet objet n\'a pas de liens vers d\'autres objets.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Il n\'y a aucun objet ici</string>
     <string name="empty_list_widget_no_view">Cette vue de données n\'a aucun objet.\nEssayez d\'en créer un nouveau.</string>
     <string name="this_widget_has_no_object">Ce widget n\'a pas d\'objets.\nEssayez d\'en créer un nouveau.</string>
     <string name="emoji">Emoji</string>
@@ -1997,6 +1997,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Désépingler</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>

@@ -810,7 +810,7 @@
     <string name="relation_editing_title">Pengaturan properti</string>
     <string name="type_editing_uninstall">Hapus</string>
     <string name="empty_tree_widget_reader_access">Objek ini tidak punya tautan ke objek lain.</string>
-    <string name="empty_list_widget_no_objects">Tidak ada objek</string>
+    <string name="empty_list_widget_no_objects">Tidak ada objek di sini</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1986,6 +1986,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>
     <string name="widget_unpin_alert_title">Gawit Tak Dapat Dikembalikan</string>
     <string name="widget_unpin_alert_button_unpin">Lepas sematan</string>
+    <string name="widgets_see_all">Lihat semua</string>
     <string name="my_sites">Situsku</string>
     <string name="my_sites_empty_state_text">Belum ada objek diterbitkan</string>
     <string name="my_sites_it_s_empty_here">Di sini kosong</string>

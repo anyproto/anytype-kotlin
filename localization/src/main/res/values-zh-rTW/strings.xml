@@ -810,7 +810,7 @@
     <string name="relation_editing_title">Property settings</string>
     <string name="type_editing_uninstall">移除</string>
     <string name="empty_tree_widget_reader_access">This object has no links to other objects.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">這裡沒有物件</string>
     <string name="empty_list_widget_no_view">該資料檢視沒有物件。\n請嘗試建立一個新的。</string>
     <string name="this_widget_has_no_object">此小工具內沒有物件。\n請嘗試建立一個新的。</string>
     <string name="emoji">Emoji</string>
@@ -1987,6 +1987,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">取消釘選</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>

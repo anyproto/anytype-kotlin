@@ -753,7 +753,7 @@
     <string name="object_not_exist">Questo oggetto non esiste</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Indietro</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">Query non trovata per questo tipo.</string>
     <string name="create_new_set">Crea</string>
     <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
@@ -785,9 +785,9 @@
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere nota della tua Chiave dalle impostazioni e salvarla.</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Sblocca il tuo oggetto per aggiungere una nuova proprietà</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
-    <string name="fragment_relation_create_from_scratch_title">Select property type</string>
+    <string name="fragment_relation_create_from_scratch_title">Seleziona tipo di proprietà</string>
     <string name="fragment_dashboard_restore">Ripristina</string>
     <string name="your_account_deleted">La tua cassaforte è stata eliminata.</string>
     <plurals name="fragment_dashboard_selected_count">

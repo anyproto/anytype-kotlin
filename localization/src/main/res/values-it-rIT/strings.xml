@@ -809,7 +809,7 @@
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Chiave copiata</string>
     <string name="type_editing_title">Type settings</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">Impostazioni della proprietà</string>
     <string name="type_editing_uninstall">Rimuovi</string>
     <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
     <string name="empty_list_widget_no_objects">Non ci sono oggetti qui</string>
@@ -1000,7 +1000,7 @@
     <string name="widget_type_compact_list_description">Widget con una vista a elenco compatta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
+    <string name="widget_type_view_description">Widget con layout Query o Collezione</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Cambia Tipo di Widget</string>
@@ -1650,10 +1650,10 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
+    <string name="all_content_sort_date_desc">Prima i più recenti</string>
+    <string name="all_content_sort_date_asc">Prima i più vecchi</string>
+    <string name="all_content_sort_date_updated">Data di aggiornamento</string>
+    <string name="all_content_sort_date_created">Data di creazione</string>
     <string name="all_content_sort_date_used">Data ultimo utilizzo</string>
     <string name="all_content_sort_name">Nome</string>
     <string name="all_content_item_menu_open">Apri come Oggetto</string>

@@ -2338,5 +2338,6 @@ Please provide specific details of your needs here.</string>
 
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
 
 </resources>

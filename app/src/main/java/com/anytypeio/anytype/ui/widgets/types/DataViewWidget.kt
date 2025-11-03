@@ -624,7 +624,7 @@ private fun GalleryIconTitleContent(
                 withStyle(
                     style = ParagraphStyle(
                         textIndent = TextIndent(
-                            firstLine = if (hasIcon) 28.sp else 0.sp,
+                            firstLine = if (hasIcon) 26.sp else 0.sp,
                             restLine = 0.sp
                         )
                     )

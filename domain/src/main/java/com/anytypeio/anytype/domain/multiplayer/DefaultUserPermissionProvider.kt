@@ -51,7 +51,6 @@ interface UserPermissionProvider  {
 
     /**
      * @return Flow of the current user's [ObjectWrapper.SpaceMember] or null if not available.
-     * Convenience method for observing the single space member without specifying a space.
      */
     fun getCurrent() : Flow<ObjectWrapper.SpaceMember?>
 

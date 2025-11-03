@@ -810,7 +810,7 @@
     <string name="relation_editing_title">プロパティ設定</string>
     <string name="type_editing_uninstall">削除</string>
     <string name="empty_tree_widget_reader_access">他のオブジェクトとのリンクがありません。</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">オブジェクトがありません</string>
     <string name="empty_list_widget_no_view">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="this_widget_has_no_object">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="emoji">絵文字</string>
@@ -1988,6 +1988,7 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">サイト</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>

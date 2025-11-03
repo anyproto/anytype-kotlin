@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Ajustes de la propiedad</string>
     <string name="type_editing_uninstall">Borrar</string>
     <string name="empty_tree_widget_reader_access">Este objeto no tiene enlaces a otros objetos.</string>
-    <string name="empty_list_widget_no_objects">No contiene objetos</string>
+    <string name="empty_list_widget_no_objects">Aquí no hay objetos</string>
     <string name="empty_list_widget_no_view">Esta vista de datos no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="this_widget_has_no_object">Este widget no tiene objetos.\nPrueba a crear alguno.</string>
     <string name="emoji">Emoji</string>
@@ -2000,6 +2000,7 @@ En concreto,
     <string name="widget_unpin_alert_description">Hemos rediseñado el funcionamiento de los widgets y este widget ya no es compatible. Una vez desanclado, este widget no se puede restaurar.</string>
     <string name="widget_unpin_alert_title">Este widget no se podrá restaurar</string>
     <string name="widget_unpin_alert_button_unpin">Desanclar</string>
+    <string name="widgets_see_all">Ver todo</string>
     <string name="my_sites">Mis sitios</string>
     <string name="my_sites_empty_state_text">Aún no hay ningún objeto publicado</string>
     <string name="my_sites_it_s_empty_here">Aquí no hay nada</string>

@@ -8,6 +8,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -53,6 +54,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
@@ -222,41 +224,43 @@ fun GalleryWidgetCard(
                         item(key = element.obj.id) {
                             GalleryWidgetItemCard(
                                 item = element,
+                                showIcon = item.showIcon,
+                                showCover = item.showCover,
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
                                 }
                             )
                         }
-                        if (idx == item.elements.lastIndex) {
-                            item {
-                                Box(
-                                    modifier = Modifier
-                                        .size(136.dp)
-                                        .border(
-                                            width = 1.dp,
-                                            color = colorResource(id = R.color.shape_transparent_primary),
-                                            shape = RoundedCornerShape(8.dp)
-                                        )
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .clickable {
-                                            onWidgetSourceClicked(item.id)
-                                        }
-                                ) {
-                                    Text(
-                                        text = stringResource(id = R.string.widget_view_see_all_objects),
-                                        style = Caption1Medium,
-                                        color = colorResource(id = R.color.glyph_active),
-                                        modifier = Modifier
-                                            .align(Alignment.Center)
-                                            .padding(horizontal = 12.dp),
-                                        textAlign = TextAlign.Center
-                                    )
-                                }
-                            }
-                            item {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                        }
+//                        if (idx == item.elements.lastIndex) {
+//                            item {
+//                                Box(
+//                                    modifier = Modifier
+//                                        .size(136.dp)
+//                                        .border(
+//                                            width = 1.dp,
+//                                            color = colorResource(id = R.color.shape_transparent_primary),
+//                                            shape = RoundedCornerShape(8.dp)
+//                                        )
+//                                        .clip(RoundedCornerShape(8.dp))
+//                                        .clickable {
+//                                            onWidgetSourceClicked(item.id)
+//                                        }
+//                                ) {
+//                                    Text(
+//                                        text = stringResource(id = R.string.widget_view_see_all_objects),
+//                                        style = Caption1Medium,
+//                                        color = colorResource(id = R.color.glyph_active),
+//                                        modifier = Modifier
+//                                            .align(Alignment.Center)
+//                                            .padding(horizontal = 12.dp),
+//                                        textAlign = TextAlign.Center
+//                                    )
+//                                }
+//                            }
+//                            item {
+//                                Spacer(modifier = Modifier.width(8.dp))
+//                            }
+//                        }
                     }
                 }
             } else {
@@ -393,34 +397,26 @@ fun ListWidgetElement(
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
+    showIcon: Boolean = false,
+    showCover: Boolean = true,
     onItemClicked: () -> Unit
 ) {
     val isImageType = item.obj.layout == ObjectType.Layout.IMAGE
     val hasCover = item.cover != null
 
-    Box(
-        modifier = Modifier
-            .size(136.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable {
-                onItemClicked()
-            }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_transparent_primary),
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )
-
-        when {
-            // Case 1: Image type - show full 136x136 image
-            isImageType -> {
-                when (val cover = item.cover) {
-                    is CoverView.Image -> {
+    when {
+        isImageType -> {
+            when (val cover = item.cover) {
+                // Case 1: Image type - show full 136x136 image
+                is CoverView.Image -> {
+                    Box(
+                        modifier = Modifier
+                            .size(136.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onItemClicked()
+                            }
+                    ) {
                         AsyncImage(
                             model = cover.url,
                             contentDescription = "Image object",
@@ -429,16 +425,45 @@ private fun GalleryWidgetItemCard(
                                 .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop,
                         )
+                        GalleryItemBorder()
                     }
-                    else -> {
-                        // Fallback for image type without cover
-                        TitleOnlyContent(item)
+                }
+                // Case 2: Image type - Fallback for image type without cover
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .height(112.dp)
+                            .width(136.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onItemClicked()
+                            }
+                    ) {
+                        GalleryIconTitleContent(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 9.dp, start = 12.dp, end = 12.dp),
+                            item = item,
+                            showIcon = showIcon,
+                            showCover = showCover
+                        )
+                        GalleryItemBorder()
                     }
                 }
             }
+        }
 
-            // Case 2: Has cover - show 136x80 cover + title at bottom
-            hasCover -> {
+        // Case 3: Has cover - show 136x80 cover + title at bottom
+        hasCover -> {
+            Box(
+                modifier = Modifier
+                    .width(136.dp)
+                    .height(124.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onItemClicked()
+                    }
+            ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -455,7 +480,10 @@ private fun GalleryWidgetItemCard(
                                         .fillMaxSize()
                                         .background(
                                             color = Color(cover.coverColor.color),
-                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                            shape = RoundedCornerShape(
+                                                topEnd = 8.dp,
+                                                topStart = 8.dp
+                                            )
                                         )
                                 )
                             }
@@ -468,7 +496,10 @@ private fun GalleryWidgetItemCard(
                                             Brush.horizontalGradient(
                                                 colors = gradient(cover.gradient)
                                             ),
-                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                            shape = RoundedCornerShape(
+                                                topEnd = 8.dp,
+                                                topStart = 8.dp
+                                            )
                                         )
                                 )
                             }
@@ -490,11 +521,11 @@ private fun GalleryWidgetItemCard(
                         }
                     }
 
-                    // Title section (remaining 56dp height)
+                    // Title section (remaining 44dp height)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
+                            .height(44.dp)
                             .padding(top = 8.dp, start = 12.dp, end = 12.dp),
                         contentAlignment = Alignment.TopStart
                     ) {
@@ -511,24 +542,73 @@ private fun GalleryWidgetItemCard(
                         )
                     }
                 }
+                GalleryItemBorder()
             }
+        }
 
-            // Case 3: No cover - show 136x136 with centered title
-            else -> {
-                TitleOnlyContent(item)
+        // Case 3: No cover - show 136x54 with title and icon
+        else -> {
+            Box(
+                modifier = Modifier
+                    .width(136.dp)
+                    .height(54.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onItemClicked()
+                    }
+            ) {
+                GalleryIconTitleContent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                    item = item,
+                    showIcon = showIcon,
+                    showCover = showCover
+                )
+                GalleryItemBorder()
             }
         }
     }
 }
 
 @Composable
-private fun TitleOnlyContent(item: WidgetView.SetOfObjects.Element) {
+private fun BoxScope.GalleryItemBorder() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 9.dp, start = 12.dp, end = 12.dp),
-        contentAlignment = Alignment.TopStart
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+    )
+}
+
+@Composable
+private fun GalleryIconTitleContent(
+    modifier: Modifier = Modifier,
+    item: WidgetView.SetOfObjects.Element,
+    showIcon: Boolean = false,
+    showCover: Boolean = true
+) {
+    // When showCover is false, maxLines should be 2, otherwise keep default
+    val titleMaxLines = if (!showCover) 2 else 2
+    val hasIcon = showIcon && item.objectIcon != ObjectIcon.None
+
+    Box(
+        modifier = modifier
     ) {
+        // Show icon when showIcon is true and icon is not None
+        if (hasIcon) {
+            ListWidgetObjectIcon(
+                icon = item.objectIcon,
+                iconSize = 20.dp,
+                iconWithoutBackgroundMaxSize = 20.dp,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+            )
+        }
+
         Text(
             text = when (val name = item.name) {
                 is WidgetView.Name.Default -> name.prettyPrintName
@@ -538,8 +618,12 @@ private fun TitleOnlyContent(item: WidgetView.SetOfObjects.Element) {
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Start,
-            maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            maxLines = titleMaxLines,
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .align(Alignment.TopStart)
+                .padding(start = if (hasIcon) 32.dp else 0.dp)
+                .padding(top = 2.dp)
         )
     }
 }
@@ -665,8 +749,12 @@ fun GalleryWidgetItemCard_NoCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_NoCoverShort_Preview() {
     GalleryWidgetItemCard(
+        showIcon = true,
         item = WidgetView.SetOfObjects.Element(
-            objectIcon = ObjectIcon.None,
+            objectIcon = ObjectIcon.TypeIcon.Default(
+                rawValue = "american-football",
+                color = CustomIconColor.Blue
+            ),
             obj = ObjectWrapper.Basic(
                 map = mapOf(
                     Relations.NAME to "Tasks",
@@ -674,7 +762,7 @@ fun GalleryWidgetItemCard_NoCoverShort_Preview() {
                 )
             ),
             name = WidgetView.Name.Default(
-                prettyPrintName = "Tasks"
+                prettyPrintName = "Buy, study, and share this game as an example of video games as true art."
             ),
             cover = null
         ),

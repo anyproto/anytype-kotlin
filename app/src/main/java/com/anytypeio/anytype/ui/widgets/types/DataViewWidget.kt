@@ -599,8 +599,6 @@ private fun GalleryIconTitleContent(
     showIcon: Boolean = false,
     showCover: Boolean = true
 ) {
-    // When showCover is false, maxLines should be 2, otherwise keep default
-    val titleMaxLines = if (!showCover) 2 else 2
     val hasIcon = showIcon && item.objectIcon != ObjectIcon.None
 
     Box(
@@ -638,11 +636,10 @@ private fun GalleryIconTitleContent(
             },
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
-            maxLines = titleMaxLines,
+            maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 0.dp)
         )
     }
 }

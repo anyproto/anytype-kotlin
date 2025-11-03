@@ -17,6 +17,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -52,6 +53,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -116,7 +119,8 @@ fun ProfileSettingsScreen(
                 onNameSet = onNameChange,
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
-                onTitleClicked = onHeaderTitleClicked
+                onTitleClicked = onHeaderTitleClicked,
+                onIdentityClicked = onMembershipClicked
             )
         }
         item {
@@ -394,7 +398,8 @@ private fun Header(
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
     clearProfileImage: () -> Unit,
-    onTitleClicked: () -> Unit
+    onTitleClicked: () -> Unit,
+    onIdentityClicked: () -> Unit
 ) {
     when (account) {
         is AccountProfile.Data -> {
@@ -402,7 +407,7 @@ private fun Header(
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-                ProfileTitleBlock(onTitleClicked)
+                ProfileTitleBlock(account, onIdentityClicked)
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -507,32 +512,63 @@ fun ProfileNameBlock(
 
 @Composable
 fun BoxScope.ProfileTitleBlock(
+    account: AccountProfile.Data,
     onClick: () -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .height(22.dp)
-            .wrapContentWidth()
-            .align(Alignment.Center),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    val globalName = account.globalName
+    val identity = account.identity
+    Box(
+        modifier = Modifier.fillMaxWidth()
+            .padding(horizontal = 32.dp),
+        contentAlignment = Alignment.Center
     ) {
-        Image(
-            modifier = Modifier.size(18.dp),
-            painter = painterResource(R.drawable.ic_account_name_18),
-            contentDescription = "Account any name"
-        )
-        Text(
-            text = "Any name",
-            style = Caption1Regular,
-            color = colorResource(id = R.color.text_primary),
-            modifier = Modifier.noRippleClickable {
-                onClick()
+        Row(
+            modifier = Modifier
+                .height(22.dp)
+                .wrapContentWidth()
+                .align(Alignment.Center),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (!globalName.isNullOrEmpty()) {
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(R.drawable.ic_account_name_18),
+                    contentDescription = "Account any name"
+                )
+                Text(
+                    text = globalName,
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_primary),
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.MiddleEllipsis,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .noRippleClickable { onClick() }
+                )
+            } else {
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(R.drawable.ic_account_identity_16),
+                    contentDescription = "Account any name",
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = identity.orEmpty(),
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_primary),
+                    overflow = TextOverflow.MiddleEllipsis,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .width(108.dp)
+                        .noRippleClickable { onClick() }
+                )
             }
-        )
+        }
     }
 }
-
 
 @Composable
 fun ProfileImageBlock(
@@ -646,7 +682,9 @@ private fun ProfileSettingPreview() {
         onProfileIconClick = {},
         account = AccountProfile.Data(
             "Walter",
-            icon = ProfileIconView.Placeholder("Walter")
+            icon = ProfileIconView.Placeholder("Walter"),
+            //globalName = "Konstantin.any",
+            identity = "hdjsakjflkjdshlfkdsjkhfjkasdhjkfhdskjhfjksdhakjfhsadjkhfkjlasdhjkfhjsdhfjkhsadj"
         ),
         onAppearanceClicked = {},
         onDataManagementClicked = {},

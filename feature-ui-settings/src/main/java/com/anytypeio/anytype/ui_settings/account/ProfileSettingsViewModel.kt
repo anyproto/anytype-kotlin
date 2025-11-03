@@ -32,11 +32,12 @@ import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlinx.coroutines.flow.StateFlow
 
 class ProfileSettingsViewModel(
     private val analytics: Analytics,
@@ -72,16 +73,21 @@ class ProfileSettingsViewModel(
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
 
-    val profileData = profileContainer.observe().map { obj ->
-        AccountProfile.Data(
-            name = obj.name.orEmpty(),
-            icon = obj.profileIcon(urlBuilder)
+    val profileData = profileContainer
+        .observe()
+        .combine(userPermissionProvider.getCurrent()) { profile, spaceMember ->
+            Timber.d("profileData, profile:[$profile], spaceMember:[$spaceMember]")
+            AccountProfile.Data(
+                name = profile.name.orEmpty(),
+                icon = profile.profileIcon(urlBuilder),
+                identity = spaceMember?.identity,
+                globalName = spaceMember?.globalName
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
+            AccountProfile.Idle
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
-        AccountProfile.Idle
-    )
 
     init {
         viewModelScope.launch {

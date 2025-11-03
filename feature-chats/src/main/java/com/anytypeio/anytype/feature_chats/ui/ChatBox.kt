@@ -82,6 +82,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel.ChatBoxMode
@@ -115,7 +116,7 @@ fun ChatBox(
     onUrlInserted: (Url) -> Unit,
     onImageCaptured: (Uri) -> Unit,
     onVideoCaptured: (Uri) -> Unit,
-    onAttachmentMenuTriggered: () -> Unit
+    onAttachmentMenuTriggered: () -> Unit,
     ) {
 
     val context = LocalContext.current
@@ -131,6 +132,9 @@ fun ChatBox(
     val uploadFileLauncher = rememberLauncherForActivityResult(
         ActivityResultContracts.OpenMultipleDocuments()
     ) { uris ->
+        if (uris.size > ChatConfig.MAX_ATTACHMENT_COUNT) {
+            context.toast(context.getString(R.string.chats_warning_you_can_upload_only_10_files_at_a_time))
+        }
         onChatBoxFilePicked(uris.take(ChatConfig.MAX_ATTACHMENT_COUNT))
     }
 

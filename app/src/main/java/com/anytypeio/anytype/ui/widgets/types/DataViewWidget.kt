@@ -33,10 +33,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -609,21 +613,32 @@ private fun GalleryIconTitleContent(
             )
         }
 
+        val titleText = when (val name = item.name) {
+            is WidgetView.Name.Default -> name.prettyPrintName
+            is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
+            WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+        }
+
         Text(
-            text = when (val name = item.name) {
-                is WidgetView.Name.Default -> name.prettyPrintName
-                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
-                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+            text = buildAnnotatedString {
+                withStyle(
+                    style = ParagraphStyle(
+                        textIndent = TextIndent(
+                            firstLine = if (hasIcon) 28.sp else 0.sp,
+                            restLine = 0.sp
+                        )
+                    )
+                ) {
+                    append(titleText)
+                }
             },
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Start,
             maxLines = titleMaxLines,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(start = if (hasIcon) 32.dp else 0.dp)
-                .padding(top = 2.dp)
+                .padding(top = 3.dp)
         )
     }
 }

@@ -247,7 +247,7 @@
     <string name="fields">Alanlar</string>
     <string name="download">İndir</string>
     <string name="view">Görüntüle</string>
-    <string name="views">Görüntülenmeler</string>
+    <string name="views">Görünümler</string>
     <string name="choose_emoji">Emoji seç</string>
     <string name="logo_transition">logo geçi̇şi̇</string>
     <string name="page_nav_link_from">Şuradan bağla</string>
@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Özellik ayarları</string>
     <string name="type_editing_uninstall">Kaldır</string>
     <string name="empty_tree_widget_reader_access">Bu nesnenin diğer nesnelerle bağlantısı yok.</string>
-    <string name="empty_list_widget_no_objects">İçinde nesne yok</string>
+    <string name="empty_list_widget_no_objects">Burada hiç nesne yok</string>
     <string name="empty_list_widget_no_view">Bu veri görünümünde nesne yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="this_widget_has_no_object">Bu widget\'ın nesnesi yok.\nYeni bir tane oluşturmayı deneyin.</string>
     <string name="emoji">Emoji</string>
@@ -2000,6 +2000,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>
     <string name="widget_unpin_alert_title">Bu Widget Geri Yüklenemez</string>
     <string name="widget_unpin_alert_button_unpin">Sabitlemeyi kaldır</string>
+    <string name="widgets_see_all">Tümünü gör</string>
     <string name="my_sites">Sitelerim</string>
     <string name="my_sites_empty_state_text">Henüz yayınlanmış nesne bulunmamaktadır</string>
     <string name="my_sites_it_s_empty_here">Burası boş</string>

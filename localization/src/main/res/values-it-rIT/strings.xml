@@ -753,7 +753,7 @@
     <string name="object_not_exist">Questo oggetto non esiste</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Indietro</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">Query non trovata per questo tipo.</string>
     <string name="create_new_set">Crea</string>
     <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
@@ -785,9 +785,9 @@
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere nota della tua Chiave dalle impostazioni e salvarla.</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Sblocca il tuo oggetto per aggiungere una nuova proprietà</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
-    <string name="fragment_relation_create_from_scratch_title">Select property type</string>
+    <string name="fragment_relation_create_from_scratch_title">Seleziona tipo di proprietà</string>
     <string name="fragment_dashboard_restore">Ripristina</string>
     <string name="your_account_deleted">La tua cassaforte è stata eliminata.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -809,10 +809,10 @@
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Chiave copiata</string>
     <string name="type_editing_title">Type settings</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">Impostazioni della proprietà</string>
     <string name="type_editing_uninstall">Rimuovi</string>
     <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
-    <string name="empty_list_widget_no_objects">Nessun oggetto all\'interno</string>
+    <string name="empty_list_widget_no_objects">Non ci sono oggetti qui</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1000,7 +1000,7 @@
     <string name="widget_type_compact_list_description">Widget con una vista a elenco compatta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
+    <string name="widget_type_view_description">Widget con layout Query o Collezione</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Cambia Tipo di Widget</string>
@@ -1650,10 +1650,10 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
+    <string name="all_content_sort_date_desc">Prima i più recenti</string>
+    <string name="all_content_sort_date_asc">Prima i più vecchi</string>
+    <string name="all_content_sort_date_updated">Data di aggiornamento</string>
+    <string name="all_content_sort_date_created">Data di creazione</string>
     <string name="all_content_sort_date_used">Data ultimo utilizzo</string>
     <string name="all_content_sort_name">Nome</string>
     <string name="all_content_item_menu_open">Apri come Oggetto</string>
@@ -2001,6 +2001,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>
     <string name="widget_unpin_alert_title">Questo Widget Non Può Essere Ripristinato</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="widgets_see_all">Mostra tutto</string>
     <string name="my_sites">I miei Siti</string>
     <string name="my_sites_empty_state_text">Non ci sono ancora oggetti pubblicati</string>
     <string name="my_sites_it_s_empty_here">Qui è vuoto</string>

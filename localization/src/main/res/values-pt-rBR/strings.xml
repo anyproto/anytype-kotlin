@@ -10,7 +10,7 @@
     <string name="appearance">Aparência</string>
     <string name="file_storage">Armazenamento de arquivos</string>
     <string name="key">Chave</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Chave de acesso</string>
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
@@ -31,7 +31,7 @@
     <string name="settings">Configurações</string>
     <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">Preferências</string>
-    <string name="settings_application">Application</string>
+    <string name="settings_application">Aplicação</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
@@ -52,7 +52,7 @@
     <string name="default_space">Entrar no Espaço</string>
     <string name="space_settings_apply_random_gradient">Aplicar cor sólida aleatória</string>
     <string name="space_settings_apply_upload_image">Carregue uma imagem</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Alterar cor do ícone</string>
     <string name="profile_settings_apply_upload_image">Carregue uma imagem</string>
     <string name="remove_image">Remover imagem</string>
     <string name="delete_space">Excluir Espaço</string>
@@ -68,10 +68,10 @@
     <string name="get_more_space">Obtenha mais espaço</string>
     <string name="account_name">Nome</string>
     <string name="space_settings">Configurações do espaço</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Não foi possível alterar o tipo do espaço. Tente novamente.</string>
+    <string name="space_settings_error_wallpaper">Falha ao atualizar plano de fundo. Tente novamente.</string>
+    <string name="space_settings_error_name">Falha ao atualizar o nome do espaço. Tente novamente.</string>
+    <string name="space_settings_error_icon">Falha ao atualizar o ícone de espaço. Tente novamente.</string>
     <string name="data_management">Gerenciamento de dados</string>
     <string name="deleted_account_danger_zone_msg">Após solicitar a exclusão do seu vault, você terá 30 dias para cancelar esta solicitação. Após 30 dias, os dados criptografados do vault serão removidos permanentemente do nosso nó de backup e você não conseguirá acessar o Anytype em novos dispositivos.</string>
     <string name="danger_zone">Zona de perigo</string>
@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Configurações da propriedade</string>
     <string name="type_editing_uninstall">Remover</string>
     <string name="empty_tree_widget_reader_access">Esse objeto não possui ligações para outros objetos.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Não há objetos aqui</string>
     <string name="empty_list_widget_no_view">Esta visualização de dados não tem objetos. \nTente criar objetos.</string>
     <string name="this_widget_has_no_object">Esse componente não tem objetos. \nTente criar um objeto.</string>
     <string name="emoji">Emoji</string>
@@ -836,9 +836,9 @@
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_chat">Criar conversa</string>
     <string name="create_space_change_icon">Alterar ícone</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Nome da conversa</string>
     <string name="create_space_space_name">Nome do espaço</string>
     <string name="generic_error">Algo deu errado. Por favor, tente novamente.</string>
     <string name="type">Tipo</string>
@@ -1997,6 +1997,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Desafixar</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>

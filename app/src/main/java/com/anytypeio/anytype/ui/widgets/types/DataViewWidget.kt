@@ -35,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
@@ -235,36 +236,40 @@ fun GalleryWidgetCard(
                                 }
                             )
                         }
-//                        if (idx == item.elements.lastIndex) {
-//                            item {
-//                                Box(
-//                                    modifier = Modifier
-//                                        .size(136.dp)
-//                                        .border(
-//                                            width = 1.dp,
-//                                            color = colorResource(id = R.color.shape_transparent_primary),
-//                                            shape = RoundedCornerShape(8.dp)
-//                                        )
-//                                        .clip(RoundedCornerShape(8.dp))
-//                                        .clickable {
-//                                            onWidgetSourceClicked(item.id)
-//                                        }
-//                                ) {
-//                                    Text(
-//                                        text = stringResource(id = R.string.widget_view_see_all_objects),
-//                                        style = Caption1Medium,
-//                                        color = colorResource(id = R.color.glyph_active),
-//                                        modifier = Modifier
-//                                            .align(Alignment.Center)
-//                                            .padding(horizontal = 12.dp),
-//                                        textAlign = TextAlign.Center
-//                                    )
-//                                }
-//                            }
-//                            item {
-//                                Spacer(modifier = Modifier.width(8.dp))
-//                            }
-//                        }
+                        if (idx == item.elements.lastIndex) {
+                            item {
+                                // Height should match gallery items based on showCover
+                                val seeAllHeight = if (item.showCover) 136.dp else 54.dp
+
+                                Box(
+                                    modifier = Modifier
+                                        .width(136.dp)
+                                        .height(seeAllHeight)
+                                        .border(
+                                            width = 1.dp,
+                                            color = colorResource(id = R.color.shape_transparent_primary),
+                                            shape = RoundedCornerShape(8.dp)
+                                        )
+                                        .clip(RoundedCornerShape(8.dp))
+                                        .clickable {
+                                            onWidgetSourceClicked(item.id)
+                                        }
+                                ) {
+                                    Text(
+                                        text = stringResource(id = R.string.widget_view_see_all_objects),
+                                        style = Caption1Medium,
+                                        color = colorResource(id = R.color.glyph_active),
+                                        modifier = Modifier
+                                            .align(Alignment.Center)
+                                            .padding(horizontal = 12.dp),
+                                        textAlign = TextAlign.Center
+                                    )
+                                }
+                            }
+                            item {
+                                Spacer(modifier = Modifier.width(8.dp))
+                            }
+                        }
                     }
                 }
             } else {
@@ -407,6 +412,8 @@ private fun GalleryWidgetItemCard(
 ) {
     val isImageType = item.obj.layout == ObjectType.Layout.IMAGE
     val hasCover = item.cover != null
+    
+    val cardHeight = if (showCover) 136.dp else 54.dp
 
     when {
         isImageType -> {
@@ -415,7 +422,8 @@ private fun GalleryWidgetItemCard(
                 is CoverView.Image -> {
                     Box(
                         modifier = Modifier
-                            .size(136.dp)
+                            .width(136.dp)
+                            .height(cardHeight)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
                                 onItemClicked()
@@ -436,7 +444,7 @@ private fun GalleryWidgetItemCard(
                 else -> {
                     Box(
                         modifier = Modifier
-                            .height(112.dp)
+                            .height(cardHeight)
                             .width(136.dp)
                             .clip(RoundedCornerShape(8.dp))
                             .clickable {
@@ -462,7 +470,7 @@ private fun GalleryWidgetItemCard(
             Box(
                 modifier = Modifier
                     .width(136.dp)
-                    .height(124.dp)
+                    .height(cardHeight)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         onItemClicked()
@@ -525,24 +533,20 @@ private fun GalleryWidgetItemCard(
                         }
                     }
 
-                    // Title section (remaining 44dp height)
+                    // Title section (remaining 56dp height)
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(44.dp)
-                            .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                            .height(56.dp),
                         contentAlignment = Alignment.TopStart
                     ) {
-                        Text(
-                            text = when (val name = item.name) {
-                                is WidgetView.Name.Default -> name.prettyPrintName
-                                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
-                                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
-                            },
-                            style = Caption1Medium,
-                            color = colorResource(id = R.color.text_primary),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                        GalleryIconTitleContent(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                            item = item,
+                            showIcon = showIcon,
+                            showCover = showCover
                         )
                     }
                 }
@@ -555,7 +559,7 @@ private fun GalleryWidgetItemCard(
             Box(
                 modifier = Modifier
                     .width(136.dp)
-                    .height(54.dp)
+                    .height(cardHeight)
                     .clip(RoundedCornerShape(8.dp))
                     .clickable {
                         onItemClicked()
@@ -606,7 +610,7 @@ private fun GalleryIconTitleContent(
         if (hasIcon) {
             ListWidgetObjectIcon(
                 icon = item.objectIcon,
-                iconSize = 20.dp,
+                iconSize = 16.dp,
                 iconWithoutBackgroundMaxSize = 20.dp,
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -624,7 +628,7 @@ private fun GalleryIconTitleContent(
                 withStyle(
                     style = ParagraphStyle(
                         textIndent = TextIndent(
-                            firstLine = if (hasIcon) 26.sp else 0.sp,
+                            firstLine = if (hasIcon) 20.sp else 0.sp,
                             restLine = 0.sp
                         )
                     )
@@ -638,7 +642,7 @@ private fun GalleryIconTitleContent(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .align(Alignment.TopStart)
-                .padding(top = 3.dp)
+                .padding(top = 0.dp)
         )
     }
 }
@@ -695,8 +699,9 @@ fun GalleryWidgetItemCard_WithImageCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithColorCover_Preview() {
     GalleryWidgetItemCard(
+        showIcon = true,
         item = WidgetView.SetOfObjects.Element(
-            objectIcon = ObjectIcon.None,
+            objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
                     Relations.NAME to "Meeting Notes",

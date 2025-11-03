@@ -96,7 +96,7 @@ fun ChooseSpaceTypeScreen(
                         Text(
                             text = stringResource(id = R.string.vault_create_chat_description),
                             style = Caption1Regular,
-                            color = colorResource(id = R.color.text_secondary),
+                            color = colorResource(id = R.color.control_transparent_secondary),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -129,7 +129,7 @@ fun ChooseSpaceTypeScreen(
                     Text(
                         text = stringResource(id = R.string.vault_create_space_description),
                         style = Caption1Regular,
-                        color = colorResource(id = R.color.text_secondary),
+                        color = colorResource(id = R.color.control_transparent_secondary),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )

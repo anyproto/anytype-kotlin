@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -48,7 +49,8 @@ class ProfileSettingsViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val profileContainer: ProfileSubscriptionManager,
     private val removeObjectIcon: RemoveObjectIcon,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -205,7 +207,8 @@ class ProfileSettingsViewModel(
         private val getNetworkMode: GetNetworkMode,
         private val profileSubscriptionManager: ProfileSubscriptionManager,
         private val removeObjectIcon: RemoveObjectIcon,
-        private val notificationPermissionManager: NotificationPermissionManager
+        private val notificationPermissionManager: NotificationPermissionManager,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -220,7 +223,8 @@ class ProfileSettingsViewModel(
                 getNetworkMode = getNetworkMode,
                 profileContainer = profileSubscriptionManager,
                 removeObjectIcon = removeObjectIcon,
-                notificationPermissionManager = notificationPermissionManager
+                notificationPermissionManager = notificationPermissionManager,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

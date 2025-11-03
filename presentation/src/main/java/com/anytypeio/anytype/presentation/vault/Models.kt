@@ -67,10 +67,6 @@ sealed class VaultUiState {
         val pinnedSpaces: List<VaultSpaceView> = emptyList(),
         val mainSpaces: List<VaultSpaceView> = emptyList()
     ) : VaultUiState()
-
-    companion object {
-        const val MAX_PINNED_SPACES = 6
-    }
 }
 
 sealed class VaultCommand {
@@ -109,7 +105,6 @@ sealed class VaultNavigation {
 
 sealed class VaultErrors {
     data object Hidden : VaultErrors()
-    data object MaxPinnedSpacesReached : VaultErrors()
     data object QrScannerError : VaultErrors()
     data object QrCodeIsNotValid : VaultErrors()
     data object CameraPermissionDenied : VaultErrors()

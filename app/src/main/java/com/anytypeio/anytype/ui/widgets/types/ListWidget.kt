@@ -98,6 +98,11 @@ fun ListWidgetCard(
                         }
                     }
                 }
+                if (item.hasMore && item.isExpanded) {
+                    SeeAllButton(
+                        onClick = { onWidgetSourceClicked(item.id) }
+                    )
+                }
             } else {
                 if (item.isExpanded) {
                     if (item.type is Type.Bin) {

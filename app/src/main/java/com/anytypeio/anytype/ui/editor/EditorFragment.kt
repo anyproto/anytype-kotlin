@@ -862,14 +862,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     open fun setupWindowInsetAnimation() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            binding.toolbar.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            binding.chooseTypeWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-        }
+        binding.toolbar.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.chooseTypeWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
     }
 
     private fun onApplyScrollAndMoveClicked() {

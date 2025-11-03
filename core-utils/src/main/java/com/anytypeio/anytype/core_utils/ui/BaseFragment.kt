@@ -90,14 +90,12 @@ abstract class BaseFragment<T : ViewBinding>(
     }
 
     open fun onApplyWindowRootInsets() {
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            val deferringInsetsListener = RootViewDeferringInsetsCallback(
-                persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
-                deferredInsetTypes = WindowInsetsCompat.Type.ime()
-            )
-            ViewCompat.setWindowInsetsAnimationCallback(binding.root, deferringInsetsListener)
-            ViewCompat.setOnApplyWindowInsetsListener(binding.root, deferringInsetsListener)
-        }
+        val deferringInsetsListener = RootViewDeferringInsetsCallback(
+            persistentInsetTypes = WindowInsetsCompat.Type.systemBars(),
+            deferredInsetTypes = WindowInsetsCompat.Type.ime()
+        )
+        ViewCompat.setWindowInsetsAnimationCallback(binding.root, deferringInsetsListener)
+        ViewCompat.setOnApplyWindowInsetsListener(binding.root, deferringInsetsListener)
     }
 
     protected fun DialogFragment.showChildFragment(tag: String? = null) {

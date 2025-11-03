@@ -800,7 +800,7 @@ class SpaceSettingsViewModel(
                 details = mapOf(
                     Relations.ICON_IMAGE to file.id,
                     Relations.ICON_OPTION to null,
-                    Relations.ICON_EMOJI to null
+                    Relations.ICON_EMOJI to ""
                 )
             )
         ).fold(

@@ -713,7 +713,7 @@ fun MOTypeLayout.toCoreModels(): ObjectType.Layout = when (this) {
     MOTypeLayout.relationOptionsList -> ObjectType.Layout.RELATION_OPTION_LIST
     MOTypeLayout.spaceView -> ObjectType.Layout.SPACE_VIEW
     MOTypeLayout.pdf -> ObjectType.Layout.PDF
-    MOTypeLayout.chat -> ObjectType.Layout.CHAT
+    MOTypeLayout.chatDeprecated -> ObjectType.Layout.CHAT
     MOTypeLayout.chatDerived -> ObjectType.Layout.CHAT_DERIVED
     MOTypeLayout.tag -> ObjectType.Layout.TAG
     MOTypeLayout.notification -> ObjectType.Layout.NOTIFICATION

@@ -52,4 +52,4 @@ fun View.doOnApplyWindowInsets(
     }
 }
 
-const val EDGE_TO_EDGE_MIN_SDK = Build.VERSION_CODES.TIRAMISU
+const val EDGE_TO_EDGE_MIN_SDK = Build.VERSION_CODES.O

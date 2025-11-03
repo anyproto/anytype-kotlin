@@ -689,7 +689,7 @@ class ObjectTypeViewModel(
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.ICON_EMOJI to null,
+                    Relations.ICON_EMOJI to "",
                     Relations.ICON_NAME to iconName,
                     Relations.ICON_OPTION to newColor?.iconOption?.toDouble()
                 )
@@ -710,8 +710,8 @@ class ObjectTypeViewModel(
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.ICON_EMOJI to null,
-                    Relations.ICON_NAME to null,
+                    Relations.ICON_EMOJI to "",
+                    Relations.ICON_NAME to "",
                     Relations.ICON_OPTION to null
                 )
             )

@@ -51,7 +51,7 @@ enum SmartBlockType {
 
     NotificationObject = 0x217;
     DevicesObject = 0x218;
-    ChatObject = 0x219; // Container for any-store based chats
+    ChatObjectDeprecated = 0x219; // DEPRECATED Container for any-store based chats
     ChatDerivedObject = 0x220; // Any-store based object for chat
     AccountObject = 0x221; // Container for account data in tech space
 }
@@ -813,7 +813,7 @@ message ObjectType {
         participant = 19;
 
         pdf = 20;
-        chat = 21; // deprecated
+        chatDeprecated = 21; // deprecated
         chatDerived = 22;
         tag = 23;
 
@@ -871,6 +871,7 @@ message Relation {
         string color = 3; // stored
         // 4 is reserved for old relation format
         string relationKey = 5; // stored
+        string orderId = 6; // lexicographic id of relation option for ordering
     }
 
     enum Scope {

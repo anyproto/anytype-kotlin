@@ -260,9 +260,7 @@ fun VaultScreenContent(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    onSpaceSettings = onSpaceSettings,
-                                    maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-                                    currentPinnedCount = sections.pinnedSpaces.size
+                                    onSpaceSettings = onSpaceSettings
                                 )
                             }
 
@@ -302,7 +300,6 @@ fun VaultScreenContent(
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
-                                    currentPinnedCount = sections.pinnedSpaces.size,
                                     spaceBackground = spaceBackgroundValue.value
                                 )
                             }
@@ -357,9 +354,7 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                maxPinnedSpaces = VaultUiState.MAX_PINNED_SPACES,
-                                onSpaceSettings = onSpaceSettings,
-                                currentPinnedCount = sections.pinnedSpaces.size
+                                onSpaceSettings = onSpaceSettings
                             )
                         }
 
@@ -385,8 +380,7 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings,
-                                currentPinnedCount = sections.pinnedSpaces.size
+                                onSpaceSettings = onSpaceSettings
                             )
                         }
                     }

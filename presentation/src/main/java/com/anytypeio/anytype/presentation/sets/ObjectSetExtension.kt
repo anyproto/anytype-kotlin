@@ -134,24 +134,47 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
     return dataViewContent.objectOrders.find { it.view == currentViewerId }?.ids ?: emptyList()
 }
 
-fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
-    return map { f: DVFilter ->
-        val r = relationLinks.firstOrNull { it.key == f.relation }
-        if (r != null && r.format == RelationFormat.DATE) {
-            f.copy(relationFormat = r.format)
-        } else if (r != null && r.format == RelationFormat.OBJECT) {
+/**
+ * Transforms a filter by applying the appropriate relation format.
+ *
+ * For DATE formats: adds the relationFormat to the filter
+ * For OBJECT formats: adds the relationFormat AND normalizes EQUAL condition to IN
+ *
+ * @param filter The filter to transform
+ * @param format The relation format to apply (null means no transformation)
+ * @return The transformed filter, or the original if format is null or not DATE/OBJECT
+ */
+private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?): DVFilter {
+    return when (format) {
+        RelationFormat.DATE -> {
+            filter.copy(relationFormat = format)
+        }
+        RelationFormat.OBJECT -> {
             // Temporary workaround for normalizing filter condition for object filters
-            f.copy(
-                relationFormat = r.format,
-                condition = if (f.condition == DVFilterCondition.EQUAL) {
+            filter.copy(
+                relationFormat = format,
+                condition = if (filter.condition == DVFilterCondition.EQUAL) {
                     DVFilterCondition.IN
                 } else {
-                    f.condition
+                    filter.condition
                 }
             )
-        } else {
-            f
         }
+        else -> filter
+    }
+}
+
+fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
+    return map { filter ->
+        val relation = relationLinks.firstOrNull { it.key == filter.relation }
+        transformFilterWithFormat(filter, relation?.format)
+    }
+}
+
+suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
+    return map { filter ->
+        val relation = storeOfRelations.getByKey(filter.relation)
+        transformFilterWithFormat(filter, relation?.format)
     }
 }
 
@@ -466,6 +489,36 @@ suspend fun resolveTypeAndActiveViewTemplate(
         Pair(defaultSetObjectType, defaultTemplateId)
     } else {
         Pair(defaultSetObjectType, activeView.defaultTemplate)
+    }
+}
+
+/**
+ * Resolves template for creating objects in a View of an Objects with Layouts: SET or OBJECT_TYPE.
+ * Template resolution priority:
+ * 1. Check Viewer's defaultTemplate first
+ * 2. If viewer template is null/empty, check setOfObject's defaultTemplateId
+ * 3. If both are null/empty, return null (no template for object creation)
+ *
+ * @param viewer The viewer from which to check for template
+ * @param setOfObject The DataView setOf object containing the default template
+ * @return Template ID if found, null if both viewer and setOfObject's templates are empty
+ */
+fun resolveTemplateForDataViewObject(
+    viewer: Block.Content.DataView.Viewer,
+    setOfObject: ObjectWrapper.Basic
+): Id? {
+    // First check Viewer for template
+    return if (!viewer.defaultTemplate.isNullOrEmpty()) {
+        viewer.defaultTemplate
+    } else {
+        // If viewer template is not present, check ObjectType
+        val objectTypeTemplate = setOfObject.getSingleValue<String>(Relations.DEFAULT_TEMPLATE_ID)
+        if (!objectTypeTemplate.isNullOrEmpty()) {
+            objectTypeTemplate
+        } else {
+            // If both are null/empty, don't use template for object creation
+            null
+        }
     }
 }
 

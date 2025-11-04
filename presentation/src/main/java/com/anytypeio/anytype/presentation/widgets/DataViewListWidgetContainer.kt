@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
+import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.SetOfObjects
@@ -286,7 +287,7 @@ class DataViewListWidgetContainer(
      * Builds a ViewerContext containing object data, data view configuration, and search parameters.
      * Handles viewer selection, limit resolution, and parameter parsing for widget data subscription.
      */
-    private fun buildViewerContextCommon(
+    private suspend fun buildViewerContextCommon(
         obj: ObjectView,
         activeViewerId: Id?,
         isCompact: Boolean
@@ -326,8 +327,12 @@ class DataViewListWidgetContainer(
                         addAll(defaultKeys)
                         addAll(dataViewKeys)
                     }.distinct(),
+                    // IMPORTANT: updateFormatForSubscription is required to enrich filters with proper
+                    // property formats from StoreOfRelations. ObjectView doesn't include formats in
+                    // DataView details, so we must always fetch the latest Property Format from Store.
+                    // This is critical for DATE and OBJECT relation types to get correct subscription results.
                     filters = buildList {
-                        addAll(targetView?.filters.orEmpty())
+                        addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                         addAll(ObjectSearchConstants.defaultDataViewFilters())
                     },
                     limit = subscriptionLimit,
@@ -349,8 +354,12 @@ class DataViewListWidgetContainer(
                             addAll(defaultKeys)
                             addAll(dataViewKeys)
                         }.distinct(),
+                        // IMPORTANT: updateFormatForSubscription is required to enrich filters with proper
+                        // property formats from StoreOfRelations. ObjectView doesn't include formats in
+                        // DataView details, so we must always fetch the latest Property Format from Store.
+                        // This is critical for DATE and OBJECT relation types to get correct subscription results.
                         filters = buildList {
-                            addAll(targetView?.filters.orEmpty())
+                            addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                             addAll(ObjectSearchConstants.defaultDataViewFilters())
                         },
                         limit = subscriptionLimit,

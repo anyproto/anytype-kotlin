@@ -469,6 +469,36 @@ suspend fun resolveTypeAndActiveViewTemplate(
     }
 }
 
+/**
+ * Resolves template for creating objects in a View of an ObjectType.
+ * Template resolution priority:
+ * 1. Check Viewer's defaultTemplate first
+ * 2. If viewer template is null/empty, check ObjectType's defaultTemplateId
+ * 3. If both are null/empty, return null (no template for object creation)
+ *
+ * @param viewer The viewer from which to check for template
+ * @param objectType The ObjectType object (dataViewSourceObj) containing the default template
+ * @return Template ID if found, null if both viewer and object type templates are empty
+ */
+fun resolveTemplateForObjectTypeDataView(
+    viewer: Block.Content.DataView.Viewer,
+    objectType: ObjectWrapper.Basic
+): Id? {
+    // First check Viewer for template
+    return if (!viewer.defaultTemplate.isNullOrEmpty()) {
+        viewer.defaultTemplate
+    } else {
+        // If viewer template is not present, check ObjectType
+        val objectTypeTemplate = objectType.getSingleValue<String>(Relations.DEFAULT_TEMPLATE_ID)
+        if (!objectTypeTemplate.isNullOrEmpty()) {
+            objectTypeTemplate
+        } else {
+            // If both are null/empty, don't use template for object creation
+            null
+        }
+    }
+}
+
 fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
     return when (this) {
         is ObjectState.DataView.Collection -> true

@@ -119,6 +119,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
+import com.anytypeio.anytype.presentation.sets.resolveTemplateForObjectTypeDataView
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -2491,6 +2492,57 @@ class HomeScreenViewModel(
         )
     }
 
+    private suspend fun proceedWithCreatingObjectTypeDataViewObject(
+        dataViewSourceObj: ObjectWrapper.Basic,
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        navigate: Boolean = false
+    ) {
+        Timber.d("proceedWithCreatingObjectTypeDataViewObject, dataViewSourceObj: $dataViewSourceObj")
+        val prefilled = viewer.prefillNewObjectDetails(
+            storeOfRelations = storeOfRelations,
+            dataViewRelationLinks = dv.relationLinks,
+            dateProvider = dateProvider
+        )
+        val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val space = vmParams.spaceId.id
+        val startTime = System.currentTimeMillis()
+        createDataViewObject.async(
+            params = CreateDataViewObject.Params.SetByType(
+                type = type,
+                filters = viewer.filters,
+                template = resolveTemplateForObjectTypeDataView(
+                    viewer = viewer,
+                    objectType = dataViewSourceObj
+                ),
+                prefilled = prefilled
+            ).also {
+                Timber.d("Calling with params: $it")
+            }
+        ).fold(
+            onSuccess = { result ->
+                Timber.d("Successfully created object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
+                if (navigate) {
+                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                    if (wrapper.isValid) {
+                        proceedWithNavigation(wrapper.navigation())
+                    }
+                }
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating data view object for widget")
+            }
+        )
+    }
+
     private suspend fun proceedWithAddingObjectToCollection(
         viewer: Block.Content.DataView.Viewer,
         dv: DV,
@@ -2624,7 +2676,7 @@ class HomeScreenViewModel(
                             Timber.w("Data view object is not valid")
                             return@fold
                         }
-                        proceedWithCreatingDataViewObject(
+                        proceedWithCreatingObjectTypeDataViewObject(
                             dataViewSourceObj = dataViewObject,
                             viewer = viewer,
                             dv = dv,

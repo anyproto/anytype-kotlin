@@ -2440,23 +2440,29 @@ class HomeScreenViewModel(
     }
 
     /**
-     * Creates a new object in a "Query by Type" Widget [Pinned section]
-     * or Objec Type widget [Object Types section] (where the Set's `setOf` field points to an ObjectType).
+     * Creates a new object in a Widget by clicking the "+" button.
      *
-     * This method is used when clicking the "+" button in a widget. The created object will:
-     * - Have the type specified by [dataViewSourceObj] (the ObjectType from `setOf`)
-     * - Be prefilled with values from active view filters (when filters use permitted conditions)
+     * This method handles TWO distinct use cases:
+     * 1. **Layout.SET** - "Query by Type" Widgets [Pinned section]:
+     *    The [dataViewSourceObj] is the ObjectType obtained from the Set's `setOf` field via lookup.
+     * 2. **Layout.OBJECT_TYPE** - Object Type Widgets [Object Types section]:
+     *    The [dataViewSourceObj] IS the ObjectType view itself (no lookup needed).
+     *
+     * In both cases, the created object will:
+     * - Have the type specified by [dataViewSourceObj] (the ObjectType)
+     * - Be prefilled with values from active view filters (when filters use permitted conditions,
+     *   see [com.anytypeio.anytype.core_models.PermittedConditions])
      * - Use a template with the following priority:
      *   1. Viewer's custom template (if set)
      *   2. ObjectType's default template (if viewer template is not set)
      *   3. No template (if both are null/empty)
      *
-     * @param dataViewSourceObj The ObjectType that this Set is based on (from the Set's `setOf` field).
-     *                          This is NOT the Query or ObjectType object itself, but the ObjectType it references.
+     * @param dataViewSourceObj The ObjectType for the new object. Source depends on layout:
+     *                          - Layout.SET: The ObjectType from the Set's `setOf` field (obtained via lookup)
+     *                          - Layout.OBJECT_TYPE: The widget's source object itself (already the ObjectType)
      * @param viewer The active view/viewer containing filters, template settings, and display configuration
      * @param dv The DataView content with relation links used for proper filter value formatting
      * @param navigate If true, navigates to the created object after successful creation
-     *
      */
     private suspend fun proceedWithCreatingDataViewObject(
         dataViewSourceObj: ObjectWrapper.Basic,

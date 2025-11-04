@@ -2439,13 +2439,32 @@ class HomeScreenViewModel(
         )
     }
 
+    /**
+     * Creates a new object in a "Query by Type" Widget [Pinned section]
+     * or Objec Type widget [Object Types section] (where the Set's `setOf` field points to an ObjectType).
+     *
+     * This method is used when clicking the "+" button in a widget. The created object will:
+     * - Have the type specified by [dataViewSourceObj] (the ObjectType from `setOf`)
+     * - Be prefilled with values from active view filters (when filters use permitted conditions)
+     * - Use a template with the following priority:
+     *   1. Viewer's custom template (if set)
+     *   2. ObjectType's default template (if viewer template is not set)
+     *   3. No template (if both are null/empty)
+     *
+     * @param dataViewSourceObj The ObjectType that this Set is based on (from the Set's `setOf` field).
+     *                          This is NOT the Query or ObjectType object itself, but the ObjectType it references.
+     * @param viewer The active view/viewer containing filters, template settings, and display configuration
+     * @param dv The DataView content with relation links used for proper filter value formatting
+     * @param navigate If true, navigates to the created object after successful creation
+     *
+     */
     private suspend fun proceedWithCreatingDataViewObject(
         dataViewSourceObj: ObjectWrapper.Basic,
         viewer: Block.Content.DataView.Viewer,
         dv: DV,
         navigate: Boolean = false
     ) {
-        Timber.d("proceedWithCreatingObjectTypeDataViewObject, dataViewSourceObj: $dataViewSourceObj")
+        Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dataViewRelationLinks = dv.relationLinks,

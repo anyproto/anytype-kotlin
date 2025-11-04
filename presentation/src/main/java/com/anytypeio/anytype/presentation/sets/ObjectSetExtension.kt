@@ -155,6 +155,27 @@ fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>
     }
 }
 
+suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
+    return map { f: DVFilter ->
+        val r = storeOfRelations.getByKey(f.relation)
+        if (r != null && r.format == RelationFormat.DATE) {
+            f.copy(relationFormat = r.format)
+        } else if (r != null && r.format == RelationFormat.OBJECT) {
+            // Temporary workaround for normalizing filter condition for object filters
+            f.copy(
+                relationFormat = r.format,
+                condition = if (f.condition == DVFilterCondition.EQUAL) {
+                    DVFilterCondition.IN
+                } else {
+                    f.condition
+                }
+            )
+        } else {
+            f
+        }
+    }
+}
+
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
     filter { !it.isHidden }
 

@@ -327,6 +327,10 @@ class DataViewListWidgetContainer(
                         addAll(defaultKeys)
                         addAll(dataViewKeys)
                     }.distinct(),
+                    // IMPORTANT: updateFormatForSubscription is required to enrich filters with proper
+                    // property formats from StoreOfRelations. ObjectView doesn't include formats in
+                    // DataView details, so we must always fetch the latest Property Format from Store.
+                    // This is critical for DATE and OBJECT relation types to get correct subscription results.
                     filters = buildList {
                         addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                         addAll(ObjectSearchConstants.defaultDataViewFilters())
@@ -350,6 +354,10 @@ class DataViewListWidgetContainer(
                             addAll(defaultKeys)
                             addAll(dataViewKeys)
                         }.distinct(),
+                        // IMPORTANT: updateFormatForSubscription is required to enrich filters with proper
+                        // property formats from StoreOfRelations. ObjectView doesn't include formats in
+                        // DataView details, so we must always fetch the latest Property Format from Store.
+                        // This is critical for DATE and OBJECT relation types to get correct subscription results.
                         filters = buildList {
                             addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                             addAll(ObjectSearchConstants.defaultDataViewFilters())

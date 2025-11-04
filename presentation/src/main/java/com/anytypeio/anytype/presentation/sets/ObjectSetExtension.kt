@@ -134,45 +134,47 @@ fun ObjectState.DataView.Collection.getObjectOrderIds(currentViewerId: String): 
     return dataViewContent.objectOrders.find { it.view == currentViewerId }?.ids ?: emptyList()
 }
 
-fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
-    return map { f: DVFilter ->
-        val r = relationLinks.firstOrNull { it.key == f.relation }
-        if (r != null && r.format == RelationFormat.DATE) {
-            f.copy(relationFormat = r.format)
-        } else if (r != null && r.format == RelationFormat.OBJECT) {
+/**
+ * Transforms a filter by applying the appropriate relation format.
+ *
+ * For DATE formats: adds the relationFormat to the filter
+ * For OBJECT formats: adds the relationFormat AND normalizes EQUAL condition to IN
+ *
+ * @param filter The filter to transform
+ * @param format The relation format to apply (null means no transformation)
+ * @return The transformed filter, or the original if format is null or not DATE/OBJECT
+ */
+private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?): DVFilter {
+    return when (format) {
+        RelationFormat.DATE -> {
+            filter.copy(relationFormat = format)
+        }
+        RelationFormat.OBJECT -> {
             // Temporary workaround for normalizing filter condition for object filters
-            f.copy(
-                relationFormat = r.format,
-                condition = if (f.condition == DVFilterCondition.EQUAL) {
+            filter.copy(
+                relationFormat = format,
+                condition = if (filter.condition == DVFilterCondition.EQUAL) {
                     DVFilterCondition.IN
                 } else {
-                    f.condition
+                    filter.condition
                 }
             )
-        } else {
-            f
         }
+        else -> filter
+    }
+}
+
+fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
+    return map { filter ->
+        val relation = relationLinks.firstOrNull { it.key == filter.relation }
+        transformFilterWithFormat(filter, relation?.format)
     }
 }
 
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
-    return map { f: DVFilter ->
-        val r = storeOfRelations.getByKey(f.relation)
-        if (r != null && r.format == RelationFormat.DATE) {
-            f.copy(relationFormat = r.format)
-        } else if (r != null && r.format == RelationFormat.OBJECT) {
-            // Temporary workaround for normalizing filter condition for object filters
-            f.copy(
-                relationFormat = r.format,
-                condition = if (f.condition == DVFilterCondition.EQUAL) {
-                    DVFilterCondition.IN
-                } else {
-                    f.condition
-                }
-            )
-        } else {
-            f
-        }
+    return map { filter ->
+        val relation = storeOfRelations.getByKey(filter.relation)
+        transformFilterWithFormat(filter, relation?.format)
     }
 }
 

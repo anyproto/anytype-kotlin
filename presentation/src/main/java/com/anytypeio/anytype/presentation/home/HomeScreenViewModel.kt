@@ -119,6 +119,7 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
+import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
 import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
@@ -2515,6 +2516,80 @@ class HomeScreenViewModel(
         )
     }
 
+    /**
+     * Creates a new object in a "Set by Relation" Widget.
+     *
+     * This method handles Sets where the `setOf` field points to a Relation object
+     * (not an ObjectType). In this case:
+     * - The type comes from the viewer's `defaultObjectType` (similar to Collections)
+     * - The relation itself is added to the created object with an appropriate default value
+     * - Template resolution follows the standard priority (Viewer → ObjectType → null)
+     *
+     * @param relationObj The Relation object from the Set's `setOf` field
+     * @param viewer The active view/viewer containing filters, template settings, and display configuration
+     * @param dv The DataView content with relation links used for proper filter value formatting
+     * @param navigate If true, navigates to the created object after successful creation
+     */
+    private suspend fun proceedWithCreatingSetByRelationObject(
+        relationObj: ObjectWrapper.Relation,
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        navigate: Boolean = false
+    ) {
+        Timber.d("proceedWithCreatingSetByRelationObject, relationObj Id: ${relationObj.id}, relationObj Key: ${relationObj.uniqueKey}")
+
+        // Get type from viewer's defaultObjectType (not from the relation)
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            activeView = viewer,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+
+        val type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+
+        // Get prefilled data including the relation itself with default value
+        val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            objSetByRelation = relationObj,
+            dataViewRelationLinks = dv.relationLinks
+        )
+
+        val space = vmParams.spaceId.id
+        val startTime = System.currentTimeMillis()
+
+        createDataViewObject.async(
+            params = CreateDataViewObject.Params.SetByRelation(
+                type = type,
+                filters = viewer.filters,
+                template = defaultTemplate,
+                prefilled = prefilled
+            ).also {
+                Timber.d("Calling SetByRelation with params: $it")
+            }
+        ).fold(
+            onSuccess = { result ->
+                Timber.d("Successfully created Set by Relation object with id: ${result.objectId}")
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    route = EventsDictionary.Routes.widget,
+                    startTime = startTime,
+                    view = null,
+                    objType = type.key,
+                    spaceParams = provideParams(space)
+                )
+                if (navigate) {
+                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                    if (wrapper.isValid) {
+                        proceedWithNavigation(wrapper.navigation())
+                    }
+                }
+            },
+            onFailure = {
+                Timber.e(it, "Error while creating Set by Relation object for widget")
+            }
+        )
+    }
+
     private suspend fun proceedWithAddingObjectToCollection(
         viewer: Block.Content.DataView.Viewer,
         dv: DV,
@@ -2636,12 +2711,30 @@ class HomeScreenViewModel(
                             Timber.w("Data view source is missing or not valid")
                             return@fold
                         }
-                        proceedWithCreatingDataViewObject(
-                            dataViewSourceObj = dataViewSourceObj,
-                            viewer = viewer,
-                            dv = dv,
-                            navigate = navigate
-                        )
+                        // Check if this is a Set by ObjectType or Set by Relation
+                        when (dataViewSourceObj.layout) {
+                            ObjectType.Layout.OBJECT_TYPE -> {
+                                // Set by Type: setOf points to an ObjectType
+                                proceedWithCreatingDataViewObject(
+                                    dataViewSourceObj = dataViewSourceObj,
+                                    viewer = viewer,
+                                    dv = dv,
+                                    navigate = navigate
+                                )
+                            }
+                            ObjectType.Layout.RELATION -> {
+                                // Set by Relation: setOf points to a Relation
+                                proceedWithCreatingSetByRelationObject(
+                                    relationObj = ObjectWrapper.Relation(dataViewSourceObj.map),
+                                    viewer = viewer,
+                                    dv = dv,
+                                    navigate = navigate
+                                )
+                            }
+                            else -> {
+                                Timber.w("Unsupported setOf layout: ${dataViewSourceObj.layout}")
+                            }
+                        }
                     }
                     ObjectType.Layout.OBJECT_TYPE -> {
                         if (!dataViewObject.isValid) {

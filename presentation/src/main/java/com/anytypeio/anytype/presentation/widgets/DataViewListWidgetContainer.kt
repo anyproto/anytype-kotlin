@@ -27,6 +27,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
+import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
 import com.anytypeio.anytype.presentation.widgets.WidgetView.SetOfObjects
@@ -286,7 +287,7 @@ class DataViewListWidgetContainer(
      * Builds a ViewerContext containing object data, data view configuration, and search parameters.
      * Handles viewer selection, limit resolution, and parameter parsing for widget data subscription.
      */
-    private fun buildViewerContextCommon(
+    private suspend fun buildViewerContextCommon(
         obj: ObjectView,
         activeViewerId: Id?,
         isCompact: Boolean
@@ -327,7 +328,7 @@ class DataViewListWidgetContainer(
                         addAll(dataViewKeys)
                     }.distinct(),
                     filters = buildList {
-                        addAll(targetView?.filters.orEmpty())
+                        addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                         addAll(ObjectSearchConstants.defaultDataViewFilters())
                     },
                     limit = subscriptionLimit,
@@ -350,7 +351,7 @@ class DataViewListWidgetContainer(
                             addAll(dataViewKeys)
                         }.distinct(),
                         filters = buildList {
-                            addAll(targetView?.filters.orEmpty())
+                            addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
                             addAll(ObjectSearchConstants.defaultDataViewFilters())
                         },
                         limit = subscriptionLimit,

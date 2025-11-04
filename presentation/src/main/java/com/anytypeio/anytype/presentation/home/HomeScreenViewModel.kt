@@ -2527,8 +2527,8 @@ class HomeScreenViewModel(
         )
 
         val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
+            activeView = viewer,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         val defaultObjectTypeUniqueKey = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)

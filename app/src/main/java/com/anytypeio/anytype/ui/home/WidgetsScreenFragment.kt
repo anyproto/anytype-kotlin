@@ -440,7 +440,8 @@ class WidgetsScreenFragment : Fragment(),
             is Navigation.OpenChat -> runCatching {
                 navigation().openChat(
                     target = destination.ctx,
-                    space = destination.space
+                    space = destination.space,
+                    popUpToVault = false
                 )
             }
             is Navigation.ExpandWidget -> runCatching {

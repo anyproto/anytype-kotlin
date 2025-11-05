@@ -545,18 +545,18 @@ internal suspend fun mapSpaceTypesToWidgets(
 ): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
     val filteredObjectTypes = allTypes
-        .mapNotNull { objectType ->
-            if (!objectType.isValid ||
-                SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
-                objectType.isArchived == true ||
-                objectType.isDeleted == true ||
-                objectType.uniqueKey == ObjectTypeIds.TEMPLATE
-            ) {
-                return@mapNotNull null
-            } else {
-                objectType
-            }
-        }
+//        .mapNotNull { objectType ->
+//            if (!objectType.isValid ||
+//                SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
+//                objectType.isArchived == true ||
+//                objectType.isDeleted == true ||
+//                objectType.uniqueKey == ObjectTypeIds.TEMPLATE
+//            ) {
+//                return@mapNotNull null
+//            } else {
+//                objectType
+//            }
+//        }
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
@@ -632,7 +632,7 @@ private fun sortObjectTypesByPriority(
 /**
  * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
  */
-private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
+private fun createWidgetViewFromType(objectType: Type, config: Config): Widget {
     val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
     val icon = objectType.objectIcon()
     val widgetLimit = objectType.widgetLimit ?: 0

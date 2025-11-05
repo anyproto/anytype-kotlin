@@ -88,6 +88,7 @@ class ChatFragment : Fragment() {
     private val space get() = arg<Id>(SPACE_KEY)
 
     private val triggeredByPush get() = arg<Boolean>(TRIGGERED_BY_PUSH_KEY)
+    private val popUpToVault get() = arg<Boolean>(POP_UP_TO_VAULT_KEY)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         injectDependencies()
@@ -126,7 +127,9 @@ class ChatFragment : Fragment() {
                             .fillMaxWidth()
                             .statusBarsPadding(),
                         header = vm.header.collectAsStateWithLifecycle().value,
-                        onBackButtonClicked = vm::onBackButtonPressed,
+                        onBackButtonClicked = {
+                            vm.onBackButtonPressed(isExitingVault = popUpToVault)
+                        },
                         onSpaceNameClicked = vm::onSpaceIconClicked,
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
@@ -303,7 +306,11 @@ class ChatFragment : Fragment() {
                 when (command) {
                     is ChatViewModel.ViewModelCommand.Exit -> {
                         runCatching {
-                            findNavController().navigate(R.id.action_back_on_vault)
+                            if (popUpToVault) {
+                                findNavController().navigate(R.id.action_back_on_vault)
+                            } else {
+                                findNavController().popBackStack()
+                            }
                         }.onFailure {
                             Timber.e(it, "Error while back on vault from chat screen")
                         }
@@ -447,7 +454,7 @@ class ChatFragment : Fragment() {
             onHideQrCodeScreen = vm::onHideQRCodeScreen
         )
         BackHandler {
-            vm.onBackButtonPressed()
+            vm.onBackButtonPressed(isExitingVault = popUpToVault)
         }
         //DROID-3943 Temporarily disabled
 //        LaunchedEffect(Unit) {
@@ -539,15 +546,18 @@ class ChatFragment : Fragment() {
         private const val CTX_KEY = "arg.discussion.ctx"
         private const val SPACE_KEY = "arg.discussion.space"
         private const val TRIGGERED_BY_PUSH_KEY = "arg.discussion.triggered-by-push"
+        private const val POP_UP_TO_VAULT_KEY = "arg.discussion.pop-up-to-vault"
         const val PERMISSIONS_REQUEST_CODE = 100
         fun args(
             space: Id,
             ctx: Id,
-            triggeredByPush: Boolean = false
+            triggeredByPush: Boolean = false,
+            popUpToVault: Boolean = true
         ) = bundleOf(
             CTX_KEY to ctx,
             SPACE_KEY to space,
-            TRIGGERED_BY_PUSH_KEY to triggeredByPush
+            TRIGGERED_BY_PUSH_KEY to triggeredByPush,
+            POP_UP_TO_VAULT_KEY to popUpToVault
         )
     }
 }

@@ -752,7 +752,6 @@ class HomeScreenViewModel(
                     collapsedSections = preferences.collapsedSectionIds.toSet()
                 )
                 if (state is ObjectViewState.Success) {
-
                     // Build widget sections from the current object state
                     val sections = buildWidgetSections(
                         state = state,

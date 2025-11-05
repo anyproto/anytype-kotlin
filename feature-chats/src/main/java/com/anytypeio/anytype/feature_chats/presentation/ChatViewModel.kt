@@ -1434,7 +1434,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed() {
+    fun onBackButtonPressed(isExitingVault: Boolean) {
         Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
@@ -1442,6 +1442,7 @@ class ChatViewModel @Inject constructor(
             }
             withContext(dispatchers.io) {
                 runCatching {
+                    // TODO DROID-4115 check whether we need to close object
                     objectWatcher.unwatch(target = vmParams.ctx, space = vmParams.space)
                 }.onFailure {
                     Timber.e(it, "DROID-2966 Failed to unsubscribe object watcher")
@@ -1449,14 +1450,11 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            proceedWithClearingSpaceBeforeExitingToVault()
+            if (isExitingVault) {
+                proceedWithClearingSpaceBeforeExitingToVault()
+            }
             commands.emit(ViewModelCommand.Exit)
         }
-    }
-
-    fun onSpaceNameClicked() {
-        Timber.d("onSpaceNameClicked")
-        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {

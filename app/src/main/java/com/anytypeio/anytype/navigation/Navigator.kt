@@ -43,12 +43,13 @@ class Navigator : AppNavigation {
         }
     }
 
-    override fun openChat(target: Id, space: Id) {
+    override fun openChat(target: Id, space: Id, popUpToVault: Boolean) {
         navController?.navigate(
             R.id.chatScreen,
             ChatFragment.args(
                 ctx = target,
-                space = space
+                space = space,
+                popUpToVault = popUpToVault
             )
         )
     }

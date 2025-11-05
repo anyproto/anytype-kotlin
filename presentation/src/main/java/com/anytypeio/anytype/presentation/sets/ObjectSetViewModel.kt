@@ -1383,7 +1383,7 @@ class ObjectSetViewModel(
         response: CreateDataViewObject.Result,
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
-        if (obj.layout == ObjectType.Layout.NOTE) {
+        if (obj.layout == ObjectType.Layout.NOTE || obj.layout == ObjectType.Layout.CHAT_DERIVED) {
             proceedWithOpeningObject(
                 target = response.objectId,
                 layout = obj.layout,
@@ -1718,6 +1718,17 @@ class ObjectSetViewModel(
                         AppNavigation.Command.OpenDateObject(
                             objectId = target,
                             space = space
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.CHAT_DERIVED -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenChat(
+                            target = target,
+                            space = space,
+                            popUpToVault = false
                         )
                     )
                 )

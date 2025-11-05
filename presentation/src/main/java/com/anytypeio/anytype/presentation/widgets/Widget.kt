@@ -267,7 +267,7 @@ suspend fun List<Block>.parseWidgets(
                 val sourceContent = child.content
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
-                    val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
+                    val raw = details[target].orEmpty()
                     val targetObj = ObjectWrapper.Basic(raw)
                     val icon = targetObj.objectIcon(
                         builder = urlBuilder,

@@ -1471,6 +1471,22 @@ class ChatViewModel @Inject constructor(
         }
     }
 
+    fun onEditInfo() {
+        // TODO: Implement edit info functionality
+    }
+
+    fun onPin() {
+        // TODO: Implement pin functionality
+    }
+
+    fun onCopyLink() {
+        // TODO: Implement copy link functionality
+    }
+
+    fun onMoveToBin() {
+        // TODO: Implement move to bin functionality
+    }
+
     fun onMediaPreview(objects: List<Id>, index: Int) {
         Timber.d("onMediaPreview, objects: $objects")
         viewModelScope.launch {
@@ -1879,7 +1895,8 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val isMuted: Boolean = false
+            val isMuted: Boolean = false,
+            val showDropDownMenu: Boolean = true
         ) : HeaderView()
     }
 

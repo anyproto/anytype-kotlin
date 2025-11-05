@@ -133,6 +133,10 @@ class ChatFragment : Fragment() {
                         onSpaceNameClicked = vm::onSpaceIconClicked,
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
+                        onEditInfo = vm::onEditInfo,
+                        onPin = vm::onPin,
+                        onCopyLink = vm::onCopyLink,
+                        onMoveToBin = vm::onMoveToBin
                     )
                 }
             ) { paddingValues ->

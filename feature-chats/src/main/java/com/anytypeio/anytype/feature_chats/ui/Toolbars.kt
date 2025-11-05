@@ -106,13 +106,7 @@ fun ChatTopToolbar(
                     .padding(end = 16.dp),
                 mainSize = 28.dp,
                 icon = header.icon,
-                onSpaceIconClick = {
-                    if (header.showDropDownMenu) {
-                        showDropdownMenu = !showDropdownMenu
-                    } else {
-                        onSpaceIconClicked()
-                    }
-                }
+                onSpaceIconClick = { onSpaceIconClicked() }
             )
         }
 

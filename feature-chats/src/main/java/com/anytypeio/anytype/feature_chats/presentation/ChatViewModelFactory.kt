@@ -30,6 +30,7 @@ import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
+import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import javax.inject.Inject
 
 class ChatViewModelFactory @Inject constructor(
@@ -61,7 +62,8 @@ class ChatViewModelFactory @Inject constructor(
     private val getObject: GetObject,
     private val analytics: Analytics,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
-    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
+    private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -93,6 +95,7 @@ class ChatViewModelFactory @Inject constructor(
         preloadFile = preloadFile,
         discardPreloadedFile = discardPreloadedFile,
         spaceInviteLinkStore = spaceInviteLinkStore,
-        getCurrentInviteAccessLevel = getCurrentInviteAccessLevel
+        getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
+        pinObjectAsWidgetDelegate = pinObjectAsWidgetDelegate
     ) as T
 }

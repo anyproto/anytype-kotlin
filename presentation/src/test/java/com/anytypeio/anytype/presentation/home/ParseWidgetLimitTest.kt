@@ -30,7 +30,9 @@ class ParseWidgetLimitTest {
             layout = Block.Content.Widget.Layout.TREE
         )
 
-        val widgetLink = StubLinkToObjectBlock()
+        val widgetLink = StubLinkToObjectBlock(
+            target = source.id
+        )
 
         val widgetBlock = Block(
             id = MockDataFactory.randomUuid(),
@@ -52,7 +54,7 @@ class ParseWidgetLimitTest {
                 put(source.id, source.map)
             },
             config = StubConfig(),
-            urlBuilder,
+            urlBuilder = urlBuilder,
             storeOfObjectTypes = storeOfObjectTypes
         )
 
@@ -70,7 +72,9 @@ class ParseWidgetLimitTest {
             layout = Block.Content.Widget.Layout.LIST
         )
 
-        val widgetLink = StubLinkToObjectBlock()
+        val widgetLink = StubLinkToObjectBlock(
+            target = source.id
+        )
 
         val widgetBlock = Block(
             id = MockDataFactory.randomUuid(),
@@ -110,7 +114,9 @@ class ParseWidgetLimitTest {
             layout = Block.Content.Widget.Layout.COMPACT_LIST
         )
 
-        val widgetLink = StubLinkToObjectBlock()
+        val widgetLink = StubLinkToObjectBlock(
+            target = source.id
+        )
 
         val widgetBlock = Block(
             id = MockDataFactory.randomUuid(),

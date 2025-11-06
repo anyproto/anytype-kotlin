@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
@@ -51,6 +52,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -129,7 +131,8 @@ class ChatViewModel @Inject constructor(
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val setObjectDetails: SetObjectDetails
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -197,15 +200,40 @@ class ChatViewModel @Inject constructor(
             spaceViews
                 .observe(
                     vmParams.space
-                ).map { view ->
+                ).collect { view ->
                     val isMuted = NotificationStateCalculator.calculateMutedState(view)
-                    HeaderView.Default(
-                        title = view.name.orEmpty(),
-                        icon = view.spaceIcon(builder = urlBuilder),
-                        isMuted = isMuted
-                    )
-                }.collect {
-                    header.value = it
+                    
+                    if (view.spaceUxType == SpaceUxType.CHAT) {
+                        // For chat spaces, use space name and icon
+                        header.value = HeaderView.Default(
+                            title = view.name.orEmpty(),
+                            icon = view.spaceIcon(builder = urlBuilder),
+                            isMuted = isMuted
+                        )
+                    } else {
+                        // For non-chat spaces, fetch the object name
+                        getObject.async(
+                            GetObject.Params(
+                                target = vmParams.ctx,
+                                space = vmParams.space
+                            )
+                        ).onSuccess { objectView ->
+                            val wrapper = ObjectWrapper.Basic(objectView.details[vmParams.ctx].orEmpty())
+                            header.value = HeaderView.Default(
+                                title = wrapper.name.orEmpty(),
+                                icon = view.spaceIcon(builder = urlBuilder),
+                                isMuted = isMuted
+                            )
+                        }.onFailure {
+                            Timber.e(it, "Failed to fetch object for chat header")
+                            // Fallback to space name
+                            header.value = HeaderView.Default(
+                                title = view.name.orEmpty(),
+                                icon = view.spaceIcon(builder = urlBuilder),
+                                isMuted = isMuted
+                            )
+                        }
+                    }
                 }
         }
 
@@ -1557,6 +1585,43 @@ class ChatViewModel @Inject constructor(
 
     fun onCopyChatLink() {
         // TODO: Implement copy link functionality
+    }
+
+    fun onChatInfoSaved(newName: String) {
+        viewModelScope.launch {
+            val spaceView = spaceViews.get(vmParams.space)
+            if (spaceView == null) {
+                Timber.e("Space view not available")
+                sendToast("Failed to update chat name")
+                return@launch
+            }
+
+            val targetId = if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                // For chat spaces, update the space view object
+                spaceView.id
+            } else {
+                // For non-chat spaces, update the chat object
+                vmParams.ctx
+            }
+
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = targetId,
+                    details = mapOf(Relations.NAME to newName)
+                )
+            ).onSuccess {
+                Timber.d("Successfully updated chat name to: $newName")
+                // Update local state
+                val currentHeader = header.value
+                if (currentHeader is HeaderView.Default) {
+                    header.value = currentHeader.copy(title = newName)
+                }
+                sendToast("Chat name updated")
+            }.onFailure { e ->
+                Timber.e(e, "Error while updating chat name")
+                sendToast("Failed to update chat name")
+            }
+        }
     }
 
     fun onMoveToBin() {

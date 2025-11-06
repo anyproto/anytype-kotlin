@@ -331,7 +331,7 @@ class ChatFragment : Fragment() {
                         ),
                         spaceIconView = spaceIconView,
                         onSave = { newName ->
-                            // TODO: Implement save logic in ViewModel
+                            vm.onChatInfoSaved(newName)
                             showChatInfoScreen = false
                             chatInfoData = null
                         },

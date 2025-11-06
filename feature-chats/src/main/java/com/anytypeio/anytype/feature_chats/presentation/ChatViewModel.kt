@@ -1520,7 +1520,26 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onEditInfo() {
-        // TODO: Implement edit info functionality
+        viewModelScope.launch {
+            val headerView = header.value
+            if (headerView is HeaderView.Default) {
+                val name = headerView.title
+                val icon = when (val spaceIcon = headerView.icon) {
+                    is SpaceIconView.ChatSpace.Image -> ObjectIcon.Profile.Image(
+                        hash = spaceIcon.url,
+                        name = name
+                    )
+                    is SpaceIconView.ChatSpace.Placeholder -> ObjectIcon.None
+                    else -> ObjectIcon.None
+                }
+                commands.emit(
+                    ViewModelCommand.OpenChatInfo(
+                        name = name,
+                        icon = icon
+                    )
+                )
+            }
+        }
     }
 
     fun onPinChatAsWidget() {
@@ -1909,6 +1928,7 @@ class ChatViewModel @Inject constructor(
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
+        data class OpenChatInfo(val name: String, val icon: ObjectIcon) : ViewModelCommand()
     }
 
     sealed class UXCommand {

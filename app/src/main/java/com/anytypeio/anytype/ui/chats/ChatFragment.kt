@@ -69,6 +69,7 @@ import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -117,7 +118,11 @@ class ChatFragment : Fragment() {
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
             val moveToBinSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val chatInfoSheetState =
+                rememberModalBottomSheetState(skipPartiallyExpanded = true)
             var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
+            var showChatInfoScreen by remember { mutableStateOf(false) }
+            var chatInfoData by remember { mutableStateOf<Pair<String, com.anytypeio.anytype.presentation.objects.ObjectIcon>?>(null) }
             val showNotificationPermissionDialog =
                 vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
             val showMoveToBinDialog =
@@ -299,6 +304,204 @@ class ChatFragment : Fragment() {
             } else {
                 componentManager().globalSearchComponent.release()
             }
+
+            if (showChatInfoScreen && chatInfoData != null) {
+                val (name, icon) = chatInfoData!!
+                val currentHeader = vm.header.collectAsStateWithLifecycle().value
+                val spaceIconView = if (currentHeader is ChatViewModel.HeaderView.Default) {
+                    currentHeader.icon
+                } else {
+                    SpaceIconView.ChatSpace.Placeholder(name = name)
+                }
+                
+                ModalBottomSheet(
+                    onDismissRequest = { 
+                        showChatInfoScreen = false
+                        chatInfoData = null
+                    },
+                    sheetState = chatInfoSheetState,
+                    containerColor = colorResource(id = R.color.background_primary),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    dragHandle = null
+                ) {
+                    com.anytypeio.anytype.feature_chats.ui.ChatInfoScreen(
+                        state = com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState.Edit(
+                            currentName = name,
+                            currentIcon = icon
+                        ),
+                        spaceIconView = spaceIconView,
+                        onSave = { newName ->
+                            // TODO: Implement save logic in ViewModel
+                            showChatInfoScreen = false
+                            chatInfoData = null
+                        },
+                        onCreate = { newName ->
+                            // Not used in edit mode
+                        },
+                        onSpaceIconUploadClicked = {
+                            // TODO: Implement icon upload
+                        },
+                        onSpaceIconRemoveClicked = {
+                            // TODO: Implement icon remove
+                        },
+                        isLoading = false
+                    )
+                }
+            }
+
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command ->
+                    Timber.d("Command: $command")
+                    when (command) {
+                        is ChatViewModel.ViewModelCommand.Exit -> {
+                            runCatching {
+                                if (popUpToVault) {
+                                    findNavController().navigate(R.id.action_back_on_vault)
+                                } else {
+                                    findNavController().popBackStack()
+                                }
+                            }.onFailure {
+                                Timber.e(it, "Error while back on vault from chat screen")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.OpenWidgets -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.actionOpenWidgetsFromChat,
+                                    args = WidgetsScreenFragment.args(
+                                        space = space,
+                                        deeplink = null
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening widgets from chats")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.MediaPreview -> {
+                            runCatching {
+                                MediaActivity.start(
+                                    context = requireContext(),
+                                    mediaType = MediaActivity.TYPE_IMAGE,
+                                    objects = command.objects,
+                                    index = command.index,
+                                    space = space
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while launching media image viewer")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.SelectChatReaction -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.selectChatReactionScreen,
+                                    SelectChatReactionFragment.args(
+                                        space = Space(space),
+                                        chat = ctx,
+                                        msg = command.msg
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening chat-reaction picker")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.ViewChatReaction -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.chatReactionScreen,
+                                    ChatReactionFragment.args(
+                                        space = Space(space),
+                                        chat = ctx,
+                                        msg = command.msg,
+                                        emoji = command.emoji
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening a chat reaction")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.ViewMemberCard -> {
+                            runCatching {
+                                findNavController().navigate(
+                                    R.id.participantScreen,
+                                    ParticipantFragment.args(
+                                        space = command.space.id,
+                                        objectId = command.member
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening space member card")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.Browse -> {
+                            runCatching {
+                                proceedWithAction(
+                                    OpenUrl(
+                                        command.url
+                                    )
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while opening bookmark from chat")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.PlayAudio -> {
+                            runCatching {
+                                MediaActivity.start(
+                                    context = requireContext(),
+                                    mediaType = MediaActivity.TYPE_AUDIO,
+                                    obj = command.obj,
+                                    name = command.name,
+                                    space = space
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while launching audio player")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
+                            runCatching {
+                                val intent = Intent().apply {
+                                    action = Intent.ACTION_SEND
+                                    putExtra(Intent.EXTRA_TEXT, command.link)
+                                    type = "text/plain"
+                                }
+                                startActivity(Intent.createChooser(intent, null))
+                            }.onFailure {
+                                Timber.e(it, "Error while sharing invite link")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.ShareQrCode -> {
+                            runCatching {
+                                Timber.d("ShareQrCode command received with link: ${command.link}")
+                                toast("QR Code sharing - to be implemented")
+                            }.onFailure {
+                                Timber.e(it, "Error while opening QR code")
+                            }
+                        }
+
+                        is ChatViewModel.ViewModelCommand.OpenSpaceMembers -> {
+                            findNavController().safeNavigate(
+                                currentDestinationId = R.id.chatScreen,
+                                id = R.id.shareSpaceScreen,
+                                args = ShareSpaceFragment.args(command.space),
+                                errorMessage = "Error while opening share screen"
+                            )
+                        }
+
+                        is ChatViewModel.ViewModelCommand.OpenChatInfo -> {
+                            chatInfoData = command.name to command.icon
+                            showChatInfoScreen = true
+                        }
+                    }
+                }
+            }
         }
         LaunchedEffect(Unit) {
             vm.navigation.collect { nav ->
@@ -333,154 +536,6 @@ class ChatFragment : Fragment() {
                     }
 
                     else -> toast("TODO")
-                }
-            }
-        }
-        LaunchedEffect(Unit) {
-            vm.commands.collect { command ->
-                Timber.d("Command: $command")
-                when (command) {
-                    is ChatViewModel.ViewModelCommand.Exit -> {
-                        runCatching {
-                            if (popUpToVault) {
-                                findNavController().navigate(R.id.action_back_on_vault)
-                            } else {
-                                findNavController().popBackStack()
-                            }
-                        }.onFailure {
-                            Timber.e(it, "Error while back on vault from chat screen")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.OpenWidgets -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.actionOpenWidgetsFromChat,
-                                args = WidgetsScreenFragment.args(
-                                    space = space,
-                                    deeplink = null
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening widgets from chats")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.MediaPreview -> {
-                        runCatching {
-                            MediaActivity.start(
-                                context = requireContext(),
-                                mediaType = MediaActivity.TYPE_IMAGE,
-                                objects = command.objects,
-                                index = command.index,
-                                space = space
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while launching media image viewer")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.SelectChatReaction -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.selectChatReactionScreen,
-                                SelectChatReactionFragment.args(
-                                    space = Space(space),
-                                    chat = ctx,
-                                    msg = command.msg
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening chat-reaction picker")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.ViewChatReaction -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.chatReactionScreen,
-                                ChatReactionFragment.args(
-                                    space = Space(space),
-                                    chat = ctx,
-                                    msg = command.msg,
-                                    emoji = command.emoji
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening a chat reaction")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.ViewMemberCard -> {
-                        runCatching {
-                            findNavController().navigate(
-                                R.id.participantScreen,
-                                ParticipantFragment.args(
-                                    space = command.space.id,
-                                    objectId = command.member
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening space member card")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.Browse -> {
-                        runCatching {
-                            proceedWithAction(
-                                OpenUrl(
-                                    command.url
-                                )
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while opening bookmark from chat")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.PlayAudio -> {
-                        runCatching {
-                            MediaActivity.start(
-                                context = requireContext(),
-                                mediaType = MediaActivity.TYPE_AUDIO,
-                                obj = command.obj,
-                                name = command.name,
-                                space = space
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Error while launching audio player")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.ShareInviteLink -> {
-                        runCatching {
-                            val intent = Intent().apply {
-                                action = Intent.ACTION_SEND
-                                putExtra(Intent.EXTRA_TEXT, command.link)
-                                type = "text/plain"
-                            }
-                            startActivity(Intent.createChooser(intent, null))
-                        }.onFailure {
-                            Timber.e(it, "Error while sharing invite link")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.ShareQrCode -> {
-                        runCatching {
-                            Timber.d("ShareQrCode command received with link: ${command.link}")
-                            toast("QR Code sharing - to be implemented")
-                        }.onFailure {
-                            Timber.e(it, "Error while opening QR code")
-                        }
-                    }
-
-                    is ChatViewModel.ViewModelCommand.OpenSpaceMembers -> {
-                        findNavController().safeNavigate(
-                            currentDestinationId = R.id.chatScreen,
-                            id = R.id.shareSpaceScreen,
-                            args = ShareSpaceFragment.args(command.space),
-                            errorMessage = "Error while opening share screen"
-                        )
-                    }
                 }
             }
         }

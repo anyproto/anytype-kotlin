@@ -31,7 +31,6 @@ import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.AddChatMessage
@@ -54,6 +53,7 @@ import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -72,12 +72,8 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -132,7 +128,8 @@ class ChatViewModel @Inject constructor(
     private val analytics: Analytics,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
-    private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate
+    private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
+    private val setObjectListIsArchived: SetObjectListIsArchived
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -154,6 +151,9 @@ class ChatViewModel @Inject constructor(
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
+    val showMoveToBinDialog = MutableStateFlow(false)
+
+
     val canCreateInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -1523,7 +1523,7 @@ class ChatViewModel @Inject constructor(
         // TODO: Implement edit info functionality
     }
 
-    fun onPin() {
+    fun onPinChatAsWidget() {
         viewModelScope.launch(dispatchers.io) {
             pinChat(
                 space = vmParams.space,
@@ -1536,12 +1536,35 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onCopyLink() {
+    fun onCopyChatLink() {
         // TODO: Implement copy link functionality
     }
 
     fun onMoveToBin() {
-        // TODO: Implement move to bin functionality
+        showMoveToBinDialog.value = true
+    }
+
+    fun onMoveToBinConfirmed() {
+        viewModelScope.launch {
+            setObjectListIsArchived.async(
+                SetObjectListIsArchived.Params(
+                    targets = listOf(vmParams.ctx),
+                    isArchived = true
+                )
+            ).onSuccess {
+                Timber.d("Successfully moved chat to bin")
+                showMoveToBinDialog.value = false
+                onBackButtonPressed(isExitingVault = false)
+            }.onFailure { e ->
+                Timber.e(e, "Error while moving chat to bin")
+                sendToast("Failed to move chat to bin")
+                showMoveToBinDialog.value = false
+            }
+        }
+    }
+
+    fun onMoveToBinCancelled() {
+        showMoveToBinDialog.value = false
     }
 
     fun onMediaPreview(objects: List<Id>, index: Int) {

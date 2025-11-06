@@ -43,6 +43,10 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
@@ -111,9 +115,13 @@ class ChatFragment : Fragment() {
             val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
             val notificationsSheetState =
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
+            val moveToBinSheetState =
+                rememberModalBottomSheetState(skipPartiallyExpanded = true)
             var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
             val showNotificationPermissionDialog =
                 vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
+            val showMoveToBinDialog =
+                vm.showMoveToBinDialog.collectAsStateWithLifecycle().value
 
             ErrorScreen()
 
@@ -134,8 +142,8 @@ class ChatFragment : Fragment() {
                         onSpaceIconClicked = vm::onSpaceIconClicked,
                         onInviteMembersClicked = vm::onInviteMembersClicked,
                         onEditInfo = vm::onEditInfo,
-                        onPin = vm::onPin,
-                        onCopyLink = vm::onCopyLink,
+                        onPin = vm::onPinChatAsWidget,
+                        onCopyLink = vm::onCopyChatLink,
                         onMoveToBin = vm::onMoveToBin
                     )
                 }
@@ -229,6 +237,30 @@ class ChatFragment : Fragment() {
                             vm.onNotificationPermissionRequested()
                             launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
                         }
+                    )
+                }
+            }
+
+            if (showMoveToBinDialog) {
+                ModalBottomSheet(
+                    onDismissRequest = { vm.onMoveToBinCancelled() },
+                    sheetState = moveToBinSheetState,
+                    containerColor = colorResource(id = R.color.background_secondary),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
+                    dragHandle = null
+                ) {
+                    GenericAlert(
+                        config = AlertConfig.WithTwoButtons(
+                            title = "Move chat to Bin?",
+                            description = "This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it's permanently cleared.",
+                            firstButtonText = "Cancel",
+                            secondButtonText = "Move To Bin",
+                            firstButtonType = BUTTON_SECONDARY,
+                            secondButtonType = BUTTON_WARNING,
+                            icon = R.drawable.ic_popup_question_56
+                        ),
+                        onFirstButtonClicked = { vm.onMoveToBinCancelled() },
+                        onSecondButtonClicked = { vm.onMoveToBinConfirmed() }
                     )
                 }
             }

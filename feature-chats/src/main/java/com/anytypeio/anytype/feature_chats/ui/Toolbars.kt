@@ -180,7 +180,7 @@ fun ChatTopToolbar(
                     DropdownMenuItem(
                         content = {
                             Text(
-                                text = stringResource(R.string.edit),
+                                text = stringResource(R.string.chat_edit_info),
                                 color = colorResource(id = R.color.text_primary),
                                 modifier = Modifier.padding(end = 64.dp)
                             )
@@ -222,7 +222,7 @@ fun ChatTopToolbar(
                     DropdownMenuItem(
                         content = {
                             Text(
-                                text = stringResource(R.string.move_to_bin),
+                                text = stringResource(R.string.chat_move_to_bin),
                                 color = colorResource(id = R.color.palette_system_red),
                                 modifier = Modifier.padding(end = 64.dp)
                             )

@@ -256,10 +256,10 @@ class ChatFragment : Fragment() {
                 ) {
                     GenericAlert(
                         config = AlertConfig.WithTwoButtons(
-                            title = "Move chat to Bin?",
-                            description = "This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it's permanently cleared.",
-                            firstButtonText = "Cancel",
-                            secondButtonText = "Move To Bin",
+                            title = stringResource(R.string.move_chat_to_bin_warning_title),
+                            description = stringResource(R.string.chat_move_to_bin_warning_description),
+                            firstButtonText = stringResource(R.string.cancel),
+                            secondButtonText = stringResource(R.string.chat_move_to_bin),
                             firstButtonType = BUTTON_SECONDARY,
                             secondButtonType = BUTTON_WARNING,
                             icon = R.drawable.ic_popup_question_56
@@ -498,6 +498,11 @@ class ChatFragment : Fragment() {
                         is ChatViewModel.ViewModelCommand.OpenChatInfo -> {
                             chatInfoData = command.name to command.icon
                             showChatInfoScreen = true
+                        }
+                        is ChatViewModel.ViewModelCommand.Toast.PinnedChatAsWidget -> {
+                            toast(
+                                getString(R.string.chat_pinned_as_widget_success)
+                            )
                         }
                     }
                 }

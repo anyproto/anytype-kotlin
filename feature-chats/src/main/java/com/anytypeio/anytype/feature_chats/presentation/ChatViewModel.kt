@@ -1571,12 +1571,14 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onPinChatAsWidget() {
+        Timber.d("onPinChatAsWidget clicked")
         viewModelScope.launch(dispatchers.io) {
             pinChat(
                 space = vmParams.space,
                 obj = vmParams.ctx
             ).onSuccess {
-                sendToast("Your chat has been pinned!")
+                Timber.d("Pinned chat as widget successfully")
+                commands.emit(ViewModelCommand.Toast.PinnedChatAsWidget)
             }.onFailure {
                 Timber.e(it, "Error while pinning object as widget")
             }
@@ -1994,6 +1996,9 @@ class ChatViewModel @Inject constructor(
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
         data class OpenChatInfo(val name: String, val icon: ObjectIcon) : ViewModelCommand()
+        sealed class Toast : ViewModelCommand() {
+            data object PinnedChatAsWidget : Toast()
+        }
     }
 
     sealed class UXCommand {

@@ -89,7 +89,12 @@ fun ChatInfoScreen(
     }
     
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(initialValue))
+        mutableStateOf(
+            TextFieldValue(
+                text = initialValue,
+                selection = androidx.compose.ui.text.TextRange(initialValue.length)
+            )
+        )
     }
 
     val focusRequester = remember { FocusRequester() }

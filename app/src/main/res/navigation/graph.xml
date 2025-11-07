@@ -163,6 +163,8 @@
         <dialog android:id="@+id/objectTypeFieldsScreen"
             android:name="com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment"
             android:label="ObjectTypeFieldsScreen" />
+
+        <include app:graph="@navigation/nav_relations" />
     </navigation>
 
     <fragment

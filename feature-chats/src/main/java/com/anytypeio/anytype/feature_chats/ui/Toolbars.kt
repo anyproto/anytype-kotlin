@@ -204,20 +204,20 @@ fun ChatTopToolbar(
                             showDropdownMenu = false
                         }
                     )
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.copy_link),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onCopyLink()
-                            showDropdownMenu = false
-                        }
-                    )
+//                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+//                    DropdownMenuItem(
+//                        content = {
+//                            Text(
+//                                text = stringResource(R.string.copy_link),
+//                                color = colorResource(id = R.color.text_primary),
+//                                modifier = Modifier.padding(end = 64.dp)
+//                            )
+//                        },
+//                        onClick = {
+//                            onCopyLink()
+//                            showDropdownMenu = false
+//                        }
+//                    )
                     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         content = {

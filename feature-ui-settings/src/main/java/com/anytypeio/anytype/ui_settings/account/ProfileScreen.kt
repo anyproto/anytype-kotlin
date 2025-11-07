@@ -418,16 +418,6 @@ fun ProfileNameBlock(
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(nameValue.value) {
-        snapshotFlow { nameValue.value }
-            .debounce(PROFILE_NAME_CHANGE_DELAY)
-            .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
-            .collect { query ->
-                onNameSet(query)
-            }
-    }
-
     Column(modifier = modifier.padding(start = 20.dp)) {
         Text(
             text = stringResource(id = R.string.name),
@@ -454,6 +444,11 @@ fun ProfileNameBlock(
             ),
             keyboardActions = KeyboardActions(
                 onDone = {
+                    if(nameValue.value.isNotEmpty()) {
+                        onNameSet(nameValue.value)
+                    } else {
+                        nameValue.value = name
+                    }
                     focusManager.clearFocus()
                 }
             ),

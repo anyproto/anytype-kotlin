@@ -205,37 +205,26 @@ class ChatViewModel @Inject constructor(
                     vmParams.space
                 ).collect { view ->
                     val isMuted = NotificationStateCalculator.calculateMutedState(view)
-                    
-                    if (view.spaceUxType == SpaceUxType.CHAT) {
-                        // For chat spaces, use space name and icon
+                    getObject.async(
+                        GetObject.Params(
+                            target = vmParams.ctx,
+                            space = vmParams.space
+                        )
+                    ).onSuccess { objectView ->
+                        val wrapper = ObjectWrapper.Basic(objectView.details[vmParams.ctx].orEmpty())
+                        header.value = HeaderView.Default(
+                            title = wrapper.name.orEmpty(),
+                            icon = view.spaceIcon(builder = urlBuilder),
+                            isMuted = isMuted
+                        )
+                    }.onFailure {
+                        Timber.e(it, "Failed to fetch object for chat header")
+                        // Fallback to space name
                         header.value = HeaderView.Default(
                             title = view.name.orEmpty(),
                             icon = view.spaceIcon(builder = urlBuilder),
                             isMuted = isMuted
                         )
-                    } else {
-                        // For non-chat spaces, fetch the object name
-                        getObject.async(
-                            GetObject.Params(
-                                target = vmParams.ctx,
-                                space = vmParams.space
-                            )
-                        ).onSuccess { objectView ->
-                            val wrapper = ObjectWrapper.Basic(objectView.details[vmParams.ctx].orEmpty())
-                            header.value = HeaderView.Default(
-                                title = wrapper.name.orEmpty(),
-                                icon = view.spaceIcon(builder = urlBuilder),
-                                isMuted = isMuted
-                            )
-                        }.onFailure {
-                            Timber.e(it, "Failed to fetch object for chat header")
-                            // Fallback to space name
-                            header.value = HeaderView.Default(
-                                title = view.name.orEmpty(),
-                                icon = view.spaceIcon(builder = urlBuilder),
-                                isMuted = isMuted
-                            )
-                        }
                     }
                 }
         }
@@ -1594,51 +1583,22 @@ class ChatViewModel @Inject constructor(
 
     fun onChatInfoSaved(newName: String) {
         viewModelScope.launch {
-            val spaceView = spaceViews.get(vmParams.space)
-            if (spaceView == null) {
-                Timber.e("Space view not available")
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = vmParams.ctx,
+                    details = mapOf(Relations.NAME to newName)
+                )
+            ).onSuccess {
+                Timber.d("Successfully updated chat name to: $newName")
+                // Update local state
+                val currentHeader = header.value
+                if (currentHeader is HeaderView.Default) {
+                    header.value = currentHeader.copy(title = newName)
+                }
+                sendToast("Chat name updated")
+            }.onFailure { e ->
+                Timber.e(e, "Error while updating chat name")
                 sendToast("Failed to update chat name")
-                return@launch
-            }
-
-            if (spaceView.spaceUxType == SpaceUxType.CHAT) {
-                // For chat spaces, update space details
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = vmParams.space,
-                        details = mapOf(Relations.NAME to newName)
-                    )
-                ).onSuccess {
-                    Timber.d("Successfully updated chat space name to: $newName")
-                    // Update local state
-                    val currentHeader = header.value
-                    if (currentHeader is HeaderView.Default) {
-                        header.value = currentHeader.copy(title = newName)
-                    }
-                    sendToast("Chat name updated")
-                }.onFailure { e ->
-                    Timber.e(e, "Error while updating chat space name")
-                    sendToast("Failed to update chat name")
-                }
-            } else {
-                // For non-chat spaces, update the chat object
-                setObjectDetails.async(
-                    SetObjectDetails.Params(
-                        ctx = vmParams.ctx,
-                        details = mapOf(Relations.NAME to newName)
-                    )
-                ).onSuccess {
-                    Timber.d("Successfully updated chat name to: $newName")
-                    // Update local state
-                    val currentHeader = header.value
-                    if (currentHeader is HeaderView.Default) {
-                        header.value = currentHeader.copy(title = newName)
-                    }
-                    sendToast("Chat name updated")
-                }.onFailure { e ->
-                    Timber.e(e, "Error while updating chat name")
-                    sendToast("Failed to update chat name")
-                }
             }
         }
     }

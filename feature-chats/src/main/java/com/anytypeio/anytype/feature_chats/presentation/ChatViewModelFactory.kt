@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -67,7 +68,8 @@ class ChatViewModelFactory @Inject constructor(
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -102,6 +104,7 @@ class ChatViewModelFactory @Inject constructor(
         getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
         pinObjectAsWidgetDelegate = pinObjectAsWidgetDelegate,
         setObjectListIsArchived = setObjectListIsArchived,
-        setObjectDetails = setObjectDetails
+        setObjectDetails = setObjectDetails,
+        setSpaceDetails = setSpaceDetails
     ) as T
 }

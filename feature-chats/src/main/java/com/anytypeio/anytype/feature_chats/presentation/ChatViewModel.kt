@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -56,6 +57,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -132,7 +134,8 @@ class ChatViewModel @Inject constructor(
     private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
     private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val setObjectDetails: SetObjectDetails
+    private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -1622,6 +1625,148 @@ class ChatViewModel @Inject constructor(
             }.onFailure { e ->
                 Timber.e(e, "Error while updating chat name")
                 sendToast("Failed to update chat name")
+            }
+        }
+    }
+
+    fun onChatIconImageSelected(url: Url) {
+        Timber.d("onChatIconImageSelected: $url")
+        viewModelScope.launch {
+            val spaceView = spaceViews.get(vmParams.space)
+            if (spaceView == null) {
+                Timber.e("Space view not available")
+                sendToast("Failed to upload image")
+                return@launch
+            }
+
+            // Upload the file
+            uploadFile.async(
+                UploadFile.Params(
+                    path = url,
+                    space = vmParams.space,
+                    type = Block.Content.File.Type.IMAGE
+                )
+            ).onSuccess { file ->
+                // Update icon based on space type
+                if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                    // For chat spaces, update space details
+                    setSpaceDetails.async(
+                        SetSpaceDetails.Params(
+                            space = vmParams.space,
+                            details = mapOf(Relations.ICON_IMAGE to file.id)
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully updated chat space icon")
+                        // Update local header state
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.Default) {
+                            header.value = currentHeader.copy(
+                                icon = SpaceIconView.ChatSpace.Image(
+                                    url = urlBuilder.thumbnail(file.id)
+                                )
+                            )
+                        }
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while updating chat space icon")
+                        sendToast("Failed to update chat icon")
+                    }
+                } else {
+                    // For non-chat spaces, update chat object details
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(Relations.ICON_IMAGE to file.id)
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully updated chat object icon")
+                        // Update local header state
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.Default) {
+                            header.value = currentHeader.copy(
+                                icon = SpaceIconView.ChatSpace.Image(
+                                    url = urlBuilder.thumbnail(file.id)
+                                )
+                            )
+                        }
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while updating chat object icon")
+                        sendToast("Failed to update chat icon")
+                    }
+                }
+            }.onFailure { e ->
+                Timber.e(e, "Error while uploading chat icon")
+                sendToast("Failed to upload image")
+            }
+        }
+    }
+
+    fun onChatIconRemove() {
+        Timber.d("onChatIconRemove")
+        viewModelScope.launch {
+            val spaceView = spaceViews.get(vmParams.space)
+            if (spaceView == null) {
+                Timber.e("Space view not available")
+                sendToast("Failed to remove icon")
+                return@launch
+            }
+
+            // Reset to random color placeholder
+            val randomColor = SystemColor.entries.random()
+            val details = mapOf(
+                Relations.ICON_IMAGE to "",
+                Relations.ICON_OPTION to randomColor.index.toDouble()
+            )
+
+            if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                // For chat spaces, update space details
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = vmParams.space,
+                        details = details
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully removed chat space icon")
+                    // Update local header state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(
+                            icon = SpaceIconView.ChatSpace.Placeholder(
+                                name = currentHeader.title,
+                                color = randomColor
+                            )
+                        )
+                    }
+                    sendToast("Chat icon removed")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while removing chat space icon")
+                    sendToast("Failed to remove chat icon")
+                }
+            } else {
+                // For non-chat spaces, update chat object details
+                setObjectDetails.async(
+                    SetObjectDetails.Params(
+                        ctx = vmParams.ctx,
+                        details = details
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully removed chat object icon")
+                    // Update local header state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(
+                            icon = SpaceIconView.ChatSpace.Placeholder(
+                                name = currentHeader.title,
+                                color = randomColor
+                            )
+                        )
+                    }
+                    sendToast("Chat icon removed")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while removing chat object icon")
+                    sendToast("Failed to remove chat icon")
+                }
             }
         }
     }

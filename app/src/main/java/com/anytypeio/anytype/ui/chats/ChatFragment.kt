@@ -8,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -50,6 +51,7 @@ import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.openAppSettings
+import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.intents.SystemAction
@@ -314,6 +316,17 @@ class ChatFragment : Fragment() {
                     SpaceIconView.ChatSpace.Placeholder(name = name)
                 }
                 
+                val imagePickerLauncher = rememberLauncherForActivityResult(
+                    contract = ActivityResultContracts.PickVisualMedia(),
+                    onResult = { uri ->
+                        if (uri != null) {
+                            context?.let {
+                                vm.onChatIconImageSelected(url = uri.parseImagePath(it))
+                            }
+                        }
+                    }
+                )
+                
                 ModalBottomSheet(
                     onDismissRequest = { 
                         showChatInfoScreen = false
@@ -339,10 +352,12 @@ class ChatFragment : Fragment() {
                             // Not used in edit mode
                         },
                         onSpaceIconUploadClicked = {
-                            // TODO: Implement icon upload
+                            imagePickerLauncher.launch(
+                                PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
+                            )
                         },
                         onSpaceIconRemoveClicked = {
-                            // TODO: Implement icon remove
+                            vm.onChatIconRemove()
                         },
                         isLoading = false
                     )

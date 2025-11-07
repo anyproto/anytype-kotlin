@@ -154,22 +154,29 @@ fun ChatTopToolbar(
         }
 
         if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
-            MaterialTheme(
-                shapes = MaterialTheme.shapes.copy(
-                    medium = RoundedCornerShape(16.dp)
-                ),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.background_secondary)
-                )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
             ) {
-                DropdownMenu(
-                    offset = DpOffset(0.dp, 8.dp),
-                    expanded = showDropdownMenu,
-                    onDismissRequest = {
-                        showDropdownMenu = false
-                    },
-                    properties = PopupProperties(focusable = false)
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(
+                        medium = RoundedCornerShape(16.dp)
+                    ),
+                    colors = MaterialTheme.colors.copy(
+                        surface = colorResource(id = R.color.background_secondary)
+                    )
                 ) {
+                    DropdownMenu(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        offset = DpOffset((-16).dp, 8.dp),
+                        expanded = showDropdownMenu,
+                        onDismissRequest = {
+                            showDropdownMenu = false
+                        },
+                        properties = PopupProperties(focusable = false)
+                    ) {
                     DropdownMenuItem(
                         content = {
                             Text(
@@ -228,6 +235,7 @@ fun ChatTopToolbar(
                 }
             }
         }
+    }
     }
 }
 

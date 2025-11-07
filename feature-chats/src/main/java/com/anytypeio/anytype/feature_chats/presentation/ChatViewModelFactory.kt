@@ -23,13 +23,17 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
+import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import javax.inject.Inject
 
 class ChatViewModelFactory @Inject constructor(
@@ -61,7 +65,11 @@ class ChatViewModelFactory @Inject constructor(
     private val getObject: GetObject,
     private val analytics: Analytics,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
-    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
+    private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -93,6 +101,10 @@ class ChatViewModelFactory @Inject constructor(
         preloadFile = preloadFile,
         discardPreloadedFile = discardPreloadedFile,
         spaceInviteLinkStore = spaceInviteLinkStore,
-        getCurrentInviteAccessLevel = getCurrentInviteAccessLevel
+        getCurrentInviteAccessLevel = getCurrentInviteAccessLevel,
+        pinObjectAsWidgetDelegate = pinObjectAsWidgetDelegate,
+        setObjectListIsArchived = setObjectListIsArchived,
+        setObjectDetails = setObjectDetails,
+        setSpaceDetails = setSpaceDetails
     ) as T
 }

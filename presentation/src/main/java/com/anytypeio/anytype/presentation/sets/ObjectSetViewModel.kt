@@ -1383,20 +1383,29 @@ class ObjectSetViewModel(
         response: CreateDataViewObject.Result,
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
-        if (obj.layout == ObjectType.Layout.NOTE) {
-            proceedWithOpeningObject(
-                target = response.objectId,
-                layout = obj.layout,
-                space = vmParams.space.id
-            )
-        } else {
-            dispatch(
-                ObjectSetCommand.Modal.SetNameForCreatedObject(
-                    ctx = vmParams.ctx,
+        when (obj.layout) {
+            ObjectType.Layout.NOTE -> {
+                proceedWithOpeningObject(
                     target = response.objectId,
+                    layout = obj.layout,
                     space = vmParams.space.id
                 )
-            )
+            }
+            ObjectType.Layout.CHAT_DERIVED -> {
+                proceedWithOpeningChat(
+                    target = obj.id,
+                    space = vmParams.space.id
+                )
+            }
+            else -> {
+                dispatch(
+                    ObjectSetCommand.Modal.SetNameForCreatedObject(
+                        ctx = vmParams.ctx,
+                        target = response.objectId,
+                        space = vmParams.space.id
+                    )
+                )
+            }
         }
     }
 
@@ -1586,6 +1595,30 @@ class ObjectSetViewModel(
         )
     }
 
+    private suspend fun proceedWithOpeningChat(
+        target: Id,
+        space: Id
+    ) {
+        isCustomizeViewPanelVisible.value = false
+        val navigateCommand = AppNavigation.Command.OpenChat(
+            target = target,
+            space = space,
+            popUpToVault = false
+        )
+        closeObject.async(
+            CloseObject.Params(
+                target = vmParams.ctx,
+                space = vmParams.space
+            )
+        ).fold(
+            onSuccess = { navigate(EventWrapper(navigateCommand)) },
+            onFailure = {
+                Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
+                navigate(EventWrapper(navigateCommand))
+            }
+        )
+    }
+
     private fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
@@ -1718,6 +1751,17 @@ class ObjectSetViewModel(
                         AppNavigation.Command.OpenDateObject(
                             objectId = target,
                             space = space
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.CHAT_DERIVED -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenChat(
+                            target = target,
+                            space = space,
+                            popUpToVault = false
                         )
                     )
                 )

@@ -18,12 +18,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,9 +41,12 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -47,6 +55,7 @@ import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatTopToolbar(
     modifier: Modifier,
@@ -54,8 +63,13 @@ fun ChatTopToolbar(
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onSpaceNameClicked: () -> Unit,
-    onInviteMembersClicked: () -> Unit
+    onInviteMembersClicked: () -> Unit,
+    onEditInfo: () -> Unit,
+    onPin: () -> Unit,
+    onCopyLink: () -> Unit,
+    onMoveToBin: () -> Unit
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.height(52.dp)
@@ -92,9 +106,7 @@ fun ChatTopToolbar(
                     .padding(end = 16.dp),
                 mainSize = 28.dp,
                 icon = header.icon,
-                onSpaceIconClick = {
-                    onSpaceIconClicked()
-                }
+                onSpaceIconClick = { onSpaceIconClicked() }
             )
         }
 
@@ -103,7 +115,13 @@ fun ChatTopToolbar(
                 .fillMaxHeight()
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
-                .noRippleClickable { onSpaceNameClicked() },
+                .noRippleClickable {
+                    if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+                        showDropdownMenu = !showDropdownMenu
+                    } else {
+                        onSpaceNameClicked()
+                    }
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -134,6 +152,90 @@ fun ChatTopToolbar(
                 )
             }
         }
+
+        if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                MaterialTheme(
+                    shapes = MaterialTheme.shapes.copy(
+                        medium = RoundedCornerShape(16.dp)
+                    ),
+                    colors = MaterialTheme.colors.copy(
+                        surface = colorResource(id = R.color.background_secondary)
+                    )
+                ) {
+                    DropdownMenu(
+                        modifier = Modifier.align(Alignment.TopEnd),
+                        offset = DpOffset((-16).dp, 8.dp),
+                        expanded = showDropdownMenu,
+                        onDismissRequest = {
+                            showDropdownMenu = false
+                        },
+                        properties = PopupProperties(focusable = false)
+                    ) {
+                    DropdownMenuItem(
+                        content = {
+                            Text(
+                                text = stringResource(R.string.chat_edit_info),
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
+                            )
+                        },
+                        onClick = {
+                            onEditInfo()
+                            showDropdownMenu = false
+                        }
+                    )
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    DropdownMenuItem(
+                        content = {
+                            Text(
+                                text = stringResource(R.string.object_action_pin),
+                                color = colorResource(id = R.color.text_primary),
+                                modifier = Modifier.padding(end = 64.dp)
+                            )
+                        },
+                        onClick = {
+                            onPin()
+                            showDropdownMenu = false
+                        }
+                    )
+//                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+//                    DropdownMenuItem(
+//                        content = {
+//                            Text(
+//                                text = stringResource(R.string.copy_link),
+//                                color = colorResource(id = R.color.text_primary),
+//                                modifier = Modifier.padding(end = 64.dp)
+//                            )
+//                        },
+//                        onClick = {
+//                            onCopyLink()
+//                            showDropdownMenu = false
+//                        }
+//                    )
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    DropdownMenuItem(
+                        content = {
+                            Text(
+                                text = stringResource(R.string.chat_move_to_bin),
+                                color = colorResource(id = R.color.palette_system_red),
+                                modifier = Modifier.padding(end = 64.dp)
+                            )
+                        },
+                        onClick = {
+                            onMoveToBin()
+                            showDropdownMenu = false
+                        }
+                    )
+                }
+            }
+        }
+    }
     }
 }
 
@@ -150,7 +252,11 @@ fun ChatTopToolbarPreview() {
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {},
-        onInviteMembersClicked = {}
+        onInviteMembersClicked = {},
+        onEditInfo = {},
+        onPin = {},
+        onCopyLink = {},
+        onMoveToBin = {}
     )
 }
 
@@ -167,7 +273,11 @@ fun ChatTopToolbarMutedPreview() {
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {},
-        onInviteMembersClicked = {}
+        onInviteMembersClicked = {},
+        onEditInfo = {},
+        onPin = {},
+        onCopyLink = {},
+        onMoveToBin = {}
     )
 }
 

@@ -1601,30 +1601,44 @@ class ChatViewModel @Inject constructor(
                 return@launch
             }
 
-            val targetId = if (spaceView.spaceUxType == SpaceUxType.CHAT) {
-                // For chat spaces, update the space view object
-                spaceView.id
+            if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                // For chat spaces, update space details
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = vmParams.space,
+                        details = mapOf(Relations.NAME to newName)
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully updated chat space name to: $newName")
+                    // Update local state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(title = newName)
+                    }
+                    sendToast("Chat name updated")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while updating chat space name")
+                    sendToast("Failed to update chat name")
+                }
             } else {
                 // For non-chat spaces, update the chat object
-                vmParams.ctx
-            }
-
-            setObjectDetails.async(
-                SetObjectDetails.Params(
-                    ctx = targetId,
-                    details = mapOf(Relations.NAME to newName)
-                )
-            ).onSuccess {
-                Timber.d("Successfully updated chat name to: $newName")
-                // Update local state
-                val currentHeader = header.value
-                if (currentHeader is HeaderView.Default) {
-                    header.value = currentHeader.copy(title = newName)
+                setObjectDetails.async(
+                    SetObjectDetails.Params(
+                        ctx = vmParams.ctx,
+                        details = mapOf(Relations.NAME to newName)
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully updated chat name to: $newName")
+                    // Update local state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(title = newName)
+                    }
+                    sendToast("Chat name updated")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while updating chat name")
+                    sendToast("Failed to update chat name")
                 }
-                sendToast("Chat name updated")
-            }.onFailure { e ->
-                Timber.e(e, "Error while updating chat name")
-                sendToast("Failed to update chat name")
             }
         }
     }

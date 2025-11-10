@@ -16,6 +16,7 @@ object SupportedLayouts {
         ObjectType.Layout.AUDIO,
         ObjectType.Layout.PDF,
         ObjectType.Layout.OBJECT_TYPE,
+        ObjectType.Layout.CHAT_DERIVED
     )
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,
@@ -39,8 +40,7 @@ object SupportedLayouts {
         ObjectType.Layout.DASHBOARD,
         ObjectType.Layout.SPACE,
         ObjectType.Layout.SPACE_VIEW,
-        ObjectType.Layout.TAG,
-        ObjectType.Layout.CHAT_DERIVED
+        ObjectType.Layout.TAG
     )
 
     val createObjectLayouts = listOf(
@@ -51,7 +51,8 @@ object SupportedLayouts {
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,
         ObjectType.Layout.NOTE,
-        ObjectType.Layout.BOOKMARK
+        ObjectType.Layout.BOOKMARK,
+        ObjectType.Layout.CHAT_DERIVED
     )
 
     val dateLayouts = listOf(

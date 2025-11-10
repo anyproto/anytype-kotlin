@@ -343,11 +343,27 @@ fun NavController.safeNavigate(
     args: Bundle? = null,
     errorMessage: String? = null
 ) {
-    if (currentDestinationId == currentDestination?.id) {
+    val currentDest = currentDestination
+    val isAtExpectedDestination = currentDest?.id == currentDestinationId
+    val isInExpectedGraph = currentDest?.parent?.id == currentDestinationId
+    
+    if (isAtExpectedDestination || isInExpectedGraph) {
         runCatching {
             navigate(id, args)
         }.onFailure {
             Timber.e(it, "Error while navigation, $errorMessage")
+        }
+    } else {
+        // Last resort: try to navigate anyway if we can find the destination in the graph
+        runCatching {
+            if (graph.findNode(id) != null) {
+                navigate(id, args)
+                Timber.d("Navigation succeeded despite destination mismatch: expected=$currentDestinationId, actual=${currentDest?.id}")
+            } else {
+                Timber.d("Skipping navigation: expected=$currentDestinationId, actual=${currentDest?.id}, parent=${currentDest?.parent?.id}, destination not found in graph")
+            }
+        }.onFailure {
+            Timber.w(it, "Skipping navigation: expected=$currentDestinationId, actual=${currentDest?.id}, parent=${currentDest?.parent?.id}, error: $errorMessage")
         }
     }
 }

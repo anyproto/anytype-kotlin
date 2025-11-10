@@ -632,7 +632,7 @@ private fun sortObjectTypesByPriority(
 /**
  * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
  */
-private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
+private fun createWidgetViewFromType(objectType: Type, config: Config): Widget {
     val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
     val icon = objectType.objectIcon()
     val widgetLimit = objectType.widgetLimit ?: 0

@@ -1905,7 +1905,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_chat">Obrolan Baru</string>
     <string name="vault_create_chat_description">Untuk percakapan langsung</string>
     <string name="vault_create_space">Ruang Baru</string>
-    <string name="vault_create_space_description">Untuk konten dan data yang tertata</string>
+    <string name="vault_create_space_description">Untuk konten dan data tertata</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ide perlu konversasi</string>
     <string name="spaces_introduction_page1_description">Anytype sekarang mendukung obrolan langsung di Ruang Terbagi—sehingga pikiran dan dialog kalian dapat berkembang bersama.</string>
@@ -2007,4 +2007,10 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Setujui</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Kamu hanya bisa mengunggah 10 berkas dalam satu waktu</string>
+    <string name="chat_pinned_as_widget_success">Obrolan ini telah disematkan ke gawitmu.</string>
+    <string name="chat_edit_info">Sunting Info</string>
+    <string name="chat_move_to_bin">Buang ke Bak Sampah</string>
+    <string name="move_chat_to_bin_warning_title">Buang obrolan ke bak sampah?</string>
+    <string name="chat_move_to_bin_warning_description">Obrolan ini dan seluruh lampirannya akan dipindah ke bak sampah. Tidak ada yang akan dapat mengirimkan pesan baru. Kamu bisa mengembalikannya dari bak sampah hingga obrolan dihapus permanen.</string>
 </resources>

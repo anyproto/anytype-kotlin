@@ -2022,4 +2022,10 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Onayla</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Bir seferde yalnızca 10 dosya yükleyebilirsin</string>
+    <string name="chat_pinned_as_widget_success">Bu sohbet widget\'larınıza sabitlendi.</string>
+    <string name="chat_edit_info">Bilgileri Düzenle</string>
+    <string name="chat_move_to_bin">Çöpe Taşı</string>
+    <string name="move_chat_to_bin_warning_title">Sohbet çöp kutusuna taşınsın mı?</string>
+    <string name="chat_move_to_bin_warning_description">Bu sohbet ve tüm ekleri Çöp Kutusu\'na taşınacak. Kimse yeni mesaj gönderemeyecek. Kalıcı olarak silinene kadar Çöp Kutusu\'ndan geri yükleyebilirsin.</string>
 </resources>

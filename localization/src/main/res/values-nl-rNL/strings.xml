@@ -1916,9 +1916,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notifications_modal_success_button">Schakel meldingen in</string>
     <string name="notifications_modal_cancel_button">Niet nu</string>
     <string name="vault_create_chat">Nieuwe chat</string>
-    <string name="vault_create_chat_description">Voor real-time gesprekken</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">Nieuwe ruimte</string>
-    <string name="vault_create_space_description">Voor georganiseerde inhoud en gegevens</string>
+    <string name="vault_create_space_description">For organized content and data</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideeën vereisen gesprekken</string>
     <string name="spaces_introduction_page1_description">Anytype ondersteunt nu realtime gesprekken in gedeelde kanalen - zodat jullie gedachten en dialogen samen kunnen groeien.</string>
@@ -2022,4 +2022,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Keur goed</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
+    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
+    <string name="chat_edit_info">Edit Info</string>
+    <string name="chat_move_to_bin">Verplaats naar prullenbak</string>
+    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
+    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
 </resources>

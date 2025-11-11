@@ -66,6 +66,8 @@ import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
+import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreen
+import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
@@ -337,8 +339,8 @@ class ChatFragment : Fragment() {
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                     dragHandle = null
                 ) {
-                    com.anytypeio.anytype.feature_chats.ui.ChatInfoScreen(
-                        state = com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState.Edit(
+                    ChatInfoScreen(
+                        state = ChatInfoScreenState.Edit(
                             currentName = name,
                             currentIcon = icon
                         ),

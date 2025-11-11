@@ -58,6 +58,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -108,7 +110,6 @@ fun CreateChatObjectScreen(
             CreateChatIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
                 icon = icon,
-                name = innerValue.text.ifEmpty { stringResource(id = R.string.untitled) },
                 onIconUploadClicked = onIconUploadClicked,
                 onIconRemoveClicked = onIconRemoveClicked,
                 onEmojiIconClicked = onEmojiIconClicked
@@ -219,7 +220,6 @@ private fun CreateChatHeader() {
 private fun CreateChatIcon(
     modifier: Modifier,
     icon: ObjectIcon,
-    name: String,
     onIconUploadClicked: () -> Unit,
     onIconRemoveClicked: () -> Unit,
     onEmojiIconClicked: () -> Unit
@@ -229,15 +229,14 @@ private fun CreateChatIcon(
     }
 
     Box(modifier = modifier.wrapContentSize()) {
-        BlockAdapter.ObjectIconWidget(
+        ListWidgetObjectIcon(
             modifier = Modifier
                 .size(96.dp)
                 .clickable {
                     isIconMenuExpanded.value = !isIconMenuExpanded.value
                 },
             icon = icon,
-            iconSize = 96.dp,
-            objectName = name
+            iconSize = 96.dp
         )
         DropdownMenu(
             modifier = Modifier,
@@ -273,7 +272,7 @@ private fun CreateChatIcon(
                     color = colorResource(id = R.color.text_primary)
                 )
             }
-            if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Emoji) {
+            if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Basic.Emoji) {
                 Divider(
                     paddingStart = 0.dp,
                     paddingEnd = 0.dp,

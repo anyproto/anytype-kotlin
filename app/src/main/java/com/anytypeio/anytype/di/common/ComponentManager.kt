@@ -102,6 +102,7 @@ import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
+import com.anytypeio.anytype.di.feature.widgets.DaggerCreateChatObjectComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
 import com.anytypeio.anytype.di.main.MainComponent
@@ -129,6 +130,7 @@ import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
+import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
@@ -1155,6 +1157,12 @@ class ComponentManager(
         DaggerMediaComponent
             .factory()
             .create(findComponentDependencies())
+    }
+
+    val createChatObjectComponent = ComponentWithParams { vmParams: CreateChatObjectViewModel.VmParams ->
+        DaggerCreateChatObjectComponent
+            .factory()
+            .create(vmParams, findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

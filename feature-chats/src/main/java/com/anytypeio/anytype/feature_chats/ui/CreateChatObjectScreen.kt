@@ -250,12 +250,10 @@ private fun CreateChatIcon(
             )
             ListWidgetObjectIcon(
                 modifier = Modifier
-                    .size(96.dp)
-                    .clickable {
-                        isIconMenuExpanded.value = !isIconMenuExpanded.value
-                    },
+                    .align(Alignment.Center)
+                    .size(112.dp),
                 icon = icon,
-                iconSize = 96.dp
+                iconSize = 112.dp
             )
             DropdownMenu(
                 modifier = Modifier,

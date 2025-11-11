@@ -158,7 +158,7 @@ class CreateChatObjectViewModel(
 
     fun onImageSelected(url: Url) {
         Timber.d("onImageSelected: $url")
-        icon.value = ObjectIcon.Basic.Image(hash = url)
+        icon.value = ObjectIcon.Profile.Image(hash = url, name = "")
     }
 
     fun onEmojiSelected(emoji: String) {

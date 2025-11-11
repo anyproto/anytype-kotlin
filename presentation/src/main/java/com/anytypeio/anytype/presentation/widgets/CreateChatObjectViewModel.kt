@@ -79,6 +79,9 @@ class CreateChatObjectViewModel(
             is ObjectIcon.Basic.Image -> {
                 uploadAndSetIcon(url = icon.hash, objectId = objectId)
             }
+            is ObjectIcon.Profile.Image -> {
+                uploadAndSetIcon(url = icon.hash, objectId = objectId)
+            }
             is ObjectIcon.Basic.Emoji -> {
                 setIconEmoji(emoji = icon.unicode, objectId = objectId)
             }

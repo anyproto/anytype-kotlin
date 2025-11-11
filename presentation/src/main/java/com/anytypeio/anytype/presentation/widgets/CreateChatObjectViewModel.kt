@@ -50,7 +50,7 @@ class CreateChatObjectViewModel(
             
             val params = CreateObject.Param(
                 space = vmParams.space,
-                type = TypeKey(ObjectTypeIds.CHAT),
+                type = TypeKey(ObjectTypeIds.CHAT_DERIVED),
                 prefilled = prefilled
             )
             

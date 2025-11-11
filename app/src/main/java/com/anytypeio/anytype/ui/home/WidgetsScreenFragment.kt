@@ -567,7 +567,8 @@ class WidgetsScreenFragment : Fragment(),
         Timber.d("Chat object created from widget: $objectId")
         navigation().openChat(
             target = objectId,
-            space = space
+            space = space,
+            popUpToVault = false
         )
     }
 

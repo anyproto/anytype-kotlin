@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,6 +27,7 @@ import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Surface
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -35,6 +38,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
@@ -42,15 +46,19 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.util.packInts
 import com.anytypeio.anytype.core_models.Name
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
@@ -114,15 +122,7 @@ fun CreateChatObjectScreen(
                 onIconRemoveClicked = onIconRemoveClicked,
                 onEmojiIconClicked = onEmojiIconClicked
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                text = "Change icon",
-                style = BodyCalloutMedium,
-                color = colorResource(id = R.color.glyph_active)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(26.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -228,68 +228,130 @@ private fun CreateChatIcon(
         mutableStateOf(false)
     }
 
-    Box(modifier = modifier.wrapContentSize()) {
-        ListWidgetObjectIcon(
-            modifier = Modifier
-                .size(96.dp)
-                .clickable {
-                    isIconMenuExpanded.value = !isIconMenuExpanded.value
-                },
-            icon = icon,
-            iconSize = 96.dp
-        )
-        DropdownMenu(
-            modifier = Modifier,
-            expanded = isIconMenuExpanded.value,
-            offset = DpOffset(x = 0.dp, y = 6.dp),
-            onDismissRequest = {
-                isIconMenuExpanded.value = false
-            },
-            shape = RoundedCornerShape(10.dp),
-            containerColor = colorResource(id = R.color.background_secondary)
+    Box(
+        modifier
+    ) {
+        Box(
+            modifier = modifier
+                .padding(bottom = 6.dp)
+                .size(112.dp)
+                .background(
+                    color = colorResource(id = R.color.shape_tertiary),
+                    shape = CircleShape
+                )
+                .noRippleClickable {
+                    isIconMenuExpanded.value = true
+                }
         ) {
-            DropdownMenuItem(
-                onClick = {
-                    onIconUploadClicked()
+            Image(
+                painter = painterResource(R.drawable.ic_create_chat_without_icon),
+                contentDescription = "Icon placeholder",
+                modifier = Modifier.align(Alignment.Center)
+            )
+            ListWidgetObjectIcon(
+                modifier = Modifier
+                    .size(96.dp)
+                    .clickable {
+                        isIconMenuExpanded.value = !isIconMenuExpanded.value
+                    },
+                icon = icon,
+                iconSize = 96.dp
+            )
+            DropdownMenu(
+                modifier = Modifier,
+                expanded = isIconMenuExpanded.value,
+                offset = DpOffset(x = 0.dp, y = 6.dp),
+                onDismissRequest = {
                     isIconMenuExpanded.value = false
                 },
+                shape = RoundedCornerShape(10.dp),
+                containerColor = colorResource(id = R.color.background_secondary)
             ) {
-                Text(
-                    text = "Upload image",
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary)
-                )
-            }
-            DropdownMenuItem(
-                onClick = {
-                    onEmojiIconClicked()
-                    isIconMenuExpanded.value = false
-                },
-            ) {
-                Text(
-                    text = "Emoji",
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary)
-                )
-            }
-            if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Basic.Emoji) {
-                Divider(
-                    paddingStart = 0.dp,
-                    paddingEnd = 0.dp,
-                )
                 DropdownMenuItem(
                     onClick = {
+                        onIconUploadClicked()
                         isIconMenuExpanded.value = false
-                        onIconRemoveClicked()
                     },
                 ) {
                     Text(
-                        text = "Remove",
+                        text = "Upload image",
                         style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
+                DropdownMenuItem(
+                    onClick = {
+                        onEmojiIconClicked()
+                        isIconMenuExpanded.value = false
+                    },
+                ) {
+                    Text(
+                        text = "Emoji",
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Basic.Emoji) {
+                    Divider(
+                        paddingStart = 0.dp,
+                        paddingEnd = 0.dp,
+                    )
+                    DropdownMenuItem(
+                        onClick = {
+                            isIconMenuExpanded.value = false
+                            onIconRemoveClicked()
+                        },
+                    ) {
+                        Text(
+                            text = "Remove",
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                }
+            }
+        }
+
+        Surface(
+            shape = CircleShape,
+            color = colorResource(id = R.color.background_primary),
+            tonalElevation = 4.dp,
+            modifier = Modifier
+                .align(Alignment.BottomEnd)
+        ) {
+            Box(
+                modifier = Modifier.size(32.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.ic_edit_chat_object_icon),
+                    contentDescription = "Edit icon"
+                )
             }
         }
     }
+}
+
+@DefaultPreviews
+@Composable
+fun CreateChatObjectObjectIconPreview() {
+    CreateChatIcon(
+        modifier = Modifier,
+        icon = ObjectIcon.None,
+        onIconUploadClicked = {},
+        onIconRemoveClicked = {},
+        onEmojiIconClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun CreateChatObjectScreenPreview() {
+    CreateChatObjectScreen(
+        icon = ObjectIcon.None,
+        onIconUploadClicked = {},
+        onIconRemoveClicked = {},
+        onCreateClicked = {},
+        onEmojiIconClicked = {}
+    )
 }

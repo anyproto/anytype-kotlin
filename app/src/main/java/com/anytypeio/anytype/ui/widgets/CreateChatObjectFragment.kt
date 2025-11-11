@@ -31,7 +31,6 @@ import com.anytypeio.anytype.feature_chats.ui.CreateChatObjectScreen
 import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
-import kotlin.collections.get
 import kotlinx.coroutines.launch
 import timber.log.Timber
 

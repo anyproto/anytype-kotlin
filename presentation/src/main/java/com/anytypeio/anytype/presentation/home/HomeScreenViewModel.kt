@@ -3321,6 +3321,7 @@ sealed class Command {
 
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
+    data class CreateChatObject(val space: SpaceId) : Command()
 }
 
 /**

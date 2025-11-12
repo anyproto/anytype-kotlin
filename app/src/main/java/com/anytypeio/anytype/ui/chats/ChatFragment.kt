@@ -60,6 +60,7 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
@@ -310,15 +311,9 @@ class ChatFragment : Fragment() {
 
             if (showChatInfoScreen && chatInfoData != null) {
                 val (name, icon) = chatInfoData!!
-                val currentHeader = vm.header.collectAsStateWithLifecycle().value
-                val spaceIconView = if (currentHeader is ChatViewModel.HeaderView.Default) {
-                    currentHeader.icon
-                } else {
-                    null
-                }
 
                 // Track selected icon state for preview and save
-                var selectedIcon by remember { mutableStateOf<com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon>(com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon.None) }
+                var selectedIcon by remember { mutableStateOf<ChatObjectIcon>(ChatObjectIcon.None) }
 
                 val imagePickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia(),
@@ -327,7 +322,7 @@ class ChatFragment : Fragment() {
                             context?.let {
                                 val path = uri.parseImagePath(it)
                                 if (path.isNotEmpty()) {
-                                    selectedIcon = com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon.Image(uri = path)
+                                    selectedIcon = ChatObjectIcon.Image(uri = path)
                                 }
                             }
                         }
@@ -370,7 +365,7 @@ class ChatFragment : Fragment() {
                         },
                         onIconRemoveClicked = {
                             // Mark as removed (explicit empty state)
-                            selectedIcon = com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon.Removed
+                            selectedIcon = ChatObjectIcon.Removed
                         },
                         isLoading = false
                     )

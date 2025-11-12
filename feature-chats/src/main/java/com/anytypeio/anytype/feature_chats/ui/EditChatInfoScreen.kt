@@ -49,6 +49,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.feature_chats.presentation.ChatInfoUpdate
+import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 
 sealed class ChatInfoScreenState {
     data object Create : ChatInfoScreenState()
@@ -61,8 +63,9 @@ sealed class ChatInfoScreenState {
 @Composable
 fun EditChatInfoScreen(
     state: ChatInfoScreenState,
-    spaceIconView: ObjectIcon,
-    onSave: (Name) -> Unit,
+    icon: ObjectIcon,
+    selectedIcon: ChatObjectIcon = ChatObjectIcon.None,
+    onSave: (ChatInfoUpdate) -> Unit,
     onCreate: (Name) -> Unit,
     onIconUploadClicked: () -> Unit,
     onIconRemoveClicked: () -> Unit,
@@ -90,6 +93,20 @@ fun EditChatInfoScreen(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
+    // Resolve icon to display based on selection
+    val displayIcon: ObjectIcon = when (selectedIcon) {
+        is ChatObjectIcon.Image -> ObjectIcon.Profile.Image(hash = selectedIcon.uri, name = initialValue)
+        is ChatObjectIcon.Emoji -> ObjectIcon.Basic.Emoji(unicode = selectedIcon.unicode)
+        ChatObjectIcon.Removed -> ObjectIcon.None
+        ChatObjectIcon.None -> icon
+    }
+
+    // Detect if anything has changed
+    val hasNameChanged = isEditMode && innerValue.text != initialValue
+    val hasIconChanged = isEditMode && selectedIcon != ChatObjectIcon.None
+    val isModified = hasNameChanged || hasIconChanged
+    val isSaveEnabled = if (isEditMode) isModified else true
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -114,7 +131,7 @@ fun EditChatInfoScreen(
             Spacer(modifier = Modifier.height(8.dp))
             ChatObjectIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                icon = spaceIconView,
+                icon = displayIcon,
                 onIconUploadClicked = onIconUploadClicked,
                 onIconRemoveClicked = onIconRemoveClicked,
                 onEmojiIconClicked = {}
@@ -178,7 +195,7 @@ fun EditChatInfoScreen(
                 focusManager.clearFocus()
                 keyboardController?.hide()
                 if (isEditMode) {
-                    onSave(innerValue.text)
+                    onSave(ChatInfoUpdate(name = innerValue.text, chatIcon = selectedIcon))
                 } else if (isCreateMode) {
                     onCreate(innerValue.text)
                 }
@@ -192,7 +209,7 @@ fun EditChatInfoScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp),
             loading = isLoading,
-            enabled = true
+            enabled = isSaveEnabled
         )
     }
 

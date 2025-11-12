@@ -240,13 +240,15 @@ fun ChatObjectIcon(
                 contentDescription = "Icon placeholder",
                 modifier = Modifier.align(Alignment.Center)
             )
-            ListWidgetObjectIcon(
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .size(112.dp),
-                icon = icon,
-                iconSize = 112.dp
-            )
+            if (icon !is ObjectIcon.None) {
+                ListWidgetObjectIcon(
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .size(112.dp),
+                    icon = icon,
+                    iconSize = 112.dp
+                )
+            }
             DropdownMenu(
                 modifier = Modifier,
                 expanded = isIconMenuExpanded.value,

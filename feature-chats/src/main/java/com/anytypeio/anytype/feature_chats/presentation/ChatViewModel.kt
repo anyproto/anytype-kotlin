@@ -210,22 +210,25 @@ class ChatViewModel @Inject constructor(
                             space = vmParams.space
                         )
                     ).onSuccess { objectView ->
-                        if (view.spaceUxType != SpaceUxType.CHAT) {
-                            val wrapper = ObjectWrapper.Basic(
-                                objectView.details[vmParams.ctx].orEmpty()
-                            )
+                        // Chat space
+                        if (view.spaceUxType == SpaceUxType.CHAT) {
                             header.value = HeaderView.Default(
-                                title = wrapper.name.orEmpty(),
+                                title = view.name.orEmpty(),
                                 icon = view.spaceIcon(builder = urlBuilder),
                                 isMuted = isMuted
                             )
                         } else {
+                            // Chat object
                             val wrapper = ObjectWrapper.Basic(
                                 objectView.details[vmParams.ctx].orEmpty()
                             )
+                            val type = storeOfObjectTypes.getTypeOfObject(wrapper)
                             header.value = HeaderView.ChatObject(
                                 title = wrapper.name.orEmpty(),
-                                icon = wrapper.objectIcon(builder = urlBuilder),
+                                icon = wrapper.objectIcon(
+                                    builder = urlBuilder,
+                                    objType = type
+                                ),
                                 isMuted = isMuted
                             )
                         }
@@ -1554,20 +1557,12 @@ class ChatViewModel @Inject constructor(
     fun onEditInfo() {
         viewModelScope.launch {
             val headerView = header.value
-            if (headerView is HeaderView.Default) {
+            if (headerView is HeaderView.ChatObject) {
                 val name = headerView.title
-                val icon = when (val spaceIcon = headerView.icon) {
-                    is SpaceIconView.ChatSpace.Image -> ObjectIcon.Profile.Image(
-                        hash = spaceIcon.url,
-                        name = name
-                    )
-                    is SpaceIconView.ChatSpace.Placeholder -> ObjectIcon.None
-                    else -> ObjectIcon.None
-                }
                 commands.emit(
                     ViewModelCommand.OpenChatInfo(
                         name = name,
-                        icon = icon
+                        icon = headerView.icon
                     )
                 )
             }
@@ -1611,6 +1606,100 @@ class ChatViewModel @Inject constructor(
             }.onFailure { e ->
                 Timber.e(e, "Error while updating chat name")
                 sendToast("Failed to update chat name")
+            }
+        }
+    }
+
+    fun onUpdateChatObjectInfoRequested(
+        originalName: String,
+        originalIcon: ObjectIcon,
+        update: ChatInfoUpdate
+    ) {
+        viewModelScope.launch {
+            // Only update name if it has changed
+            val nameChanged = update.name != originalName
+            if (nameChanged && update.name.isNotEmpty()) {
+                setObjectDetails.async(
+                    SetObjectDetails.Params(
+                        ctx = vmParams.ctx,
+                        details = mapOf(Relations.NAME to update.name)
+                    )
+                ).onSuccess {
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(title = update.name)
+                    }
+                }.onFailure { e ->
+                    Timber.e(e, "Failed to update chat name while saving chat info")
+                }
+            }
+
+            // Only update icon if it has changed
+            when (val icon = update.chatIcon) {
+                is ChatObjectIcon.Image -> {
+                    // Upload and set image icon for chat object
+                    uploadFile.async(
+                        UploadFile.Params(
+                            path = icon.uri,
+                            space = vmParams.space,
+                            type = Block.Content.File.Type.IMAGE
+                        )
+                    ).onSuccess { file ->
+                        setObjectDetails.async(
+                            SetObjectDetails.Params(
+                                ctx = vmParams.ctx,
+                                details = mapOf(
+                                    Relations.ICON_IMAGE to file.id,
+                                    Relations.ICON_EMOJI to ""
+                                )
+                            )
+                        ).onSuccess {
+                            sendToast("Chat icon updated")
+                        }.onFailure { e ->
+                            Timber.e(e, "Error while setting uploaded chat icon")
+                            sendToast("Failed to update chat icon")
+                        }
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while uploading chat icon from uri")
+                        sendToast("Failed to upload image")
+                    }
+                }
+                is ChatObjectIcon.Emoji -> {
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(
+                                Relations.ICON_EMOJI to icon.unicode,
+                                Relations.ICON_IMAGE to ""
+                            )
+                        )
+                    ).onSuccess {
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while setting emoji icon for chat")
+                        sendToast("Failed to update chat icon")
+                    }
+                }
+                ChatObjectIcon.Removed -> {
+                    // User explicitly removed icon - clear both image and emoji
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(
+                                Relations.ICON_IMAGE to "",
+                                Relations.ICON_EMOJI to ""
+                            )
+                        )
+                    ).onSuccess {
+                        sendToast("Chat icon removed")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while removing chat icon")
+                        sendToast("Failed to remove chat icon")
+                    }
+                }
+                ChatObjectIcon.None -> {
+                    // No change to icon requested
+                }
             }
         }
     }
@@ -2200,13 +2289,15 @@ class ChatViewModel @Inject constructor(
             val icon: SpaceIconView,
             val title: String,
             val isMuted: Boolean = false,
-            val showDropDownMenu: Boolean = true
+            val showDropDownMenu: Boolean = true,
+            val showAddMembers: Boolean = true,
         ) : HeaderView()
         data class ChatObject(
             val icon: ObjectIcon,
             val title: String,
             val isMuted: Boolean = false,
-            val showDropDownMenu: Boolean = true
+            val showDropDownMenu: Boolean = true,
+            val showAddMembers: Boolean = false
         ) : HeaderView()
     }
 

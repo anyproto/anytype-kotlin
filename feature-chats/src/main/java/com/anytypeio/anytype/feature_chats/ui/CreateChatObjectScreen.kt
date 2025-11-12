@@ -266,23 +266,23 @@ fun ChatObjectIcon(
                     },
                 ) {
                     Text(
-                        text = "Upload image",
+                        text = stringResource(R.string.chat_edit_info_upload_image),
                         style = BodyRegular,
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        onEmojiIconClicked()
-                        isIconMenuExpanded.value = false
-                    },
-                ) {
-                    Text(
-                        text = "Emoji",
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
+//                DropdownMenuItem(
+//                    onClick = {
+//                        onEmojiIconClicked()
+//                        isIconMenuExpanded.value = false
+//                    },
+//                ) {
+//                    Text(
+//                        text = "Emoji",
+//                        style = BodyRegular,
+//                        color = colorResource(id = R.color.text_primary)
+//                    )
+//                }
                 if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Basic.Emoji) {
                     Divider(
                         paddingStart = 0.dp,
@@ -295,7 +295,7 @@ fun ChatObjectIcon(
                         },
                     ) {
                         Text(
-                            text = "Remove",
+                            text = stringResource(R.string.remove),
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary)
                         )

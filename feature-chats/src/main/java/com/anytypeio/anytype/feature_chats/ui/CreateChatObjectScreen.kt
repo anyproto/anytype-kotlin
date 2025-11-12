@@ -240,7 +240,7 @@ fun ChatObjectIcon(
                 contentDescription = "Icon placeholder",
                 modifier = Modifier.align(Alignment.Center)
             )
-            if (icon !is ObjectIcon.None) {
+            if (icon !is ObjectIcon.None && icon !is ObjectIcon.TypeIcon) {
                 ListWidgetObjectIcon(
                     modifier = Modifier
                         .align(Alignment.Center)

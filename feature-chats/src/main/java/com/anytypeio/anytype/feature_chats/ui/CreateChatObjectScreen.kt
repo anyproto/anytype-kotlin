@@ -48,6 +48,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.Name
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -60,6 +61,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_utils.ext.TRANSPARENT_COLOR
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
@@ -235,18 +237,23 @@ fun ChatObjectIcon(
                     isIconMenuExpanded.value = true
                 }
         ) {
-            Image(
-                painter = painterResource(R.drawable.ic_create_chat_without_icon),
-                contentDescription = "Icon placeholder",
-                modifier = Modifier.align(Alignment.Center)
-            )
             if (icon !is ObjectIcon.None && icon !is ObjectIcon.TypeIcon) {
                 ListWidgetObjectIcon(
                     modifier = Modifier
                         .align(Alignment.Center)
                         .size(112.dp),
                     icon = icon,
-                    iconSize = 112.dp
+                    iconSize = if (icon is ObjectIcon.Basic.Emoji)
+                        64.dp
+                    else
+                        112.dp,
+                    backgroundColor = R.color.transparent_black
+                )
+            } else {
+                Image(
+                    painter = painterResource(R.drawable.ic_create_chat_without_icon),
+                    contentDescription = "Icon placeholder",
+                    modifier = Modifier.align(Alignment.Center)
                 )
             }
             DropdownMenu(
@@ -271,18 +278,18 @@ fun ChatObjectIcon(
                         color = colorResource(id = R.color.text_primary)
                     )
                 }
-//                DropdownMenuItem(
-//                    onClick = {
-//                        onEmojiIconClicked()
-//                        isIconMenuExpanded.value = false
-//                    },
-//                ) {
-//                    Text(
-//                        text = "Emoji",
-//                        style = BodyRegular,
-//                        color = colorResource(id = R.color.text_primary)
-//                    )
-//                }
+                DropdownMenuItem(
+                    onClick = {
+                        onEmojiIconClicked()
+                        isIconMenuExpanded.value = false
+                    },
+                ) {
+                    Text(
+                        text = stringResource(R.string.emoji),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
                 if (icon is ObjectIcon.Profile.Image || icon is ObjectIcon.Basic.Emoji) {
                     Divider(
                         paddingStart = 0.dp,
@@ -310,6 +317,9 @@ fun ChatObjectIcon(
             tonalElevation = 4.dp,
             modifier = Modifier
                 .align(Alignment.BottomEnd)
+                .noRippleClickable {
+                    isIconMenuExpanded.value = true
+                }
         ) {
             Box(
                 modifier = Modifier.size(32.dp),

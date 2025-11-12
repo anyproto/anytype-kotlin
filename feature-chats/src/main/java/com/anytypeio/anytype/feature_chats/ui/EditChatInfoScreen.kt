@@ -69,6 +69,7 @@ fun EditChatInfoScreen(
     onCreate: (Name) -> Unit,
     onIconUploadClicked: () -> Unit,
     onIconRemoveClicked: () -> Unit,
+    onEmojiIconClicked: () -> Unit = {},
     isLoading: Boolean = false
 ) {
     val isEditMode = state is ChatInfoScreenState.Edit
@@ -134,7 +135,7 @@ fun EditChatInfoScreen(
                 icon = displayIcon,
                 onIconUploadClicked = onIconUploadClicked,
                 onIconRemoveClicked = onIconRemoveClicked,
-                onEmojiIconClicked = {}
+                onEmojiIconClicked = onEmojiIconClicked
             )
             Spacer(modifier = Modifier.height(26.dp))
             Column(

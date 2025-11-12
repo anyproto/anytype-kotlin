@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_chats.ui.CreateChatObjectScreen
 import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
+import com.anytypeio.anytype.ui.chats.SelectChatIconFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -89,10 +90,23 @@ class CreateChatObjectFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        setupEmojiResultListener()
         viewLifecycleOwner.lifecycleScope.launch {
             viewLifecycleOwner.repeatOnLifecycle(Lifecycle.State.STARTED) {
                 launch { vm.commands.collect { command -> proceed(command) } }
                 launch { vm.toasts.collect { toast(it) } }
+            }
+        }
+    }
+
+    private fun setupEmojiResultListener() {
+        childFragmentManager.setFragmentResultListener(
+            SelectChatIconFragment.REQUEST_KEY,
+            viewLifecycleOwner
+        ) { _, bundle ->
+            val emoji = bundle.getString(SelectChatIconFragment.RESULT_EMOJI_KEY)
+            if (emoji != null) {
+                vm.onEmojiSelected(emoji)
             }
         }
     }
@@ -112,12 +126,8 @@ class CreateChatObjectFragment : BaseBottomSheetComposeFragment() {
                 )
             }
             is CreateChatObjectViewModel.Command.SelectEmoji -> {
-                // TODO
-//                val dialog = EmojiPickerFragmentNew.new()
-//                dialog.onEmojiSelected = { emoji ->
-//                    vm.onEmojiSelected(emoji)
-//                }
-//                dialog.show(childFragmentManager, null)
+                val dialog = SelectChatIconFragment.new()
+                dialog.show(childFragmentManager, null)
             }
         }
     }

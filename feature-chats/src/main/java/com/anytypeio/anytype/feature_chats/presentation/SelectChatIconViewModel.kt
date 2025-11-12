@@ -3,13 +3,7 @@ package com.anytypeio.anytype.feature_chats.presentation
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.core_models.Command
-import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.onFailure
-import com.anytypeio.anytype.domain.chats.ObserveRecentlyUsedChatReactions
-import com.anytypeio.anytype.domain.chats.SetRecentlyUsedChatReactions
-import com.anytypeio.anytype.domain.chats.ToggleChatMessageReaction
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
@@ -30,26 +24,20 @@ import kotlinx.coroutines.flow.flowOn
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import timber.log.Timber
 
-class SelectChatReactionViewModel @Inject constructor(
-    private val vmParams: Params,
+class SelectChatIconViewModel @Inject constructor(
     private val provider: EmojiProvider,
     private val suggester: EmojiSuggester,
-    private val dispatchers: AppCoroutineDispatchers,
-    private val toggleChatMessageReaction: ToggleChatMessageReaction,
-    private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
-    private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
+    private val dispatchers: AppCoroutineDispatchers
 ) : BaseViewModel() {
 
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
+    val emojiSelected = MutableSharedFlow<String>(replay = 0)
 
     /**
      * Default emoji list, including categories.
      */
     private val default = MutableStateFlow<List<EmojiPickerView>>(emptyList())
-
-    private val recentlyUsed = MutableStateFlow<List<String>>(emptyList())
 
     private val rawQuery = MutableStateFlow("")
 
@@ -78,21 +66,8 @@ class SelectChatReactionViewModel @Inject constructor(
         }
     }.flowOn(dispatchers.io)
 
-    val views = combine(default, recentlyUsed, queries) { default, recentlyUsed, (query, results) ->
+    val views = combine(default, queries) { default, (query, results) ->
         buildList {
-            if (query.isEmpty() && recentlyUsed.isNotEmpty()) {
-                add(EmojiPickerView.Section(RECENTLY_USED_SECTION_KEY))
-                addAll(
-                    recentlyUsed.map { unicode ->
-                        EmojiPickerView.Emoji(
-                            unicode = unicode,
-                            page = -1,
-                            index = -1,
-                            emojified = Emojifier.safeUri(unicode)
-                        )
-                    }
-                )
-            }
             if (query.isEmpty()) {
                 addAll(default)
             } else {
@@ -102,20 +77,11 @@ class SelectChatReactionViewModel @Inject constructor(
     }
 
     init {
-
-        viewModelScope.launch {
-            observeRecentlyUsedChatReactions
-                .flow()
-                .collect {
-                    recentlyUsed.value = it
-                }
-        }
         viewModelScope.launch {
             val loaded = loadEmojiWithCategories()
             default.value = loaded
         }
     }
-
 
     private suspend fun loadEmojiWithCategories() = withContext(dispatchers.io) {
 
@@ -146,23 +112,7 @@ class SelectChatReactionViewModel @Inject constructor(
 
     fun onEmojiClicked(emoji: String) {
         viewModelScope.launch {
-            setRecentlyUsedChatReactions.async(
-                params = (listOf(emoji) + recentlyUsed.value)
-                    .toSet()
-                    .take(MAX_RECENTLY_USED_COUNT)
-                    .toSet()
-            ).onFailure {
-                Timber.e(it, "Error while saving recently used reactions")
-            }
-            toggleChatMessageReaction.async(
-                params = Command.ChatCommand.ToggleMessageReaction(
-                    msg = vmParams.msg,
-                    chat = vmParams.chat,
-                    emoji = emoji
-                )
-            ).onFailure {
-                Timber.e(it, "Error while toggling chat message reaction")
-            }
+            emojiSelected.emit(emoji)
             isDismissed.emit(true)
         }
     }
@@ -172,34 +122,19 @@ class SelectChatReactionViewModel @Inject constructor(
     }
 
     class Factory @Inject constructor(
-        private val params: Params,
         private val emojiProvider: EmojiProvider,
         private val emojiSuggester: EmojiSuggester,
-        private val dispatchers: AppCoroutineDispatchers,
-        private val toggleChatMessageReaction: ToggleChatMessageReaction,
-        private val setRecentlyUsedChatReactions: SetRecentlyUsedChatReactions,
-        private val observeRecentlyUsedChatReactions: ObserveRecentlyUsedChatReactions
+        private val dispatchers: AppCoroutineDispatchers
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T = SelectChatReactionViewModel(
-            vmParams = params,
+        override fun <T : ViewModel> create(modelClass: Class<T>): T = SelectChatIconViewModel(
             provider = emojiProvider,
             suggester = emojiSuggester,
-            dispatchers = dispatchers,
-            toggleChatMessageReaction = toggleChatMessageReaction,
-            setRecentlyUsedChatReactions = setRecentlyUsedChatReactions,
-            observeRecentlyUsedChatReactions = observeRecentlyUsedChatReactions
+            dispatchers = dispatchers
         ) as T
     }
 
-    data class Params @Inject constructor(
-        val chat: Id,
-        val msg: Id
-    )
-
     companion object {
-        const val MAX_RECENTLY_USED_COUNT = 20
         const val DEBOUNCE_DURATION = 300L
-        const val RECENTLY_USED_SECTION_KEY = "__recently_used__"
     }
 }

@@ -314,6 +314,7 @@ class ChatFragment : Fragment() {
 
                 // Track selected icon state for preview and save
                 var selectedIcon by remember { mutableStateOf<ChatObjectIcon>(ChatObjectIcon.None) }
+                var showEmojiPicker by remember { mutableStateOf(false) }
 
                 val imagePickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia(),
@@ -367,8 +368,30 @@ class ChatFragment : Fragment() {
                             // Mark as removed (explicit empty state)
                             selectedIcon = ChatObjectIcon.Removed
                         },
+                        onEmojiIconClicked = {
+                            showEmojiPicker = true
+                        },
                         isLoading = false
                     )
+                }
+                
+                if (showEmojiPicker) {
+                    val emojiPickerFragment = SelectChatIconFragment.new()
+                    emojiPickerFragment.show(childFragmentManager, "emoji_picker")
+                    
+                    // Listen for emoji selection
+                    LaunchedEffect(Unit) {
+                        childFragmentManager.setFragmentResultListener(
+                            SelectChatIconFragment.REQUEST_KEY,
+                            viewLifecycleOwner
+                        ) { _, bundle ->
+                            val emoji = bundle.getString(SelectChatIconFragment.RESULT_EMOJI_KEY)
+                            if (emoji != null) {
+                                selectedIcon = ChatObjectIcon.Emoji(unicode = emoji)
+                                showEmojiPicker = false
+                            }
+                        }
+                    }
                 }
             }
 

@@ -60,18 +60,20 @@ import com.anytypeio.anytype.core_utils.intents.proceedWithAction
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.daggerViewModel
+import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
+import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
+import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -309,19 +311,19 @@ class ChatFragment : Fragment() {
 
             if (showChatInfoScreen && chatInfoData != null) {
                 val (name, icon) = chatInfoData!!
-                val currentHeader = vm.header.collectAsStateWithLifecycle().value
-                val spaceIconView = if (currentHeader is ChatViewModel.HeaderView.Default) {
-                    currentHeader.icon
-                } else {
-                    SpaceIconView.ChatSpace.Placeholder(name = name)
-                }
-                
+
+                // Track selected icon state for preview and save
+                var selectedIcon by remember { mutableStateOf<ChatObjectIcon>(ChatObjectIcon.None) }
+
                 val imagePickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia(),
                     onResult = { uri ->
                         if (uri != null) {
                             context?.let {
-                                vm.onChatIconImageSelected(url = uri.parseImagePath(it))
+                                val path = uri.parseImagePath(it)
+                                if (path.isNotEmpty()) {
+                                    selectedIcon = ChatObjectIcon.Image(uri = path)
+                                }
                             }
                         }
                     }
@@ -337,27 +339,33 @@ class ChatFragment : Fragment() {
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                     dragHandle = null
                 ) {
-                    com.anytypeio.anytype.feature_chats.ui.ChatInfoScreen(
-                        state = com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState.Edit(
+                    EditChatInfoScreen(
+                        state = ChatInfoScreenState.Edit(
                             currentName = name,
                             currentIcon = icon
                         ),
-                        spaceIconView = spaceIconView,
-                        onSave = { newName ->
-                            vm.onChatInfoSaved(newName)
+                        icon = icon,
+                        selectedIcon = selectedIcon,
+                        onSave = { update ->
+                            vm.onUpdateChatObjectInfoRequested(
+                                originalName = name,
+                                originalIcon = icon,
+                                update = update
+                            )
                             showChatInfoScreen = false
                             chatInfoData = null
                         },
-                        onCreate = { newName ->
+                        onCreate = { _ ->
                             // Not used in edit mode
                         },
-                        onSpaceIconUploadClicked = {
+                        onIconUploadClicked = {
                             imagePickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
                         },
-                        onSpaceIconRemoveClicked = {
-                            vm.onChatIconRemove()
+                        onIconRemoveClicked = {
+                            // Mark as removed (explicit empty state)
+                            selectedIcon = ChatObjectIcon.Removed
                         },
                         isLoading = false
                     )

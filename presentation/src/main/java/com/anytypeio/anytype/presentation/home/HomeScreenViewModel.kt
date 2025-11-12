@@ -2456,38 +2456,46 @@ class HomeScreenViewModel(
         )
         val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
         val space = vmParams.spaceId.id
-        val startTime = System.currentTimeMillis()
-        createDataViewObject.async(
-            params = CreateDataViewObject.Params.SetByType(
-                type = type,
-                filters = viewer.filters,
-                template = defaultTemplate,
-                prefilled = prefilled
-            ).also {
-                Timber.d("Calling with params: $it")
-            }
-        ).fold(
-            onSuccess = { result ->
-                Timber.d("Successfully created object with id: ${result.objectId}")
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    route = EventsDictionary.Routes.widget,
-                    startTime = startTime,
-                    view = null,
-                    objType = type.key,
-                    spaceParams = provideParams(space)
+        if (type.key == ObjectTypeIds.CHAT_DERIVED) {
+            commands.emit(
+                Command.CreateChatObject(
+                    space = SpaceId(space)
                 )
-                if (navigate) {
-                    val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
-                    if (wrapper.isValid) {
-                        proceedWithNavigation(wrapper.navigation())
-                    }
+            )
+        } else {
+            val startTime = System.currentTimeMillis()
+            createDataViewObject.async(
+                params = CreateDataViewObject.Params.SetByType(
+                    type = type,
+                    filters = viewer.filters,
+                    template = defaultTemplate,
+                    prefilled = prefilled
+                ).also {
+                    Timber.d("Calling with params: $it")
                 }
-            },
-            onFailure = {
-                Timber.e(it, "Error while creating data view object for widget")
-            }
-        )
+            ).fold(
+                onSuccess = { result ->
+                    Timber.d("Successfully created object with id: ${result.objectId}")
+                    viewModelScope.sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.widget,
+                        startTime = startTime,
+                        view = null,
+                        objType = type.key,
+                        spaceParams = provideParams(space)
+                    )
+                    if (navigate) {
+                        val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                        if (wrapper.isValid) {
+                            proceedWithNavigation(wrapper.navigation())
+                        }
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating data view object for widget")
+                }
+            )
+        }
     }
 
     private suspend fun proceedWithAddingObjectToCollection(
@@ -3321,6 +3329,7 @@ sealed class Command {
 
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
+    data class CreateChatObject(val space: SpaceId) : Command()
 }
 
 /**

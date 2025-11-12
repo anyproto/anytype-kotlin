@@ -63,6 +63,7 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
+import com.anytypeio.anytype.di.feature.widgets.CreateChatObjectDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
@@ -148,7 +149,8 @@ interface MainComponent :
     PushContentDependencies,
     PublishToWebDependencies,
     MySitesDependencies,
-    MediaDependencies
+    MediaDependencies,
+    CreateChatObjectDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -433,4 +435,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MediaDependencies::class)
     abstract fun mediaDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateChatObjectDependencies::class)
+    abstract fun createChatObjectDependencies(component: MainComponent): ComponentDependencies
 }

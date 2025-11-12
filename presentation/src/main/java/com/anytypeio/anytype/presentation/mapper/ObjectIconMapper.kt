@@ -86,7 +86,20 @@ fun ObjectWrapper.Basic.objectIcon(
                 else -> fallback
             }
         }
-
+        ObjectType.Layout.CHAT_DERIVED -> {
+            val fallback = objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
+            when {
+                !objImage.isNullOrBlank() -> ObjectIcon.Profile.Image(
+                    hash = builder.thumbnail(objImage),
+                    name = objName
+                )
+                !objEmoji.isNullOrBlank() -> Basic.Emoji(
+                    unicode = objEmoji,
+                    fallback = fallback
+                )
+                else -> fallback
+            }
+        }
         else -> {
             objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
         }

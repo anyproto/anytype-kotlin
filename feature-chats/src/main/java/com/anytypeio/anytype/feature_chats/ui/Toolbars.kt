@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -85,29 +86,48 @@ fun ChatTopToolbar(
             contentDescription = stringResource(R.string.content_desc_back_button),
             contentScale = ContentScale.Inside
         )
-        if (header is ChatViewModel.HeaderView.Default) {
-            Image(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 48.dp)
-                    .height(52.dp)
-                    .width(40.dp)
-                    .noRippleClickable {
-                        onInviteMembersClicked()
-                    },
-                contentScale = ContentScale.Inside,
-                painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
-                contentDescription = "Invite members icon",
-                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-            )
-            SpaceIconView(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 16.dp),
-                mainSize = 28.dp,
-                icon = header.icon,
-                onSpaceIconClick = { onSpaceIconClicked() }
-            )
+        
+        when(header) {
+            is ChatViewModel.HeaderView.ChatObject -> {
+                ListWidgetObjectIcon(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                        .noRippleClickable {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                    ,
+                    iconSize = 28.dp,
+                    icon = header.icon
+                )
+            }
+            is ChatViewModel.HeaderView.Default -> {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 48.dp)
+                        .height(52.dp)
+                        .width(40.dp)
+                        .noRippleClickable {
+                            onInviteMembersClicked()
+                        },
+                    contentScale = ContentScale.Inside,
+                    painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
+                    contentDescription = "Invite members icon",
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
+                )
+                SpaceIconView(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp),
+                    mainSize = 28.dp,
+                    icon = header.icon,
+                    onSpaceIconClick = { onSpaceIconClicked() }
+                )
+            }
+            ChatViewModel.HeaderView.Init -> {
+                // Do nothing
+            }
         }
 
         Row(
@@ -116,7 +136,7 @@ fun ChatTopToolbar(
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
                 .noRippleClickable {
-                    if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+                    if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
                         showDropdownMenu = !showDropdownMenu
                     } else {
                         onSpaceNameClicked()
@@ -132,7 +152,9 @@ fun ChatTopToolbar(
                     is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
-
+                    is ChatViewModel.HeaderView.ChatObject -> header.title.ifEmpty {
+                        stringResource(R.string.untitled)
+                    }
                     is ChatViewModel.HeaderView.Init -> ""
                 },
                 color = colorResource(R.color.text_primary),
@@ -153,7 +175,7 @@ fun ChatTopToolbar(
             }
         }
 
-        if (header is ChatViewModel.HeaderView.Default && header.showDropDownMenu) {
+        if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

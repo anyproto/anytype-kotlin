@@ -31,6 +31,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.SelectChatIconDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -139,6 +140,7 @@ interface MainComponent :
     DateObjectDependencies,
     ObjectTypeDependencies,
     SelectChatReactionDependencies,
+    SelectChatIconDependencies,
     ChatReactionDependencies,
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
@@ -380,6 +382,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SelectChatReactionDependencies::class)
     abstract fun provideChatReactionPickerDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SelectChatIconDependencies::class)
+    abstract fun provideSelectChatIconDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

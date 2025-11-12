@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -306,6 +307,9 @@ open class LinkToObjectOrWebViewModelTest {
     @Mock
     lateinit var fieldParser: FieldParser
 
+    @Mock
+    lateinit var spaceViews: SpaceViewSubscriptionContainer
+
     private fun givenViewModel() = LinkToObjectOrWebViewModel(
         searchObjects = searchObjects,
         analytics = analytics,
@@ -315,7 +319,8 @@ open class LinkToObjectOrWebViewModelTest {
         storeOfObjectTypes = storeOfObjectTypes,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         vmParams = vmParams,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 
     fun stubSpaceManager() {

@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -57,7 +58,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should be sorted by orderId ascending
@@ -96,7 +97,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Type with orderId should come first
@@ -140,7 +141,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should follow custom order: Page, Note, Task, Collection
@@ -181,7 +182,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = true
+            spaceUxType = SpaceUxType.CHAT
         )
 
         // Then: Should follow chat order: Image, Bookmark, Page
@@ -220,7 +221,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should be alphabetically sorted by name
@@ -253,7 +254,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should be sorted alphabetically
@@ -314,7 +315,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should be sorted by:
@@ -363,7 +364,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Only valid type should be returned
@@ -381,7 +382,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should return empty list
@@ -417,7 +418,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should be sorted case-insensitively
@@ -450,7 +451,7 @@ class WidgetTypeSortingTest {
             isOwnerOrEditor = true,
             config = config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = false
+            spaceUxType = null
         )
 
         // Then: Should maintain stable order

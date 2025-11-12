@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -71,6 +72,9 @@ class FilterViewModelInputFieldValueModifyTest {
 
     @Mock
     lateinit var fieldParser: FieldParser
+
+    @Mock
+    lateinit var spaceViews: SpaceViewSubscriptionContainer
 
     private lateinit var viewModel: FilterViewModel
     private lateinit var urlBuilder: UrlBuilder
@@ -203,7 +207,8 @@ class FilterViewModelInputFieldValueModifyTest {
             objectSetDatabase = db,
             getOptions = getOptions,
             spaceManager = spaceManager,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spaceViews
         )
     }
 

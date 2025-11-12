@@ -28,6 +28,7 @@ object SupportedLayouts {
      * For space-aware behavior, use [getLayouts] instead.
      */
     val layouts = baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
+
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
@@ -156,7 +157,7 @@ object SupportedLayouts {
      * @param spaceUxType The UX type of the current space
      * @return List of layouts that are supported for display/interaction
      */
-    fun getLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
+    fun getLayouts(spaceUxType: SpaceUxType? = null): List<ObjectType.Layout> {
         return when (spaceUxType) {
             SpaceUxType.CHAT -> baseLayouts
             else -> baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)

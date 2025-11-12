@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -29,6 +30,7 @@ class LinkToObjectViewModel(
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -76,9 +78,11 @@ class LinkToObjectViewModel(
     }
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+        val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
         objects.emit(
             Resultat.success(data.filter {
-                SupportedLayouts.layouts.contains(it.layout)
+                supportedLayouts.contains(it.layout)
             })
         )
     }

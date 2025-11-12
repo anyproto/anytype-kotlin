@@ -1654,6 +1654,14 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         ).onSuccess {
+                            Timber.d("Successfully updated chat object icon with image")
+                            // Update local header state immediately (only for chat objects)
+                            val currentHeader = header.value
+                            if (currentHeader is HeaderView.ChatObject) {
+                                header.value = currentHeader.copy(
+                                    icon = ObjectIcon.Basic.Image(hash = file.id)
+                                )
+                            }
                             sendToast("Chat icon updated")
                         }.onFailure { e ->
                             Timber.e(e, "Error while setting uploaded chat icon")
@@ -1674,6 +1682,14 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess {
+                        Timber.d("Successfully updated chat object icon with emoji")
+                        // Update local header state immediately (only for chat objects)
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.ChatObject) {
+                            header.value = currentHeader.copy(
+                                icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode)
+                            )
+                        }
                         sendToast("Chat icon updated")
                     }.onFailure { e ->
                         Timber.e(e, "Error while setting emoji icon for chat")
@@ -1691,6 +1707,14 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     ).onSuccess {
+                        Timber.d("Successfully removed chat object icon")
+                        // Update local header state immediately (only for chat objects)
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.ChatObject) {
+                            header.value = currentHeader.copy(
+                                icon = ObjectIcon.None
+                            )
+                        }
                         sendToast("Chat icon removed")
                     }.onFailure { e ->
                         Timber.e(e, "Error while removing chat icon")

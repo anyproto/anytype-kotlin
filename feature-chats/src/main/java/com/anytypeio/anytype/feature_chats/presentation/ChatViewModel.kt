@@ -1659,7 +1659,10 @@ class ChatViewModel @Inject constructor(
                             val currentHeader = header.value
                             if (currentHeader is HeaderView.ChatObject) {
                                 header.value = currentHeader.copy(
-                                    icon = ObjectIcon.Basic.Image(hash = file.id)
+                                    icon = ObjectIcon.Profile.Image(
+                                        hash = urlBuilder.thumbnail(file.id),
+                                        name = update.name
+                                    )
                                 )
                             }
                             sendToast("Chat icon updated")

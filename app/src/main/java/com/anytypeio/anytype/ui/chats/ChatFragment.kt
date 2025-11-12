@@ -66,14 +66,13 @@ import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
-import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreen
+import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
@@ -315,9 +314,8 @@ class ChatFragment : Fragment() {
                 val spaceIconView = if (currentHeader is ChatViewModel.HeaderView.Default) {
                     currentHeader.icon
                 } else {
-                    SpaceIconView.ChatSpace.Placeholder(name = name)
+                    null
                 }
-                
                 val imagePickerLauncher = rememberLauncherForActivityResult(
                     contract = ActivityResultContracts.PickVisualMedia(),
                     onResult = { uri ->
@@ -339,12 +337,12 @@ class ChatFragment : Fragment() {
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
                     dragHandle = null
                 ) {
-                    ChatInfoScreen(
+                    EditChatInfoScreen(
                         state = ChatInfoScreenState.Edit(
                             currentName = name,
                             currentIcon = icon
                         ),
-                        spaceIconView = spaceIconView,
+                        spaceIconView = icon,
                         onSave = { newName ->
                             vm.onChatInfoSaved(newName)
                             showChatInfoScreen = false
@@ -353,12 +351,12 @@ class ChatFragment : Fragment() {
                         onCreate = { newName ->
                             // Not used in edit mode
                         },
-                        onSpaceIconUploadClicked = {
+                        onIconUploadClicked = {
                             imagePickerLauncher.launch(
                                 PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly)
                             )
                         },
-                        onSpaceIconRemoveClicked = {
+                        onIconRemoveClicked = {
                             vm.onChatIconRemove()
                         },
                         isLoading = false

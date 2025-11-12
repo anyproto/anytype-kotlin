@@ -13,15 +13,12 @@ import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.DropdownMenuItem
 import androidx.compose.material.Text
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -36,21 +33,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
-import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Name
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
@@ -58,10 +49,8 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 sealed class ChatInfoScreenState {
-    data object Idle : ChatInfoScreenState()
     data object Create : ChatInfoScreenState()
     data class Edit(
         val currentName: String,
@@ -70,13 +59,13 @@ sealed class ChatInfoScreenState {
 }
 
 @Composable
-fun ChatInfoScreen(
+fun EditChatInfoScreen(
     state: ChatInfoScreenState,
-    spaceIconView: SpaceIconView,
+    spaceIconView: ObjectIcon,
     onSave: (Name) -> Unit,
     onCreate: (Name) -> Unit,
-    onSpaceIconUploadClicked: () -> Unit,
-    onSpaceIconRemoveClicked: () -> Unit,
+    onIconUploadClicked: () -> Unit,
+    onIconRemoveClicked: () -> Unit,
     isLoading: Boolean = false
 ) {
     val isEditMode = state is ChatInfoScreenState.Edit
@@ -123,28 +112,14 @@ fun ChatInfoScreen(
         ) {
             Header(isEditMode = isEditMode, isCreateMode = isCreateMode)
             Spacer(modifier = Modifier.height(8.dp))
-            ChatIcon(
+            ChatObjectIcon(
                 modifier = Modifier.align(Alignment.CenterHorizontally),
-                spaceIconView = when (spaceIconView) {
-                    is SpaceIconView.ChatSpace.Placeholder -> spaceIconView.copy(
-                        name = innerValue.text.ifEmpty {
-                            stringResource(id = R.string.untitled)
-                        }
-                    )
-                    else -> spaceIconView
-                },
-                onSpaceIconUploadClicked = onSpaceIconUploadClicked,
-                onSpaceIconRemoveClicked = onSpaceIconRemoveClicked
+                icon = spaceIconView,
+                onIconUploadClicked = onIconUploadClicked,
+                onIconRemoveClicked = onIconRemoveClicked,
+                onEmojiIconClicked = {}
             )
-            Spacer(modifier = Modifier.height(6.dp))
-            Text(
-                modifier = Modifier
-                    .align(Alignment.CenterHorizontally),
-                text = "Change icon",
-                style = BodyCalloutMedium,
-                color = colorResource(id = R.color.glyph_active)
-            )
-            Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(26.dp))
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -236,76 +211,12 @@ private fun Header(isEditMode: Boolean, isCreateMode: Boolean) {
         Text(
             modifier = Modifier.align(Alignment.Center),
             text = when {
-                isEditMode -> "Edit Info"
-                isCreateMode -> "Create chat"
+                isEditMode -> stringResource(R.string.chat_edit_info)
+                isCreateMode -> stringResource(R.string.create_chat)
                 else -> ""
             },
             style = Title1,
             color = colorResource(id = R.color.text_primary)
         )
-    }
-}
-
-@Composable
-private fun ChatIcon(
-    modifier: Modifier,
-    spaceIconView: SpaceIconView,
-    onSpaceIconUploadClicked: () -> Unit,
-    onSpaceIconRemoveClicked: () -> Unit,
-) {
-    val context = LocalContext.current
-
-    val isIconMenuExpanded = remember {
-        mutableStateOf(false)
-    }
-
-    Box(modifier = modifier.wrapContentSize()) {
-        SpaceIconView(
-            icon = spaceIconView,
-            onSpaceIconClick = {
-                isIconMenuExpanded.value = !isIconMenuExpanded.value
-            }
-        )
-        DropdownMenu(
-            modifier = Modifier,
-            expanded = isIconMenuExpanded.value,
-            offset = DpOffset(x = 0.dp, y = 6.dp),
-            onDismissRequest = {
-                isIconMenuExpanded.value = false
-            },
-            shape = RoundedCornerShape(10.dp),
-            containerColor = colorResource(id = R.color.background_secondary)
-        ) {
-            DropdownMenuItem(
-                onClick = {
-                    onSpaceIconUploadClicked()
-                    isIconMenuExpanded.value = false
-                },
-            ) {
-                Text(
-                    text = "Upload image",
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_primary)
-                )
-            }
-            if (spaceIconView is SpaceIconView.ChatSpace.Image) {
-                Divider(
-                    paddingStart = 0.dp,
-                    paddingEnd = 0.dp,
-                )
-                DropdownMenuItem(
-                    onClick = {
-                        isIconMenuExpanded.value = false
-                        onSpaceIconRemoveClicked()
-                    },
-                ) {
-                    Text(
-                        text = "Remove image",
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                }
-            }
-        }
     }
 }

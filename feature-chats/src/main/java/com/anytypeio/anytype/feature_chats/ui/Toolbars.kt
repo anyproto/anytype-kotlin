@@ -132,7 +132,9 @@ fun ChatTopToolbar(
                     is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
-
+                    is ChatViewModel.HeaderView.ChatObject -> header.title.ifEmpty {
+                        stringResource(R.string.untitled)
+                    }
                     is ChatViewModel.HeaderView.Init -> ""
                 },
                 color = colorResource(R.color.text_primary),

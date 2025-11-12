@@ -159,7 +159,6 @@ class ChatViewModel @Inject constructor(
     val showNotificationPermissionDialog = MutableStateFlow(false)
     val showMoveToBinDialog = MutableStateFlow(false)
 
-
     val canCreateInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
@@ -211,12 +210,25 @@ class ChatViewModel @Inject constructor(
                             space = vmParams.space
                         )
                     ).onSuccess { objectView ->
-                        val wrapper = ObjectWrapper.Basic(objectView.details[vmParams.ctx].orEmpty())
-                        header.value = HeaderView.Default(
-                            title = wrapper.name.orEmpty(),
-                            icon = view.spaceIcon(builder = urlBuilder),
-                            isMuted = isMuted
-                        )
+                        if (view.spaceUxType != SpaceUxType.CHAT) {
+                            val wrapper = ObjectWrapper.Basic(
+                                objectView.details[vmParams.ctx].orEmpty()
+                            )
+                            header.value = HeaderView.Default(
+                                title = wrapper.name.orEmpty(),
+                                icon = view.spaceIcon(builder = urlBuilder),
+                                isMuted = isMuted
+                            )
+                        } else {
+                            val wrapper = ObjectWrapper.Basic(
+                                objectView.details[vmParams.ctx].orEmpty()
+                            )
+                            header.value = HeaderView.ChatObject(
+                                title = wrapper.name.orEmpty(),
+                                icon = wrapper.objectIcon(builder = urlBuilder),
+                                isMuted = isMuted
+                            )
+                        }
                     }.onFailure {
                         Timber.e(it, "Failed to fetch object for chat header")
                         // Fallback to space name
@@ -1867,29 +1879,25 @@ class ChatViewModel @Inject constructor(
 
     private fun proceedWithShowingQRCode(link: String) {
         viewModelScope.launch {
-            val (spaceName, spaceIcon) = when (val state = header.value) {
-                is HeaderView.Default -> {
-                    val name = state.title
-                    val icon = state.icon
-                    name to icon
-                }
-
-                HeaderView.Init -> {
-                    "" to null
-                }
-            }
-            uiQrCodeState.value = SpaceInvite(
-                link = link,
-                spaceName = spaceName,
-                icon = spaceIcon
-            )
-
-            analytics.sendEvent(
-                eventName = screenQr,
-                props = Props(
-                    mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.CHAT)
+            val currentHeader = header.value
+            if (currentHeader is HeaderView.Default) {
+                val name = currentHeader.title
+                val icon = currentHeader.icon
+                val (spaceName, spaceIcon) = name to icon
+                uiQrCodeState.value = SpaceInvite(
+                    link = link,
+                    spaceName = spaceName,
+                    icon = spaceIcon
                 )
-            )
+                analytics.sendEvent(
+                    eventName = screenQr,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.CHAT)
+                    )
+                )
+            } else {
+                Timber.e("Sharing QR is not supported for non-chat spaces")
+            }
         }
     }
 
@@ -2190,6 +2198,12 @@ class ChatViewModel @Inject constructor(
         data object Init : HeaderView()
         data class Default(
             val icon: SpaceIconView,
+            val title: String,
+            val isMuted: Boolean = false,
+            val showDropDownMenu: Boolean = true
+        ) : HeaderView()
+        data class ChatObject(
+            val icon: ObjectIcon,
             val title: String,
             val isMuted: Boolean = false,
             val showDropDownMenu: Boolean = true

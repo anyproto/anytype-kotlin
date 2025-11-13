@@ -298,7 +298,6 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
-        // TODO check these filters
         if (limitObjectTypes.isEmpty()) {
             add(
                 DVFilter(
@@ -315,16 +314,13 @@ object ObjectSearchConstants {
                     value = limitObjectTypes
                 )
             )
-            // In data spaces, CHAT_DERIVED should not be excluded
-            if (spaceUxType == SpaceUxType.CHAT) {
-                add(
-                    DVFilter(
-                        relation = Relations.RECOMMENDED_LAYOUT,
-                        condition = DVFilterCondition.NOT_IN,
-                        value = listOf(ObjectType.Layout.CHAT_DERIVED.code.toDouble())
-                    )
+            add(
+                DVFilter(
+                    relation = Relations.RECOMMENDED_LAYOUT,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectType.Layout.CHAT_DERIVED.code.toDouble())
                 )
-            }
+            )
         }
     }
 

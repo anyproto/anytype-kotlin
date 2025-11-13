@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.sharing
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,17 +10,23 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
@@ -31,6 +37,9 @@ import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
@@ -46,72 +55,96 @@ data class SelectableSpaceItem(
 )
 
 /**
- * Full screen for space selection with search and grid layout
+ * Full screen for space selection with search, grid layout, and comment section
  *
  * @param spaces List of selectable space items
  * @param searchQuery Current search query text
+ * @param commentText Current comment text
  * @param onSearchQueryChanged Callback when search query changes
+ * @param onCommentChanged Callback when comment text changes
  * @param onSpaceSelected Callback when a space is selected
+ * @param onSendClicked Callback when Send button is clicked
  * @param modifier Modifier for the screen
  */
 @Composable
 fun SelectSpaceScreen(
     spaces: List<SelectableSpaceItem>,
     searchQuery: String,
+    commentText: String,
     onSearchQueryChanged: (String) -> Unit,
+    onCommentChanged: (String) -> Unit,
     onSpaceSelected: (SelectableSpaceItem) -> Unit,
+    onSendClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val hasSelectedSpace = spaces.any { it.isSelected }
+
     Column(
         modifier = modifier
             .fillMaxSize()
             .background(color = colorResource(id = R.color.background_primary))
-            .padding(top = 20.dp)
     ) {
-        // Header
-        Text(
-            text = stringResource(R.string.select_space),
-            style = BodyBold,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center,
+        // Main content (Header + Search + Grid)
+        Column(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 20.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        // Search Bar
-        DefaultSearchBar(
-            value = searchQuery,
-            onQueryChanged = onSearchQueryChanged,
-            hint = R.string.search,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-        )
-
-        Spacer(modifier = Modifier.height(20.dp))
-
-        // Space Grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(3),
-            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalArrangement = Arrangement.spacedBy(20.dp),
-            modifier = Modifier.fillMaxSize()
+                .weight(1f)
+                .padding(top = 20.dp)
         ) {
-            items(
-                items = spaces,
-                key = { it.id }
-            ) { space ->
-                SpaceGridItem(
-                    icon = space.icon,
-                    name = space.name,
-                    isSelected = space.isSelected,
-                    onClick = { onSpaceSelected(space) }
-                )
+            // Header
+            Text(
+                text = stringResource(R.string.select_space),
+                style = BodyBold,
+                color = colorResource(id = R.color.text_primary),
+                textAlign = TextAlign.Center,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 20.dp)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Search Bar
+            DefaultSearchBar(
+                value = searchQuery,
+                onQueryChanged = onSearchQueryChanged,
+                hint = R.string.search,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp)
+            )
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Space Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    items = spaces,
+                    key = { it.id }
+                ) { space ->
+                    SpaceGridItem(
+                        icon = space.icon,
+                        name = space.name,
+                        isSelected = space.isSelected,
+                        onClick = { onSpaceSelected(space) }
+                    )
+                }
             }
+        }
+
+        // Bottom section (Comment + Send button) - only shown when space is selected
+        if (hasSelectedSpace) {
+            CommentSection(
+                commentText = commentText,
+                onCommentChanged = onCommentChanged,
+                onSendClicked = onSendClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -136,21 +169,10 @@ private fun SpaceGridItem(
     Column(
         modifier = modifier
             .noRippleClickable(onClick = onClick)
-            .then(
-                if (isSelected) {
-                    Modifier.border(
-                        width = 2.dp,
-                        color = colorResource(id = R.color.glyph_active),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                } else {
-                    Modifier
-                }
-            )
             .padding(vertical = 8.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Space Icon
+        // Space Icon with checkmark overlay
         Box(
             modifier = Modifier.size(64.dp),
             contentAlignment = Alignment.Center
@@ -160,6 +182,25 @@ private fun SpaceGridItem(
                 mainSize = 64.dp,
                 onSpaceIconClick = onClick
             )
+
+            // Blue checkmark overlay for selected state
+            if (isSelected) {
+                Box(
+                    modifier = Modifier
+                        .size(20.dp)
+                        .align(Alignment.BottomEnd)
+                        .offset(x = (-2).dp, y = (-2).dp)
+                        .clip(CircleShape)
+                        .background(color = colorResource(id = R.color.glyph_active)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_tick_24),
+                        contentDescription = "Selected",
+                        modifier = Modifier.size(12.dp)
+                    )
+                }
+            }
         }
 
         Spacer(modifier = Modifier.height(8.dp))
@@ -179,6 +220,69 @@ private fun SpaceGridItem(
     }
 }
 
+/**
+ * Comment section with text field and Send button
+ *
+ * @param commentText Current comment text
+ * @param onCommentChanged Callback when comment changes
+ * @param onSendClicked Callback when Send button is clicked
+ * @param modifier Modifier for the section
+ */
+@Composable
+private fun CommentSection(
+    commentText: String,
+    onCommentChanged: (String) -> Unit,
+    onSendClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier
+            .background(color = colorResource(id = R.color.background_primary))
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        // Comment Text Field
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(8.dp)
+                )
+                .padding(horizontal = 16.dp, vertical = 12.dp)
+        ) {
+            BasicTextField(
+                value = commentText,
+                onValueChange = onCommentChanged,
+                textStyle = BodyRegular.copy(
+                    color = colorResource(id = R.color.text_primary)
+                ),
+                cursorBrush = SolidColor(colorResource(id = R.color.glyph_active)),
+                modifier = Modifier.fillMaxWidth(),
+                decorationBox = { innerTextField ->
+                    if (commentText.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.add_a_comment),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                    }
+                    innerTextField()
+                }
+            )
+        }
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        // Send Button
+        ButtonPrimary(
+            text = stringResource(R.string.send),
+            onClick = onSendClicked,
+            size = ButtonSize.Large,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
 // ============================================
 // PREVIEW
 // ============================================
@@ -194,7 +298,7 @@ private fun SelectSpaceScreenPreview() {
                 color = SystemColor.PINK
             ),
             name = "B&O Museum",
-            isSelected = false
+            isSelected = true
         ),
         SelectableSpaceItem(
             id = "2",
@@ -203,7 +307,7 @@ private fun SelectSpaceScreenPreview() {
                 color = SystemColor.YELLOW
             ),
             name = "Imaginary Space",
-            isSelected = true
+            isSelected = false
         ),
         SelectableSpaceItem(
             id = "3",
@@ -273,7 +377,10 @@ private fun SelectSpaceScreenPreview() {
     SelectSpaceScreen(
         spaces = sampleSpaces,
         searchQuery = "",
+        commentText = "",
         onSearchQueryChanged = {},
-        onSpaceSelected = {}
+        onCommentChanged = {},
+        onSpaceSelected = {},
+        onSendClicked = {}
     )
 }

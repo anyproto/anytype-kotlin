@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
@@ -508,11 +509,12 @@ private suspend fun buildTypeSection(
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
     if (!isObjectTypeSectionCollapsed) {
+        val spaceUxType = if (isChatSpace) SpaceUxType.CHAT else null
         val types = mapSpaceTypesToWidgets(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = isChatSpace
+            spaceUxType = spaceUxType
         )
         addAll(types)
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
@@ -541,13 +543,21 @@ internal suspend fun mapSpaceTypesToWidgets(
     isOwnerOrEditor: Boolean,
     config: Config,
     storeOfObjectTypes: StoreOfObjectTypes,
-    isChatSpace: Boolean
+    spaceUxType: SpaceUxType?
 ): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
+    
+    // Get system layouts based on space context
+    val systemLayoutsForSpace = getSystemLayouts(spaceUxType)
+    val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
+        ObjectType.Layout.OBJECT_TYPE,
+        ObjectType.Layout.PARTICIPANT
+    )
+    
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
             if (!objectType.isValid ||
-                SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
+                excludedLayouts.contains(objectType.recommendedLayout) ||
                 objectType.isArchived == true ||
                 objectType.isDeleted == true ||
                 objectType.uniqueKey == ObjectTypeIds.TEMPLATE
@@ -561,6 +571,7 @@ internal suspend fun mapSpaceTypesToWidgets(
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
     // Define custom sort order based on uniqueKey
+    val isChatSpace = spaceUxType == SpaceUxType.CHAT
     val customUniqueKeyOrder = if (!isChatSpace) {
         listOf(
             ObjectTypeIds.PAGE,

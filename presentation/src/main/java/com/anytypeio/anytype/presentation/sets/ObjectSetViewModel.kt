@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -2388,8 +2389,13 @@ class ObjectSetViewModel(
     }
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
+        // Get space UX type for context-aware filtering
+        val spaceView = spaceViews.get(vmParams.space)
+        val spaceUxType = spaceView?.spaceUxType
+        val createLayouts = getCreateObjectLayouts(spaceUxType)
+        
         val filters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.createObjectLayouts
+            recommendedLayouts = createLayouts
         )
         val params = GetObjectTypes.Params(
             space = vmParams.space,

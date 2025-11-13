@@ -580,13 +580,22 @@ fun NewSettingsTextField(
 
     val focusRequester = remember { FocusRequester() }
 
-    val textFieldValue = remember(value) {
+    val textFieldValue = remember {
         mutableStateOf(
             TextFieldValue(
                 text = value,
                 selection = TextRange(value.length)
             )
         )
+    }
+
+    LaunchedEffect(value) {
+        if (textFieldValue.value.text != value) {
+            textFieldValue.value = TextFieldValue(
+                text = value,
+                selection = TextRange(value.length)
+            )
+        }
     }
 
     BasicTextField(

@@ -17,9 +17,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
@@ -29,7 +29,8 @@ import com.anytypeio.anytype.feature_chats.R
 internal fun EmptyState(
     modifier: Modifier,
     onAddMembersClick: () -> Unit,
-    onShowQRCodeClick: () -> Unit
+    onShowQRCodeClick: () -> Unit,
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled()
 ) {
     Box(
         modifier = modifier,
@@ -84,12 +85,14 @@ internal fun EmptyState(
                     size = ButtonSize.SmallSecondary,
                     modifier = Modifier
                 )
-                ButtonPrimary(
-                    text = stringResource(R.string.chat_empty_state_show_qr_button),
-                    onClick = onShowQRCodeClick,
-                    size = ButtonSize.SmallSecondary,
-                    modifier = Modifier
-                )
+                if (inviteLinkAccessLevel !is SpaceInviteLinkAccessLevel.LinkDisabled) {
+                    ButtonPrimary(
+                        text = stringResource(R.string.chat_empty_state_show_qr_button),
+                        onClick = onShowQRCodeClick,
+                        size = ButtonSize.SmallSecondary,
+                        modifier = Modifier
+                    )
+                }
             }
         }
     }

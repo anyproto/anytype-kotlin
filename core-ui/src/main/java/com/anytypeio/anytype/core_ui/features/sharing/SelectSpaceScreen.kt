@@ -84,7 +84,7 @@ fun SelectSpaceScreen(
             .fillMaxSize()
             .background(color = colorResource(id = R.color.background_primary))
     ) {
-        // Main content (Header + Search + Grid)
+        // Main content (Header + Search + Grid or Empty State)
         Column(
             modifier = Modifier
                 .weight(1f)
@@ -103,36 +103,43 @@ fun SelectSpaceScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Search Bar
-            DefaultSearchBar(
-                value = searchQuery,
-                onQueryChanged = onSearchQueryChanged,
-                hint = R.string.search,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
+            // Show empty state if no spaces, otherwise show search and grid
+            if (spaces.isEmpty()) {
+                EmptySpaceState(
+                    modifier = Modifier.fillMaxSize()
+                )
+            } else {
+                // Search Bar
+                DefaultSearchBar(
+                    value = searchQuery,
+                    onQueryChanged = onSearchQueryChanged,
+                    hint = R.string.search,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
 
-            Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(20.dp))
 
-            // Space Grid
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                verticalArrangement = Arrangement.spacedBy(20.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = spaces,
-                    key = { it.id }
-                ) { space ->
-                    SpaceGridItem(
-                        icon = space.icon,
-                        name = space.name,
-                        isSelected = space.isSelected,
-                        onClick = { onSpaceSelected(space) }
-                    )
+                // Space Grid
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(3),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp),
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(
+                        items = spaces,
+                        key = { it.id }
+                    ) { space ->
+                        SpaceGridItem(
+                            icon = space.icon,
+                            name = space.name,
+                            isSelected = space.isSelected,
+                            onClick = { onSpaceSelected(space) }
+                        )
+                    }
                 }
             }
         }
@@ -283,6 +290,39 @@ private fun CommentSection(
     }
 }
 
+/**
+ * Empty state when user has no spaces
+ *
+ * @param modifier Modifier for the empty state
+ */
+@Composable
+private fun EmptySpaceState(
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
+    ) {
+        // Coffee icon
+        Image(
+            painter = painterResource(id = R.drawable.ic_popup_coffee_56),
+            contentDescription = null,
+            modifier = Modifier.size(56.dp)
+        )
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Empty state message
+        Text(
+            text = stringResource(R.string.you_dont_have_any_spaces_yet),
+            style = BodyRegular,
+            color = colorResource(id = R.color.text_secondary),
+            textAlign = TextAlign.Center
+        )
+    }
+}
+
 // ============================================
 // PREVIEW
 // ============================================
@@ -376,6 +416,20 @@ private fun SelectSpaceScreenPreview() {
 
     SelectSpaceScreen(
         spaces = sampleSpaces,
+        searchQuery = "",
+        commentText = "",
+        onSearchQueryChanged = {},
+        onCommentChanged = {},
+        onSpaceSelected = {},
+        onSendClicked = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+private fun SelectSpaceScreenEmptyPreview() {
+    SelectSpaceScreen(
+        spaces = emptyList(),
         searchQuery = "",
         commentText = "",
         onSearchQueryChanged = {},

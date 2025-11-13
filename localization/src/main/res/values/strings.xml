@@ -2348,5 +2348,6 @@ Please provide specific details of your needs here.</string>
     <string name="select_space">Select Space</string>
     <string name="add_a_comment">Add a comment...</string>
     <string name="send">Send</string>
+    <string name="you_dont_have_any_spaces_yet">You don't have any spaces yet</string>
 
 </resources>

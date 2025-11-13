@@ -86,6 +86,12 @@ object SupportedLayouts {
      */
     val createObjectLayouts = baseCreateObjectLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
 
+    /**
+     * Handling create-object layouts for editor. Converting an object to a chat is not currently supported.
+     */
+    val editorCreateObjectLayouts = baseCreateObjectLayouts
+
+
     val dateLayouts = listOf(
         ObjectType.Layout.DATE
     )

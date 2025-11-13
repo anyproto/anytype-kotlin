@@ -54,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -119,6 +120,8 @@ fun ChatScreenWrapper(
 
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
+        val inviteLinkAccessLevel by vm.inviteLinkAccessLevel.collectAsStateWithLifecycle()
+
         ChatScreen(
             isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
             isSyncing = vm.isSyncing.collectAsStateWithLifecycle().value,
@@ -127,6 +130,7 @@ fun ChatScreenWrapper(
             counter = counter,
             intent = intent,
             attachments = vm.chatBoxAttachments.collectAsState().value,
+            inviteLinkAccessLevel = inviteLinkAccessLevel,
             onMessageSent = { text, spans ->
                 vm.onMessageSent(
                     msg = text,
@@ -405,7 +409,8 @@ fun ChatScreen(
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
     onCreateAndAttachObject: () -> Unit,
-    onCameraPermissionDenied: () -> Unit = {}
+    onCameraPermissionDenied: () -> Unit = {},
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled()
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -647,7 +652,8 @@ fun ChatScreen(
                 onRequestVideoPlayer = onRequestVideoPlayer,
                 highlightedMessageId = highlightedMessageId,
                 onHighlightMessage = triggerHighlight,
-                onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
+                onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered,
+                inviteLinkAccessLevel = inviteLinkAccessLevel
             )
 
             GoToMentionButton(

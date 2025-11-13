@@ -18,6 +18,8 @@ import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
@@ -93,6 +95,21 @@ fun canCreateObjectOfType(objectType: ObjectWrapper.Type?): Boolean {
         return false
     }
     return createObjectLayouts.contains(objectType?.recommendedLayout)
+}
+
+/**
+ * Determines if objects of the given type can be created based on the object type's layout,
+ * taking into account the space context.
+ *
+ * @param objectType The object type to check for creation eligibility
+ * @param spaceUxType The UX type of the current space
+ * @return true if objects of this type can be created, false otherwise
+ */
+fun canCreateObjectOfType(objectType: ObjectWrapper.Type?, spaceUxType: SpaceUxType?): Boolean {
+    if (objectType?.uniqueKey == ObjectTypeIds.TEMPLATE) {
+        return false
+    }
+    return getCreateObjectLayouts(spaceUxType).contains(objectType?.recommendedLayout)
 }
 
 fun ObjectState.DataView.isCreateObjectAllowed(objectType: ObjectWrapper.Type? = null): Boolean {

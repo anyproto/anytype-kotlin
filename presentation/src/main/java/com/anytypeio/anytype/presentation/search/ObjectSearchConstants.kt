@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -198,7 +199,11 @@ object ObjectSearchConstants {
     //endregion
 
     //region ADD OBJECT TO RELATION VALUE
-    fun filterAddObjectToRelation(space: Id, targetTypes: List<Id>) = buildList {
+    fun filterAddObjectToRelation(
+        space: Id, 
+        targetTypes: List<Id>,
+        spaceUxType: SpaceUxType? = null
+    ) = buildList {
         addAll(
             listOf(
                 DVFilter(
@@ -238,7 +243,7 @@ object ObjectSearchConstants {
                 DVFilter(
                     relation = Relations.LAYOUT,
                     condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                    value = SupportedLayouts.getLayouts(spaceUxType).map { it.code.toDouble() }
                 )
             )
         } else {
@@ -255,7 +260,8 @@ object ObjectSearchConstants {
 
     //region ADD OBJECT TO FILTER
     fun filterAddObjectToFilter(
-        limitObjectTypes: List<Key>
+        limitObjectTypes: List<Key>,
+        spaceUxType: SpaceUxType? = null
     ) = buildList {
         add(
             DVFilter(
@@ -292,13 +298,12 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
-        // TODO check these filters
         if (limitObjectTypes.isEmpty()) {
             add(
                 DVFilter(
                     relation = Relations.LAYOUT,
                     condition = DVFilterCondition.IN,
-                    value = SupportedLayouts.layouts.map { it.code.toDouble() }
+                    value = SupportedLayouts.getLayouts(spaceUxType).map { it.code.toDouble() }
                 )
             )
         } else {

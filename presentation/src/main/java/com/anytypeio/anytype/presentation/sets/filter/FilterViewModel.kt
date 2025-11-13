@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -75,7 +76,8 @@ open class FilterViewModel(
     private val analytics: Analytics,
     private val getOptions: GetOptions,
     private val spaceManager: SpaceManager,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<Commands>()
@@ -394,13 +396,16 @@ open class FilterViewModel(
         limitObjectTypes: List<Key> = emptyList()
     ) {
         viewModelScope.launch {
+            val spaceId = SpaceId(spaceManager.get())
+            val spaceUxType = spaceViews.get(spaceId)?.spaceUxType
             searchObjects(
                 SearchObjects.Params(
                     // TODO DROID-2916 Provide space id to vm params
-                    space = SpaceId(spaceManager.get()),
+                    space = spaceId,
                     sorts = ObjectSearchConstants.sortAddObjectToFilter,
                     filters = ObjectSearchConstants.filterAddObjectToFilter(
-                        limitObjectTypes = limitObjectTypes
+                        limitObjectTypes = limitObjectTypes,
+                        spaceUxType = spaceUxType
                     ),
                     fulltext = SearchObjects.EMPTY_TEXT,
                     offset = SearchObjects.INIT_OFFSET,
@@ -948,7 +953,8 @@ open class FilterViewModel(
         private val getOptions: GetOptions,
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -964,7 +970,8 @@ open class FilterViewModel(
                 getOptions = getOptions,
                 analytics = analytics,
                 spaceManager = spaceManager,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                spaceViews = spaceViews
             ) as T
         }
     }

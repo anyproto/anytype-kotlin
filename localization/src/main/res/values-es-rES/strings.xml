@@ -2028,4 +2028,5 @@ En concreto,
     <string name="chat_move_to_bin">Mover a la papelera</string>
     <string name="move_chat_to_bin_warning_title">¿Mover el chat a la papelera?</string>
     <string name="chat_move_to_bin_warning_description">Este chat y sus archivos adjuntos se moverán a la papelera. Nadie podrá enviar más mensajes. Puedes restaurarlo desde la papelera antes de que se elimine definitivamente.</string>
+    <string name="chat_edit_info_upload_image">Upload Image</string>
 </resources>

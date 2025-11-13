@@ -6668,7 +6668,7 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.createObjectLayouts
+                    recommendedLayouts = SupportedLayouts.editorCreateObjectLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType,
                 space = vmParams.space

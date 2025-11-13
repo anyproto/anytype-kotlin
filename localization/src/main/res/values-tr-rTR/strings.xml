@@ -2028,4 +2028,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_move_to_bin">Çöpe Taşı</string>
     <string name="move_chat_to_bin_warning_title">Sohbet çöp kutusuna taşınsın mı?</string>
     <string name="chat_move_to_bin_warning_description">Bu sohbet ve tüm ekleri Çöp Kutusu\'na taşınacak. Kimse yeni mesaj gönderemeyecek. Kalıcı olarak silinene kadar Çöp Kutusu\'ndan geri yükleyebilirsin.</string>
+    <string name="chat_edit_info_upload_image">Görüntü Yükle</string>
 </resources>

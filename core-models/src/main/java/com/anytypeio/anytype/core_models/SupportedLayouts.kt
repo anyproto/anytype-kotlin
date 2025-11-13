@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_models
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 
 object SupportedLayouts {
+
     /**
      * Base supported layouts (without CHAT_DERIVED)
      */
@@ -27,7 +28,7 @@ object SupportedLayouts {
      * Default layouts list (includes CHAT_DERIVED for data spaces).
      * For space-aware behavior, use [getLayouts] instead.
      */
-    val layouts = baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
+    private val layouts = baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
 
     val editorLayouts = listOf(
         ObjectType.Layout.BASIC,

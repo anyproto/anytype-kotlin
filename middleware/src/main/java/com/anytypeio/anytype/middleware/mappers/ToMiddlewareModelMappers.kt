@@ -668,8 +668,8 @@ fun SpaceCreationUseCase.toMiddlewareModel(): Rpc.Object.ImportUseCase.Request.U
     SpaceCreationUseCase.DATA_SPACE_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.DATA_SPACE_MOBILE
 }
 
-fun NotificationState.toMiddlewareModel(): Rpc.PushNotification.SetSpaceMode.Mode = when (this) {
-    NotificationState.ALL -> Rpc.PushNotification.SetSpaceMode.Mode.All
-    NotificationState.MENTIONS -> Rpc.PushNotification.SetSpaceMode.Mode.Mentions
-    NotificationState.DISABLE -> Rpc.PushNotification.SetSpaceMode.Mode.Nothing
+fun NotificationState.toMiddlewareModel(): Rpc.PushNotification.Mode = when (this) {
+    NotificationState.ALL -> Rpc.PushNotification.Mode.All
+    NotificationState.MENTIONS -> Rpc.PushNotification.Mode.Mentions
+    NotificationState.DISABLE -> Rpc.PushNotification.Mode.Nothing
 }

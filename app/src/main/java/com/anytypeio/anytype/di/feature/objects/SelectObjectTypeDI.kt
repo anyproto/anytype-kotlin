@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
@@ -56,4 +57,5 @@ interface SelectObjectTypeDependencies : ComponentDependencies {
     fun userSettingsRepository(): UserSettingsRepository
     fun provideSpaceManger(): SpaceManager
     fun provideUrlBuilder(): UrlBuilder
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

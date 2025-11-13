@@ -141,7 +141,7 @@ class ObjectSetNavigationTest : ObjectSetViewModelTestSetup() {
             mapOf(
                 Relations.ID to targetObjectId,
                 Relations.SPACE_ID to mockObjectSet.spaceId,
-                Relations.LAYOUT to SupportedLayouts.layouts.random().code.toDouble()
+                Relations.LAYOUT to SupportedLayouts.getLayouts(null).random().code.toDouble()
             )
         )
 

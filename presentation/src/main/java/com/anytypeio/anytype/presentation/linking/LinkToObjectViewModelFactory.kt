@@ -6,6 +6,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -22,7 +23,8 @@ class LinkToObjectViewModelFactory(
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -35,7 +37,8 @@ class LinkToObjectViewModelFactory(
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            spaceViews = spaceViews
         ) as T
     }
 }
@@ -49,7 +52,8 @@ class LinkToObjectOrWebViewModelFactory(
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -63,7 +67,8 @@ class LinkToObjectOrWebViewModelFactory(
             stores = stores,
             urlValidator = urlValidator,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            spaceViews = spaceViews
         ) as T
     }
 }

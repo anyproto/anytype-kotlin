@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.options.GetOptions
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -54,7 +55,8 @@ object CreateFilterModule {
         analytics: Analytics,
         getOptions: GetOptions,
         spaceManager: SpaceManager,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        spaceViews: SpaceViewSubscriptionContainer
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectState = state,
         dispatcher = dispatcher,
@@ -67,6 +69,7 @@ object CreateFilterModule {
         analytics = analytics,
         getOptions = getOptions,
         spaceManager = spaceManager,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 }

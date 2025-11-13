@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -74,6 +75,7 @@ object ObjectValueObjectModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
         fieldParser: FieldParser,
+        spaceViews: SpaceViewSubscriptionContainer
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -89,7 +91,8 @@ object ObjectValueObjectModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 }
 //endregion
@@ -132,7 +135,8 @@ object ObjectValueSetModule {
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        spaceViews: SpaceViewSubscriptionContainer
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -148,7 +152,8 @@ object ObjectValueSetModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 }
 //endregion
@@ -191,7 +196,8 @@ object ObjectValueDataViewModule {
         duplicateObject: DuplicateObject,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations,
-        fieldParser: FieldParser
+        fieldParser: FieldParser,
+        spaceViews: SpaceViewSubscriptionContainer
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
@@ -207,7 +213,8 @@ object ObjectValueDataViewModule {
         duplicateObject = duplicateObject,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations,
-        fieldParser = fieldParser
+        fieldParser = fieldParser,
+        spaceViews = spaceViews
     )
 }
 //endregion

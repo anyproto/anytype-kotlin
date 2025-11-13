@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ext.rangeIntersection
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -42,7 +43,8 @@ class LinkToObjectOrWebViewModel(
     private val stores: Editor.Storage,
     private val urlValidator: UrlValidator,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ViewState>(ViewState.Init)
@@ -127,9 +129,11 @@ class LinkToObjectOrWebViewModel(
                 }
             }
             else -> {
+                val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+                val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
                 val filteredSearchResponse =
                     searchResponse
-                        .filter { SupportedLayouts.layouts.contains(it.layout) }
+                        .filter { supportedLayouts.contains(it.layout) }
 
                 val objectViews = filteredSearchResponse.toLinkToView(
                     urlBuilder = urlBuilder,

@@ -59,6 +59,7 @@ import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatIconComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
@@ -1096,6 +1097,13 @@ class ComponentManager(
             .builder()
             .withDependencies(findComponentDependencies())
             .withParams(params)
+            .build()
+    }
+
+    val selectChatIconComponent = Component {
+        DaggerSelectChatIconComponent
+            .builder()
+            .withDependencies(findComponentDependencies())
             .build()
     }
 

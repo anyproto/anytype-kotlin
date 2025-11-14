@@ -786,10 +786,9 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = (if (sections.chatWidget != null) 1 else 0) + sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: chat=${sections.chatWidget != null}, pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
 
-                    chatWidget.value = sections.chatWidget
                     pinnedWidgets.value = sections.pinnedWidgets
 
                     // Check event lock before updating type widgets to prevent race conditions during DnD

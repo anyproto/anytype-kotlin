@@ -268,7 +268,6 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     // Separate StateFlows for different widget sections
-    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -323,23 +322,6 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
-        )
-
-    // Exposed flow for space chat widget
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val chatView: StateFlow<WidgetView?> = chatWidget
-        .flatMapLatest { widget ->
-            if (widget == null) {
-                flowOf(null)
-            } else {
-                // Create container for chat widget
-                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -800,7 +782,6 @@ class HomeScreenViewModel(
 
                     binWidget.value = sections.binWidget
                 } else {
-                    chatWidget.value = null
                     pinnedWidgets.value = emptyList()
 
                     // Check event lock before clearing type widgets

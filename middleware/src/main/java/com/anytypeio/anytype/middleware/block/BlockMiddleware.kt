@@ -1110,6 +1110,14 @@ class BlockMiddleware(
         middleware.chatUnsubscribeFromMessagePreviews(subscription)
     }
 
+    override suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        return middleware.setSpaceChatsNotifications(command)
+    }
+
+    override suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        return middleware.resetSpaceChatsNotifications(command)
+    }
+
     override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {
         return middleware.dataViewSetActiveView(command)
     }

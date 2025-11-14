@@ -68,9 +68,12 @@ fun ChatTopToolbar(
     onEditInfo: () -> Unit,
     onPin: () -> Unit,
     onCopyLink: () -> Unit,
-    onMoveToBin: () -> Unit
+    onMoveToBin: () -> Unit,
+    onProperties: () -> Unit,
+    onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
+    var showChatSpaceMenu by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.height(52.dp)
@@ -122,7 +125,7 @@ fun ChatTopToolbar(
                         .padding(end = 16.dp),
                     mainSize = 28.dp,
                     icon = header.icon,
-                    onSpaceIconClick = { onSpaceIconClicked() }
+                    onSpaceIconClick = { showChatSpaceMenu = !showChatSpaceMenu }
                 )
             }
             ChatViewModel.HeaderView.Init -> {
@@ -257,6 +260,43 @@ fun ChatTopToolbar(
                 }
             }
         }
+
+        if (header is ChatViewModel.HeaderView.Default && showChatSpaceMenu) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                ChatMenu(
+                    expanded = showChatSpaceMenu,
+                    currentNotificationSetting = header.notificationSetting,
+                    onDismissRequest = {
+                        showChatSpaceMenu = false
+                    },
+                    onPropertiesClick = {
+                        onProperties()
+                        showChatSpaceMenu = false
+                    },
+                    onEditInfoClick = {
+                        onEditInfo()
+                        showChatSpaceMenu = false
+                    },
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
+                        showChatSpaceMenu = false
+                    },
+                    onPinClick = {
+                        onPin()
+                        showChatSpaceMenu = false
+                    },
+                    onMoveToBinClick = {
+                        onMoveToBin()
+                        showChatSpaceMenu = false
+                    }
+                )
+            }
+        }
     }
     }
 }
@@ -278,7 +318,9 @@ fun ChatTopToolbarPreview() {
         onEditInfo = {},
         onPin = {},
         onCopyLink = {},
-        onMoveToBin = {}
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 
@@ -299,7 +341,9 @@ fun ChatTopToolbarMutedPreview() {
         onEditInfo = {},
         onPin = {},
         onCopyLink = {},
-        onMoveToBin = {}
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -2318,6 +2319,7 @@ class ChatViewModel @Inject constructor(
             val isMuted: Boolean = false,
             val showDropDownMenu: Boolean = true,
             val showAddMembers: Boolean = true,
+            val notificationSetting: NotificationSetting = NotificationSetting.ALL
         ) : HeaderView()
         data class ChatObject(
             val icon: ObjectIcon,

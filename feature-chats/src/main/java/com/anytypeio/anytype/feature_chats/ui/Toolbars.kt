@@ -70,7 +70,7 @@ fun ChatTopToolbar(
     onCopyLink: () -> Unit,
     onMoveToBin: () -> Unit,
     onProperties: () -> Unit,
-    onNotifications: () -> Unit
+    onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
     var showChatSpaceMenu by remember { mutableStateOf(false) }
@@ -270,6 +270,7 @@ fun ChatTopToolbar(
             ) {
                 ChatMenu(
                     expanded = showChatSpaceMenu,
+                    currentNotificationSetting = header.notificationSetting,
                     onDismissRequest = {
                         showChatSpaceMenu = false
                     },
@@ -281,8 +282,8 @@ fun ChatTopToolbar(
                         onEditInfo()
                         showChatSpaceMenu = false
                     },
-                    onNotificationsClick = {
-                        onNotifications()
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
                         showChatSpaceMenu = false
                     },
                     onPinClick = {
@@ -319,7 +320,7 @@ fun ChatTopToolbarPreview() {
         onCopyLink = {},
         onMoveToBin = {},
         onProperties = {},
-        onNotifications = {}
+        onNotificationSettingChanged = {}
     )
 }
 
@@ -342,7 +343,7 @@ fun ChatTopToolbarMutedPreview() {
         onCopyLink = {},
         onMoveToBin = {},
         onProperties = {},
-        onNotifications = {}
+        onNotificationSettingChanged = {}
     )
 }
 

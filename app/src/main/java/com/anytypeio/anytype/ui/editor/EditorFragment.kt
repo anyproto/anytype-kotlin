@@ -1029,6 +1029,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private fun execute(event: EventWrapper<Command>) {
         Timber.d("Executing command: $event")
+        val currentDestinationId = if (this.parentFragment is EditorModalFragment) {
+            R.id.editorModalScreen
+        } else {
+            R.id.pageScreen
+        }
         event.getContentIfNotHandled()?.let { command ->
             when (command) {
                 is Command.OpenDocumentImagePicker -> {
@@ -1050,7 +1055,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
+                        currentDestinationId,
                         R.id.action_pageScreen_to_objectIconPickerScreen,
                         bundleOf(
                             IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to command.ctx,
@@ -1108,7 +1113,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
-                        currentDestinationId = R.id.pageScreen,
+                        currentDestinationId = currentDestinationId,
                         id = R.id.objectMenuScreen,
                         args = ObjectMenuFragment.args(
                             ctx = command.ctx,
@@ -1125,7 +1130,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenCoverGallery -> {
                     findNavController().safeNavigate(
-                        currentDestinationId = R.id.pageScreen,
+                        currentDestinationId = currentDestinationId,
                         id = R.id.action_pageScreen_to_objectCoverScreen,
                         args = SelectCoverObjectFragment.args(
                             ctx = command.ctx,
@@ -1177,7 +1182,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
+                        currentDestinationId,
                         R.id.objectRelationListScreen,
                         bundleOf(
                             ObjectFieldsFragment.ARG_CTX to command.ctx,
@@ -1383,7 +1388,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectTypeMenu -> openObjectTypeMenu(command)
                 is Command.OpenObjectRelationScreen.Value.TagOrStatus -> {
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
+                        currentDestinationId,
                         R.id.nav_relations,
                         TagOrStatusValueFragment.args(
                             ctx = command.ctx,
@@ -1397,7 +1402,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenObjectRelationScreen.Value.ObjectValue -> {
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
+                        currentDestinationId,
                         R.id.objectValueScreen,
                         ObjectValueFragment.args(
                             ctx = command.ctx,
@@ -1411,7 +1416,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.SetObjectIcon -> {
                     findNavController().safeNavigate(
-                        R.id.pageScreen,
+                        currentDestinationId,
                         R.id.objectIconPickerScreen,
                         bundleOf(
                             IconPickerFragmentBase.ARG_CONTEXT_ID_KEY to ctx,
@@ -1421,7 +1426,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 }
                 is Command.OpenShareScreen -> {
                     findNavController().safeNavigate(
-                        currentDestinationId = R.id.pageScreen,
+                        currentDestinationId = currentDestinationId,
                         id = R.id.shareSpaceScreen,
                         args = ShareSpaceFragment.args(command.space),
                         errorMessage = "Error while opening share screen"

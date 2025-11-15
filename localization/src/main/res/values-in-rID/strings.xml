@@ -2013,5 +2013,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_move_to_bin">Buang ke Bak Sampah</string>
     <string name="move_chat_to_bin_warning_title">Buang obrolan ke bak sampah?</string>
     <string name="chat_move_to_bin_warning_description">Obrolan ini dan seluruh lampirannya akan dipindah ke bak sampah. Tidak ada yang akan dapat mengirimkan pesan baru. Kamu bisa mengembalikannya dari bak sampah hingga obrolan dihapus permanen.</string>
-    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_edit_info_upload_image">Unggah Gambar</string>
 </resources>

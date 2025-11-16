@@ -409,47 +409,48 @@ fun ListWidgetElement(
         }
 
         if (counter != null) {
-            if (counter.unreadMentionCount > 0) {
-                Box(
-                    modifier = Modifier
-                        .background(
-                            color = colorResource(R.color.color_accent),
-                            shape = CircleShape
-                        )
-                        .size(20.dp),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.ic_chat_widget_mention),
-                        contentDescription = null
-                    )
-                }
-                if (counter.unreadMessageCount == 0) {
-                    Spacer(modifier = Modifier.width(16.dp))
-                }
-            }
-            if (counter.unreadMessageCount > 0) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
                 if (counter.unreadMentionCount > 0) {
-                    Spacer(modifier = Modifier.width(8.dp))
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            )
+                            .size(20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_chat_widget_mention),
+                            contentDescription = null
+                        )
+                    }
                 }
-                Box(
-                    modifier = Modifier
-                        .height(20.dp)
-                        .defaultMinSize(minWidth = 20.dp)
-                        .background(
-                            color = colorResource(R.color.color_accent),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        modifier = Modifier.padding(horizontal = 6.dp),
-                        text = counter.unreadMessageCount.toString(),
-                        style = Caption1Regular,
-                        color = colorResource(id = R.color.text_white),
-                    )
+                if (counter.unreadMessageCount > 0) {
+                    if (counter.unreadMentionCount > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .defaultMinSize(minWidth = 20.dp)
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 6.dp),
+                            text = counter.unreadMessageCount.toString(),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_white),
+                        )
+                    }
                 }
-                Spacer(modifier = Modifier.width(16.dp))
             }
         }
     }

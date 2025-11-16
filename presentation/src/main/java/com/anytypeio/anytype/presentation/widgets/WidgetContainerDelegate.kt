@@ -183,7 +183,8 @@ class WidgetContainerDelegateImpl(
                 },
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                chatPreviewContainer = chatPreviews
             )
         }
     }
@@ -218,7 +219,8 @@ class WidgetContainerDelegateImpl(
             },
             storeOfRelations = storeOfRelations,
             fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            chatPreviewContainer = chatPreviews
         )
     }
 

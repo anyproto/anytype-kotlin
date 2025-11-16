@@ -84,7 +84,8 @@ fun ListWidgetCard(
                             icon = element.objectIcon,
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName()
+                            name = element.getPrettyName(),
+                            counter = element.counter
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(

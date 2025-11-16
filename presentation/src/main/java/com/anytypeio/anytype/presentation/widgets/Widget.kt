@@ -391,13 +391,11 @@ data class WidgetUiParams(
 /**
  * Result of building widgets, separated into sections.
  *
- * @property chatWidget The space chat widget, displayed separately at the top (for shared spaces)
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
-    val chatWidget: Widget.Chat? = null,
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
     val binWidget: Widget.Bin? = null
@@ -411,12 +409,6 @@ suspend fun buildWidgetSections(
     storeOfObjectTypes: StoreOfObjectTypes
 ): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
-
-    // Build space chat widget (displayed separately at top for shared spaces)
-    val chatWidget = buildChatWidget(
-        spaceView = spaceView,
-        state = state
-    )
 
     // Build pinned section
     val pinnedWidgets = buildPinnedSection(
@@ -442,7 +434,6 @@ suspend fun buildWidgetSections(
     )
 
     return WidgetSections(
-        chatWidget = chatWidget,
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
         binWidget = binWidget

@@ -65,7 +65,8 @@ sealed class WidgetView {
         val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
-        override val sectionType: SectionType? = null
+        override val sectionType: SectionType? = null,
+        val counter: ChatCounter? = null
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()

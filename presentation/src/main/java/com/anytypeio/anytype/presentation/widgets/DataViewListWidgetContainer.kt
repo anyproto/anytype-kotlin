@@ -233,31 +233,20 @@ class DataViewListWidgetContainer(
                                                     .map {
                                                         view.copy(
                                                             elements = view.elements.map { chat ->
-//                                                                val preview = it.find { p ->
-//                                                                    p.chat == chat.obj.id
-//                                                                }
-//                                                                val state = preview?.state
-//                                                                if (preview != null && state != null) {
-//                                                                    chat.copy(
-//                                                                        counter = WidgetView.ChatCounter(
-////                                                                            unreadMentionCount = state.unreadMentions?.counter ?: 0,
-////                                                                            unreadMessageCount = state.unreadMessages?.counter ?: 0
-//                                                                            5,
-//                                                                            5
-//                                                                        )
-//                                                                    )
-//                                                                } else {
-//                                                                    chat
-//                                                                }
-
-                                                                chat.copy(
-                                                                    counter = WidgetView.ChatCounter(
-//                                                                            unreadMentionCount = state.unreadMentions?.counter ?: 0,
-//                                                                            unreadMessageCount = state.unreadMessages?.counter ?: 0
-                                                                        5,
-                                                                        5
+                                                                val preview = it.find { p ->
+                                                                    p.chat == chat.obj.id
+                                                                }
+                                                                val state = preview?.state
+                                                                if (preview != null && state != null) {
+                                                                    chat.copy(
+                                                                        counter = WidgetView.ChatCounter(
+                                                                            unreadMentionCount = state.unreadMentions?.counter ?: 0,
+                                                                            unreadMessageCount = state.unreadMessages?.counter ?: 0
+                                                                        )
                                                                     )
-                                                                )
+                                                                } else {
+                                                                    chat
+                                                                }
                                                             }
                                                         )
                                                     }

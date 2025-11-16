@@ -94,8 +94,10 @@ class WidgetContainerDelegateImpl(
 
     private fun createLinkContainer(widget: Widget.Link): WidgetContainer {
         return LinkWidgetContainer(
+            space = spaceId,
             widget = widget,
-            fieldParser = fieldParser
+            fieldParser = fieldParser,
+            chatPreviewContainer = chatPreviews
         )
     }
 

@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
@@ -66,6 +67,8 @@ import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
+import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
+import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -136,7 +139,8 @@ class ChatViewModel @Inject constructor(
     private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
-    private val setSpaceDetails: SetSpaceDetails
+    private val setSpaceDetails: SetSpaceDetails,
+    private val setChatNotificationMode: SetChatNotificationMode
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -205,6 +209,9 @@ class ChatViewModel @Inject constructor(
                     vmParams.space
                 ).collect { view ->
                     val isMuted = NotificationStateCalculator.calculateMutedState(view)
+                    val notificationSetting = NotificationStateCalculator
+                        .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
+                        .toNotificationSetting()
                     getObject.async(
                         GetObject.Params(
                             target = vmParams.ctx,
@@ -216,7 +223,8 @@ class ChatViewModel @Inject constructor(
                             header.value = HeaderView.Default(
                                 title = view.name.orEmpty(),
                                 icon = view.spaceIcon(builder = urlBuilder),
-                                isMuted = isMuted
+                                isMuted = isMuted,
+                                notificationSetting = notificationSetting
                             )
                         } else {
                             // Chat object
@@ -230,7 +238,8 @@ class ChatViewModel @Inject constructor(
                                     builder = urlBuilder,
                                     objType = type
                                 ),
-                                isMuted = isMuted
+                                isMuted = isMuted,
+                                notificationSetting = notificationSetting
                             )
                         }
                     }.onFailure {
@@ -239,7 +248,8 @@ class ChatViewModel @Inject constructor(
                         header.value = HeaderView.Default(
                             title = view.name.orEmpty(),
                             icon = view.spaceIcon(builder = urlBuilder),
-                            isMuted = isMuted
+                            isMuted = isMuted,
+                            notificationSetting = notificationSetting
                         )
                     }
                 }
@@ -1994,6 +2004,37 @@ class ChatViewModel @Inject constructor(
         uiQrCodeState.value = UiSpaceQrCodeState.Hidden
     }
 
+    fun onNotificationSettingChanged(setting: NotificationSetting) {
+        viewModelScope.launch {
+            // Convert UI setting to domain model
+            val mode = setting.toNotificationState()
+
+            // Update header optimistically for instant UI feedback
+            val currentHeader = header.value
+            val updatedHeader = when (currentHeader) {
+                is HeaderView.Default -> currentHeader.copy(notificationSetting = setting)
+                is HeaderView.ChatObject -> currentHeader.copy(notificationSetting = setting)
+                else -> currentHeader
+            }
+            header.value = updatedHeader
+
+            setChatNotificationMode.async(
+                params = SetChatNotificationMode.Params(
+                    space = vmParams.space,
+                    chatIds = listOf(vmParams.ctx),
+                    mode = mode
+                )
+            ).onSuccess {
+                Timber.d("Notification setting changed successfully to: $setting")
+            }.onFailure { e ->
+                Timber.e(e, "Failed to change notification setting")
+                // Revert header to previous state on error
+                header.value = currentHeader
+                sendToast("Failed to update notification setting")
+            }
+        }
+    }
+
     private fun proceedWithShowingQRCode(link: String) {
         viewModelScope.launch {
             val currentHeader = header.value
@@ -2326,7 +2367,8 @@ class ChatViewModel @Inject constructor(
             val title: String,
             val isMuted: Boolean = false,
             val showDropDownMenu: Boolean = true,
-            val showAddMembers: Boolean = false
+            val showAddMembers: Boolean = false,
+            val notificationSetting: NotificationSetting = NotificationSetting.ALL
         ) : HeaderView()
     }
 

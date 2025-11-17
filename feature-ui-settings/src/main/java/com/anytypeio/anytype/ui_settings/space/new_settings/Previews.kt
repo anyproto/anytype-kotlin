@@ -73,6 +73,7 @@ fun NewSpaceSettingsScreenPreview() {
             WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.PURPLE.code),
             WallpaperView.SolidColor(isSelected = false, code = WallpaperColor.RED.code),
         ),
+        chatsWithCustomNotifications = emptyList(),
         locale = Locale.getDefault()
     )
 }

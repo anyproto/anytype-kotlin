@@ -105,6 +105,7 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
         NewSpaceSettingsScreen(
             uiState = vm.uiState.collectAsStateWithLifecycle().value,
             uiWallpaperState = vm.spaceWallpapers.collectAsStateWithLifecycle().value,
+            chatsWithCustomNotifications = vm.chatsWithCustomNotifications.collectAsStateWithLifecycle().value,
             locale = locale,
             uiEvent = vm::onUiEvent
         )
@@ -206,6 +207,16 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
                 )
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        vm.onStart()
+    }
+
+    override fun onStop() {
+        super.onStop()
+        vm.onStop()
     }
 
     private suspend fun observeCommands(

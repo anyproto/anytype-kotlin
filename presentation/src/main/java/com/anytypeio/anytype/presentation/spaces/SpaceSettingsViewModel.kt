@@ -14,8 +14,11 @@ import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.event.EventAnalytics
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVFilter
+import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Filepath
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -31,7 +34,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
-import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.cover.GetCoverGradientCollection
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
@@ -39,6 +41,8 @@ import com.anytypeio.anytype.domain.invite.GetCurrentInviteAccessLevel
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.library.StoreSearchParams
+import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -47,10 +51,10 @@ import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
-import com.anytypeio.anytype.domain.`object`.FetchObject
-import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
@@ -63,8 +67,8 @@ import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
-import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageRemoteStorage
@@ -90,6 +94,7 @@ import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.getSpaceIconColor
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -104,7 +109,6 @@ class SpaceSettingsViewModel(
     private val analytics: Analytics,
     private val setSpaceDetails: SetSpaceDetails,
     private val spaceManager: SpaceManager,
-    private val gradientProvider: SpaceGradientProvider,
     private val urlBuilder: UrlBuilder,
     private val deleteSpace: DeleteSpace,
     private val spaceGradientProvider: SpaceGradientProvider,
@@ -119,8 +123,6 @@ class SpaceSettingsViewModel(
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val appActionManager: AppActionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-    private val fetchObject: FetchObject,
-    private val setObjectDetails: SetObjectDetails,
     private val getAccount: GetAccount,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val setSpaceNotificationMode: SetSpaceNotificationMode,
@@ -129,8 +131,9 @@ class SpaceSettingsViewModel(
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
     private val getGradients: GetCoverGradientCollection,
     private val setWallpaper: SetWallpaper,
-    private val stringResourceProvider: StringResourceProvider
-): BaseViewModel() {
+    private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+    private val resetSpaceChatNotification: ResetSpaceChatNotification
+) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
@@ -142,13 +145,21 @@ class SpaceSettingsViewModel(
     val _notificationState = MutableStateFlow(NotificationState.ALL)
 
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
-    
+
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
+    val inviteLinkAccessLevel =
+        MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
     val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
+
+    /**
+     * StateFlow containing chats that have custom notification states different from the space default.
+     * These chats can be reset to use the space default notification setting.
+     */
+    val chatsWithCustomNotifications = MutableStateFlow<List<ChatNotificationItem>>(emptyList())
+    private var chatNotificationsJob: Job? = null
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -159,6 +170,23 @@ class SpaceSettingsViewModel(
         }
         proceedWithObservingSpaceView()
         subscribeToInviteLinkState()
+    }
+
+    fun onStart() {
+        chatNotificationsJob = subscribeToChatsWithCustomNotifications()
+    }
+
+    fun onStop() {
+        chatNotificationsJob?.cancel()
+        chatNotificationsJob = null
+        viewModelScope.launch {
+            storelessSubscriptionContainer.unsubscribe(
+                listOf(
+                    getSpaceChatsCustomNotificationsSubscriptionId()
+                )
+            )
+            chatsWithCustomNotifications.value = emptyList()
+        }
     }
 
     private fun proceedWithObservingSpaceView() {
@@ -253,18 +281,20 @@ class SpaceSettingsViewModel(
 
                 val targetSpaceId = spaceView.targetSpaceId
 
-                val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
-                } else {
-                    null
-                }
+                val spaceCreator =
+                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
+                    } else {
+                        null
+                    }
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 // Calculate active members count (excluding JOINING) and limits state
                 val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     // Count only ACTIVE members for display
-                    val activeMemberCount = spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
+                    val activeMemberCount =
+                        spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
 
                     activeMemberCount to spaceView.spaceLimitsState(
                         spaceMembers = spaceMembers.members,
@@ -277,11 +307,12 @@ class SpaceSettingsViewModel(
                 }
 
                 // Count members with JOINING status (pending join requests)
-                val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
-                } else {
-                    0
-                }
+                val requests: Int =
+                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
+                    } else {
+                        0
+                    }
 
                 val deviceToken = if (BuildConfig.DEBUG || clickCount >= 5) {
                     try {
@@ -298,8 +329,7 @@ class SpaceSettingsViewModel(
                     createdBy = createdByNameOrId.orEmpty(),
                     creationDateInMillis = spaceView
                         .getValue<Double?>(Relations.CREATED_DATE)
-                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
-                    ,
+                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
                     isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
                     deviceToken = deviceToken
@@ -322,6 +352,7 @@ class SpaceSettingsViewModel(
                             add(Spacer(height = 4))
                             add(MembersSmall(count = spaceMemberCount))
                         }
+
                         SpaceAccessType.DEFAULT, null -> {
                             add(Spacer(height = 4))
                             add(EntrySpace)
@@ -345,6 +376,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
@@ -357,6 +389,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
@@ -369,6 +402,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -404,7 +438,12 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Preferences)
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Wallpapers(wallpaper = wallpaperResult, spaceIconView = spaceIcon))
+                    add(
+                        UiSpaceSettingsItem.Wallpapers(
+                            wallpaper = wallpaperResult,
+                            spaceIconView = spaceIcon
+                        )
+                    )
 
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
@@ -440,32 +479,39 @@ class SpaceSettingsViewModel(
 
     fun onUiEvent(uiEvent: UiEvent) {
         Timber.d("onUiEvent: $uiEvent")
-        when(uiEvent) {
+        when (uiEvent) {
             UiEvent.IconMenu.OnRemoveIconClicked -> {
                 proceedWithRemovingSpaceIcon()
             }
+
             UiEvent.IconMenu.OnChangeIconColorClicked -> {
                 proceedWithUpdateSpaceIconColor()
             }
+
             UiEvent.OnBackPressed -> {
                 isDismissed.value = true
             }
+
             UiEvent.OnDeleteSpaceClicked -> {
                 viewModelScope.launch { commands.emit(ShowDeleteSpaceWarning) }
             }
+
             UiEvent.OnLeaveSpaceClicked -> {
                 viewModelScope.launch { commands.emit(ShowLeaveSpaceWarning) }
             }
+
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
                     commands.emit(ManageRemoteStorage)
                 }
             }
+
             UiEvent.OnBinClick -> {
                 viewModelScope.launch {
                     commands.emit(ManageBin(vmParams.space))
                 }
             }
+
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch {
                     commands.emit(
@@ -473,9 +519,11 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             UiEvent.OnPersonalizationClicked -> {
                 sendToast("Coming soon")
             }
+
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
                     val (spaceName, spaceIcon) = when (val state = uiState.value) {
@@ -486,6 +534,7 @@ class SpaceSettingsViewModel(
                                 .firstOrNull()?.icon
                             name to icon
                         }
+
                         else -> "" to null
                     }
                     uiQrCodeState.value = SpaceInvite(
@@ -503,6 +552,7 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
@@ -515,6 +565,7 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSaveTitleClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
@@ -527,14 +578,17 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
             }
+
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
                     commands.emit(ManageSharedSpace(vmParams.space))
                 }
             }
+
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
@@ -548,11 +602,13 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             UiEvent.OnObjectTypesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenTypesScreen(vmParams.space))
                 }
             }
+
             UiEvent.OnPropertiesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenPropertiesScreen(vmParams.space))
@@ -569,11 +625,13 @@ class SpaceSettingsViewModel(
                     }
                 )
             }
+
             UiEvent.OnDebugClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenDebugScreen(vmParams.space.id))
                 }
             }
+
             UiEvent.OnSpaceInfoTitleClicked -> {
                 val currentCount = spaceInfoTitleClickCount.value
                 spaceInfoTitleClickCount.value = currentCount + 1
@@ -604,6 +662,7 @@ class SpaceSettingsViewModel(
                         )
                 }
             }
+
             is UiEvent.OnShareLinkClicked -> {
                 viewModelScope.launch {
                     // Analytics Event #6: ClickShareSpaceShareLink
@@ -614,26 +673,35 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnUpdateWallpaperClicked -> {
                 proceedWithWallpaperUpdate(uiEvent)
             }
+
             UiEvent.OnAddMoreSpacesClicked -> {
                 viewModelScope.launch {
                     commands.emit(Command.NavigateToMembership)
                 }
             }
+
             UiEvent.OnChangeTypeClicked -> {
                 // This event opens the bottom sheet, no action needed in ViewModel
             }
+
             is UiEvent.OnChangeSpaceType -> {
                 when (uiEvent) {
                     is UiEvent.OnChangeSpaceType.ToChat -> {
                         proceedWithChangingSpaceType(SpaceUxType.CHAT)
                     }
+
                     is UiEvent.OnChangeSpaceType.ToSpace -> {
                         proceedWithChangingSpaceType(SpaceUxType.DATA)
                     }
                 }
+            }
+
+            is UiEvent.OnResetChatNotification -> {
+                onResetChatNotification(uiEvent.chatId)
             }
         }
     }
@@ -670,12 +738,14 @@ class SpaceSettingsViewModel(
                         code = newWallpaper.code
                     )
                 }
+
                 is WallpaperView.SolidColor -> {
                     SetWallpaper.Params.SolidColor(
                         space = vmParams.space.id,
                         code = newWallpaper.code
                     )
                 }
+
                 is WallpaperView.SpaceColor -> {
                     SetWallpaper.Params.Clear(
                         space = vmParams.space.id
@@ -825,7 +895,7 @@ class SpaceSettingsViewModel(
                     Timber.e(it, "Error while setting default object type")
                 },
                 onSuccess = {
-                    when(val state = uiState.value) {
+                    when (val state = uiState.value) {
                         is UiSpaceSettingsState.SpaceSettings -> {
                             uiState.value = state.copy(
                                 items = state.items.map { item ->
@@ -841,6 +911,7 @@ class SpaceSettingsViewModel(
                                 }
                             )
                         }
+
                         else -> {
                             Timber.w("Unexpected ui state when updating object type: $state")
                         }
@@ -913,7 +984,7 @@ class SpaceSettingsViewModel(
                 commands.emit(Command.RequestNotificationPermission)
                 return@launch
             }
-            
+
             // Call backend to set notification state
             setSpaceNotificationMode.async(
                 SetSpaceNotificationMode.Params(
@@ -985,6 +1056,91 @@ class SpaceSettingsViewModel(
         }
     }
 
+    private fun getSpaceChatsCustomNotificationsSubscriptionId(): String {
+        return "space-chats-custom-notifications-${vmParams.space.id}"
+    }
+
+    /**
+     * Subscribes to chats with custom notification states and filters them to show only those
+     * with notification states different from the space default.
+     */
+    private fun subscribeToChatsWithCustomNotifications(): Job {
+        return viewModelScope.launch {
+            // Observe all chat objects in the space
+            val searchParams = StoreSearchParams(
+                space = vmParams.space,
+                subscription = getSpaceChatsCustomNotificationsSubscriptionId(),
+                filters = listOf(
+                    DVFilter(
+                        relation = Relations.LAYOUT,
+                        condition = DVFilterCondition.EQUAL,
+                        value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                    )
+                ),
+                keys = listOf(
+                    Relations.ID,
+                    Relations.NAME,
+                    Relations.ICON_EMOJI,
+                    Relations.ICON_IMAGE,
+                    Relations.TARGET_OBJECT_TYPE
+                )
+            )
+
+            // Combine chats with space view to filter by custom notification states
+            combine(
+                storelessSubscriptionContainer.subscribe(searchParams = searchParams),
+                spaceViewContainer.observe(vmParams.space)
+            ) { chats, spaceView ->
+
+                // Filter chats that have custom notification states (different from space default)
+                chats.mapNotNull { chat ->
+                    val chatState = NotificationStateCalculator.calculateChatNotificationState(
+                        chatSpace = spaceView,
+                        chatId = chat.id
+                    )
+                    if (chatState != spaceView.spacePushNotificationMode) {
+                        val objectType = storeOfObjectTypes.getTypeOfObject(chat)
+                        ChatNotificationItem(
+                            id = chat.id,
+                            name = chat.name.orEmpty(),
+                            customState = chatState,
+                            icon = chat.objectIcon(builder = urlBuilder, objType = objectType)
+                        )
+                    } else null
+                }
+            }.catch { error ->
+                Timber.e(error, "Error observing chats with custom notifications")
+                emit(emptyList())
+            }.collect { filteredChats ->
+                chatsWithCustomNotifications.value = filteredChats
+                Timber.d("Chats with custom notifications updated: ${filteredChats.size} chats")
+            }
+        }
+    }
+
+    /**
+     * Resets a chat's notification state to the space default by removing it from all
+     * force notification lists.
+     */
+    fun onResetChatNotification(chatId: Id) {
+        viewModelScope.launch {
+            resetSpaceChatNotification.async(
+                ResetSpaceChatNotification.Params(
+                    space = vmParams.space,
+                    chatId = chatId
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully reset notification state for chat: $chatId")
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Failed to reset notification state for chat: $chatId")
+                    sendToast("Failed to reset notification settings")
+                }
+            )
+        }
+    }
+
     /**
      * Determines whether the "Change Type" option should be shown in space settings.
      *
@@ -1008,9 +1164,9 @@ class SpaceSettingsViewModel(
         return false
 
         return permission?.isOwner() == true
-            && spaceView.spaceUxType != null
-            && spaceView.spaceAccessType == SpaceAccessType.SHARED
-            && !spaceView.chatId.isNullOrEmpty()
+                && spaceView.spaceUxType != null
+                && spaceView.spaceAccessType == SpaceAccessType.SHARED
+                && !spaceView.chatId.isNullOrEmpty()
     }
 
     data class ShareLimitsState(
@@ -1024,7 +1180,9 @@ class SpaceSettingsViewModel(
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
-        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
+        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) :
+            Command()
+
         data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()
@@ -1058,7 +1216,6 @@ class SpaceSettingsViewModel(
         private val container: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val setSpaceDetails: SetSpaceDetails,
-        private val gradientProvider: SpaceGradientProvider,
         private val spaceManager: SpaceManager,
         private val deleteSpace: DeleteSpace,
         private val spaceGradientProvider: SpaceGradientProvider,
@@ -1072,8 +1229,6 @@ class SpaceSettingsViewModel(
         private val appActionManager: AppActionManager,
         private val storeOfObjectTypes: StoreOfObjectTypes,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
-        private val fetchObject: FetchObject,
-        private val setObjectDetails: SetObjectDetails,
         private val getAccount: GetAccount,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val setSpaceNotificationMode: SetSpaceNotificationMode,
@@ -1082,7 +1237,8 @@ class SpaceSettingsViewModel(
         private val spaceInviteLinkStore: SpaceInviteLinkStore,
         private val getGradients: GetCoverGradientCollection,
         private val setWallpaper: SetWallpaper,
-        private val stringResourceProvider: StringResourceProvider
+        private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
+        private val resetSpaceChatNotification: ResetSpaceChatNotification
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -1092,7 +1248,6 @@ class SpaceSettingsViewModel(
             urlBuilder = urlBuilder,
             spaceManager = spaceManager,
             setSpaceDetails = setSpaceDetails,
-            gradientProvider = gradientProvider,
             analytics = analytics,
             deleteSpace = deleteSpace,
             spaceGradientProvider = spaceGradientProvider,
@@ -1107,8 +1262,6 @@ class SpaceSettingsViewModel(
             appActionManager = appActionManager,
             storeOfObjectTypes = storeOfObjectTypes,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
-            fetchObject = fetchObject,
-            setObjectDetails = setObjectDetails,
             getAccount = getAccount,
             notificationPermissionManager = notificationPermissionManager,
             setSpaceNotificationMode = setSpaceNotificationMode,
@@ -1117,7 +1270,8 @@ class SpaceSettingsViewModel(
             spaceInviteLinkStore = spaceInviteLinkStore,
             getGradients = getGradients,
             setWallpaper = setWallpaper,
-            stringResourceProvider = stringResourceProvider
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            resetSpaceChatNotification = resetSpaceChatNotification
         ) as T
     }
 

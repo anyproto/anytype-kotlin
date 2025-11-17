@@ -13,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -153,7 +156,8 @@ class ChatFragment : Fragment() {
                         onEditInfo = vm::onEditInfo,
                         onPin = vm::onPinChatAsWidget,
                         onCopyLink = vm::onCopyChatLink,
-                        onMoveToBin = vm::onMoveToBin
+                        onMoveToBin = vm::onMoveToBin,
+                        onNotificationSettingChanged = vm::onNotificationSettingChanged
                     )
                 }
             ) { paddingValues ->
@@ -331,6 +335,9 @@ class ChatFragment : Fragment() {
                 )
                 
                 ModalBottomSheet(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.statusBars),
                     onDismissRequest = { 
                         showChatInfoScreen = false
                         chatInfoData = null

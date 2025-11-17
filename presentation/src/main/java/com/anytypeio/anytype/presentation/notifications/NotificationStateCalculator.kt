@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.notifications
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
@@ -33,5 +34,30 @@ object NotificationStateCalculator {
         // For spaces with chat, only return space-level mute state
         return spaceView.spacePushNotificationMode == NotificationState.DISABLE
                 || spaceView.spacePushNotificationMode == NotificationState.MENTIONS
+    }
+
+    /**
+     * Calculates the effective notification state for a specific chat.
+     *
+     * The priority order is:
+     * 1. Per-chat force-all list (highest priority)
+     * 2. Per-chat force-mute
+     * 3. Per-chat force-mentions list
+     * 4. Space default notification mode (fallback)
+     *
+     * @param chatSpace The space containing the chat and notification settings
+     * @param chatId The ID of the specific chat object
+     * @return The effective notification state for the chat
+     */
+    fun calculateChatNotificationState(
+        chatSpace: ObjectWrapper.SpaceView,
+        chatId: Id
+    ): NotificationState {
+        return when (chatId) {
+            in chatSpace.spacePushNotificationForceAllIds -> NotificationState.ALL
+            in chatSpace.spacePushNotificationForceMuteIds -> NotificationState.DISABLE
+            in chatSpace.spacePushNotificationForceMentionIds -> NotificationState.MENTIONS
+            else -> chatSpace.spacePushNotificationMode
+        }
     }
 } 

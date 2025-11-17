@@ -3149,6 +3149,29 @@ class Middleware @Inject constructor(
         return response
     }
 
+    fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        val request = Rpc.PushNotification.SetForceModeIds.Request(
+            spaceId = command.spaceId,
+            chatIds = command.chatIds,
+            mode = command.mode.toMiddlewareModel()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setForceModeIds(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        val request = Rpc.PushNotification.ResetIds.Request(
+            spaceId = command.spaceId,
+            chatIds = command.chatIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.resetIds(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
     @Throws(Exception::class)
     fun publishingGetStatus(command: Command.Publishing.GetStatus): Publishing.State? {
         val request = Rpc.Publishing.GetStatus.Request(

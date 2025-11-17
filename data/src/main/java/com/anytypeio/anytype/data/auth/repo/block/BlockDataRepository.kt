@@ -1141,6 +1141,14 @@ class BlockDataRepository(
         remote.unsubscribeFromMessagePreviews(subscription)
     }
 
+    override suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        return remote.setSpaceChatsNotifications(command)
+    }
+
+    override suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        return remote.resetSpaceChatsNotifications(command)
+    }
+
     override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {
         return remote.objectRelationListWithValue(command)
     }

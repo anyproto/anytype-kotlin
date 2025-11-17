@@ -2870,4 +2870,30 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun setForceModeIds(request: Rpc.PushNotification.SetForceModeIds.Request): Rpc.PushNotification.SetForceModeIds.Response {
+        val encoded = Service.pushNotificationSetForceModeIds(
+            Rpc.PushNotification.SetForceModeIds.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.SetForceModeIds.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.SetForceModeIds.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun resetIds(request: Rpc.PushNotification.ResetIds.Request): Rpc.PushNotification.ResetIds.Response {
+        val encoded = Service.pushNotificationResetIds(
+            Rpc.PushNotification.ResetIds.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.PushNotification.ResetIds.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.PushNotification.ResetIds.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

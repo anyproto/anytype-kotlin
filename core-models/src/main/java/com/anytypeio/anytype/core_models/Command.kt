@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -733,6 +734,19 @@ sealed class Command {
     data class RegisterDeviceToken(
         val token: String
     ) : Command()
+
+    sealed class SpaceChatsNotifications {
+        data class SetForceModeIds(
+            val spaceId: Id,
+            val chatIds: List<Id>,
+            val mode: NotificationState
+        ) : SpaceChatsNotifications()
+
+        data class ResetIds(
+            val spaceId: Id,
+            val chatIds: List<Id>
+        ) : SpaceChatsNotifications()
+    }
 
     sealed class Publishing : Command() {
         data class GetStatus(

@@ -619,10 +619,9 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
-                        val plainText = msg.content.toPlainText()
                         text = TextFieldValue(
-                            plainText,
-                            selection = TextRange(plainText.length)
+                            msg.content.msg,
+                            selection = TextRange(msg.content.msg.length)
                         )
                         scope.launch {
                             delay(100) // optionally delay to let layout settle

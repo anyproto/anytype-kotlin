@@ -133,7 +133,7 @@ class SpaceSettingsViewModel(
     private val setWallpaper: SetWallpaper,
     private val storelessSubscriptionContainer: StorelessSubscriptionContainer,
     private val resetSpaceChatNotification: ResetSpaceChatNotification
-): BaseViewModel() {
+) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
@@ -147,7 +147,8 @@ class SpaceSettingsViewModel(
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
 
     private val spaceInfoTitleClickCount = MutableStateFlow(0)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
+    val inviteLinkAccessLevel =
+        MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
@@ -280,18 +281,20 @@ class SpaceSettingsViewModel(
 
                 val targetSpaceId = spaceView.targetSpaceId
 
-                val spaceCreator = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
-                } else {
-                    null
-                }
+                val spaceCreator =
+                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        spaceMembers.members.find { it.id == spaceView.getValue<Id>(Relations.CREATOR) }
+                    } else {
+                        null
+                    }
                 val createdByNameOrId =
                     spaceCreator?.globalName?.takeIf { it.isNotEmpty() } ?: spaceCreator?.identity
 
                 // Calculate active members count (excluding JOINING) and limits state
                 val (spaceMemberCount, spaceLimitsState) = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
                     // Count only ACTIVE members for display
-                    val activeMemberCount = spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
+                    val activeMemberCount =
+                        spaceMembers.members.count { it.status == ParticipantStatus.ACTIVE }
 
                     activeMemberCount to spaceView.spaceLimitsState(
                         spaceMembers = spaceMembers.members,
@@ -304,11 +307,12 @@ class SpaceSettingsViewModel(
                 }
 
                 // Count members with JOINING status (pending join requests)
-                val requests: Int = if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                    spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
-                } else {
-                    0
-                }
+                val requests: Int =
+                    if (spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        spaceMembers.members.count { it.status == ParticipantStatus.JOINING }
+                    } else {
+                        0
+                    }
 
                 val deviceToken = if (BuildConfig.DEBUG || clickCount >= 5) {
                     try {
@@ -325,8 +329,7 @@ class SpaceSettingsViewModel(
                     createdBy = createdByNameOrId.orEmpty(),
                     creationDateInMillis = spaceView
                         .getValue<Double?>(Relations.CREATED_DATE)
-                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() }
-                    ,
+                        ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
                     isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
                     deviceToken = deviceToken
@@ -349,6 +352,7 @@ class SpaceSettingsViewModel(
                             add(Spacer(height = 4))
                             add(MembersSmall(count = spaceMemberCount))
                         }
+
                         SpaceAccessType.DEFAULT, null -> {
                             add(Spacer(height = 4))
                             add(EntrySpace)
@@ -372,6 +376,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
@@ -384,6 +389,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
@@ -396,6 +402,7 @@ class SpaceSettingsViewModel(
                                     )
                                 )
                             }
+
                             is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -431,7 +438,12 @@ class SpaceSettingsViewModel(
                     add(UiSpaceSettingsItem.Section.Preferences)
                     add(defaultObjectTypeSettingItem)
                     add(Spacer(height = 8))
-                    add(UiSpaceSettingsItem.Wallpapers(wallpaper = wallpaperResult, spaceIconView = spaceIcon))
+                    add(
+                        UiSpaceSettingsItem.Wallpapers(
+                            wallpaper = wallpaperResult,
+                            spaceIconView = spaceIcon
+                        )
+                    )
 
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
@@ -467,32 +479,39 @@ class SpaceSettingsViewModel(
 
     fun onUiEvent(uiEvent: UiEvent) {
         Timber.d("onUiEvent: $uiEvent")
-        when(uiEvent) {
+        when (uiEvent) {
             UiEvent.IconMenu.OnRemoveIconClicked -> {
                 proceedWithRemovingSpaceIcon()
             }
+
             UiEvent.IconMenu.OnChangeIconColorClicked -> {
                 proceedWithUpdateSpaceIconColor()
             }
+
             UiEvent.OnBackPressed -> {
                 isDismissed.value = true
             }
+
             UiEvent.OnDeleteSpaceClicked -> {
                 viewModelScope.launch { commands.emit(ShowDeleteSpaceWarning) }
             }
+
             UiEvent.OnLeaveSpaceClicked -> {
                 viewModelScope.launch { commands.emit(ShowLeaveSpaceWarning) }
             }
+
             UiEvent.OnRemoteStorageClick -> {
                 viewModelScope.launch {
                     commands.emit(ManageRemoteStorage)
                 }
             }
+
             UiEvent.OnBinClick -> {
                 viewModelScope.launch {
                     commands.emit(ManageBin(vmParams.space))
                 }
             }
+
             UiEvent.OnInviteClicked -> {
                 viewModelScope.launch {
                     commands.emit(
@@ -500,9 +519,11 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             UiEvent.OnPersonalizationClicked -> {
                 sendToast("Coming soon")
             }
+
             is UiEvent.OnQrCodeClicked -> {
                 viewModelScope.launch {
                     val (spaceName, spaceIcon) = when (val state = uiState.value) {
@@ -513,6 +534,7 @@ class SpaceSettingsViewModel(
                                 .firstOrNull()?.icon
                             name to icon
                         }
+
                         else -> "" to null
                     }
                     uiQrCodeState.value = SpaceInvite(
@@ -530,6 +552,7 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSaveDescriptionClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
@@ -542,6 +565,7 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSaveTitleClicked -> {
                 viewModelScope.launch {
                     setSpaceDetails.async(
@@ -554,14 +578,17 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnSpaceImagePicked -> {
                 proceedWithSettingSpaceImage(uiEvent.uri)
             }
+
             is UiEvent.OnSpaceMembersClicked -> {
                 viewModelScope.launch {
                     commands.emit(ManageSharedSpace(vmParams.space))
                 }
             }
+
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
@@ -575,11 +602,13 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             UiEvent.OnObjectTypesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenTypesScreen(vmParams.space))
                 }
             }
+
             UiEvent.OnPropertiesClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenPropertiesScreen(vmParams.space))
@@ -596,11 +625,13 @@ class SpaceSettingsViewModel(
                     }
                 )
             }
+
             UiEvent.OnDebugClicked -> {
                 viewModelScope.launch {
                     commands.emit(OpenDebugScreen(vmParams.space.id))
                 }
             }
+
             UiEvent.OnSpaceInfoTitleClicked -> {
                 val currentCount = spaceInfoTitleClickCount.value
                 spaceInfoTitleClickCount.value = currentCount + 1
@@ -631,6 +662,7 @@ class SpaceSettingsViewModel(
                         )
                 }
             }
+
             is UiEvent.OnShareLinkClicked -> {
                 viewModelScope.launch {
                     // Analytics Event #6: ClickShareSpaceShareLink
@@ -641,27 +673,33 @@ class SpaceSettingsViewModel(
                     )
                 }
             }
+
             is UiEvent.OnUpdateWallpaperClicked -> {
                 proceedWithWallpaperUpdate(uiEvent)
             }
+
             UiEvent.OnAddMoreSpacesClicked -> {
                 viewModelScope.launch {
                     commands.emit(Command.NavigateToMembership)
                 }
             }
+
             UiEvent.OnChangeTypeClicked -> {
                 // This event opens the bottom sheet, no action needed in ViewModel
             }
+
             is UiEvent.OnChangeSpaceType -> {
                 when (uiEvent) {
                     is UiEvent.OnChangeSpaceType.ToChat -> {
                         proceedWithChangingSpaceType(SpaceUxType.CHAT)
                     }
+
                     is UiEvent.OnChangeSpaceType.ToSpace -> {
                         proceedWithChangingSpaceType(SpaceUxType.DATA)
                     }
                 }
             }
+
             is UiEvent.OnResetChatNotification -> {
                 onResetChatNotification(uiEvent.chatId)
             }
@@ -700,12 +738,14 @@ class SpaceSettingsViewModel(
                         code = newWallpaper.code
                     )
                 }
+
                 is WallpaperView.SolidColor -> {
                     SetWallpaper.Params.SolidColor(
                         space = vmParams.space.id,
                         code = newWallpaper.code
                     )
                 }
+
                 is WallpaperView.SpaceColor -> {
                     SetWallpaper.Params.Clear(
                         space = vmParams.space.id
@@ -855,7 +895,7 @@ class SpaceSettingsViewModel(
                     Timber.e(it, "Error while setting default object type")
                 },
                 onSuccess = {
-                    when(val state = uiState.value) {
+                    when (val state = uiState.value) {
                         is UiSpaceSettingsState.SpaceSettings -> {
                             uiState.value = state.copy(
                                 items = state.items.map { item ->
@@ -871,6 +911,7 @@ class SpaceSettingsViewModel(
                                 }
                             )
                         }
+
                         else -> {
                             Timber.w("Unexpected ui state when updating object type: $state")
                         }
@@ -943,7 +984,7 @@ class SpaceSettingsViewModel(
                 commands.emit(Command.RequestNotificationPermission)
                 return@launch
             }
-            
+
             // Call backend to set notification state
             setSpaceNotificationMode.async(
                 SetSpaceNotificationMode.Params(
@@ -1052,23 +1093,20 @@ class SpaceSettingsViewModel(
             ) { chats, spaceView ->
 
                 // Filter chats that have custom notification states (different from space default)
-                chats.filter { chat ->
+                chats.mapNotNull { chat ->
                     val chatState = NotificationStateCalculator.calculateChatNotificationState(
                         chatSpace = spaceView,
                         chatId = chat.id
                     )
-                    chatState != spaceView.spacePushNotificationMode
-                }.map { chat ->
-                    val objectType = storeOfObjectTypes.getTypeOfObject(chat)
-                    ChatNotificationItem(
-                        id = chat.id,
-                        name = chat.name.orEmpty(),
-                        customState = NotificationStateCalculator.calculateChatNotificationState(
-                            chatSpace = spaceView,
-                            chatId = chat.id
-                        ),
-                        icon = chat.objectIcon(builder = urlBuilder, objType = objectType)
-                    )
+                    if (chatState != spaceView.spacePushNotificationMode) {
+                        val objectType = storeOfObjectTypes.getTypeOfObject(chat)
+                        ChatNotificationItem(
+                            id = chat.id,
+                            name = chat.name.orEmpty(),
+                            customState = chatState,
+                            icon = chat.objectIcon(builder = urlBuilder, objType = objectType)
+                        )
+                    } else null
                 }
             }.catch { error ->
                 Timber.e(error, "Error observing chats with custom notifications")
@@ -1126,9 +1164,9 @@ class SpaceSettingsViewModel(
         return false
 
         return permission?.isOwner() == true
-            && spaceView.spaceUxType != null
-            && spaceView.spaceAccessType == SpaceAccessType.SHARED
-            && !spaceView.chatId.isNullOrEmpty()
+                && spaceView.spaceUxType != null
+                && spaceView.spaceAccessType == SpaceAccessType.SHARED
+                && !spaceView.chatId.isNullOrEmpty()
     }
 
     data class ShareLimitsState(
@@ -1142,7 +1180,9 @@ class SpaceSettingsViewModel(
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
-        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) : Command()
+        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) :
+            Command()
+
         data object ExitToVault : Command()
         data object ShowDeleteSpaceWarning : Command()
         data object ShowLeaveSpaceWarning : Command()

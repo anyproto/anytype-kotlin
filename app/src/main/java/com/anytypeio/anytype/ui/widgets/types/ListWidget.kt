@@ -93,7 +93,7 @@ fun ListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = element.counter
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -195,14 +195,13 @@ fun CompactListWidgetList(
                     style = PreviewTitle2Medium,
                     color = color
                 )
-
-                val counter = element.counter
                 
-                if (counter != null) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        if (counter.unreadMentionCount > 0) {
+                if (element is WidgetView.Element.Chat) {
+                    element.counter?.let { counter ->
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            if (counter.unreadMentionCount > 0) {
                             Box(
                                 modifier = Modifier
                                     .background(
@@ -218,26 +217,27 @@ fun CompactListWidgetList(
                                 )
                             }
                         }
-                        if (counter.unreadMessageCount > 0) {
-                            if (counter.unreadMentionCount > 0) {
-                                Spacer(modifier = Modifier.width(8.dp))
-                            }
-                            Box(
-                                modifier = Modifier
-                                    .height(20.dp)
-                                    .defaultMinSize(minWidth = 20.dp)
-                                    .background(
-                                        color = colorResource(R.color.color_accent),
-                                        shape = CircleShape
-                                    ),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Text(
-                                    modifier = Modifier.padding(horizontal = 6.dp),
-                                    text = counter.unreadMessageCount.toString(),
-                                    style = Caption1Regular,
-                                    color = colorResource(id = R.color.text_white),
-                                )
+                            if (counter.unreadMessageCount > 0) {
+                                if (counter.unreadMentionCount > 0) {
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                }
+                                Box(
+                                    modifier = Modifier
+                                        .height(20.dp)
+                                        .defaultMinSize(minWidth = 20.dp)
+                                        .background(
+                                            color = colorResource(R.color.color_accent),
+                                            shape = CircleShape
+                                        ),
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        modifier = Modifier.padding(horizontal = 6.dp),
+                                        text = counter.unreadMessageCount.toString(),
+                                        style = Caption1Regular,
+                                        color = colorResource(id = R.color.text_white),
+                                    )
+                                }
                             }
                         }
                     }

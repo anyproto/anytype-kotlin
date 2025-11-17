@@ -229,22 +229,26 @@ class DataViewListWidgetContainer(
                                                         }
                                                     }
                                                     .distinctUntilChanged()
-                                                    .map {
+                                                    .map { previewList ->
                                                         view.copy(
-                                                            elements = view.elements.map { chat ->
-                                                                val preview = it.find { p ->
-                                                                    p.chat == chat.obj.id
+                                                            elements = view.elements.map { element ->
+                                                                val preview = previewList.find { p ->
+                                                                    p.chat == element.obj.id
                                                                 }
                                                                 val state = preview?.state
                                                                 if (preview != null && state != null) {
-                                                                    chat.copy(
+                                                                    WidgetView.SetOfObjects.Element.Chat(
+                                                                        obj = element.obj,
+                                                                        objectIcon = element.objectIcon,
+                                                                        name = element.name,
+                                                                        cover = element.cover,
                                                                         counter = WidgetView.ChatCounter(
                                                                             unreadMentionCount = state.unreadMentions?.counter ?: 0,
                                                                             unreadMessageCount = state.unreadMessages?.counter ?: 0
                                                                         )
                                                                     )
                                                                 } else {
-                                                                    chat
+                                                                    element
                                                                 }
                                                             }
                                                         )
@@ -523,7 +527,7 @@ class DataViewListWidgetContainer(
                 view = target.id,
                 tabs = obj.tabs(viewer = activeView),
                 elements = displayObjects.map { obj ->
-                    WidgetView.SetOfObjects.Element(
+                    WidgetView.SetOfObjects.Element.Regular(
                         obj = obj,
                         objectIcon = if (withIcon) {
                             obj.objectIcon(
@@ -585,7 +589,7 @@ class DataViewListWidgetContainer(
                 source = widget.source,
                 tabs = obj.tabs(viewer = activeView),
                 elements = displayObjects.map { obj ->
-                    WidgetView.SetOfObjects.Element(
+                    WidgetView.SetOfObjects.Element.Regular(
                         obj = obj,
                         objectIcon = obj.objectIcon(
                             builder = urlBuilder,

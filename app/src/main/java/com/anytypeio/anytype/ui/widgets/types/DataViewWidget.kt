@@ -137,7 +137,7 @@ fun DataViewListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = element.counter
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -703,7 +703,7 @@ private fun GalleryIconTitleContent(
 @Composable
 fun GalleryWidgetItemCard_ImageType_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -726,7 +726,7 @@ fun GalleryWidgetItemCard_ImageType_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithImageCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -750,7 +750,7 @@ fun GalleryWidgetItemCard_WithImageCover_Preview() {
 fun GalleryWidgetItemCard_WithColorCover_Preview() {
     GalleryWidgetItemCard(
         showIcon = true,
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -773,7 +773,7 @@ fun GalleryWidgetItemCard_WithColorCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithGradientCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -796,7 +796,7 @@ fun GalleryWidgetItemCard_WithGradientCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_NoCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -820,7 +820,7 @@ fun GalleryWidgetItemCard_NoCover_Preview() {
 fun GalleryWidgetItemCard_NoCoverShort_Preview() {
     GalleryWidgetItemCard(
         showIcon = true,
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.TypeIcon.Default(
                 rawValue = "american-football",
                 color = CustomIconColor.Blue
@@ -858,7 +858,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💡"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -869,7 +869,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Product Ideas")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📊"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -880,7 +880,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Q4 Planning")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("✅"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -920,22 +920,22 @@ fun DataViewListWidgetCard_Compact_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🏠"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Home Dashboard")),
                     name = WidgetView.Name.Default("Home Dashboard")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📁"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Projects Folder")),
                     name = WidgetView.Name.Default("Projects Folder")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Reading List")),
                     name = WidgetView.Name.Default("Reading List")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🔖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-4", Relations.NAME to "Bookmarks")),
                     name = WidgetView.Name.Default("Bookmarks")
@@ -1028,7 +1028,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Book 1")),
                     name = WidgetView.Name.Default("Book 1")
@@ -1079,7 +1079,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                 )
             ),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -1090,7 +1090,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                     ),
                     name = WidgetView.Name.Default("Design mockups")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "task-2", Relations.NAME to "Code review")),
                     name = WidgetView.Name.Default("Code review")
@@ -1125,12 +1125,12 @@ fun DataViewListWidgetCard_EditMode_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📄"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Document 1")),
                     name = WidgetView.Name.Default("Document 1")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📝"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Document 2")),
                     name = WidgetView.Name.Default("Document 2")
@@ -1163,17 +1163,17 @@ fun DataViewListWidgetCard_Favorites_Preview() {
             source = Widget.Source.Bundled.Favorites,
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💼"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Work Notes")),
                     name = WidgetView.Name.Default("Work Notes")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🎨"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Design System")),
                     name = WidgetView.Name.Default("Design System")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🚀"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Launch Plan")),
                     name = WidgetView.Name.Default("Launch Plan")

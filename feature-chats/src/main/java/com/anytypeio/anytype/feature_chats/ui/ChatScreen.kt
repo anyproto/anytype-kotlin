@@ -169,7 +169,7 @@ fun ChatScreenWrapper(
             lazyListState = lazyListState,
             onReacted = vm::onReacted,
             onCopyMessage = { msg ->
-                clipboard.setText(AnnotatedString(text = msg.content.msg))
+                clipboard.setText(AnnotatedString(text = msg.content.toPlainText()))
                 vm.onCopyMessageTextActionTriggered()
             },
             onDeleteMessage = vm::onDeleteMessage,
@@ -619,9 +619,10 @@ fun ChatScreen(
                 onAttachmentClicked = onAttachmentClicked,
                 onEditMessage = { msg ->
                     onEditMessage(msg).also {
+                        val plainText = msg.content.toPlainText()
                         text = TextFieldValue(
-                            msg.content.msg,
-                            selection = TextRange(msg.content.msg.length)
+                            plainText,
+                            selection = TextRange(plainText.length)
                         )
                         scope.launch {
                             delay(100) // optionally delay to let layout settle

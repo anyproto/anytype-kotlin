@@ -158,7 +158,6 @@ fun BoxScope.ChatMenu(
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.ALL)
-                        onDismissRequest()
                     }
                 )
 
@@ -171,7 +170,6 @@ fun BoxScope.ChatMenu(
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.MENTIONS)
-                        onDismissRequest()
                     }
                 )
 
@@ -184,7 +182,6 @@ fun BoxScope.ChatMenu(
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.MUTE)
-                        onDismissRequest()
                     }
                 )
             }

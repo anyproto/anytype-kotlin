@@ -107,7 +107,7 @@ fun BoxScope.ChatMenu(
                 },
                 onClick = { onEditInfoClick() }
             )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
 
             // Pin
             DropdownMenuItem(

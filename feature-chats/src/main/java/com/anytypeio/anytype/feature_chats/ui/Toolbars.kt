@@ -73,7 +73,6 @@ fun ChatTopToolbar(
     onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
-    var showChatSpaceMenu by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.height(52.dp)
@@ -125,7 +124,7 @@ fun ChatTopToolbar(
                         .padding(end = 16.dp),
                     mainSize = 28.dp,
                     icon = header.icon,
-                    onSpaceIconClick = { showChatSpaceMenu = !showChatSpaceMenu }
+                    onSpaceIconClick = { onSpaceIconClicked() }
                 )
             }
             ChatViewModel.HeaderView.Init -> {
@@ -185,119 +184,35 @@ fun ChatTopToolbar(
                     .padding(top = 52.dp)
                     .align(Alignment.TopEnd)
             ) {
-                MaterialTheme(
-                    shapes = MaterialTheme.shapes.copy(
-                        medium = RoundedCornerShape(16.dp)
-                    ),
-                    colors = MaterialTheme.colors.copy(
-                        surface = colorResource(id = R.color.background_secondary)
-                    )
-                ) {
-                    DropdownMenu(
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        offset = DpOffset((-16).dp, 8.dp),
-                        expanded = showDropdownMenu,
-                        onDismissRequest = {
-                            showDropdownMenu = false
-                        },
-                        properties = PopupProperties(focusable = false)
-                    ) {
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.chat_edit_info),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onEditInfo()
-                            showDropdownMenu = false
-                        }
-                    )
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.object_action_pin),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onPin()
-                            showDropdownMenu = false
-                        }
-                    )
-//                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-//                    DropdownMenuItem(
-//                        content = {
-//                            Text(
-//                                text = stringResource(R.string.copy_link),
-//                                color = colorResource(id = R.color.text_primary),
-//                                modifier = Modifier.padding(end = 64.dp)
-//                            )
-//                        },
-//                        onClick = {
-//                            onCopyLink()
-//                            showDropdownMenu = false
-//                        }
-//                    )
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.chat_move_to_bin),
-                                color = colorResource(id = R.color.palette_system_red),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onMoveToBin()
-                            showDropdownMenu = false
-                        }
-                    )
-                }
-            }
-        }
-
-        if (header is ChatViewModel.HeaderView.Default && showChatSpaceMenu) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(top = 52.dp)
-                    .align(Alignment.TopEnd)
-            ) {
                 ChatMenu(
-                    expanded = showChatSpaceMenu,
+                    expanded = showDropdownMenu,
                     currentNotificationSetting = header.notificationSetting,
                     onDismissRequest = {
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     },
                     onPropertiesClick = {
                         onProperties()
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     },
                     onEditInfoClick = {
                         onEditInfo()
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     },
                     onNotificationSettingChanged = { setting ->
                         onNotificationSettingChanged(setting)
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     },
                     onPinClick = {
                         onPin()
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     },
                     onMoveToBinClick = {
                         onMoveToBin()
-                        showChatSpaceMenu = false
+                        showDropdownMenu = false
                     }
                 )
             }
         }
-    }
     }
 }
 

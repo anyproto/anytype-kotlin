@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
-import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
@@ -72,8 +71,7 @@ class ChatViewModelFactory @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
-    private val setChatNotificationMode: SetChatNotificationMode,
-    private val resetSpaceChatNotification: ResetSpaceChatNotification
+    private val setChatNotificationMode: SetChatNotificationMode
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -110,7 +108,6 @@ class ChatViewModelFactory @Inject constructor(
         setObjectListIsArchived = setObjectListIsArchived,
         setObjectDetails = setObjectDetails,
         setSpaceDetails = setSpaceDetails,
-        setChatNotificationMode = setChatNotificationMode,
-        resetSpaceChatNotification = resetSpaceChatNotification
+        setChatNotificationMode = setChatNotificationMode
     ) as T
 }

@@ -67,9 +67,9 @@ fun ChatTopToolbar(
     onInviteMembersClicked: () -> Unit,
     onEditInfo: () -> Unit,
     onPin: () -> Unit,
-    onCopyLink: () -> Unit,
+    onCopyLink: () -> Unit = {},
     onMoveToBin: () -> Unit,
-    onProperties: () -> Unit,
+    onProperties: () -> Unit = {},
     onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }

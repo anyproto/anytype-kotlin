@@ -157,7 +157,6 @@ class ChatFragment : Fragment() {
                         onPin = vm::onPinChatAsWidget,
                         onCopyLink = vm::onCopyChatLink,
                         onMoveToBin = vm::onMoveToBin,
-                        onProperties = {},
                         onNotificationSettingChanged = vm::onNotificationSettingChanged
                     )
                 }

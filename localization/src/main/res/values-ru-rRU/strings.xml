@@ -2059,4 +2059,6 @@
     <string name="move_chat_to_bin_warning_title">Переместить чат в корзину?</string>
     <string name="chat_move_to_bin_warning_description">Этот чат и все его вложения будут перемещены в Корзину. Никто не сможет отправлять новые сообщения. Вы можете восстановить его от Бин, пока он не будет полностью очищен.</string>
     <string name="chat_edit_info_upload_image">Загрузить изображение</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
 </resources>

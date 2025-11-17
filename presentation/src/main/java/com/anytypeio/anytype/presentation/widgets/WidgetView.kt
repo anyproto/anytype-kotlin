@@ -14,11 +14,16 @@ sealed class WidgetView {
         data object Empty : Name
     }
 
-    interface Element {
+    sealed interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
         val name: Name
-        val counter: ChatCounter?
+        
+        interface Regular : Element
+        
+        interface Chat : Element {
+            val counter: ChatCounter?
+        }
     }
 
     abstract val id: Id
@@ -95,13 +100,24 @@ sealed class WidgetView {
             val isSelected: Boolean
         )
 
-        data class Element(
-            override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic,
-            override val name: Name,
-            val cover: CoverView? = null,
-            override val counter: ChatCounter? = null
-        ) : WidgetView.Element
+        sealed class Element : WidgetView.Element {
+            abstract val cover: CoverView?
+            
+            data class Regular(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val cover: CoverView? = null
+            ) : Element(), WidgetView.Element.Regular
+            
+            data class Chat(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val cover: CoverView? = null,
+                override val counter: ChatCounter? = null
+            ) : Element(), WidgetView.Element.Chat
+        }
     }
 
     data class Gallery(
@@ -138,12 +154,20 @@ sealed class WidgetView {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
 
-        data class Element(
-            override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic,
-            override val name: Name,
-            override val counter: ChatCounter? = null
-        ) : WidgetView.Element
+        sealed class Element : WidgetView.Element {
+            data class Regular(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name
+            ) : Element(), WidgetView.Element.Regular
+            
+            data class Chat(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val counter: ChatCounter? = null
+            ) : Element(), WidgetView.Element.Chat
+        }
 
         sealed class Type {
             data object Recent : Type()

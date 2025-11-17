@@ -1,11 +1,20 @@
 package com.anytypeio.anytype.feature_chats.ui
 
+import androidx.annotation.DrawableRes
+import androidx.annotation.IntegerRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +40,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.feature_chats.R
 
 enum class NotificationSetting {
@@ -38,7 +48,7 @@ enum class NotificationSetting {
 }
 
 @Composable
-fun ChatMenu(
+fun BoxScope.ChatMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     currentNotificationSetting: NotificationSetting,
@@ -51,218 +61,239 @@ fun ChatMenu(
 ) {
     var notificationsExpanded by remember { mutableStateOf(false) }
     val chevronRotation by animateFloatAsState(
-        targetValue = if (notificationsExpanded) 180f else 0f,
+        targetValue = if (notificationsExpanded) 90f else 0f,
         label = "chevron rotation"
     )
-
-    Box(
-        modifier = modifier.fillMaxWidth()
+    MaterialTheme(
+        shapes = MaterialTheme.shapes.copy(
+            medium = RoundedCornerShape(12.dp)
+        ),
+        colors = MaterialTheme.colors.copy(
+            background = colorResource(id = R.color.background_secondary)
+        )
     ) {
-        MaterialTheme(
-            shapes = MaterialTheme.shapes.copy(
-                medium = RoundedCornerShape(10.dp)
-            ),
-            colors = MaterialTheme.colors.copy(
-                surface = colorResource(id = R.color.background_secondary)
-            )
+        DropdownMenu(
+            modifier = Modifier
+                .defaultMinSize(minWidth = 252.dp)
+                .background(
+                    shape = RoundedCornerShape(12.dp),
+                    color = colorResource(id = R.color.background_secondary)
+                )
+                .align(Alignment.TopEnd),
+            offset = DpOffset((-16).dp, 8.dp),
+            expanded = expanded,
+            onDismissRequest = onDismissRequest,
+            properties = PopupProperties(focusable = false)
         ) {
-            DropdownMenu(
-                modifier = Modifier.align(Alignment.TopEnd),
-                offset = DpOffset((-16).dp, 8.dp),
-                expanded = expanded,
-                onDismissRequest = onDismissRequest,
-                properties = PopupProperties(focusable = false)
-            ) {
-                // Properties
-                DropdownMenuItem(
-                    content = {
-                        Text(
-                            text = stringResource(R.string.properties),
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
-                    },
-                    onClick = { onPropertiesClick() }
-                )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            // Properties
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(R.string.properties),
+                        iconRes = R.drawable.ic_chat_menu_properties_24
+                    )
+                },
+                onClick = { onPropertiesClick() }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-                // Edit Info
-                DropdownMenuItem(
-                    content = {
-                        Text(
-                            text = stringResource(R.string.chat_edit_info),
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
-                    },
-                    onClick = { onEditInfoClick() }
-                )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            // Edit Info
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(R.string.chat_edit_info),
+                        iconRes = R.drawable.ic_edit_info_24
+                    )
+                },
+                onClick = { onEditInfoClick() }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-                // Notifications - expandable
+            // Pin
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(R.string.object_action_pin),
+                        iconRes = R.drawable.ic_pin_24
+                    )
+                },
+                onClick = { onPinClick() }
+            )
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+            // Notifications - expandable
+            DropdownMenuItem(
+                content = {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_arrow_right_18),
+                        contentDescription = null,
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                        modifier = Modifier
+                            .width(14.dp)
+                            .height(22.dp)
+                            .rotate(chevronRotation)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = stringResource(R.string.notifications_title),
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_notifications),
+                        contentDescription = "Notification icon",
+                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                        modifier = Modifier.size(24.dp)
+                    )
+                },
+                onClick = { notificationsExpanded = !notificationsExpanded }
+            )
+
+            // Notification sub-items
+            if (notificationsExpanded) {
                 DropdownMenuItem(
                     content = {
                         Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            verticalAlignment = Alignment.CenterVertically
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
                         ) {
-                            Image(
-                                painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_bell_24),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
+                            if (currentNotificationSetting == NotificationSetting.ALL) {
+                                Image(
+                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            } else {
+                                Spacer(modifier = Modifier.width(24.dp))
+                            }
                             Text(
-                                text = stringResource(R.string.notifications_title),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.weight(1f)
-                            )
-                            Image(
-                                painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_arrow_down_18),
-                                contentDescription = null,
-                                colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                modifier = Modifier
-                                    .size(18.dp)
-                                    .rotate(chevronRotation)
+                                text = stringResource(R.string.chat_notifications_receive_all),
+                                color = colorResource(id = R.color.text_primary)
                             )
                         }
                     },
-                    onClick = { notificationsExpanded = !notificationsExpanded }
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.ALL)
+                        onDismissRequest()
+                    }
                 )
 
-                // Notification sub-items
-                if (notificationsExpanded) {
-                    DropdownMenuItem(
-                        content = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(start = 32.dp)
-                            ) {
-                                if (currentNotificationSetting == NotificationSetting.ALL) {
-                                    Image(
-                                        painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                } else {
-                                    Spacer(modifier = Modifier.width(24.dp))
-                                }
-                                Text(
-                                    text = stringResource(R.string.chat_notifications_receive_all),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            }
-                        },
-                        onClick = {
-                            onNotificationSettingChanged(NotificationSetting.ALL)
-                            onDismissRequest()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        content = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(start = 32.dp)
-                            ) {
-                                if (currentNotificationSetting == NotificationSetting.MENTIONS) {
-                                    Image(
-                                        painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                } else {
-                                    Spacer(modifier = Modifier.width(24.dp))
-                                }
-                                Text(
-                                    text = stringResource(R.string.notifications_mentions),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            }
-                        },
-                        onClick = {
-                            onNotificationSettingChanged(NotificationSetting.MENTIONS)
-                            onDismissRequest()
-                        }
-                    )
-
-                    DropdownMenuItem(
-                        content = {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(start = 32.dp)
-                            ) {
-                                if (currentNotificationSetting == NotificationSetting.MUTE) {
-                                    Image(
-                                        painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                        contentDescription = null,
-                                        colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                } else {
-                                    Spacer(modifier = Modifier.width(24.dp))
-                                }
-                                Text(
-                                    text = stringResource(R.string.chat_notifications_mute_all),
-                                    color = colorResource(id = R.color.text_primary)
-                                )
-                            }
-                        },
-                        onClick = {
-                            onNotificationSettingChanged(NotificationSetting.MUTE)
-                            onDismissRequest()
-                        }
-                    )
-                }
-
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-
-                // Pin
                 DropdownMenuItem(
                     content = {
-                        Text(
-                            text = stringResource(R.string.object_action_pin),
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            if (currentNotificationSetting == NotificationSetting.MENTIONS) {
+                                Image(
+                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            } else {
+                                Spacer(modifier = Modifier.width(24.dp))
+                            }
+                            Text(
+                                text = stringResource(R.string.notifications_mentions),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        }
                     },
-                    onClick = { onPinClick() }
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.MENTIONS)
+                        onDismissRequest()
+                    }
                 )
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-                // Move to Bin
                 DropdownMenuItem(
                     content = {
-                        Text(
-                            text = stringResource(R.string.chat_move_to_bin),
-                            color = colorResource(id = R.color.palette_system_red),
-                            modifier = Modifier.padding(end = 64.dp)
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier
+                        ) {
+                            if (currentNotificationSetting == NotificationSetting.MUTE) {
+                                Image(
+                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
+                                    contentDescription = null,
+                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                            } else {
+                                Spacer(modifier = Modifier.width(24.dp))
+                            }
+                            Text(
+                                text = stringResource(R.string.chat_notifications_mute_all),
+                                color = colorResource(id = R.color.text_primary)
+                            )
+                        }
                     },
-                    onClick = { onMoveToBinClick() }
+                    onClick = {
+                        onNotificationSettingChanged(NotificationSetting.MUTE)
+                        onDismissRequest()
+                    }
                 )
             }
+
+            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+            // Move to Bin
+            DropdownMenuItem(
+                content = {
+                    ChatMenuItemContent(
+                        text = stringResource(R.string.chat_move_to_bin),
+                        iconRes = R.drawable.ic_chat_menu_to_bin_24,
+                        textColor = R.color.palette_system_red
+                    )
+                },
+                onClick = { onMoveToBinClick() }
+            )
         }
     }
+}
+
+@Composable
+private fun RowScope.ChatMenuItemContent(
+    text: String,
+    textColor: Int = R.color.text_primary,
+    @DrawableRes iconRes: Int
+) {
+    Text(
+        modifier = Modifier.weight(1f),
+        text = text,
+        color = colorResource(id = textColor),
+        style = BodyRegular
+    )
+    Image(
+        painter = painterResource(id = iconRes),
+        contentDescription = "menu item icon",
+        modifier = Modifier.size(22.dp),
+        colorFilter = ColorFilter.tint(colorResource(id = textColor))
+    )
 }
 
 @DefaultPreviews
 @Composable
 fun ChatMenuPreview() {
-    ChatMenu(
-        expanded = true,
-        currentNotificationSetting = NotificationSetting.ALL,
-        onDismissRequest = {},
-        onPropertiesClick = {},
-        onEditInfoClick = {},
-        onNotificationSettingChanged = {},
-        onPinClick = {},
-        onMoveToBinClick = {}
-    )
+    Box(
+        modifier = Modifier
+            .padding(top = 232.dp)
+            .fillMaxWidth()
+            .fillMaxHeight()
+    ) {
+        ChatMenu(
+            expanded = true,
+            currentNotificationSetting = NotificationSetting.ALL,
+            onDismissRequest = {},
+            onPropertiesClick = {},
+            onEditInfoClick = {},
+            onNotificationSettingChanged = {},
+            onPinClick = {},
+            onMoveToBinClick = {}
+        )
+    }
 }

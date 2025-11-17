@@ -54,6 +54,7 @@ import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
@@ -1035,7 +1036,8 @@ class SpaceSettingsViewModel(
                     Relations.ID,
                     Relations.NAME,
                     Relations.ICON_EMOJI,
-                    Relations.ICON_IMAGE
+                    Relations.ICON_IMAGE,
+                    Relations.TARGET_OBJECT_TYPE
                 )
             )
 
@@ -1053,13 +1055,15 @@ class SpaceSettingsViewModel(
                     )
                     chatState != spaceView.spacePushNotificationMode
                 }.map { chat ->
+                    val objectType = storeOfObjectTypes.getTypeOfObject(chat)
                     ChatNotificationItem(
                         id = chat.id,
                         name = chat.name.orEmpty(),
                         customState = NotificationStateCalculator.calculateChatNotificationState(
                             chatSpace = spaceView,
                             chatId = chat.id
-                        )
+                        ),
+                        icon = chat.objectIcon(builder = urlBuilder, objType = objectType)
                     )
                 }
             }.catch { error ->

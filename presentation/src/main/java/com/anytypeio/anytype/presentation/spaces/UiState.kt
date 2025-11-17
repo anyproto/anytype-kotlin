@@ -48,6 +48,7 @@ data class SpaceTechInfo(
 data class ChatNotificationItem(
     val id: Id,
     val name: String,
+    val icon: ObjectIcon,
     val customState: NotificationState
 )
 

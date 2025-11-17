@@ -589,10 +589,7 @@ fun NewSpaceSettingsScreen(
             targetSpaceId = uiState.targetSpaceId,
             currentState = uiState.notificationState,
             chatsWithCustomNotifications = chatsWithCustomNotifications,
-            uiEvent = {
-                showNotificationsSettings = false
-                uiEvent(it)
-            },
+            uiEvent = uiEvent,
             onDismiss = {
                 showNotificationsSettings = false
             }

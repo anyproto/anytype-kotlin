@@ -43,6 +43,21 @@ sealed interface ChatView {
             reactions.count { it.isSelected } >= ChatConfig.MAX_USER_REACTION_COUNT
 
         data class Content(val msg: String, val parts: List<Part>) {
+            /**
+             * Returns the plain text content including emoji characters.
+             * The [msg] field doesn't contain emoji characters, so this method
+             * reconstructs the text from parts, using emoji.param for emoji marks.
+             */
+            fun toPlainText(): String = buildString {
+                parts.forEach { part ->
+                    if (part.emoji?.param != null) {
+                        append(part.emoji.param)
+                    } else {
+                        append(part.part)
+                    }
+                }
+            }
+
             data class Part(
                 val part: String,
                 val styles: List<Block.Content.Text.Mark> = emptyList()

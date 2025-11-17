@@ -171,7 +171,7 @@ class ListWidgetContainer(
             source = widget.source,
             type = resolveType(),
             elements = displayObjects.map { obj ->
-                WidgetView.ListOfObjects.Element(
+                WidgetView.ListOfObjects.Element.Regular(
                     obj = obj,
                     objectIcon = obj.objectIcon(
                         builder = urlBuilder,
@@ -180,7 +180,7 @@ class ListWidgetContainer(
                     name = buildWidgetName(
                         obj = obj,
                         fieldParser = fieldParser
-                    ),
+                    )
                 )
             },
             isExpanded = true,

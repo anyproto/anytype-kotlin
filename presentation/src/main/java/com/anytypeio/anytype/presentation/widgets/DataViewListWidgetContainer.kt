@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -12,6 +13,7 @@ import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -36,10 +38,13 @@ import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.sync.Mutex
@@ -62,6 +67,7 @@ class DataViewListWidgetContainer(
     private val storeOfRelations: StoreOfRelations,
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val chatPreviewContainer: ChatPreviewContainer,
     isSessionActiveFlow: Flow<Boolean>,
     onRequestCache: () -> WidgetView? = { null },
 ) : WidgetContainer {
@@ -201,8 +207,8 @@ class DataViewListWidgetContainer(
                                             )
                                         )
                                     } else {
-                                        emitAll(
-                                            defaultWidgetSubscribe(
+                                        if (widgetSourceObj.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
+                                            val view = defaultWidgetSubscribe(
                                                 obj = ctx.obj,
                                                 activeView = activeView,
                                                 params = ctx.params,
@@ -210,7 +216,57 @@ class DataViewListWidgetContainer(
                                                 displayLimit = ctx.displayLimit,
                                                 storeOfObjectTypes = storeOfObjectTypes
                                             )
-                                        )
+                                            val previews = chatPreviewContainer
+                                                .observePreviewsBySpaceId(space)
+                                                .distinctUntilChanged()
+
+                                            val chats = view.flatMapLatest { view ->
+                                                val chats = view.elements.map { it.obj.id }
+                                                previews
+                                                    .map { list ->
+                                                        list.filter { preview ->
+                                                            chats.contains(preview.chat)
+                                                        }
+                                                    }
+                                                    .distinctUntilChanged()
+                                                    .map { previewList ->
+                                                        view.copy(
+                                                            elements = view.elements.map { element ->
+                                                                val preview = previewList.find { p ->
+                                                                    p.chat == element.obj.id
+                                                                }
+                                                                val state = preview?.state
+                                                                if (preview != null && state != null) {
+                                                                    WidgetView.SetOfObjects.Element.Chat(
+                                                                        obj = element.obj,
+                                                                        objectIcon = element.objectIcon,
+                                                                        name = element.name,
+                                                                        cover = element.cover,
+                                                                        counter = WidgetView.ChatCounter(
+                                                                            unreadMentionCount = state.unreadMentions?.counter ?: 0,
+                                                                            unreadMessageCount = state.unreadMessages?.counter ?: 0
+                                                                        )
+                                                                    )
+                                                                } else {
+                                                                    element
+                                                                }
+                                                            }
+                                                        )
+                                                    }
+                                            }
+                                            emitAll(chats)
+                                        } else {
+                                            emitAll(
+                                                defaultWidgetSubscribe(
+                                                    obj = ctx.obj,
+                                                    activeView = activeView,
+                                                    params = ctx.params,
+                                                    isCompact = isCompact,
+                                                    displayLimit = ctx.displayLimit,
+                                                    storeOfObjectTypes = storeOfObjectTypes
+                                                )
+                                            )
+                                        }
                                     }
                                 } else {
                                     emit(defaultEmptyState(isCollapsed = false))
@@ -471,7 +527,7 @@ class DataViewListWidgetContainer(
                 view = target.id,
                 tabs = obj.tabs(viewer = activeView),
                 elements = displayObjects.map { obj ->
-                    WidgetView.SetOfObjects.Element(
+                    WidgetView.SetOfObjects.Element.Regular(
                         obj = obj,
                         objectIcon = if (withIcon) {
                             obj.objectIcon(
@@ -518,7 +574,7 @@ class DataViewListWidgetContainer(
         isCompact: Boolean,
         displayLimit: Int,
         storeOfObjectTypes: StoreOfObjectTypes
-    ): Flow<WidgetView> {
+    ): Flow<WidgetView.SetOfObjects> {
         return storage.subscribe(params).map { results ->
             val objects = resolveObjectOrder(
                 searchResults = results,
@@ -527,12 +583,13 @@ class DataViewListWidgetContainer(
             )
             val hasMore = objects.size > displayLimit
             val displayObjects = objects.take(displayLimit)
+
             WidgetView.SetOfObjects(
                 id = widget.id,
                 source = widget.source,
                 tabs = obj.tabs(viewer = activeView),
                 elements = displayObjects.map { obj ->
-                    WidgetView.SetOfObjects.Element(
+                    WidgetView.SetOfObjects.Element.Regular(
                         obj = obj,
                         objectIcon = obj.objectIcon(
                             builder = urlBuilder,

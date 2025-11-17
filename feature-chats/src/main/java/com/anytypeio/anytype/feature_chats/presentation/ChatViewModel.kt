@@ -2024,7 +2024,7 @@ class ChatViewModel @Inject constructor(
                     chatIds = listOf(vmParams.ctx),
                     mode = mode
                 )
-            ).onSuccess {
+            ).onSuccess { payload ->
                 Timber.d("Notification setting changed successfully to: $setting")
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")

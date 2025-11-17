@@ -1,11 +1,9 @@
 package com.anytypeio.anytype.feature_chats.ui
 
 import androidx.annotation.DrawableRes
-import androidx.annotation.IntegerRes
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Row
@@ -153,26 +151,10 @@ fun BoxScope.ChatMenu(
             if (notificationsExpanded) {
                 DropdownMenuItem(
                     content = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                        ) {
-                            if (currentNotificationSetting == NotificationSetting.ALL) {
-                                Image(
-                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            } else {
-                                Spacer(modifier = Modifier.width(24.dp))
-                            }
-                            Text(
-                                text = stringResource(R.string.chat_notifications_receive_all),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        }
+                        NotificationOptionItem(
+                            text = stringResource(R.string.chat_notifications_receive_all),
+                            isSelected = currentNotificationSetting == NotificationSetting.ALL
+                        )
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.ALL)
@@ -182,26 +164,10 @@ fun BoxScope.ChatMenu(
 
                 DropdownMenuItem(
                     content = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                        ) {
-                            if (currentNotificationSetting == NotificationSetting.MENTIONS) {
-                                Image(
-                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            } else {
-                                Spacer(modifier = Modifier.width(24.dp))
-                            }
-                            Text(
-                                text = stringResource(R.string.notifications_mentions),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        }
+                        NotificationOptionItem(
+                            text = stringResource(R.string.notifications_mentions),
+                            isSelected = currentNotificationSetting == NotificationSetting.MENTIONS
+                        )
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.MENTIONS)
@@ -211,26 +177,10 @@ fun BoxScope.ChatMenu(
 
                 DropdownMenuItem(
                     content = {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                        ) {
-                            if (currentNotificationSetting == NotificationSetting.MUTE) {
-                                Image(
-                                    painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
-                                    contentDescription = null,
-                                    colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                            } else {
-                                Spacer(modifier = Modifier.width(24.dp))
-                            }
-                            Text(
-                                text = stringResource(R.string.chat_notifications_mute_all),
-                                color = colorResource(id = R.color.text_primary)
-                            )
-                        }
+                        NotificationOptionItem(
+                            text = stringResource(R.string.chat_notifications_mute_all),
+                            isSelected = currentNotificationSetting == NotificationSetting.MUTE
+                        )
                     },
                     onClick = {
                         onNotificationSettingChanged(NotificationSetting.MUTE)
@@ -253,6 +203,33 @@ fun BoxScope.ChatMenu(
                 onClick = { onMoveToBinClick() }
             )
         }
+    }
+}
+
+@Composable
+private fun NotificationOptionItem(
+    text: String,
+    isSelected: Boolean
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+    ) {
+        if (isSelected) {
+            Image(
+                painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_check_16),
+                contentDescription = null,
+                colorFilter = ColorFilter.tint(colorResource(id = R.color.text_primary)),
+                modifier = Modifier.size(16.dp)
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+        } else {
+            Spacer(modifier = Modifier.width(24.dp))
+        }
+        Text(
+            text = text,
+            color = colorResource(id = R.color.text_primary)
+        )
     }
 }
 

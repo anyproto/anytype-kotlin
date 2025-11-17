@@ -330,7 +330,7 @@
     <string name="unknown_object_type">Tipo desconhecido</string>
     <string name="relation_format_short_text">Texto curto</string>
     <string name="relation_format_long_text">Texto</string>
-    <string name="set_new_relation">Definir nova prioridade</string>
+    <string name="set_new_relation">Definir nova propriedade</string>
     <string name="relation_deleted">Propriedade deletada</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>

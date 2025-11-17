@@ -42,6 +42,8 @@ sealed class UiEvent {
         data class None(override val targetSpaceId: Id?) : OnNotificationsSetting()
     }
 
+    data class OnResetChatNotification(val chatId: Id) : UiEvent()
+
     data object OnAddMoreSpacesClicked : UiEvent()
 
     data object OnChangeTypeClicked : UiEvent()

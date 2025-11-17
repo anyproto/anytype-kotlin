@@ -42,6 +42,15 @@ data class SpaceTechInfo(
     val deviceToken: String? = null
 )
 
+/**
+ * Represents a chat with a custom notification state different from the space default.
+ */
+data class ChatNotificationItem(
+    val id: Id,
+    val name: String,
+    val customState: NotificationState
+)
+
 sealed class UiSpaceSettingsItem {
     sealed class Section : UiSpaceSettingsItem() {
         data object Collaboration : Section()

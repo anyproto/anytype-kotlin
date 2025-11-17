@@ -36,6 +36,7 @@ import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
+import timber.log.Timber
 
 
 @Composable
@@ -53,6 +54,8 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
+
+    Timber.d("Type widgets: $typeWidgets")
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }

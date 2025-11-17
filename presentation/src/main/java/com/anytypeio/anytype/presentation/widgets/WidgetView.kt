@@ -18,6 +18,7 @@ sealed class WidgetView {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
         val name: Name
+        val counter: ChatCounter?
     }
 
     abstract val id: Id
@@ -99,7 +100,7 @@ sealed class WidgetView {
             override val obj: ObjectWrapper.Basic,
             override val name: Name,
             val cover: CoverView? = null,
-            val counter: ChatCounter? = null
+            override val counter: ChatCounter? = null
         ) : WidgetView.Element
     }
 
@@ -141,7 +142,7 @@ sealed class WidgetView {
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
             override val name: Name,
-            val counter: ChatCounter? = null
+            override val counter: ChatCounter? = null
         ) : WidgetView.Element
 
         sealed class Type {

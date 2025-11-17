@@ -208,7 +208,6 @@ class DataViewListWidgetContainer(
                                         )
                                     } else {
                                         if (widgetSourceObj.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
-                                            Timber.d("Detected chat source")
                                             val view = defaultWidgetSubscribe(
                                                 obj = ctx.obj,
                                                 activeView = activeView,

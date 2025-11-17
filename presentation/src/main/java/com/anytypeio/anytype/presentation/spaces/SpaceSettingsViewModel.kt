@@ -94,6 +94,7 @@ import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.getSpaceIconColor
 import javax.inject.Inject
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -157,6 +158,7 @@ class SpaceSettingsViewModel(
      * These chats can be reset to use the space default notification setting.
      */
     val chatsWithCustomNotifications = MutableStateFlow<List<ChatNotificationItem>>(emptyList())
+    private var chatNotificationsJob: Job? = null
 
     init {
         Timber.d("SpaceSettingsViewModel, Init, vmParams: $vmParams")
@@ -170,17 +172,19 @@ class SpaceSettingsViewModel(
     }
 
     fun onStart() {
-        subscribeToChatsWithCustomNotifications()
+        chatNotificationsJob = subscribeToChatsWithCustomNotifications()
     }
 
     fun onStop() {
-        chatsWithCustomNotifications.value = emptyList()
+        chatNotificationsJob?.cancel()
+        chatNotificationsJob = null
         viewModelScope.launch {
             storelessSubscriptionContainer.unsubscribe(
                 listOf(
                     getSpaceChatsCustomNotificationsSubscriptionId()
                 )
             )
+            chatsWithCustomNotifications.value = emptyList()
         }
     }
 
@@ -1019,8 +1023,8 @@ class SpaceSettingsViewModel(
      * Subscribes to chats with custom notification states and filters them to show only those
      * with notification states different from the space default.
      */
-    private fun subscribeToChatsWithCustomNotifications() {
-        viewModelScope.launch {
+    private fun subscribeToChatsWithCustomNotifications(): Job {
+        return viewModelScope.launch {
             // Observe all chat objects in the space
             val searchParams = StoreSearchParams(
                 space = vmParams.space,

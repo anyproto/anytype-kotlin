@@ -674,6 +674,9 @@ class ChatViewModel @Inject constructor(
 
             preloadingJobs.cancel()
 
+            // Discard mention panel state on send action
+            mentionPanelState.value = MentionPanelState.Hidden
+
             // Use LinkDetector to find all types of links (URLs, emails, phones)
             val detectedLinkMarks = LinkDetector.addLinkMarksToText(
                 text = msg,

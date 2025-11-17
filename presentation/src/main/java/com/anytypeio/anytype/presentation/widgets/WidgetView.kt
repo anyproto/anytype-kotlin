@@ -18,6 +18,7 @@ sealed class WidgetView {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
         val name: Name
+        val counter: ChatCounter?
     }
 
     abstract val id: Id
@@ -65,7 +66,8 @@ sealed class WidgetView {
         val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
-        override val sectionType: SectionType? = null
+        override val sectionType: SectionType? = null,
+        val counter: ChatCounter? = null
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -97,7 +99,8 @@ sealed class WidgetView {
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
             override val name: Name,
-            val cover: CoverView? = null
+            val cover: CoverView? = null,
+            override val counter: ChatCounter? = null
         ) : WidgetView.Element
     }
 
@@ -138,7 +141,8 @@ sealed class WidgetView {
         data class Element(
             override val objectIcon: ObjectIcon,
             override val obj: ObjectWrapper.Basic,
-            override val name: Name
+            override val name: Name,
+            override val counter: ChatCounter? = null
         ) : WidgetView.Element
 
         sealed class Type {
@@ -180,6 +184,11 @@ sealed class WidgetView {
     }
 
     interface Draggable
+
+    data class ChatCounter(
+        val unreadMentionCount: Int,
+        val unreadMessageCount: Int
+    )
 }
 
 sealed class DropDownMenuAction {

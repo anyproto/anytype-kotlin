@@ -2030,4 +2030,6 @@ Please provide specific details of your needs here.</string>
     <string name="move_chat_to_bin_warning_title">Spostare la chat nel Cestino?</string>
     <string name="chat_move_to_bin_warning_description">Questa chat e tutti i suoi allegati saranno spostati nel Cestino. Nessuno potrà inviare nuovi messaggi. È possibile ripristinarla dal Cestino fino a quando non verrà eliminata definitivamente.</string>
     <string name="chat_edit_info_upload_image">Carica Immagine</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
 </resources>

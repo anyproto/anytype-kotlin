@@ -262,7 +262,7 @@ private fun ChatSubtitleRow(
 }
 
 @Composable
-private fun UnreadIndicatorsRow(
+internal fun UnreadIndicatorsRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     isMuted: Boolean?,
@@ -449,11 +449,12 @@ fun TitleRow(
 }
 
 @Composable
-private fun buildChatContentWithInlineIcons(
+internal fun buildChatContentWithInlineIcons(
     creatorName: String?,
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
-    fallbackSubtitle: String
+    fallbackSubtitle: String,
+    singleLineFormat: Boolean = false
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
     val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
@@ -475,7 +476,11 @@ private fun buildChatContentWithInlineIcons(
                 creatorName
             }
             withStyle(style = spanTitle2Medium) {
-                append("$truncatedCreatorName\n")
+                if (singleLineFormat) {
+                    append("$truncatedCreatorName: ")
+                } else {
+                    append("$truncatedCreatorName\n")
+                }
             }
         }
 

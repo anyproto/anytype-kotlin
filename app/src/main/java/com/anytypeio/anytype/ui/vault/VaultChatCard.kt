@@ -57,6 +57,19 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
+private fun getChatTextColor(
+    isMuted: Boolean?,
+    unreadMessageCount: Int,
+    unreadMentionCount: Int
+): androidx.compose.ui.graphics.Color {
+    return when {
+        isMuted == true -> colorResource(id = R.color.text_transparent_secondary)
+        unreadMessageCount == 0 && unreadMentionCount == 0 -> colorResource(id = R.color.text_transparent_secondary)
+        else -> colorResource(id = R.color.text_primary)
+    }
+}
+
+@Composable
 fun VaultChatCard(
     modifier: Modifier = Modifier,
     title: String,
@@ -235,11 +248,17 @@ private fun ChatSubtitleRow(
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
+        val textColor = getChatTextColor(
+            isMuted = isMuted,
+            unreadMessageCount = unreadMessageCount,
+            unreadMentionCount = unreadMentionCount
+        )
         val (chatText, inlineContent) = buildChatContentWithInlineIcons(
             creatorName = creatorName,
             messageText = messageText,
             attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = subtitle
+            fallbackSubtitle = subtitle,
+            textColor = textColor
         )
 
         Text(
@@ -249,7 +268,7 @@ private fun ChatSubtitleRow(
             maxLines = 2,
             lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_transparent_secondary),
+            color = textColor,
         )
 
         UnreadIndicatorsRow(
@@ -454,11 +473,12 @@ internal fun buildChatContentWithInlineIcons(
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
     fallbackSubtitle: String,
-    singleLineFormat: Boolean = false
+    singleLineFormat: Boolean = false,
+    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary)
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
-    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
-    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle()
+    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor)
+    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }

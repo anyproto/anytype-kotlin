@@ -34,6 +34,19 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
+private fun getChatTextColor(
+    isMuted: Boolean?,
+    unreadMessageCount: Int,
+    unreadMentionCount: Int
+): androidx.compose.ui.graphics.Color {
+    return when {
+        isMuted == true -> colorResource(id = R.color.text_transparent_secondary)
+        unreadMessageCount == 0 && unreadMentionCount == 0 -> colorResource(id = R.color.text_transparent_secondary)
+        else -> colorResource(id = R.color.text_primary)
+    }
+}
+
+@Composable
 fun VaultDataSpaceChatCard(
     modifier: Modifier = Modifier,
     title: String,
@@ -181,7 +194,11 @@ private fun ContentDataSpaceChat(
             Text(
                 text = chatName,
                 style = Relations2,
-                color = colorResource(id = R.color.text_transparent_secondary),
+                color = getChatTextColor(
+                    isMuted = isMuted,
+                    unreadMessageCount = unreadMessageCount,
+                    unreadMentionCount = unreadMentionCount
+                ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f)
@@ -213,7 +230,10 @@ private fun ContentDataSpaceChat(
             DataSpaceChatPreviewRow(
                 creatorName = creatorName,
                 messageText = messageText,
-                attachmentPreviews = attachmentPreviews
+                attachmentPreviews = attachmentPreviews,
+                unreadMessageCount = unreadMessageCount,
+                unreadMentionCount = unreadMentionCount,
+                isMuted = isMuted
             )
         }
     }
@@ -223,14 +243,23 @@ private fun ContentDataSpaceChat(
 private fun DataSpaceChatPreviewRow(
     creatorName: String?,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    unreadMessageCount: Int,
+    unreadMentionCount: Int,
+    isMuted: Boolean?
 ) {
+    val textColor = getChatTextColor(
+        isMuted = isMuted,
+        unreadMessageCount = unreadMessageCount,
+        unreadMentionCount = unreadMentionCount
+    )
     val (chatText, inlineContent) = buildChatContentWithInlineIcons(
         creatorName = creatorName,
         messageText = messageText,
         attachmentPreviews = attachmentPreviews,
         fallbackSubtitle = "",
-        singleLineFormat = true
+        singleLineFormat = true,
+        textColor = textColor
     )
 
     Text(
@@ -240,7 +269,7 @@ private fun DataSpaceChatPreviewRow(
         maxLines = 1,
         lineHeight = 20.sp,
         overflow = TextOverflow.Ellipsis,
-        color = colorResource(id = R.color.text_transparent_secondary),
+        color = textColor,
     )
 }
 

@@ -171,38 +171,49 @@ private fun ContentDataSpaceChat(
                 messageTime = messageTime,
                 isMuted = isMuted
             )
+        }
 
-            // Show pin icon when no content but is pinned
-            if (!hasContent && isPinned) {
+        // Line 2: Chat Name + Indicators
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = chatName,
+                style = Relations2,
+                color = colorResource(id = R.color.text_transparent_secondary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f)
+            )
+
+            // Show indicators if there's content, or pin if pinned but no content
+            if (hasContent) {
+                UnreadIndicatorsRow(
+                    unreadMessageCount = unreadMessageCount,
+                    unreadMentionCount = unreadMentionCount,
+                    isMuted = isMuted,
+                    isPinned = isPinned
+                )
+            } else if (isPinned) {
+                // Show just pin icon when no content
                 Image(
                     painter = painterResource(R.drawable.ic_pin_18),
                     contentDescription = stringResource(R.string.content_desc_pin),
-                    modifier = Modifier.size(18.dp),
+                    modifier = Modifier
+                        .padding(start = 8.dp)
+                        .size(18.dp),
                     colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                 )
             }
         }
-
-        // Line 2: Chat Name
-        Text(
-            text = chatName,
-            style = Relations2,
-            color = colorResource(id = R.color.text_transparent_secondary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            modifier = Modifier.fillMaxWidth()
-        )
 
         // Line 3: Author + Message Preview
         if (hasContent) {
             DataSpaceChatPreviewRow(
                 creatorName = creatorName,
                 messageText = messageText,
-                attachmentPreviews = attachmentPreviews,
-                unreadMessageCount = unreadMessageCount,
-                unreadMentionCount = unreadMentionCount,
-                isMuted = isMuted,
-                isPinned = isPinned
+                attachmentPreviews = attachmentPreviews
             )
         }
     }
@@ -212,41 +223,25 @@ private fun ContentDataSpaceChat(
 private fun DataSpaceChatPreviewRow(
     creatorName: String?,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
-    unreadMessageCount: Int,
-    unreadMentionCount: Int,
-    isMuted: Boolean?,
-    isPinned: Boolean
+    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
 ) {
-    Row(
+    val (chatText, inlineContent) = buildChatContentWithInlineIcons(
+        creatorName = creatorName,
+        messageText = messageText,
+        attachmentPreviews = attachmentPreviews,
+        fallbackSubtitle = "",
+        singleLineFormat = true
+    )
+
+    Text(
+        text = chatText,
+        inlineContent = inlineContent,
         modifier = Modifier.fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        val (chatText, inlineContent) = buildChatContentWithInlineIcons(
-            creatorName = creatorName,
-            messageText = messageText,
-            attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = "",
-            singleLineFormat = true
-        )
-
-        Text(
-            text = chatText,
-            inlineContent = inlineContent,
-            modifier = Modifier.weight(1f),
-            maxLines = 1,
-            lineHeight = 20.sp,
-            overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_transparent_secondary),
-        )
-
-        UnreadIndicatorsRow(
-            unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
-            isMuted = isMuted,
-            isPinned = isPinned
-        )
-    }
+        maxLines = 1,
+        lineHeight = 20.sp,
+        overflow = TextOverflow.Ellipsis,
+        color = colorResource(id = R.color.text_transparent_secondary),
+    )
 }
 
 // Preview Composables

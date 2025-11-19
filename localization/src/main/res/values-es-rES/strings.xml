@@ -1937,9 +1937,9 @@ En concreto,
     <string name="chat_box_record_video">Grabar vídeo</string>
     <string name="chat_camera_permission_denied">Sin acceso a la cámara</string>
     <string name="notifications_title">Notificaciones</string>
-    <string name="notifications_all">Toda la actividad</string>
+    <string name="notifications_all">Todos los mensajes nuevos</string>
     <string name="notifications_mentions">Solo menciones</string>
-    <string name="notifications_disable">Desactivar las notificaciones</string>
+    <string name="notifications_disable">Nada</string>
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
@@ -2028,5 +2028,9 @@ En concreto,
     <string name="chat_move_to_bin">Mover a la papelera</string>
     <string name="move_chat_to_bin_warning_title">¿Mover el chat a la papelera?</string>
     <string name="chat_move_to_bin_warning_description">Este chat y sus archivos adjuntos se moverán a la papelera. Nadie podrá enviar más mensajes. Puedes restaurarlo desde la papelera antes de que se elimine definitivamente.</string>
-    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_edit_info_upload_image">Cargar imagen</string>
+    <string name="chat_notifications_receive_all">Recibir todas</string>
+    <string name="chat_notifications_mute_all">Silenciar todas</string>
+    <string name="chat_specific_notifications">Notificaciones del chat</string>
+    <string name="notify_me_about">Notifícame sobre</string>
 </resources>

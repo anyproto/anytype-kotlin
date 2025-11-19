@@ -157,4 +157,7 @@
     <color name="navigation_panel">#BF000000</color>
     <color name="navigation_panel_icon">#66FFFFFF</color>
 
+    <color name="incentive_gradient_start">#75331F</color>
+    <color name="incentive_gradient_end">#4D261A</color>
+
 </resources>

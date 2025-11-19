@@ -1937,9 +1937,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_box_record_video">Video Kaydet</string>
     <string name="chat_camera_permission_denied">Kamera izni reddedildi</string>
     <string name="notifications_title">Bildirimler</string>
-    <string name="notifications_all">Tüm etkinlikler</string>
+    <string name="notifications_all">Tüm yeni mesajlar</string>
     <string name="notifications_mentions">Sadece bahsetmeler</string>
-    <string name="notifications_disable">Bildirimleri devre dışı bırak</string>
+    <string name="notifications_disable">Hiçbir şey</string>
     <string name="notifications_all_short">Hepsi</string>
     <string name="notifications_mentions_short">Bahsetmeler</string>
     <string name="notifications_disable_short">Devre dışı bırak</string>
@@ -2029,4 +2029,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="move_chat_to_bin_warning_title">Sohbet çöp kutusuna taşınsın mı?</string>
     <string name="chat_move_to_bin_warning_description">Bu sohbet ve tüm ekleri Çöp Kutusu\'na taşınacak. Kimse yeni mesaj gönderemeyecek. Kalıcı olarak silinene kadar Çöp Kutusu\'ndan geri yükleyebilirsin.</string>
     <string name="chat_edit_info_upload_image">Görüntü Yükle</string>
+    <string name="chat_notifications_receive_all">Tümünü al</string>
+    <string name="chat_notifications_mute_all">Tümünü sustur</string>
+    <string name="chat_specific_notifications">Sohbete özel bildirimler</string>
+    <string name="notify_me_about">Beni bilgilendir</string>
 </resources>

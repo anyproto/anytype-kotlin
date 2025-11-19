@@ -1924,9 +1924,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_box_record_video">Rekam Video</string>
     <string name="chat_camera_permission_denied">Izin kamera ditolak</string>
     <string name="notifications_title">Pemberitahuan</string>
-    <string name="notifications_all">Semua aktivitas</string>
+    <string name="notifications_all">Semua pesan baru</string>
     <string name="notifications_mentions">Hanya sebutan</string>
-    <string name="notifications_disable">Nonaktifkan notifikasi</string>
+    <string name="notifications_disable">Tidak ada</string>
     <string name="notifications_all_short">Semua</string>
     <string name="notifications_mentions_short">Sebutan</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
@@ -2014,4 +2014,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="move_chat_to_bin_warning_title">Buang obrolan ke bak sampah?</string>
     <string name="chat_move_to_bin_warning_description">Obrolan ini dan seluruh lampirannya akan dipindah ke bak sampah. Tidak ada yang akan dapat mengirimkan pesan baru. Kamu bisa mengembalikannya dari bak sampah hingga obrolan dihapus permanen.</string>
     <string name="chat_edit_info_upload_image">Unggah Gambar</string>
+    <string name="chat_notifications_receive_all">Terima semua</string>
+    <string name="chat_notifications_mute_all">Senyapkan semua</string>
+    <string name="chat_specific_notifications">Pemberitahuan spesifik obrolan</string>
+    <string name="notify_me_about">Beri notifikasi tentang</string>
 </resources>

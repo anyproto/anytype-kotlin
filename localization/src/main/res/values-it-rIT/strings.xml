@@ -1938,9 +1938,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Registra Video</string>
     <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
     <string name="notifications_title">Notifiche</string>
-    <string name="notifications_all">Tutte le attività</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Solo menzioni</string>
-    <string name="notifications_disable">Disattiva le notifiche</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
@@ -2030,4 +2030,8 @@ Please provide specific details of your needs here.</string>
     <string name="move_chat_to_bin_warning_title">Spostare la chat nel Cestino?</string>
     <string name="chat_move_to_bin_warning_description">Questa chat e tutti i suoi allegati saranno spostati nel Cestino. Nessuno potrà inviare nuovi messaggi. È possibile ripristinarla dal Cestino fino a quando non verrà eliminata definitivamente.</string>
     <string name="chat_edit_info_upload_image">Carica Immagine</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
 </resources>

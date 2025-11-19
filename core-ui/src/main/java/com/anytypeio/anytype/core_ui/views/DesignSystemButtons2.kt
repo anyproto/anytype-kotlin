@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.views
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
@@ -18,7 +19,6 @@ import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
@@ -72,7 +72,7 @@ fun ButtonUpgradeBlack(
     style: TextStyle = BodyCalloutRegular
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val backgroundColor = colorResource(id = R.color.black)
+    val backgroundColor = colorResource(id = R.color.control_primary)
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(
@@ -90,7 +90,7 @@ fun ButtonUpgradeBlack(
                 modifier = Modifier.wrapContentSize(),
                 text = text,
                 style = style,
-                color = colorResource(id = R.color.white)
+                color = colorResource(id = R.color.text_button_label)
             )
         }
     }
@@ -105,14 +105,16 @@ fun ButtonIncentiveSecond(
     style: TextStyle = UxSmallTextMedium
 ) {
     val interactionSource = remember { MutableInteractionSource() }
-    val isPressed = interactionSource.collectIsPressedAsState()
-    val backgroundColor = Color(0x1C000000)
 
     CompositionLocalProvider(LocalRippleConfiguration provides null) {
         Box(
             modifier = modifier
                 .fillMaxWidth()
-                .background(color = backgroundColor, shape = RoundedCornerShape(100.dp))
+                .border(
+                    width = 0.5.dp,
+                    color = colorResource(R.color.shape_transparent_primary),
+                    shape = RoundedCornerShape(100.dp)
+                )
                 .clickable(
                     interactionSource = interactionSource,
                     onClick = onClick,
@@ -125,7 +127,7 @@ fun ButtonIncentiveSecond(
                 modifier = Modifier.wrapContentSize(),
                 text = text,
                 style = style,
-                color = colorResource(id = R.color.black)
+                color = colorResource(id = R.color.text_primary)
             )
         }
     }

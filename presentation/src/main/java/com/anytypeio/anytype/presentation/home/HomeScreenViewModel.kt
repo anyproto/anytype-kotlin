@@ -2340,6 +2340,13 @@ class HomeScreenViewModel(
                         navigate = true
                     )
                 }
+                is WidgetView.ChatList -> {
+                    handleDefaultWidgetSource(
+                        dataViewObjectId = widget.source.id,
+                        viewId = widget.tabs.find { it.isSelected }?.id,
+                        navigate = true
+                    )
+                }
                 is WidgetView.Tree -> {
                     getDefaultObjectType.async(vmParams.spaceId).getOrNull()?.type?.let { typeKey ->
                         storeOfObjectTypes.getByKey(key = typeKey.key)?.let {

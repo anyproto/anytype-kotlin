@@ -333,7 +333,7 @@ class VaultViewModel(
             space.spaceUxType == SpaceUxType.DATA && chatPreview != null -> {
                 createDataSpaceWithChatView(space, chatPreview, permissions, wallpapers)
             }
-            // DATA space without chat → VaultSpaceView.DataSpace
+            // DATA space without chat or STREAM(not yet supported) → VaultSpaceView.DataSpace
             else -> {
                 createDataSpaceView(space, permissions, wallpapers)
             }

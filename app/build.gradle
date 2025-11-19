@@ -201,6 +201,8 @@ dependencies {
     implementation libs.constraintLayout
     implementation libs.composeConstraintLayout
     implementation libs.coilCompose
+    implementation libs.coilSvg
+    implementation libs.coilGif
     implementation libs.coilNetwork
     implementation libs.coilVideo
     implementation libs.coilCache

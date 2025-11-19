@@ -31,17 +31,15 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
-fun VaultSpaceCard(
+fun DataSpaceCard(
     modifier: Modifier,
     title: String,
     icon: SpaceIconView,
     isPinned: Boolean = false,
     spaceBackground: SpaceBackground,
-    spaceView: VaultSpaceView,
+    spaceView: VaultSpaceView.DataSpace,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (Id) -> Unit = {},
-    onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
     onSpaceSettings: (Id) -> Unit = {}
@@ -100,13 +98,7 @@ fun VaultSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isMuted,
             isPinned = spaceView.isPinned,
-            onMuteToggle = {
-                spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
-                }
-            },
             onPinToggle = {
                 spaceView.space.id.let {
                     if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
@@ -154,22 +146,30 @@ private fun ContentSpace(
 
 @Composable
 @DefaultPreviews
-fun VaultDataSpaceCardPreview() {
+fun DataSpaceCardPreview() {
     Column {
         Spacer(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(32.dp)
         )
-        VaultSpaceCard(
+        DataSpaceCard(
             modifier = Modifier.fillMaxWidth(),
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isPinned = true,
-            spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
-                space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
-                isMuted = false,
+            spaceBackground = SpaceBackground.SolidColor(
+                color = androidx.compose.ui.graphics.Color(
+                    0xFFE0F7FA
+                )
+            ),
+            spaceView = VaultSpaceView.DataSpace(
+                space = ObjectWrapper.SpaceView(
+                    map = mapOf(
+                        "name" to "Space 1",
+                        "id" to "spaceId1"
+                    )
+                ),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
                 accessType = "Owner"

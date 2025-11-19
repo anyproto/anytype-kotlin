@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -26,6 +25,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -35,12 +35,12 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
 private fun getChatTextColor(
-    isMuted: Boolean?,
+    notificationMode: NotificationState?,
     unreadMessageCount: Int,
     unreadMentionCount: Int
 ): androidx.compose.ui.graphics.Color {
     return when {
-        isMuted == true -> colorResource(id = R.color.text_transparent_secondary)
+        notificationMode == NotificationState.DISABLE -> colorResource(id = R.color.text_transparent_secondary)
         unreadMessageCount == 0 && unreadMentionCount == 0 -> colorResource(id = R.color.text_transparent_secondary)
         else -> colorResource(id = R.color.text_primary)
     }
@@ -59,9 +59,10 @@ fun VaultDataSpaceChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
+    isChatMuted: Boolean? = null,
+    chatNotificationState: NotificationState,
     isPinned: Boolean = false,
-    spaceView: VaultSpaceView,
+    spaceView: VaultSpaceView.DataSpaceWithChat,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
@@ -125,7 +126,7 @@ fun VaultDataSpaceChatCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted,
+            chatNotificationState = chatNotificationState,
             isPinned = isPinned
         )
 
@@ -133,11 +134,12 @@ fun VaultDataSpaceChatCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isMuted,
+            isMuted = isChatMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (spaceView.chatNotificationState == NotificationState.DISABLE)
+                        onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
             onPinToggle = {
@@ -164,6 +166,7 @@ private fun ContentDataSpaceChat(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    chatNotificationState: NotificationState,
     isPinned: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
@@ -195,7 +198,7 @@ private fun ContentDataSpaceChat(
                 text = chatName,
                 style = Relations2,
                 color = getChatTextColor(
-                    isMuted = isMuted,
+                    notificationMode = chatNotificationState,
                     unreadMessageCount = unreadMessageCount,
                     unreadMentionCount = unreadMentionCount
                 ),
@@ -209,7 +212,7 @@ private fun ContentDataSpaceChat(
                 UnreadIndicatorsRow(
                     unreadMessageCount = unreadMessageCount,
                     unreadMentionCount = unreadMentionCount,
-                    isMuted = isMuted,
+                    notificationMode = chatNotificationState,
                     isPinned = isPinned
                 )
             } else if (isPinned) {
@@ -233,7 +236,7 @@ private fun ContentDataSpaceChat(
                 attachmentPreviews = attachmentPreviews,
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
-                isMuted = isMuted
+                chatPreviewNotificationState = chatNotificationState
             )
         }
     }
@@ -246,10 +249,10 @@ private fun DataSpaceChatPreviewRow(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
     unreadMessageCount: Int,
     unreadMentionCount: Int,
-    isMuted: Boolean?
+    chatPreviewNotificationState: NotificationState?
 ) {
     val textColor = getChatTextColor(
-        isMuted = isMuted,
+        notificationMode = chatPreviewNotificationState,
         unreadMessageCount = unreadMessageCount,
         unreadMentionCount = unreadMentionCount
     )
@@ -294,17 +297,18 @@ fun DataSpaceChatWithMessage() {
             messageTime = "17:01",
             unreadMessageCount = 2,
             unreadMentionCount = 1,
-            isMuted = false,
+            chatNotificationState = NotificationState.ALL,
             isPinned = false,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.DataSpaceWithChat(
                 space = com.anytypeio.anytype.core_models.ObjectWrapper.SpaceView(
                     map = mapOf("name" to "Dream Team Space", "id" to "spaceId1")
                 ),
-                isMuted = false,
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
+                chatNotificationState = NotificationState.ALL,
+                chatName = "@feature-chat",
+                isSpaceMuted = true
             )
         )
     }
@@ -329,17 +333,17 @@ fun DataSpaceChatMuted() {
             messageTime = "09:15",
             unreadMessageCount = 5,
             unreadMentionCount = 0,
-            isMuted = true,
+            chatNotificationState = NotificationState.DISABLE,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFFFF3E0)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.DataSpaceWithChat(
                 space = com.anytypeio.anytype.core_models.ObjectWrapper.SpaceView(
                     map = mapOf("name" to "Project Alpha", "id" to "spaceId2")
                 ),
-                isMuted = true,
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = false,
-                accessType = "Member"
+                chatName = "@feature-chat",
+                chatNotificationState = NotificationState.DISABLE
             )
         )
     }
@@ -364,17 +368,17 @@ fun DataSpaceChatNoMessage() {
             messageTime = null,
             unreadMessageCount = 0,
             unreadMentionCount = 0,
-            isMuted = false,
+            chatNotificationState = NotificationState.ALL,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE8F5E9)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.DataSpaceWithChat(
                 space = com.anytypeio.anytype.core_models.ObjectWrapper.SpaceView(
                     map = mapOf("name" to "Empty Chat Space", "id" to "spaceId3")
                 ),
-                isMuted = false,
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
+                chatName = "@feature-chat",
+                chatNotificationState = NotificationState.DISABLE
             )
         )
     }

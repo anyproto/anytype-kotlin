@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -92,7 +93,8 @@ fun TypeIconView(
                 modifier = modifier,
                 backgroundSize = backgroundSize,
                 backgroundColor = backgroundColor,
-                condition = backgroundSize > iconWithoutBackgroundMaxSize
+                condition = backgroundSize > iconWithoutBackgroundMaxSize,
+                isCircleShape = icon.isCircleShape
             )
             IconBoxView(
                 boxModifier = boxModifier,
@@ -139,13 +141,19 @@ private fun createIconModifiers(
     modifier: Modifier,
     backgroundSize: Dp,
     backgroundColor: Int,
-    condition: Boolean
+    condition: Boolean,
+    isCircleShape: Boolean = false
 ): Pair<Modifier, Modifier> {
+    val shape = if (isCircleShape){
+        CircleShape
+    } else {
+        RoundedCornerShape(size = cornerRadius(backgroundSize))
+    }
     val baseModifier = modifier.size(backgroundSize)
     val boxModifier = if (condition) {
         baseModifier.background(
             color = colorResource(backgroundColor),
-            shape = RoundedCornerShape(size = cornerRadius(backgroundSize))
+            shape = shape
         )
     } else {
         baseModifier

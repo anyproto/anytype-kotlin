@@ -18,7 +18,6 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -29,7 +28,7 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 @Composable
 @DefaultPreviews
 fun ChatWithManyAttachmentsNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -62,20 +61,18 @@ fun ChatWithManyAttachmentsNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
-            isOwner = true,
-            accessType = "Owner"
+            isOwner = true
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithManyMixedAttachmentsNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -113,20 +110,18 @@ fun ChatWithManyMixedAttachmentsNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithImageAttachments() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -151,20 +146,18 @@ fun ChatWithImageAttachments() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithFileAttachments() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -185,20 +178,18 @@ fun ChatWithFileAttachments() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithLinkAttachments() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -229,20 +220,18 @@ fun ChatWithLinkAttachments() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMixedAttachments() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -268,20 +257,18 @@ fun ChatWithMixedAttachments() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithAttachmentsNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -301,20 +288,18 @@ fun ChatWithAttachmentsNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithManyLinksNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -351,20 +336,18 @@ fun ChatWithManyLinksNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithSingleLinkNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -381,20 +364,18 @@ fun ChatWithSingleLinkNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMultipleLinksOnlyNoText() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -421,20 +402,18 @@ fun ChatWithMultipleLinksOnlyNoText() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithSingleImageNoMessage() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -451,20 +430,18 @@ fun ChatWithSingleImageNoMessage() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithSingleLinkWithMessage() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -483,20 +460,18 @@ fun ChatWithSingleLinkWithMessage() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMultipleImagesNoMessage() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -506,11 +481,10 @@ fun ChatWithMultipleImagesNoMessage() {
         creatorName = "Charlie",
         messageTime = "11:00",
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
         // Multiple images, no message: "Charlie: [][][] 3 Images"
         attachmentPreviews = listOf(
@@ -527,14 +501,13 @@ fun ChatWithMultipleImagesNoMessage() {
                 objectIcon = ObjectIcon.TypeIcon.Fallback.DEFAULT
             )
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatWithMultipleObjectsWithMessage() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -563,20 +536,18 @@ fun ChatWithMultipleObjectsWithMessage() {
             )
         ),
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
 @Composable
 @DefaultPreviews
 fun ChatEmpty() {
-    VaultChatCard(
+    VaultChatSpaceCard(
         modifier = Modifier
             .fillMaxWidth()
             .height(80.dp)
@@ -585,13 +556,11 @@ fun ChatEmpty() {
         icon = SpaceIconView.ChatSpace.Placeholder(),
         messageTime = "08:00",
         spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-        spaceView = VaultSpaceView.Space(
+        spaceView = VaultSpaceView.ChatSpace(
             space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
             icon = SpaceIconView.ChatSpace.Placeholder(),
             isOwner = true,
-            accessType = "Owner"
         ),
-        notificationMode = NotificationState.ALL
     )
 }
 
@@ -603,7 +572,6 @@ fun PreviewSpaceActionsDropdownMenu_MutedOwner() {
         SpaceActionsDropdownMenu(
             expanded = expanded,
             onDismiss = { expanded = false },
-            notificationMode = com.anytypeio.anytype.core_models.chats.NotificationState.ALL,
             isPinned = false,
             onMuteToggle = {},
             onPinToggle = {},
@@ -620,7 +588,6 @@ fun PreviewSpaceActionsDropdownMenu_UnmutedNotOwner() {
         SpaceActionsDropdownMenu(
             expanded = expanded,
             onDismiss = { expanded = false },
-            notificationMode = com.anytypeio.anytype.core_models.chats.NotificationState.ALL,
             isPinned = false,
             onMuteToggle = {},
             onPinToggle = {},
@@ -638,7 +605,7 @@ fun ChatWithMention() {
                 .fillMaxWidth()
                 .height(32.dp)
         )
-        VaultChatCard(
+        VaultChatSpaceCard(
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
             creatorName = "John Doe",
@@ -666,13 +633,11 @@ fun ChatWithMention() {
                 )
             ),
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.ChatSpace(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
             ),
-            notificationMode = NotificationState.ALL
         )
     }
 }
@@ -686,7 +651,7 @@ fun ChatPreview() {
                 .fillMaxWidth()
                 .height(32.dp)
         )
-        VaultChatCard(
+        VaultChatSpaceCard(
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
             creatorName = "John Doe",
@@ -714,13 +679,11 @@ fun ChatPreview() {
                 )
             ),
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.ChatSpace(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1")),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
             ),
-            notificationMode = NotificationState.ALL
         )
     }
 }

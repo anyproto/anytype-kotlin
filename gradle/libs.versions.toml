@@ -59,9 +59,8 @@ timberVersion = '5.0.1'
 roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
-coilComposeVersion = '3.3.0'
+coilComposeVersion = '3.2.0'
 telephotoZoomableVersion = '0.16.0'
-coilVideoVersion = '3.2.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
 
@@ -97,7 +96,7 @@ wireRuntime = { module = "com.squareup.wire:wire-runtime", version.ref = "wireVe
 gsonWire = { module = "com.squareup.wire:wire-gson-support", version.ref = "wireVersion" }
 coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilComposeVersion"  }
 coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion"  }
-coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVersion"  }
+coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilComposeVersion"  }
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }
 coilGif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilComposeVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }

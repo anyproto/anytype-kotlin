@@ -126,6 +126,7 @@ sealed interface ChatView {
                 val status: SyncStatus = SyncStatus.Unknown
             ): Attachment() {
                 val isSyncing: Boolean = status is SyncStatus.Syncing
+                val isSynced: Boolean = status is SyncStatus.Synced
             }
 
             data class Link(

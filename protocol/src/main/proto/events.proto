@@ -1008,6 +1008,7 @@ message Event {
         SyncError error = 4;
         int64 syncingObjectsCounter = 5;
         int64 notSyncedFilesCounter = 6;
+        int64 uploadingFilesCounter = 7;
       }
     }
     enum Status {

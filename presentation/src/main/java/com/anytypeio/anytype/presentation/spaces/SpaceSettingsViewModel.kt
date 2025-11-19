@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageRemoteStorage
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageSharedSpace
@@ -1077,13 +1078,7 @@ class SpaceSettingsViewModel(
                         value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
                     )
                 ),
-                keys = listOf(
-                    Relations.ID,
-                    Relations.NAME,
-                    Relations.ICON_EMOJI,
-                    Relations.ICON_IMAGE,
-                    Relations.TARGET_OBJECT_TYPE
-                )
+                keys = ObjectSearchConstants.defaultKeys
             )
 
             // Combine chats with space view to filter by custom notification states

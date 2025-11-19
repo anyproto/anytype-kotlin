@@ -593,7 +593,79 @@ class ChatFragment : Fragment() {
                         }
                     }
 
-                    else -> toast("TODO")
+                    is OpenObjectNavigation.OpenType -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening type from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenChat -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.chatScreen,
+                                ChatFragment.args(
+                                    space = nav.space,
+                                    ctx = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening chat from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenParticipant -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.participantScreen,
+                                ParticipantFragment.args(
+                                    space = nav.space,
+                                    objectId = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening participant from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenBookmarkUrl -> {
+                        runCatching {
+                            proceedWithAction(OpenUrl(nav.url))
+                        }.onFailure {
+                            Timber.w("Error while opening bookmark URL from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenDateObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening date object from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                        toast("Cannot open object: unexpected layout")
+                        Timber.w("Unexpected layout error: ${nav.layout}")
+                    }
+
+                    OpenObjectNavigation.NonValidObject -> {
+                        toast("Cannot open invalid object")
+                        Timber.w("Attempted to open non-valid object")
+                    }
                 }
             }
         }

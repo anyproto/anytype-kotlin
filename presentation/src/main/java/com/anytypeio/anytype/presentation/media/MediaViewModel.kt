@@ -91,8 +91,12 @@ class MediaViewModel(
                     targets = listOf(id),
                     isArchived = true
                 )
-            ).onFailure {
-                Timber.e(it, "Error while archiving media object")
+            ).onFailure { error ->
+                Timber.e(error, "Error while archiving media object").also {
+                    _commands.emit(
+                        Command.ShowToast("Error: ${error.message}")
+                    )
+                }
             }.onSuccess {
                 _commands.emit(Command.Dismiss)
             }

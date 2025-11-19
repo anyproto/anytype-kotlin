@@ -5,7 +5,10 @@ import com.anytypeio.anytype.core_models.DV
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ext.content
+import com.anytypeio.anytype.core_models.ext.isValidObject
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -326,7 +329,7 @@ class ChatListWidgetContainer(
                     collection = obj.root
                 )
             } else {
-                val setOf = struct.getSingleValue<String>(com.anytypeio.anytype.core_models.Relations.SET_OF).orEmpty()
+                val setOf = struct.getSingleValue<String>(Relations.SET_OF).orEmpty()
                 if (setOf.isEmpty()) {
                     Timber.w("Widget ${widget.id}: setOf is empty, cannot create subscription parameters")
                     null

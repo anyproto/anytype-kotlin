@@ -254,7 +254,8 @@ class VaultViewModel(
         // Index chatPreviews by space.id for O(1) lookup, selecting most recent per space
         val chatPreviewMap = chatPreviews.groupBy { it.space.id }
             .mapValues { (_, previews) ->
-                previews.maxByOrNull { it.message?.createdAt ?: 0L }
+                // Select preview with latest timestamp, falling back to first if all timestamps are invalid
+                previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
             }
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow

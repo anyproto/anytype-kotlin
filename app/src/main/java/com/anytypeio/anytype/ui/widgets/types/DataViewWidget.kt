@@ -197,7 +197,7 @@ fun ChatListWidgetCard(
                 .padding(horizontal = 0.dp, vertical = 6.dp)
         ) {
             WidgetHeader(
-                title = item.getPrettyName(),
+                title = item.name.getPrettyName(),
                 icon = item.icon,
                 isCardMenuExpanded = isCardMenuExpanded,
                 onWidgetHeaderClicked = {

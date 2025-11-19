@@ -1287,7 +1287,7 @@ class ChatViewModel @Inject constructor(
                             }
 
                             is ChatView.Message.Attachment.Link -> {
-                                attachment.wrapper?.name.orEmpty()
+                                attachment.title
                             }
 
                             is ChatView.Message.Attachment.Bookmark -> {

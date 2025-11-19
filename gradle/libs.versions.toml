@@ -99,6 +99,7 @@ coil = { module = "io.coil-kt.coil3:coil", version.ref = "coilComposeVersion"  }
 coilCompose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilComposeVersion"  }
 coilVideo = { module = "io.coil-kt.coil3:coil-video", version.ref = "coilVideoVersion"  }
 coilSvg = { module = "io.coil-kt.coil3:coil-svg", version.ref = "coilComposeVersion"  }
+coilGif = { module = "io.coil-kt.coil3:coil-gif", version.ref = "coilComposeVersion"  }
 coilNetwork = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coilComposeVersion"  }
 coilCache = { module = "io.coil-kt.coil3:coil-network-cache-control", version.ref = "coilComposeVersion"  }
 telephotoZoomableImage = { module = "me.saket.telephoto:zoomable-image-coil3", version.ref = "telephotoZoomableVersion"  }

@@ -21,7 +21,8 @@ sealed class ObjectIcon {
 
         data class Emoji(
             val unicode: String,
-            val fallback: TypeIcon.Fallback = TypeIcon.Fallback.DEFAULT
+            val fallback: TypeIcon.Fallback = TypeIcon.Fallback.DEFAULT,
+            val circleShape: Boolean = false
         ) : Basic()
     }
 
@@ -96,7 +97,7 @@ sealed class ObjectIcon {
         }
 
         //we use this icon when we can't find the emoji for object or image icon can't be loaded
-        data class Fallback(val rawValue: String) : TypeIcon() {
+        data class Fallback(val rawValue: String, val isCircleShape: Boolean = false) : TypeIcon() {
 
             val drawableResId: String
                 get() = DEFAULT_ICON_PREFIX + rawValue.toSnakeCase()

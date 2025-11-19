@@ -4,6 +4,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,7 +38,11 @@ fun EmojiIconView(
             .size(backgroundSize)
             .background(
                 color = colorResource(backgroundColor),
-                shape = RoundedCornerShape(size = cornerRadius(backgroundSize))
+                shape = if (icon.circleShape){
+                    CircleShape
+                } else {
+                    RoundedCornerShape(size = cornerRadius(backgroundSize))
+                }
             ) to Modifier.size(
             contentSizeForBackground(backgroundSize)
         )

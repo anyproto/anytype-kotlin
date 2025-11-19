@@ -34,6 +34,7 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.middleware.discovery.adresshandler.LocalNetworkAddressProvider
 import javax.inject.Inject
+import kotlin.time.ExperimentalTime
 import timber.log.Timber
 
 class AndroidApplication : Application(), HasComponentDependencies, SingletonImageLoader.Factory {
@@ -153,7 +154,7 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
         SignalHandler.initSignalHandler()
     }
 
-    @OptIn(ExperimentalCoilApi::class)
+    @OptIn(ExperimentalCoilApi::class, ExperimentalTime::class)
     override fun newImageLoader(context: Context): ImageLoader {
         return ImageLoader.Builder(context)
             //.logger(DebugLogger(Logger.Level.Verbose))  //only for debug builds!
@@ -165,7 +166,7 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
                     )
                 )
                 add(SvgDecoder.Factory())
-                if (SDK_INT >= 28) {
+                if (SDK_INT >= android.os.Build.VERSION_CODES.P) {
                     add(AnimatedImageDecoder.Factory())
                 } else {
                     add(GifDecoder.Factory())

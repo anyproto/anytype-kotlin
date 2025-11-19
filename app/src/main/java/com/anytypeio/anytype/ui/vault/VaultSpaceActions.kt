@@ -25,9 +25,9 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 fun SpaceActionsDropdownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
-    isMuted: Boolean?,
+    isMuted: Boolean? = null,
     isPinned: Boolean,
-    onMuteToggle: () -> Unit,
+    onMuteToggle: () -> Unit = {},
     onPinToggle: () -> Unit,
     onSpaceSettings: () -> Unit
 ) {

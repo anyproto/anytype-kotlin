@@ -208,7 +208,7 @@ class ChatViewModel @Inject constructor(
                 .observe(
                     vmParams.space
                 ).collect { view ->
-                    val isMuted = NotificationStateCalculator.calculateMutedState(view)
+                    val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(view)
                     val notificationSetting = NotificationStateCalculator
                         .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
                         .toNotificationSetting()

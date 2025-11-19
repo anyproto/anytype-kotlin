@@ -199,8 +199,9 @@ fun VaultScreenContent(
                     key = { _, item -> item.space.id },
                     contentType = { _, item ->
                         when (item) {
-                            is VaultSpaceView.Chat -> TYPE_CHAT
-                            is VaultSpaceView.Space -> TYPE_SPACE
+                            is VaultSpaceView.ChatSpace -> TYPE_CHAT
+                            is VaultSpaceView.DataSpace -> TYPE_SPACE
+                            is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
                         }
                     }
                 ) { index, item ->
@@ -216,8 +217,8 @@ fun VaultScreenContent(
                         val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                         when (item) {
-                            is VaultSpaceView.Chat -> {
-                                VaultChatCard(
+                            is VaultSpaceView.ChatSpace -> {
+                                VaultChatSpaceCard(
                                     modifier = Modifier
                                         .combinedClickable(
                                             onClick = {
@@ -251,7 +252,6 @@ fun VaultScreenContent(
                                     unreadMessageCount = item.unreadMessageCount,
                                     unreadMentionCount = item.unreadMentionCount,
                                     attachmentPreviews = item.attachmentPreviews,
-                                    isMuted = item.isMuted,
                                     isPinned = item.isPinned,
                                     spaceView = item,
                                     expandedSpaceId = expandedSpaceId,
@@ -264,8 +264,8 @@ fun VaultScreenContent(
                                 )
                             }
 
-                            is VaultSpaceView.Space -> {
-                                VaultSpaceCard(
+                            is VaultSpaceView.DataSpace -> {
+                                DataSpaceCard(
                                     modifier = Modifier
                                         .animateItem()
                                         .graphicsLayer(alpha = alpha.value)
@@ -295,12 +295,58 @@ fun VaultScreenContent(
                                     spaceView = item,
                                     expandedSpaceId = expandedSpaceId,
                                     onDismissMenu = { expandedSpaceId = null },
-                                    onMuteSpace = onMuteSpace,
-                                    onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
                                     spaceBackground = spaceBackgroundValue.value
+                                )
+                            }
+
+                            is VaultSpaceView.DataSpaceWithChat -> {
+                                VaultDataSpaceChatCard(
+                                    modifier = Modifier
+                                        .combinedClickable(
+                                            onClick = {
+                                                onSpaceClicked(item)
+                                            },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )
+                                        .graphicsLayer(alpha = alpha.value)
+                                        .animateItem()
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    ReorderHapticFeedbackType.START
+                                                )
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    ReorderHapticFeedbackType.MOVE
+                                                )
+                                            }
+                                        ),
+                                    title = item.space.name.orEmpty(),
+                                    icon = item.icon,
+                                    spaceBackground = spaceBackgroundValue.value,
+                                    creatorName = item.creatorName,
+                                    messageText = item.messageText,
+                                    messageTime = item.messageTime,
+                                    chatName = item.chatName,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews,
+                                    chatNotificationState = item.chatNotificationState,
+                                    isPinned = item.isPinned,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onPinSpace = onPinSpace,
+                                    onUnpinSpace = onUnpinSpace,
+                                    onSpaceSettings = onSpaceSettings
                                 )
                             }
                         }
@@ -315,8 +361,9 @@ fun VaultScreenContent(
                     key = { _, item -> item.space.id },
                     contentType = { _, item ->
                         when (item) {
-                            is VaultSpaceView.Chat -> TYPE_CHAT
-                            is VaultSpaceView.Space -> TYPE_SPACE
+                            is VaultSpaceView.ChatSpace -> TYPE_CHAT
+                            is VaultSpaceView.DataSpace -> TYPE_SPACE
+                            is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
                         }
                     }
                 ) { _, item ->
@@ -326,8 +373,8 @@ fun VaultScreenContent(
                     val spaceBackgroundValue = remember { mutableStateOf(spaceBackground) }
 
                     when (item) {
-                        is VaultSpaceView.Chat -> {
-                            VaultChatCard(
+                        is VaultSpaceView.ChatSpace -> {
+                            VaultChatSpaceCard(
                                 modifier = Modifier
                                     .animateItem()
                                     .then(
@@ -345,7 +392,6 @@ fun VaultScreenContent(
                                 unreadMessageCount = item.unreadMessageCount,
                                 unreadMentionCount = item.unreadMentionCount,
                                 attachmentPreviews = item.attachmentPreviews,
-                                isMuted = item.isMuted,
                                 isPinned = item.isPinned,
                                 spaceView = item,
                                 expandedSpaceId = expandedSpaceId,
@@ -358,8 +404,42 @@ fun VaultScreenContent(
                             )
                         }
 
-                        is VaultSpaceView.Space -> {
-                            VaultSpaceCard(
+                        is VaultSpaceView.DataSpaceWithChat -> {
+                            VaultDataSpaceChatCard(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .then(
+                                        createCombinedClickableModifier(
+                                            onClick = { onSpaceClicked(item) },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )),
+                                title = item.space.name.orEmpty(),
+                                icon = item.icon,
+                                spaceBackground = spaceBackgroundValue.value,
+                                creatorName = item.creatorName,
+                                messageText = item.messageText,
+                                messageTime = item.messageTime,
+                                chatName = item.chatName,
+                                unreadMessageCount = item.unreadMessageCount,
+                                unreadMentionCount = item.unreadMentionCount,
+                                attachmentPreviews = item.attachmentPreviews,
+                                chatNotificationState = item.chatNotificationState,
+                                isPinned = item.isPinned,
+                                spaceView = item,
+                                expandedSpaceId = expandedSpaceId,
+                                onDismissMenu = { expandedSpaceId = null },
+                                onMuteSpace = onMuteSpace,
+                                onUnmuteSpace = onUnmuteSpace,
+                                onPinSpace = onPinSpace,
+                                onUnpinSpace = onUnpinSpace,
+                                onSpaceSettings = onSpaceSettings
+                            )
+                        }
+
+                        is VaultSpaceView.DataSpace -> {
+                            DataSpaceCard(
                                 modifier = Modifier
                                     .animateItem()
                                     .then(
@@ -376,8 +456,6 @@ fun VaultScreenContent(
                                 spaceBackground = spaceBackgroundValue.value,
                                 expandedSpaceId = expandedSpaceId,
                                 onDismissMenu = { expandedSpaceId = null },
-                                onMuteSpace = onMuteSpace,
-                                onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
                                 onSpaceSettings = onSpaceSettings
@@ -392,6 +470,7 @@ fun VaultScreenContent(
 
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
+const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"
 
 
 fun createCombinedClickableModifier(

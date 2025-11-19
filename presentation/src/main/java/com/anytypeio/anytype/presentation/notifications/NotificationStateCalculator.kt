@@ -3,31 +3,31 @@ package com.anytypeio.anytype.presentation.notifications
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
 
 /**
- * Utility object for calculating muted state for spaces with chat functionality
+ * Utility object for calculating notification states for spaces and chats
  */
 object NotificationStateCalculator {
 
     /**
-     * Calculate muted state for a space with chat functionality.
+     * Calculate muted state for a space based on its notification settings.
      *
-     * This should only be called for spaces that have chat functionality (i.e., hasChatFunctionality() returns true).
-     * For spaces with chat, only considers space-level notification settings, ignoring app-level notification
-     * permission. This ensures the mute/unmute state is always visible for chat-enabled spaces regardless of
-     * app notification settings.
+     * This function checks the space-level notification mode only, ignoring app-level notification
+     * permissions. This ensures the mute state accurately reflects the space's notification configuration
+     * regardless of system-level notification settings.
      *
-     * If called for a space without chat functionality, returns false (unmuted) as a safe default.
+     * A space is considered "muted" when its notification mode is either:
+     * - DISABLE (all notifications off)
+     * - MENTIONS (only mentions, treating non-mention notifications as muted)
      *
-     * @param spaceView The space view to check. Should have chat functionality.
-     * @return true if the space is muted (notifications disabled or mentions-only), false otherwise
+     * @param spaceView The space view to check. Can be null or any space type.
+     * @return true if the space is muted (DISABLE or MENTIONS mode), false otherwise (including null)
      */
-    fun calculateMutedState(
+    fun calculateSpaceNotificationMutedState(
         spaceView: ObjectWrapper.SpaceView?
     ): Boolean {
-        // Return false (unmuted) as safe default for null or non-chat spaces
-        if (spaceView == null || !spaceView.hasChatFunctionality()) {
+        // Return false (unmuted) as safe default for null spaces
+        if (spaceView == null) {
             return false
         }
 

@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -52,6 +51,7 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
@@ -251,8 +251,12 @@ class VaultViewModel(
             emptyMap()
         }
         
-        // Index chatPreviews by space.id for O(1) lookup
-        val chatPreviewMap = chatPreviews.associateBy { it.space.id }
+        // Index chatPreviews by space.id for O(1) lookup, selecting most recent per space
+        val chatPreviewMap = chatPreviews.groupBy { it.space.id }
+            .mapValues { (_, previews) ->
+                // Select preview with latest timestamp, falling back to first if all timestamps are invalid
+                previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
+            }
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
@@ -260,13 +264,8 @@ class VaultViewModel(
         val allSpaces = allSpacesRaw.map { space ->
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
-            }?.takeIf { preview ->
-                // Only use chat preview if it matches the main space chat ID
-                // This filters out previews from other chats in multi-chat spaces
-                space.chatId?.let { spaceChatId ->
-                    preview.chat == spaceChatId
-                } == true // If no chatId is set, don't show preview
             }
+
             mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, wallpapers)
         }
 
@@ -325,12 +324,19 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
     ): VaultSpaceView {
-        return if (space.hasChatFunctionality()) {
-            // Spaces with chat functionality (CHAT spaces or DATA/STREAM spaces with chatId)
-            createChatView(space, chatPreview, permissions, wallpapers)
-        } else {
-            // Other spaces without chat use standard space view
-            createStandardSpaceView(space, permissions, wallpapers)
+        return when {
+            // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
+            space.spaceUxType == SpaceUxType.CHAT && chatPreview != null -> {
+                createChatSpaceView(space, chatPreview, permissions, wallpapers)
+            }
+            // DATA space with chat preview → VaultSpaceView.DataSpaceWithChat
+            space.spaceUxType == SpaceUxType.DATA && chatPreview != null -> {
+                createDataSpaceWithChatView(space, chatPreview, permissions, wallpapers)
+            }
+            // DATA space without chat or STREAM(not yet supported) → VaultSpaceView.DataSpace
+            else -> {
+                createDataSpaceView(space, permissions, wallpapers)
+            }
         }
     }
 
@@ -422,13 +428,15 @@ class VaultViewModel(
     }
 
 
-
-    private suspend fun createChatView(
+    /**
+     * Create a Vault View for a Chat Space with a chat preview
+     */
+    private suspend fun createChatSpaceView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
-    ): VaultSpaceView.Chat {
+    ): VaultSpaceView.ChatSpace {
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
 
@@ -469,15 +477,14 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = NotificationStateCalculator.calculateMutedState(space)
 
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
             icon = icon,
             wallpaper = wallpaper
         )
-        
-        return VaultSpaceView.Chat(
+
+        return VaultSpaceView.ChatSpace(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
@@ -488,22 +495,95 @@ class VaultViewModel(
             unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted,
+            isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
             wallpaper = wallpaperResult
         )
     }
 
-    private fun createStandardSpaceView(
+    /**
+     * Create a Vault View for Data Space with a chat preview
+     */
+    private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
+        chatPreview: Chat.Preview,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>
-    ): VaultSpaceView.Space {
+    ): VaultSpaceView.DataSpaceWithChat {
+        val creatorId = chatPreview.message?.creator
+        val messageText = chatPreview.message?.content?.text
+
+        val creatorName = if (!creatorId.isNullOrEmpty()) {
+            val creatorObj = chatPreview.dependencies.find {
+                it.getSingleValue<String>(
+                    Relations.IDENTITY
+                ) == creatorId
+            }
+            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
+        } else {
+            null
+        }
+
+        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+            if (timeInSeconds > 0) {
+                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
+            } else null
+        }
+
+        // Build attachment previews with proper URLs
+        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
+            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+            val attachmentPreview = mapToAttachmentPreview(
+                attachment = attachment,
+                dependency = dependency
+            )
+            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+            attachmentPreview
+        } ?: emptyList()
+
+        val icon = space.spaceIcon(urlBuilder)
+
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
 
-        // Standard spaces without chat functionality have no notification/mute state
-        val isMuted = null
+        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
+        val wallpaperResult = computeWallpaperResult(
+            icon = icon,
+            wallpaper = wallpaper
+        )
+
+        return VaultSpaceView.DataSpaceWithChat(
+            space = space,
+            icon = icon,
+            chatPreview = chatPreview,
+            creatorName = creatorName,
+            messageText = messageText,
+            messageTime = messageTime,
+            unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
+            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            attachmentPreviews = attachmentPreviews,
+            isOwner = isOwner,
+            chatNotificationState = calculateChatNotificationState(
+                chatSpace = space,
+                chatId = chatPreview.chat
+            ),
+            wallpaper = wallpaperResult,
+            isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
+            //todo DROID-4127 add Proper Chat Name!
+        )
+    }
+
+    /**
+     * Create a Vault View for Data Space WITHOUT chat preview
+     */
+    private fun createDataSpaceView(
+        space: ObjectWrapper.SpaceView,
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>
+    ): VaultSpaceView.DataSpace {
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -515,12 +595,11 @@ class VaultViewModel(
             wallpaper = wallpaper
         )
 
-        return VaultSpaceView.Space(
+        return VaultSpaceView.DataSpace(
             space = space,
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted,
             wallpaper = wallpaperResult
         )
     }

@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Wallpaper
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -15,28 +15,46 @@ sealed class VaultSpaceView {
     abstract val space: ObjectWrapper.SpaceView
     abstract val icon: SpaceIconView
     abstract val isOwner: Boolean
-    abstract val isMuted: Boolean?
     abstract val wallpaper: WallpaperResult
     val isPinned: Boolean get() = !space.spaceOrder.isNullOrEmpty()
 
     val lastMessageDate: Long?
         get() = when (this) {
-            is Chat -> chatPreview?.message?.createdAt
+            is ChatSpace -> chatPreview?.message?.createdAt
+            is DataSpaceWithChat -> chatPreview?.message?.createdAt
             else -> null
         }
 
-    data class Space(
+    data class DataSpace(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
         val accessType: String,
         override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
         override val wallpaper: WallpaperResult = WallpaperResult.None
     ) : VaultSpaceView()
 
-    data class Chat(
+    data class DataSpaceWithChat(
         override val space: ObjectWrapper.SpaceView,
         override val icon: SpaceIconView,
+        override val isOwner: Boolean,
+        override val wallpaper: WallpaperResult = WallpaperResult.None,
+        val chatName: String = "",
+        val unreadMessageCount: Int = 0,
+        val unreadMentionCount: Int = 0,
+        val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,
+        val creatorName: String? = null,
+        val messageText: String? = null,
+        val messageTime: String? = null,
+        val attachmentPreviews: List<AttachmentPreview> = emptyList(),
+        val chatNotificationState: NotificationState,
+        val isSpaceMuted: Boolean = false
+    ) : VaultSpaceView()
+
+    data class ChatSpace(
+        override val space: ObjectWrapper.SpaceView,
+        override val icon: SpaceIconView,
+        override val isOwner: Boolean,
+        override val wallpaper: WallpaperResult = WallpaperResult.None,
         val unreadMessageCount: Int = 0,
         val unreadMentionCount: Int = 0,
         val chatMessage: com.anytypeio.anytype.core_models.chats.Chat.Message.Content? = null,
@@ -45,9 +63,7 @@ sealed class VaultSpaceView {
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-        override val isOwner: Boolean,
-        override val isMuted: Boolean? = null,
-        override val wallpaper: WallpaperResult = WallpaperResult.None
+        val isSpaceMuted: Boolean = false
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

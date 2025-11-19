@@ -41,14 +41,13 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -57,7 +56,44 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 @Composable
-fun VaultChatCard(
+private fun getChatTextColor(
+    notificationMode: NotificationState?,
+    unreadMessageCount: Int,
+    unreadMentionCount: Int
+): androidx.compose.ui.graphics.Color {
+    return when {
+        notificationMode == NotificationState.DISABLE -> colorResource(id = R.color.text_transparent_secondary)
+        unreadMessageCount == 0 && unreadMentionCount == 0 -> colorResource(id = R.color.text_transparent_secondary)
+        else -> colorResource(id = R.color.text_primary)
+    }
+}
+
+@Composable
+private fun getUnreadMentionCountBadgeColor(
+    notificationMode: NotificationState?
+): androidx.compose.ui.graphics.Color {
+    return when (notificationMode) {
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_accent)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
+    }
+}
+
+@Composable
+private fun getUnreadMessageCountBadgeColor(
+    notificationMode: NotificationState?
+): androidx.compose.ui.graphics.Color {
+    return when (notificationMode) {
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_transparent_tetriary)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
+    }
+}
+
+@Composable
+fun VaultChatSpaceCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: SpaceIconView,
@@ -71,7 +107,7 @@ fun VaultChatCard(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     isPinned: Boolean = false,
-    spaceView: VaultSpaceView,
+    spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
@@ -143,11 +179,11 @@ fun VaultChatCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isMuted,
+            isMuted = spaceView.isSpaceMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (spaceView.isSpaceMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
             onPinToggle = {
@@ -230,16 +266,23 @@ private fun ChatSubtitleRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     isMuted: Boolean?,
+    notificationMode: NotificationState? = null,
     isPinned: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
+        val textColor = getChatTextColor(
+            notificationMode = notificationMode,
+            unreadMessageCount = unreadMessageCount,
+            unreadMentionCount = unreadMentionCount
+        )
         val (chatText, inlineContent) = buildChatContentWithInlineIcons(
             creatorName = creatorName,
             messageText = messageText,
             attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = subtitle
+            fallbackSubtitle = subtitle,
+            textColor = textColor
         )
 
         Text(
@@ -249,23 +292,23 @@ private fun ChatSubtitleRow(
             maxLines = 2,
             lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_transparent_secondary),
+            color = textColor,
         )
 
         UnreadIndicatorsRow(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
-            isMuted = isMuted,
+            notificationMode = notificationMode,
             isPinned = isPinned
         )
     }
 }
 
 @Composable
-private fun UnreadIndicatorsRow(
+internal fun UnreadIndicatorsRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
-    isMuted: Boolean?,
+    notificationMode: NotificationState?,
     isPinned: Boolean
 ) {
     Row(
@@ -276,8 +319,8 @@ private fun UnreadIndicatorsRow(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
-                            R.color.control_accent
+                        color = getUnreadMentionCountBadgeColor(
+                            notificationMode = notificationMode
                         ),
                         shape = CircleShape
                     )
@@ -302,8 +345,8 @@ private fun UnreadIndicatorsRow(
                 modifier = Modifier
                     .height(18.dp)
                     .background(
-                        color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
-                            R.color.control_accent
+                        color = getUnreadMessageCountBadgeColor(
+                            notificationMode = notificationMode
                         ),
                         shape = shape
                     )
@@ -449,15 +492,17 @@ fun TitleRow(
 }
 
 @Composable
-private fun buildChatContentWithInlineIcons(
+internal fun buildChatContentWithInlineIcons(
     creatorName: String?,
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
-    fallbackSubtitle: String
+    fallbackSubtitle: String,
+    singleLineFormat: Boolean = false,
+    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary)
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
-    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
-    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle()
+    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor)
+    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
@@ -475,7 +520,11 @@ private fun buildChatContentWithInlineIcons(
                 creatorName
             }
             withStyle(style = spanTitle2Medium) {
-                append("$truncatedCreatorName\n")
+                if (singleLineFormat) {
+                    append("$truncatedCreatorName: ")
+                } else {
+                    append("$truncatedCreatorName\n")
+                }
             }
         }
 
@@ -635,7 +684,7 @@ fun ChatWithMentionAndMessage() {
                 .fillMaxWidth()
                 .height(32.dp)
         )
-        VaultChatCard(
+        VaultChatSpaceCard(
             modifier = Modifier.fillMaxWidth(),
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
@@ -668,13 +717,11 @@ fun ChatWithMentionAndMessage() {
                 )
             ),
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.ChatSpace(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
-                isMuted = false,
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
-            ),
+            )
         )
     }
 }

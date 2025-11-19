@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.content.Context
+import android.os.Build.VERSION.SDK_INT
 import android.os.StrictMode
 import android.os.StrictMode.ThreadPolicy
 import android.os.StrictMode.VmPolicy
@@ -11,11 +12,12 @@ import androidx.lifecycle.ProcessLifecycleOwner
 import coil3.ImageLoader
 import coil3.SingletonImageLoader
 import coil3.annotation.ExperimentalCoilApi
+import coil3.gif.AnimatedImageDecoder
+import coil3.gif.GifDecoder
 import coil3.network.cachecontrol.CacheControlCacheStrategy
 import coil3.network.okhttp.OkHttpNetworkFetcherFactory
 import coil3.request.crossfade
-import coil3.util.DebugLogger
-import coil3.util.Logger
+import coil3.svg.SvgDecoder
 import coil3.video.VideoFrameDecoder
 import com.amplitude.api.Amplitude
 import com.amplitude.api.TrackingOptions
@@ -162,6 +164,12 @@ class AndroidApplication : Application(), HasComponentDependencies, SingletonIma
                         cacheStrategy = { CacheControlCacheStrategy() }
                     )
                 )
+                add(SvgDecoder.Factory())
+                if (SDK_INT >= 28) {
+                    add(AnimatedImageDecoder.Factory())
+                } else {
+                    add(GifDecoder.Factory())
+                }
             }
             .crossfade(true)
             .build()

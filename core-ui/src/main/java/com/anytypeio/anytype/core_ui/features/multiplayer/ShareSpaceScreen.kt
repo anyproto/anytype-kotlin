@@ -424,13 +424,13 @@ fun SharedSpacesIncentiveItem(
                 id = R.string.membership_space_settings_share_limit,
                 count
             ),
-            color = colorResource(id = R.color.black),
+            color = colorResource(id = R.color.text_primary),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.membership_space_settings_share_limit_2),
-            color = colorResource(id = R.color.black),
+            color = colorResource(id = R.color.text_primary),
             style = Title3
         )
         Row(
@@ -499,13 +499,13 @@ private fun AddEditorsIncentive(
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = text,
-            color = colorResource(id = R.color.black),
+            color = colorResource(id = R.color.text_primary),
             style = Title2
         )
         Text(
             modifier = Modifier.fillMaxWidth(),
             text = stringResource(id = R.string.members_limits_incentive_editors_sub),
-            color = colorResource(id = R.color.black),
+            color = colorResource(id = R.color.text_primary),
             style = Title3
         )
         ButtonUpgradeBlack(

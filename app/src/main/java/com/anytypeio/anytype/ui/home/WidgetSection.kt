@@ -47,6 +47,7 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ChatListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
@@ -299,6 +300,66 @@ fun LazyListScope.renderWidgetSection(
                     )
 
                     GalleryWidgetCard(
+                        modifier = modifier,
+                        item = item,
+                        mode = mode,
+                        onWidgetObjectClicked = { obj ->
+                            onWidgetElementClicked(item.id, obj)
+                        },
+                        onWidgetSourceClicked = onWidgetSourceClicked,
+                        onWidgetMenuTriggered = onWidgetMenuTriggered,
+                        onDropDownMenuAction = { action ->
+                            onWidgetMenuAction(item.id, action)
+                        },
+                        onChangeWidgetView = onChangeWidgetView,
+                        onToggleExpandedWidgetState = onToggleExpandedWidgetState,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked,
+                        onCreateElement = onCreateElement,
+                        menuItems = menuItems,
+                        isCardMenuExpanded = isCardMenuExpanded
+                    )
+                }
+            }
+
+            is WidgetView.ChatList -> {
+                val isCardMenuExpanded = remember { mutableStateOf(false) }
+                val menuItems = remember(item.id, item.sectionType, item.canCreateObjectOfType, item.source) {
+                    item.getWidgetMenuItems()
+                }
+                val isReorderEnabled = mode !is InteractionMode.ReadOnly && !isOtherSectionDragging
+
+                ReorderableItem(
+                    enabled = isReorderEnabled,
+                    state = reorderableState,
+                    key = item.id,
+                    animateItemModifier = animateItemModifier
+                ) { isDragged ->
+                    val hasStartedDragging = remember { mutableStateOf(false) }
+
+                    if (isReorderEnabled) {
+                        LaunchedEffect(isDragged) {
+                            if (isDragged) {
+                                hasStartedDragging.value = true
+                                delay(1000)
+                                isCardMenuExpanded.value = false
+                            } else if (hasStartedDragging.value) {
+                                hasStartedDragging.value = false
+                            }
+                        }
+                    }
+
+                    val modifier = WidgetCardModifier(
+                        isMenuExpanded = isCardMenuExpanded.value,
+                        mode = mode,
+                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
+                        onWidgetLongClicked = {
+                            isCardMenuExpanded.value = !isCardMenuExpanded.value
+                        },
+                        dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
+                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                    )
+
+                    ChatListWidgetCard(
                         modifier = modifier,
                         item = item,
                         mode = mode,

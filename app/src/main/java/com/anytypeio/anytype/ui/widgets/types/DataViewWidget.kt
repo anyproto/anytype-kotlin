@@ -173,6 +173,107 @@ fun DataViewListWidgetCard(
 }
 
 @Composable
+fun ChatListWidgetCard(
+    item: WidgetView.ChatList,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
+) {
+    // For now, both Compact and Preview display modes use the same rendering
+    // In the future, when displayMode is Preview, we can render a different UI with message previews
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            WidgetHeader(
+                title = item.name.getPrettyName(),
+                icon = item.icon,
+                isCardMenuExpanded = isCardMenuExpanded,
+                onWidgetHeaderClicked = {
+                    if (mode !is InteractionMode.Edit) {
+                        onWidgetSourceClicked(item.id)
+                    }
+                },
+                onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                canCreateObject = item.canCreateObjectOfType,
+                onCreateElement = { onCreateElement(item) },
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+            )
+            if (item.tabs.size > 1 && item.isExpanded) {
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
+            }
+            if (item.elements.isNotEmpty()) {
+                if (item.isCompact) {
+                    CompactListWidgetList(
+                        mode = mode,
+                        elements = item.elements,
+                        onWidgetElementClicked = onWidgetObjectClicked,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                    )
+                } else {
+                    item.elements.forEachIndexed { idx, element ->
+                        ListWidgetElement(
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            obj = element.obj,
+                            icon = element.objectIcon,
+                            mode = mode,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            name = element.getPrettyName(),
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
+                        )
+                        if (idx != item.elements.lastIndex) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                color = colorResource(id = R.color.widget_divider)
+                            )
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                }
+                if (item.hasMore && item.isExpanded) {
+                    SeeAllButton(
+                        onClick = { onWidgetSourceClicked(item.id) }
+                    )
+                }
+            } else {
+                if (item.isExpanded) {
+                    EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            }
+        }
+
+        WidgetLongClickMenu(
+            menuItems = menuItems,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
+        )
+    }
+}
+
+@Composable
 fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,

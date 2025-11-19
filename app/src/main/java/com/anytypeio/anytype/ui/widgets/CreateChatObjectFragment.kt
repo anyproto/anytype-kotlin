@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
 import com.anytypeio.anytype.ui.chats.SelectChatIconFragment
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
+import kotlin.math.exp
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -97,6 +98,8 @@ class CreateChatObjectFragment : BaseBottomSheetComposeFragment() {
                 launch { vm.toasts.collect { toast(it) } }
             }
         }
+        skipCollapsed()
+        expand()
     }
 
     private fun setupEmojiResultListener() {
@@ -140,7 +143,7 @@ class CreateChatObjectFragment : BaseBottomSheetComposeFragment() {
     }
 
     override fun releaseDependencies() {
-        super.releaseDependencies()
+        componentManager().createChatObjectComponent.release()
     }
 
     companion object {

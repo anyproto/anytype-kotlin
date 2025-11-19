@@ -3419,6 +3419,7 @@ fun ObjectWrapper.Basic.navigation(
                 effect = effect
             )
         }
+        ObjectType.Layout.CHAT,
         ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenChat(
                 target = id,

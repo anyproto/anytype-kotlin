@@ -1063,10 +1063,15 @@ class ChatViewModel @Inject constructor(
                             val wrapper = a.wrapper
                             if (wrapper != null) {
                                 val type = wrapper.type.firstOrNull()
+                                val name = if (wrapper.layout == ObjectType.Layout.NOTE) {
+                                    wrapper.snippet.orEmpty()
+                                } else {
+                                    wrapper.name.orEmpty()
+                                }
                                 add(
                                     ChatView.Message.ChatBoxAttachment.Existing.Link(
                                         target = wrapper.id,
-                                        name = wrapper.name.orEmpty(),
+                                        name = name,
                                         icon = wrapper.objectIcon(
                                             builder = urlBuilder,
                                             objType = storeOfObjectTypes.getTypeOfObject(wrapper)
@@ -1118,13 +1123,18 @@ class ChatViewModel @Inject constructor(
                         builder = urlBuilder,
                         objType = type
                     )
+                    val title = if (wrapper.layout == ObjectType.Layout.NOTE) {
+                        wrapper.snippet.orEmpty()
+                    } else {
+                        wrapper.name.orEmpty()
+                    }
                     chatBoxAttachments.value += listOf(
                         ChatView.Message.ChatBoxAttachment.Link(
                             target = target,
                             wrapper = GlobalSearchItemView(
                                 id = target,
                                 obj = wrapper,
-                                title = wrapper.name.orEmpty(),
+                                title = title,
                                 icon = icon,
                                 layout = wrapper.layout ?: ObjectType.Layout.BASIC,
                                 space = vmParams.space,

@@ -38,7 +38,7 @@ sealed class VaultSpaceView {
         override val icon: SpaceIconView,
         override val isOwner: Boolean,
         override val wallpaper: WallpaperResult = WallpaperResult.None,
-        val chatName: String,
+        val chatName: String = "",
         val unreadMessageCount: Int = 0,
         val unreadMentionCount: Int = 0,
         val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,

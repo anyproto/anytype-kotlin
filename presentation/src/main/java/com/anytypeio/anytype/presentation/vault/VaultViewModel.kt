@@ -428,7 +428,7 @@ class VaultViewModel(
 
 
     /**
-     * Create a Chat Space with a chat preview
+     * Create a Vault View for a Chat Space with a chat preview
      */
     private suspend fun createChatSpaceView(
         space: ObjectWrapper.SpaceView,
@@ -500,7 +500,7 @@ class VaultViewModel(
     }
 
     /**
-     * Create a Data Space with a chat preview
+     * Create a Vault View for Data Space with a chat preview
      */
     private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
@@ -545,15 +545,11 @@ class VaultViewModel(
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
 
-        val accessType = stringResourceProvider.getSpaceAccessTypeName(accessType = space.spaceAccessType)
-
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
             icon = icon,
             wallpaper = wallpaper
         )
-
-        val notificationMode = space.spacePushNotificationMode
 
         return VaultSpaceView.DataSpaceWithChat(
             space = space,
@@ -573,12 +569,11 @@ class VaultViewModel(
             wallpaper = wallpaperResult,
             isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
             //todo DROID-4127 add Proper Chat Name!
-            chatName = "sadfsadfsdlfks;dla"
         )
     }
 
     /**
-     * create a Data Space WITHOUT chat preview
+     * Create a Vault View for Data Space WITHOUT chat preview
      */
     private fun createDataSpaceView(
         space: ObjectWrapper.SpaceView,

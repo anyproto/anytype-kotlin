@@ -2350,4 +2350,7 @@ Please provide specific details of your needs here.</string>
     <string name="chat_specific_notifications">Chat specific notifications</string>
     <string name="notify_me_about">Notify me about</string>
 
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
+
 </resources>

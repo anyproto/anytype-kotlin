@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.localization.R
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
@@ -109,8 +110,18 @@ class MediaActivity : ComponentActivity() {
                             is MediaViewModel.Command.Dismiss -> {
                                 finish()
                             }
-                            is MediaViewModel.Command.ShowToast -> {
+                            is MediaViewModel.Command.ShowToast.Generic -> {
                                 toast(command.message)
+                            }
+                            is MediaViewModel.Command.ShowToast.ErrorWhileDownloadingObject -> {
+                                val txt = getString(
+                                    R.string.error_while_downloading_object,
+                                    command.exception
+                                )
+                                toast(txt)
+                            }
+                            MediaViewModel.Command.ShowToast.MovedToBin -> {
+                                toast(getString(R.string.toast_moved_to_bin))
                             }
                         }
                     }

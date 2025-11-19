@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.media
 
+import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -91,9 +92,14 @@ class MediaViewModel(
                     targets = listOf(id),
                     isArchived = true
                 )
-            ).onFailure {
-                Timber.e(it, "Error while archiving media object")
+            ).onFailure { error ->
+                Timber.e(error, "Error while archiving media object").also {
+                    _commands.emit(
+                        Command.ShowToast.Generic("Error: ${error.message}")
+                    )
+                }
             }.onSuccess {
+                _commands.emit(Command.ShowToast.MovedToBin)
                 _commands.emit(Command.Dismiss)
             }
         }
@@ -132,12 +138,12 @@ class MediaViewModel(
                 failure = {
                     Timber.e(it, "Error while downloading media object")
                     _commands.emit(
-                        Command.ShowToast("Error while downloading media object: ${it.message}")
+                        Command.ShowToast.Generic("Error while downloading media object: ${it.message}")
                     )
                 },
                 success = {
                     _commands.emit(
-                        Command.ShowToast("Download completed successfully.")
+                        Command.ShowToast.Generic("Download completed successfully.")
                     )
                 }
             )
@@ -169,7 +175,11 @@ class MediaViewModel(
 
     sealed class Command {
         data object Dismiss : Command()
-        data class ShowToast(val message: String) : Command()
+        sealed class ShowToast : Command() {
+            data class Generic(val message: String) : Command()
+            data class ErrorWhileDownloadingObject(val exception: String) : Command()
+            data object MovedToBin : Command()
+        }
     }
 
     class Factory @Inject constructor(

@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -161,7 +162,78 @@ class WidgetContainerDelegateImpl(
                 storeOfObjectTypes = storeOfObjectTypes
             )
         } else {
-            DataViewListWidgetContainer(
+            // Check if this is a chat widget by source type
+            val isChatWidget = (widget.source as? Widget.Source.Default)?.obj?.uniqueKey == ObjectTypeIds.CHAT_DERIVED
+            
+            if (isChatWidget) {
+                ChatListWidgetContainer(
+                    space = spaceId,
+                    widget = widget,
+                    storage = storelessSubscriptionContainer,
+                    getObject = getObject,
+                    activeView = observeCurrentWidgetView(widget.id),
+                    isWidgetCollapsed = combine(
+                        expandedWidgetIds,
+                        userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+                    ) { expanded, collapsedSecs ->
+                        isWidgetCollapsed(widget, expanded, collapsedSecs)
+                    },
+                    isSessionActiveFlow = isSessionActive,
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    onRequestCache = {
+                        currentlyDisplayedViews.find { view ->
+                            view.id == widget.id
+                                    && view is WidgetView.ChatList
+                                    && view.source == widget.source
+                        } as? WidgetView.ChatList
+                    },
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    chatPreviewContainer = chatPreviews
+                )
+            } else {
+                DataViewListWidgetContainer(
+                    space = spaceId,
+                    widget = widget,
+                    storage = storelessSubscriptionContainer,
+                    getObject = getObject,
+                    activeView = observeCurrentWidgetView(widget.id),
+                    isWidgetCollapsed = combine(
+                        expandedWidgetIds,
+                        userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+                    ) { expanded, collapsedSecs ->
+                        isWidgetCollapsed(widget, expanded, collapsedSecs)
+                    },
+                    isSessionActiveFlow = isSessionActive,
+                    urlBuilder = urlBuilder,
+                    coverImageHashProvider = coverImageHashProvider,
+                    onRequestCache = {
+                        currentlyDisplayedViews.find { view ->
+                            view.id == widget.id
+                                    && view is WidgetView.SetOfObjects
+                                    && view.source == widget.source
+                        } as? WidgetView.SetOfObjects
+                    },
+                    storeOfRelations = storeOfRelations,
+                    fieldParser = fieldParser,
+                    storeOfObjectTypes = storeOfObjectTypes,
+                    chatPreviewContainer = chatPreviews
+                )
+            }
+        }
+    }
+
+    private fun createViewContainer(
+        widget: Widget.View,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        // Check if this is a chat widget by source type
+        val isChatWidget = (widget.source as? Widget.Source.Default)?.obj?.uniqueKey == ObjectTypeIds.CHAT_DERIVED
+        
+        return if (isChatWidget) {
+            ChatListWidgetContainer(
                 space = spaceId,
                 widget = widget,
                 storage = storelessSubscriptionContainer,
@@ -179,9 +251,39 @@ class WidgetContainerDelegateImpl(
                 onRequestCache = {
                     currentlyDisplayedViews.find { view ->
                         view.id == widget.id
-                                && view is WidgetView.SetOfObjects
+                                && view is WidgetView.ChatList
                                 && view.source == widget.source
-                    } as? WidgetView.SetOfObjects
+                    } as? WidgetView.ChatList
+                },
+                storeOfRelations = storeOfRelations,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes,
+                chatPreviewContainer = chatPreviews
+            )
+        } else {
+            DataViewListWidgetContainer(
+                space = spaceId,
+                widget = widget,
+                storage = storelessSubscriptionContainer,
+                getObject = getObject,
+                activeView = observeCurrentWidgetView(widget.id),
+                isWidgetCollapsed = combine(
+                    expandedWidgetIds,
+                    userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+                ) { expanded, collapsedSecs ->
+                    isWidgetCollapsed(widget, expanded, collapsedSecs)
+                },
+                isSessionActiveFlow = isSessionActive,
+                urlBuilder = urlBuilder,
+                coverImageHashProvider = coverImageHashProvider,
+                onRequestCache = {
+                    currentlyDisplayedViews.find { view ->
+                        when (view) {
+                            is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
+                            is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
+                            else -> false
+                        }
+                    }
                 },
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
@@ -189,41 +291,6 @@ class WidgetContainerDelegateImpl(
                 chatPreviewContainer = chatPreviews
             )
         }
-    }
-
-    private fun createViewContainer(
-        widget: Widget.View,
-        currentlyDisplayedViews: List<WidgetView>
-    ): WidgetContainer {
-        return DataViewListWidgetContainer(
-            space = spaceId,
-            widget = widget,
-            storage = storelessSubscriptionContainer,
-            getObject = getObject,
-            activeView = observeCurrentWidgetView(widget.id),
-            isWidgetCollapsed = combine(
-                expandedWidgetIds,
-                userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
-            ) { expanded, collapsedSecs ->
-                isWidgetCollapsed(widget, expanded, collapsedSecs)
-            },
-            isSessionActiveFlow = isSessionActive,
-            urlBuilder = urlBuilder,
-            coverImageHashProvider = coverImageHashProvider,
-            onRequestCache = {
-                currentlyDisplayedViews.find { view ->
-                    when (view) {
-                        is WidgetView.SetOfObjects -> view.id == widget.id && view.source == widget.source
-                        is WidgetView.Gallery -> view.id == widget.id && view.source == widget.source
-                        else -> false
-                    }
-                }
-            },
-            storeOfRelations = storeOfRelations,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes,
-            chatPreviewContainer = chatPreviews
-        )
     }
 
     private fun createAllObjectsContainer(widget: Widget.AllObjects): WidgetContainer {

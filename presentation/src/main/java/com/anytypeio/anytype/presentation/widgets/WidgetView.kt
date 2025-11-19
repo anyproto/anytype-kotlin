@@ -139,6 +139,38 @@ sealed class WidgetView {
             get() = source.canCreateObjectOfType()
     }
 
+    data class ChatList(
+        override val id: Id,
+        val icon: ObjectIcon = ObjectIcon.None,
+        val source: Widget.Source,
+        val tabs: List<SetOfObjects.Tab>,
+        val elements: List<SetOfObjects.Element>,
+        val isExpanded: Boolean,
+        val isCompact: Boolean = false,
+        val name: Name,
+        val hasMore: Boolean = false,
+        override val sectionType: SectionType? = null,
+        val displayMode: DisplayMode = DisplayMode.Compact
+    ) : WidgetView(), Draggable {
+
+        override val canCreateObjectOfType: Boolean
+            get() = source.canCreateObjectOfType()
+
+        sealed class DisplayMode {
+            /**
+             * Compact display: shows chat objects with counters as list items.
+             */
+            data object Compact : DisplayMode()
+
+            /**
+             * Preview display: shows chat list with message previews.
+             * Currently displays identically to Compact as a placeholder.
+             * Will be replaced with rich preview UI in the future.
+             */
+            data object Preview : DisplayMode()
+        }
+    }
+
     data class ListOfObjects(
         override val id: Id,
         val icon: ObjectIcon,

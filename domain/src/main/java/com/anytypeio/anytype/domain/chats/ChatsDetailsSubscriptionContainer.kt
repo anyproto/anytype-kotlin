@@ -51,17 +51,17 @@ interface ChatsDetailsSubscriptionContainer {
                 awaitAccountStart.state().collect { state ->
                     when (state) {
                         AwaitAccountStartManager.State.Init -> {
-                            logger.logInfo("AwaitAccountStartManager.State.Init - waiting for account start")
+                            logger.logInfo("ChatsDetailsSubscriptionContainer, AwaitAccountStartManager.State.Init - waiting for account start")
                             // Do nothing
                         }
 
                         AwaitAccountStartManager.State.Started -> {
-                            logger.logInfo("AwaitAccountStartManager.State.Started - starting chat details subscription")
+                            logger.logInfo("ChatsDetailsSubscriptionContainer, AwaitAccountStartManager.State.Started - starting chat details subscription")
                             start()
                         }
 
                         AwaitAccountStartManager.State.Stopped -> {
-                            logger.logInfo("AwaitAccountStartManager.State.Stopped - stopping chat details subscription")
+                            logger.logInfo("ChatsDetailsSubscriptionContainer, AwaitAccountStartManager.State.Stopped - stopping chat details subscription")
                             stop()
                         }
                     }

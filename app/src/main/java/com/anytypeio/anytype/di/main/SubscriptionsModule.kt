@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
-import com.anytypeio.anytype.domain.chats.ChatsSubscriptionContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -185,7 +185,7 @@ object SubscriptionsModule {
         container: CrossSpaceSubscriptionContainer,
         awaitAccountStartManager: AwaitAccountStartManager,
         logger: Logger,
-    ): ChatsSubscriptionContainer = ChatsSubscriptionContainer.Default(
+    ): ChatsDetailsSubscriptionContainer = ChatsDetailsSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,

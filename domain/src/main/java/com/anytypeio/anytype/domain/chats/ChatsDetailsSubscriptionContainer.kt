@@ -24,7 +24,7 @@ import kotlinx.coroutines.launch
  * Container for subscribing to and observing all chat objects (Layout.CHAT_DERIVED).
  * Maintains a global subscription to chat objects across all spaces.
  */
-interface ChatsSubscriptionContainer {
+interface ChatsDetailsSubscriptionContainer {
 
     fun start()
     fun stop()
@@ -40,13 +40,13 @@ interface ChatsSubscriptionContainer {
         private val dispatchers: AppCoroutineDispatchers,
         private val awaitAccountStart: AwaitAccountStartManager,
         private val logger: Logger
-    ) : ChatsSubscriptionContainer {
+    ) : ChatsDetailsSubscriptionContainer {
 
         private val data = MutableStateFlow<List<ObjectWrapper.Basic>>(emptyList())
         private val jobs = mutableListOf<Job>()
 
         init {
-            logger.logInfo("ChatsSubscriptionContainer initialized")
+            logger.logInfo("ChatsDetailsSubscriptionContainer initialized")
             scope.launch {
                 awaitAccountStart.state().collect { state ->
                     when (state) {
@@ -56,12 +56,12 @@ interface ChatsSubscriptionContainer {
                         }
 
                         AwaitAccountStartManager.State.Started -> {
-                            logger.logInfo("AwaitAccountStartManager.State.Started - starting chat subscription")
+                            logger.logInfo("AwaitAccountStartManager.State.Started - starting chat details subscription")
                             start()
                         }
 
                         AwaitAccountStartManager.State.Stopped -> {
-                            logger.logInfo("AwaitAccountStartManager.State.Stopped - stopping chat subscription")
+                            logger.logInfo("AwaitAccountStartManager.State.Stopped - stopping chat details subscription")
                             stop()
                         }
                     }
@@ -88,7 +88,7 @@ interface ChatsSubscriptionContainer {
         }
 
         override fun start() {
-            logger.logInfo("Starting ChatsSubscriptionContainer")
+            logger.logInfo("Starting ChatsDetailsSubscriptionContainer")
             jobs += scope.launch(dispatchers.io) {
                 proceedWithSubscription()
             }
@@ -134,7 +134,7 @@ interface ChatsSubscriptionContainer {
             ).catch { error ->
                 logger.logException(
                     e = error,
-                    msg = "Failed to subscribe to chats"
+                    msg = "Failed to subscribe to chats details"
                 )
             }.collect {
                 data.value = it
@@ -142,7 +142,7 @@ interface ChatsSubscriptionContainer {
         }
 
         override fun stop() {
-            logger.logInfo("Stopping ChatsSubscriptionContainer")
+            logger.logInfo("Stopping ChatsDetailsSubscriptionContainer")
             jobs.forEach { it.cancel() }
             scope.launch(dispatchers.io) {
                 runCatching {
@@ -158,7 +158,7 @@ interface ChatsSubscriptionContainer {
         }
 
         companion object {
-            const val GLOBAL_CHATS_SUBSCRIPTION = "subscription.global.chats"
+            const val GLOBAL_CHATS_SUBSCRIPTION = "global-chats-details-subscription"
         }
     }
 }

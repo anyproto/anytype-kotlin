@@ -46,6 +46,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -329,7 +330,7 @@ internal fun UnreadIndicatorsRow(
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_chat_widget_mention),
-                    contentDescription = null
+                    contentDescription = "Mentions icon"
                 )
             }
             Spacer(modifier = Modifier.width(4.dp))
@@ -350,12 +351,12 @@ internal fun UnreadIndicatorsRow(
                         ),
                         shape = shape
                     )
-                    .padding(horizontal = 5.dp),
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = unreadMessageCount.toString(),
-                    style = Caption1Regular,
+                    style = Caption2Regular,
                     color = colorResource(id = R.color.text_white),
                 )
             }
@@ -498,11 +499,10 @@ internal fun buildChatContentWithInlineIcons(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
     fallbackSubtitle: String,
     singleLineFormat: Boolean = false,
-    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary)
+    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary),
+    mediumStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor),
+    regularStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
-
-    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor)
-    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
@@ -519,7 +519,7 @@ internal fun buildChatContentWithInlineIcons(
             } else {
                 creatorName
             }
-            withStyle(style = spanTitle2Medium) {
+            withStyle(style = mediumStyle) {
                 if (singleLineFormat) {
                     append("$truncatedCreatorName: ")
                 } else {
@@ -568,13 +568,13 @@ internal fun buildChatContentWithInlineIcons(
                         // Single attachment, no message text
                         when {
                             imageCount == 1 -> {
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(stringResource(R.string.image))
                                 }
                             }
 
                             fileCount == 1 -> {
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(stringResource(R.string.file))
                                 }
                             }
@@ -583,14 +583,14 @@ internal fun buildChatContentWithInlineIcons(
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.objects)
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                 }
                             }
 
                             else -> {
                                 // No attachments, no message, show fallback
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(fallbackSubtitle)
                                 }
                             }
@@ -605,18 +605,18 @@ internal fun buildChatContentWithInlineIcons(
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.object_1)
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                     append(" ")
                                 }
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(messageText)
                                 }
                             }
 
                             else -> {
                                 // For files/images: just show messageText
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(messageText)
                                 }
                             }
@@ -633,28 +633,28 @@ internal fun buildChatContentWithInlineIcons(
                         when {
                             imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
                                 // Images only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$imageCount ${stringResource(R.string.images)}")
                                 }
                             }
 
                             fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
                                 // Files only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$fileCount ${stringResource(R.string.files)}")
                                 }
                             }
 
                             linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
                                 // Objects only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$linkCount ${stringResource(R.string.objects)}")
                                 }
                             }
 
                             else -> {
                                 // Mixed types
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$attachmentCount ${stringResource(R.string.attachments)}")
                                 }
                             }
@@ -663,7 +663,7 @@ internal fun buildChatContentWithInlineIcons(
 
                     else -> {
                         // Multiple attachments, with message text - just show message text
-                        withStyle(style = spanTitle2Regular) {
+                        withStyle(style = regularStyle) {
                             append(messageText)
                         }
                     }
@@ -692,7 +692,7 @@ fun ChatWithMentionAndMessage() {
             creatorName = "John Doe",
             messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
             messageTime = "18:32",
-            unreadMessageCount = 32,
+            unreadMessageCount = 999,
             unreadMentionCount = 1,
             isMuted = true,
             chatPreview =

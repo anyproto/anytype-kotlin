@@ -27,7 +27,8 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -196,7 +197,7 @@ private fun ContentDataSpaceChat(
         ) {
             Text(
                 text = chatName,
-                style = Relations2,
+                style = CodeChatPreviewMedium,
                 color = getChatTextColor(
                     notificationMode = chatNotificationState,
                     unreadMessageCount = unreadMessageCount,
@@ -262,7 +263,9 @@ private fun DataSpaceChatPreviewRow(
         attachmentPreviews = attachmentPreviews,
         fallbackSubtitle = "",
         singleLineFormat = true,
-        textColor = textColor
+        textColor = textColor,
+        mediumStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor),
+        regularStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
     )
 
     Text(

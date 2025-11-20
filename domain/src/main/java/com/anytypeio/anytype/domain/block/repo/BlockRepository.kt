@@ -236,6 +236,17 @@ interface BlockRepository {
         keys: List<String>
     ): SearchResult
 
+    /**
+     * Subscribe to search results across all user spaces.
+     * Unlike searchObjectsWithSubscription which is scoped to a single space,
+     * this searches across all spaces globally.
+     */
+    suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult
+
+    suspend fun objectCrossSpaceUnsubscribe(subscription: String)
+
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?

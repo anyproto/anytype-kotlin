@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
     <string name="multiplayer_request_to_join_explanation">Cuando el propietario del espacio apruebe tu solicitud, tendrás acceso al espacio con los derechos que el propietario determine.</string>
@@ -1977,6 +1978,8 @@ En concreto,
     <string name="share_space_error_generic">Se ha producido un error inesperado: %1$s. Inténtalo de nuevo más tarde.</string>
     <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
     <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>

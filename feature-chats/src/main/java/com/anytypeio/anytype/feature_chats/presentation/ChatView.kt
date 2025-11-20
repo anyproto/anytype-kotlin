@@ -140,11 +140,11 @@ sealed interface ChatView {
                 private val resolvedTitle: String
                     get() {
                     val layout = wrapper?.layout
-                    return when {
-                        layout == ObjectType.Layout.NOTE -> {
+                    return when (layout) {
+                        ObjectType.Layout.NOTE -> {
                             wrapper.snippet.orEmpty()
                         }
-                        layout in SupportedLayouts.fileLayouts -> {
+                        in SupportedLayouts.fileLayouts -> {
                             val fileName = wrapper?.name.orEmpty()
                             val fileExt = wrapper?.fileExt
                             when {

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.ui_settings.space.new_settings
 
-import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -44,7 +43,6 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.ChatNotificationItem
 import com.anytypeio.anytype.presentation.spaces.UiEvent

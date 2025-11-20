@@ -24,9 +24,50 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.scan
 
 /**
- * Subscription container for cross-space searches.
- * Unlike StorelessSubscriptionContainer which is scoped to a single space,
- * this allows subscribing to objects across all user spaces.
+ * Storeless subscription container for cross-space searches.
+ *
+ * ## What "Storeless" Means
+ *
+ * This container does NOT maintain persistent state between subscriptions:
+ * - **No instance-level caching** of subscription results
+ * - **State exists only within the Flow scope** using the `scan` operator
+ * - **Each subscribe() call creates a fresh, independent Flow** with isolated state
+ * - **State is automatically garbage collected** when the Flow collection ends
+ *
+ * ## Benefits of Storeless Design
+ *
+ * - **Multiple concurrent subscriptions** without state conflicts
+ * - **Automatic cleanup** when subscribers stop collecting
+ * - **Memory efficiency** - no leaked state or stale data
+ * - **Thread safety** - no shared mutable state to synchronize
+ *
+ * ## Cross-Space vs Single-Space
+ *
+ * Unlike [StorelessSubscriptionContainer] which is scoped to a single space,
+ * this container searches and subscribes to objects **across all user spaces** using
+ * the `crossSpaceSearchSubscribe` middleware API.
+ *
+ * ## Flow Lifecycle
+ *
+ * 1. Subscribe with [CrossSpaceSearchParams] (filters, sorts, keys)
+ * 2. Initial results fetched via [BlockRepository.crossSpaceSearchSubscribe]
+ * 3. Results mapped to internal state ([SubscriptionObject] list)
+ * 4. State accumulated via `scan` operator processing [SubscriptionEvent]s from [SubscriptionEventChannel]
+ * 5. Final results emitted as [ObjectWrapper.Basic] list (only valid objects)
+ * 6. **State discarded** when Flow collection ends
+ *
+ * ## Event Processing Order
+ *
+ * Events are processed in priority order to ensure consistency:
+ * 1. **Add** - New objects added to subscription
+ * 2. **Remove** - Objects removed from subscription
+ * 3. **Set** - Object field values set
+ * 4. **Amend** - Object field values updated
+ * 5. **Unset** - Object field values cleared
+ * 6. **Position** - Object positions reordered
+ * 7. **Counter** - Counters updated (ignored by this container)
+ * @see StorelessSubscriptionContainer for single-space subscriptions
+ * @see SubscriptionObject internal state representation
  */
 interface CrossSpaceSubscriptionContainer {
 

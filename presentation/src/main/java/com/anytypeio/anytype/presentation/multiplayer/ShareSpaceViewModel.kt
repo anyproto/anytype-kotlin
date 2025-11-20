@@ -44,6 +44,7 @@ import com.anytypeio.anytype.domain.multiplayer.MakeSpaceShareable
 import com.anytypeio.anytype.domain.multiplayer.RemoveSpaceMembers
 import com.anytypeio.anytype.domain.multiplayer.RevokeSpaceInviteLink
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.StopSharingSpace
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
 import com.anytypeio.anytype.domain.`object`.canChangeReaderToWriter
@@ -80,6 +81,7 @@ class ShareSpaceViewModel(
     private val revokeSpaceInviteLink: RevokeSpaceInviteLink,
     private val removeSpaceMembers: RemoveSpaceMembers,
     private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
+    private val stopSharingSpace: StopSharingSpace,
     private val container: StorelessSubscriptionContainer,
     private val permissions: UserPermissionProvider,
     private val getAccount: GetAccount,
@@ -111,6 +113,8 @@ class ShareSpaceViewModel(
     val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
     val inviteLinkAccessLoading = MutableStateFlow(false)
     val inviteLinkConfirmationDialog = MutableStateFlow<SpaceInviteLinkAccessLevel?>(null)
+    val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
+    val isMakePrivateEnabled = MutableStateFlow(false)
 
     init {
         Timber.i("Share-space init with params: $vmParams")
@@ -118,6 +122,7 @@ class ShareSpaceViewModel(
         proceedWithSubscriptions()
         proceedWithGettingActiveTier()
         proceedWithInviteLinkState()
+        proceedWithMakePrivateEnabledState()
     }
 
     private fun proceedWithInviteLinkState() {
@@ -144,6 +149,25 @@ class ShareSpaceViewModel(
                             inviteLink
                         }
                 }
+        }
+    }
+
+    /**
+     * Observes member list, ownership status, and space access type to determine
+     * if the "Make Private" button should be enabled.
+     * Enabled when: single member (owner) and space is currently SHARED.
+     */
+    private fun proceedWithMakePrivateEnabledState() {
+        viewModelScope.launch {
+            combine(
+                flow = members,
+                flow2 = isCurrentUserOwner,
+                flow3 = spaceAccessType
+            ) { membersList, isOwner, accessType ->
+                membersList.size == 1 && isOwner && accessType == SpaceAccessType.SHARED
+            }.collect { enabled ->
+                isMakePrivateEnabled.value = enabled
+            }
         }
     }
 
@@ -222,6 +246,7 @@ class ShareSpaceViewModel(
             }.collect { result ->
                 isLoadingInProgress.value = false
                 _spaceViews = result.spaceView
+                spaceAccessType.value = result.spaceView?.spaceAccessType
                 val spaceView = result.spaceView
                 val spaceMembers = result.spaceMembers
                     .sortedByDescending { it.status == ParticipantStatus.JOINING }
@@ -548,6 +573,50 @@ class ShareSpaceViewModel(
         }
     }
 
+    fun onMakePrivateClicked() {
+        Timber.d("onMakePrivateClicked: Making space private")
+        viewModelScope.launch {
+            isLoadingInProgress.value = true
+
+            // First, revoke invite link if it exists and is not disabled
+            val currentInviteLink = inviteLinkAccessLevel.value
+            if (currentInviteLink !is SpaceInviteLinkAccessLevel.LinkDisabled) {
+                Timber.d("Revoking active invite link before making space private")
+                revokeSpaceInviteLink.async(vmParams.space).fold(
+                    onSuccess = {
+                        Timber.d("Successfully revoked invite link")
+                        proceedWithMakingSpacePrivate()
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Failed to revoke invite link, proceeding with making space private anyway")
+                        // Proceed anyway - the main goal is to make space private
+                        proceedWithMakingSpacePrivate()
+                    }
+                )
+            } else {
+                // No active invite link, proceed directly
+                proceedWithMakingSpacePrivate()
+            }
+        }
+    }
+
+    private suspend fun proceedWithMakingSpacePrivate() {
+        stopSharingSpace.async(vmParams.space).fold(
+            onSuccess = {
+                Timber.d("Successfully made space private")
+                isLoadingInProgress.value = false
+                viewModelScope.launch {
+                    commands.emit(Command.Dismiss)
+                }
+            },
+            onFailure = { error ->
+                Timber.e(error, "Failed to make space private")
+                isLoadingInProgress.value = false
+                shareSpaceErrors.value = ShareSpaceErrors.MakePrivateFailed
+            }
+        )
+    }
+
     private fun updateInviteLinkAccessLevel(newLevel: SpaceInviteLinkAccessLevel) {
         if (!inSpaceSharable()) {
             viewModelScope.launch {
@@ -851,6 +920,7 @@ class ShareSpaceViewModel(
         private val changeSpaceMemberPermissions: ChangeSpaceMemberPermissions,
         private val getAccount: GetAccount,
         private val removeSpaceMembers: RemoveSpaceMembers,
+        private val stopSharingSpace: StopSharingSpace,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val permissions: UserPermissionProvider,
@@ -872,6 +942,7 @@ class ShareSpaceViewModel(
             revokeSpaceInviteLink = revokeSpaceInviteLink,
             changeSpaceMemberPermissions = changeSpaceMemberPermissions,
             removeSpaceMembers = removeSpaceMembers,
+            stopSharingSpace = stopSharingSpace,
             container = container,
             urlBuilder = urlBuilder,
             getAccount = getAccount,
@@ -1185,6 +1256,7 @@ sealed class ShareSpaceErrors {
     data object SpaceIsDeleted : ShareSpaceErrors()
     data object IncorrectPermissions : ShareSpaceErrors()
     data object NoSuchSpace : ShareSpaceErrors()
+    data object MakePrivateFailed : ShareSpaceErrors()
     data class Error(val msg: String) : ShareSpaceErrors()
 }
 

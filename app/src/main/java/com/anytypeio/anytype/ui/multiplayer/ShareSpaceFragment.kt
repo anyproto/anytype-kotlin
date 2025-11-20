@@ -68,7 +68,10 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onInviteLinkAccessChangeConfirmed = vm::onInviteLinkAccessChangeConfirmed,
                     onInviteLinkAccessChangeCancel = vm::onInviteLinkAccessChangeCancel,
                     onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
-                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value
+                    isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
+                    onMakePrivateClicked = vm::onMakePrivateClicked,
+                    spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value,
+                    isMakePrivateEnabled = vm.isMakePrivateEnabled.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->
@@ -147,6 +150,14 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     ShareSpaceErrors.NoSuchSpace -> {
                         BaseAlertDialog(
                             dialogText = stringResource(R.string.share_space_error_no_such_space),
+                            buttonText = stringResource(R.string.button_ok),
+                            onButtonClick = { vm.dismissShareSpaceErrors() },
+                            onDismissRequest = { vm.dismissShareSpaceErrors() }
+                        )
+                    }
+                    ShareSpaceErrors.MakePrivateFailed -> {
+                        BaseAlertDialog(
+                            dialogText = stringResource(R.string.share_space_error_make_private_failed),
                             buttonText = stringResource(R.string.button_ok),
                             onButtonClick = { vm.dismissShareSpaceErrors() },
                             onDismissRequest = { vm.dismissShareSpaceErrors() }

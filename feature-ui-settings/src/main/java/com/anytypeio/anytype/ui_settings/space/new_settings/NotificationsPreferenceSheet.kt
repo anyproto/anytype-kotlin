@@ -58,14 +58,9 @@ fun NotificationsPreferenceSheet(
     uiEvent: (UiEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
-    val contentModifier = if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK) {
-        Modifier
-            .windowInsetsPadding(WindowInsets.systemBars)
-            .fillMaxSize()
-    } else {
-        Modifier
-            .fillMaxSize()
-    }
+    val contentModifier = Modifier
+        .windowInsetsPadding(WindowInsets.systemBars)
+        .fillMaxSize()
     ModalBottomSheet(
         sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
         modifier = contentModifier,

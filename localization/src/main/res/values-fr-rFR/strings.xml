@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">Copier le lien</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Rejoindre un espace</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commentaire privé pour un propriétaire d\'espace</string>
     <string name="multiplayer_request_to_join_explanation">Une fois que le propriétaire de l\'espace a approuvé votre demande, vous rejoindrez l\'espace avec les droits d\'accès déterminés par le propriétaire.</string>
@@ -1974,6 +1975,8 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>

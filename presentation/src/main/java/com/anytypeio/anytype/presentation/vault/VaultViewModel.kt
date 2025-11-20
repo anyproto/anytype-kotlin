@@ -83,6 +83,14 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+/**
+ * Data class to hold aggregated unread counts for all chats in a space
+ */
+private data class UnreadCounts(
+    val unreadMessages: Int,
+    val unreadMentions: Int
+)
+
 @OptIn(ExperimentalCoroutinesApi::class)
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
@@ -268,6 +276,16 @@ class VaultViewModel(
                 previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
             }
 
+        // Calculate total unread counts for all chats per space
+        val unreadCountsPerSpace = chatPreviews.groupBy { it.space.id }
+            .mapValues { (_, previews) ->
+                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
+                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
+                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
+                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+                UnreadCounts(totalUnreadMessages, hasMentions)
+            }
+
         // Index chatDetails by chat ID for O(1) lookup of chat names
         val chatDetailsMap = chatDetails.associateBy { it.id }
         // Map all active spaces to VaultSpaceView objects
@@ -278,8 +296,11 @@ class VaultViewModel(
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
             }
+            val unreadCounts = space.targetSpaceId?.let { spaceId ->
+                unreadCountsPerSpace[spaceId]
+            }
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, wallpapers, chatDetailsMap)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -334,6 +355,7 @@ class VaultViewModel(
     private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>
@@ -341,11 +363,11 @@ class VaultViewModel(
         return when {
             // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
             space.spaceUxType == SpaceUxType.CHAT && chatPreview != null -> {
-                createChatSpaceView(space, chatPreview, permissions, wallpapers, chatDetailsMap)
+                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
             }
             // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, permissions, wallpapers, chatDetailsMap)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
             }
             // any other space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -448,6 +470,7 @@ class VaultViewModel(
     private suspend fun createChatSpaceView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>
@@ -506,8 +529,8 @@ class VaultViewModel(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
-            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
+            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
+            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
@@ -521,6 +544,7 @@ class VaultViewModel(
     private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>
@@ -578,8 +602,8 @@ class VaultViewModel(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
-            unreadMessageCount = chatPreview.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview.state?.unreadMentions?.counter ?: 0,
+            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
+            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
             chatNotificationState = calculateChatNotificationState(

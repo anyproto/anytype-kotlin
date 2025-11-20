@@ -1245,6 +1245,7 @@
     <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
     <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
     <string name="multiplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
@@ -1978,6 +1979,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_generic">Si è verificato un errore inatteso: %1$s. Riprovare più tardi.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>

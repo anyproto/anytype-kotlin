@@ -66,6 +66,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_ui.R
@@ -118,7 +119,10 @@ fun ShareSpaceScreen(
 
     onShareInviteLinkClicked: (String) -> Unit,
     onCopyInviteLinkClicked: (String, String) -> Unit,
-    onShareQrCodeClicked: (String, String) -> Unit
+    onShareQrCodeClicked: (String, String) -> Unit,
+    onMakePrivateClicked: () -> Unit,
+    spaceAccessType: SpaceAccessType?,
+    isMakePrivateEnabled: Boolean
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -148,13 +152,17 @@ fun ShareSpaceScreen(
                         .padding(vertical = 6.dp)
                 )
             }
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .verticalScroll(rememberScrollState())
-            ) {
-                Toolbar(title = stringResource(R.string.multiplayer_members))
-            }
+            // Header with title and menu
+            ShareSpaceHeader(
+                title = stringResource(R.string.multiplayer_members),
+                inviteLinkAccessLevel = inviteLinkAccessLevel,
+                isMakePrivateEnabled = isMakePrivateEnabled,
+                isCurrentUserOwner = isCurrentUserOwner,
+                onCopyClicked = onCopyInviteLinkClicked,
+                onShareClicked = onShareInviteLinkClicked,
+                onQrCodeClicked = onShareQrCodeClicked,
+                onMakePrivateClicked = onMakePrivateClicked
+            )
 
             LazyColumn(
                 modifier = Modifier
@@ -338,6 +346,171 @@ private fun showConfirmScreen(
                 isSecondButtonLoading = isLoading,
             )
         )
+    }
+}
+
+@Composable
+private fun ShareSpaceHeader(
+    title: String,
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
+    isMakePrivateEnabled: Boolean,
+    isCurrentUserOwner: Boolean,
+    onCopyClicked: (String, String) -> Unit,
+    onShareClicked: (String) -> Unit,
+    onQrCodeClicked: (String, String) -> Unit,
+    onMakePrivateClicked: () -> Unit
+) {
+    var showMenu by remember { mutableStateOf(false) }
+
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(48.dp)
+            .padding(horizontal = 16.dp)
+    ) {
+        // Title on the left
+        Text(
+            text = title,
+            style = PreviewTitle2Medium,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.align(Alignment.Center)
+        )
+
+        // Three dots menu on the right
+        Box(modifier = Modifier.align(Alignment.CenterEnd)) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_action_more),
+                contentDescription = "More options",
+                modifier = Modifier
+                    .size(24.dp)
+                    .noRippleClickable {
+                        showMenu = true
+                    },
+                contentScale = ContentScale.Inside
+            )
+
+            // Dropdown menu
+            val link = when (inviteLinkAccessLevel) {
+                is SpaceInviteLinkAccessLevel.EditorAccess -> inviteLinkAccessLevel.link
+                is SpaceInviteLinkAccessLevel.RequestAccess -> inviteLinkAccessLevel.link
+                is SpaceInviteLinkAccessLevel.ViewerAccess -> inviteLinkAccessLevel.link
+                is SpaceInviteLinkAccessLevel.LinkDisabled -> ""
+            }
+
+            val isLinkDisabled = inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.LinkDisabled
+
+            DropdownMenu(
+                modifier = Modifier.widthIn(min = 252.dp),
+                containerColor = colorResource(R.color.background_secondary),
+                shape = RoundedCornerShape(12.dp),
+                expanded = showMenu,
+                onDismissRequest = { showMenu = false }
+            ) {
+                // Copy link
+                DropdownMenuItem(
+                    modifier = Modifier.alpha(if (isLinkDisabled) 0.3f else 1.0f),
+                    onClick = {
+                        if (!isLinkDisabled) {
+                            onCopyClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
+                        }
+                        showMenu = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.multiplayer_copy_link),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1.0f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_object_action_copy_link),
+                        contentDescription = "Copy link icon",
+                        modifier = Modifier
+                            .size(22.dp)
+                            .align(Alignment.CenterVertically),
+                        colorFilter = ColorFilter.tint(
+                            colorResource(id = R.color.text_primary)
+                        )
+                    )
+                }
+
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+                // Share link
+                DropdownMenuItem(
+                    modifier = Modifier.alpha(if (isLinkDisabled) 0.3f else 1.0f),
+                    onClick = {
+                        if (!isLinkDisabled) {
+                            onShareClicked(link)
+                        }
+                        showMenu = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.multiplayer_share_invite_link_menu),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1.0f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_menu_share_link),
+                        contentDescription = "Share link icon",
+                        modifier = Modifier
+                            .size(22.dp)
+                            .align(Alignment.CenterVertically)
+                    )
+                }
+
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+                // Show QR code
+                DropdownMenuItem(
+                    modifier = Modifier.alpha(if (isLinkDisabled) 0.3f else 1.0f),
+                    onClick = {
+                        if (!isLinkDisabled) {
+                            onQrCodeClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
+                        }
+                        showMenu = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.multiplayer_qr_invite_link_menu),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        modifier = Modifier.weight(1.0f)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_qr_code_24),
+                        contentDescription = "QR code icon",
+                        modifier = Modifier
+                            .size(22.dp)
+                            .align(Alignment.CenterVertically),
+                    )
+                }
+
+                // Make Private - only visible for owners
+                if (isCurrentUserOwner) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+
+                    DropdownMenuItem(
+                        modifier = Modifier.alpha(if (isMakePrivateEnabled) 1.0f else 0.3f),
+                        onClick = {
+                            if (isMakePrivateEnabled) {
+                                onMakePrivateClicked()
+                            }
+                            showMenu = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_make_private),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -791,14 +964,12 @@ fun InviteLinkDisplay(
     onShareClicked: (String) -> Unit,
     onQrCodeClicked: (String, String) -> Unit
 ) {
-    var showMenu by remember { mutableStateOf(false) }
-
     Column(
         modifier = modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
-        // Link text with three dots menu
+        // Link text display
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -813,108 +984,10 @@ fun InviteLinkDisplay(
                 text = link,
                 style = BodyCalloutRegular,
                 color = colorResource(id = R.color.text_primary),
-                modifier = Modifier.weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
-
-            Spacer(modifier = Modifier.width(8.dp))
-
-            // Three dots menu trigger
-            Box {
-                Image(
-                    painter = painterResource(id = R.drawable.ic_action_more),
-                    contentDescription = "More options",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .noRippleClickable {
-                            showMenu = true
-                        },
-                    contentScale = ContentScale.Inside
-                )
-
-                // Dropdown menu
-                DropdownMenu(
-                    modifier = Modifier.widthIn(min = 252.dp),
-                    containerColor = colorResource(R.color.background_secondary),
-                    shape = RoundedCornerShape(12.dp),
-                    expanded = showMenu,
-                    onDismissRequest = { showMenu = false }
-                ) {
-                    // Copy link
-                    DropdownMenuItem(
-                        onClick = {
-                            onCopyClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
-                            showMenu = false
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.multiplayer_copy_link),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.weight(1.0f)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_object_action_copy_link),
-                            contentDescription = "Copy link icon",
-                            modifier = Modifier
-                                .size(22.dp)
-                                .align(Alignment.CenterVertically),
-                            colorFilter = ColorFilter.tint(
-                                colorResource(id = R.color.text_primary)
-                            )
-                        )
-                    }
-
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-
-                    // Share link
-                    DropdownMenuItem(
-                        onClick = {
-                            onShareClicked(link)
-                            showMenu = false
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.multiplayer_share_invite_link_menu),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.weight(1.0f)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_menu_share_link),
-                            contentDescription = "Share link icon",
-                            modifier = Modifier
-                                .size(22.dp)
-                                .align(Alignment.CenterVertically)
-                        )
-                    }
-
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-
-                    // Show QR code
-                    DropdownMenuItem(
-                        onClick = {
-                            onQrCodeClicked(link, EventsDictionary.CopyLinkRoutes.MENU)
-                            showMenu = false
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.multiplayer_qr_invite_link_menu),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_primary),
-                            modifier = Modifier.weight(1.0f)
-                        )
-                        Image(
-                            painter = painterResource(id = R.drawable.ic_qr_code_24),
-                            contentDescription = "QR code icon",
-                            modifier = Modifier
-                                .size(22.dp)
-                                .align(Alignment.CenterVertically),
-                        )
-                    }
-                }
-            }
         }
         Spacer(modifier = Modifier.height(8.dp))
         // Copy button
@@ -1091,7 +1164,10 @@ fun ShareSpaceScreenPreview1() {
         onInviteLinkAccessChangeCancel = {},
         onCopyInviteLinkClicked = { _, _ -> },
         isCurrentUserOwner = true,
-        onManageSpacesClicked = {}
+        onManageSpacesClicked = {},
+        onMakePrivateClicked = {},
+        spaceAccessType = SpaceAccessType.SHARED,
+        isMakePrivateEnabled = true
     )
 }
 

@@ -25,14 +25,24 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.views.Relations2
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
+import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
+/**
+ * Determines the text color for chat preview based on notification state and read/unread status.
+ *
+ * Logic:
+ * - Muted/disabled chats: Always show as secondary color (even if unread)
+ * - Enabled chats with no unread messages: Show as secondary color (read state)
+ * - Enabled chats with unread messages: Show as primary color (unread state)
+ */
 @Composable
 private fun getChatTextColor(
     notificationMode: NotificationState?,
@@ -40,9 +50,17 @@ private fun getChatTextColor(
     unreadMentionCount: Int
 ): androidx.compose.ui.graphics.Color {
     return when {
-        notificationMode == NotificationState.DISABLE -> colorResource(id = R.color.text_transparent_secondary)
-        unreadMessageCount == 0 && unreadMentionCount == 0 -> colorResource(id = R.color.text_transparent_secondary)
-        else -> colorResource(id = R.color.text_primary)
+        // Muted/disabled chats: always show as secondary (even if unread)
+        notificationMode == NotificationState.DISABLE ->
+            colorResource(id = R.color.text_transparent_secondary)
+
+        // Read messages: show as secondary
+        unreadMessageCount == 0 && unreadMentionCount == 0 ->
+            colorResource(id = R.color.text_transparent_secondary)
+
+        // Unread messages (when notifications enabled): show as primary
+        else ->
+            colorResource(id = R.color.text_primary)
     }
 }
 
@@ -123,6 +141,7 @@ fun VaultDataSpaceChatCard(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
+            chatPreview = spaceView.chatPreview,
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
@@ -162,6 +181,7 @@ private fun ContentDataSpaceChat(
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
+    chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
@@ -189,6 +209,10 @@ private fun ContentDataSpaceChat(
             )
         }
 
+        // Extract preview-specific counts for text color (not aggregated counts)
+        val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
+        val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
+
         // Line 2: Chat Name + Indicators
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -196,11 +220,11 @@ private fun ContentDataSpaceChat(
         ) {
             Text(
                 text = chatName,
-                style = Relations2,
+                style = CodeChatPreviewMedium,
                 color = getChatTextColor(
                     notificationMode = chatNotificationState,
-                    unreadMessageCount = unreadMessageCount,
-                    unreadMentionCount = unreadMentionCount
+                    unreadMessageCount = previewUnreadMessages,
+                    unreadMentionCount = previewUnreadMentions
                 ),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
@@ -234,8 +258,7 @@ private fun ContentDataSpaceChat(
                 creatorName = creatorName,
                 messageText = messageText,
                 attachmentPreviews = attachmentPreviews,
-                unreadMessageCount = unreadMessageCount,
-                unreadMentionCount = unreadMentionCount,
+                chatPreview = chatPreview,
                 chatPreviewNotificationState = chatNotificationState
             )
         }
@@ -247,14 +270,17 @@ private fun DataSpaceChatPreviewRow(
     creatorName: String?,
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
-    unreadMessageCount: Int,
-    unreadMentionCount: Int,
+    chatPreview: Chat.Preview?,
     chatPreviewNotificationState: NotificationState?
 ) {
+    // Extract preview-specific counts for text color (not aggregated counts)
+    val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
+    val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
+
     val textColor = getChatTextColor(
         notificationMode = chatPreviewNotificationState,
-        unreadMessageCount = unreadMessageCount,
-        unreadMentionCount = unreadMentionCount
+        unreadMessageCount = previewUnreadMessages,
+        unreadMentionCount = previewUnreadMentions
     )
     val (chatText, inlineContent) = buildChatContentWithInlineIcons(
         creatorName = creatorName,
@@ -262,7 +288,9 @@ private fun DataSpaceChatPreviewRow(
         attachmentPreviews = attachmentPreviews,
         fallbackSubtitle = "",
         singleLineFormat = true,
-        textColor = textColor
+        textColor = textColor,
+        mediumStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor),
+        regularStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
     )
 
     Text(

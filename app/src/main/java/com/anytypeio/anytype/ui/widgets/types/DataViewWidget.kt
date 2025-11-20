@@ -3,6 +3,7 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -11,6 +12,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -32,6 +35,7 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -52,6 +56,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -131,7 +136,109 @@ fun DataViewListWidgetCard(
                             icon = element.objectIcon,
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName()
+                            name = element.getPrettyName(),
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
+                        )
+                        if (idx != item.elements.lastIndex) {
+                            Divider(
+                                thickness = 0.5.dp,
+                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                color = colorResource(id = R.color.widget_divider)
+                            )
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                }
+                if (item.hasMore && item.isExpanded) {
+                    SeeAllButton(
+                        onClick = { onWidgetSourceClicked(item.id) }
+                    )
+                }
+            } else {
+                if (item.isExpanded) {
+                    EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            }
+        }
+
+        WidgetLongClickMenu(
+            menuItems = menuItems,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
+        )
+    }
+}
+
+@Composable
+fun ChatListWidgetCard(
+    item: WidgetView.ChatList,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
+) {
+    // For now, both Compact and Preview display modes use the same rendering
+    // In the future, when displayMode is Preview, we can render a different UI with message previews
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            WidgetHeader(
+                title = item.name.getPrettyName(),
+                icon = item.icon,
+                isCardMenuExpanded = isCardMenuExpanded,
+                onWidgetHeaderClicked = {
+                    if (mode !is InteractionMode.Edit) {
+                        onWidgetSourceClicked(item.id)
+                    }
+                },
+                onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                canCreateObject = item.canCreateObjectOfType,
+                onCreateElement = { onCreateElement(item) },
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+            )
+            if (item.tabs.size > 1 && item.isExpanded) {
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
+            }
+            if (item.elements.isNotEmpty()) {
+                if (item.isCompact) {
+                    CompactListWidgetList(
+                        mode = mode,
+                        elements = item.elements,
+                        onWidgetElementClicked = onWidgetObjectClicked,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                    )
+                } else {
+                    item.elements.forEachIndexed { idx, element ->
+                        ListWidgetElement(
+                            onWidgetObjectClicked = onWidgetObjectClicked,
+                            obj = element.obj,
+                            icon = element.objectIcon,
+                            mode = mode,
+                            onObjectCheckboxClicked = onObjectCheckboxClicked,
+                            name = element.getPrettyName(),
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -338,7 +445,8 @@ fun ListWidgetElement(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     icon: ObjectIcon,
     obj: ObjectWrapper.Basic,
-    name: String
+    name: String,
+    counter: WidgetView.ChatCounter? = null
 ) {
     Box(
         modifier = Modifier
@@ -399,6 +507,52 @@ fun ListWidgetElement(
                     color = colorResource(id = R.color.text_secondary_widgets)
                 )
             )
+        }
+
+        if (counter != null) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (counter.unreadMentionCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            )
+                            .size(20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_chat_widget_mention),
+                            contentDescription = null
+                        )
+                    }
+                }
+                if (counter.unreadMessageCount > 0) {
+                    if (counter.unreadMentionCount > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .defaultMinSize(minWidth = 20.dp)
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 6.dp),
+                            text = counter.unreadMessageCount.toString(),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_white),
+                        )
+                    }
+                }
+            }
         }
     }
 }
@@ -650,7 +804,7 @@ private fun GalleryIconTitleContent(
 @Composable
 fun GalleryWidgetItemCard_ImageType_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -673,7 +827,7 @@ fun GalleryWidgetItemCard_ImageType_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithImageCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -697,7 +851,7 @@ fun GalleryWidgetItemCard_WithImageCover_Preview() {
 fun GalleryWidgetItemCard_WithColorCover_Preview() {
     GalleryWidgetItemCard(
         showIcon = true,
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -720,7 +874,7 @@ fun GalleryWidgetItemCard_WithColorCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithGradientCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -743,7 +897,7 @@ fun GalleryWidgetItemCard_WithGradientCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_NoCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -767,7 +921,7 @@ fun GalleryWidgetItemCard_NoCover_Preview() {
 fun GalleryWidgetItemCard_NoCoverShort_Preview() {
     GalleryWidgetItemCard(
         showIcon = true,
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.TypeIcon.Default(
                 rawValue = "american-football",
                 color = CustomIconColor.Blue
@@ -805,7 +959,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💡"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -816,7 +970,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Product Ideas")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📊"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -827,7 +981,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Q4 Planning")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("✅"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -867,22 +1021,22 @@ fun DataViewListWidgetCard_Compact_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🏠"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Home Dashboard")),
                     name = WidgetView.Name.Default("Home Dashboard")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📁"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Projects Folder")),
                     name = WidgetView.Name.Default("Projects Folder")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Reading List")),
                     name = WidgetView.Name.Default("Reading List")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🔖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-4", Relations.NAME to "Bookmarks")),
                     name = WidgetView.Name.Default("Bookmarks")
@@ -975,7 +1129,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Book 1")),
                     name = WidgetView.Name.Default("Book 1")
@@ -1026,7 +1180,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                 )
             ),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -1037,7 +1191,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                     ),
                     name = WidgetView.Name.Default("Design mockups")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "task-2", Relations.NAME to "Code review")),
                     name = WidgetView.Name.Default("Code review")
@@ -1072,12 +1226,12 @@ fun DataViewListWidgetCard_EditMode_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📄"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Document 1")),
                     name = WidgetView.Name.Default("Document 1")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📝"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Document 2")),
                     name = WidgetView.Name.Default("Document 2")
@@ -1110,17 +1264,17 @@ fun DataViewListWidgetCard_Favorites_Preview() {
             source = Widget.Source.Bundled.Favorites,
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💼"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Work Notes")),
                     name = WidgetView.Name.Default("Work Notes")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🎨"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Design System")),
                     name = WidgetView.Name.Default("Design System")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🚀"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Launch Plan")),
                     name = WidgetView.Name.Default("Launch Plan")

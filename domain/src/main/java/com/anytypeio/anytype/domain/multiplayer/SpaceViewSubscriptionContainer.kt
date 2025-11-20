@@ -130,7 +130,10 @@ interface SpaceViewSubscriptionContainer {
                         Relations.SPACE_PUSH_NOTIFICATIONS_KEY,
                         Relations.SPACE_PUSH_NOTIFICATIONS_TOPIC,
                         Relations.SPACE_PUSH_NOTIFICATION_MODE,
-                        Relations.SPACE_ORDER
+                        Relations.SPACE_ORDER,
+                        Relations.PUSH_NOTIFICATION_FORCE_ALL_IDS,
+                        Relations.PUSH_NOTIFICATION_FORCE_MENTION_IDS,
+                        Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS
                     ),
                     filters = listOf(
                         DVFilter(

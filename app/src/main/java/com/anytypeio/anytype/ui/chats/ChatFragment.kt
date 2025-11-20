@@ -13,9 +13,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -153,7 +156,8 @@ class ChatFragment : Fragment() {
                         onEditInfo = vm::onEditInfo,
                         onPin = vm::onPinChatAsWidget,
                         onCopyLink = vm::onCopyChatLink,
-                        onMoveToBin = vm::onMoveToBin
+                        onMoveToBin = vm::onMoveToBin,
+                        onNotificationSettingChanged = vm::onNotificationSettingChanged
                     )
                 }
             ) { paddingValues ->
@@ -331,6 +335,9 @@ class ChatFragment : Fragment() {
                 )
                 
                 ModalBottomSheet(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .windowInsetsPadding(WindowInsets.statusBars),
                     onDismissRequest = { 
                         showChatInfoScreen = false
                         chatInfoData = null
@@ -586,7 +593,79 @@ class ChatFragment : Fragment() {
                         }
                     }
 
-                    else -> toast("TODO")
+                    is OpenObjectNavigation.OpenType -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening type from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenChat -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.chatScreen,
+                                ChatFragment.args(
+                                    space = nav.space,
+                                    ctx = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening chat from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenParticipant -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.participantScreen,
+                                ParticipantFragment.args(
+                                    space = nav.space,
+                                    objectId = nav.target
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening participant from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenBookmarkUrl -> {
+                        runCatching {
+                            proceedWithAction(OpenUrl(nav.url))
+                        }.onFailure {
+                            Timber.w("Error while opening bookmark URL from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.OpenDateObject -> {
+                        runCatching {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
+                                )
+                            )
+                        }.onFailure {
+                            Timber.w("Error while opening date object from chat.")
+                        }
+                    }
+
+                    is OpenObjectNavigation.UnexpectedLayoutError -> {
+                        toast("Cannot open object: unexpected layout")
+                        Timber.w("Unexpected layout error: ${nav.layout}")
+                    }
+
+                    OpenObjectNavigation.NonValidObject -> {
+                        toast("Cannot open invalid object")
+                        Timber.w("Attempted to open non-valid object")
+                    }
                 }
             }
         }

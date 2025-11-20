@@ -20,7 +20,8 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
-import com.anytypeio.anytype.domain.`object`.FetchObject
+import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
+import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -134,4 +135,6 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun notificationBuilder(): NotificationBuilder
     fun eventChannel(): EventChannel
     fun spaceLinkInfoStore(): SpaceInviteLinkStore
+    fun setChatNotificationMode(): SetChatNotificationMode
+    fun resetSpaceChatNotification(): ResetSpaceChatNotification
 }

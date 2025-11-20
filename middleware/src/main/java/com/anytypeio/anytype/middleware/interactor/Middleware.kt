@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1378,6 +1379,49 @@ class Middleware @Inject constructor(
             },
             counter = response.counters?.parse()
         )
+    }
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult {
+        val request = Rpc.Object.CrossSpaceSearchSubscribe.Request(
+            subId = command.subscription,
+            filters = command.filters.map { it.toMiddlewareModel() },
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            keys = command.keys,
+            source = command.source,
+            noDepSubscription = command.noDepSubscription,
+            collectionId = command.collectionId.orEmpty()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceSubscribe(request) }
+        logResponseIfDebug(response, time)
+        return SearchResult(
+            results = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            dependencies = response.dependencies.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            counter = response.counters?.parse()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceUnsubscribe(subscription: String) {
+        val request = Rpc.Object.CrossSpaceSearchUnsubscribe.Request(
+            subId = subscription
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceUnsubscribe(request) }
+        logResponseIfDebug(response, time)
     }
 
     @Throws(Exception::class)
@@ -3147,6 +3191,29 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.setSpaceMode(request) }
         logResponseIfDebug(response, time)
         return response
+    }
+
+    fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        val request = Rpc.PushNotification.SetForceModeIds.Request(
+            spaceId = command.spaceId,
+            chatIds = command.chatIds,
+            mode = command.mode.toMiddlewareModel()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setForceModeIds(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        val request = Rpc.PushNotification.ResetIds.Request(
+            spaceId = command.spaceId,
+            chatIds = command.chatIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.resetIds(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
     }
 
     @Throws(Exception::class)

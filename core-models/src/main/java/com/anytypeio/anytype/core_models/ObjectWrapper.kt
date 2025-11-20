@@ -405,6 +405,15 @@ sealed class ObjectWrapper {
                     NotificationState.entries.firstOrNull { it.code == code.toInt() }
                 } ?: NotificationState.ALL
 
+        val spacePushNotificationForceAllIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_ALL_IDS)
+
+        val spacePushNotificationForceMentionIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_MENTION_IDS)
+
+        val spacePushNotificationForceMuteIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS)
+
         val spaceOrder: String? get() = getSingleValue(Relations.SPACE_ORDER)
 
         val spaceJoinDate: Double? get() = getSingleValue(Relations.SPACE_JOIN_DATE)

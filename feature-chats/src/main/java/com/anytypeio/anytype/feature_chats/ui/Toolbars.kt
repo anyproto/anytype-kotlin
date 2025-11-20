@@ -67,8 +67,10 @@ fun ChatTopToolbar(
     onInviteMembersClicked: () -> Unit,
     onEditInfo: () -> Unit,
     onPin: () -> Unit,
-    onCopyLink: () -> Unit,
-    onMoveToBin: () -> Unit
+    onCopyLink: () -> Unit = {},
+    onMoveToBin: () -> Unit,
+    onProperties: () -> Unit = {},
+    onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
     var showDropdownMenu by remember { mutableStateOf(false) }
 
@@ -182,82 +184,35 @@ fun ChatTopToolbar(
                     .padding(top = 52.dp)
                     .align(Alignment.TopEnd)
             ) {
-                MaterialTheme(
-                    shapes = MaterialTheme.shapes.copy(
-                        medium = RoundedCornerShape(16.dp)
-                    ),
-                    colors = MaterialTheme.colors.copy(
-                        surface = colorResource(id = R.color.background_secondary)
-                    )
-                ) {
-                    DropdownMenu(
-                        modifier = Modifier.align(Alignment.TopEnd),
-                        offset = DpOffset((-16).dp, 8.dp),
-                        expanded = showDropdownMenu,
-                        onDismissRequest = {
-                            showDropdownMenu = false
-                        },
-                        properties = PopupProperties(focusable = false)
-                    ) {
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.chat_edit_info),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onEditInfo()
-                            showDropdownMenu = false
-                        }
-                    )
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.object_action_pin),
-                                color = colorResource(id = R.color.text_primary),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onPin()
-                            showDropdownMenu = false
-                        }
-                    )
-//                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-//                    DropdownMenuItem(
-//                        content = {
-//                            Text(
-//                                text = stringResource(R.string.copy_link),
-//                                color = colorResource(id = R.color.text_primary),
-//                                modifier = Modifier.padding(end = 64.dp)
-//                            )
-//                        },
-//                        onClick = {
-//                            onCopyLink()
-//                            showDropdownMenu = false
-//                        }
-//                    )
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        content = {
-                            Text(
-                                text = stringResource(R.string.chat_move_to_bin),
-                                color = colorResource(id = R.color.palette_system_red),
-                                modifier = Modifier.padding(end = 64.dp)
-                            )
-                        },
-                        onClick = {
-                            onMoveToBin()
-                            showDropdownMenu = false
-                        }
-                    )
-                }
+                ChatMenu(
+                    expanded = showDropdownMenu,
+                    currentNotificationSetting = header.notificationSetting,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    onPropertiesClick = {
+                        onProperties()
+                        showDropdownMenu = false
+                    },
+                    onEditInfoClick = {
+                        onEditInfo()
+                        showDropdownMenu = false
+                    },
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
+                        showDropdownMenu = false
+                    },
+                    onPinClick = {
+                        onPin()
+                        showDropdownMenu = false
+                    },
+                    onMoveToBinClick = {
+                        onMoveToBin()
+                        showDropdownMenu = false
+                    }
+                )
             }
         }
-    }
     }
 }
 
@@ -278,7 +233,9 @@ fun ChatTopToolbarPreview() {
         onEditInfo = {},
         onPin = {},
         onCopyLink = {},
-        onMoveToBin = {}
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 
@@ -299,7 +256,9 @@ fun ChatTopToolbarMutedPreview() {
         onEditInfo = {},
         onPin = {},
         onCopyLink = {},
-        onMoveToBin = {}
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 

@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Iedereen met de link moet toegang vragen om deel te nemen aan de ruimte.</string>
     <string name="multiplayer_invite_link_copied">Uitnodigingslink gekopieerd naar klembord</string>
     <string name="multiplayer_copy_link">Kopieer link</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Deelnemen aan een ruimte</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Persoonlijk bericht voor een eigenaar van de ruimte</string>
     <string name="multiplayer_request_to_join_explanation">Zodra de eigenaar van de ruimte je verzoek goedkeurt, krijg je toegang tot de ruimte met de door de eigenaar bepaalde toegangsrechten.</string>
@@ -1937,9 +1938,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="chat_box_record_video">Neem video op</string>
     <string name="chat_camera_permission_denied">Cameratoegang geweigerd</string>
     <string name="notifications_title">Meldingen</string>
-    <string name="notifications_all">Alle activiteit</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Alleen vermeldingen</string>
-    <string name="notifications_disable">Schakel meldingen uit</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Alles</string>
     <string name="notifications_mentions_short">Vermeldingen</string>
     <string name="notifications_disable_short">Schakel uit</string>
@@ -1977,6 +1978,8 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_generic">Er is een onverwachte fout opgetreden: %1$s. Probeer het later opnieuw.</string>
     <string name="share_space_error_incorrect_permissions">Je hebt niet de benodigde machtigingen. Neem contact op met de eigenaar van de ruimte voor ondersteuning.</string>
     <string name="share_space_error_no_such_space">        De ruimte die je probeert te delen bestaat niet. Controleer alsjeblieft het ruimte-ID en probeer het opnieuw.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
     <string name="wallpaper_item_space_icon_color">Standaardkleur</string>
@@ -2029,4 +2032,10 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
     <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
     <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

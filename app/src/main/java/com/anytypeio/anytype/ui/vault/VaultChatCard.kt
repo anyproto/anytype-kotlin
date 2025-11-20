@@ -41,14 +41,14 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
@@ -56,8 +56,61 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
+/**
+ * Determines the text color for chat preview based on notification state and read/unread status.
+ *
+ * Logic:
+ * - Muted/disabled chats: Always show as secondary color (even if unread)
+ * - Enabled chats with no unread messages: Show as secondary color (read state)
+ * - Enabled chats with unread messages: Show as primary color (unread state)
+ */
 @Composable
-fun VaultChatCard(
+private fun getChatTextColor(
+    notificationMode: NotificationState?,
+    unreadMessageCount: Int,
+    unreadMentionCount: Int
+): androidx.compose.ui.graphics.Color {
+    return when {
+        // Muted/disabled chats: always show as secondary (even if unread)
+        notificationMode == NotificationState.DISABLE ->
+            colorResource(id = R.color.text_transparent_secondary)
+
+        // Read messages: show as secondary
+        unreadMessageCount == 0 && unreadMentionCount == 0 ->
+            colorResource(id = R.color.text_transparent_secondary)
+
+        // Unread messages (when notifications enabled): show as primary
+        else ->
+            colorResource(id = R.color.text_primary)
+    }
+}
+
+@Composable
+private fun getUnreadMentionCountBadgeColor(
+    notificationMode: NotificationState?
+): androidx.compose.ui.graphics.Color {
+    return when (notificationMode) {
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_accent)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
+    }
+}
+
+@Composable
+private fun getUnreadMessageCountBadgeColor(
+    notificationMode: NotificationState?
+): androidx.compose.ui.graphics.Color {
+    return when (notificationMode) {
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_transparent_tetriary)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
+    }
+}
+
+@Composable
+fun VaultChatSpaceCard(
     modifier: Modifier = Modifier,
     title: String,
     icon: SpaceIconView,
@@ -71,7 +124,7 @@ fun VaultChatCard(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     isPinned: Boolean = false,
-    spaceView: VaultSpaceView,
+    spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
@@ -132,6 +185,7 @@ fun VaultChatCard(
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
+            chatPreview = chatPreview,
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
@@ -143,11 +197,11 @@ fun VaultChatCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isMuted,
+            isMuted = spaceView.isSpaceMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (spaceView.isSpaceMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
             onPinToggle = {
@@ -170,6 +224,7 @@ private fun RowScope.ContentChat(
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
+    chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
@@ -212,6 +267,7 @@ private fun RowScope.ContentChat(
                 creatorName = creatorName,
                 messageText = messageText,
                 attachmentPreviews = attachmentPreviews,
+                chatPreview = chatPreview,
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
                 isMuted = isMuted,
@@ -227,19 +283,31 @@ private fun ChatSubtitleRow(
     creatorName: String?,
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    chatPreview: Chat.Preview?,
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     isMuted: Boolean?,
+    notificationMode: NotificationState? = null,
     isPinned: Boolean
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
     ) {
+        // Extract preview-specific counts for text color (not aggregated counts)
+        val previewUnreadMessages = chatPreview?.state?.unreadMessages?.counter ?: 0
+        val previewUnreadMentions = chatPreview?.state?.unreadMentions?.counter ?: 0
+
+        val textColor = getChatTextColor(
+            notificationMode = notificationMode,
+            unreadMessageCount = previewUnreadMessages,
+            unreadMentionCount = previewUnreadMentions
+        )
         val (chatText, inlineContent) = buildChatContentWithInlineIcons(
             creatorName = creatorName,
             messageText = messageText,
             attachmentPreviews = attachmentPreviews,
-            fallbackSubtitle = subtitle
+            fallbackSubtitle = subtitle,
+            textColor = textColor
         )
 
         Text(
@@ -249,23 +317,23 @@ private fun ChatSubtitleRow(
             maxLines = 2,
             lineHeight = 20.sp,
             overflow = TextOverflow.Ellipsis,
-            color = colorResource(id = R.color.text_transparent_secondary),
+            color = textColor,
         )
 
         UnreadIndicatorsRow(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
-            isMuted = isMuted,
+            notificationMode = notificationMode,
             isPinned = isPinned
         )
     }
 }
 
 @Composable
-private fun UnreadIndicatorsRow(
+internal fun UnreadIndicatorsRow(
     unreadMessageCount: Int,
     unreadMentionCount: Int,
-    isMuted: Boolean?,
+    notificationMode: NotificationState?,
     isPinned: Boolean
 ) {
     Row(
@@ -276,8 +344,8 @@ private fun UnreadIndicatorsRow(
             Box(
                 modifier = Modifier
                     .background(
-                        color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
-                            R.color.control_accent
+                        color = getUnreadMentionCountBadgeColor(
+                            notificationMode = notificationMode
                         ),
                         shape = CircleShape
                     )
@@ -286,7 +354,7 @@ private fun UnreadIndicatorsRow(
             ) {
                 Image(
                     painter = painterResource(R.drawable.ic_chat_widget_mention),
-                    contentDescription = null
+                    contentDescription = "Mentions icon"
                 )
             }
             Spacer(modifier = Modifier.width(4.dp))
@@ -302,17 +370,17 @@ private fun UnreadIndicatorsRow(
                 modifier = Modifier
                     .height(18.dp)
                     .background(
-                        color = if (isMuted == true) colorResource(R.color.control_transparent_tetriary) else colorResource(
-                            R.color.control_accent
+                        color = getUnreadMessageCountBadgeColor(
+                            notificationMode = notificationMode
                         ),
                         shape = shape
                     )
-                    .padding(horizontal = 5.dp),
+                    .padding(horizontal = 4.dp, vertical = 2.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
                     text = unreadMessageCount.toString(),
-                    style = Caption1Regular,
+                    style = Caption2Regular,
                     color = colorResource(id = R.color.text_white),
                 )
             }
@@ -449,15 +517,16 @@ fun TitleRow(
 }
 
 @Composable
-private fun buildChatContentWithInlineIcons(
+internal fun buildChatContentWithInlineIcons(
     creatorName: String?,
     messageText: String?,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
-    fallbackSubtitle: String
+    fallbackSubtitle: String,
+    singleLineFormat: Boolean = false,
+    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary),
+    mediumStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor),
+    regularStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
-
-    val spanTitle2Medium = CodeChatPreviewMedium.toSpanStyle()
-    val spanTitle2Regular = CodeChatPreviewRegular.toSpanStyle()
 
     val attachmentCount = attachmentPreviews.size
     val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
@@ -474,8 +543,12 @@ private fun buildChatContentWithInlineIcons(
             } else {
                 creatorName
             }
-            withStyle(style = spanTitle2Medium) {
-                append("$truncatedCreatorName\n")
+            withStyle(style = mediumStyle) {
+                if (singleLineFormat) {
+                    append("$truncatedCreatorName: ")
+                } else {
+                    append("$truncatedCreatorName\n")
+                }
             }
         }
 
@@ -519,13 +592,13 @@ private fun buildChatContentWithInlineIcons(
                         // Single attachment, no message text
                         when {
                             imageCount == 1 -> {
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(stringResource(R.string.image))
                                 }
                             }
 
                             fileCount == 1 -> {
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(stringResource(R.string.file))
                                 }
                             }
@@ -534,14 +607,14 @@ private fun buildChatContentWithInlineIcons(
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.objects)
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                 }
                             }
 
                             else -> {
                                 // No attachments, no message, show fallback
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(fallbackSubtitle)
                                 }
                             }
@@ -556,18 +629,18 @@ private fun buildChatContentWithInlineIcons(
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.object_1)
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                     append(" ")
                                 }
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(messageText)
                                 }
                             }
 
                             else -> {
                                 // For files/images: just show messageText
-                                withStyle(style = spanTitle2Regular) {
+                                withStyle(style = regularStyle) {
                                     append(messageText)
                                 }
                             }
@@ -584,28 +657,28 @@ private fun buildChatContentWithInlineIcons(
                         when {
                             imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
                                 // Images only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$imageCount ${stringResource(R.string.images)}")
                                 }
                             }
 
                             fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
                                 // Files only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$fileCount ${stringResource(R.string.files)}")
                                 }
                             }
 
                             linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
                                 // Objects only
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$linkCount ${stringResource(R.string.objects)}")
                                 }
                             }
 
                             else -> {
                                 // Mixed types
-                                withStyle(style = spanTitle2Medium) {
+                                withStyle(style = mediumStyle) {
                                     append("$attachmentCount ${stringResource(R.string.attachments)}")
                                 }
                             }
@@ -614,7 +687,7 @@ private fun buildChatContentWithInlineIcons(
 
                     else -> {
                         // Multiple attachments, with message text - just show message text
-                        withStyle(style = spanTitle2Regular) {
+                        withStyle(style = regularStyle) {
                             append(messageText)
                         }
                     }
@@ -635,7 +708,7 @@ fun ChatWithMentionAndMessage() {
                 .fillMaxWidth()
                 .height(32.dp)
         )
-        VaultChatCard(
+        VaultChatSpaceCard(
             modifier = Modifier.fillMaxWidth(),
             title = "B&O Museum",
             icon = SpaceIconView.ChatSpace.Placeholder(),
@@ -643,7 +716,7 @@ fun ChatWithMentionAndMessage() {
             creatorName = "John Doe",
             messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
             messageTime = "18:32",
-            unreadMessageCount = 32,
+            unreadMessageCount = 999,
             unreadMentionCount = 1,
             isMuted = true,
             chatPreview =
@@ -668,13 +741,11 @@ fun ChatWithMentionAndMessage() {
                 )
             ),
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
-            spaceView = VaultSpaceView.Space(
+            spaceView = VaultSpaceView.ChatSpace(
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
-                isMuted = false,
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
-                accessType = "Owner"
-            ),
+            )
         )
     }
 }

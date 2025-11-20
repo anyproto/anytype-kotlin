@@ -1245,6 +1245,7 @@
     <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
     <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
     <string name="multiplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
@@ -1696,10 +1697,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Modifica messaggio</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
-    <string name="chat_empty_state_title">Nessun messaggio</string>
+    <string name="chat_empty_state_title">Chatta senza il cloud</string>
     <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
     <string name="chat_empty_state_feature_yours_forever">Tuo per sempre</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Messaggi, documenti &amp; file disponibili offline</string>
     <string name="chat_empty_state_feature_encrypted">Completamente privato e crittografato</string>
     <string name="chat_empty_state_add_members_button">Aggiungi membri</string>
     <string name="chat_empty_state_show_qr_button">Mostra codice QR</string>
@@ -1917,9 +1918,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_success_button">Abilita le notifiche</string>
     <string name="notifications_modal_cancel_button">Non ora</string>
     <string name="vault_create_chat">Nuova Chat</string>
-    <string name="vault_create_chat_description">For real-time conversations</string>
+    <string name="vault_create_chat_description">Per conversazioni in tempo reale</string>
     <string name="vault_create_space">Nuovo Spazio</string>
-    <string name="vault_create_space_description">For organized content and data</string>
+    <string name="vault_create_space_description">Per contenuti e dati organizzati</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Le idee hanno bisogno di conversazioni</string>
     <string name="spaces_introduction_page1_description">Anytype ora supporta la chat in tempo reale nei Canali Condivisi — in modo che i tuoi pensieri e dialoghi possano crescere insieme.</string>
@@ -1938,9 +1939,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Registra Video</string>
     <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
     <string name="notifications_title">Notifiche</string>
-    <string name="notifications_all">Tutte le attività</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Solo menzioni</string>
-    <string name="notifications_disable">Disattiva le notifiche</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
@@ -1978,6 +1979,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_generic">Si è verificato un errore inatteso: %1$s. Riprovare più tardi.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
@@ -2023,11 +2026,17 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approva</string>
-    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
-    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
-    <string name="chat_edit_info">Edit Info</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">È possibile caricare solo 10 file alla volta</string>
+    <string name="chat_pinned_as_widget_success">Questa chat è stata fissata ai tuoi widget.</string>
+    <string name="chat_edit_info">Modifica Informazioni</string>
     <string name="chat_move_to_bin">Sposta nel Cestino</string>
-    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
-    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
-    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="move_chat_to_bin_warning_title">Spostare la chat nel Cestino?</string>
+    <string name="chat_move_to_bin_warning_description">Questa chat e tutti i suoi allegati saranno spostati nel Cestino. Nessuno potrà inviare nuovi messaggi. È possibile ripristinarla dal Cestino fino a quando non verrà eliminata definitivamente.</string>
+    <string name="chat_edit_info_upload_image">Carica Immagine</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

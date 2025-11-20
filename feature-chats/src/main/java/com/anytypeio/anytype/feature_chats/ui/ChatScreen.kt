@@ -169,7 +169,7 @@ fun ChatScreenWrapper(
             lazyListState = lazyListState,
             onReacted = vm::onReacted,
             onCopyMessage = { msg ->
-                clipboard.setText(AnnotatedString(text = msg.content.msg))
+                clipboard.setText(AnnotatedString(text = msg.content.toPlainText()))
                 vm.onCopyMessageTextActionTriggered()
             },
             onDeleteMessage = vm::onDeleteMessage,

@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">Kopier lenke</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bli med i et rom</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="multiplayer_request_to_join_explanation">Når eieren av rommet godkjenner forespørselen din, vil du bli med i rommet med tilgangsrettigheter eieren har satt.</string>
@@ -1937,9 +1938,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
     <string name="notifications_title">Notifications</string>
-    <string name="notifications_all">All activity</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
@@ -1977,6 +1978,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
@@ -2029,4 +2032,10 @@ Please provide specific details of your needs here.</string>
     <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
     <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
     <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Davet bağlantısı panoya kopyalandı</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Alan sahibi için özel bir yorum bırakın</string>
     <string name="multiplayer_request_to_join_explanation">Alan sahibi talebinizi onayladığında, alana erişim hakları sahibinin belirlediği şekilde katılırsınız.</string>
@@ -1978,6 +1979,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsiniz. Yardım için lütfen alan sahibiyle iletişime geçin.</string>
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
     <string name="wallpaper_item_space_icon_color">Varsayılan Renk</string>
     <string name="publish_to_web">Web\'de Yayınla</string>
@@ -2033,4 +2036,6 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="chat_notifications_mute_all">Tümünü sustur</string>
     <string name="chat_specific_notifications">Sohbete özel bildirimler</string>
     <string name="notify_me_about">Beni bilgilendir</string>
+    <string name="error_while_downloading_object">Nesne indirilirken hata oluştu: %1$s</string>
+    <string name="toast_moved_to_bin">Nesne çöp kutusuna taşındı.</string>
 </resources>

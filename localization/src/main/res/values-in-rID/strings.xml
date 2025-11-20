@@ -1240,6 +1240,7 @@
     <string name="multiplayer_change_to_request_confirmation">Siapa pun dengan tautan ini akan perlu meminta akses bergabung ke ruang.</string>
     <string name="multiplayer_invite_link_copied">Tautan undangan disalin ke papan kerani</string>
     <string name="multiplayer_copy_link">Salin tautan</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="multiplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
@@ -1964,6 +1965,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_generic">Terjadi galat tak terduga: %1$s. Silakan coba lagi nanti.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
@@ -2018,4 +2021,6 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_notifications_mute_all">Senyapkan semua</string>
     <string name="chat_specific_notifications">Pemberitahuan spesifik obrolan</string>
     <string name="notify_me_about">Beri notifikasi tentang</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

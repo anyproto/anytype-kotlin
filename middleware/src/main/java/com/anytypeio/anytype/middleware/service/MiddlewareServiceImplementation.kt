@@ -2896,4 +2896,30 @@ class MiddlewareServiceImplementation @Inject constructor(
             return response
         }
     }
+
+    override fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response {
+        val encoded = Service.objectCrossSpaceSearchSubscribe(
+            Rpc.Object.CrossSpaceSearchSubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CrossSpaceSearchSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CrossSpaceSearchSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCrossSpaceUnsubscribe(request: Rpc.Object.CrossSpaceSearchUnsubscribe.Request): Rpc.Object.CrossSpaceSearchUnsubscribe.Response {
+        val encoded = Service.objectCrossSpaceSearchUnsubscribe(
+            Rpc.Object.CrossSpaceSearchUnsubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CrossSpaceSearchUnsubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CrossSpaceSearchUnsubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
 }

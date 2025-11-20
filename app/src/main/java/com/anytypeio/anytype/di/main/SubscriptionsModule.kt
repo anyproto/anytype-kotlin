@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.debugging.DebugAccountSelectTrace
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.domain.library.CrossSpaceSubscriptionContainer
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
@@ -173,6 +175,34 @@ object SubscriptionsModule {
         logger = logger,
         config = configStorage
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun chatsViewSubscriptionContainer(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: CrossSpaceSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        logger: Logger,
+    ): ChatsDetailsSubscriptionContainer = ChatsDetailsSubscriptionContainer.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStart = awaitAccountStartManager,
+        logger = logger,
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideCrossSpaceSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger
+    ): CrossSpaceSubscriptionContainer =
+        CrossSpaceSubscriptionContainer.Impl(repo, channel, dispatchers, logger)
 
     @JvmStatic
     @Provides

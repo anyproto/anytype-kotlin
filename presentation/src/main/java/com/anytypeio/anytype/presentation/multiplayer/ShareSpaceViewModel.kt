@@ -577,21 +577,44 @@ class ShareSpaceViewModel(
         Timber.d("onMakePrivateClicked: Making space private")
         viewModelScope.launch {
             isLoadingInProgress.value = true
-            stopSharingSpace.async(vmParams.space).fold(
-                onSuccess = {
-                    Timber.d("Successfully made space private")
-                    isLoadingInProgress.value = false
-                    viewModelScope.launch {
-                        commands.emit(Command.Dismiss)
+
+            // First, revoke invite link if it exists and is not disabled
+            val currentInviteLink = inviteLinkAccessLevel.value
+            if (currentInviteLink !is SpaceInviteLinkAccessLevel.LinkDisabled) {
+                Timber.d("Revoking active invite link before making space private")
+                revokeSpaceInviteLink.async(vmParams.space).fold(
+                    onSuccess = {
+                        Timber.d("Successfully revoked invite link")
+                        proceedWithMakingSpacePrivate()
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Failed to revoke invite link, proceeding with making space private anyway")
+                        // Proceed anyway - the main goal is to make space private
+                        proceedWithMakingSpacePrivate()
                     }
-                },
-                onFailure = { error ->
-                    Timber.e(error, "Failed to make space private")
-                    isLoadingInProgress.value = false
-                    shareSpaceErrors.value = ShareSpaceErrors.MakePrivateFailed
-                }
-            )
+                )
+            } else {
+                // No active invite link, proceed directly
+                proceedWithMakingSpacePrivate()
+            }
         }
+    }
+
+    private suspend fun proceedWithMakingSpacePrivate() {
+        stopSharingSpace.async(vmParams.space).fold(
+            onSuccess = {
+                Timber.d("Successfully made space private")
+                isLoadingInProgress.value = false
+                viewModelScope.launch {
+                    commands.emit(Command.Dismiss)
+                }
+            },
+            onFailure = { error ->
+                Timber.e(error, "Failed to make space private")
+                isLoadingInProgress.value = false
+                shareSpaceErrors.value = ShareSpaceErrors.MakePrivateFailed
+            }
+        )
     }
 
     private fun updateInviteLinkAccessLevel(newLevel: SpaceInviteLinkAccessLevel) {

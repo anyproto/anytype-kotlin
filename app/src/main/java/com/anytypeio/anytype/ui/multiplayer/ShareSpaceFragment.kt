@@ -70,7 +70,8 @@ class ShareSpaceFragment : BaseBottomSheetComposeFragment() {
                     onCopyInviteLinkClicked = vm::onCopyInviteLinkClicked,
                     isCurrentUserOwner = vm.isCurrentUserOwner.collectAsStateWithLifecycle().value,
                     onMakePrivateClicked = vm::onMakePrivateClicked,
-                    spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value
+                    spaceAccessType = vm.spaceAccessType.collectAsStateWithLifecycle().value,
+                    isMakePrivateEnabled = vm.isMakePrivateEnabled.collectAsStateWithLifecycle().value
                 )
                 LaunchedEffect(Unit) {
                     vm.commands.collect { command ->

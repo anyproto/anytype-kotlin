@@ -121,7 +121,8 @@ fun ShareSpaceScreen(
     onCopyInviteLinkClicked: (String, String) -> Unit,
     onShareQrCodeClicked: (String, String) -> Unit,
     onMakePrivateClicked: () -> Unit,
-    spaceAccessType: SpaceAccessType?
+    spaceAccessType: SpaceAccessType?,
+    isMakePrivateEnabled: Boolean
 ) {
     val nestedScrollInteropConnection = rememberNestedScrollInteropConnection()
     var showInviteLinkAccessSelector by remember(false) { mutableStateOf(false) }
@@ -155,9 +156,8 @@ fun ShareSpaceScreen(
             ShareSpaceHeader(
                 title = stringResource(R.string.multiplayer_members),
                 inviteLinkAccessLevel = inviteLinkAccessLevel,
-                members = members,
+                isMakePrivateEnabled = isMakePrivateEnabled,
                 isCurrentUserOwner = isCurrentUserOwner,
-                spaceAccessType = spaceAccessType,
                 onCopyClicked = onCopyInviteLinkClicked,
                 onShareClicked = onShareInviteLinkClicked,
                 onQrCodeClicked = onShareQrCodeClicked,
@@ -353,9 +353,8 @@ private fun showConfirmScreen(
 private fun ShareSpaceHeader(
     title: String,
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel,
-    members: List<SpaceMemberView>,
+    isMakePrivateEnabled: Boolean,
     isCurrentUserOwner: Boolean,
-    spaceAccessType: SpaceAccessType?,
     onCopyClicked: (String, String) -> Unit,
     onShareClicked: (String) -> Unit,
     onQrCodeClicked: (String, String) -> Unit,
@@ -399,9 +398,6 @@ private fun ShareSpaceHeader(
             }
 
             val isLinkDisabled = inviteLinkAccessLevel is SpaceInviteLinkAccessLevel.LinkDisabled
-            val isMakePrivateEnabled = members.size == 1 &&
-                                       isCurrentUserOwner &&
-                                       spaceAccessType == SpaceAccessType.SHARED
 
             DropdownMenu(
                 modifier = Modifier.widthIn(min = 252.dp),
@@ -492,24 +488,26 @@ private fun ShareSpaceHeader(
                     )
                 }
 
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                // Make Private - only visible for owners
+                if (isCurrentUserOwner) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-                // Make Private
-                DropdownMenuItem(
-                    modifier = Modifier.alpha(if (isMakePrivateEnabled) 1.0f else 0.3f),
-                    onClick = {
-                        if (isMakePrivateEnabled) {
-                            onMakePrivateClicked()
+                    DropdownMenuItem(
+                        modifier = Modifier.alpha(if (isMakePrivateEnabled) 1.0f else 0.3f),
+                        onClick = {
+                            if (isMakePrivateEnabled) {
+                                onMakePrivateClicked()
+                            }
+                            showMenu = false
                         }
-                        showMenu = false
+                    ) {
+                        Text(
+                            text = stringResource(R.string.multiplayer_make_private),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_primary),
+                            modifier = Modifier.weight(1.0f)
+                        )
                     }
-                ) {
-                    Text(
-                        text = stringResource(R.string.multiplayer_make_private),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_primary),
-                        modifier = Modifier.weight(1.0f)
-                    )
                 }
             }
         }
@@ -1168,7 +1166,8 @@ fun ShareSpaceScreenPreview1() {
         isCurrentUserOwner = true,
         onManageSpacesClicked = {},
         onMakePrivateClicked = {},
-        spaceAccessType = SpaceAccessType.SHARED
+        spaceAccessType = SpaceAccessType.SHARED,
+        isMakePrivateEnabled = true
     )
 }
 

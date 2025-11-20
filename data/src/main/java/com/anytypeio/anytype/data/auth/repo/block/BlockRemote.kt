@@ -199,6 +199,8 @@ interface BlockRemote {
         command: Command.CrossSpaceSearchSubscribe
     ): SearchResult
 
+    suspend fun objectCrossSpaceUnsubscribe(subscription: String)
+
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?

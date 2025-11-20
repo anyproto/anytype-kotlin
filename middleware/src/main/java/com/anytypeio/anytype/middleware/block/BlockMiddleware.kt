@@ -428,6 +428,10 @@ class BlockMiddleware(
         command
     )
 
+    override suspend fun objectCrossSpaceUnsubscribe(subscription: String) {
+        middleware.objectCrossSpaceUnsubscribe(subscription)
+    }
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = middleware.objectSearchUnsubscribe(subscriptions = subscriptions)

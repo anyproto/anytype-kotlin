@@ -462,6 +462,10 @@ class BlockDataRepository(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult = remote.crossSpaceSearchSubscribe(command)
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = remote.cancelObjectSearchSubscription(subscriptions).also {

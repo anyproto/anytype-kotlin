@@ -606,6 +606,21 @@ sealed class Command {
         }
     }
 
+    /**
+     * Subscribe to search results across multiple spaces.
+     * Unlike regular subscriptions that are scoped to a single space,
+     * this allows searching and subscribing to objects across all user spaces.
+     */
+    data class CrossSpaceSearchSubscribe(
+        val subscription: Id,
+        val filters: List<DVFilter> = emptyList(),
+        val sorts: List<DVSort> = emptyList(),
+        val keys: List<String>,
+        val source: List<String> = emptyList(),
+        val noDepSubscription: Boolean = false,
+        val collectionId: Id? = null
+    ) : Command()
+
     data class ProcessCancel(
         val processId: Id
     ) : Command()

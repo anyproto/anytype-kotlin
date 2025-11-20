@@ -422,6 +422,12 @@ class BlockMiddleware(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult = middleware.objectCrossSpaceSearchSubscribe(
+        command
+    )
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = middleware.objectSearchUnsubscribe(subscriptions = subscriptions)

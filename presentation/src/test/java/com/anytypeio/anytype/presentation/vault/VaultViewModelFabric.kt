@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -25,6 +26,7 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.runBlocking
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
@@ -41,6 +43,9 @@ object VaultViewModelFabric {
         spaceInviteResolver: SpaceInviteResolver = mock(),
         profileContainer: ProfileSubscriptionManager = mock(),
         chatPreviewContainer: ChatPreviewContainer = mock(),
+        chatsDetailsContainer: ChatsDetailsSubscriptionContainer = mock {
+            on { observe() }.thenReturn(flowOf(emptyList()))
+        },
         pendingIntentStore: PendingIntentStore = mock(),
         stringResourceProvider: StringResourceProvider = mock(),
         dateProvider: DateProvider = mock(),
@@ -71,6 +76,7 @@ object VaultViewModelFabric {
         spaceInviteResolver = spaceInviteResolver,
         profileContainer = profileContainer,
         chatPreviewContainer = chatPreviewContainer,
+        chatsDetailsContainer = chatsDetailsContainer,
         pendingIntentStore = pendingIntentStore,
         stringResourceProvider = stringResourceProvider,
         dateProvider = dateProvider,

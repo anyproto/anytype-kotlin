@@ -32,6 +32,7 @@ import com.anytypeio.anytype.domain.relations.CreateRelation
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.types.CreateObjectType
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
@@ -196,6 +197,7 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
     fun dispatcher(): Dispatcher<Payload>
+    fun spaceManager(): SpaceManager
 }
 
 //region Space Types Screen

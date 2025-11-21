@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s из %2$s используется</string>
     <string name="remote_storage">Облачное хранилище</string>
     <string name="contact_us">Связаться с нами</string>
-    <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Название</string>
     <string name="space_settings">Настройки пространства</string>
     <string name="space_settings_error_change_type">Не удалось изменить тип пространства. Попробуйте ещё раз.</string>

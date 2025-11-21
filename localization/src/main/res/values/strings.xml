@@ -69,7 +69,7 @@
     <string name="default_space">Entry channel</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color" translatable="false">Change icon color</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Remove image</string>
     <string name="delete_space">Delete channel</string>
@@ -82,7 +82,6 @@
     <string name="space_usage">%1$s of %2$s used</string>
     <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Contact us</string>
-    <string name="get_more_space">Get more channel</string>
     <string name="account_name">Name</string>
     <string name="space_settings">Channel settings</string>
     <string name="space_settings_error_change_type">Failed to change channel type. Please try again.</string>
@@ -1927,7 +1926,7 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_prev_14">Previous 14 days</string>
     <string name="introduce_vault_text_1">Vault is the new home for all your Channels.\nCreate, join, or share Channels – everything is securely stored here.</string>
     <string name="introduce_vault_text_2">You can now easily reorder your Channels using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your channel as a background. If needed, you can change it in the channel-settings.</string>
+    <string name="introduce_vault_text_3">By default, we blur the icon of your channel as a background. If needed, you can change it in the channel settings.</string>
     <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
 
@@ -2070,7 +2069,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of channel and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of storage space and run the process again</string>
 
     <string name="fields_screen_title">Properties</string>
     <string name="field_text_title">Text</string>
@@ -2189,7 +2188,7 @@ Please provide specific details of your needs here.</string>
     <string name="onboarding_error_account_created_but_failed_to_set_name">Account was created but failed to set name. You can update it later in settings.</string>
     <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
     <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
-    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage channel.</string>
+    <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
     <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
     <string name="onboarding_error_config_file_not_found">Configuration file not found. Please reinstall the app.</string>
     <string name="onboarding_error_config_file_invalid">Invalid configuration file. Please reinstall the app.</string>

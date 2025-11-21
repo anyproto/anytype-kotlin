@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s av %2$s brukt</string>
     <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Kontakt oss</string>
-    <string name="get_more_space">Få mer plass</string>
     <string name="account_name">Navn</string>
     <string name="space_settings">Rominnstillinger</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>

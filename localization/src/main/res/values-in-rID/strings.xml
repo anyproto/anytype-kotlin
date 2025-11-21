@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s dari %2$s digunakan</string>
     <string name="remote_storage">Penyimpanan Jarak Jauh</string>
     <string name="contact_us">Hubungi kami</string>
-    <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>

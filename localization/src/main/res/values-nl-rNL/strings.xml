@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s van %2$s gebruikt</string>
     <string name="remote_storage">Externe opslag</string>
     <string name="contact_us">Neem contact met ons op</string>
-    <string name="get_more_space">Krijg meer ruimte</string>
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
     <string name="space_settings_error_change_type">Wijzigen van ruimtetype mislukt. Probeer het alsjeblieft opnieuw.</string>

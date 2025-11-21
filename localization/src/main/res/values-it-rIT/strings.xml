@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s di %2$s utilizzato</string>
     <string name="remote_storage">Spazio di archiviazione remoto</string>
     <string name="contact_us">Contattaci</string>
-    <string name="get_more_space">Ottieni più spazio</string>
     <string name="account_name">Nome</string>
     <string name="space_settings">Impostazioni dello Spazio</string>
     <string name="space_settings_error_change_type">Impossibile modificare il tipo di spazio. Riprovare.</string>

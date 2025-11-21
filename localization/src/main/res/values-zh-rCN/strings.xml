@@ -65,7 +65,6 @@
     <string name="space_usage">已使用 %1$s ,总共有 %2$s </string>
     <string name="remote_storage">远程存储</string>
     <string name="contact_us">联系我们</string>
-    <string name="get_more_space">获取更多空间</string>
     <string name="account_name">名称</string>
     <string name="space_settings">空间设置</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>

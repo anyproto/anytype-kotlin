@@ -235,10 +235,12 @@ fun ChatListWidgetCard(
                 } else {
                     // Check if we should use Preview mode with ChatWidgetCard
                     val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+                    android.util.Log.d("ChatListWidgetCard", "Rendering with displayMode=${item.displayMode}, usePreviewMode=$usePreviewMode, elements=${item.elements.size}")
                     
                     item.elements.forEachIndexed { idx, element ->
                         if (usePreviewMode && element is WidgetView.SetOfObjects.Element.Chat) {
                             // Use ChatWidgetCard for preview mode
+                            android.util.Log.d("ChatListWidgetCard", "Rendering ChatWidgetCard for element idx=$idx, chatName=${element.getPrettyName()}, creator=${element.creatorName}, message=${element.messageText?.take(30)}")
                             ChatWidgetCard(
                                 modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
                                 chatIcon = element.objectIcon,

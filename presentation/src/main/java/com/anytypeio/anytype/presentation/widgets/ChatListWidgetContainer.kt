@@ -78,6 +78,10 @@ class ChatListWidgetContainer(
         // Hard-coded flag to control display mode (can be changed later)
         private const val USE_PREVIEW_MODE = true
     }
+    
+    init {
+        Timber.d("ChatListWidgetContainer initialized with USE_PREVIEW_MODE = $USE_PREVIEW_MODE")
+    }
 
     /**
      * Reactive flow that emits widget view states based on session activity and collapsed state.
@@ -207,6 +211,8 @@ class ChatListWidgetContainer(
                                                                     mapToAttachmentPreview(attachment, dependency)
                                                                 } ?: emptyList()
                                                                 val chatNotificationState = getChatNotificationState(element.obj.id, spaces)
+                                                                
+                                                                Timber.d("Creating Chat element with preview: chatId=${element.obj.id}, creator=$creatorName, message=${messageText?.take(30)}, time=$messageTime")
                                                                 
                                                                 WidgetView.SetOfObjects.Element.Chat(
                                                                     obj = element.obj,
@@ -415,6 +421,12 @@ class ChatListWidgetContainer(
             val hasMore = objects.size > displayLimit
             val displayObjects = objects.take(displayLimit)
 
+            val displayMode = if (USE_PREVIEW_MODE) {
+                WidgetView.ChatList.DisplayMode.Preview
+            } else {
+                WidgetView.ChatList.DisplayMode.Compact
+            }
+            Timber.d("ChatListWidgetContainer creating widget with displayMode=$displayMode, elements=${displayObjects.size}")
             WidgetView.ChatList(
                 id = widget.id,
                 source = widget.source,
@@ -439,11 +451,7 @@ class ChatListWidgetContainer(
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType,
-                displayMode = if (USE_PREVIEW_MODE) {
-                    WidgetView.ChatList.DisplayMode.Preview
-                } else {
-                    WidgetView.ChatList.DisplayMode.Compact
-                }
+                displayMode = displayMode
             )
         }
     }

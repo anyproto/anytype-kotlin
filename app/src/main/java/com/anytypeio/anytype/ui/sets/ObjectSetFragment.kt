@@ -1564,6 +1564,10 @@ open class ObjectSetFragment :
         vm.onCloseObject()
     }
 
+    fun onMenuClicked() {
+        vm.onMenuClicked()
+    }
+
     companion object {
         const val CONTEXT_ID_KEY = "arg.object_set.context"
         const val SPACE_ID_KEY = "arg.object_set.space-id"

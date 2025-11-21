@@ -1559,7 +1559,7 @@
 
     <string name="multiplayer_you_as_member">you</string>
 
-    <string name="multiplayer_spaces">Spaces</string>
+    <string name="multiplayer_spaces">Channels</string>
 
     <string name="multiplayer_space_status_joining">Joining</string>
     <string name="multiplayer_space_status_active">Active</string>

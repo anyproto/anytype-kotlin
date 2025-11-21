@@ -241,7 +241,7 @@ fun ChatListWidgetCard(
                             // Use ChatWidgetCard for preview mode
                             android.util.Log.d("ChatListWidgetCard", "Rendering ChatWidgetCard for element idx=$idx, chatName=${element.getPrettyName()}, creator=${element.creatorName}, message=${element.messageText?.take(30)}")
                             ChatWidgetCard(
-                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                modifier = Modifier.padding(vertical = 4.dp),
                                 chatIcon = element.objectIcon,
                                 chatName = element.getPrettyName(),
                                 creatorName = element.creatorName,

@@ -82,13 +82,15 @@ fun ChatWidgetCard(
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Chat icon (40dp)
         ListWidgetObjectIcon(
             icon = chatIcon,
-            modifier = Modifier.size(48.dp),
+            modifier = Modifier
+                .padding(start = 16.dp)
+                .size(48.dp),
             iconSize = 48.dp
         )
 
@@ -96,7 +98,9 @@ fun ChatWidgetCard(
 
         // Chat content
         Column(
-            modifier = Modifier.weight(1f),
+            modifier = Modifier
+                .weight(1f)
+                .padding(end = 16.dp),
             verticalArrangement = Arrangement.spacedBy(2.dp)
         ) {
             // Line 1: Chat Name + Time

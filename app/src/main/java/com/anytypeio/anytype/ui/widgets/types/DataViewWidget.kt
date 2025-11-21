@@ -225,7 +225,7 @@ fun ChatListWidgetCard(
             if (item.elements.isNotEmpty()) {
                 val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
 
-                if (item.isCompact) {
+                if (item.isCompact && !usePreviewMode) {
                     CompactListWidgetList(
                         mode = mode,
                         elements = item.elements,
@@ -234,7 +234,6 @@ fun ChatListWidgetCard(
                     )
                 } else {
                     // Check if we should use Preview mode with ChatWidgetCard
-                    val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
                     android.util.Log.d("ChatListWidgetCard", "Rendering with displayMode=${item.displayMode}, usePreviewMode=$usePreviewMode, elements=${item.elements.size}")
                     
                     item.elements.forEachIndexed { idx, element ->

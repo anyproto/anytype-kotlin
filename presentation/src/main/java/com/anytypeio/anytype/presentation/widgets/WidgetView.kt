@@ -2,9 +2,11 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 sealed class WidgetView {
 
@@ -115,7 +117,12 @@ sealed class WidgetView {
                 override val obj: ObjectWrapper.Basic,
                 override val name: Name,
                 override val cover: CoverView? = null,
-                override val counter: ChatCounter? = null
+                override val counter: ChatCounter? = null,
+                val creatorName: String? = null,
+                val messageText: String? = null,
+                val messageTime: String? = null,
+                val attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+                val chatNotificationState: NotificationState = NotificationState.ALL
             ) : Element(), WidgetView.Element.Chat
         }
     }
@@ -150,7 +157,7 @@ sealed class WidgetView {
         val name: Name,
         val hasMore: Boolean = false,
         override val sectionType: SectionType? = null,
-        val displayMode: DisplayMode = DisplayMode.Compact
+        val displayMode: DisplayMode = DisplayMode.Preview
     ) : WidgetView(), Draggable {
 
         override val canCreateObjectOfType: Boolean
@@ -197,7 +204,12 @@ sealed class WidgetView {
                 override val objectIcon: ObjectIcon,
                 override val obj: ObjectWrapper.Basic,
                 override val name: Name,
-                override val counter: ChatCounter? = null
+                override val counter: ChatCounter? = null,
+                val creatorName: String? = null,
+                val messageText: String? = null,
+                val messageTime: String? = null,
+                val attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+                val chatNotificationState: NotificationState = NotificationState.ALL
             ) : Element(), WidgetView.Element.Chat
         }
 

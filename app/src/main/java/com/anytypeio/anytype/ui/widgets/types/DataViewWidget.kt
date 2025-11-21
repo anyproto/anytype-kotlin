@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
@@ -222,6 +223,8 @@ fun ChatListWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
+                val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+
                 if (item.isCompact) {
                     CompactListWidgetList(
                         mode = mode,
@@ -230,22 +233,43 @@ fun ChatListWidgetCard(
                         onObjectCheckboxClicked = onObjectCheckboxClicked
                     )
                 } else {
+                    // Check if we should use Preview mode with ChatWidgetCard
+                    val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+                    
                     item.elements.forEachIndexed { idx, element ->
-                        ListWidgetElement(
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            obj = element.obj,
-                            icon = element.objectIcon,
-                            mode = mode,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null
-                        )
-                        if (idx != item.elements.lastIndex) {
-                            Divider(
-                                thickness = 0.5.dp,
-                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
-                                color = colorResource(id = R.color.widget_divider)
+                        if (usePreviewMode && element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Use ChatWidgetCard for preview mode
+                            ChatWidgetCard(
+                                modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp),
+                                chatIcon = element.objectIcon,
+                                chatName = element.getPrettyName(),
+                                creatorName = element.creatorName,
+                                messageText = element.messageText,
+                                messageTime = element.messageTime,
+                                attachmentPreviews = element.attachmentPreviews,
+                                unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
+                                unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                chatNotificationState = element.chatNotificationState,
+                                onClick = { onWidgetObjectClicked(element.obj) }
                             )
+                        } else {
+                            // Use ListWidgetElement for compact mode
+                            ListWidgetElement(
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                obj = element.obj,
+                                icon = element.objectIcon,
+                                mode = mode,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                name = element.getPrettyName(),
+                                counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
                         }
                         if (idx == item.elements.lastIndex) {
                             Spacer(modifier = Modifier.height(2.dp))

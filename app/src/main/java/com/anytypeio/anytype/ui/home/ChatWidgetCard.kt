@@ -66,14 +66,12 @@ fun ChatWidgetCard(
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
-    chatPreview: Chat.Preview? = null,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    unreadMessageCount: Int,
+    unreadMentionCount: Int,
     chatNotificationState: NotificationState,
     onClick: () -> Unit
 ) {
-    // Extract unread counts from chat preview state (NOT aggregated from space)
-    val unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0
-    val unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0
 
     Row(
         modifier = modifier

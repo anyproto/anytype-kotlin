@@ -3064,6 +3064,8 @@ class HomeScreenViewModel(
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed

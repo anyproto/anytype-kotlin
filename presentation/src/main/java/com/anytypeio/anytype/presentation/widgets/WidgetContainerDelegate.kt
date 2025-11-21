@@ -8,8 +8,10 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -64,6 +66,8 @@ class WidgetContainerDelegateImpl(
     private val getObject: GetObject,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
+    private val dateProvider: DateProvider,
+    private val stringResourceProvider: StringResourceProvider,
     private val dispatchers: AppCoroutineDispatchers,
     private val observeCurrentWidgetView: (Id) -> Flow<ViewId?>,
     private val isWidgetCollapsed: (Widget, Set<Id>, Set<String>) -> Boolean
@@ -191,7 +195,10 @@ class WidgetContainerDelegateImpl(
                     storeOfRelations = storeOfRelations,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes,
-                    chatPreviewContainer = chatPreviews
+                    chatPreviewContainer = chatPreviews,
+                    dateProvider = dateProvider,
+                    stringResourceProvider = stringResourceProvider,
+                    spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
                 )
             } else {
                 DataViewListWidgetContainer(
@@ -258,7 +265,10 @@ class WidgetContainerDelegateImpl(
                 storeOfRelations = storeOfRelations,
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
-                chatPreviewContainer = chatPreviews
+                chatPreviewContainer = chatPreviews,
+                dateProvider = dateProvider,
+                stringResourceProvider = stringResourceProvider,
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
             )
         } else {
             DataViewListWidgetContainer(

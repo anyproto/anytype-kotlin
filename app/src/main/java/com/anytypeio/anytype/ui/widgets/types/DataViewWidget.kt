@@ -253,6 +253,13 @@ fun ChatListWidgetCard(
                                 chatNotificationState = element.chatNotificationState,
                                 onClick = { onWidgetObjectClicked(element.obj) }
                             )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
                         } else {
                             // Use ListWidgetElement for compact mode
                             ListWidgetElement(

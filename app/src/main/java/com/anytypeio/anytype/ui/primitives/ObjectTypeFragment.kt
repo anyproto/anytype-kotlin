@@ -154,6 +154,14 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         fieldEvent = vm::onFieldEvent
                     )
                 }
+
+                val menuState = vm.uiMenuState.collectAsStateWithLifecycle().value
+                if (menuState.isVisible) {
+                    ObjectTypeMenu(
+                        isPinned = menuState.isPinned,
+                        onEvent = vm::onMenuEvent
+                    )
+                }
             }
         }
     }

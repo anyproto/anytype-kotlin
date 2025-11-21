@@ -568,6 +568,7 @@ internal suspend fun mapSpaceTypesToWidgets(
             ObjectTypeIds.PAGE,
             ObjectTypeIds.NOTE,
             ObjectTypeIds.TASK,
+            ObjectTypeIds.CHAT_DERIVED,
             ObjectTypeIds.COLLECTION,
             ObjectTypeIds.SET,
             ObjectTypeIds.BOOKMARK,

@@ -64,7 +64,6 @@ enum class SystemColor(
     GREEN(index = 9);
 
     companion object {
-        private const val MAX_INDEX = 9
         fun color(idx: Int): SystemColor {
             if (idx < 0) {
                 return YELLOW

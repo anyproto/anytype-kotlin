@@ -16,10 +16,9 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.unit.dp
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -140,7 +139,8 @@ class WidgetsScreenFragment : Fragment(),
         }
 
         // Force status bar to refresh and match the current background color
-        SideEffect {
+        // Using LaunchedEffect(Unit) ensures this only runs once when the screen is displayed
+        LaunchedEffect(Unit) {
             (requireActivity() as? ComponentActivity)?.enableEdgeToEdge(
                 statusBarStyle = SystemBarStyle.auto(
                     lightScrim = android.graphics.Color.TRANSPARENT,

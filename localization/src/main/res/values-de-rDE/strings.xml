@@ -1266,7 +1266,6 @@
     <string name="multiplayer_upgrade_button">✦ Plan upgraden</string>
     <string name="multiplayer_manage_spaces">Spaces verwalten</string>
     <string name="multiplayer_upgrade_button_request">✦ Plan upgraden, um weitere Mitglieder hinzuzufügen</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Plan upgraden, um weitere Spaces zu erstellen</string>
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>

@@ -1266,7 +1266,6 @@
     <string name="multiplayer_upgrade_button">✦ Atualizar</string>
     <string name="multiplayer_manage_spaces">Gerenciar espaços</string>
     <string name="multiplayer_upgrade_button_request">✦ Dê um “upgrade” na sua assinatura para adicionar mais membros</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Dê um “upgrade” na sua assinatura para adicionar mais espaços</string>
     <string name="multiplayer_members">Membros</string>
     <string name="multiplayer_leave_request">Sair da solicitação</string>
     <string name="multiplayer_join_request">Junte-se a pedido</string>

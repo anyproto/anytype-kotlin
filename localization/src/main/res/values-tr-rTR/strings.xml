@@ -1266,7 +1266,6 @@
     <string name="multiplayer_upgrade_button">✦ Yükselt</string>
     <string name="multiplayer_manage_spaces">Alanları yönetin</string>
     <string name="multiplayer_upgrade_button_request">✦ Daha fazla üye eklemek için yükseltin</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Daha fazla alan eklemek için yükseltin</string>
     <string name="multiplayer_members">Üyeler</string>
     <string name="multiplayer_leave_request">Ayrılma talebi</string>
     <string name="multiplayer_join_request">Katılma talebi</string>

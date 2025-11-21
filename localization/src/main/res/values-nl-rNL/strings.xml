@@ -1266,7 +1266,6 @@
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_manage_spaces">Beheer ruimten</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade om meer leden toe te voegen</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade om meer ruimten toe te voegen</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>

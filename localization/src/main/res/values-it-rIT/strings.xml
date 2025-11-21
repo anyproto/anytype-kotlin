@@ -1267,7 +1267,6 @@
     <string name="multiplayer_upgrade_button">✦ Aggiorna</string>
     <string name="multiplayer_manage_spaces">Gestisci Spazi</string>
     <string name="multiplayer_upgrade_button_request">✦ Aggiorna per aggiungere più membri</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Fai l\'upgrade per aggiungere più spazi</string>
     <string name="multiplayer_members">Membri</string>
     <string name="multiplayer_leave_request">Richiesta di uscita</string>
     <string name="multiplayer_join_request">Richiesta di partecipazione</string>

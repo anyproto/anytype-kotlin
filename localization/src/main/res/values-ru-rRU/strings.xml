@@ -1274,7 +1274,6 @@
     <string name="multiplayer_upgrade_button">✦ Обновить</string>
     <string name="multiplayer_manage_spaces">Управление пространствами</string>
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
     <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>

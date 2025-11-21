@@ -1262,7 +1262,6 @@
     <string name="multiplayer_upgrade_button">✦ アップグレード</string>
     <string name="multiplayer_manage_spaces">スペース管理</string>
     <string name="multiplayer_upgrade_button_request">✦ アップグレードしてさらに多くのメンバーを追加</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ アップグレードしてさらにスペースを追加</string>
     <string name="multiplayer_members">メンバー</string>
     <string name="multiplayer_leave_request">退出リクエスト</string>
     <string name="multiplayer_join_request">参加リクエスト</string>

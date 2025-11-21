@@ -1262,7 +1262,6 @@
     <string name="multiplayer_upgrade_button">✦ 升級</string>
     <string name="multiplayer_manage_spaces">管理空間</string>
     <string name="multiplayer_upgrade_button_request">✦ 升級以新增更多成員</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ 升級以使用更多空間</string>
     <string name="multiplayer_members">成員</string>
     <string name="multiplayer_leave_request">離開請求</string>
     <string name="multiplayer_join_request">加入請求</string>

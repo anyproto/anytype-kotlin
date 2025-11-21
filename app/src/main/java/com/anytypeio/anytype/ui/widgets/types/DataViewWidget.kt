@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
@@ -222,7 +223,9 @@ fun ChatListWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                if (item.isCompact) {
+                val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+
+                if (item.isCompact && !usePreviewMode) {
                     CompactListWidgetList(
                         mode = mode,
                         elements = item.elements,
@@ -230,22 +233,51 @@ fun ChatListWidgetCard(
                         onObjectCheckboxClicked = onObjectCheckboxClicked
                     )
                 } else {
+                    // Check if we should use Preview mode with ChatWidgetCard
+                    android.util.Log.d("ChatListWidgetCard", "Rendering with displayMode=${item.displayMode}, usePreviewMode=$usePreviewMode, elements=${item.elements.size}")
+                    
                     item.elements.forEachIndexed { idx, element ->
-                        ListWidgetElement(
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            obj = element.obj,
-                            icon = element.objectIcon,
-                            mode = mode,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null
-                        )
-                        if (idx != item.elements.lastIndex) {
-                            Divider(
-                                thickness = 0.5.dp,
-                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
-                                color = colorResource(id = R.color.widget_divider)
+                        if (usePreviewMode && element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Use ChatWidgetCard for preview mode
+                            android.util.Log.d("ChatListWidgetCard", "Rendering ChatWidgetCard for element idx=$idx, chatName=${element.getPrettyName()}, creator=${element.creatorName}, message=${element.messageText?.take(30)}")
+                            ChatWidgetCard(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                chatIcon = element.objectIcon,
+                                chatName = element.getPrettyName(),
+                                creatorName = element.creatorName,
+                                messageText = element.messageText,
+                                messageTime = element.messageTime,
+                                attachmentPreviews = element.attachmentPreviews,
+                                unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
+                                unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                chatNotificationState = element.chatNotificationState,
+                                onClick = { onWidgetObjectClicked(element.obj) }
                             )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
+                        } else {
+                            // Use ListWidgetElement for compact mode
+                            ListWidgetElement(
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                obj = element.obj,
+                                icon = element.objectIcon,
+                                mode = mode,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                name = element.getPrettyName(),
+                                counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
                         }
                         if (idx == item.elements.lastIndex) {
                             Spacer(modifier = Modifier.height(2.dp))

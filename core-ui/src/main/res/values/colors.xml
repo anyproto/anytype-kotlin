@@ -138,6 +138,7 @@
     <color name="palette_very_light_lime">#E5F8D6</color>
     <color name="palette_very_light_grey">#F2F2F2</color>
 
+    <color name="palette_system_gray">#BFBFBF</color>
     <color name="palette_system_yellow">#ECD91B</color>
     <color name="palette_system_amber_125">#F09C0E</color>
     <color name="palette_system_amber_100">#FFB522</color>

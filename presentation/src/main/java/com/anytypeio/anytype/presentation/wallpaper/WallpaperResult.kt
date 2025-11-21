@@ -91,6 +91,7 @@ fun getSpaceIconColor(icon: SpaceIconView): SystemColor? {
 
 private fun findClosestWallpaperColorForSystemColor(systemColor: SystemColor): WallpaperColor? {
     return when (systemColor) {
+        SystemColor.GRAY -> WallpaperColor.LIGHT_GREY
         SystemColor.YELLOW -> WallpaperColor.YELLOW
         SystemColor.AMBER -> WallpaperColor.ORANGE
         SystemColor.RED -> WallpaperColor.RED

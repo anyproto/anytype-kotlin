@@ -117,11 +117,11 @@ fun ObjectTypeMenu(
             ) {
                 // Pin/Unpin button
                 BottomActionButton(
-                    iconRes = if (isPinned) R.drawable.ic_state_pin_24 else R.drawable.ic_state_unpin_24,
+                    iconRes = if (isPinned) R.drawable.ic_state_unpin_24 else R.drawable.ic_state_pin_24,
                     text = if (isPinned)
-                        stringResource(R.string.object_action_pin)
+                        stringResource(R.string.object_action_unpin)
                     else
-                        stringResource(R.string.object_action_unpin),
+                        stringResource(R.string.object_action_pin),
                     onClick = { onEvent(ObjectTypeMenuEvent.OnPinToggleClick) }
                 )
 

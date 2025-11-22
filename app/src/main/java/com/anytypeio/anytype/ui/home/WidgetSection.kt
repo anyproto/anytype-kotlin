@@ -664,11 +664,14 @@ private class LongPressWithSlopDetector(
 
             // Wait for a long-press. If it gets cancelled (pointer up or moved too far),
             // we stop handling this gesture.
-            val longPress = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
+            val longPress = awaitLongPressOrCancellation(down.id) ?: run {
+                onDragCancel()
+                return@awaitEachGesture
+            }
 
             var isDragging = false
             val pointerId = longPress.id
-            var dragStartOffset = longPress.position
+            val dragStartOffset = longPress.position
 
             // After long-press is recognized, watch for movement.
             while (true) {

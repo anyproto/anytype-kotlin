@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s з %2$s выкарыстоўваецца</string>
     <string name="remote_storage">Аддаленае сховішча</string>
     <string name="contact_us">Звяжыцеся з намі</string>
-    <string name="get_more_space">Атрымаць больш месца</string>
     <string name="account_name">Назва</string>
     <string name="space_settings">Налады прасторы</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
@@ -1274,7 +1273,6 @@
     <string name="multiplayer_upgrade_button">✦ Абнавіць</string>
     <string name="multiplayer_manage_spaces">Кіраванне Прасторамі</string>
     <string name="multiplayer_upgrade_button_request">✦ Палепшыце, каб дадаць больш удзельнікаў</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Палепшыце, каб дадаць больш прастор</string>
     <string name="multiplayer_members">Удзельнікі</string>
     <string name="multiplayer_leave_request">Запыт на выхад</string>
     <string name="multiplayer_join_request">Запыт на далучэнне</string>

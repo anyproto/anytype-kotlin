@@ -2021,6 +2021,6 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="chat_notifications_mute_all">Senyapkan semua</string>
     <string name="chat_specific_notifications">Pemberitahuan spesifik obrolan</string>
     <string name="notify_me_about">Beri notifikasi tentang</string>
-    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
-    <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="error_while_downloading_object">Galat saat mengunduh objek: %1$s</string>
+    <string name="toast_moved_to_bin">Objek dipindahkan ke Bak Sampah.</string>
 </resources>

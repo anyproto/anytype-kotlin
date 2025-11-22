@@ -11,7 +11,6 @@ import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
-import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -37,7 +36,6 @@ import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.pointer.PointerInputChange
 import androidx.compose.ui.input.pointer.PointerInputScope
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
@@ -663,31 +661,48 @@ private class LongPressWithSlopDetector(
     ) {
         awaitEachGesture {
             val down = awaitFirstDown()
+
+            // Wait for a long-press. If it gets cancelled (pointer up or moved too far),
+            // we stop handling this gesture.
             val longPress = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
 
-            var isOverSlop = false
+            var isDragging = false
+            val pointerId = longPress.id
+            var dragStartOffset = longPress.position
 
-            drag(longPress.id) { change ->
-                if (!isOverSlop) {
-                    val dragMovement = longPress.position - change.position
-                    if (maxOf(abs(dragMovement.x), abs(dragMovement.y)) > touchSlop) {
-                        isOverSlop = true
+            // After long-press is recognized, watch for movement.
+            while (true) {
+                val event = awaitPointerEvent()
+                val change = event.changes.firstOrNull { it.id == pointerId } ?: continue
+
+                if (!change.pressed) {
+                    // Pointer was released; decide whether to trigger menu or end drag.
+                    if (isDragging) {
+                        onDragEnd()
+                        onDragStopped()
+                    } else {
+                        onMenuTrigger()
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    }
+                    break
+                }
+
+                val dragDelta = change.positionChange()
+                val verticalDelta = dragDelta.y
+
+                if (!isDragging) {
+                    // Check if we've moved far enough from the long-press position to start a drag.
+                    val verticalOffset = change.position.y - dragStartOffset.y
+                    if (abs(verticalOffset) > touchSlop) {
+                        isDragging = true
                         onDragStarted()
-                        onDragStart(longPress.position)
+                        onDragStart(dragStartOffset)
                     }
                 }
 
-                if (isOverSlop) {
-                    onDrag(change, change.positionChange())
+                if (isDragging && verticalDelta != 0f) {
+                    onDrag(change, Offset(0f, verticalDelta))
                 }
-            }
-
-            if (isOverSlop) {
-                onDragEnd()
-                onDragStopped()
-            } else {
-                onMenuTrigger()
-                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
             }
         }
     }
@@ -707,6 +722,8 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
 ): Modifier {
     val haptic = LocalHapticFeedback.current
     val touchSlop = LocalViewConfiguration.current.touchSlop
+
+    var longPressConsumed by remember { mutableStateOf(false) }
 
     var modifier = Modifier
         .then(
@@ -733,11 +750,20 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
                     .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
-                    ) { onWidgetClicked() }
+                    ) {
+                        if (longPressConsumed) {
+                            longPressConsumed = false
+                        } else {
+                            onWidgetClicked()
+                        }
+                    }
                     .draggableHandle(
                         dragGestureDetector = LongPressWithSlopDetector(
                             touchSlop = touchSlop,
-                            onMenuTrigger = onWidgetLongClicked,
+                            onMenuTrigger = {
+                                longPressConsumed = true
+                                onWidgetLongClicked()
+                            },
                             haptic = haptic,
                             onDragStarted = {
                                 ViewCompat.performHapticFeedback(

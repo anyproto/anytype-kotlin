@@ -1428,13 +1428,7 @@ class HomeScreenViewModel(
                             type = parseWidgetType(curr),
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
-                                is Widget.Source.Default -> {
-                                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
-                                        UNDEFINED_LAYOUT_CODE
-                                    } else {
-                                        source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
-                                    }
-                                }
+                                is Widget.Source.Default -> source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                                 Widget.Source.Other -> UNDEFINED_LAYOUT_CODE
                             },
                             isInEditMode = isInEditMode()

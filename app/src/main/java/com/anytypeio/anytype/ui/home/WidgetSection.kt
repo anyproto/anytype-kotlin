@@ -700,11 +700,13 @@ private class LongPressWithSlopDetector(
                         isDragging = true
                         onDragStarted()
                         onDragStart(dragStartOffset)
+                        change.consume()
                     }
                 }
 
                 if (isDragging && verticalDelta != 0f) {
                     onDrag(change, Offset(0f, verticalDelta))
+                    change.consume()
                 }
             }
         }

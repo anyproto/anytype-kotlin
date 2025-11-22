@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.vault
 
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
@@ -22,19 +21,10 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedback
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.platform.LocalHapticFeedback
-import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.foundation.gestures.awaitEachGesture
-import androidx.compose.foundation.gestures.awaitFirstDown
-import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
-import kotlin.math.abs
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
@@ -228,23 +218,18 @@ fun VaultScreenContent(
 
                         when (item) {
                             is VaultSpaceView.ChatSpace -> {
-                                val touchSlop = LocalViewConfiguration.current.touchSlop
-                                val composableHaptic = LocalHapticFeedback.current
-
                                 VaultChatSpaceCard(
                                     modifier = Modifier
-                                        .clickable(onClick = { onSpaceClicked(item) })
+                                        .combinedClickable(
+                                            onClick = {
+                                                onSpaceClicked(item)
+                                            },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )
                                         .graphicsLayer(alpha = alpha.value)
                                         .animateItem()
-                                        .then(
-                                            longPressMenuDetector(
-                                                touchSlop = touchSlop,
-                                                onMenuTrigger = {
-                                                    expandedSpaceId = item.space.id
-                                                },
-                                                haptic = composableHaptic
-                                            )
-                                        )
                                         .longPressDraggableHandle(
                                             onDragStarted = {
                                                 hapticFeedback.performHapticFeedback(
@@ -280,22 +265,17 @@ fun VaultScreenContent(
                             }
 
                             is VaultSpaceView.DataSpace -> {
-                                val touchSlop = LocalViewConfiguration.current.touchSlop
-                                val composableHaptic = LocalHapticFeedback.current
-
                                 DataSpaceCard(
                                     modifier = Modifier
                                         .animateItem()
                                         .graphicsLayer(alpha = alpha.value)
-                                        .clickable(onClick = { onSpaceClicked(item) })
-                                        .then(
-                                            longPressMenuDetector(
-                                                touchSlop = touchSlop,
-                                                onMenuTrigger = {
-                                                    expandedSpaceId = item.space.id
-                                                },
-                                                haptic = composableHaptic
-                                            )
+                                        .combinedClickable(
+                                            onClick = {
+                                                onSpaceClicked(item)
+                                            },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
                                         )
                                         .longPressDraggableHandle(
                                             onDragStarted = {
@@ -323,23 +303,18 @@ fun VaultScreenContent(
                             }
 
                             is VaultSpaceView.DataSpaceWithChat -> {
-                                val touchSlop = LocalViewConfiguration.current.touchSlop
-                                val composableHaptic = LocalHapticFeedback.current
-
                                 VaultDataSpaceChatCard(
                                     modifier = Modifier
-                                        .clickable(onClick = { onSpaceClicked(item) })
+                                        .combinedClickable(
+                                            onClick = {
+                                                onSpaceClicked(item)
+                                            },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )
                                         .graphicsLayer(alpha = alpha.value)
                                         .animateItem()
-                                        .then(
-                                            longPressMenuDetector(
-                                                touchSlop = touchSlop,
-                                                onMenuTrigger = {
-                                                    expandedSpaceId = item.space.id
-                                                },
-                                                haptic = composableHaptic
-                                            )
-                                        )
                                         .longPressDraggableHandle(
                                             onDragStarted = {
                                                 hapticFeedback.performHapticFeedback(
@@ -497,63 +472,6 @@ const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"
 
-/**
- * Creates a modifier that detects long-press with slop to distinguish between
- * static long-press (menu) and long-press with drag (reorder).
- *
- * This is applied BEFORE the longPressDraggableHandle modifier to intercept
- * gestures that should show the menu instead of starting a drag.
- */
-@Composable
-private fun longPressMenuDetector(
-    touchSlop: Float,
-    onMenuTrigger: () -> Unit,
-    haptic: HapticFeedback,
-    enabled: Boolean = true
-): Modifier {
-    return if (enabled) {
-        Modifier.pointerInput(touchSlop, onMenuTrigger) {
-            awaitEachGesture {
-                val down = awaitFirstDown(requireUnconsumed = false)
-                val longPress = awaitLongPressOrCancellation(down.id)
-
-                if (longPress != null) {
-                    val startPosition = longPress.position
-                    var hasMovedBeyondSlop = false
-
-                    // Monitor movement after long-press
-                    while (true) {
-                        val event = awaitPointerEvent()
-                        val change = event.changes.firstOrNull { it.id == longPress.id }
-
-                        if (change == null || !change.pressed) {
-                            // Pointer released
-                            if (!hasMovedBeyondSlop) {
-                                // Static long-press: show menu
-                                onMenuTrigger()
-                                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                                change?.consume()
-                            }
-                            // If moved beyond slop, don't consume - let drag handle it
-                            break
-                        }
-
-                        // Check if movement exceeds touchSlop
-                        val currentPosition = change.position
-                        val offset = abs(currentPosition.y - startPosition.y)
-                        if (offset > touchSlop) {
-                            hasMovedBeyondSlop = true
-                            // Don't consume - let the drag handler take over
-                            break
-                        }
-                    }
-                }
-            }
-        }
-    } else {
-        Modifier
-    }
-}
 
 fun createCombinedClickableModifier(
     onClick: () -> Unit,

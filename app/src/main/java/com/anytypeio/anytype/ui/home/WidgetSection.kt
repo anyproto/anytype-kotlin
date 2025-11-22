@@ -2,9 +2,16 @@ package com.anytypeio.anytype.ui.home
 
 import android.view.View
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.gestures.awaitLongPressOrCancellation
+import androidx.compose.foundation.gestures.drag
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -18,18 +25,28 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.hapticfeedback.HapticFeedback
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.PointerInputChange
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import kotlin.math.abs
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -56,6 +73,8 @@ import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import kotlinx.coroutines.delay
+import sh.calvin.reorderable.DragGestureDetector
+import sh.calvin.reorderable.ReorderableCollectionItemScope
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
 
@@ -118,8 +137,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -178,8 +199,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -229,8 +252,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -289,8 +314,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -349,8 +376,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -409,8 +438,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -478,8 +509,10 @@ fun LazyListScope.renderWidgetSection(
                     }
 
                     val modifier = WidgetCardModifier(
+                        lazyItemScope = this@itemsIndexed,
                         isMenuExpanded = isCardMenuExpanded.value,
                         mode = mode,
+                        view = view,
                         onWidgetClicked = { onWidgetSourceClicked(item.id) },
                         onWidgetLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
@@ -608,21 +641,78 @@ fun PinnedSectionHeader(
     }
 }
 
+/**
+ * Custom DragGestureDetector that uses touch slop to differentiate between:
+ * - Long-press without movement (shows menu)
+ * - Long-press with drag movement (starts dragging)
+ *
+ * Based on approach from https://github.com/Calvin-LL/Reorderable/issues/55
+ */
+private class LongPressWithSlopDetector(
+    private val touchSlop: Float,
+    private val onMenuTrigger: () -> Unit,
+    private val haptic: HapticFeedback,
+    private val onDragStarted: () -> Unit = {},
+    private val onDragStopped: () -> Unit = {}
+) : DragGestureDetector {
+    override suspend fun PointerInputScope.detect(
+        onDragStart: (Offset) -> Unit,
+        onDragEnd: () -> Unit,
+        onDragCancel: () -> Unit,
+        onDrag: (PointerInputChange, Offset) -> Unit
+    ) {
+        awaitEachGesture {
+            val down = awaitFirstDown()
+            val longPress = awaitLongPressOrCancellation(down.id) ?: return@awaitEachGesture
+
+            var isOverSlop = false
+
+            drag(longPress.id) { change ->
+                if (!isOverSlop) {
+                    val dragMovement = longPress.position - change.position
+                    if (maxOf(abs(dragMovement.x), abs(dragMovement.y)) > touchSlop) {
+                        isOverSlop = true
+                        onDragStarted()
+                        onDragStart(longPress.position)
+                    }
+                }
+
+                if (isOverSlop) {
+                    onDrag(change, change.positionChange())
+                }
+            }
+
+            if (isOverSlop) {
+                onDragEnd()
+                onDragStopped()
+            } else {
+                onMenuTrigger()
+                haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+            }
+        }
+    }
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
-private fun LazyItemScope.WidgetCardModifier(
+private fun ReorderableCollectionItemScope.WidgetCardModifier(
+    lazyItemScope: LazyItemScope,
     isMenuExpanded: Boolean,
     mode: InteractionMode,
+    view: View,
     onWidgetClicked: () -> Unit,
     onWidgetLongClicked: () -> Unit,
     dragModifier: Modifier? = null,
     shouldEnableLongClick: Boolean = true
 ): Modifier {
     val haptic = LocalHapticFeedback.current
+    val touchSlop = LocalViewConfiguration.current.touchSlop
 
     var modifier = Modifier
-        .animateItem(
-            placementSpec = null
+        .then(
+            with(lazyItemScope) {
+                Modifier.animateItem(placementSpec = null)
+            }
         )
         .fillMaxWidth()
         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
@@ -631,29 +721,54 @@ private fun LazyItemScope.WidgetCardModifier(
             shape = RoundedCornerShape(16.dp),
             color = colorResource(id = R.color.dashboard_card_background)
         )
-        .then(
-            if (mode is InteractionMode.ReadOnly) {
-                Modifier.noRippleClickable { onWidgetClicked() }
-            } else {
-                if (shouldEnableLongClick) {
-                    Modifier.combinedClickable(
-                        onClick = { onWidgetClicked() },
-                        onLongClick = {
-                            onWidgetLongClicked()
-                            haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        },
+
+    // Apply click and drag modifiers based on mode
+    modifier = modifier.then(
+        if (mode is InteractionMode.ReadOnly) {
+            Modifier.noRippleClickable { onWidgetClicked() }
+        } else {
+            if (shouldEnableLongClick && dragModifier != null) {
+                // When drag is enabled, use simple click + custom drag detector
+                Modifier
+                    .clickable(
                         indication = null,
                         interactionSource = remember { MutableInteractionSource() }
+                    ) { onWidgetClicked() }
+                    .draggableHandle(
+                        dragGestureDetector = LongPressWithSlopDetector(
+                            touchSlop = touchSlop,
+                            onMenuTrigger = onWidgetLongClicked,
+                            haptic = haptic,
+                            onDragStarted = {
+                                ViewCompat.performHapticFeedback(
+                                    view,
+                                    HapticFeedbackConstantsCompat.GESTURE_START
+                                )
+                            },
+                            onDragStopped = {
+                                ViewCompat.performHapticFeedback(
+                                    view,
+                                    HapticFeedbackConstantsCompat.GESTURE_END
+                                )
+                            }
+                        )
                     )
-                } else {
-                    Modifier.noRippleClickable { onWidgetClicked() }
-                }
+            } else if (shouldEnableLongClick) {
+                // When drag is not enabled, use standard combinedClickable
+                Modifier.combinedClickable(
+                    onClick = { onWidgetClicked() },
+                    onLongClick = {
+                        onWidgetLongClicked()
+                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    },
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                )
+            } else {
+                Modifier.noRippleClickable { onWidgetClicked() }
             }
-        )
-
-    if (dragModifier != null) {
-        modifier = modifier.then(dragModifier)
-    }
+        }
+    )
 
     return modifier
 }

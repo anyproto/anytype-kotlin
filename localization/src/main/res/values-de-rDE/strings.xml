@@ -838,7 +838,7 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Chat erstellen</string>
     <string name="create_space_change_icon">Symbol ändern</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Chatname</string>
     <string name="create_space_space_name">Space-Name</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
@@ -1244,7 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
-    <string name="multiplayer_make_private">Make Private</string>
+    <string name="multiplayer_make_private">Privat machen</string>
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Privater Kommentar für einen Space-Eigentümer</string>
     <string name="multiplayer_request_to_join_explanation">Sobald der Spacebesitzer Ihre Anfrage genehmigt, werden Sie dem Space beitreten, wobei der Eigentümer die Zugriffsrechte festgelegt.</string>
@@ -1938,9 +1938,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_box_record_video">Video aufnehmen</string>
     <string name="chat_camera_permission_denied">Kameraberechtigung verweigert</string>
     <string name="notifications_title">Benachrichtigungen</string>
-    <string name="notifications_all">All new messages</string>
+    <string name="notifications_all">Alle neuen Nachrichten</string>
     <string name="notifications_mentions">Nur Erwähnungen</string>
-    <string name="notifications_disable">Nothing</string>
+    <string name="notifications_disable">Nichts</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Deaktivieren</string>
@@ -2003,7 +2003,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">Dieses Widget kann nicht wiederhergestellt werden</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
-    <string name="widgets_see_all">See all</string>
+    <string name="widgets_see_all">Alles ansehen</string>
     <string name="my_sites">Meine Seiten</string>
     <string name="my_sites_empty_state_text">Es gibt noch keine veröffentlichten Objekte</string>
     <string name="my_sites_it_s_empty_here">Hier ist es leer</string>
@@ -2031,10 +2031,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_move_to_bin">In den Papierkorb verschieben</string>
     <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
     <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
-    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_edit_info_upload_image">Bild hochladen</string>
     <string name="chat_notifications_receive_all">Receive all</string>
     <string name="chat_notifications_mute_all">Mute all</string>
-    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="chat_specific_notifications">Chat-spezifische Benachrichtigungen</string>
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>

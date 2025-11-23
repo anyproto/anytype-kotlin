@@ -65,7 +65,7 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
  * - Enabled chats with unread messages: Show as primary color (unread state)
  */
 @Composable
-private fun getChatTextColor(
+internal fun getChatTextColor(
     notificationMode: NotificationState?,
     unreadMessageCount: Int,
     unreadMentionCount: Int

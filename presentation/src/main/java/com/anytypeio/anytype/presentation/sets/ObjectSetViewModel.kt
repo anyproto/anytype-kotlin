@@ -2778,6 +2778,10 @@ class ObjectSetViewModel(
                     onEvent(ViewerEvent.SetActive(
                         viewer = action.id,
                         onResult = {
+                            viewersWidgetState.value = viewersWidgetState.value.copy(
+                                showWidget = false,
+                                isEditing = false
+                            )
                             logEvent(
                                 state = state,
                                 analytics = analytics,

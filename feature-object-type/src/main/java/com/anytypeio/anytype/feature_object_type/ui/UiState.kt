@@ -30,6 +30,8 @@ sealed class ObjectTypeCommand {
     ) : ObjectTypeCommand()
 
     data class OpenAddNewPropertyScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
+
+    data class ShowToast(val msg: String) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)

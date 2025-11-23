@@ -35,35 +35,6 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
-/**
- * Determines the text color for chat preview based on notification state and read/unread status.
- *
- * Logic:
- * - Muted/disabled chats: Always show as secondary color (even if unread)
- * - Enabled chats with no unread messages: Show as secondary color (read state)
- * - Enabled chats with unread messages: Show as primary color (unread state)
- */
-@Composable
-private fun getChatTextColor(
-    notificationMode: NotificationState?,
-    unreadMessageCount: Int,
-    unreadMentionCount: Int
-): androidx.compose.ui.graphics.Color {
-    return when {
-        // Muted/disabled chats: always show as secondary (even if unread)
-        notificationMode == NotificationState.DISABLE ->
-            colorResource(id = R.color.text_transparent_secondary)
-
-        // Read messages: show as secondary
-        unreadMessageCount == 0 && unreadMentionCount == 0 ->
-            colorResource(id = R.color.text_transparent_secondary)
-
-        // Unread messages (when notifications enabled): show as primary
-        else ->
-            colorResource(id = R.color.text_primary)
-    }
-}
-
 @Composable
 fun VaultDataSpaceChatCard(
     modifier: Modifier = Modifier,

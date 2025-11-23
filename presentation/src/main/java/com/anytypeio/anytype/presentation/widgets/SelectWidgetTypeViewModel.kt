@@ -96,7 +96,9 @@ class SelectWidgetTypeViewModel(
 
                     objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
                         listOf(
+                            WidgetTypeView.View(),
                             WidgetTypeView.CompactList(),
+                            WidgetTypeView.List(),
                             WidgetTypeView.Link()
                         )
                     }
@@ -171,6 +173,7 @@ class SelectWidgetTypeViewModel(
 
                     objectLayout == ObjectType.Layout.OBJECT_TYPE -> {
                         listOf(
+                            WidgetTypeView.View(isSelected = false),
                             WidgetTypeView.CompactList(),
                             WidgetTypeView.List(),
                             WidgetTypeView.Link()

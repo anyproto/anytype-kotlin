@@ -28,7 +28,9 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.types.CreateObjectType
@@ -167,6 +169,22 @@ object ObjectTypeModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddToFeaturedRelations(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddToFeaturedRelations = AddToFeaturedRelations(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveFromFeaturedRelations(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveFromFeaturedRelations = RemoveFromFeaturedRelations(repo, dispatchers)
 
     @Module
     interface Declarations {

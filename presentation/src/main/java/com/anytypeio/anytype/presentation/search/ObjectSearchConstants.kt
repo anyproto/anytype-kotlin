@@ -66,9 +66,18 @@ object ObjectSearchConstants {
         )
         // Exclude chat types in chat spaces
         if (spaceUxType == SpaceUxType.CHAT) {
+            // Filter out objects whose type is chat
             add(
                 DVFilter(
                     relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
+                )
+            )
+            // Filter out ObjectType objects (the type definitions themselves) with chat uniqueKey
+            add(
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
                 )
@@ -143,9 +152,18 @@ object ObjectSearchConstants {
         )
         // Exclude chat types in chat spaces
         if (spaceUxType == SpaceUxType.CHAT) {
+            // Filter out objects whose type is chat
             add(
                 DVFilter(
                     relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
+                )
+            )
+            // Filter out ObjectType objects (the type definitions themselves) with chat uniqueKey
+            add(
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
                     condition = DVFilterCondition.NOT_IN,
                     value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
                 )

@@ -731,12 +731,9 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
 
     var longPressConsumed by remember { mutableStateOf(false) }
 
-    var modifier = Modifier
-        .then(
-            with(lazyItemScope) {
-                Modifier.animateItem(placementSpec = null)
-            }
-        )
+    val baseModifier = with(lazyItemScope) {
+        Modifier.animateItem(placementSpec = null)
+    }
         .fillMaxWidth()
         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
         .alpha(if (isMenuExpanded) 0.8f else 1f)
@@ -745,66 +742,70 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
             color = colorResource(id = R.color.dashboard_card_background)
         )
 
-    // Apply click and drag modifiers based on mode
-    modifier = modifier.then(
-        if (mode is InteractionMode.ReadOnly) {
+    val interactionModifier = when {
+
+        mode is InteractionMode.ReadOnly -> {
             Modifier.noRippleClickable { onWidgetClicked() }
-        } else {
-            if (dragModifier != null) {
-                // When drag is enabled, use simple click + custom drag detector
-                // Menu is only shown if shouldEnableLongClick is true
-                Modifier
-                    .clickable(
-                        indication = null,
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) {
-                        if (longPressConsumed) {
-                            longPressConsumed = false
-                        } else {
-                            onWidgetClicked()
-                        }
-                    }
-                    .draggableHandle(
-                        dragGestureDetector = LongPressWithSlopDetector(
-                            touchSlop = touchSlop,
-                            onMenuTrigger = {
-                                // Only show menu if widget has menu items
-                                if (shouldEnableLongClick) {
-                                    longPressConsumed = true
-                                    onWidgetLongClicked()
-                                }
-                            },
-                            haptic = haptic,
-                            onDragStarted = {
-                                ViewCompat.performHapticFeedback(
-                                    view,
-                                    HapticFeedbackConstantsCompat.GESTURE_START
-                                )
-                            },
-                            onDragStopped = {
-                                ViewCompat.performHapticFeedback(
-                                    view,
-                                    HapticFeedbackConstantsCompat.GESTURE_END
-                                )
-                            }
-                        )
-                    )
-            } else if (shouldEnableLongClick) {
-                // When drag is not enabled, use standard combinedClickable
-                Modifier.combinedClickable(
-                    onClick = { onWidgetClicked() },
-                    onLongClick = {
-                        onWidgetLongClicked()
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                    },
+        }
+
+        dragModifier != null -> {
+            // When drag is enabled, use simple click + custom drag detector.
+            // Menu is only shown if shouldEnableLongClick is true.
+            Modifier
+                .clickable(
                     indication = null,
                     interactionSource = remember { MutableInteractionSource() }
+                ) {
+                    if (longPressConsumed) {
+                        longPressConsumed = false
+                    } else {
+                        onWidgetClicked()
+                    }
+                }
+                .draggableHandle(
+                    dragGestureDetector = LongPressWithSlopDetector(
+                        touchSlop = touchSlop,
+                        onMenuTrigger = {
+                            // Only show menu if widget has menu items
+                            if (shouldEnableLongClick) {
+                                longPressConsumed = true
+                                onWidgetLongClicked()
+                            }
+                        },
+                        haptic = haptic,
+                        onDragStarted = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.GESTURE_START
+                            )
+                        },
+                        onDragStopped = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.GESTURE_END
+                            )
+                        }
+                    )
                 )
-            } else {
-                Modifier.noRippleClickable { onWidgetClicked() }
-            }
         }
-    )
 
-    return modifier
+        shouldEnableLongClick -> {
+            // When drag is not enabled, use standard combinedClickable
+            Modifier.combinedClickable(
+                onClick = { onWidgetClicked() },
+                onLongClick = {
+                    onWidgetLongClicked()
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                },
+                indication = null,
+                interactionSource = remember { MutableInteractionSource() }
+            )
+        }
+
+        else -> {
+            Modifier.noRippleClickable { onWidgetClicked() }
+        }
+    }
+
+    return baseModifier.then(interactionModifier)
 }

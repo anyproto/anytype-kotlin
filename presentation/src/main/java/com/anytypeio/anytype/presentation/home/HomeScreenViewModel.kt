@@ -1175,7 +1175,11 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(widgetId: Id) {
-        Timber.d("onWidgetSourceClicked:")
+        onWidgetSourceWithViewClicked(widgetId, null)
+    }
+
+    fun onWidgetSourceWithViewClicked(widgetId: Id, viewId: ViewId?) {
+        Timber.d("onWidgetSourceWithViewClicked: widgetId=$widgetId, viewId=$viewId")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return
         Timber.d("Widget source: ${widget.source}")
         when (val source = widget.source) {
@@ -1230,7 +1234,21 @@ class HomeScreenViewModel(
                         widget = widgetId,
                         source = source
                     )
-                    proceedWithOpeningObject(source.obj)
+                    // Check if it's a Set or Collection layout
+                    val layout = source.obj.layout
+                    if (layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) {
+                        viewModelScope.launch {
+                            navigate(
+                                Navigation.OpenSet(
+                                    ctx = source.obj.id,
+                                    space = vmParams.spaceId.id,
+                                    view = viewId
+                                )
+                            )
+                        }
+                    } else {
+                        proceedWithOpeningObject(source.obj)
+                    }
                 } else {
                     sendToast("Open bin to restore your archived object")
                 }

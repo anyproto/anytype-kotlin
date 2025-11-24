@@ -291,33 +291,33 @@ class ObjectMenuViewModel(
                     Relations.DESCRIPTION
                 ) == true
             if (isDescriptionAlreadyInFeatured) {
-                removeFromFeaturedRelations(
+                removeFromFeaturedRelations.async(
                     params = RemoveFromFeaturedRelations.Params(
                         ctx = ctx,
                         relations = listOf(Relations.DESCRIPTION)
                     )
-                ).proceed(
-                    success = { payload ->
+                ).fold(
+                    onSuccess = { payload ->
                         dispatcher.send(payload)
                         Timber.d("Description was removed from featured relations")
                     },
-                    failure = {
+                    onFailure = {
                         Timber.e(it, "Error while removing description from featured relations")
                         _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                     }
                 )
             } else {
-                addToFeaturedRelations(
+                addToFeaturedRelations.async(
                     params = AddToFeaturedRelations.Params(
                         ctx = ctx,
                         relations = listOf(Relations.DESCRIPTION)
                     )
-                ).proceed(
-                    success = { payload ->
+                ).fold(
+                    onSuccess = { payload ->
                         dispatcher.send(payload)
                         Timber.d("Description was added to featured relations")
                     },
-                    failure = {
+                    onFailure = {
                         Timber.e(it, "Error while adding description to featured relations")
                         _toasts.emit(SOMETHING_WENT_WRONG_MSG)
                     }

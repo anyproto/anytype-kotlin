@@ -20,7 +20,7 @@
     <string name="account">Vault</string>
     <string name="reset_account">Reset vault</string>
     <string name="delete_account">Delete vault</string>
-    <string name="space_debug">Channel debug</string>
+    <string name="space_debug">Space debug</string>
     <string name="data">Data</string>
     <string name="mode">Mode</string>
     <string name="log_out">Log out</string>
@@ -64,15 +64,15 @@
     <string name="about_meta_info_new">App version: %1$s\nBuild number: %2$d\nLibrary version: %3$s\nAccount\u00A0ID:\u00A0%4$s\nDevice\u00A0ID:\u00A0%5$s\nAnalytics\u00A0ID:\u00A0%6$s\nEthereum key\u00A0ID:\u00A0%7$s</string>
     <string name="about_meta_info_for_copy">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s</string>
     <string name="about_meta_info_for_copy_new">Device: %1$s\nAndroid version: %2$d\nApp version: %3$s\nBuild number: %4$d\nLibrary version: %5$s\nAccount\u00A0ID:\u00A0%6$s\nDevice\u00A0ID:\u00A0%7$s\nAnalytics\u00A0ID:\u00A0%8$s\nEthereum key\u00A0ID:\u00A0%9$s</string>
-    <string name="space">Channel</string>
-    <string name="space_name">Channel name</string>
-    <string name="default_space">Entry channel</string>
+    <string name="space">Space</string>
+    <string name="space_name">Space name</string>
+    <string name="default_space">Entry space</string>
     <string name="space_settings_apply_random_gradient">Apply random solid color</string>
     <string name="space_settings_apply_upload_image">Upload image</string>
-    <string name="space_settings_chage_space_icon_color" translatable="false">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Change icon color</string>
     <string name="profile_settings_apply_upload_image">Upload image</string>
     <string name="remove_image">Remove image</string>
-    <string name="delete_space">Delete channel</string>
+    <string name="delete_space">Delete space</string>
     <string name="you_can_store">You can store up to %1$s of your files on our encrypted backup node for free. If you reach the limit, files will be stored only locally.</string>
     <string name="in_order_to_save">In order to save space on your local device, you can offload all your files to our encrypted backup node. The files will be loaded back when you open them.</string>
     <string name="manage_files">Manage files</string>
@@ -82,12 +82,13 @@
     <string name="space_usage">%1$s of %2$s used</string>
     <string name="remote_storage">Remote Storage</string>
     <string name="contact_us">Contact us</string>
+    <string name="get_more_space">Get more space</string>
     <string name="account_name">Name</string>
-    <string name="space_settings">Channel settings</string>
-    <string name="space_settings_error_change_type">Failed to change channel type. Please try again.</string>
+    <string name="space_settings">Space settings</string>
+    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update channel name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update channel icon. Please try again.</string>
+    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
+    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
     <string name="data_management">Data management</string>
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
@@ -929,24 +930,24 @@
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
     <string name="personal">Default</string>
-    <string name="create_space">Create channel</string>
+    <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
     <string name="create_space_change_icon">Change icon</string>
     <string name="create_space_chat_name">Chat name</string>
-    <string name="create_space_space_name">Channel name</string>
+    <string name="create_space_space_name">Space name</string>
 
     <string name="generic_error">Something went wrong. Please try again.</string>
     <string name="type">Type</string>
     <string name="format">Format</string>
-    <string name="space_info">Channel info</string>
+    <string name="space_info">Space info</string>
     <string name="creation_date">Creation date</string>
     <string name="created_by">Created by</string>
-    <string name="space_id">Channel ID</string>
+    <string name="space_id">Space ID</string>
     <string name="network_id">Network ID</string>
-    <string name="delete_space_subtitle">Channel deletion is permanent and cannot be undone. Please note that all the data connected to this channel will be permanently removed and you will lose an access to it forever.</string>
-    <string name="delete_space_title_with_param">Delete \'%1$s\' channel</string>
-    <string name="delete_space_title">Are you sure to delete this channel?</string>
-    <string name="space_id_copied_toast_msg">Channel ID copied</string>
+    <string name="delete_space_subtitle">Space deletion is permanent and cannot be undone. Please note that all the data connected to this space will be permanently removed and you will lose an access to it forever.</string>
+    <string name="delete_space_title_with_param">Delete \'%1$s\' space</string>
+    <string name="delete_space_title">Are you sure to delete this space?</string>
+    <string name="space_id_copied_toast_msg">Space ID copied</string>
     <string name="network_id_copied_toast_msg">Network ID copied</string>
     <string name="created_by_id_copied_toast_msg">Created-by ID copied</string>
 
@@ -954,11 +955,11 @@
     <string name="anytype_update_alert_title">It\'s time to update</string>
 
     <string name="space_type_default">Entry</string>
-    <string name="space_type_default_space">Entry channel</string>
+    <string name="space_type_default_space">Entry space</string>
     <string name="space_type_private">Private</string>
-    <string name="space_type_private_space">Private channel</string>
+    <string name="space_type_private_space">Private space</string>
     <string name="space_type_shared">Shared</string>
-    <string name="space_type_shared_space">Shared channel</string>
+    <string name="space_type_shared_space">Shared space</string>
     <string name="space_type_unknown">Unknown type</string>
     <string name="create_space_start_with">Start with</string>
     <string name="create_object_section_lists">Lists</string>
@@ -1293,7 +1294,7 @@
     <string name="sharing_menu_add_to_anytype_header_title">Add to Anytype</string>
     <string name="sharing_menu_add_to_anytype_error">Anytype file upload error: %1$s</string>
     <string name="sharing_menu_add_to_anytype_success">All files have been successfully uploaded</string>
-    <string name="sharing_menu_toast_object_added">New object is added to the channel \'%1$s\'</string>
+    <string name="sharing_menu_toast_object_added">New object is added to the space \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Add</string>
     <string name="sharing_menu_btn_open">Open</string>
 
@@ -1379,7 +1380,7 @@
     <string name="options_empty_title">No options</string>
     <string name="options_empty_not_editable">The property is empty</string>
     <string name="options_delete_title">Are you sure?</string>
-    <string name="options_delete_description">The option will be permanently removed from your channel</string>
+    <string name="options_delete_description">The option will be permanently removed from your space</string>
 
     <string name="object_values_empty_description">Objects not found</string>
     <string name="object_values_empty_title">No values</string>
@@ -1419,7 +1420,7 @@
     <string name="multiplayer_share_invite_link">Share invite link</string>
     <string name="multiplayer_share_invite_link_menu">Share link</string>
     <string name="multiplayer_qr_invite_link_menu">Show QR code</string>
-    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Channel. Once they click your link and request access, you can set their access rights.</string>
+    <string name="multiplayer_share_invite_link_description">Share this invite link so that others can join your Space. Once they click your link and request access, you can set their access rights.</string>
     <string name="multiplayer_invite_link">Invite link</string>
     <string name="multiplayer_invite_link_access">Invite link access</string>
     <string name="multiplayer_link_disabled">Link disabled</string>
@@ -1436,36 +1437,37 @@
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
-    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the channel content.</string>
-    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the channel content.</string>
-    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the channel.</string>
+    <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
+    <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
+    <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">Copy link</string>
     <string name="multiplayer_make_private">Make Private</string>
-    <string name="multiplayer_join_a_space">Join a channel</string>
-    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a channel owner</string>
-    <string name="multiplayer_request_to_join_explanation">Once the channel owner approves your request, you\'ll join the channel with the access rights owner determined.</string>
+    <string name="multiplayer_join_a_space">Join a space</string>
+    <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
+    <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
 
     <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
     <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
-    <string name="multiplayer_request_to_join_without_approve_button">Join Channel</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
     <string name="multiplayer_request_to_join_sent_title">Request sent</string>
-    <string name="multiplayer_request_to_join_sent_description">You will receive a notification when the channel owner will approve your request.</string>
-    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage channels</string>
+    <string name="multiplayer_request_to_join_sent_description">You will receive a notification when the space owner will approve your request.</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
 
     <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
 
     <string name="multiplayer_space_request_to_join">Request to join</string>
-    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s channel, created by %2$s. Send a request so channel owner can let you in.</string>
+    <string name="multiplayer_space_request_to_join_msg">You\'ve been invited to join %1$s space, created by %2$s. Send a request so space owner can let you in.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Tap to write your comment</string>
-    <string name="multiplayer_share_space">Share channel</string>
+    <string name="multiplayer_share_space">Share space</string>
     <string name="multiplayer_members_and_requests">Members</string>
     <string name="multiplayer_members_invite_links_section">Invite link</string>
     <string name="multiplayer_cant_add_members">You can’t add more members</string>
     <string name="multiplayer_cant_add_editors">You can’t add more editors</string>
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
-    <string name="multiplayer_manage_spaces">Manage Channels</string>
+    <string name="multiplayer_manage_spaces">Manage Spaces</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade to add more members</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade to add more spaces</string>
     <string name="multiplayer_members">Members</string>
     <string name="multiplayer_leave_request">Leave request</string>
     <string name="multiplayer_join_request">Join request</string>
@@ -1481,62 +1483,66 @@
     <string name="multiplayer_space_add_editor">Add editor</string>
     <string name="multiplayer_space_add_more_editor">✦ Add more editors</string>
     <string name="multiplayer_space_request_reject">Reject</string>
-    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s channel</string>
+    <string name="multiplayer_space_join_request_header">%1$s requested to join %2$s space</string>
     <string name="multiplayer_remove_member">Remove member</string>
-    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from channel</string>
+    <string name="multiplayer_remove_member_warning_text">%1$s will be removed from space</string>
     <string name="multiplayer_request_sent_toast">Request sent</string>
     <string name="multiplayer_space_stop_sharing">Stop sharing</string>
-    <string name="multiplayer_space_stop_sharing_space">Stop sharing the channel</string>
-    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this channel and the share link will be deactivated.</string>
+    <string name="multiplayer_space_stop_sharing_space">Stop sharing the space</string>
+    <string name="multiplayer_space_stop_sharing_space_description">Participants will no longer sync to this space and the share link will be deactivated.</string>
     <string name="multiplayer_more_info">More info</string>
     <string name="multiplayer_sharing">Sharing</string>
     <string name="multiplayer_space_type">Type</string>
     <string name="multiplayer_share">Share</string>
     <string name="multiplayer_manage">Manage</string>
-    <string name="multiplayer_leave_space">Leave channel</string>
-    <string name="multiplayer_leave_space_warning_subtitle">This channel will be removed from your devices  and you will no longer have access to it</string>
-    <string name="multiplayer_generate_invite_link_description">Create invite link to share channel and add new members</string>
+    <string name="multiplayer_leave_space">Leave space</string>
+    <string name="multiplayer_leave_space_warning_subtitle">This space will be removed from your devices  and you will no longer have access to it</string>
+    <string name="multiplayer_generate_invite_link_description">Create invite link to share space and add new members</string>
     <string name="multiplayer_generate_invite_link">Generate invite link</string>
     <string name="multiplayer_show_qr_code">Show QR code</string>
-    <string name="multiplayer_how_to_share_space">How to share a channel?</string>
+    <string name="multiplayer_how_to_share_space">How to share a space?</string>
     <string name="multiplayer_how_to_share_space_step_1">Please provide the link to the person you\'d like to collaborate with.</string>
     <string name="multiplayer_how_to_share_space_qr_code">Show this QR code to the person you\'d like to collaborate with.</string>
-    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the channel.</string>
+    <string name="multiplayer_how_to_share_space_step_2">By clicking the link, a person requests to join the space.</string>
     <string name="multiplayer_how_to_share_space_step_3">After approving the request, you can choose the access rights for that person.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
     <string name="multiplayer_how_share_three">3.</string>
     <string name="multiplayer_delete_space_sharing_link">Delete sharing link</string>
     <string name="multiplayer_delete_link">Delete link</string>
-    <string name="multiplayer_delete_link_description">New members won’t be able to join the channel. You can generate a new link anytime.</string>
-    <string name="multiplayer_already_space_member">You are already a member of this channel</string>
-    <string name="multiplayer_open_space">Open channel</string>
-    <string name="multiplayer_error_space_deleted">Channel deleted</string>
-    <string name="multiplayer_error_space_not_found">Channel not found</string>
-    <string name="multiplayer_read_only_access_error">Read-only access. Contact channel owner for changes.</string>
-    <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s channel.</string>
-    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s channel.</string>
+    <string name="multiplayer_delete_link_description">New members won’t be able to join the space. You can generate a new link anytime.</string>
+    <string name="multiplayer_already_space_member">You are already a member of this space</string>
+    <string name="multiplayer_open_space">Open space</string>
+    <string name="multiplayer_error_space_deleted">Space deleted</string>
+    <string name="multiplayer_error_space_not_found">Space not found</string>
+    <string name="multiplayer_read_only_access_error">Read-only access. Contact space owner for changes.</string>
+    <string name="multiplayer_notification_member_user_sends_join_request">%1$s requested to join the %2$s space.</string>
+    <string name="multiplayer_notification_member_user_sends_leave_request">%1$s requested to leave the %2$s space.</string>
     <string name="multiplayer_notification_new_join_request">New join request</string>
-    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s channel with read-only access rights</string>
-    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s channel with edit access rights</string>
+    <string name="multiplayer_notification_member_joined_space_with_read_only_rights">%1$s joined %2$s space with read-only access rights</string>
+    <string name="multiplayer_notification_member_joined_space_with_editor_only_rights">%1$s joined %2$s space with edit access rights</string>
     <string name="multiplayer_notification_member_request_approved">Request approved</string>
-    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s channel has been approved with read-only access rights. The channel will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s channel has been approved. The channel will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s channel has been approved with edit access rights. The channel will be available on your device soon.</string>
-    <string name="multiplayer_notification_member_removed_from_space_title">The channel \"%1$s\" is no longer accessible.</string>
-    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the channel \"%1$s\", or the channel was deleted by the owner.</string>
+    <string name="multiplayer_notification_member_request_approved_with_read_only_rights">Your request to join the %1$s space has been approved with read-only access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_unknown_rights">Your request to join the %1$s space has been approved. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_request_approved_with_edit_rights">Your request to join the %1$s space has been approved with edit access rights. The space will be available on your device soon.</string>
+    <string name="multiplayer_notification_member_removed_from_space_title">The space \"%1$s\" is no longer accessible.</string>
+    <string name="multiplayer_notification_member_removed_from_space">You have been removed from the space \"%1$s\", or the space was deleted by the owner.</string>
     <string name="multiplayer_notification_member_permissions_changed">Permissions changed</string>
-    <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s channel.</string>
-    <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s channel.</string>
-    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s channel has been declined.</string>
+    <string name="multiplayer_notification_member_permission_change_read">Your access rights were changed to read-only in the %1$s space.</string>
+    <string name="multiplayer_notification_member_permission_change_edit">Your access rights were changed to edit in the %1$s space.</string>
+    <string name="multiplayer_notification_member_join_request_declined">Your request to join the %1$s space has been declined.</string>
     <string name="multiplayer_notification_member_join_without_approval">You joined %1$s.</string>
     <string name="multiplayer_notification_request_declined">Request declined</string>
     <string name="multiplayer_notification_view_request">View</string>
-    <string name="multiplayer_notification_go_to_space">Go to channel</string>
+    <string name="multiplayer_notification_go_to_space">Go to space</string>
     <string name="multiplayer_toast_permission_not_allowed">Changing permissions is not allowed</string>
     <string name="multiplayer_toast_share_limit_reached">Sharing limit reached</string>
     <string name="multiplayer_deeplink_to_your_object">Deeplink to your object</string>
     <string name="multiplayer_deeplink_to_your_object_error">Object is not available. Ask the owner to share it.</string>
+    <string name="multiplayer_collaborate_on_spaces">Collaborate on spaces</string>
+    <string name="multiplayer_collaborate_step_1">1.  Tap the Space widget to access settings</string>
+    <string name="multiplayer_collaborate_step_2">2.  Open Share section</string>
+    <string name="multiplayer_collaborate_step_3">3.  Generate an invite link and share it</string>
     <string name="profile_view_edit_button">Edit Profile</string>
 
     <plurals name="multiplayer_number_of_space_members">
@@ -1563,18 +1569,18 @@
     <string name="multiplayer_cancel_join_request_msg">You will have to send join request again</string>
     <string name="multiplayer_do_not_cancel_join_request">Do not cancel</string>
 
-    <string name="multiplayer_error_invite_not_found_title">No access to this channel</string>
-    <string name="multiplayer_error_invalid_link_title">No access to this channel</string>
+    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
+    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
     <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
     <string name="multiplayer_error_invite_bad_content">The invitation link could not be parsed. It may contain errors in the format or invalid data.</string>
-    <string name="multiplayer_error_space_deleted_title">No access to this channel</string>
-    <string name="multiplayer_error_space_is_deleted">It looks like the channel has been deleted. Please ensure that your devices are synchronized.</string>
-    <string name="multiplayer_error_limit_reached">Limit reached for this channel. Please upgrade your membership or contact support for assistance.</string>
-    <string name="multiplayer_error_not_shareable">It looks like the channel is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
+    <string name="multiplayer_error_space_is_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
     <string name="multiplayer_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
 
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">This link does not seem to work</string>
-    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the channel was not found.</string>
+    <string name="multiplayer_invite_link_space_not_found">This invite link is no longer valid because the space was not found.</string>
     <string name="multiplayer_invite_link_request_already_sent">Request sent</string>
 
 
@@ -1589,7 +1595,7 @@
     <string name="payments_card_description_1">As a valued member your voice matters! Engage in exclusive events, shape strategic choices, and influence our roadmap.</string>
 
     <string name="payments_card_text_2">Unlock Member Benefits</string>
-    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared channels, and a unique identity on the Anytype Network.</string>
+    <string name="payments_card_description_2">Members enjoy higher backup storage &amp; sync limits, invitations for multiple guests to collaborate in shared spaces, and a unique identity on the Anytype Network.</string>
 
     <string name="payments_card_text_3">Support Digital Independence</string>
     <string name="payments_card_description_3">Your contribution supports our team and endorses our vision of a user-owned, secure, and collaborative digital network.</string>
@@ -1632,6 +1638,30 @@
     <string name="payments_tier_details_name_validating">Validating name</string>
     <string name="payments_tier_details_free_forever">Forever</string>
     <string name="payments_tier_details_valid_until">Valid until %1$s</string>
+
+    <string name="payments_tier_details_info_explorer">Dive into the network and enjoy the thrill of one-on-one collaboration</string>
+    <string-array name="payments_benefits_explorer">
+        <item>1 GB of network space</item>
+        <item>10 one-to-one spaces</item>
+        <item>Up to 10 shared spaces in read-only mode</item>
+    </string-array>
+
+    <string name="payments_tier_details_info_builder">Unlock the magic of multi-party collaboration and enjoy top-notch support</string>
+    <string-array name="payments_benefits_builder">
+        <item>Unique name (from 7 characters)</item>
+        <item>128 GB of network space</item>
+        <item>10 Guest collaborator seats</item>
+        <item>Priority support</item>
+    </string-array>
+
+    <string name="payments_tier_details_info_cocreator">Support our adventure and unlock exclusive access and perks</string>
+    <string-array name="payments_benefits_cocreator">
+        <item>Unique name (from 5 characters)</item>
+        <item>256 GB of network space</item>
+        <item>25 Guest collaborator seats</item>
+        <item>Chat with the team</item>
+        <item>Unique collectible</item>
+    </string-array>
 
     <string name="payments_detials_button_pay">Pay by Card</string>
     <string name="payments_detials_button_submit">Submit</string>
@@ -1694,8 +1724,8 @@
     <string name="payments_email_subject">Upgrade %1$s</string>
     <string name="payments_email_body">Hello Anytype team! I would like to extend my current membership for more (please choose an option):\n
 - Extra remote storage\n
-- More channel editors\n
-- Additional shared channels\n
+- More space editors\n
+- Additional shared spaces\n
 Specifically,
 Please provide specific details of your needs here.</string>
 
@@ -1740,11 +1770,11 @@ Please provide specific details of your needs here.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Made by</string>
     <string name="gallery_experience_install">Install</string>
-    <string name="gallery_experience_install_new">Install to new channel</string>
+    <string name="gallery_experience_install_new">Install to new space</string>
     <string name="gallery_experience_alert_title_success">Experience was installed</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new channel. You can now open and start using it.</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" was installed to a new space. You can now open and start using it.</string>
     <string name="gallery_experience_alert_title_error">Oops!</string>
-    <string name="gallery_experience_alert_button_space">Open channel</string>
+    <string name="gallery_experience_alert_button_space">Open space</string>
     <string name="gallery_experience_alert_button_error">Close</string>
 
 
@@ -1753,7 +1783,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="notifications_prompt_get_notified">Get notified</string>
     <string name="notifications_prompt_secondary_button_text">Not now</string>
-    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave channels.</string>
+    <string name="notifications_prompt_description">Please enable notifications to stay informed about any requests to join or leave spaces.</string>
     <string name="notifications_prompt_primary_button_text">Enable</string>
 
     <string name="clipboard_panel_create_bookmark_from_clipboard">Create bookmark from clipboard</string>
@@ -1774,16 +1804,16 @@ Please provide specific details of your needs here.</string>
     <string name="membership_support_already_acquired">You’ve already acquired a Membership plan using another Anytype account.</string>
     <string name="membership_support_different_subscription">Found a subscription with a different id</string>
     <string name="membership_support_more_then_one_subscription">Found more than one subscription</string>
-    <string name="multiplayer_space_join_request_participants_error">Channel participant\'s error</string>
+    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Current membership status error</string>
 
     <string name="membership_upgrade_title">Membership upgrade</string>
-    <string name="membership_upgrade_description">Reach us for extra storage, channel editors, or more shared channels. Anytype team will provide details and conditions tailored to your needs.</string>
+    <string name="membership_upgrade_description">Reach us for extra storage, space editors, or more shared spaces. Anytype team will provide details and conditions tailored to your needs.</string>
     <string name="membership_upgrade_button">Contact Anytype Team</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared channels</string>
-    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove channels.</string>
+    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
+    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
 
 
     <plurals name="period_years">
@@ -1853,7 +1883,7 @@ Please provide specific details of your needs here.</string>
 
     <string name="sync_status_storage_limit_exceed">Storage limit reached</string>
     <string name="sync_status_incompatible_version">Incompatible version</string>
-    <string name="sync_status_network_error">No access to the channel</string>
+    <string name="sync_status_network_error">No access to the space</string>
     <string name="sync_status_unrecognized">Unrecognized error</string>
 
     <string name="version_history_title">Version history</string>
@@ -1861,13 +1891,13 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">My Spaces</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">All</string>
     <string name="vault_pinned_section_title">Pinned</string>
     <string name="vault_pin_space">Pin</string>
     <string name="vault_unpin_space">Unpin</string>
-    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned channels</string>
+    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
 
     <string name="all_content_title_all_content">All Objects</string>
     <string name="all_content_title_only_unlinked">Only unlinked</string>
@@ -1900,9 +1930,9 @@ Please provide specific details of your needs here.</string>
     <string name="allContent_group_yesterday">Yesterday</string>
     <string name="allContent_group_prev_7">Previous 7 days</string>
     <string name="allContent_group_prev_14">Previous 14 days</string>
-    <string name="introduce_vault_text_1">Vault is the new home for all your Channels.\nCreate, join, or share Channels – everything is securely stored here.</string>
-    <string name="introduce_vault_text_2">You can now easily reorder your Channels using drag and drop and navigate them more easily.</string>
-    <string name="introduce_vault_text_3">By default, we blur the icon of your channel as a background. If needed, you can change it in the channel settings.</string>
+    <string name="introduce_vault_text_1">Vault is the new home for all your Spaces.\nCreate, join, or share Spaces – everything is securely stored here.</string>
+    <string name="introduce_vault_text_2">You can now easily reorder your Spaces using drag and drop and navigate them more easily.</string>
+    <string name="introduce_vault_text_3">By default, we blur the icon of your space as a background. If needed, you can change it in the space-settings.</string>
     <string name="introduce_vault_welcome_to_the_vault">Welcome to the Vault</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Simple & Flexible]]></string>
 
@@ -1913,7 +1943,7 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_no_results_description">Try searching with different keywords.</string>
 
     <string name="all_content_error_title">Something went wrong.</string>
-    <string name="onboarding_my_first_space">My First Channel</string>
+    <string name="onboarding_my_first_space">My First Space</string>
 
     <string name="all_content_error_unexpected_layout">Error: unexpected layout</string>
     <string name="all_content_toast_relation_added">Property added</string>
@@ -2020,7 +2050,7 @@ Please provide specific details of your needs here.</string>
     <string name="images">Images</string>
     <string name="attachment">Attachment</string>
     <string name="attachments">Attachments</string>
-    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first channel to get started</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
     <string name="space_list_empty_state_it_is_empty_here">It is empty here.</string>
 
     <string name="emoji_category_smileys_and_people">Smileys &amp; People</string>
@@ -2045,7 +2075,7 @@ Please provide specific details of your needs here.</string>
     <string name="migration_this_shouldn_t_take_long">This may take some time. Please don’t close the app until the process is complete.</string>
     <string name="migration_error_try_again">Try again</string>
     <string name="migration_migration_failed">Migration failed</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of storage space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
 
     <string name="fields_screen_title">Properties</string>
     <string name="field_text_title">Text</string>
@@ -2090,8 +2120,8 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_default_type_button">Default Object Type</string>
     <string name="space_settings_wallpaper_button">Wallpaper</string>
     <string name="space_settings_storage_button">Remote Storage</string>
-    <string name="space_settings_space_info_button">Channel Information</string>
-    <string name="space_settings_delete_space_button">Delete Channel</string>
+    <string name="space_settings_space_info_button">Space Information</string>
+    <string name="space_settings_delete_space_button">Delete Space</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
     <string name="space_settings_join_space_by_qr_title">Join</string>
@@ -2112,11 +2142,11 @@ Please provide specific details of your needs here.</string>
     <string name="add_property_error_add">Error while adding property to type</string>
 
     <string name="property_select_format_title">Select property format</string>
-    <string name="property_edit_menu_delete">Delete from channel</string>
+    <string name="property_edit_menu_delete">Delete from space</string>
     <string name="property_edit_menu_unlink">Unlink from type</string>
     <string name="property_limit_objects_title">Limit objects</string>
     <string name="property_include_time_section">Include time</string>
-    <string name="delete_space_checkbox_text">I have read and want to delete this channel</string>
+    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
     <string name="migration_screen_new_version_update">New Version Update</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
     <string name="migration_screen_description_2">It might take a little while, but don\'t worry, your data is safe.</string>
@@ -2131,7 +2161,7 @@ Please provide specific details of your needs here.</string>
     <string name="object_type_icon_change_title">Change icon</string>
     <string name="object_type_icon_remove">Remove</string>
     <string name="object_type_icon_change_title_search_hint">Search..."</string>
-    <string name="space_invite_link_copied">Channel invite link copied!</string>
+    <string name="space_invite_link_copied">Space invite link copied!</string>
 
     <string name="object_type_create_new_title">Create new type</string>
     <string name="object_type_rename_title">Rename type</string>
@@ -2155,7 +2185,7 @@ Please provide specific details of your needs here.</string>
     <string name="space_properties_screen_section_my_types">My Properties</string>
     <string name="space_properties_screen_section_system_types">System Properties</string>
     <string name="space_properties_screen_menu_move_to_bin">Move to bin</string>
-    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: channel is missing</string>
+    <string name="onboarding_error_while_creating_account_space_is_missing">Error while creating account: space is missing</string>
     
     <!-- Account creation error messages -->
     <string name="onboarding_error_network_error">Failed to create account due to network error. Please check your connection.</string>
@@ -2181,27 +2211,27 @@ Please provide specific details of your needs here.</string>
     <string name="onboarding_name_error">Enter name</string>
 
     <string name="notifications_modal_title">Turn on push notifications</string>
-    <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your channels.</string>
+    <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
     <string name="notifications_modal_success_button">Enable notifications</string>
     <string name="notifications_modal_cancel_button">Not now</string>
 
     <string name="vault_create_chat">New Chat</string>
     <string name="vault_create_chat_description">For real-time conversations</string>
-    <string name="vault_create_space">New Channel</string>
+    <string name="vault_create_space">New Space</string>
     <string name="vault_create_space_description">For organized content and data</string>
 
-    <!-- Channels Introduction Popup -->
+    <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
     <string name="spaces_introduction_page2_title">Your Vault just leveled up</string>
-    <string name="spaces_introduction_page2_description">Channels and Chats now show live previews and updates — one place to follow everything that matters.</string>
+    <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
     <string name="spaces_introduction_page3_title">Chats that do more</string>
     <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
     <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
     <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
     <string name="spaces_introduction_try_it">Let\'s try it</string>
 
-    <string name="vault_empty_state_text">There are no channels yet</string>
+    <string name="vault_empty_state_text">There are no spaces yet</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
     <string name="chat_box_camera">Camera</string>
@@ -2219,8 +2249,8 @@ Please provide specific details of your needs here.</string>
 
     <string name="space_notify_unmute">Unmute</string>
     <string name="space_notify_mute">Mute</string>
-    <string name="vault_pinned_limit_message">%1$d pinned channels are your current limit. Unpin one to add a new favorite.</string>
-    <string name="vault_space_settings">Channel Settings</string>
+    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
+    <string name="vault_space_settings">Space Settings</string>
 
     <string name="notification_settings_title">Notifications</string>
     <string name="notification_settings_disabled">Notifications are disabled</string>
@@ -2246,18 +2276,18 @@ Please provide specific details of your needs here.</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
 
-    <!-- Share Channel Errors -->
-    <string name="share_space_error_limit_reached">Limit reached for this channel. Please upgrade your membership or contact support for assistance.</string>
-    <string name="share_space_error_not_shareable">It looks like the channel is no longer shared. Please ensure that your devices are synchronized.</string>
+    <!-- Share Space Errors -->
+    <string name="share_space_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
+    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
     <string name="share_space_error_request_failed">Oops! The request failed. Please check your Internet connection and try again.</string>
-    <string name="share_space_error_space_deleted">It looks like the channel has been deleted. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_space_deleted">It looks like the space has been deleted. Please ensure that your devices are synchronized.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
-    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the channel owner for assistance.</string>
+    <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">
-        The channel you are trying to share does not exist. Please check the channel ID and try again.
+        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
     <string name="share_space_error_make_private_failed">
-        Failed to make the channel private. Please try again later.
+        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
@@ -2265,7 +2295,7 @@ Please provide specific details of your needs here.</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferences</string>
     <string name="web_publishing_customize_url">Customize URL</string>
-    <string name="web_publishing_join_space_button">Join Channel Button</string>
+    <string name="web_publishing_join_space_button">Join Space Button</string>
     <string name="web_publishing_unpublish">Unpublish</string>
     <string name="web_publishing_update">Update</string>
     <string name="web_publishing_publish">Publish</string>
@@ -2297,11 +2327,11 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_space_type_chat_title">Channel Type</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
     <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
-    <string name="space_settings_space_type_space_item_title">Channel</string>
+    <string name="space_settings_space_type_space_item_title">Space</string>
     <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
 
     <string name="alert_change_space_type_title">Convert Channel Type?</string>
-    <string name="alert_change_space_type_subtitle">Switching between Channel and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
     <string name="alert_change_space_type_button">Yes, convert</string>
 
 

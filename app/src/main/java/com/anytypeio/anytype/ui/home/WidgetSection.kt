@@ -67,7 +67,7 @@ fun LazyListScope.renderWidgetSection(
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetSourceWithViewClicked: (WidgetId, ViewId?) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -250,7 +250,7 @@ fun LazyListScope.renderWidgetSection(
                             onWidgetElementClicked(item.id, obj)
                         },
                         onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetSourceWithViewClicked = onWidgetSourceWithViewClicked,
+                        onSeeAllClicked = onSeeAllClicked,
                         onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
@@ -313,7 +313,7 @@ fun LazyListScope.renderWidgetSection(
                             onWidgetElementClicked(item.id, obj)
                         },
                         onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetSourceWithViewClicked = onWidgetSourceWithViewClicked,
+                        onSeeAllClicked = onSeeAllClicked,
                         onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
@@ -376,7 +376,7 @@ fun LazyListScope.renderWidgetSection(
                             onWidgetElementClicked(item.id, obj)
                         },
                         onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetSourceWithViewClicked = onWidgetSourceWithViewClicked,
+                        onSeeAllClicked = onSeeAllClicked,
                         onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)

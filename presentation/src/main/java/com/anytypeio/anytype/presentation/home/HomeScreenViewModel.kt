@@ -1175,11 +1175,11 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(widgetId: Id) {
-        onWidgetSourceWithViewClicked(widgetId, null)
+        onSeeAllClicked(widgetId, null)
     }
 
-    fun onWidgetSourceWithViewClicked(widgetId: Id, viewId: ViewId?) {
-        Timber.d("onWidgetSourceWithViewClicked: widgetId=$widgetId, viewId=$viewId")
+    fun onSeeAllClicked(widgetId: Id, viewId: ViewId?) {
+        Timber.d("onSeeAllClicked: widgetId=$widgetId, viewId=$viewId")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return
         Timber.d("Widget source: ${widget.source}")
         when (val source = widget.source) {

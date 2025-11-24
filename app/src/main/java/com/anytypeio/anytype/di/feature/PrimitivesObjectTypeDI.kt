@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -185,6 +186,15 @@ object ObjectTypeModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): RemoveFromFeaturedRelations = RemoveFromFeaturedRelations(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateBlockUseCase(
+        repo: BlockRepository
+    ): UpdateText = UpdateText(
+        repo = repo
+    )
 
     @Module
     interface Declarations {

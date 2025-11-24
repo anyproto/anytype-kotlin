@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -59,7 +60,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val spaceManager: SpaceManager,
     private val getObject: GetObject,
     private val addToFeaturedRelations: AddToFeaturedRelations,
-    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val updateText: UpdateText
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -91,6 +93,7 @@ class ObjectTypeVMFactory @Inject constructor(
             spaceManager = spaceManager,
             getObject = getObject,
             addToFeaturedRelations = addToFeaturedRelations,
-            removeFromFeaturedRelations = removeFromFeaturedRelations
+            removeFromFeaturedRelations = removeFromFeaturedRelations,
+            updateText = updateText
         ) as T
 }

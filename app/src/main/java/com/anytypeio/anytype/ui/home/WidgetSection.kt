@@ -59,6 +59,7 @@ import com.anytypeio.anytype.presentation.widgets.TreePath
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.compositeKey
 import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
@@ -97,7 +98,7 @@ fun LazyListScope.renderWidgetSection(
 ) {
     itemsIndexed(
         items = widgets,
-        key = { _, item -> item.id },
+        key = { _, item -> item.compositeKey() },
         contentType = { _, item -> sectionType }
     ) { index, item ->
         val animateItemModifier = Modifier.animateItem()
@@ -117,7 +118,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -179,7 +180,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -232,7 +233,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -294,7 +295,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -356,7 +357,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -418,7 +419,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }
@@ -489,7 +490,7 @@ fun LazyListScope.renderWidgetSection(
                 ReorderableItem(
                     enabled = isReorderEnabled,
                     state = reorderableState,
-                    key = item.id,
+                    key = item.compositeKey(),
                     animateItemModifier = animateItemModifier
                 ) { isDragged ->
                     val hasStartedDragging = remember { mutableStateOf(false) }

@@ -9,9 +9,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
@@ -40,21 +43,23 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.*
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.Back
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenAddNewPropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.ErrorEditingTypeDetails
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.Other
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Show
 import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
-import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
-import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
-import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.Visible
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
@@ -70,7 +75,6 @@ import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
-import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
@@ -83,10 +87,7 @@ import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import kotlin.collections.map
+import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -615,7 +616,8 @@ class ObjectTypeViewModel(
                 uiMenuState.value = uiMenuState.value.copy(
                     isVisible = true,
                     icon = uiIconState.value.icon,
-                    isPinned = pinnedWidgetBlockId.value != null
+                    isPinned = pinnedWidgetBlockId.value != null,
+                    canDelete = _objectTypePermissionsState.value?.canDelete ?: false
                 )
             }
         }

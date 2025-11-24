@@ -34,13 +34,12 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
-import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ObjectTypeMenu(
     isPinned: Boolean,
+    canDelete: Boolean,
     onEvent: (ObjectTypeMenuEvent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -125,15 +124,17 @@ fun ObjectTypeMenu(
                     onClick = { onEvent(ObjectTypeMenuEvent.OnPinToggleClick) }
                 )
 
-                Spacer(modifier = Modifier.width(12.dp))
+                // To Bin button (only show if user has delete permission)
+                if (canDelete) {
+                    Spacer(modifier = Modifier.width(12.dp))
 
-                // To Bin button
-                BottomActionButton(
-                    iconRes = R.drawable.ic_object_action_archive,
-                    text = stringResource(R.string.action_bar_to_bin),
-                    isDestructive = true,
-                    onClick = { onEvent(ObjectTypeMenuEvent.OnToBinClick) }
-                )
+                    BottomActionButton(
+                        iconRes = R.drawable.ic_object_action_archive,
+                        text = stringResource(R.string.action_bar_to_bin),
+                        isDestructive = true,
+                        onClick = { onEvent(ObjectTypeMenuEvent.OnToBinClick) }
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -216,6 +217,7 @@ private fun BottomActionButton(
 fun ObjectTypeMenuPreview() {
     ObjectTypeMenu(
         isPinned = false,
+        canDelete = true,
         onEvent = {}
     )
 }

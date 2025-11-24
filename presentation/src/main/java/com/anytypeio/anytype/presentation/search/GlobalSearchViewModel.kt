@@ -32,6 +32,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -77,7 +78,8 @@ class GlobalSearchViewModel @Inject constructor(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
     private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -278,7 +280,8 @@ class GlobalSearchViewModel @Inject constructor(
                 offset = 0,
                 keys = DEFAULT_KEYS,
                 filters = buildList {
-                    addAll(filterSearchObjects())
+                    val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+                    addAll(filterSearchObjects(spaceUxType = spaceUxType))
                     add(
                         DVFilter(
                             relation = Relations.ID,
@@ -307,7 +310,10 @@ class GlobalSearchViewModel @Inject constructor(
                     limit = DEFAULT_SEARCH_LIMIT,
                     offset = 0,
                     keys = DEFAULT_KEYS,
-                    filters = ObjectSearchConstants.filterSearchObjects(),
+                    filters = buildList {
+                        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+                        addAll(ObjectSearchConstants.filterSearchObjects(spaceUxType = spaceUxType))
+                    },
                     sorts = ObjectSearchConstants.sortsSearchObjects,
                     withMetaRelationDetails = true,
                     withMeta = true,
@@ -420,7 +426,8 @@ class GlobalSearchViewModel @Inject constructor(
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
         private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -434,7 +441,8 @@ class GlobalSearchViewModel @Inject constructor(
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 restoreGlobalSearchHistory = restoreGlobalSearchHistory,
                 updateGlobalSearchHistory = updateGlobalSearchHistory,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                spaceViews = spaceViews
             ) as T
         }
     }

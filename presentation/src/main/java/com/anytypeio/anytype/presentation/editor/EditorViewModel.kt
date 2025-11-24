@@ -6526,11 +6526,13 @@ class EditorViewModel(
                 return
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
             val params = SearchObjects.Params(
                 space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context
+                    ignore = context,
+                    spaceUxType = spaceUxType
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,

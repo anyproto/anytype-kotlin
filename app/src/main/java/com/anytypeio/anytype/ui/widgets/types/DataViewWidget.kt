@@ -80,6 +80,7 @@ fun DataViewListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -153,8 +154,9 @@ fun DataViewListWidgetCard(
                     }
                 }
                 if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
                     SeeAllButton(
-                        onClick = { onWidgetSourceClicked(item.id) }
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
                     )
                 }
             } else {
@@ -179,6 +181,7 @@ fun ChatListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -285,8 +288,9 @@ fun ChatListWidgetCard(
                     }
                 }
                 if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
                     SeeAllButton(
-                        onClick = { onWidgetSourceClicked(item.id) }
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
                     )
                 }
             } else {
@@ -311,6 +315,7 @@ fun GalleryWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -391,7 +396,8 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.id)
+                                            val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
+                                            onSeeAllClicked(item.id, activeViewId)
                                         }
                                 ) {
                                     Text(
@@ -1031,6 +1037,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1081,6 +1088,7 @@ fun DataViewListWidgetCard_Compact_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1110,6 +1118,7 @@ fun DataViewListWidgetCard_Loading_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1139,6 +1148,7 @@ fun DataViewListWidgetCard_Empty_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1174,6 +1184,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1236,6 +1247,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1276,6 +1288,7 @@ fun DataViewListWidgetCard_EditMode_Preview() {
         mode = InteractionMode.Edit,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1319,6 +1332,7 @@ fun DataViewListWidgetCard_Favorites_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },

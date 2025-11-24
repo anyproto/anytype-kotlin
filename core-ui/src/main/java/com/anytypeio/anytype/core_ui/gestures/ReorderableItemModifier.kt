@@ -35,8 +35,8 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
     isMenuExpanded: Boolean,
     isReadOnly: Boolean,
     view: View,
-    onWidgetClicked: () -> Unit,
-    onWidgetLongClicked: () -> Unit,
+    onItemClicked: () -> Unit,
+    onItemLongClicked: () -> Unit,
     dragModifier: Modifier? = null,
     shouldEnableLongClick: Boolean = true
 ): Modifier {
@@ -59,7 +59,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
     val interactionModifier = when {
 
         isReadOnly -> {
-            Modifier.noRippleClickable { onWidgetClicked() }
+            Modifier.noRippleClickable { onItemClicked() }
         }
 
         dragModifier != null -> {
@@ -73,7 +73,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
                     if (longPressConsumed) {
                         longPressConsumed = false
                     } else {
-                        onWidgetClicked()
+                        onItemClicked()
                     }
                 }
                 .draggableHandle(
@@ -83,7 +83,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
                             // Only show menu if widget has menu items
                             if (shouldEnableLongClick) {
                                 longPressConsumed = true
-                                onWidgetLongClicked()
+                                onItemLongClicked()
                             }
                         },
                         haptic = haptic,
@@ -106,9 +106,9 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
         shouldEnableLongClick -> {
             // When drag is not enabled, use standard combinedClickable
             Modifier.combinedClickable(
-                onClick = { onWidgetClicked() },
+                onClick = { onItemClicked() },
                 onLongClick = {
-                    onWidgetLongClicked()
+                    onItemLongClicked()
                     haptic.performHapticFeedback(HapticFeedbackType.LongPress)
                 },
                 indication = null,
@@ -117,7 +117,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
         }
 
         else -> {
-            Modifier.noRippleClickable { onWidgetClicked() }
+            Modifier.noRippleClickable { onItemClicked() }
         }
     }
 

@@ -118,8 +118,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -180,8 +180,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -233,8 +233,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -295,8 +295,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -357,8 +357,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -419,8 +419,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
@@ -490,8 +490,8 @@ fun LazyListScope.renderWidgetSection(
                         isMenuExpanded = isCardMenuExpanded.value,
                         isReadOnly = mode is InteractionMode.ReadOnly,
                         view = view,
-                        onWidgetClicked = { onWidgetSourceClicked(item.id) },
-                        onWidgetLongClicked = {
+                        onItemClicked = { onWidgetSourceClicked(item.id) },
+                        onItemLongClicked = {
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,

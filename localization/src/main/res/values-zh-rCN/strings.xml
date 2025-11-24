@@ -65,6 +65,7 @@
     <string name="space_usage">已使用 %1$s ,总共有 %2$s </string>
     <string name="remote_storage">远程存储</string>
     <string name="contact_us">联系我们</string>
+    <string name="get_more_space">获取更多空间</string>
     <string name="account_name">名称</string>
     <string name="space_settings">空间设置</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
@@ -1261,6 +1262,7 @@
     <string name="multiplayer_upgrade_button">✦ 升级</string>
     <string name="multiplayer_manage_spaces">管理空间</string>
     <string name="multiplayer_upgrade_button_request">✦ 升级以添加更多成员</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ 升级以创建更多空间</string>
     <string name="multiplayer_members">参与的人</string>
     <string name="multiplayer_leave_request">退出请求</string>
     <string name="multiplayer_join_request">加入请求</string>
@@ -1610,7 +1612,7 @@
     <string name="version_history_error_get_version">获取版本历史时出现错误</string>
     <string name="version_history_error_get_members">获取成员时出现错误</string>
     <string name="new_object">新对象</string>
-    <string name="vault_my_spaces">我的空间</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">所有</string>
     <string name="vault_pinned_section_title">固定</string>

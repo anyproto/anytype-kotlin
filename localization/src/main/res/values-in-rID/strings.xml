@@ -65,6 +65,7 @@
     <string name="space_usage">%1$s dari %2$s digunakan</string>
     <string name="remote_storage">Penyimpanan Jarak Jauh</string>
     <string name="contact_us">Hubungi kami</string>
+    <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
@@ -1261,6 +1262,7 @@
     <string name="multiplayer_upgrade_button">✦ Tingkatkan</string>
     <string name="multiplayer_manage_spaces">Kelola Ruang</string>
     <string name="multiplayer_upgrade_button_request">✦ Tingkatkan untuk menambah lebih banyak anggota</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Tingkatkan untuk menambah lebih banyak ruang</string>
     <string name="multiplayer_members">Anggota</string>
     <string name="multiplayer_leave_request">Permintaan keluar</string>
     <string name="multiplayer_join_request">Permintaan bergabung</string>
@@ -1614,7 +1616,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="version_history_error_get_version">Galat mengambil riwayat versi</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
-    <string name="vault_my_spaces">Ruangku</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Belum dibaca</string>
     <string name="vault_all_section_title">Semua</string>
     <string name="vault_pinned_section_title">Tersemat</string>

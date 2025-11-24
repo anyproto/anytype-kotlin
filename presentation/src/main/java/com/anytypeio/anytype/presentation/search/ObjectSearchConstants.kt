@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
@@ -63,6 +64,16 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
+        // Exclude chat types in chat spaces
+        if (spaceUxType == SpaceUxType.CHAT) {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
+                )
+            )
+        }
         add(
             DVFilter(
                 relation = Relations.LAYOUT,
@@ -94,44 +105,68 @@ object ObjectSearchConstants {
     fun getFilterLinkTo(
         ignore: Id?,
         spaceUxType: SpaceUxType? = null
-    ) = listOf(
-        DVFilter(
-            relation = Relations.IS_ARCHIVED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_HIDDEN_DISCOVERY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.IS_DELETED,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = true
-        ),
-        DVFilter(
-            relation = Relations.TYPE_UNIQUE_KEY,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ObjectTypeUniqueKeys.TEMPLATE
-        ),
-        DVFilter(
-            relation = Relations.LAYOUT,
-            condition = DVFilterCondition.IN,
-            value = SupportedLayouts.getObjectSearchLayouts(spaceUxType)
-                .map { it.code.toDouble() }
-        ),
-        DVFilter(
-            relation = Relations.ID,
-            condition = DVFilterCondition.NOT_EQUAL,
-            value = ignore
+    ) = buildList {
+        add(
+            DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
         )
-    )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_HIDDEN_DISCOVERY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.TYPE_UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.TEMPLATE
+            )
+        )
+        // Exclude chat types in chat spaces
+        if (spaceUxType == SpaceUxType.CHAT) {
+            add(
+                DVFilter(
+                    relation = Relations.TYPE_UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectTypeIds.CHAT_DERIVED, ObjectTypeIds.CHAT)
+                )
+            )
+        }
+        add(
+            DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.IN,
+                value = SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                    .map { it.code.toDouble() }
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.ID,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ignore
+            )
+        )
+    }
 
     val sortLinkTo = listOf(
         DVSort(

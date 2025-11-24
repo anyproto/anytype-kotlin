@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s / %2$s 使用中</string>
     <string name="remote_storage">リモートストレージ</string>
     <string name="contact_us">お問い合わせ</string>
-    <string name="get_more_space">さらに多くのスペースを入手</string>
     <string name="account_name">名前</string>
     <string name="space_settings">スペース設定</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
@@ -1262,7 +1261,6 @@
     <string name="multiplayer_upgrade_button">✦ アップグレード</string>
     <string name="multiplayer_manage_spaces">スペース管理</string>
     <string name="multiplayer_upgrade_button_request">✦ アップグレードしてさらに多くのメンバーを追加</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ アップグレードしてさらにスペースを追加</string>
     <string name="multiplayer_members">メンバー</string>
     <string name="multiplayer_leave_request">退出リクエスト</string>
     <string name="multiplayer_join_request">参加リクエスト</string>

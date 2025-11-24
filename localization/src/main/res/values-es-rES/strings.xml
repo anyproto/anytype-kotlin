@@ -65,7 +65,6 @@
     <string name="space_usage">En uso: %1$s de %2$s</string>
     <string name="remote_storage">Almacenamiento remoto</string>
     <string name="contact_us">Contacto</string>
-    <string name="get_more_space">Conseguir más espacio</string>
     <string name="account_name">Nombre</string>
     <string name="space_settings">Ajustes del espacio</string>
     <string name="space_settings_error_change_type">No se ha podido cambiar el tipo de espacio. Inténtalo de nuevo.</string>
@@ -1266,7 +1265,6 @@
     <string name="multiplayer_upgrade_button">✦ Ampliar</string>
     <string name="multiplayer_manage_spaces">Gestionar espacios</string>
     <string name="multiplayer_upgrade_button_request">✦ Ampliar para añadir más miembros</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Ampliar para añadir más espacios</string>
     <string name="multiplayer_members">Miembros</string>
     <string name="multiplayer_leave_request">Retirar solicitud</string>
     <string name="multiplayer_join_request">Solicitud de acceso</string>

@@ -1559,7 +1559,7 @@
 
     <string name="multiplayer_you_as_member">you</string>
 
-    <string name="multiplayer_spaces">Spaces</string>
+    <string name="multiplayer_spaces">Channels</string>
 
     <string name="multiplayer_space_status_joining">Joining</string>
     <string name="multiplayer_space_status_active">Active</string>
@@ -1891,7 +1891,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">All</string>
     <string name="vault_pinned_section_title">Pinned</string>

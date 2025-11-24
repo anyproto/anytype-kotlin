@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s van %2$s gebruikt</string>
     <string name="remote_storage">Externe opslag</string>
     <string name="contact_us">Neem contact met ons op</string>
-    <string name="get_more_space">Krijg meer ruimte</string>
     <string name="account_name">Naam</string>
     <string name="space_settings">Ruimte instellingen</string>
     <string name="space_settings_error_change_type">Wijzigen van ruimtetype mislukt. Probeer het alsjeblieft opnieuw.</string>
@@ -1266,7 +1265,6 @@
     <string name="multiplayer_upgrade_button">✦ Upgrade</string>
     <string name="multiplayer_manage_spaces">Beheer ruimten</string>
     <string name="multiplayer_upgrade_button_request">✦ Upgrade om meer leden toe te voegen</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Upgrade om meer ruimten toe te voegen</string>
     <string name="multiplayer_members">Leden</string>
     <string name="multiplayer_leave_request">Afmeldverzoek</string>
     <string name="multiplayer_join_request">Deelnameverzoek</string>

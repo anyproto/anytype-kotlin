@@ -65,7 +65,6 @@
     <string name="space_usage">%1$s von %2$s benutzt</string>
     <string name="remote_storage">Entfernte Speicherung</string>
     <string name="contact_us">Kontaktiere uns</string>
-    <string name="get_more_space">Speicherplatz erweitern</string>
     <string name="account_name">Name</string>
     <string name="space_settings">Space-Einstellungen</string>
     <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
@@ -1266,7 +1265,6 @@
     <string name="multiplayer_upgrade_button">✦ Plan upgraden</string>
     <string name="multiplayer_manage_spaces">Spaces verwalten</string>
     <string name="multiplayer_upgrade_button_request">✦ Plan upgraden, um weitere Mitglieder hinzuzufügen</string>
-    <string name="multiplayer_upgrade_spaces_button">✦ Plan upgraden, um weitere Spaces zu erstellen</string>
     <string name="multiplayer_members">Mitglieder</string>
     <string name="multiplayer_leave_request">Anfrage abgeben</string>
     <string name="multiplayer_join_request">Beitrittsanfrage</string>

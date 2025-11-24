@@ -1650,8 +1650,14 @@ class ChatViewModel @Inject constructor(
                     )
                 ).onSuccess {
                     val currentHeader = header.value
-                    if (currentHeader is HeaderView.Default) {
-                        header.value = currentHeader.copy(title = update.name)
+                    when (currentHeader) {
+                        is HeaderView.Default -> {
+                            header.value = currentHeader.copy(title = update.name)
+                        }
+                        is HeaderView.ChatObject -> {
+                            header.value = currentHeader.copy(title = update.name)
+                        }
+                        else -> {}
                     }
                 }.onFailure { e ->
                     Timber.e(e, "Failed to update chat name while saving chat info")
@@ -1679,7 +1685,7 @@ class ChatViewModel @Inject constructor(
                             )
                         ).onSuccess {
                             Timber.d("Successfully updated chat object icon with image")
-                            // Update local header state immediately (only for chat objects)
+                            // Update local header state immediately
                             val currentHeader = header.value
                             if (currentHeader is HeaderView.ChatObject) {
                                 header.value = currentHeader.copy(
@@ -1710,7 +1716,7 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess {
                         Timber.d("Successfully updated chat object icon with emoji")
-                        // Update local header state immediately (only for chat objects)
+                        // Update local header state immediately
                         val currentHeader = header.value
                         if (currentHeader is HeaderView.ChatObject) {
                             header.value = currentHeader.copy(
@@ -1735,7 +1741,7 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess {
                         Timber.d("Successfully removed chat object icon")
-                        // Update local header state immediately (only for chat objects)
+                        // Update local header state immediately
                         val currentHeader = header.value
                         if (currentHeader is HeaderView.ChatObject) {
                             header.value = currentHeader.copy(

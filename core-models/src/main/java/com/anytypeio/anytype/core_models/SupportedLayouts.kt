@@ -170,4 +170,21 @@ object SupportedLayouts {
             else -> baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
         }
     }
+
+    /**
+     * Get layouts for object search (global search, link to, etc.).
+     * 
+     * Combines base layouts, file layouts, date layouts, and object type layout,
+     * filtered by space UX type.
+     * 
+     * @param spaceUxType The UX type of the current space
+     * @return List of layouts for object search operations
+     */
+    fun getObjectSearchLayouts(spaceUxType: SpaceUxType? = null): List<ObjectType.Layout> {
+        return getLayouts(spaceUxType)
+            .plus(fileLayouts)
+            .plus(dateLayouts)
+            .plus(listOf(ObjectType.Layout.OBJECT_TYPE))
+            .distinct()
+    }
 }

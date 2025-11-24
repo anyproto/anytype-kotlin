@@ -24,7 +24,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.safeNavigate
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
@@ -41,7 +40,6 @@ import com.anytypeio.anytype.feature_object_type.ui.menu.ObjectTypeMenu
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
-import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.TYPE_TEMPLATE_EDIT
 import com.google.accompanist.navigation.material.ExperimentalMaterialNavigationApi
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
@@ -143,6 +141,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiDescriptionState = vm.uiDescriptionState.collectAsStateWithLifecycle().value,
                     uiHorizontalButtonsState = vm.uiHorizontalButtonsState.collectAsStateWithLifecycle().value,
                     uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
@@ -167,6 +166,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
                 if (menuState.isVisible) {
                     ObjectTypeMenu(
                         isPinned = menuState.isPinned,
+                        canDelete = menuState.canDelete,
+                        isDescriptionFeatured = menuState.isDescriptionFeatured,
                         onEvent = vm::onMenuEvent
                     )
                 }

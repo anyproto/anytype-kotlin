@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
@@ -19,6 +20,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -55,7 +58,10 @@ class ObjectTypeVMFactory @Inject constructor(
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
     private val spaceManager: SpaceManager,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val addToFeaturedRelations: AddToFeaturedRelations,
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val updateText: UpdateText
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -85,6 +91,9 @@ class ObjectTypeVMFactory @Inject constructor(
             createWidget = createWidget,
             deleteWidget = deleteWidget,
             spaceManager = spaceManager,
-            getObject = getObject
+            getObject = getObject,
+            addToFeaturedRelations = addToFeaturedRelations,
+            removeFromFeaturedRelations = removeFromFeaturedRelations,
+            updateText = updateText
         ) as T
 }

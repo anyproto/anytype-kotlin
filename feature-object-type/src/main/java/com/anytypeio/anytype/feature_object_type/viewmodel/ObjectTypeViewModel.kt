@@ -9,11 +9,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -30,6 +34,8 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -40,21 +46,24 @@ import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.*
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.Back
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenAddNewPropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.ErrorEditingTypeDetails
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.Other
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Show
 import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
-import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
-import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
-import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.Visible
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
@@ -70,7 +79,6 @@ import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
-import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
@@ -83,10 +91,7 @@ import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import com.anytypeio.anytype.core_models.Position
-import com.anytypeio.anytype.core_models.WidgetLayout
-import com.anytypeio.anytype.core_models.primitives.SpaceId
-import kotlin.collections.map
+import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -129,7 +134,10 @@ class ObjectTypeViewModel(
     private val createWidget: CreateWidget,
     private val deleteWidget: DeleteWidget,
     private val spaceManager: SpaceManager,
-    private val getObject: GetObject
+    private val getObject: GetObject,
+    private val addToFeaturedRelations: AddToFeaturedRelations,
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val updateText: UpdateText
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -143,6 +151,7 @@ class ObjectTypeViewModel(
     //header
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
+    val uiDescriptionState = MutableStateFlow<UiDescriptionState>(UiDescriptionState.EMPTY)
 
     //layout, properties and templates buttons
     val uiHorizontalButtonsState =
@@ -193,6 +202,7 @@ class ObjectTypeViewModel(
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
     private val pinnedWidgetBlockId = MutableStateFlow<Id?>(null)
     private var targetWidgetBlockId: Id? = null  // Cached first widget block ID for positioning
+    private val _isDescriptionFeatured = MutableStateFlow<Boolean>(false)
     //endregion
 
     val showPropertiesScreen = MutableStateFlow<Boolean>(false)
@@ -377,6 +387,10 @@ class ObjectTypeViewModel(
         (uiTitleAndIconUpdateState.value as? UiTypeSetupTitleAndIconState.Visible.EditType)?.let {
             uiTitleAndIconUpdateState.value = it.copy(icon = newIcon)
         }
+
+        // Update description state
+        updateDescriptionState(objType, objectPermissions)
+
         //turn off button, we give Move to Bin logic in Library now
 //        if (objectPermissions.canDelete) {
 //            uiEditButtonState.value = UiEditButton.Visible
@@ -543,6 +557,10 @@ class ObjectTypeViewModel(
                 showTitleAndIconUpdateScreen()
             }
 
+            is TypeEvent.OnDescriptionChanged -> {
+                onDescriptionChanged(event.text)
+            }
+
             TypeEvent.OnMenuItemDeleteClick -> {
                 uiAlertState.value = UiDeleteAlertState.Show
             }
@@ -611,11 +629,14 @@ class ObjectTypeViewModel(
             }
 
             TypeEvent.OnMenuClick -> {
-                // Show Compose menu
+                // Check current description status before showing menu
+                checkDescriptionFeaturedStatus()
                 uiMenuState.value = uiMenuState.value.copy(
                     isVisible = true,
                     icon = uiIconState.value.icon,
-                    isPinned = pinnedWidgetBlockId.value != null
+                    isPinned = pinnedWidgetBlockId.value != null,
+                    canDelete = _objectTypePermissionsState.value?.canDelete ?: false,
+                    isDescriptionFeatured = _isDescriptionFeatured.value
                 )
             }
         }
@@ -632,10 +653,7 @@ class ObjectTypeViewModel(
                 uiIconsPickerScreen.value = UiIconsPickerState.Visible
             }
             ObjectTypeMenuEvent.OnDescriptionClick -> {
-                // TODO: Implement description logic later
-                viewModelScope.launch {
-                    commands.emit(ObjectTypeCommand.ShowToast("Not implemented yet"))
-                }
+                proceedWithDescriptionToggle()
             }
             ObjectTypeMenuEvent.OnToBinClick -> {
                 uiMenuState.value = UiObjectTypeMenuState.Hidden
@@ -741,6 +759,43 @@ class ObjectTypeViewModel(
                 }
             )
         }
+    }
+
+    private fun onDescriptionChanged(text: String) {
+        viewModelScope.launch {
+            val params = UpdateText.Params(
+                context = vmParams.objectId,
+                target = Relations.DESCRIPTION,
+                text = text,
+                marks = listOf()
+            )
+            updateText(params).proceed(
+                failure = {
+                    Timber.e(it, "Error while updating description")
+                },
+                success = {
+                    Timber.d("Description updated")
+                }
+            )
+        }
+    }
+
+    private fun updateDescriptionState(
+        objType: ObjectWrapper.Type,
+        objectPermissions: ObjectPermissions
+    ) {
+        // Access description and featured relations directly from objType
+        val descriptionText = objType.description.orEmpty()
+        val isDescriptionFeatured = objType.featuredRelations.contains(Relations.DESCRIPTION)
+
+        // Update both UI states from the same source of truth (the store)
+        _isDescriptionFeatured.value = isDescriptionFeatured
+
+        uiDescriptionState.value = UiDescriptionState(
+            description = descriptionText,
+            isVisible = isDescriptionFeatured,
+            isEditable = objectPermissions.canEditDetails
+        )
     }
 
     private fun updateIcon(
@@ -1203,6 +1258,68 @@ class ObjectTypeViewModel(
                     uiMenuState.value = UiObjectTypeMenuState.Hidden
                 }
             )
+        }
+    }
+
+    /**
+     * Checks if description is in featured relations using cached object type state.
+     * Updates the internal state accordingly.
+     */
+    private fun checkDescriptionFeaturedStatus() {
+        val objType = _objTypeState.value
+        _isDescriptionFeatured.value = objType?.featuredRelations?.contains(Relations.DESCRIPTION) ?: false
+    }
+
+    private fun proceedWithDescriptionToggle() {
+        viewModelScope.launch {
+            // Permission check
+            if (userPermissionProvider.get(space = vmParams.spaceId)?.isOwnerOrEditor() != true) {
+                Timber.w("User doesn't have permission to modify featured relations")
+                commands.emit(ObjectTypeCommand.ShowToast("Permission denied"))
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                return@launch
+            }
+
+            val isCurrentlyFeatured = _isDescriptionFeatured.value
+
+            if (isCurrentlyFeatured) {
+                // Remove description from featured relations
+                val params = RemoveFromFeaturedRelations.Params(
+                    ctx = vmParams.objectId,
+                    relations = listOf(Relations.DESCRIPTION)
+                )
+                removeFromFeaturedRelations.async(params = params).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        Timber.d("Description removed from featured relations")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error removing description from featured relations")
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to hide description"))
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            } else {
+                // Add description to featured relations
+                addToFeaturedRelations.async(
+                    params = AddToFeaturedRelations.Params(
+                        ctx = vmParams.objectId,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        Timber.d("Description added to featured relations")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error adding description to featured relations")
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to show description"))
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            }
         }
     }
 

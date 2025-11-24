@@ -2,18 +2,20 @@ package com.anytypeio.anytype.domain.relations
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
-import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.base.ResultInteractor
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 /**
  * Use-case for removing one or more relations from featured relations list.
  */
 class RemoveFromFeaturedRelations(
-    private val repo: BlockRepository
-) : BaseUseCase<Payload, RemoveFromFeaturedRelations.Params>() {
+    private val repo: BlockRepository,
+    dispatchers: AppCoroutineDispatchers
+) : ResultInteractor<RemoveFromFeaturedRelations.Params, Payload>(dispatchers.io) {
 
-    override suspend fun run(params: Params) = safe {
-        repo.removeFromFeaturedRelations(
+    override suspend fun doWork(params: Params): Payload {
+        return repo.removeFromFeaturedRelations(
             ctx = params.ctx,
             relations = params.relations
         )

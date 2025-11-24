@@ -6,7 +6,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -64,8 +63,8 @@ fun DescriptionWidget(
         value = text,
         onValueChange = { text = it },
         modifier = modifier,
+        textStyle = Relations1.copy(color = colorResource(id = R.color.text_primary)),
         enabled = uiDescriptionState.isEditable,
-        textStyle = Relations1.copy(color = MaterialTheme.colors.onSurface),
         cursorBrush = SolidColor(colorResource(id = R.color.text_primary)),
         decorationBox = { innerTextField ->
             Box {

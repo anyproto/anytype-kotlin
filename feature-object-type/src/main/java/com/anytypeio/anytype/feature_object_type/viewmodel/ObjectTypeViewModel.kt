@@ -788,6 +788,9 @@ class ObjectTypeViewModel(
         val descriptionText = objType.description.orEmpty()
         val isDescriptionFeatured = objType.featuredRelations.contains(Relations.DESCRIPTION)
 
+        // Update both UI states from the same source of truth (the store)
+        _isDescriptionFeatured.value = isDescriptionFeatured
+
         uiDescriptionState.value = UiDescriptionState(
             description = descriptionText,
             isVisible = isDescriptionFeatured,
@@ -1288,7 +1291,6 @@ class ObjectTypeViewModel(
                 removeFromFeaturedRelations.async(params = params).fold(
                     onSuccess = { payload ->
                         dispatcher.send(payload)
-                        _isDescriptionFeatured.value = false
                         uiMenuState.value = UiObjectTypeMenuState.Hidden
                         Timber.d("Description removed from featured relations")
                     },
@@ -1308,7 +1310,6 @@ class ObjectTypeViewModel(
                 ).fold(
                     onSuccess = { payload ->
                         dispatcher.send(payload)
-                        _isDescriptionFeatured.value = true
                         uiMenuState.value = UiObjectTypeMenuState.Hidden
                         Timber.d("Description added to featured relations")
                     },

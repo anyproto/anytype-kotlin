@@ -65,6 +65,7 @@
     <string name="space_usage">%1$s из %2$s используется</string>
     <string name="remote_storage">Облачное хранилище</string>
     <string name="contact_us">Связаться с нами</string>
+    <string name="get_more_space">Увеличить объем хранилища</string>
     <string name="account_name">Название</string>
     <string name="space_settings">Настройки пространства</string>
     <string name="space_settings_error_change_type">Не удалось изменить тип пространства. Попробуйте ещё раз.</string>
@@ -1273,6 +1274,7 @@
     <string name="multiplayer_upgrade_button">✦ Обновить</string>
     <string name="multiplayer_manage_spaces">Управление пространствами</string>
     <string name="multiplayer_upgrade_button_request">✦ Обновите, чтобы добавить больше участников</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Обновите, чтобы добавить больше пространств</string>
     <string name="multiplayer_members">Участники</string>
     <string name="multiplayer_leave_request">Запрос на выход</string>
     <string name="multiplayer_join_request">Запрос на присоединение</string>
@@ -1656,7 +1658,7 @@
     <string name="version_history_error_get_version">Ошибка получения истории версий</string>
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
-    <string name="vault_my_spaces">Мои пространства</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Непрочитанные</string>
     <string name="vault_all_section_title">Все</string>
     <string name="vault_pinned_section_title">Закреплённые</string>

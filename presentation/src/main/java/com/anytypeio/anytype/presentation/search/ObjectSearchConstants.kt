@@ -321,6 +321,13 @@ object ObjectSearchConstants {
                     value = listOf(ObjectType.Layout.CHAT_DERIVED.code.toDouble())
                 )
             )
+            add(
+                DVFilter(
+                    relation = Relations.RECOMMENDED_LAYOUT,
+                    condition = DVFilterCondition.NOT_IN,
+                    value = listOf(ObjectType.Layout.CHAT.code.toDouble())
+                )
+            )
         }
     }
 

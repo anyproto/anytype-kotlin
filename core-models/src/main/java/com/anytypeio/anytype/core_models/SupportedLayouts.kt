@@ -134,7 +134,7 @@ object SupportedLayouts {
      */
     fun getSystemLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
         return when (spaceUxType) {
-            SpaceUxType.CHAT -> baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
+            SpaceUxType.CHAT -> baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED, ObjectType.Layout.CHAT)
             else -> baseSystemLayouts
         }
     }

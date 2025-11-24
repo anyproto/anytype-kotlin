@@ -1175,11 +1175,7 @@ class HomeScreenViewModel(
     }
 
     fun onWidgetSourceClicked(widgetId: Id) {
-        onSeeAllClicked(widgetId, null)
-    }
-
-    fun onSeeAllClicked(widgetId: Id, viewId: ViewId?) {
-        Timber.d("onSeeAllClicked: widgetId=$widgetId, viewId=$viewId")
+        Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return
         Timber.d("Widget source: ${widget.source}")
         when (val source = widget.source) {
@@ -1234,21 +1230,7 @@ class HomeScreenViewModel(
                         widget = widgetId,
                         source = source
                     )
-                    // Check if it's a Set or Collection layout
-                    val layout = source.obj.layout
-                    if (layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) {
-                        viewModelScope.launch {
-                            navigate(
-                                Navigation.OpenSet(
-                                    ctx = source.obj.id,
-                                    space = vmParams.spaceId.id,
-                                    view = viewId
-                                )
-                            )
-                        }
-                    } else {
-                        proceedWithOpeningObject(source.obj)
-                    }
+                    proceedWithOpeningObject(source.obj)
                 } else {
                     sendToast("Open bin to restore your archived object")
                 }
@@ -1298,6 +1280,42 @@ class HomeScreenViewModel(
             Widget.Source.Other -> {
                 Timber.w("Skipping click on 'other' widget source")
             }
+        }
+    }
+
+    fun onSeeAllClicked(widgetId: Id, viewId: ViewId?) {
+        Timber.d("onSeeAllClicked: widgetId=$widgetId, viewId=$viewId")
+        val widget = currentWidgets?.find { it.id == widgetId } ?: return
+        val source = widget.source
+        
+        if (source is Widget.Source.Default) {
+            if (source.obj.isArchived != true) {
+                dispatchSelectHomeTabCustomSourceEvent(
+                    widget = widgetId,
+                    source = source
+                )
+                // Check if it's a Set or Collection layout and we have a viewId
+                val layout = source.obj.layout
+                if ((layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) && viewId != null) {
+                    viewModelScope.launch {
+                        navigate(
+                            Navigation.OpenSet(
+                                ctx = source.obj.id,
+                                space = vmParams.spaceId.id,
+                                view = viewId
+                            )
+                        )
+                    }
+                } else {
+                    // Fall back to standard navigation without view
+                    proceedWithOpeningObject(source.obj)
+                }
+            } else {
+                sendToast("Open bin to restore your archived object")
+            }
+        } else {
+            // For non-default sources, delegate to standard handler
+            onWidgetSourceClicked(widgetId)
         }
     }
 

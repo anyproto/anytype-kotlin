@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -20,6 +21,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -30,6 +32,9 @@ import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
@@ -56,6 +61,8 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiPropertiesList
 import com.anytypeio.anytype.feature_object_type.ui.create.UiTypeSetupTitleAndIconState
+import com.anytypeio.anytype.feature_object_type.ui.menu.ObjectTypeMenuEvent
+import com.anytypeio.anytype.feature_object_type.ui.menu.UiObjectTypeMenuState
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
@@ -63,6 +70,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsLocalPropertyResolve
+import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsPropertiesLocalInfo
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsReorderRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenObjectType
@@ -75,6 +83,9 @@ import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import kotlin.collections.map
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
@@ -114,7 +125,11 @@ class ObjectTypeViewModel(
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
     private val dispatcher: Dispatcher<Payload>,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val createWidget: CreateWidget,
+    private val deleteWidget: DeleteWidget,
+    private val spaceManager: SpaceManager,
+    private val getObject: GetObject
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -161,6 +176,9 @@ class ObjectTypeViewModel(
     //icons picker screen
     val uiIconsPickerScreen = MutableStateFlow<UiIconsPickerState>(UiIconsPickerState.Hidden)
 
+    //menu
+    val uiMenuState = MutableStateFlow<UiObjectTypeMenuState>(UiObjectTypeMenuState.Hidden)
+
     //title and icon update screen
     val uiTitleAndIconUpdateState =
         MutableStateFlow<UiTypeSetupTitleAndIconState>(UiTypeSetupTitleAndIconState.Hidden)
@@ -173,6 +191,8 @@ class ObjectTypeViewModel(
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
+    private val pinnedWidgetBlockId = MutableStateFlow<Id?>(null)
+    private var targetWidgetBlockId: Id? = null  // Cached first widget block ID for positioning
     //endregion
 
     val showPropertiesScreen = MutableStateFlow<Boolean>(false)
@@ -190,6 +210,9 @@ class ObjectTypeViewModel(
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
         startSubscriptions()
+        viewModelScope.launch {
+            checkIfTypeIsPinned(ctx = vmParams.objectId, space = vmParams.spaceId)
+        }
     }
 
     fun sendAnalyticsScreenObjectType() {
@@ -412,9 +435,9 @@ class ObjectTypeViewModel(
 
         val currentValue = uiTemplatesModalListState.value
         uiTemplatesModalListState.value = when (currentValue) {
-            is UiTemplatesModalListState.Hidden -> currentValue.copy(updatedTemplates)
+            is UiTemplatesModalListState.Hidden -> currentValue.copy(items = updatedTemplates)
             is UiTemplatesModalListState.Visible -> currentValue.copy(
-                updatedTemplates,
+                items = updatedTemplates,
                 showAddIcon = permissions.canCreateTemplatesForThisType
             )
         }
@@ -585,6 +608,45 @@ class ObjectTypeViewModel(
             TypeEvent.OnIconPickerRemovedClick -> {
                 uiIconsPickerScreen.value = UiIconsPickerState.Hidden
                 removeIcon()
+            }
+
+            TypeEvent.OnMenuClick -> {
+                // Show Compose menu
+                uiMenuState.value = uiMenuState.value.copy(
+                    isVisible = true,
+                    icon = uiIconState.value.icon,
+                    isPinned = pinnedWidgetBlockId.value != null
+                )
+            }
+        }
+    }
+
+    fun onMenuEvent(event: ObjectTypeMenuEvent) {
+        when (event) {
+            ObjectTypeMenuEvent.OnDismiss -> {
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+            }
+            ObjectTypeMenuEvent.OnIconClick -> {
+                // Close menu and show icon picker
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                uiIconsPickerScreen.value = UiIconsPickerState.Visible
+            }
+            ObjectTypeMenuEvent.OnDescriptionClick -> {
+                // TODO: Implement description logic later
+                viewModelScope.launch {
+                    commands.emit(ObjectTypeCommand.ShowToast("Not implemented yet"))
+                }
+            }
+            ObjectTypeMenuEvent.OnToBinClick -> {
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                proceedWithMoveTypeToBin()
+            }
+            ObjectTypeMenuEvent.OnPinToggleClick -> {
+                if (uiMenuState.value.isPinned) {
+                    proceedWithUnpinType()
+                } else {
+                    proceedWithPinType()
+                }
             }
         }
     }
@@ -1066,6 +1128,123 @@ class ObjectTypeViewModel(
                 }
             )
         }
+    }
+
+    private fun proceedWithMoveTypeToBin() {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(vmParams.objectId),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object type ${vmParams.objectId} moved to bin")
+                    commands.emit(ObjectTypeCommand.Back)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithPinType() {
+        viewModelScope.launch {
+            val config = spaceManager.getConfig(vmParams.spaceId)
+            if (config != null) {
+                // Use cached target from fetchWidgetsAndUpdatePinnedState
+                val params = CreateWidget.Params(
+                    ctx = config.widgets,
+                    source = vmParams.objectId,
+                    type = WidgetLayout.COMPACT_LIST,
+                    position = Position.TOP,
+                    target = targetWidgetBlockId
+                )
+                createWidget.async(params).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Widget created for type ${vmParams.objectId}")
+                        // Update pinned state
+                        checkIfTypeIsPinned(vmParams.objectId, vmParams.spaceId)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        commands.emit(ObjectTypeCommand.ShowToast("Widget created"))
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while creating widget for type")
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            } else {
+                Timber.e("Could not create widget: config is missing.")
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+            }
+        }
+    }
+
+    private fun proceedWithUnpinType() {
+        val widgetId = pinnedWidgetBlockId.value ?: return
+        viewModelScope.launch {
+            val config = spaceManager.getConfig(vmParams.spaceId)
+            deleteWidget.async(
+                params = DeleteWidget.Params(
+                    ctx = config?.widgets ?: return@launch,
+                    targets = listOf(widgetId)
+                )
+            ).fold(
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                    pinnedWidgetBlockId.value = null
+                    Timber.d("Widget removed for type ${vmParams.objectId}")
+                    uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    commands.emit(ObjectTypeCommand.ShowToast("Widget unpinned"))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting widget for type")
+                    uiMenuState.value = UiObjectTypeMenuState.Hidden
+                }
+            )
+        }
+    }
+
+    /**
+     * Checks if the given object type is pinned as a widget in the space's home screen.
+     * Updates [pinnedWidgetBlockId] with the widget block ID if found, or null otherwise.
+     */
+    private suspend fun checkIfTypeIsPinned(ctx: Id, space: SpaceId) {
+        spaceManager.getConfig(space)?.let { config ->
+            fetchWidgetsAndUpdatePinnedState(
+                ctx = ctx,
+                widgetsObjectId = config.widgets,
+                space = space
+            )
+        }
+    }
+
+    /**
+     * Fetches the widgets object and updates the pinned state for the given type.
+     */
+    private suspend fun fetchWidgetsAndUpdatePinnedState(
+        ctx: Id,
+        widgetsObjectId: Id,
+        space: SpaceId
+    ) {
+        val params = GetObject.Params(
+            target = widgetsObjectId,
+            space = space,
+            saveAsLastOpened = false
+        )
+        getObject.async(params).fold(
+            onFailure = { error ->
+                Timber.e(error, "Error fetching widgets object")
+                pinnedWidgetBlockId.value = null
+            },
+            onSuccess = { obj ->
+                // Update pinned status
+                pinnedWidgetBlockId.value = findWidgetBlockForObject(ctx, obj.blocks)
+                // Cache first widget block ID for positioning new widgets
+                targetWidgetBlockId = obj.blocks.find { it.content is Block.Content.Widget }?.id
+            }
+        )
     }
 
     private fun proceedWithTemplateDelete(template: Id) {

@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainModalScreen
@@ -74,6 +75,9 @@ class ObjectTypeFieldsFragment : BaseBottomSheetComposeFragment()  {
                     }.onFailure {
                         Timber.e(it, "Error while opening edit object type properties screen")
                     }
+                }
+                is ObjectTypeCommand.ShowToast -> {
+                    this.toast(command.msg)
                 }
                 else -> {
                     // do nothing

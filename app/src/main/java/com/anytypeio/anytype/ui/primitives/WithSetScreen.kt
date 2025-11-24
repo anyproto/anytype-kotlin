@@ -87,6 +87,9 @@ fun WithSetScreen(
                     if (typeEvent is TypeEvent.OnBackClick) {
                         objectSetFragment.value?.onCloseCurrentObject()
                     }
+                    if (typeEvent is TypeEvent.OnMenuClick) {
+                        objectSetFragment.value?.onMenuClicked()
+                    }
                     onTypeEvent(typeEvent)
                 }
             )

@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -20,6 +21,9 @@ import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -47,7 +51,11 @@ class ObjectTypeVMFactory @Inject constructor(
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
     private val dispatcher: Dispatcher<Payload>,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val createWidget: CreateWidget,
+    private val deleteWidget: DeleteWidget,
+    private val spaceManager: SpaceManager,
+    private val getObject: GetObject
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -73,6 +81,10 @@ class ObjectTypeVMFactory @Inject constructor(
             objectTypeSetRecommendedFields = objectTypeSetRecommendedFields,
             setDataViewProperties = setDataViewProperties,
             dispatcher = dispatcher,
-            setObjectListIsArchived = setObjectListIsArchived
+            setObjectListIsArchived = setObjectListIsArchived,
+            createWidget = createWidget,
+            deleteWidget = deleteWidget,
+            spaceManager = spaceManager,
+            getObject = getObject
         ) as T
 }

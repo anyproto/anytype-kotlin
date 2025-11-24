@@ -1428,13 +1428,7 @@ class HomeScreenViewModel(
                             type = parseWidgetType(curr),
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
-                                is Widget.Source.Default -> {
-                                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
-                                        UNDEFINED_LAYOUT_CODE
-                                    } else {
-                                        source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
-                                    }
-                                }
+                                is Widget.Source.Default -> source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                                 Widget.Source.Other -> UNDEFINED_LAYOUT_CODE
                             },
                             isInEditMode = isInEditMode()
@@ -2927,6 +2921,16 @@ class HomeScreenViewModel(
             viewModelScope.launch {
                 Timber.d("DROID-3965, Persisting type widget order: ${newOrder.map { it.takeLast(4) + "..." }}")
 
+                // Store the current order for potential rollback
+                val previousOrder = typeWidgets.value.toList()
+
+                // Optimistically update typeWidgets immediately to keep UI in sync
+                val reorderedWidgets = newOrder.mapNotNull { id ->
+                    typeWidgets.value.find { it.id == id }
+                }
+                typeWidgets.value = reorderedWidgets
+                Timber.d("DROID-4113, Optimistically updated typeWidgets to new order")
+
                 // Activate event lock before sending to middleware to prevent race conditions
                 activateTypeWidgetEventLock()
 
@@ -2938,6 +2942,9 @@ class HomeScreenViewModel(
                 ).fold(
                     onFailure = { error ->
                         Timber.e(error, "DROID-3965, Failed to reorder type widgets: $newOrder")
+                        // Rollback to previous order
+                        typeWidgets.value = previousOrder
+                        Timber.d("DROID-4113, Rolled back typeWidgets to previous order")
                         clearTypeWidgetDragState()
                     },
                     onSuccess = { finalOrder ->
@@ -3064,6 +3071,8 @@ class HomeScreenViewModel(
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed

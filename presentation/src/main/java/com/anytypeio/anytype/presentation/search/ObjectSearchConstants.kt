@@ -25,7 +25,8 @@ object ObjectSearchConstants {
 
     //region SEARCH OBJECTS
     fun filterSearchObjects(
-        excludeTypes: Boolean = false
+        excludeTypes: Boolean = false,
+        spaceUxType: SpaceUxType? = null
     ) = buildList {
         add(
             DVFilter(
@@ -67,11 +68,12 @@ object ObjectSearchConstants {
                 relation = Relations.LAYOUT,
                 condition = DVFilterCondition.IN,
                 value = if (excludeTypes) {
-                    globalSearchLayouts
+                    SupportedLayouts.getObjectSearchLayouts(spaceUxType)
                         .filter { it != ObjectType.Layout.OBJECT_TYPE }
                         .map { it.code.toDouble() }
                 } else {
-                    globalSearchLayouts.map { it.code.toDouble() }
+                    SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                        .map { it.code.toDouble() }
                 }
             )
         )
@@ -90,7 +92,8 @@ object ObjectSearchConstants {
 
     //region LINK TO
     fun getFilterLinkTo(
-        ignore: Id?
+        ignore: Id?,
+        spaceUxType: SpaceUxType? = null
     ) = listOf(
         DVFilter(
             relation = Relations.IS_ARCHIVED,
@@ -120,7 +123,8 @@ object ObjectSearchConstants {
         DVFilter(
             relation = Relations.LAYOUT,
             condition = DVFilterCondition.IN,
-            value = globalSearchLayouts.map { it.code.toDouble() }
+            value = SupportedLayouts.getObjectSearchLayouts(spaceUxType)
+                .map { it.code.toDouble() }
         ),
         DVFilter(
             relation = Relations.ID,

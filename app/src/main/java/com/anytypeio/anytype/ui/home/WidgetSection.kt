@@ -750,8 +750,9 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
         if (mode is InteractionMode.ReadOnly) {
             Modifier.noRippleClickable { onWidgetClicked() }
         } else {
-            if (shouldEnableLongClick && dragModifier != null) {
+            if (dragModifier != null) {
                 // When drag is enabled, use simple click + custom drag detector
+                // Menu is only shown if shouldEnableLongClick is true
                 Modifier
                     .clickable(
                         indication = null,
@@ -767,8 +768,11 @@ private fun ReorderableCollectionItemScope.WidgetCardModifier(
                         dragGestureDetector = LongPressWithSlopDetector(
                             touchSlop = touchSlop,
                             onMenuTrigger = {
-                                longPressConsumed = true
-                                onWidgetLongClicked()
+                                // Only show menu if widget has menu items
+                                if (shouldEnableLongClick) {
+                                    longPressConsumed = true
+                                    onWidgetLongClicked()
+                                }
                             },
                             haptic = haptic,
                             onDragStarted = {

@@ -141,6 +141,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiDescriptionState = vm.uiDescriptionState.collectAsStateWithLifecycle().value,
                     uiHorizontalButtonsState = vm.uiHorizontalButtonsState.collectAsStateWithLifecycle().value,
                     uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
@@ -166,6 +167,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     ObjectTypeMenu(
                         isPinned = menuState.isPinned,
                         canDelete = menuState.canDelete,
+                        isDescriptionFeatured = menuState.isDescriptionFeatured,
                         onEvent = vm::onMenuEvent
                     )
                 }

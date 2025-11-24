@@ -40,6 +40,7 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 fun ObjectTypeMenu(
     isPinned: Boolean,
     canDelete: Boolean,
+    isDescriptionFeatured: Boolean,
     onEvent: (ObjectTypeMenuEvent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -85,18 +86,21 @@ fun ObjectTypeMenu(
 
             Divider(paddingStart = 20.dp, paddingEnd = 20.dp)
 
-            // Description cell (disabled for now)
+            // Description cell
             MenuCell(
                 iconRes = R.drawable.ic_obj_settings_description_24,
                 title = stringResource(R.string.description),
                 trailingContent = {
                     Text(
-                        text = stringResource(R.string.show),
+                        text = if (isDescriptionFeatured)
+                            stringResource(R.string.modal_hide)
+                        else
+                            stringResource(R.string.show),
                         style = PreviewTitle1Regular,
                         color = colorResource(R.color.text_secondary)
                     )
                 },
-                onClick = { /* onEvent(ObjectTypeMenuEvent.OnDescriptionClick) - Leave for later */ },
+                onClick = { onEvent(ObjectTypeMenuEvent.OnDescriptionClick) }
             )
 
             // Divider before bottom section
@@ -218,6 +222,7 @@ fun ObjectTypeMenuPreview() {
     ObjectTypeMenu(
         isPinned = false,
         canDelete = true,
+        isDescriptionFeatured = false,
         onEvent = {}
     )
 }

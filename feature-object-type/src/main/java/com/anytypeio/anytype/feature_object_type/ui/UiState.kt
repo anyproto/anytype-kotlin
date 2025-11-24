@@ -46,6 +46,20 @@ data class UiIconState(val icon: ObjectIcon.TypeIcon, val isEditable: Boolean) {
         val EMPTY = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false)
     }
 }
+
+data class UiDescriptionState(
+    val description: String,
+    val isVisible: Boolean,
+    val isEditable: Boolean
+) {
+    companion object {
+        val EMPTY = UiDescriptionState(
+            description = "",
+            isVisible = false,
+            isEditable = false
+        )
+    }
+}
 //endregion
 
 //region LAYOUTS

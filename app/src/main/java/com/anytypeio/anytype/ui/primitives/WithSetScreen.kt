@@ -40,7 +40,9 @@ import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
+import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
+import com.anytypeio.anytype.feature_object_type.ui.header.DescriptionWidget
 import com.anytypeio.anytype.feature_object_type.ui.header.HorizontalButtons
 import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
 import com.anytypeio.anytype.feature_object_type.ui.layouts.TypeLayoutsScreen
@@ -57,6 +59,7 @@ fun WithSetScreen(
     //header
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
+    uiDescriptionState: UiDescriptionState,
     //layout, properties and templates buttons
     uiHorizontalButtonsState: UiHorizontalButtonsState,
     uiLayoutTypeState: UiLayoutTypeState,
@@ -99,6 +102,7 @@ fun WithSetScreen(
                 paddingValues = paddingValues,
                 uiIconState = uiIconState,
                 uiTitleState = uiTitleState,
+                uiDescriptionState = uiDescriptionState,
                 uiHorizontalButtonsState = uiHorizontalButtonsState,
                 objectId = objectId,
                 space = space,
@@ -142,6 +146,7 @@ private fun MainContentSet(
     paddingValues: PaddingValues,
     uiIconState: UiIconState,
     uiTitleState: UiTitleState,
+    uiDescriptionState: UiDescriptionState,
     uiHorizontalButtonsState: UiHorizontalButtonsState,
     objectId: String,
     space: String,
@@ -170,6 +175,21 @@ private fun MainContentSet(
             uiTitleState = uiTitleState,
             onTypeEvent = onTypeEvent
         )
+
+        if (uiDescriptionState.isVisible) {
+            Spacer(modifier = Modifier.height(8.dp))
+            DescriptionWidget(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(horizontal = 20.dp),
+                uiDescriptionState = uiDescriptionState,
+                onDescriptionChanged = { text ->
+                    onTypeEvent(TypeEvent.OnDescriptionChanged(text))
+                }
+            )
+        }
+
         if (uiHorizontalButtonsState.isVisible) {
             Spacer(modifier = Modifier.height(20.dp))
             HorizontalButtons(

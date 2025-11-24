@@ -21,6 +21,7 @@ sealed class TypeEvent {
     data object OnObjectTypeIconClick : TypeEvent()
     data class OnObjectTypeTitleUpdate(val title: String) : TypeEvent()
     data object OnObjectTypeTitleClick : TypeEvent()
+    data class OnDescriptionChanged(val text: String) : TypeEvent()
     //endregion
 
     //region Templates

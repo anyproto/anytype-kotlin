@@ -65,6 +65,7 @@
     <string name="space_usage">%1$s\'dan %2$s kadarı kullanıldı</string>
     <string name="remote_storage">Uzak Depolama</string>
     <string name="contact_us">Bize ulaşın</string>
+    <string name="get_more_space">Daha fazla alan alın</string>
     <string name="account_name">İsim</string>
     <string name="space_settings">Alan ayarları</string>
     <string name="space_settings_error_change_type">Alan türü değiştirilemedi. Lütfen tekrar deneyin.</string>
@@ -1265,6 +1266,7 @@
     <string name="multiplayer_upgrade_button">✦ Yükselt</string>
     <string name="multiplayer_manage_spaces">Alanları yönetin</string>
     <string name="multiplayer_upgrade_button_request">✦ Daha fazla üye eklemek için yükseltin</string>
+    <string name="multiplayer_upgrade_spaces_button">✦ Daha fazla alan eklemek için yükseltin</string>
     <string name="multiplayer_members">Üyeler</string>
     <string name="multiplayer_leave_request">Ayrılma talebi</string>
     <string name="multiplayer_join_request">Katılma talebi</string>
@@ -1627,7 +1629,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="version_history_error_get_version">Sürüm geçmişi alınırken hata oluştu</string>
     <string name="version_history_error_get_members">Üyeler alınırken hata oluştu</string>
     <string name="new_object">Yeni nesne</string>
-    <string name="vault_my_spaces">Alanlarım</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Okunmamış</string>
     <string name="vault_all_section_title">Hepsi</string>
     <string name="vault_pinned_section_title">Sabitlendi</string>

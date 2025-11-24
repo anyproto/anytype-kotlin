@@ -356,7 +356,7 @@
     <string name="favourite">Zu Favoriten hinzufügen</string>
     <string name="template">Vorlage</string>
     <string name="templates">Vorlagen</string>
-    <string name="layout_type">Layout type</string>
+    <string name="layout_type">Art des Layouts</string>
     <string name="lock">Sperren</string>
     <string name="unlock">Entsperren</string>
     <string name="restore">Wiederherstellen</string>
@@ -442,7 +442,7 @@
     <string name="card">Karte</string>
     <string name="inline">In dieser Zeile</string>
     <string name="set_view">Ansicht festlegen</string>
-    <string name="inline_set">Inline query</string>
+    <string name="inline_set">Inline Abfrage</string>
     <string name="inline_collection">Inline-Sammlung</string>
     <string name="fit_image">Bild einpassen</string>
     <string name="image_preview">Bildvorschau</string>

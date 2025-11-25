@@ -55,8 +55,8 @@ class NotificationBuilderImpl(
     private val groupNotificationIds = mutableMapOf<String, MutableSet<Int>>()
 
     /**
-     * In-memory cache for space icon bitmaps to avoid redundant generation
-     * when multiple notifications arrive for the same space in quick succession.
+     * In-memory cache for notification icon bitmaps (both space and chat icons) to avoid redundant generation
+     * when multiple notifications arrive for the same space or chat in quick succession.
      * Cache is cleared when notifications are dismissed to allow fresh icons if changed.
      */
     private val spaceIconCache = mutableMapOf<Id, Bitmap>()
@@ -92,6 +92,10 @@ class NotificationBuilderImpl(
                 ?: loadSpaceIconBitmap(spaceId)  // Fallback to space icon if chat icon fails
         } else {
             loadSpaceIconBitmap(spaceId)
+        }
+
+        if (largeIcon == null) {
+            Timber.w("Failed to load both chat and space icons for notification. spaceId=$spaceId, chatId=${message.chatId}")
         }
 
         val builder = NotificationCompat.Builder(context, channelId)
@@ -157,8 +161,11 @@ class NotificationBuilderImpl(
      * Returns null if the space is not found or bitmap generation fails.
      *
      * Bitmaps are cached to avoid redundant generation when multiple notifications
-     * arrive for the same space. Android's notification system creates its own copy
-     * of the bitmap when setLargeIcon() is called, so the cached bitmap can be safely reused.
+     * arrive for the same space. Note: Android's notification system does not always create
+     * a deep copy of the bitmap when setLargeIcon() is called. If the cached bitmap is modified
+     * or recycled after being set, it could affect notifications that are already displayed.
+     * The current implementation is safe because bitmaps are never modified after creation,
+     * but care should be taken if this changes in the future.
      */
     private suspend fun loadSpaceIconBitmap(spaceId: Id): Bitmap? {
         // Return cached bitmap if available

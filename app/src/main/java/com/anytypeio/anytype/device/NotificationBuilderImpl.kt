@@ -143,43 +143,29 @@ class NotificationBuilderImpl(
             // Get space icon view
             // Generate bitmap based on icon type
             when (val iconView = spaceView.spaceIcon(urlBuilder)) {
-                is SpaceIconView.ChatSpace.Placeholder -> {
-                    generatePlaceholderBitmap(
-                        color = iconView.color,
-                        name = iconView.name
-                    )
-                }
-                is SpaceIconView.DataSpace.Placeholder -> {
-                    generatePlaceholderBitmap(
-                        color = iconView.color,
-                        name = iconView.name
-                    )
-                }
-                is SpaceIconView.ChatSpace.Image -> {
-                    // Try to load from Coil3 cache first
-                    loadImageFromCoilCache(iconView.url) ?: run {
-                        Timber.d("Image not in cache, generating placeholder for: ${iconView.url}")
-                        generatePlaceholderBitmap(
-                            color = iconView.color,
-                            name = spaceView.name.orEmpty()
-                        )
-                    }
-                }
-                is SpaceIconView.DataSpace.Image -> {
-                    // Try to load from Coil3 cache first
-                    loadImageFromCoilCache(iconView.url) ?: run {
-                        Timber.d("Image not in cache, generating placeholder for: ${iconView.url}")
-                        generatePlaceholderBitmap(
-                            color = iconView.color,
-                            name = spaceView.name.orEmpty()
-                        )
-                    }
-                }
+                is SpaceIconView.ChatSpace.Placeholder -> generatePlaceholderBitmap(iconView.color, iconView.name)
+                is SpaceIconView.DataSpace.Placeholder -> generatePlaceholderBitmap(iconView.color, iconView.name)
+                is SpaceIconView.ChatSpace.Image -> loadImageOrPlaceholder(url = iconView.url, color = iconView.color, name = spaceView.name.orEmpty())
+                is SpaceIconView.DataSpace.Image -> loadImageOrPlaceholder(url = iconView.url, color = iconView.color, name = spaceView.name.orEmpty())
                 SpaceIconView.Loading -> null
             }
         }.onFailure { error ->
             Timber.w(error, "Failed to load space icon bitmap for space: $spaceId")
         }.getOrNull()
+    }
+
+    /**
+     * Attempts to load an image from cache, falling back to a placeholder if not available.
+     */
+    private suspend fun loadImageOrPlaceholder(
+        url: String,
+        color: SystemColor,
+        name: String
+    ): Bitmap {
+        return loadImageFromCoilCache(url) ?: run {
+            Timber.d("Image not in cache, generating placeholder for: $url")
+            generatePlaceholderBitmap(color, name)
+        }
     }
 
     /**

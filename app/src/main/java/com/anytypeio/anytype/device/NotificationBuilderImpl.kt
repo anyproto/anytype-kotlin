@@ -6,15 +6,33 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import coil3.imageLoader
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.toBitmap
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_utils.ext.runSafely
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
 import timber.log.Timber
@@ -22,14 +40,28 @@ import timber.log.Timber
 class NotificationBuilderImpl(
     private val context: Context,
     private val notificationManager: NotificationManager,
-    private val resourceProvider: StringResourceProvider
+    private val resourceProvider: StringResourceProvider,
+    private val urlBuilder: UrlBuilder,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer
 ) : NotificationBuilder {
 
     private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
+
+    /** Notification large icon size in pixels (48dp converted to px for current density) */
+    private val iconSizePx: Int
+        get() = (ICON_SIZE_DP * context.resources.displayMetrics.density).toInt()
     private val groupNotificationIds = mutableMapOf<String, MutableSet<Int>>()
 
-    override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id, groupId: String) {
+    /**
+     * In-memory cache for notification icon bitmaps (both space and chat icons) to avoid redundant generation
+     * when multiple notifications arrive for the same space or chat in quick succession.
+     * Cache is cleared when notifications are dismissed to allow fresh icons if changed.
+     */
+    private val spaceIconCache = mutableMapOf<Id, Bitmap>()
+
+    override suspend fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id, groupId: String) {
         val channelId = "${spaceId}_${message.chatId}"
 
         ensureChannelExists(
@@ -51,7 +83,22 @@ class NotificationBuilderImpl(
         // Generate unique notification ID based on message ID
         val notificationId = message.msgId.hashCode()
 
-        val notif = NotificationCompat.Builder(context, channelId)
+        // Load icon for notification:
+        // - For Data spaces: use the chat's icon (each chat has its own icon)
+        // - For Chat spaces: use the space icon (space and chat are the same)
+        val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
+        val largeIcon = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
+            loadChatIconBitmap(chatId = message.chatId)
+                ?: loadSpaceIconBitmap(spaceId)  // Fallback to space icon if chat icon fails
+        } else {
+            loadSpaceIconBitmap(spaceId)
+        }
+
+        if (largeIcon == null) {
+            Timber.w("Failed to load both chat and space icons for notification. spaceId=$spaceId, chatId=${message.chatId}")
+        }
+
+        val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
@@ -66,7 +113,11 @@ class NotificationBuilderImpl(
             .setLights(0xFF0000FF.toInt(), 300, 1000)
             .setVibrate(longArrayOf(0, 500, 200, 500))
             .setGroup(groupId) // Group notifications by groupId
-            .build()
+
+        // Set large icon if available
+        largeIcon?.let { builder.setLargeIcon(it) }
+
+        val notif = builder.build()
 
         // Track notification ID for this group
         groupNotificationIds.getOrPut(groupId) { mutableSetOf() }.add(notificationId)
@@ -78,21 +129,216 @@ class NotificationBuilderImpl(
         updateSummaryNotification(
             groupId = groupId,
             spaceName = message.spaceName,
-            chatPendingIntent = pending
+            chatPendingIntent = pending,
+            largeIcon = largeIcon
         )
+    }
+
+    /**
+     * Attempts to load an image from Coil3's cache (memory or disk).
+     * Returns null if the image is not cached (no network request is made).
+     */
+    private suspend fun loadImageFromCoilCache(url: String): Bitmap? {
+        return runCatching {
+            val imageLoader = context.imageLoader
+            val request = ImageRequest.Builder(context)
+                .data(url)
+                .memoryCachePolicy(CachePolicy.READ_ONLY)  // Only read from memory cache
+                .diskCachePolicy(CachePolicy.READ_ONLY)     // Only read from disk cache
+                .build()
+
+            when (val result = imageLoader.execute(request)) {
+                is SuccessResult -> result.image.toBitmap()
+                else -> null
+            }
+        }.onFailure { error ->
+            Timber.e(error, "Failed to load image from Coil cache: $url")
+        }.getOrNull()
+    }
+
+    /**
+     * Loads a space icon as a Bitmap for use in notifications.
+     * Returns null if the space is not found or bitmap generation fails.
+     *
+     * Bitmaps are cached to avoid redundant generation when multiple notifications
+     * arrive for the same space. Note: Android's notification system does not always create
+     * a deep copy of the bitmap when setLargeIcon() is called. If the cached bitmap is modified
+     * or recycled after being set, it could affect notifications that are already displayed.
+     * The current implementation is safe because bitmaps are never modified after creation,
+     * but care should be taken if this changes in the future.
+     */
+    private suspend fun loadSpaceIconBitmap(spaceId: Id): Bitmap? {
+        // Return cached bitmap if available
+        spaceIconCache[spaceId]?.let { cached ->
+            Timber.d("Using cached space icon for space: $spaceId")
+            return cached
+        }
+
+        Timber.d("Loading space icon for space: $spaceId")
+        return runCatching {
+            // Get space view from subscription container
+            val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId)) ?: return null
+
+            // Generate bitmap based on icon type
+            when (val iconView = spaceView.spaceIcon(urlBuilder)) {
+                is SpaceIconView.ChatSpace.Placeholder -> generatePlaceholderBitmap(iconView.color, iconView.name)
+                is SpaceIconView.DataSpace.Placeholder -> generatePlaceholderBitmap(iconView.color, iconView.name)
+                is SpaceIconView.ChatSpace.Image -> loadImageOrPlaceholder(url = iconView.url, color = iconView.color, name = spaceView.name.orEmpty())
+                is SpaceIconView.DataSpace.Image -> loadImageOrPlaceholder(url = iconView.url, color = iconView.color, name = spaceView.name.orEmpty())
+                SpaceIconView.Loading -> null
+            }
+        }.onSuccess { bitmap ->
+            // Cache the generated bitmap for future use
+            bitmap?.let { spaceIconCache[spaceId] = it }
+        }.onFailure { error ->
+            Timber.w(error, "Failed to load space icon bitmap for space: $spaceId")
+        }.getOrNull()
+    }
+
+    /**
+     * Loads a chat object's icon as a Bitmap for use in notifications.
+     * Chat objects (CHAT_DERIVED layout) can have: iconImage, iconEmoji, or fallback placeholder.
+     * Used for Data spaces where each chat has its own distinct icon.
+     * Uses ChatsDetailsSubscriptionContainer which already has cached chat details.
+     */
+    private suspend fun loadChatIconBitmap(chatId: Id): Bitmap? {
+        // Check cache first using chatId as key
+        spaceIconCache[chatId]?.let { cached ->
+            Timber.d("Using cached chat icon for chat: $chatId")
+            return cached
+        }
+
+        Timber.d("Loading chat icon for chat: $chatId")
+        return runCatching {
+            // Use cached chat details from subscription container (no network call)
+            val chatObject =
+                chatsDetailsSubscriptionContainer.get(chatId) ?: return@runCatching null
+
+            val iconImage = chatObject.iconImage
+            val iconEmoji = chatObject.iconEmoji
+            val iconOption = chatObject.iconOption?.toInt() ?: 0
+            val chatName = chatObject.name.orEmpty()
+            val color = SystemColor.color(idx = iconOption)
+
+            when {
+                !iconImage.isNullOrBlank() -> {
+                    val url = urlBuilder.thumbnail(iconImage)
+                    loadImageOrPlaceholder(url = url, color = color, name = chatName)
+                }
+
+                !iconEmoji.isNullOrBlank() -> {
+                    generateEmojiPlaceholderBitmap(emoji = iconEmoji, color = color)
+                }
+
+                else -> {
+                    generatePlaceholderBitmap(color = color, name = chatName)
+                }
+            }
+        }.onSuccess { bitmap ->
+            bitmap?.let { spaceIconCache[chatId] = it }
+        }.onFailure { error ->
+            Timber.w(error, "Failed to load chat icon bitmap for chat: $chatId")
+        }.getOrNull()
+    }
+
+    /**
+     * Attempts to load an image from cache, falling back to a placeholder if not available.
+     */
+    private suspend fun loadImageOrPlaceholder(
+        url: String,
+        color: SystemColor,
+        name: String
+    ): Bitmap {
+        return loadImageFromCoilCache(url) ?: run {
+            Timber.d("Image not in cache, generating placeholder for: $url")
+            generatePlaceholderBitmap(color, name)
+        }
+    }
+
+    /**
+     * Generates a circular placeholder bitmap with the first letter of the name.
+     */
+    private fun generatePlaceholderBitmap(
+        color: SystemColor,
+        name: String
+    ): Bitmap {
+        val size = iconSizePx
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Draw circular background
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = context.getColor(color.resInt())
+            style = Paint.Style.FILL
+        }
+        val radius = size / 2f
+        canvas.drawCircle(radius, radius, radius, paint)
+
+        // Draw first letter
+        val initial = name.firstOrNull()?.uppercase() ?: ""
+        if (initial.isNotEmpty()) {
+            val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                this.color = android.graphics.Color.WHITE
+                textSize = size / 2f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.CENTER
+            }
+
+            // Calculate text position (centered)
+            val textY = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+            canvas.drawText(initial, radius, textY, textPaint)
+        }
+
+        return bitmap
+    }
+
+    /**
+     * Generates a circular placeholder bitmap with an emoji centered on it.
+     * Used for chat objects that have an emoji icon.
+     */
+    private fun generateEmojiPlaceholderBitmap(
+        emoji: String,
+        color: SystemColor
+    ): Bitmap {
+        val size = iconSizePx
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Draw circular background
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = context.getColor(color.resInt())
+            style = Paint.Style.FILL
+        }
+        val radius = size / 2f
+        canvas.drawCircle(radius, radius, radius, paint)
+
+        // Draw emoji
+        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            textSize = size / 2f
+            textAlign = Paint.Align.CENTER
+        }
+        val textY = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+        canvas.drawText(emoji, radius, textY, textPaint)
+
+        return bitmap
     }
 
     /**
      * Creates or updates the summary notification for a group of chat notifications.
      */
-    private fun updateSummaryNotification(groupId: String, spaceName: String, chatPendingIntent: PendingIntent) {
+    private fun updateSummaryNotification(
+        groupId: String,
+        spaceName: String,
+        chatPendingIntent: PendingIntent,
+        largeIcon: Bitmap?
+    ) {
         val groupNotifications = groupNotificationIds[groupId] ?: return
         if (groupNotifications.isEmpty()) return
 
         val messageCount = groupNotifications.size
         if (messageCount <= 1) return // Don't show summary for single notification
 
-        val summaryNotif = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(spaceName.trim())
             .setContentText(resourceProvider.getMessagesCountText(messageCount))
@@ -102,7 +348,11 @@ class NotificationBuilderImpl(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(chatPendingIntent)
-            .build()
+
+        // Set large icon if available
+        largeIcon?.let { builder.setLargeIcon(it) }
+
+        val summaryNotif = builder.build()
 
         // Use consistent ID for summary notification
         val summaryId = "${groupId}_summary".hashCode()
@@ -229,6 +479,9 @@ class NotificationBuilderImpl(
         // Delete the specific chat channel
         notificationManager.deleteNotificationChannel(channelId)
         createdChannels.remove(channelId)
+
+        // Clear cached bitmap for this space to allow fresh icon on next notification
+        spaceIconCache.remove(spaceId)
     }
 
     /**
@@ -270,5 +523,6 @@ class NotificationBuilderImpl(
         private const val CHANNEL_GROUP_NAME = "Chats"
         private const val CHAT_SUMMARY_CHANNEL_ID = "chat_summary_channel"
         private const val SUMMARY_TAG = "chat_summary"
+        private const val ICON_SIZE_DP = 48  // Size in dp for notification large icon
     }
 }

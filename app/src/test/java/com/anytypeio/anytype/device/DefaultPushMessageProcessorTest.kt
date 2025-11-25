@@ -15,6 +15,7 @@ import org.mockito.kotlin.mock
 import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyNoInteractions
 import org.mockito.kotlin.whenever
+import kotlinx.coroutines.runBlocking
 import org.robolectric.RobolectricTestRunner
 import org.robolectric.annotation.Config
 
@@ -38,7 +39,7 @@ class DefaultPushMessageProcessorTest {
 
 
     @Test
-    fun `process should return false when payload is missing`() {
+    fun `process should return false when payload is missing`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-type" to "normal",
@@ -56,7 +57,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return false when key id is missing`() {
+    fun `process should return false when key id is missing`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-type" to "normal",
@@ -74,7 +75,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return false when decryption fails`() {
+    fun `process should return false when decryption fails`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-payload" to "test-payload",
@@ -91,7 +92,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return true and show notification when decryption succeeds`() {
+    fun `process should return true and show notification when decryption succeeds`() = runBlocking {
         // Given
         val payload = "test-payload"
         val keyId = "test-key-id"
@@ -132,7 +133,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return true and show notification when decryption with signature succeeds`() {
+    fun `process should return true and show notification when decryption with signature succeeds`() = runBlocking {
         // Given
         val payload = "test-payload"
         val keyId = "test-key-id"
@@ -175,7 +176,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return false when signature verification fails`() {
+    fun `process should return false when signature verification fails`() = runBlocking {
         // Given
         val payload = "test-payload"
         val keyId = "test-key-id"
@@ -200,7 +201,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return true and clear notifications for silent push`() {
+    fun `process should return true and clear notifications for silent push`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-type" to "silent",
@@ -217,7 +218,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return false when type is missing`() {
+    fun `process should return false when type is missing`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-group-id" to "test-group"
@@ -233,7 +234,7 @@ class DefaultPushMessageProcessorTest {
     }
 
     @Test
-    fun `process should return false when group id is missing`() {
+    fun `process should return false when group id is missing`() = runBlocking {
         // Given
         val messageData = mapOf(
             "x-any-type" to "normal"

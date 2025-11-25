@@ -1612,7 +1612,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="sync_status_p2p_restricted">Kısıtlanmış. Cihaz ayarlarını kontrol edin.</string>
     <string name="sync_status_p2p_not_connected">Bağlı değil</string>
     <string name="sync_status_anytype_network">Anytype Ağı</string>
-    <string name="sync_status_anytype_end_to_end">Uçtan uca şifrelenmiş</string>
+    <string name="sync_status_anytype_end_to_end">Uçtan uca şifrelendi</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d öğe eşitleniyor...</item>
         <item quantity="other">%1$d öğe eşitleniyor...</item>

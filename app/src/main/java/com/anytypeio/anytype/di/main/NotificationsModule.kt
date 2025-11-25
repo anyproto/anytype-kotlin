@@ -117,11 +117,15 @@ object NotificationsModule {
     fun provideNotificationBuilder(
         context: Context,
         notificationManager: NotificationManager,
-        stringResourceProvider: StringResourceProvider
+        stringResourceProvider: StringResourceProvider,
+        urlBuilder: com.anytypeio.anytype.domain.misc.UrlBuilder,
+        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
     ): NotificationBuilder = NotificationBuilderImpl(
         context = context,
         notificationManager = notificationManager,
-        resourceProvider = stringResourceProvider
+        resourceProvider = stringResourceProvider,
+        urlBuilder = urlBuilder,
+        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer
     )
 
     @JvmStatic

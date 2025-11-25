@@ -6,15 +6,31 @@ import android.app.NotificationManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
+import android.graphics.Typeface
 import android.os.Build
 import androidx.core.app.NotificationCompat
+import coil3.imageLoader
+import coil3.request.CachePolicy
+import coil3.request.ImageRequest
+import coil3.request.SuccessResult
+import coil3.toBitmap
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_utils.ext.runSafely
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
 import timber.log.Timber
@@ -22,14 +38,16 @@ import timber.log.Timber
 class NotificationBuilderImpl(
     private val context: Context,
     private val notificationManager: NotificationManager,
-    private val resourceProvider: StringResourceProvider
+    private val resourceProvider: StringResourceProvider,
+    private val urlBuilder: UrlBuilder,
+    private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
 ) : NotificationBuilder {
 
     private val attachmentText get() = resourceProvider.getAttachmentText()
     private val createdChannels = mutableSetOf<String>()
     private val groupNotificationIds = mutableMapOf<String, MutableSet<Int>>()
 
-    override fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id, groupId: String) {
+    override suspend fun buildAndNotify(message: DecryptedPushContent.Message, spaceId: Id, groupId: String) {
         val channelId = "${spaceId}_${message.chatId}"
 
         ensureChannelExists(
@@ -51,7 +69,10 @@ class NotificationBuilderImpl(
         // Generate unique notification ID based on message ID
         val notificationId = message.msgId.hashCode()
 
-        val notif = NotificationCompat.Builder(context, channelId)
+        // Load space icon as large icon for notification
+        val largeIcon = loadSpaceIconBitmap(spaceId)
+
+        val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
@@ -66,7 +87,11 @@ class NotificationBuilderImpl(
             .setLights(0xFF0000FF.toInt(), 300, 1000)
             .setVibrate(longArrayOf(0, 500, 200, 500))
             .setGroup(groupId) // Group notifications by groupId
-            .build()
+
+        // Set large icon if available
+        largeIcon?.let { builder.setLargeIcon(it) }
+
+        val notif = builder.build()
 
         // Track notification ID for this group
         groupNotificationIds.getOrPut(groupId) { mutableSetOf() }.add(notificationId)
@@ -78,21 +103,138 @@ class NotificationBuilderImpl(
         updateSummaryNotification(
             groupId = groupId,
             spaceName = message.spaceName,
-            chatPendingIntent = pending
+            chatPendingIntent = pending,
+            largeIcon = largeIcon
         )
+    }
+
+    /**
+     * Attempts to load an image from Coil3's cache (memory or disk).
+     * Returns null if the image is not cached (no network request is made).
+     */
+    private suspend fun loadImageFromCoilCache(url: String): Bitmap? {
+        return runCatching {
+            val imageLoader = context.imageLoader
+            val request = ImageRequest.Builder(context)
+                .data(url)
+                .memoryCachePolicy(CachePolicy.READ_ONLY)  // Only read from memory cache
+                .diskCachePolicy(CachePolicy.READ_ONLY)     // Only read from disk cache
+                .build()
+
+            when (val result = imageLoader.execute(request)) {
+                is SuccessResult -> result.image.toBitmap()
+                else -> null
+            }
+        }.onFailure { error ->
+            Timber.e(error, "Failed to load image from Coil cache: $url")
+        }.getOrNull()
+    }
+
+    /**
+     * Loads a space icon as a Bitmap for use in notifications.
+     * Returns null if the space is not found or bitmap generation fails.
+     */
+    private suspend fun loadSpaceIconBitmap(spaceId: Id): Bitmap? {
+        Timber.d("Loading space icon for space: $spaceId")
+        return runCatching {
+            // Get space view from subscription container
+            val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId)) ?: return null
+
+            // Get space icon view
+            // Generate bitmap based on icon type
+            when (val iconView = spaceView.spaceIcon(urlBuilder)) {
+                is SpaceIconView.ChatSpace.Placeholder -> {
+                    generatePlaceholderBitmap(
+                        color = iconView.color,
+                        name = iconView.name
+                    )
+                }
+                is SpaceIconView.DataSpace.Placeholder -> {
+                    generatePlaceholderBitmap(
+                        color = iconView.color,
+                        name = iconView.name
+                    )
+                }
+                is SpaceIconView.ChatSpace.Image -> {
+                    // Try to load from Coil3 cache first
+                    loadImageFromCoilCache(iconView.url) ?: run {
+                        Timber.d("Image not in cache, generating placeholder for: ${iconView.url}")
+                        generatePlaceholderBitmap(
+                            color = iconView.color,
+                            name = spaceView.name.orEmpty()
+                        )
+                    }
+                }
+                is SpaceIconView.DataSpace.Image -> {
+                    // Try to load from Coil3 cache first
+                    loadImageFromCoilCache(iconView.url) ?: run {
+                        Timber.d("Image not in cache, generating placeholder for: ${iconView.url}")
+                        generatePlaceholderBitmap(
+                            color = iconView.color,
+                            name = spaceView.name.orEmpty()
+                        )
+                    }
+                }
+                SpaceIconView.Loading -> null
+            }
+        }.onFailure { error ->
+            Timber.w(error, "Failed to load space icon bitmap for space: $spaceId")
+        }.getOrNull()
+    }
+
+    /**
+     * Generates a circular placeholder bitmap with the first letter of the name.
+     */
+    private fun generatePlaceholderBitmap(
+        color: SystemColor,
+        name: String
+    ): Bitmap {
+        val size = 256 // Size in pixels for notification large icon
+        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+        val canvas = Canvas(bitmap)
+
+        // Draw circular background
+        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+            this.color = context.getColor(color.resInt())
+            style = Paint.Style.FILL
+        }
+        val radius = size / 2f
+        canvas.drawCircle(radius, radius, radius, paint)
+
+        // Draw first letter
+        val initial = name.firstOrNull()?.uppercase() ?: ""
+        if (initial.isNotEmpty()) {
+            val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
+                this.color = android.graphics.Color.WHITE
+                textSize = size / 2f
+                typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
+                textAlign = Paint.Align.CENTER
+            }
+
+            // Calculate text position (centered)
+            val textY = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
+            canvas.drawText(initial, radius, textY, textPaint)
+        }
+
+        return bitmap
     }
 
     /**
      * Creates or updates the summary notification for a group of chat notifications.
      */
-    private fun updateSummaryNotification(groupId: String, spaceName: String, chatPendingIntent: PendingIntent) {
+    private fun updateSummaryNotification(
+        groupId: String,
+        spaceName: String,
+        chatPendingIntent: PendingIntent,
+        largeIcon: Bitmap?
+    ) {
         val groupNotifications = groupNotificationIds[groupId] ?: return
         if (groupNotifications.isEmpty()) return
 
         val messageCount = groupNotifications.size
         if (messageCount <= 1) return // Don't show summary for single notification
 
-        val summaryNotif = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
+        val builder = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(spaceName.trim())
             .setContentText(resourceProvider.getMessagesCountText(messageCount))
@@ -102,7 +244,11 @@ class NotificationBuilderImpl(
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setContentIntent(chatPendingIntent)
-            .build()
+
+        // Set large icon if available
+        largeIcon?.let { builder.setLargeIcon(it) }
+
+        val summaryNotif = builder.build()
 
         // Use consistent ID for summary notification
         val summaryId = "${groupId}_summary".hashCode()

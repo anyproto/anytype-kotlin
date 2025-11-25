@@ -7,8 +7,12 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import kotlin.test.Test
+import kotlinx.coroutines.runBlocking
 import org.junit.After
 import org.junit.Before
 import org.junit.runner.RunWith
@@ -30,8 +34,11 @@ import org.robolectric.annotation.Config
 class NotificationBuilderTest {
 
     private val context: Context = ApplicationProvider.getApplicationContext()
-    lateinit var notificationManager: NotificationManager
-    lateinit var stringResourceProvider: StringResourceProvider
+    private lateinit var notificationManager: NotificationManager
+    private lateinit var stringResourceProvider: StringResourceProvider
+    private lateinit var urlBuilder: UrlBuilder
+    private lateinit var spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer
+    private lateinit var chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer
     private lateinit var builder: NotificationBuilderImpl
     private val testSpaceId = "space123"
     private val testChatId = "chat456"
@@ -54,7 +61,18 @@ class NotificationBuilderTest {
             on { getMessagesCountText(any()) } doReturn "new messages"
         }
         notificationManager = mock()
-        builder = NotificationBuilderImpl(context, notificationManager, stringResourceProvider)
+        urlBuilder = mock()
+        spaceViewSubscriptionContainer = mock()
+        chatsDetailsSubscriptionContainer = mock()
+
+        builder = NotificationBuilderImpl(
+            context = context,
+            notificationManager = notificationManager,
+            resourceProvider = stringResourceProvider,
+            urlBuilder = urlBuilder,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer
+        )
     }
 
     @After
@@ -63,7 +81,7 @@ class NotificationBuilderTest {
     }
 
     @Test
-    fun `buildAndNotify should create channel and post notification with group`() {
+    fun `buildAndNotify should create channel and post notification with group`() = runBlocking {
         // When
         builder.buildAndNotify(message, testSpaceId, testGroupId)
 
@@ -77,24 +95,24 @@ class NotificationBuilderTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
-    fun `clearNotificationChannel should cancel active and delete channel`() {
+    fun `clearNotificationChannel should cancel active and delete channel`() = runBlocking {
         val channelId = "${testSpaceId}_${testChatId}"
         // Prepare two mock StatusBarNotifications
         val notif1: android.app.Notification = mock()
         val notif2: android.app.Notification = mock()
-        
+
         whenever(notif1.channelId).thenReturn(channelId)
         whenever(notif2.channelId).thenReturn("other")
 
         // Wrap them in StatusBarNotification mocks
         val sbn1: StatusBarNotification = mock()
         val sbn2: StatusBarNotification = mock()
-        
+
         whenever(sbn1.notification).thenReturn(notif1)
         whenever(sbn1.id).thenReturn(1)
         whenever(sbn2.notification).thenReturn(notif2)
         whenever(sbn2.id).thenReturn(2)
-        
+
         whenever(notificationManager.activeNotifications).thenReturn(arrayOf(sbn1, sbn2))
 
         // Ensure channel exists
@@ -113,7 +131,7 @@ class NotificationBuilderTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
-    fun `clearNotificationChannel with multiple chats in same space should only clear specified chat`() {
+    fun `clearNotificationChannel with multiple chats in same space should only clear specified chat`() = runBlocking {
         // Prepare three mock notifications for different chats in the same space
         val chat1 = "chat1"
         val chat2 = "chat2"
@@ -161,7 +179,7 @@ class NotificationBuilderTest {
 
     @Test
     @Config(sdk = [Build.VERSION_CODES.O]) // API 26+ for channels
-    fun `clearNotificationChannel with multiple spaces and chats should only clear specified chat`() {
+    fun `clearNotificationChannel with multiple spaces and chats should only clear specified chat`() = runBlocking {
         // Prepare notifications for different spaces and chats
         val space1 = "space1"
         val space2 = "space2"
@@ -270,7 +288,7 @@ class NotificationBuilderTest {
     }
 
     @Test
-    fun `clearNotificationsByGroupId should work on older Android versions without activeNotifications`() {
+    fun `clearNotificationsByGroupId should work on older Android versions without activeNotifications`() = runBlocking {
         // Simulate older Android version by returning empty active notifications
         whenever(notificationManager.activeNotifications).thenReturn(emptyArray())
         
@@ -288,7 +306,7 @@ class NotificationBuilderTest {
     }
 
     @Test
-    fun `buildAndNotify with multiple messages should create summary notification`() {
+    fun `buildAndNotify with multiple messages should create summary notification`() = runBlocking {
         val groupId = "test_group"
         val message1 = message.copy(msgId = "msg1", text = "First message")
         val message2 = message.copy(msgId = "msg2", text = "Second message")
@@ -305,5 +323,6 @@ class NotificationBuilderTest {
         
         // Verify getMessagesCountText was called for summary
         verify(stringResourceProvider).getMessagesCountText(2)
+        Unit
     }
 }

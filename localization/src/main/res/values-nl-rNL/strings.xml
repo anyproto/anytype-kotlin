@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Iedereen met de link kan alleen de inhoud van de ruimte bekijken.</string>
     <string name="multiplayer_change_to_request_confirmation">Iedereen met de link moet toegang vragen om deel te nemen aan de ruimte.</string>
     <string name="multiplayer_invite_link_copied">Uitnodigingslink gekopieerd naar klembord</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Kopieer link</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Deelnemen aan een ruimte</string>

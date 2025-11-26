@@ -160,6 +160,9 @@ interface MiddlewareService {
     fun addObjectToCollection(request : Rpc.ObjectCollection.Add.Request): Rpc.ObjectCollection.Add.Response
 
     @Throws(Exception::class)
+    fun removeObjectFromCollection(request : Rpc.ObjectCollection.Remove.Request): Rpc.ObjectCollection.Remove.Response
+
+    @Throws(Exception::class)
     fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response
 
     @Throws(Exception::class)

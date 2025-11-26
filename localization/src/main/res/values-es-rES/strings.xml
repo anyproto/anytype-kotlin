@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Quien tenga el enlace solo podra ver el contenido del espacio.</string>
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
     <string name="multiplayer_make_private">Hacer privado</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>

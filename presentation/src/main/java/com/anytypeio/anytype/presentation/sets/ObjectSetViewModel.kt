@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
@@ -32,6 +31,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -183,7 +184,8 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1147,7 +1149,22 @@ class ObjectSetViewModel(
      */
     fun onObjectHeaderLongClicked(objectId: Id) {
         Timber.d("onObjectHeaderLongClicked, id:[$objectId]")
-        dispatch(ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(objectId = objectId))
+        viewModelScope.launch {
+
+            // Check object DELETE restriction
+            val obj = objectStore.get(objectId)
+            val hasDeleteRestriction = obj?.restrictions?.contains(ObjectRestriction.DELETE) == true
+
+            // Can move to bin only if: user is owner/editor AND object allows delete
+            val canMoveToBin = isOwnerOrEditor && !hasDeleteRestriction
+
+            dispatch(
+                ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(
+                    objectId = objectId,
+                    canMoveToBin = canMoveToBin
+                )
+            )
+        }
     }
 
     /**
@@ -1167,6 +1184,56 @@ class ObjectSetViewModel(
             } else {
                 toast("Object not found. Please, try again later.")
             }
+        }
+    }
+
+    /**
+     * Copies the object's deeplink to clipboard.
+     */
+    fun onCopyLink(targetId: Id) {
+        Timber.d("onCopyLink, id:[$targetId]")
+        viewModelScope.launch {
+            val link = deepLinkResolver.createObjectDeepLink(
+                obj = targetId,
+                space = vmParams.space
+            )
+            dispatch(ObjectSetCommand.CopyLinkToClipboard(link = link))
+        }
+    }
+
+    /**
+     * Moves the object to bin (archives it).
+     * Only Owner or Editor can perform this action, and the object must not have DELETE restriction.
+     */
+    fun onMoveToBin(targetId: Id) {
+        Timber.d("onMoveToBin, id:[$targetId]")
+        viewModelScope.launch {
+            // Defensive permission check
+            if (!isOwnerOrEditor) {
+                toast(NOT_ALLOWED)
+                return@launch
+            }
+
+            // Defensive restriction check
+            val obj = objectStore.get(targetId)
+            if (obj?.restrictions?.contains(ObjectRestriction.DELETE) == true) {
+                toast(NOT_ALLOWED)
+                return@launch
+            }
+
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(targetId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully moved object to bin: $targetId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while moving object to bin")
+                    toast("Error while moving to bin. Please try again.")
+                }
+            )
         }
     }
 

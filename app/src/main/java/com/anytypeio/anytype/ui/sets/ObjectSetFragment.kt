@@ -57,6 +57,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
@@ -1313,7 +1314,8 @@ open class ObjectSetFragment :
                 contextMenuAnchorView?.let { anchor ->
                     showObjectHeaderContextMenu(
                         objectId = command.objectId,
-                        anchor = anchor
+                        anchor = anchor,
+                        showMoveToBin = command.canMoveToBin
                     )
                 }
             }
@@ -1330,6 +1332,13 @@ open class ObjectSetFragment :
                 ActivityCustomTabsHelper.openUrl(
                     activity = requireActivity(),
                     url = command.url
+                )
+            }
+            is ObjectSetCommand.CopyLinkToClipboard -> {
+                requireContext().copyPlainTextToClipboard(
+                    plainText = command.link,
+                    label = "Object link",
+                    successToast = getString(R.string.link_copied)
                 )
             }
         }
@@ -1585,13 +1594,20 @@ open class ObjectSetFragment :
         componentManager().objectSetComponent.release(ctx)
     }
 
-    private fun showObjectHeaderContextMenu(objectId: Id, anchor: View) {
+    private fun showObjectHeaderContextMenu(objectId: Id, anchor: View, showMoveToBin: Boolean) {
         val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
         val popup = ObjectHeaderContextMenu(
             context = themeWrapper,
             view = anchor,
+            showMoveToBin = showMoveToBin,
             onOpenAsObjectClicked = {
                 vm.onOpenAsObject(objectId)
+            },
+            onCopyLinkClicked = {
+                vm.onCopyLink(objectId)
+            },
+            onMoveToBinClicked = {
+                vm.onMoveToBin(objectId)
             }
         )
         popup.show()

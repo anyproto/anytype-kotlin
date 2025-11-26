@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -70,6 +71,7 @@ class ObjectSetViewModelFactory(
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
     private val objectToCollection: ConvertObjectToCollection,
+    private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
@@ -128,7 +130,8 @@ class ObjectSetViewModelFactory(
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
             spaceViews = spaceViews,
-            deepLinkResolver = deepLinkResolver
+            deepLinkResolver = deepLinkResolver,
+            removeObjectFromCollection = removeObjectFromCollection
         ) as T
     }
 }

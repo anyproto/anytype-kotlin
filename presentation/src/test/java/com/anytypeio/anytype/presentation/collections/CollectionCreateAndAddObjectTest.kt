@@ -106,7 +106,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
             spaceViews = spacedViews,
-            deepLinkResolver = deepLinkResolver
+            deepLinkResolver = deepLinkResolver,
+            removeObjectFromCollection = removeObjectFromCollection
         )
     }
 

@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
@@ -216,6 +217,7 @@ object ObjectSetModule {
         dataViewSubscription: DataViewSubscription,
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
+        removeObjectFromCollection: RemoveObjectFromCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
         getObjectTypes: GetObjectTypes,
@@ -273,7 +275,8 @@ object ObjectSetModule {
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         fieldParser = fieldParser,
         spaceViews = spaceViews,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        removeObjectFromCollection = removeObjectFromCollection
     )
 
     @JvmStatic
@@ -548,6 +551,17 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): AddObjectToCollection = AddObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveObjectFromCollection = RemoveObjectFromCollection(
         repo = repo,
         dispatchers = dispatchers
     )

@@ -39,6 +39,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
@@ -171,6 +172,7 @@ class ObjectSetViewModel(
     private val dataViewSubscription: DataViewSubscription,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
+    private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getObjectTypes: GetObjectTypes,

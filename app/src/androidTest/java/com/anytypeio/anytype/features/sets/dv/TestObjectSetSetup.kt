@@ -68,6 +68,7 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -199,6 +200,9 @@ abstract class TestObjectSetSetup {
 
     @Mock
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
+
+    @Mock
+    lateinit var removeObjectFromCollection: RemoveObjectFromCollection
 
     @Mock
     lateinit var spacedViews: SpaceViewSubscriptionContainer
@@ -344,7 +348,8 @@ abstract class TestObjectSetSetup {
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
             deepLinkResolver = deepLinkResolver,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            removeObjectFromCollection = removeObjectFromCollection
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

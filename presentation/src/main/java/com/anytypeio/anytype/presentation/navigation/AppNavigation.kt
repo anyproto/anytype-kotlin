@@ -126,7 +126,8 @@ interface AppNavigation {
 
         data class OpenChatObject(
             val target: Id,
-            val space: Id
+            val space: Id,
+            val popUpToVault: Boolean = false
         ) : Command()
 
         data class OpenParticipant(

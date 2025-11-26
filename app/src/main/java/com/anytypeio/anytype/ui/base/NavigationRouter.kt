@@ -81,7 +81,7 @@ class NavigationRouter(
                 is AppNavigation.Command.OpenChatObject -> navigation.openChat(
                     target = command.target,
                     space = command.space,
-                    popUpToVault = false
+                    popUpToVault = command.popUpToVault
                 )
 
             }

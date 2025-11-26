@@ -1621,6 +1621,7 @@ open class ObjectSetFragment :
             }
         )
         popup.show()
+        contextMenuAnchorView = null
     }
 
     fun onCloseCurrentObject() {

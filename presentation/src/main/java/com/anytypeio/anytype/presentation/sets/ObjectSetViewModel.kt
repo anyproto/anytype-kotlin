@@ -1146,8 +1146,12 @@ class ObjectSetViewModel(
     }
 
     /**
-     * Called when user long-clicks on a row header in the grid view.
-     * Shows a context menu with "Open as Object" option.
+     * Called when user long-clicks on a row header in a view (e.g., grid, gallery, or list view)
+     * Shows a context menu with the following options:
+     * - "Open as Object"
+     * - "Copy Link"
+     * - "Move to Bin" (if allowed)
+     * - "Unlink from Collection" (if allowed)
      */
     fun onObjectHeaderLongClicked(objectId: Id) {
         Timber.d("onObjectHeaderLongClicked, id:[$objectId]")

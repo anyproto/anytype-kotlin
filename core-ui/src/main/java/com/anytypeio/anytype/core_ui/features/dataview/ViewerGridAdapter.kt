@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import android.widget.LinearLayout
 import androidx.core.view.updateLayoutParams
@@ -21,6 +22,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer
 class ViewerGridAdapter(
     private val onCellClicked: (CellView) -> Unit,
     private val onObjectHeaderClicked: (Id) -> Unit,
+    private val onObjectHeaderLongClicked: (Id, View) -> Unit,
     private val onTaskCheckboxClicked: (Id) -> Unit
 ) : ListAdapter<Viewer.GridView.Row, ViewerGridAdapter.RecordHolder>(GridDiffUtil) {
 
@@ -66,6 +68,14 @@ class ViewerGridAdapter(
                     val item = getItem(pos)
                     onObjectHeaderClicked(item.id)
                 }
+            }
+            binding.headerContainer.setOnLongClickListener { view ->
+                val pos = bindingAdapterPosition
+                if (pos != RecyclerView.NO_POSITION) {
+                    val item = getItem(pos)
+                    onObjectHeaderLongClicked(item.id, view)
+                }
+                true
             }
             binding.objectIcon.checkbox.setOnClickListener {
                 val pos = bindingAdapterPosition

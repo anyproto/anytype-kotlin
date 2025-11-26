@@ -110,6 +110,10 @@ sealed class ObjectSetCommand {
             val ctx: Id,
             val anchor: Int
         ) : Modal()
+
+        data class ShowObjectHeaderContextMenu(
+            val objectId: Id
+        ) : Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {

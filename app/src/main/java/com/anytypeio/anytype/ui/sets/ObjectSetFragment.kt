@@ -59,6 +59,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -231,10 +232,16 @@ open class ObjectSetFragment :
 
     private val viewerGridHeaderAdapter by lazy { ViewerGridHeaderAdapter() }
 
+    private var contextMenuAnchorView: View? = null
+
     private val viewerGridAdapter by lazy {
         ViewerGridAdapter(
             onCellClicked = vm::onGridCellClicked,
             onObjectHeaderClicked = vm::onObjectHeaderClicked,
+            onObjectHeaderLongClicked = { id, view ->
+                contextMenuAnchorView = view
+                vm.onObjectHeaderLongClicked(id)
+            },
             onTaskCheckboxClicked = vm::onTaskCheckboxClicked
         )
     }
@@ -1292,6 +1299,14 @@ open class ObjectSetFragment :
                 )
                 popup.show()
             }
+            is ObjectSetCommand.Modal.ShowObjectHeaderContextMenu -> {
+                contextMenuAnchorView?.let { anchor ->
+                    showObjectHeaderContextMenu(
+                        objectId = command.objectId,
+                        anchor = anchor
+                    )
+                }
+            }
             is ObjectSetCommand.ShowOnlyAccessError -> {
                 toast(
                     getString(R.string.multiplayer_read_only_access_error)
@@ -1558,6 +1573,18 @@ open class ObjectSetFragment :
 
     override fun releaseDependencies() {
         componentManager().objectSetComponent.release(ctx)
+    }
+
+    private fun showObjectHeaderContextMenu(objectId: Id, anchor: View) {
+        val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
+        val popup = ObjectHeaderContextMenu(
+            context = themeWrapper,
+            view = anchor,
+            onOpenAsObjectClicked = {
+                vm.onOpenAsObject(objectId)
+            }
+        )
+        popup.show()
     }
 
     fun onCloseCurrentObject() {

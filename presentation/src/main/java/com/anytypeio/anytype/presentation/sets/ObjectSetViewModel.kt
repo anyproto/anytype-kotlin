@@ -1141,6 +1141,35 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Called when user long-clicks on a row header in the grid view.
+     * Shows a context menu with "Open as Object" option.
+     */
+    fun onObjectHeaderLongClicked(objectId: Id) {
+        Timber.d("onObjectHeaderLongClicked, id:[$objectId]")
+        dispatch(ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(objectId = objectId))
+    }
+
+    /**
+     * Opens the object as an Anytype object (not as a URL for bookmarks).
+     * This bypasses the default bookmark behavior of opening URLs in browser.
+     */
+    fun onOpenAsObject(targetId: Id) {
+        Timber.d("onOpenAsObject, id:[$targetId]")
+        viewModelScope.launch {
+            val obj = objectStore.get(targetId)
+            if (obj != null) {
+                navigateByLayout(
+                    target = targetId,
+                    space = vmParams.space.id,
+                    layout = obj.layout
+                )
+            } else {
+                toast("Object not found. Please, try again later.")
+            }
+        }
+    }
+
     fun onRelationTextValueChanged(
         value: Any?,
         objectId: Id,

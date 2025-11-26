@@ -3387,6 +3387,18 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.CHAT_DERIVED -> {
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenChat(
+                                target = target,
+                                space = vmParams.space.id,
+                                popUpToVault = false
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }

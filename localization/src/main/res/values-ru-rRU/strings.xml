@@ -1251,6 +1251,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Любой, у кого есть ссылка, сможет просматривать только содержимое места.</string>
     <string name="multiplayer_change_to_request_confirmation">Любой, у кого есть ссылка, должен будет запросить доступ для входа в пространство.</string>
     <string name="multiplayer_invite_link_copied">Ссылка скопирована в буфер обмена.</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Скопировать ссылку</string>
     <string name="multiplayer_make_private">Сделать приватным</string>
     <string name="multiplayer_join_a_space">Присоединиться к пространству</string>

@@ -1244,6 +1244,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Chiunque abbia il link potrà solo visualizzare il contenuto dello spazio.</string>
     <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
     <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>

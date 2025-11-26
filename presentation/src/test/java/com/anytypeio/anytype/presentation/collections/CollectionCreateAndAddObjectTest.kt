@@ -105,7 +105,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            deepLinkResolver = deepLinkResolver
         )
     }
 

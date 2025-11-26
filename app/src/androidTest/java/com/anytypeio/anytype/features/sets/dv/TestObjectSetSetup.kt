@@ -68,6 +68,8 @@ import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -105,6 +107,9 @@ abstract class TestObjectSetSetup {
     private lateinit var setDocCoverImage: SetDocCoverImage
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage
     private lateinit var setDataViewQuery: SetDataViewQuery
+
+    @Mock
+    lateinit var deepLinkResolver: DeepLinkResolver
 
     private val defaultSpace: Id = MockDataFactory.randomString()
 
@@ -197,6 +202,9 @@ abstract class TestObjectSetSetup {
     lateinit var clearLastOpenedObject: ClearLastOpenedObject
 
     @Mock
+    lateinit var removeObjectFromCollection: RemoveObjectFromCollection
+
+    @Mock
     lateinit var spacedViews: SpaceViewSubscriptionContainer
 
     private lateinit var getTemplates: GetTemplates
@@ -257,6 +265,7 @@ abstract class TestObjectSetSetup {
 
     open fun setup() {
         MockitoAnnotations.openMocks(this)
+        deepLinkResolver = mock()
 
         val dispatchers = AppCoroutineDispatchers(
             io = StandardTestDispatcher(),
@@ -338,7 +347,9 @@ abstract class TestObjectSetSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
-            spaceViews = spacedViews
+            deepLinkResolver = deepLinkResolver,
+            spaceViews = spacedViews,
+            removeObjectFromCollection = removeObjectFromCollection
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

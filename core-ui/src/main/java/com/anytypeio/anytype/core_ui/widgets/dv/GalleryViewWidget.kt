@@ -31,17 +31,21 @@ class GalleryViewWidget @JvmOverloads constructor(
     attrs: AttributeSet? = null
 ) : RecyclerView(context, attrs) {
 
+    var onGalleryItemClicked: (Id) -> Unit = {}
+    var onGalleryItemLongClicked: (Id, View) -> Unit = { _, _ -> }
+    var onTaskCheckboxClicked: (Id) -> Unit = {}
+
     private val galleryViewAdapter = GalleryViewAdapter(
         onGalleryItemClicked = { id ->
             onGalleryItemClicked(id)
+        },
+        onGalleryItemLongClicked = { id, view ->
+            onGalleryItemLongClicked(id, view)
         },
         onTaskCheckboxClicked = { id ->
             onTaskCheckboxClicked(id)
         }
     )
-
-    var onGalleryItemClicked: (Id) -> Unit = {}
-    var onTaskCheckboxClicked: (Id) -> Unit = {}
 
     private val lm = GridLayoutManager(context, SMALL_CARDS_COLUMN_COUNT)
     private val smallCardsItemDecoration = GalleryViewItemDecoration(
@@ -93,6 +97,7 @@ class GalleryViewWidget @JvmOverloads constructor(
 
     class GalleryViewAdapter(
         private val onGalleryItemClicked: (Id) -> Unit,
+        private val onGalleryItemLongClicked: (Id, View) -> Unit,
         private val onTaskCheckboxClicked: (Id) -> Unit
     ) : ListAdapter<Viewer.GalleryView.Item, GalleryViewHolder>(Differ) {
 
@@ -127,6 +132,13 @@ class GalleryViewWidget @JvmOverloads constructor(
                 if (pos != NO_POSITION) {
                     onGalleryItemClicked(getItem(pos).objectId)
                 }
+            }
+            itemView.setOnLongClickListener { view ->
+                val pos = bindingAdapterPosition
+                if (pos != NO_POSITION) {
+                    onGalleryItemLongClicked(getItem(pos).objectId, view)
+                }
+                true
             }
             when (this) {
                 is GalleryViewHolder.OnlyCover -> {

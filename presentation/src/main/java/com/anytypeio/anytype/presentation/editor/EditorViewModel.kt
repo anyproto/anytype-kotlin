@@ -3390,9 +3390,10 @@ class EditorViewModel(
                 ObjectType.Layout.CHAT_DERIVED -> {
                     navigate(
                         EventWrapper(
-                            AppNavigation.Command.OpenChatObject(
+                            AppNavigation.Command.OpenChat(
                                 target = target,
-                                space = vmParams.space.id
+                                space = vmParams.space.id,
+                                popUpToVault = false
                             )
                         )
                     )

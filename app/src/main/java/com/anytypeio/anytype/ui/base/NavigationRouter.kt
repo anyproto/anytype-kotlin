@@ -78,12 +78,7 @@ class NavigationRouter(
                     objectId = command.objectId,
                     space = command.space
                 )
-                is AppNavigation.Command.OpenChatObject -> navigation.openChat(
-                    target = command.target,
-                    space = command.space,
-                    popUpToVault = command.popUpToVault
-                )
-
+                else -> Timber.d("Nav command ignored: $command")
             }
         } catch (e: Exception) {
             Timber.e(e, "Error while navigation")

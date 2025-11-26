@@ -1239,6 +1239,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Siapa pun dengan tautan ini hanya akan dapat melihat konten ruang.</string>
     <string name="multiplayer_change_to_request_confirmation">Siapa pun dengan tautan ini akan perlu meminta akses bergabung ke ruang.</string>
     <string name="multiplayer_invite_link_copied">Tautan undangan disalin ke papan kerani</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Salin tautan</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>

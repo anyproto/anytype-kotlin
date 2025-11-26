@@ -66,6 +66,7 @@ firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
+flexboxVersion = "3.0.0"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -162,6 +163,7 @@ firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "fire
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
 anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2" }
+flexbox = { module = "com.google.android.flexbox:flexbox", version.ref = "flexboxVersion" }
 
 [bundles]
 

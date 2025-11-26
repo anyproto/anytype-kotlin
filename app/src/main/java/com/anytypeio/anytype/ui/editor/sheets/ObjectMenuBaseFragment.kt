@@ -9,14 +9,12 @@ import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
-import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
@@ -43,6 +41,8 @@ import com.anytypeio.anytype.ui.linking.BacklinkOrAddToObjectFragment
 import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
 import com.anytypeio.anytype.ui.publishtoweb.PublishToWebFragment
+import com.google.android.flexbox.FlexDirection
+import com.google.android.flexbox.FlexboxLayoutManager
 import com.google.android.material.snackbar.Snackbar
 import timber.log.Timber
 
@@ -75,14 +75,12 @@ abstract class ObjectMenuBaseFragment :
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         binding.rvActions.apply {
-            layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+            layoutManager = FlexboxLayoutManager(context).apply {
+                flexDirection = FlexDirection.ROW
+                flexWrap = com.google.android.flexbox.FlexWrap.WRAP
+                alignItems = com.google.android.flexbox.AlignItems.FLEX_START
+            }
             adapter = actionAdapter
-            addItemDecoration(
-                SpacingItemDecoration(
-                    firstItemSpacingStart = resources.getDimension(R.dimen.dp_8).toInt(),
-                    lastItemSpacingEnd = resources.getDimension(R.dimen.dp_8).toInt()
-                )
-            )
         }
         binding.objectLayoutConflictScreen.apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)

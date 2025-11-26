@@ -364,12 +364,22 @@ open class ObjectSetFragment :
             vm.onObjectHeaderClicked(id)
         }
 
+        binding.galleryView.onGalleryItemLongClicked = { id, view ->
+            contextMenuAnchorView = view
+            vm.onObjectHeaderLongClicked(id)
+        }
+
         binding.galleryView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
 
         binding.listView.onListItemClicked = { id ->
             vm.onObjectHeaderClicked(id)
+        }
+
+        binding.listView.onListItemLongClicked = { id, view ->
+            contextMenuAnchorView = view
+            vm.onObjectHeaderLongClicked(id)
         }
 
         binding.listView.onTaskCheckboxClicked = { id ->

@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Bağlantıya sahip olan herkes alan içeriğini yalnızca görüntüleyebilir.</string>
     <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Davet bağlantısı panoya kopyalandı</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
     <string name="multiplayer_make_private">Özel Yap</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>

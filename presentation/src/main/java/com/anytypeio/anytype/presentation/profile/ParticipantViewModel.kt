@@ -8,14 +8,19 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -31,7 +36,8 @@ class ParticipantViewModel(
     private val subscriptionContainer: StorelessSubscriptionContainer,
     private val fieldsParser: FieldParser,
     private val userPermissionProvider: UserPermissionProvider,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val createSpace: CreateSpace
 ) : ViewModel() {
 
     val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
@@ -116,6 +122,56 @@ class ParticipantViewModel(
                     }
                 }
             }
+
+            ParticipantEvent.OnConnectClicked -> {
+                proceedWithCreatingOneToOneSpace()
+            }
+        }
+    }
+
+    private fun proceedWithCreatingOneToOneSpace() {
+        val state = uiState.value
+        val participantIdentity = state.identity
+        if (participantIdentity.isNullOrBlank()) {
+            viewModelScope.launch {
+                commands.emit(Command.Toast.Error("Unable to connect: participant identity not found"))
+            }
+            return
+        }
+
+        viewModelScope.launch {
+            // Set loading state
+            uiState.value = state.copy(isConnecting = true)
+
+            // Create the 1-on-1 space
+            val params = CreateSpace.Params(
+                details = mapOf(
+                    Relations.ONE_TO_ONE_IDENTITY to participantIdentity,
+                    Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
+                    Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
+                    Relations.SPACE_DASHBOARD_ID to "chat" // Chat dashboard ID
+                ),
+                useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
+            )
+
+            createSpace.async(params).suspendFold(
+                onSuccess = { response ->
+                    // Reset loading state
+                    uiState.value = state.copy(isConnecting = false)
+                    // Switch to the new space
+                    commands.emit(Command.SwitchToVault(response.space.id))
+                },
+                onFailure = { error ->
+                    // Reset loading state
+                    uiState.value = state.copy(isConnecting = false)
+                    // Show error
+                    commands.emit(
+                        Command.Toast.Error(
+                            error.message ?: "Failed to create 1-on-1 space"
+                        )
+                    )
+                }
+            )
         }
     }
 
@@ -124,13 +180,15 @@ class ParticipantViewModel(
         val icon: ProfileIconView,
         val description: String? = null,
         val identity: String? = null,
-        val isOwner: Boolean
+        val isOwner: Boolean,
+        val isConnecting: Boolean = false
     ) {
        companion object {
            val EMPTY = UiParticipantScreenState(
                name = "",
                icon = ProfileIconView.Loading,
-               isOwner = false
+               isOwner = false,
+               isConnecting = false
            )
        }
     }
@@ -147,6 +205,7 @@ class ParticipantViewModel(
 
         data object Dismiss : Command()
         data object OpenSettingsProfile : Command()
+        data class SwitchToVault(val spaceId: Id) : Command()
     }
 
     companion object {
@@ -161,7 +220,8 @@ class ParticipantViewModel(
         private val subscriptionContainer: StorelessSubscriptionContainer,
         private val fieldsParser: FieldParser,
         private val userPermissionProvider: UserPermissionProvider,
-        private val configStorage: ConfigStorage
+        private val configStorage: ConfigStorage,
+        private val createSpace: CreateSpace
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -173,7 +233,8 @@ class ParticipantViewModel(
                 subscriptionContainer = subscriptionContainer,
                 fieldsParser = fieldsParser,
                 userPermissionProvider = userPermissionProvider,
-                configStorage = configStorage
+                configStorage = configStorage,
+                createSpace = createSpace
             ) as T
         }
     }

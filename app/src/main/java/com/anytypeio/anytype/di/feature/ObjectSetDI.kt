@@ -33,6 +33,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -229,7 +230,8 @@ object ObjectSetModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         fieldParser: FieldParser,
-        spaceViews: SpaceViewSubscriptionContainer
+        spaceViews: SpaceViewSubscriptionContainer,
+        deepLinkResolver: DeepLinkResolver
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -270,7 +272,8 @@ object ObjectSetModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         fieldParser = fieldParser,
-        spaceViews = spaceViews
+        spaceViews = spaceViews,
+        deepLinkResolver = deepLinkResolver
     )
 
     @JvmStatic

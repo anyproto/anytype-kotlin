@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Jeder mit dem Link kann den Inhalt des Spaces nur anzeigen.</string>
     <string name="multiplayer_change_to_request_confirmation">Jeder mit dem Link muss den Zugang zum Space anfragen.</string>
     <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
     <string name="multiplayer_make_private">Privat machen</string>
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>

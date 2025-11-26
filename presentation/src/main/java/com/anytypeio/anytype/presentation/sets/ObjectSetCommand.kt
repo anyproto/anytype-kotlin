@@ -113,7 +113,8 @@ sealed class ObjectSetCommand {
 
         data class ShowObjectHeaderContextMenu(
             val objectId: Id,
-            val canMoveToBin: Boolean
+            val canMoveToBin: Boolean,
+            val isCollection: Boolean
         ) : Modal()
     }
 

@@ -1315,7 +1315,8 @@ open class ObjectSetFragment :
                     showObjectHeaderContextMenu(
                         objectId = command.objectId,
                         anchor = anchor,
-                        showMoveToBin = command.canMoveToBin
+                        showMoveToBin = command.canMoveToBin,
+                        showRemoveFromCollection = command.isCollection
                     )
                 }
             }
@@ -1594,12 +1595,18 @@ open class ObjectSetFragment :
         componentManager().objectSetComponent.release(ctx)
     }
 
-    private fun showObjectHeaderContextMenu(objectId: Id, anchor: View, showMoveToBin: Boolean) {
+    private fun showObjectHeaderContextMenu(
+        objectId: Id,
+        anchor: View,
+        showMoveToBin: Boolean,
+        showRemoveFromCollection: Boolean
+    ) {
         val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
         val popup = ObjectHeaderContextMenu(
             context = themeWrapper,
             view = anchor,
             showMoveToBin = showMoveToBin,
+            showRemoveFromCollection = showRemoveFromCollection,
             onOpenAsObjectClicked = {
                 vm.onOpenAsObject(objectId)
             },
@@ -1608,6 +1615,9 @@ open class ObjectSetFragment :
             },
             onMoveToBinClicked = {
                 vm.onMoveToBin(objectId)
+            },
+            onRemoveFromCollectionClicked = {
+                vm.onRemoveFromCollection(objectId)
             }
         )
         popup.show()

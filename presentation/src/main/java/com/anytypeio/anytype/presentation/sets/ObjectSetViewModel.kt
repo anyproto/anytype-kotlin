@@ -1160,10 +1160,15 @@ class ObjectSetViewModel(
             // Can move to bin only if: user is owner/editor AND object allows delete
             val canMoveToBin = isOwnerOrEditor && !hasDeleteRestriction
 
+            // Check if current state is a Collection AND user has edit permission
+            val isCollection = stateReducer.state.value is ObjectState.DataView.Collection
+            val canRemoveFromCollection = isCollection && isOwnerOrEditor
+
             dispatch(
                 ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(
                     objectId = objectId,
-                    canMoveToBin = canMoveToBin
+                    canMoveToBin = canMoveToBin,
+                    isCollection = canRemoveFromCollection
                 )
             )
         }
@@ -1234,6 +1239,29 @@ class ObjectSetViewModel(
                 onFailure = { e ->
                     Timber.e(e, "Error while moving object to bin")
                     toast("Error while moving to bin. Please try again.")
+                }
+            )
+        }
+    }
+
+    /**
+     * Removes the object from the current collection (does not delete the object).
+     * Only available when viewing a Collection.
+     */
+    fun onRemoveFromCollection(targetId: Id) {
+        Timber.d("onRemoveFromCollection, id:[$targetId]")
+        viewModelScope.launch {
+            val params = RemoveObjectFromCollection.Params(
+                collectionId = vmParams.ctx,
+                objectIdsToRemove = listOf(targetId)
+            )
+            removeObjectFromCollection.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully removed object from collection: $targetId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error removing object from collection")
+                    toast("Error removing from collection. Please try again.")
                 }
             )
         }

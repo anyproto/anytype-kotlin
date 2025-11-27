@@ -277,7 +277,6 @@ class VaultViewModel(
         participants: List<ObjectWrapper.SpaceMember>
     ): VaultUiState.Sections {
         // Index participants by identity for O(1) lookup when resolving creator names
-        // Filter out entries with null identity as they can't be used for lookup
         val participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember> = participants.associateBy { it.identity }
 
         // Fetch all space wallpapers once

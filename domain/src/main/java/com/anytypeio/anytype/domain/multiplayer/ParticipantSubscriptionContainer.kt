@@ -142,6 +142,7 @@ interface ParticipantSubscriptionContainer {
         override fun stop() {
             logger.logInfo("Stopping ParticipantSubscriptionContainer")
             jobs.forEach { it.cancel() }
+            jobs.clear()
             scope.launch(dispatchers.io) {
                 runCatching {
                     container.unsubscribe(GLOBAL_PARTICIPANTS_SUBSCRIPTION)

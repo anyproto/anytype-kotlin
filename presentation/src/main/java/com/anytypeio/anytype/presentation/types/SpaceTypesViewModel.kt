@@ -6,9 +6,11 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -31,7 +33,8 @@ class SpaceTypesViewModel(
     private val fieldParser: FieldParser,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val userPermissionProvider: UserPermissionProvider,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val uiItemsState =
@@ -41,14 +44,17 @@ class SpaceTypesViewModel(
     private val permission = MutableStateFlow(userPermissionProvider.get(vmParams.spaceId))
 
     companion object {
-        val notAllowedTypesLayouts = listOf(
+        /**
+         * Base system layouts that are always excluded from the Object Types list,
+         * regardless of space type.
+         */
+        val baseSystemLayouts = listOf(
             ObjectType.Layout.RELATION,
             ObjectType.Layout.RELATION_OPTION,
             ObjectType.Layout.DASHBOARD,
             ObjectType.Layout.SPACE,
             ObjectType.Layout.SPACE_VIEW,
             ObjectType.Layout.TAG,
-            ObjectType.Layout.CHAT_DERIVED,
             ObjectType.Layout.DATE,
             ObjectType.Layout.OBJECT_TYPE,
         )
@@ -63,11 +69,25 @@ class SpaceTypesViewModel(
         viewModelScope.launch {
             storeOfObjectTypes.trackChanges()
                 .collectLatest { event ->
+                    // Get space UX type to determine which layouts to exclude
+                    val spaceView = spaceViewContainer.get(vmParams.spaceId)
+                    val spaceUxType = spaceView?.spaceUxType
+                    
+                    // Build dynamic exclusion list based on space type
+                    val excludedLayouts = buildList {
+                        addAll(baseSystemLayouts)
+                        // Only exclude CHAT_DERIVED and CHAT in Chat Spaces
+                        if (spaceUxType == SpaceUxType.CHAT) {
+                            add(ObjectType.Layout.CHAT_DERIVED)
+                            add(ObjectType.Layout.CHAT)
+                        }
+                    }
+                    
                     val allTypes =
                         storeOfObjectTypes.getAll().mapNotNull { objectType ->
                             val resolvedLayout =
                                 objectType.recommendedLayout ?: return@mapNotNull null
-                            if (notAllowedTypesLayouts.contains(resolvedLayout) || objectType.isArchived == true) {
+                            if (excludedLayouts.contains(resolvedLayout) || objectType.isArchived == true) {
                                 return@mapNotNull null
                             } else {
                                 objectType
@@ -171,7 +191,8 @@ class SpaceTypesVmFactory @Inject constructor(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val userPermissionProvider: UserPermissionProvider,
     private val fieldParser: FieldParser,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T =
@@ -182,7 +203,8 @@ class SpaceTypesVmFactory @Inject constructor(
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             userPermissionProvider = userPermissionProvider,
             fieldParser = fieldParser,
-            setObjectListIsArchived = setObjectListIsArchived
+            setObjectListIsArchived = setObjectListIsArchived,
+            spaceViewContainer = spaceViewContainer
         ) as T
 }
 

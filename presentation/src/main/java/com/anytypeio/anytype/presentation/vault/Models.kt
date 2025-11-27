@@ -47,7 +47,7 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         val chatNotificationState: NotificationState,
-        val isSpaceMuted: Boolean = false
+        val spaceNotificationState: NotificationState = NotificationState.ALL
     ) : VaultSpaceView()
 
     data class ChatSpace(
@@ -63,7 +63,7 @@ sealed class VaultSpaceView {
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-        val isSpaceMuted: Boolean = false
+        val spaceNotificationState: NotificationState = NotificationState.ALL
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

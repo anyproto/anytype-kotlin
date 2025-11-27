@@ -48,8 +48,8 @@ fun VaultDataSpaceChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isChatMuted: Boolean? = null,
     chatNotificationState: NotificationState,
+    spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
     expandedSpaceId: String? = null,
@@ -103,6 +103,8 @@ fun VaultDataSpaceChatCard(
             mainSize = 64.dp,
             modifier = Modifier
         )
+        val isSpaceMuted = spaceNotificationState == NotificationState.DISABLE
+
         ContentDataSpaceChat(
             modifier = Modifier
                 .fillMaxWidth()
@@ -117,6 +119,8 @@ fun VaultDataSpaceChatCard(
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
             chatNotificationState = chatNotificationState,
+            spaceNotificationState = spaceNotificationState,
+            isMuted = isSpaceMuted,
             isPinned = isPinned
         )
 
@@ -124,11 +128,11 @@ fun VaultDataSpaceChatCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = isChatMuted,
+            isMuted = isSpaceMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.chatNotificationState == NotificationState.DISABLE)
+                    if (isSpaceMuted)
                         onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
@@ -158,6 +162,7 @@ private fun ContentDataSpaceChat(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     chatNotificationState: NotificationState,
+    spaceNotificationState: NotificationState,
     isPinned: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
@@ -193,7 +198,7 @@ private fun ContentDataSpaceChat(
                 text = chatName,
                 style = CodeChatPreviewMedium,
                 color = getChatTextColor(
-                    notificationMode = chatNotificationState,
+                    notificationMode = spaceNotificationState,
                     unreadMessageCount = previewUnreadMessages,
                     unreadMentionCount = previewUnreadMentions
                 ),
@@ -207,7 +212,7 @@ private fun ContentDataSpaceChat(
                 UnreadIndicatorsRow(
                     unreadMessageCount = unreadMessageCount,
                     unreadMentionCount = unreadMentionCount,
-                    notificationMode = chatNotificationState,
+                    notificationMode = spaceNotificationState,
                     isPinned = isPinned
                 )
             } else if (isPinned) {
@@ -230,7 +235,7 @@ private fun ContentDataSpaceChat(
                 messageText = messageText,
                 attachmentPreviews = attachmentPreviews,
                 chatPreview = chatPreview,
-                chatPreviewNotificationState = chatNotificationState
+                chatPreviewNotificationState = spaceNotificationState
             )
         }
     }
@@ -297,6 +302,7 @@ fun DataSpaceChatWithMessage() {
             unreadMessageCount = 2,
             unreadMentionCount = 1,
             chatNotificationState = NotificationState.ALL,
+            spaceNotificationState = NotificationState.ALL,
             isPinned = false,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
             spaceView = VaultSpaceView.DataSpaceWithChat(
@@ -307,7 +313,7 @@ fun DataSpaceChatWithMessage() {
                 isOwner = true,
                 chatNotificationState = NotificationState.ALL,
                 chatName = "@feature-chat",
-                isSpaceMuted = true
+                spaceNotificationState = NotificationState.ALL
             )
         )
     }
@@ -333,6 +339,7 @@ fun DataSpaceChatMuted() {
             unreadMessageCount = 5,
             unreadMentionCount = 0,
             chatNotificationState = NotificationState.DISABLE,
+            spaceNotificationState = NotificationState.DISABLE,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFFFF3E0)),
             spaceView = VaultSpaceView.DataSpaceWithChat(
@@ -342,7 +349,8 @@ fun DataSpaceChatMuted() {
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = false,
                 chatName = "@feature-chat",
-                chatNotificationState = NotificationState.DISABLE
+                chatNotificationState = NotificationState.DISABLE,
+                spaceNotificationState = NotificationState.DISABLE
             )
         )
     }
@@ -368,6 +376,7 @@ fun DataSpaceChatNoMessage() {
             unreadMessageCount = 0,
             unreadMentionCount = 0,
             chatNotificationState = NotificationState.ALL,
+            spaceNotificationState = NotificationState.ALL,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE8F5E9)),
             spaceView = VaultSpaceView.DataSpaceWithChat(
@@ -377,7 +386,8 @@ fun DataSpaceChatNoMessage() {
                 icon = SpaceIconView.DataSpace.Placeholder(),
                 isOwner = true,
                 chatName = "@feature-chat",
-                chatNotificationState = NotificationState.DISABLE
+                chatNotificationState = NotificationState.DISABLE,
+                spaceNotificationState = NotificationState.ALL
             )
         )
     }

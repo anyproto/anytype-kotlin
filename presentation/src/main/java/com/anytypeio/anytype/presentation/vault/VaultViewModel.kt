@@ -533,7 +533,7 @@ class VaultViewModel(
             unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
+            spaceNotificationState = space.spacePushNotificationMode,
             wallpaper = wallpaperResult
         )
     }
@@ -611,7 +611,7 @@ class VaultViewModel(
                 chatId = chatPreview.chat
             ),
             wallpaper = wallpaperResult,
-            isSpaceMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(space),
+            spaceNotificationState = space.spacePushNotificationMode,
             chatName = chatName
         )
     }

@@ -2025,4 +2025,6 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notify_me_about">Beri notifikasi tentang</string>
     <string name="error_while_downloading_object">Galat saat mengunduh objek: %1$s</string>
     <string name="toast_moved_to_bin">Objek dipindahkan ke Bak Sampah.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
 </resources>

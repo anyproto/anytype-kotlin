@@ -119,6 +119,8 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
+import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
+import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
@@ -268,7 +270,6 @@ class HomeScreenViewModel(
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
     // Separate StateFlows for different widget sections
-    private val chatWidget = MutableStateFlow<Widget.Chat?>(null)
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
@@ -323,23 +324,6 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
-        )
-
-    // Exposed flow for space chat widget
-    @OptIn(ExperimentalCoroutinesApi::class)
-    val chatView: StateFlow<WidgetView?> = chatWidget
-        .flatMapLatest { widget ->
-            if (widget == null) {
-                flowOf(null)
-            } else {
-                // Create container for chat widget
-                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
-            }
-        }
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.Eagerly,
-            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -752,7 +736,6 @@ class HomeScreenViewModel(
                     collapsedSections = preferences.collapsedSectionIds.toSet()
                 )
                 if (state is ObjectViewState.Success) {
-
                     // Build widget sections from the current object state
                     val sections = buildWidgetSections(
                         state = state,
@@ -787,10 +770,9 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = (if (sections.chatWidget != null) 1 else 0) + sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: chat=${sections.chatWidget != null}, pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
 
-                    chatWidget.value = sections.chatWidget
                     pinnedWidgets.value = sections.pinnedWidgets
 
                     // Check event lock before updating type widgets to prevent race conditions during DnD
@@ -802,7 +784,6 @@ class HomeScreenViewModel(
 
                     binWidget.value = sections.binWidget
                 } else {
-                    chatWidget.value = null
                     pinnedWidgets.value = emptyList()
 
                     // Check event lock before clearing type widgets
@@ -1304,6 +1285,42 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSeeAllClicked(widgetId: Id, viewId: ViewId?) {
+        Timber.d("onSeeAllClicked: widgetId=$widgetId, viewId=$viewId")
+        val widget = currentWidgets?.find { it.id == widgetId } ?: return
+        val source = widget.source
+
+        if (source is Widget.Source.Default) {
+            if (source.obj.isArchived != true) {
+                dispatchSelectHomeTabCustomSourceEvent(
+                    widget = widgetId,
+                    source = source
+                )
+                // Check if it's a Set or Collection layout and we have a viewId
+                val layout = source.obj.layout
+                if ((layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) && viewId != null) {
+                    viewModelScope.launch {
+                        navigate(
+                            Navigation.OpenSet(
+                                ctx = source.obj.id,
+                                space = vmParams.spaceId.id,
+                                view = viewId
+                            )
+                        )
+                    }
+                } else {
+                    // Fall back to standard navigation without view
+                    proceedWithOpeningObject(source.obj)
+                }
+            } else {
+                sendToast("Open bin to restore your archived object")
+            }
+        } else {
+            // For non-default sources, delegate to standard handler
+            onWidgetSourceClicked(widgetId)
+        }
+    }
+
     fun onBinWidgetClicked() {
         viewModelScope.launch {
             navigation(
@@ -1449,13 +1466,7 @@ class HomeScreenViewModel(
                             type = parseWidgetType(curr),
                             layout = when (val source = curr.source) {
                                 is Widget.Source.Bundled -> UNDEFINED_LAYOUT_CODE
-                                is Widget.Source.Default -> {
-                                    if (source.obj.layout == ObjectType.Layout.OBJECT_TYPE) {
-                                        UNDEFINED_LAYOUT_CODE
-                                    } else {
-                                        source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
-                                    }
-                                }
+                                is Widget.Source.Default -> source.obj.layout?.code ?: UNDEFINED_LAYOUT_CODE
                                 Widget.Source.Other -> UNDEFINED_LAYOUT_CODE
                             },
                             isInEditMode = isInEditMode()
@@ -2361,6 +2372,13 @@ class HomeScreenViewModel(
                         navigate = true
                     )
                 }
+                is WidgetView.ChatList -> {
+                    handleDefaultWidgetSource(
+                        dataViewObjectId = widget.source.id,
+                        viewId = widget.tabs.find { it.isSelected }?.id,
+                        navigate = true
+                    )
+                }
                 is WidgetView.Tree -> {
                     getDefaultObjectType.async(vmParams.spaceId).getOrNull()?.type?.let { typeKey ->
                         storeOfObjectTypes.getByKey(key = typeKey.key)?.let {
@@ -2438,6 +2456,31 @@ class HomeScreenViewModel(
         )
     }
 
+    /**
+     * Creates a new object in a Widget by clicking the "+" button.
+     *
+     * This method handles TWO distinct use cases:
+     * 1. **Layout.SET** - "Query by Type" Widgets [Pinned section]:
+     *    The [dataViewSourceObj] is the ObjectType obtained from the Set's `setOf` field via lookup.
+     * 2. **Layout.OBJECT_TYPE** - Object Type Widgets [Object Types section]:
+     *    The [dataViewSourceObj] IS the ObjectType view itself (no lookup needed).
+     *
+     * In both cases, the created object will:
+     * - Have the type specified by [dataViewSourceObj] (the ObjectType)
+     * - Be prefilled with values from active view filters (when filters use permitted conditions,
+     *   see [com.anytypeio.anytype.core_models.PermittedConditions])
+     * - Use a template with the following priority:
+     *   1. Viewer's custom template (if set)
+     *   2. ObjectType's default template (if viewer template is not set)
+     *   3. No template (if both are null/empty)
+     *
+     * @param dataViewSourceObj The ObjectType for the new object. Source depends on layout:
+     *                          - Layout.SET: The ObjectType from the Set's `setOf` field (obtained via lookup)
+     *                          - Layout.OBJECT_TYPE: The widget's source object itself (already the ObjectType)
+     * @param viewer The active view/viewer containing filters, template settings, and display configuration
+     * @param dv The DataView content with relation links used for proper filter value formatting
+     * @param navigate If true, navigates to the created object after successful creation
+     */
     private suspend fun proceedWithCreatingDataViewObject(
         dataViewSourceObj: ObjectWrapper.Basic,
         viewer: Block.Content.DataView.Viewer,
@@ -2445,31 +2488,111 @@ class HomeScreenViewModel(
         navigate: Boolean = false
     ) {
         Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
-        val dataViewSourceType = dataViewSourceObj.uniqueKey
-        val (_, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
-        )
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dataViewRelationLinks = dv.relationLinks,
             dateProvider = dateProvider
         )
-        val type = TypeKey(dataViewSourceType ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+        val space = vmParams.spaceId.id
+        if (type.key == ObjectTypeIds.CHAT_DERIVED) {
+            commands.emit(
+                Command.CreateChatObject(
+                    space = SpaceId(space)
+                )
+            )
+        } else {
+            val startTime = System.currentTimeMillis()
+            createDataViewObject.async(
+                params = CreateDataViewObject.Params.SetByType(
+                    type = type,
+                    filters = viewer.filters,
+                    template = resolveTemplateForDataViewObject(
+                        viewer = viewer,
+                        setOfObject = dataViewSourceObj
+                    ),
+                    prefilled = prefilled
+                ).also {
+                    Timber.d("Calling with params: $it")
+                }
+            ).fold(
+                onSuccess = { result ->
+                    Timber.d("Successfully created object with id: ${result.objectId}")
+                    viewModelScope.sendAnalyticsObjectCreateEvent(
+                        analytics = analytics,
+                        route = EventsDictionary.Routes.widget,
+                        startTime = startTime,
+                        view = null,
+                        objType = type.key,
+                        spaceParams = provideParams(space)
+                    )
+                    if (navigate) {
+                        val wrapper = ObjectWrapper.Basic(result.struct.orEmpty())
+                        if (wrapper.isValid) {
+                            proceedWithNavigation(wrapper.navigation())
+                        }
+                    }
+                },
+                onFailure = {
+                    Timber.e(it, "Error while creating data view object for widget")
+                }
+            )
+        }
+    }
+
+    /**
+     * Creates a new object in a "Set by Relation" Widget.
+     *
+     * This method handles Sets where the `setOf` field points to a Relation object
+     * (not an ObjectType). In this case:
+     * - The type comes from the viewer's `defaultObjectType` (similar to Collections)
+     * - The relation itself is added to the created object with an appropriate default value
+     * - Template resolution follows the standard priority (Viewer → ObjectType → null)
+     *
+     * @param relationObj The Relation object from the Set's `setOf` field
+     * @param viewer The active view/viewer containing filters, template settings, and display configuration
+     * @param dv The DataView content with relation links used for proper filter value formatting
+     * @param navigate If true, navigates to the created object after successful creation
+     */
+    private suspend fun proceedWithCreatingSetByRelationObject(
+        relationObj: ObjectWrapper.Relation,
+        viewer: Block.Content.DataView.Viewer,
+        dv: DV,
+        navigate: Boolean = false
+    ) {
+        Timber.d("proceedWithCreatingSetByRelationObject, relationObj Id: ${relationObj.id}, relationObj Key: ${relationObj.uniqueKey}")
+
+        // Get type from viewer's defaultObjectType (not from the relation)
+        val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
+            activeView = viewer,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+
+        val type = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
+
+        // Get prefilled data including the relation itself with default value
+        val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
+            storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            objSetByRelation = relationObj,
+            dataViewRelationLinks = dv.relationLinks
+        )
+
         val space = vmParams.spaceId.id
         val startTime = System.currentTimeMillis()
+
         createDataViewObject.async(
-            params = CreateDataViewObject.Params.SetByType(
+            params = CreateDataViewObject.Params.SetByRelation(
                 type = type,
                 filters = viewer.filters,
                 template = defaultTemplate,
                 prefilled = prefilled
             ).also {
-                Timber.d("Calling with params: $it")
+                Timber.d("Calling SetByRelation with params: $it")
             }
         ).fold(
             onSuccess = { result ->
-                Timber.d("Successfully created object with id: ${result.objectId}")
+                Timber.d("Successfully created Set by Relation object with id: ${result.objectId}")
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
                     route = EventsDictionary.Routes.widget,
@@ -2486,7 +2609,7 @@ class HomeScreenViewModel(
                 }
             },
             onFailure = {
-                Timber.e(it, "Error while creating data view object for widget")
+                Timber.e(it, "Error while creating Set by Relation object for widget")
             }
         )
     }
@@ -2503,8 +2626,8 @@ class HomeScreenViewModel(
         )
 
         val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(
-            viewer,
-            storeOfObjectTypes
+            activeView = viewer,
+            storeOfObjectTypes = storeOfObjectTypes
         )
 
         val defaultObjectTypeUniqueKey = TypeKey(defaultObjectType?.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
@@ -2612,12 +2735,30 @@ class HomeScreenViewModel(
                             Timber.w("Data view source is missing or not valid")
                             return@fold
                         }
-                        proceedWithCreatingDataViewObject(
-                            dataViewSourceObj = dataViewSourceObj,
-                            viewer = viewer,
-                            dv = dv,
-                            navigate = navigate
-                        )
+                        // Check if this is a Set by ObjectType or Set by Relation
+                        when (dataViewSourceObj.layout) {
+                            ObjectType.Layout.OBJECT_TYPE -> {
+                                // Set by Type: setOf points to an ObjectType
+                                proceedWithCreatingDataViewObject(
+                                    dataViewSourceObj = dataViewSourceObj,
+                                    viewer = viewer,
+                                    dv = dv,
+                                    navigate = navigate
+                                )
+                            }
+                            ObjectType.Layout.RELATION -> {
+                                // Set by Relation: setOf points to a Relation
+                                proceedWithCreatingSetByRelationObject(
+                                    relationObj = ObjectWrapper.Relation(dataViewSourceObj.map),
+                                    viewer = viewer,
+                                    dv = dv,
+                                    navigate = navigate
+                                )
+                            }
+                            else -> {
+                                Timber.w("Unsupported setOf layout: ${dataViewSourceObj.layout}")
+                            }
+                        }
                     }
                     ObjectType.Layout.OBJECT_TYPE -> {
                         if (!dataViewObject.isValid) {
@@ -2933,6 +3074,16 @@ class HomeScreenViewModel(
             viewModelScope.launch {
                 Timber.d("DROID-3965, Persisting type widget order: ${newOrder.map { it.takeLast(4) + "..." }}")
 
+                // Store the current order for potential rollback
+                val previousOrder = typeWidgets.value.toList()
+
+                // Optimistically update typeWidgets immediately to keep UI in sync
+                val reorderedWidgets = newOrder.mapNotNull { id ->
+                    typeWidgets.value.find { it.id == id }
+                }
+                typeWidgets.value = reorderedWidgets
+                Timber.d("DROID-4113, Optimistically updated typeWidgets to new order")
+
                 // Activate event lock before sending to middleware to prevent race conditions
                 activateTypeWidgetEventLock()
 
@@ -2944,6 +3095,9 @@ class HomeScreenViewModel(
                 ).fold(
                     onFailure = { error ->
                         Timber.e(error, "DROID-3965, Failed to reorder type widgets: $newOrder")
+                        // Rollback to previous order
+                        typeWidgets.value = previousOrder
+                        Timber.d("DROID-4113, Rolled back typeWidgets to previous order")
                         clearTypeWidgetDragState()
                     },
                     onSuccess = { finalOrder ->
@@ -3070,6 +3224,8 @@ class HomeScreenViewModel(
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
+            dateProvider = dateProvider,
+            stringResourceProvider = stringResourceProvider,
             dispatchers = appCoroutineDispatchers,
             observeCurrentWidgetView = ::observeCurrentWidgetView,
             isWidgetCollapsed = ::isWidgetCollapsed
@@ -3322,6 +3478,7 @@ sealed class Command {
 
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
+    data class CreateChatObject(val space: SpaceId) : Command()
 }
 
 /**
@@ -3431,6 +3588,7 @@ fun ObjectWrapper.Basic.navigation(
                 effect = effect
             )
         }
+        ObjectType.Layout.CHAT,
         ObjectType.Layout.CHAT_DERIVED -> {
             OpenObjectNavigation.OpenChat(
                 target = id,

@@ -5,6 +5,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback
+import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback.Companion.DEFAULT_FALLBACK_ICON
 import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 fun ObjectWrapper.Basic.objectIcon(
@@ -86,7 +88,24 @@ fun ObjectWrapper.Basic.objectIcon(
                 else -> fallback
             }
         }
-
+        ObjectType.Layout.CHAT_DERIVED -> {
+            val fallback = objType?.objectFallbackIcon(isCircleShape = true) ?: Fallback(
+                rawValue = DEFAULT_FALLBACK_ICON,
+                isCircleShape = true
+            )
+            when {
+                !objImage.isNullOrBlank() -> ObjectIcon.Profile.Image(
+                    hash = builder.thumbnail(objImage),
+                    name = objName
+                )
+                !objEmoji.isNullOrBlank() -> Basic.Emoji(
+                    unicode = objEmoji,
+                    fallback = fallback,
+                    circleShape = true
+                )
+                else -> fallback
+            }
+        }
         else -> {
             objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
         }
@@ -124,13 +143,14 @@ fun ObjectWrapper.Type.objectIcon(): ObjectIcon.TypeIcon {
     }
 }
 
-private fun ObjectWrapper.Type.objectFallbackIcon(): ObjectIcon.TypeIcon.Fallback {
+private fun ObjectWrapper.Type.objectFallbackIcon(isCircleShape: Boolean = false): ObjectIcon.TypeIcon.Fallback {
 
     val objIconName = iconName
     return when {
 
         !objIconName.isNullOrEmpty() -> ObjectIcon.TypeIcon.Fallback(
-            rawValue = objIconName
+            rawValue = objIconName,
+            isCircleShape = isCircleShape
         )
 
         else -> {

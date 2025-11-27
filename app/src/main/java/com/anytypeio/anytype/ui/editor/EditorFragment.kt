@@ -876,7 +876,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             val statusBars = insets.getInsets(WindowInsetsCompat.Type.statusBars())
             val ime = insets.getInsets(WindowInsetsCompat.Type.ime())
-            
+
             // Extend topToolbar to include status bar area
             binding.topToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 height = dimen(R.dimen.default_toolbar_height) + statusBars.top
@@ -888,7 +888,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 binding.topToolbar.paddingRight,
                 binding.topToolbar.paddingBottom
             )
-            
+
             // Apply top padding to search toolbar for status bar
             binding.searchToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
                 topMargin = systemBars.top
@@ -909,7 +909,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 // IME is hidden, hide toolbar or position at bottom
                 binding.toolbar.translationY = 0f
             }
-            
+
             // Handle other bottom toolbars
             val bottomPadding = if (ime.bottom > 0) ime.bottom else systemBars.bottom
             binding.markupToolbar.updateLayoutParams<ConstraintLayout.LayoutParams> {
@@ -957,7 +957,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 //                binding.panels.paddingRight,
 //                systemBars.bottom
 //            )
-            
+
             //insets
             WindowInsetsCompat.CONSUMED
         }
@@ -966,7 +966,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         ViewCompat.setWindowInsetsAnimationCallback(
             view,
             object : WindowInsetsAnimationCompat.Callback(DISPATCH_MODE_CONTINUE_ON_SUBTREE) {
-                
+
                 override fun onPrepare(animation: WindowInsetsAnimationCompat) {
                     super.onPrepare(animation)
                     // Ensure toolbar is visible when IME animation starts
@@ -974,20 +974,20 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                         binding.toolbar.visibility = View.VISIBLE
                     }
                 }
-                
+
                 override fun onProgress(
                     insets: WindowInsetsCompat,
                     runningAnimations: MutableList<WindowInsetsAnimationCompat>
                 ): WindowInsetsCompat {
                     val imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom
-                    
+
                     // Always keep toolbar visible during animation
                     // Only animate the translation
                     binding.toolbar.translationY = if (imeHeight > 0) -imeHeight.toFloat() else 0f
-                    
+
                     return insets
                 }
-                
+
                 override fun onEnd(animation: WindowInsetsAnimationCompat) {
                     super.onEnd(animation)
                     // Only hide toolbar after animation completely ends and IME is hidden
@@ -1012,12 +1012,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             // When header is overlaid (visible), show topToolbar with background
             binding.topToolbar.setBackgroundColor(requireContext().color(R.color.background_primary))
         }
-        
+
         // Update status bar icon color based on current state and theme
         val windowInsetsController = ViewCompat.getWindowInsetsController(requireActivity().window.decorView)
         val uiMode = requireContext().resources.configuration.uiMode
         val isDarkMode = (uiMode and android.content.res.Configuration.UI_MODE_NIGHT_MASK) == android.content.res.Configuration.UI_MODE_NIGHT_YES
-        
+
         if (isHeaderOverlaid) {
             // When showing transparent status bar, adjust icons based on content
             val firstView = blockAdapter.views.firstOrNull()
@@ -1036,6 +1036,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     open fun setupWindowInsetAnimation() {
+        binding.toolbar.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.chooseTypeWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
 //            binding.toolbar.syncTranslationWithImeVisibility(
 //                dispatchMode = DISPATCH_MODE_STOP
@@ -2279,7 +2285,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             ).apply {
                 duration = SELECT_BUTTON_HIDE_ANIMATION_DURATION
                 interpolator = DecelerateInterpolator()
-                doOnEnd { 
+                doOnEnd {
                     if (hasBinding) {
                         binding.multiSelectTopToolbar.gone()
                         binding.topToolbar.visible()

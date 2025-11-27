@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 
@@ -483,6 +483,7 @@ sealed class Command {
     data class SortRelations(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
 
     data class AddObjectToCollection(val ctx: Id, val afterId: Id, val ids: List<Id>)
+    data class RemoveObjectFromCollection(val ctx: Id, val ids: List<Id>)
     data class SetQueryToSet(val ctx: Id, val query: String)
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)
@@ -604,6 +605,21 @@ sealed class Command {
             }
         }
     }
+
+    /**
+     * Subscribe to search results across multiple spaces.
+     * Unlike regular subscriptions that are scoped to a single space,
+     * this allows searching and subscribing to objects across all user spaces.
+     */
+    data class CrossSpaceSearchSubscribe(
+        val subscription: Id,
+        val filters: List<DVFilter> = emptyList(),
+        val sorts: List<DVSort> = emptyList(),
+        val keys: List<String>,
+        val source: List<String> = emptyList(),
+        val noDepSubscription: Boolean = false,
+        val collectionId: Id? = null
+    ) : Command()
 
     data class ProcessCancel(
         val processId: Id
@@ -733,6 +749,19 @@ sealed class Command {
     data class RegisterDeviceToken(
         val token: String
     ) : Command()
+
+    sealed class SpaceChatsNotifications {
+        data class SetForceModeIds(
+            val spaceId: Id,
+            val chatIds: List<Id>,
+            val mode: NotificationState
+        ) : SpaceChatsNotifications()
+
+        data class ResetIds(
+            val spaceId: Id,
+            val chatIds: List<Id>
+        ) : SpaceChatsNotifications()
+    }
 
     sealed class Publishing : Command() {
         data class GetStatus(

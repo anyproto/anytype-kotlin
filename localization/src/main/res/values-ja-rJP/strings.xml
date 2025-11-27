@@ -810,7 +810,7 @@
     <string name="relation_editing_title">プロパティ設定</string>
     <string name="type_editing_uninstall">削除</string>
     <string name="empty_tree_widget_reader_access">他のオブジェクトとのリンクがありません。</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">オブジェクトがありません</string>
     <string name="empty_list_widget_no_view">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="this_widget_has_no_object">オブジェクトがありません。\n新しく作成してみましょう。</string>
     <string name="emoji">絵文字</string>
@@ -1240,6 +1240,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">リンクをコピー</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">スペースへ参加</string>
     <string name="multiplayer_private_comment_for_a_space_owner">スペース所有者へのメッセージ</string>
     <string name="multiplayer_request_to_join_explanation">スペース所有者から承認されると、スペースに参加することができます。この際、アクセス権は所有者によって付与されます。</string>
@@ -1616,7 +1617,7 @@
     <string name="version_history_error_get_version">変更履歴取得エラー</string>
     <string name="version_history_error_get_members">メンバー取得エラー</string>
     <string name="new_object">新しいオブジェクト</string>
-    <string name="vault_my_spaces">自分のスペース</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">未読</string>
     <string name="vault_all_section_title">すべて</string>
     <string name="vault_pinned_section_title">ピン留め</string>
@@ -1904,9 +1905,9 @@
     <string name="notifications_modal_success_button">通知を有効化</string>
     <string name="notifications_modal_cancel_button">あとで</string>
     <string name="vault_create_chat">新しいチャット</string>
-    <string name="vault_create_chat_description">チームでの会話や共同作業に</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">新しいスペース</string>
-    <string name="vault_create_space_description">プロジェクトや知識の管理に</string>
+    <string name="vault_create_space_description">For organized content and data</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
@@ -1925,9 +1926,9 @@
     <string name="chat_box_record_video">動画を撮る</string>
     <string name="chat_camera_permission_denied">カメラへのアクセスが拒否されました</string>
     <string name="notifications_title">通知</string>
-    <string name="notifications_all">すべての通知</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">メンションのみ</string>
-    <string name="notifications_disable">通知が無効</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">すべて</string>
     <string name="notifications_mentions_short">メンション</string>
     <string name="notifications_disable_short">無効</string>
@@ -1966,6 +1967,8 @@
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Web公開</string>
@@ -1988,6 +1991,7 @@
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">ピン留め解除</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">サイト</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
@@ -2008,4 +2012,17 @@
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
+    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
+    <string name="chat_edit_info">Edit Info</string>
+    <string name="chat_move_to_bin">ゴミ箱に移動</string>
+    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
+    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
+    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

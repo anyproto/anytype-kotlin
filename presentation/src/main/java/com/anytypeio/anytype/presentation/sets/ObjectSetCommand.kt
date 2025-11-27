@@ -110,6 +110,12 @@ sealed class ObjectSetCommand {
             val ctx: Id,
             val anchor: Int
         ) : Modal()
+
+        data class ShowObjectHeaderContextMenu(
+            val objectId: Id,
+            val canMoveToBin: Boolean,
+            val isCollection: Boolean
+        ) : Modal()
     }
 
     sealed class Intent : ObjectSetCommand() {
@@ -122,4 +128,6 @@ sealed class ObjectSetCommand {
     data object ShowOnlyAccessError : ObjectSetCommand()
 
     data class Browse(val url: String) : ObjectSetCommand()
+
+    data class CopyLinkToClipboard(val link: String) : ObjectSetCommand()
 }

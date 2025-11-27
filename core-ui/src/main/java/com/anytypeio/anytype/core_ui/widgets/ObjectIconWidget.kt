@@ -52,6 +52,7 @@ class ObjectIconWidget @JvmOverloads constructor(
     private var isImageWithCorners: Boolean = false
     private val density = context.resources.displayMetrics.density
     private var withBackgrounds: Boolean = false
+    private var emojiSizePx: Int = 0
 
     init {
         setupAttributeValues(attrs)
@@ -66,6 +67,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         val emojiSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_emojiSize, DEFAULT_SIZE)
+        emojiSizePx = emojiSize
         val imageSize =
             attrs.getDimensionPixelSize(R.styleable.ObjectIconWidget_imageSize, DEFAULT_SIZE)
         val checkboxSize =
@@ -109,7 +111,11 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         if (hasEmojiContainer) {
             emojiContainer.visibility = View.VISIBLE
-            emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+            if (shouldShowEmojiBackground()) {
+                emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+            } else {
+                emojiContainer.background = null
+            }
         } else {
             emojiContainer.visibility = View.INVISIBLE
         }
@@ -130,7 +136,7 @@ class ObjectIconWidget @JvmOverloads constructor(
 
         when (icon) {
             is ObjectIcon.Basic.Emoji -> {
-                setEmoji(emoji = icon.unicode, fallback = icon.fallback)
+                setEmoji(emoji = icon.unicode, fallback = icon.fallback, circleShape = icon.circleShape)
             }
 
             is ObjectIcon.Basic.Image -> {
@@ -187,7 +193,8 @@ class ObjectIconWidget @JvmOverloads constructor(
             is TypeIcon.Emoji -> {
                 setEmoji(
                     emoji = icon.unicode,
-                    fallback = Fallback(rawValue = icon.rawValue)
+                    fallback = Fallback(rawValue = icon.rawValue),
+                    circleShape = false // TypeIcon.Emoji doesn't have circleShape, default to false
                 )
             }
 
@@ -232,7 +239,8 @@ class ObjectIconWidget @JvmOverloads constructor(
 
     private fun setEmoji(
         emoji: String?,
-        fallback: ObjectIcon.TypeIcon.Fallback
+        fallback: ObjectIcon.TypeIcon.Fallback,
+        circleShape: Boolean = false
     ) {
         if (withBackgrounds) {
             binding.root.setBackgroundResource(R.drawable.bg_object_header_icon_container)
@@ -249,6 +257,17 @@ class ObjectIconWidget @JvmOverloads constructor(
                 ivBookmark.setImageDrawable(null)
                 ivBookmark.gone()
                 emojiContainer.visible()
+
+                // Apply background based on circleShape parameter and size
+                if (shouldShowEmojiBackground()) {
+                    if (circleShape) {
+                        emojiContainer.setBackgroundResource(R.drawable.circle_object_icon_emoji_background)
+                    } else {
+                        emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+                    }
+                } else {
+                    emojiContainer.background = null
+                }
             }
             try {
                 val adapted = Emojifier.safeUri(emoji)
@@ -389,6 +408,25 @@ class ObjectIconWidget @JvmOverloads constructor(
             emojiContainer.visible()
             ivEmoji.gone()
             tvEmojiFallback.visible()
+
+            // Apply background based on isCircleShape parameter for Fallback icons and size
+            if (shouldShowEmojiBackground()) {
+                when (icon) {
+                    is ObjectIcon.TypeIcon.Fallback -> {
+                        if (icon.isCircleShape) {
+                            emojiContainer.setBackgroundResource(R.drawable.circle_object_icon_emoji_background)
+                        } else {
+                            emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+                        }
+                    }
+                    else -> {
+                        // For other TypeIcons, use default rounded corner background
+                        emojiContainer.setBackgroundResource(R.drawable.bg_circle_with_corner)
+                    }
+                }
+            } else {
+                emojiContainer.background = null
+            }
         }
         try {
             binding.tvEmojiFallback.setImageResource(resId)
@@ -450,6 +488,11 @@ class ObjectIconWidget @JvmOverloads constructor(
             sizeDp <= 127 -> 64
             else -> 72
         }
+    }
+
+    private fun shouldShowEmojiBackground(): Boolean {
+        val emojiSizeDp = emojiSizePx / density
+        return emojiSizeDp >= 32
     }
 }
 

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.base.getOrThrow
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -49,7 +50,8 @@ open class ObjectSearchViewModel(
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
@@ -280,7 +282,10 @@ open class ObjectSearchViewModel(
     open suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         space = vmParams.space,
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.filterSearchObjects(),
+        filters = buildList {
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            addAll(ObjectSearchConstants.filterSearchObjects(spaceUxType = spaceUxType))
+        },
         sorts = ObjectSearchConstants.sortsSearchObjects,
         fulltext = EMPTY_QUERY,
         keys = buildList {

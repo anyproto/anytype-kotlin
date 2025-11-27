@@ -106,6 +106,12 @@ interface MiddlewareService {
     fun objectSearchSubscribe(request: Rpc.Object.SearchSubscribe.Request): Rpc.Object.SearchSubscribe.Response
 
     @Throws(Exception::class)
+    fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceUnsubscribe(request: Rpc.Object.CrossSpaceSearchUnsubscribe.Request): Rpc.Object.CrossSpaceSearchUnsubscribe.Response
+
+    @Throws(Exception::class)
     fun objectSearchUnsubscribe(request: Rpc.Object.SearchUnsubscribe.Request): Rpc.Object.SearchUnsubscribe.Response
 
     @Throws(Exception::class)
@@ -152,6 +158,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun addObjectToCollection(request : Rpc.ObjectCollection.Add.Request): Rpc.ObjectCollection.Add.Response
+
+    @Throws(Exception::class)
+    fun removeObjectFromCollection(request : Rpc.ObjectCollection.Remove.Request): Rpc.ObjectCollection.Remove.Response
 
     @Throws(Exception::class)
     fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response
@@ -670,6 +679,12 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun setSpaceMode(request: Rpc.PushNotification.SetSpaceMode.Request): Rpc.PushNotification.SetSpaceMode.Response
+
+    @Throws(Exception::class)
+    fun setForceModeIds(request: Rpc.PushNotification.SetForceModeIds.Request): Rpc.PushNotification.SetForceModeIds.Response
+
+    @Throws(Exception::class)
+    fun resetIds(request: Rpc.PushNotification.ResetIds.Request): Rpc.PushNotification.ResetIds.Response
 
     //region PUBLISHING
 

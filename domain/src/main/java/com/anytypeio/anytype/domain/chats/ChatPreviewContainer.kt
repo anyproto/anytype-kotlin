@@ -50,6 +50,7 @@ interface ChatPreviewContainer {
      * @return Flow of chat preview for the space, or null if not found
      */
     fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?>
+    fun observePreviewsBySpaceId(spaceId: SpaceId): Flow<List<Chat.Preview>>
 
     sealed interface PreviewState {
         object Loading : PreviewState
@@ -140,10 +141,23 @@ interface ChatPreviewContainer {
         @OptIn(ExperimentalCoroutinesApi::class)
         override fun observePreviewsWithAttachments(): Flow<PreviewState> = previewsState
 
+        /**
+         * Need to be refactored in the context of multi chats,
+         * since one space can have more than one chat now,
+         * more than one preview
+         */
         override fun observePreviewBySpaceId(spaceId: SpaceId): Flow<Chat.Preview?> =
             previews
                 .map { list -> list?.find { it.space == spaceId } }
                 .distinctUntilChanged()
+
+        override fun observePreviewsBySpaceId(spaceId: SpaceId): Flow<List<Chat.Preview>> {
+            return previews.map { list ->
+                list?.filter { preview ->
+                    preview.space == spaceId
+                } ?: emptyList()
+            }
+        }
 
         private suspend fun collectEvents(initial: List<Chat.Preview>) {
             events.subscribe(SUBSCRIPTION_ID)

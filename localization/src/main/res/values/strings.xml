@@ -1441,7 +1441,10 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copy link</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Join a space</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Private comment for a space owner</string>
     <string name="multiplayer_request_to_join_explanation">Once the space owner approves your request, you\'ll join the space with the access rights owner determined.</string>
@@ -1558,7 +1561,7 @@
 
     <string name="multiplayer_you_as_member">you</string>
 
-    <string name="multiplayer_spaces">Spaces</string>
+    <string name="multiplayer_spaces">Channels</string>
 
     <string name="multiplayer_space_status_joining">Joining</string>
     <string name="multiplayer_space_status_active">Active</string>
@@ -1890,7 +1893,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">New object</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">All</string>
     <string name="vault_pinned_section_title">Pinned</string>
@@ -2215,9 +2218,9 @@ Please provide specific details of your needs here.</string>
     <string name="notifications_modal_cancel_button">Not now</string>
 
     <string name="vault_create_chat">New Chat</string>
-    <string name="vault_create_chat_description">Group chat with content organization</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">New Space</string>
-    <string name="vault_create_space_description">Hub for advanced data management</string>
+    <string name="vault_create_space_description">For organized content and data</string>
 
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
@@ -2239,9 +2242,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
 
     <string name="notifications_title">Notifications</string>
-    <string name="notifications_all">All activity</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">All</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
@@ -2284,6 +2287,9 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">
         The space you are trying to share does not exist. Please check the space ID and try again.
+    </string>
+    <string name="share_space_error_make_private_failed">
+        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
@@ -2338,5 +2344,19 @@ Please provide specific details of your needs here.</string>
 
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
+    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
+    <string name="chat_edit_info">Edit Info</string>
+    <string name="chat_move_to_bin">Move to Bin</string>
+    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
+    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
+    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 
 </resources>

@@ -192,6 +192,10 @@ fun WidgetLongClickMenu(
 
 private fun WidgetView.canChangeWidgetType(): Boolean {
     return when (this) {
+        is WidgetView.ChatList -> {
+            val source = this.source
+            return source !is Widget.Source.Bundled
+        }
         is WidgetView.Gallery -> {
             val source = this.source
             return source !is Widget.Source.Bundled
@@ -229,6 +233,15 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.Bin -> {
+                        if (canChangeWidgetType()) {
+                            add(WidgetMenuItem.ChangeWidgetType)
+                        }
+                        add(WidgetMenuItem.RemoveWidget)
+                    }
+                    is WidgetView.ChatList -> {
+                        if (canCreateObjectOfType) {
+                            add(CreateObjectOfType(id))
+                        }
                         if (canChangeWidgetType()) {
                             add(WidgetMenuItem.ChangeWidgetType)
                         }

@@ -2,9 +2,11 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.editor.model.Indent
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 
 sealed class WidgetView {
 
@@ -14,10 +16,16 @@ sealed class WidgetView {
         data object Empty : Name
     }
 
-    interface Element {
+    sealed interface Element {
         val objectIcon: ObjectIcon
         val obj: ObjectWrapper.Basic
         val name: Name
+        
+        interface Regular : Element
+        
+        interface Chat : Element {
+            val counter: ChatCounter?
+        }
     }
 
     abstract val id: Id
@@ -65,7 +73,8 @@ sealed class WidgetView {
         val icon: ObjectIcon = ObjectIcon.None,
         val name: Name,
         val source: Widget.Source,
-        override val sectionType: SectionType? = null
+        override val sectionType: SectionType? = null,
+        val counter: ChatCounter? = null
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -93,12 +102,29 @@ sealed class WidgetView {
             val isSelected: Boolean
         )
 
-        data class Element(
-            override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic,
-            override val name: Name,
-            val cover: CoverView? = null
-        ) : WidgetView.Element
+        sealed class Element : WidgetView.Element {
+            abstract val cover: CoverView?
+            
+            data class Regular(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val cover: CoverView? = null
+            ) : Element(), WidgetView.Element.Regular
+            
+            data class Chat(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val cover: CoverView? = null,
+                override val counter: ChatCounter? = null,
+                val creatorName: String? = null,
+                val messageText: String? = null,
+                val messageTime: String? = null,
+                val attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+                val chatNotificationState: NotificationState = NotificationState.ALL
+            ) : Element(), WidgetView.Element.Chat
+        }
     }
 
     data class Gallery(
@@ -120,6 +146,38 @@ sealed class WidgetView {
             get() = source.canCreateObjectOfType()
     }
 
+    data class ChatList(
+        override val id: Id,
+        val icon: ObjectIcon = ObjectIcon.None,
+        val source: Widget.Source,
+        val tabs: List<SetOfObjects.Tab>,
+        val elements: List<SetOfObjects.Element>,
+        val isExpanded: Boolean,
+        val isCompact: Boolean = false,
+        val name: Name,
+        val hasMore: Boolean = false,
+        override val sectionType: SectionType? = null,
+        val displayMode: DisplayMode = DisplayMode.Preview
+    ) : WidgetView(), Draggable {
+
+        override val canCreateObjectOfType: Boolean
+            get() = source.canCreateObjectOfType()
+
+        sealed class DisplayMode {
+            /**
+             * Compact display: shows chat objects with counters as list items.
+             */
+            data object Compact : DisplayMode()
+
+            /**
+             * Preview display: shows chat list with message previews.
+             * Currently displays identically to Compact as a placeholder.
+             * Will be replaced with rich preview UI in the future.
+             */
+            data object Preview : DisplayMode()
+        }
+    }
+
     data class ListOfObjects(
         override val id: Id,
         val icon: ObjectIcon,
@@ -135,11 +193,25 @@ sealed class WidgetView {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
 
-        data class Element(
-            override val objectIcon: ObjectIcon,
-            override val obj: ObjectWrapper.Basic,
-            override val name: Name
-        ) : WidgetView.Element
+        sealed class Element : WidgetView.Element {
+            data class Regular(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name
+            ) : Element(), WidgetView.Element.Regular
+            
+            data class Chat(
+                override val objectIcon: ObjectIcon,
+                override val obj: ObjectWrapper.Basic,
+                override val name: Name,
+                override val counter: ChatCounter? = null,
+                val creatorName: String? = null,
+                val messageText: String? = null,
+                val messageTime: String? = null,
+                val attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+                val chatNotificationState: NotificationState = NotificationState.ALL
+            ) : Element(), WidgetView.Element.Chat
+        }
 
         sealed class Type {
             data object Recent : Type()
@@ -180,7 +252,37 @@ sealed class WidgetView {
     }
 
     interface Draggable
+
+    data class ChatCounter(
+        val unreadMentionCount: Int,
+        val unreadMessageCount: Int
+    )
 }
+
+/**
+ * Generates a composite key for use in Compose lazy lists to ensure uniqueness
+ * across different sections (PINNED, TYPES, etc.).
+ * Format: "SECTION_widgetId"
+ */
+fun WidgetView.compositeKey(): String = "${sectionType}_${id}"
+
+/**
+ * Extracts the widget ID from a composite key generated by [compositeKey].
+ *
+ * Expected format: "SECTION_widgetId" (e.g., "PINNED_abc123" or "TYPES_xyz789")
+ *
+ * @return The widget ID portion of the composite key, or null if the format is invalid
+ *         (e.g., no underscore present or empty result after extraction)
+ *
+ * Examples:
+ * - "PINNED_abc123".extractWidgetId() → "abc123"
+ * - "TYPES_xyz".extractWidgetId() → "xyz"
+ * - "PINNED_id_with_underscores".extractWidgetId() → "id_with_underscores"
+ * - "INVALIDKEY".extractWidgetId() → null
+ * - "".extractWidgetId() → null
+ */
+fun String.extractWidgetId(): String? =
+    substringAfter("_", "").takeIf { it.isNotEmpty() }
 
 sealed class DropDownMenuAction {
     data object ChangeWidgetType : DropDownMenuAction()

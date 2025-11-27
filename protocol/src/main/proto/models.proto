@@ -1225,11 +1225,17 @@ message Invite {
 message InvitePayload {
     string creatorIdentity = 1;
     string creatorName = 2;
+    string creatorIconCid = 12;
+    repeated FileEncryptionKey creatorIconEncryptionKeys = 13;
+
     bytes aclKey = 3;
     string spaceId = 4;
     string spaceName = 5;
     string spaceIconCid = 6;
+    uint32 spaceIconOption = 10;
+    uint32 spaceUxType = 11;
     repeated FileEncryptionKey spaceIconEncryptionKeys = 7;
+
 
     InviteType inviteType = 8;
     bytes guestKey = 9;

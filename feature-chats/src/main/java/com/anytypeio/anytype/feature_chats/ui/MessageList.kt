@@ -24,6 +24,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
@@ -54,7 +55,8 @@ fun Messages(
     onShowQRCodeClick: () -> Unit,
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
-    highlightedMessageId: Id?
+    highlightedMessageId: Id?,
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled()
 ) {
     Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
@@ -215,7 +217,8 @@ fun Messages(
                     EmptyState(
                         modifier = Modifier.fillParentMaxSize(),
                         onAddMembersClick = onAddMembersClick,
-                        onShowQRCodeClick = onShowQRCodeClick
+                        onShowQRCodeClick = onShowQRCodeClick,
+                        inviteLinkAccessLevel = inviteLinkAccessLevel
                     )
                 }
             }

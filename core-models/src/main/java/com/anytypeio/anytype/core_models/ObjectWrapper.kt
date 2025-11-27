@@ -234,6 +234,8 @@ sealed class ObjectWrapper {
 
         val orderId: String? get() = getSingleValue(Relations.ORDER_ID)
 
+        val featuredRelations: List<Key> get() = getValues(Relations.FEATURED_RELATIONS)
+
         val allRecommendedRelations: List<Id>
             get() = recommendedFeaturedRelations + recommendedRelations + recommendedFileRelations + recommendedHiddenRelations
 
@@ -404,6 +406,15 @@ sealed class ObjectWrapper {
                 ?.let { code ->
                     NotificationState.entries.firstOrNull { it.code == code.toInt() }
                 } ?: NotificationState.ALL
+
+        val spacePushNotificationForceAllIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_ALL_IDS)
+
+        val spacePushNotificationForceMentionIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_MENTION_IDS)
+
+        val spacePushNotificationForceMuteIds: List<Id>
+            get() = getValues(Relations.PUSH_NOTIFICATION_FORCE_MUTE_IDS)
 
         val spaceOrder: String? get() = getSingleValue(Relations.SPACE_ORDER)
 

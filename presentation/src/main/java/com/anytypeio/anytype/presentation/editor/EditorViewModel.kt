@@ -3387,6 +3387,18 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.CHAT_DERIVED -> {
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenChat(
+                                target = target,
+                                space = vmParams.space.id,
+                                popUpToVault = false
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }
@@ -6526,11 +6538,13 @@ class EditorViewModel(
                 return
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
             val params = SearchObjects.Params(
                 space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context
+                    ignore = context,
+                    spaceUxType = spaceUxType
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6668,7 +6682,7 @@ class EditorViewModel(
             val params = GetObjectTypes.Params(
                 sorts = emptyList(),
                 filters = ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.createObjectLayouts
+                    recommendedLayouts = SupportedLayouts.editorCreateObjectLayouts
                 ),
                 keys = ObjectSearchConstants.defaultKeysObjectType,
                 space = vmParams.space

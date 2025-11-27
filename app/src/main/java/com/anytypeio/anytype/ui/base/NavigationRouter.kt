@@ -36,7 +36,8 @@ class NavigationRouter(
                 )
                 is AppNavigation.Command.OpenChat -> navigation.openChat(
                     target = command.target,
-                    space = command.space
+                    space = command.space,
+                    popUpToVault = command.popUpToVault
                 )
                 is AppNavigation.Command.LaunchObjectSet -> navigation.launchObjectSet(
                     target = command.target,

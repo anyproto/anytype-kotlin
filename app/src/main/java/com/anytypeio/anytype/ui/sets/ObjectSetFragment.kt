@@ -57,8 +57,10 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
 import com.anytypeio.anytype.core_ui.reactive.clicks
@@ -231,10 +233,16 @@ open class ObjectSetFragment :
 
     private val viewerGridHeaderAdapter by lazy { ViewerGridHeaderAdapter() }
 
+    private var contextMenuAnchorView: View? = null
+
     private val viewerGridAdapter by lazy {
         ViewerGridAdapter(
             onCellClicked = vm::onGridCellClicked,
             onObjectHeaderClicked = vm::onObjectHeaderClicked,
+            onObjectHeaderLongClicked = { id, view ->
+                contextMenuAnchorView = view
+                vm.onObjectHeaderLongClicked(id)
+            },
             onTaskCheckboxClicked = vm::onTaskCheckboxClicked
         )
     }
@@ -357,12 +365,22 @@ open class ObjectSetFragment :
             vm.onObjectHeaderClicked(id)
         }
 
+        binding.galleryView.onGalleryItemLongClicked = { id, view ->
+            contextMenuAnchorView = view
+            vm.onObjectHeaderLongClicked(id)
+        }
+
         binding.galleryView.onTaskCheckboxClicked = { id ->
             vm.onTaskCheckboxClicked(id)
         }
 
         binding.listView.onListItemClicked = { id ->
             vm.onObjectHeaderClicked(id)
+        }
+
+        binding.listView.onListItemLongClicked = { id, view ->
+            contextMenuAnchorView = view
+            vm.onObjectHeaderLongClicked(id)
         }
 
         binding.listView.onTaskCheckboxClicked = { id ->
@@ -469,21 +487,19 @@ open class ObjectSetFragment :
     }
 
     private fun setupWindowInsetAnimation() {
-        if (BuildConfig.USE_NEW_WINDOW_INSET_API && Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
-            binding.bottomToolbarBox.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            title.syncFocusWithImeVisibility()
-            binding.viewerEditWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            binding.templatesWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-            binding.titleWidget.syncTranslationWithImeVisibility(
-                dispatchMode = DISPATCH_MODE_STOP
-            )
-        }
+        binding.bottomToolbarBox.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        title.syncFocusWithImeVisibility()
+        binding.viewerEditWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.templatesWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.titleWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
     }
 
     private fun setupGridAdapters() {
@@ -1294,6 +1310,16 @@ open class ObjectSetFragment :
                 )
                 popup.show()
             }
+            is ObjectSetCommand.Modal.ShowObjectHeaderContextMenu -> {
+                contextMenuAnchorView?.let { anchor ->
+                    showObjectHeaderContextMenu(
+                        objectId = command.objectId,
+                        anchor = anchor,
+                        showMoveToBin = command.canMoveToBin,
+                        showRemoveFromCollection = command.isCollection
+                    )
+                }
+            }
             is ObjectSetCommand.ShowOnlyAccessError -> {
                 toast(
                     getString(R.string.multiplayer_read_only_access_error)
@@ -1307,6 +1333,13 @@ open class ObjectSetFragment :
                 ActivityCustomTabsHelper.openUrl(
                     activity = requireActivity(),
                     url = command.url
+                )
+            }
+            is ObjectSetCommand.CopyLinkToClipboard -> {
+                requireContext().copyPlainTextToClipboard(
+                    plainText = command.link,
+                    label = "Object link",
+                    successToast = getString(R.string.link_copied)
                 )
             }
         }
@@ -1562,8 +1595,41 @@ open class ObjectSetFragment :
         componentManager().objectSetComponent.release(ctx)
     }
 
+    private fun showObjectHeaderContextMenu(
+        objectId: Id,
+        anchor: View,
+        showMoveToBin: Boolean,
+        showRemoveFromCollection: Boolean
+    ) {
+        val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
+        val popup = ObjectHeaderContextMenu(
+            context = themeWrapper,
+            view = anchor,
+            showMoveToBin = showMoveToBin,
+            showRemoveFromCollection = showRemoveFromCollection,
+            onOpenAsObjectClicked = {
+                vm.onOpenAsObject(objectId)
+            },
+            onCopyLinkClicked = {
+                vm.onCopyLink(objectId)
+            },
+            onMoveToBinClicked = {
+                vm.onMoveToBin(objectId)
+            },
+            onRemoveFromCollectionClicked = {
+                vm.onRemoveFromCollection(objectId)
+            }
+        )
+        popup.show()
+        contextMenuAnchorView = null
+    }
+
     fun onCloseCurrentObject() {
         vm.onCloseObject()
+    }
+
+    fun onMenuClicked() {
+        vm.onMenuClicked()
     }
 
     companion object {

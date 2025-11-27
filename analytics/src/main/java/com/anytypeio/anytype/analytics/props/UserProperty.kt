@@ -8,11 +8,18 @@ sealed class UserProperty {
         val tier: String
             get() = when (tierId) {
                 0 -> "None"
+                4 -> "Builder"
+                5 -> "Co-Creator"
                 20 -> "Explorer"
                 21 -> "Starter"
                 22 -> "Pioneer"
-                4 -> "Builder"
-                5 -> "Co-Creator"
+                31 -> "Free"
+                40 -> "Plus"
+                41 -> "PlusMonthly"
+                42 -> "Pro"
+                43 -> "ProMonthly"
+                44 -> "Ultra"
+                45 -> "UltraMonthly"
                 else -> "Custom"
             }
     }

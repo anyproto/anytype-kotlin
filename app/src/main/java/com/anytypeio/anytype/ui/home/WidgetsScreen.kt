@@ -32,9 +32,9 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
-import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -50,7 +50,6 @@ fun WidgetsScreen(
     val hapticFeedback = rememberReorderHapticFeedback()
 
     val mode = viewModel.mode.collectAsState().value
-    val chatWidget = viewModel.chatView.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
@@ -97,8 +96,9 @@ fun WidgetsScreen(
 
             val fromType = from.contentType as? SectionType
 
-            val fromId = from.key as? Id
-            val toId = to.key as? Id
+            // Extract widget IDs from composite keys using extractWidgetId() extension
+            val fromId = (from.key as? String)?.extractWidgetId()
+            val toId = (to.key as? String)?.extractWidgetId()
 
             when (fromType) {
                 SectionType.PINNED -> {
@@ -151,31 +151,6 @@ fun WidgetsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            // Chat widget
-            chatWidget?.let { chat ->
-                if (chat is WidgetView.SpaceChat) {
-                    item {
-                        ReorderableItem(
-                            enabled = false,
-                            state = reorderableState,
-                            key = chat.id,
-                        ) {
-                            SpaceChatWidgetCard(
-                                item = chat,
-                                mode = mode,
-                                unReadMentionCount = chat.unreadMentionCount,
-                                unReadMessageCount = chat.unreadMessageCount,
-                                isMuted = chat.isMuted,
-                                onWidgetClicked = viewModel::onWidgetChatClicked,
-                                onDropDownMenuAction = { action ->
-                                    viewModel.onDropDownMenuAction(chat.id, action)
-                                }
-                            )
-                        }
-                    }
-                }
-            }
-
             // Only show pinned section header if there are items or section is collapsed
             if (shouldShowPinnedHeader) {
                 item {
@@ -204,6 +179,7 @@ fun WidgetsScreen(
                 },
                 onWidgetElementClicked = viewModel::onWidgetElementClicked,
                 onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
+                onSeeAllClicked = viewModel::onSeeAllClicked,
                 onWidgetMenuTriggered = viewModel::onWidgetMenuTriggered,
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
@@ -240,6 +216,7 @@ fun WidgetsScreen(
                 },
                 onWidgetElementClicked = viewModel::onWidgetElementClicked,
                 onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
+                onSeeAllClicked = viewModel::onSeeAllClicked,
                 onWidgetMenuTriggered = viewModel::onWidgetMenuTriggered,
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,

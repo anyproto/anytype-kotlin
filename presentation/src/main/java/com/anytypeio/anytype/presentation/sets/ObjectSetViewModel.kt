@@ -21,7 +21,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
+import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
@@ -38,12 +39,14 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -169,6 +172,7 @@ class ObjectSetViewModel(
     private val dataViewSubscription: DataViewSubscription,
     private val objectStore: ObjectStore,
     private val addObjectToCollection: AddObjectToCollection,
+    private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val getObjectTypes: GetObjectTypes,
@@ -182,7 +186,8 @@ class ObjectSetViewModel(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1140,6 +1145,132 @@ class ObjectSetViewModel(
         }
     }
 
+    /**
+     * Called when user long-clicks on a row header in a view (e.g., grid, gallery, or list view)
+     * Shows a context menu with the following options:
+     * - "Open as Object"
+     * - "Copy Link"
+     * - "Move to Bin" (if allowed)
+     * - "Unlink from Collection" (if allowed)
+     */
+    fun onObjectHeaderLongClicked(objectId: Id) {
+        Timber.d("onObjectHeaderLongClicked, id:[$objectId]")
+        viewModelScope.launch {
+
+            // Check object DELETE restriction
+            val obj = objectStore.get(objectId)
+            val hasDeleteRestriction = obj?.restrictions?.contains(ObjectRestriction.DELETE) == true
+
+            // Can move to bin only if: user is owner/editor AND object allows delete
+            val canMoveToBin = isOwnerOrEditor && !hasDeleteRestriction
+
+            // Check if current state is a Collection AND user has edit permission
+            val isCollection = stateReducer.state.value is ObjectState.DataView.Collection
+            val canRemoveFromCollection = isCollection && isOwnerOrEditor
+
+            dispatch(
+                ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(
+                    objectId = objectId,
+                    canMoveToBin = canMoveToBin,
+                    isCollection = canRemoveFromCollection
+                )
+            )
+        }
+    }
+
+    /**
+     * Opens the object as an Anytype object (not as a URL for bookmarks).
+     * This bypasses the default bookmark behavior of opening URLs in browser.
+     */
+    fun onOpenAsObject(targetId: Id) {
+        Timber.d("onOpenAsObject, id:[$targetId]")
+        viewModelScope.launch {
+            val obj = objectStore.get(targetId)
+            if (obj != null) {
+                navigateByLayout(
+                    target = targetId,
+                    space = vmParams.space.id,
+                    layout = obj.layout
+                )
+            } else {
+                toast("Object not found. Please, try again later.")
+            }
+        }
+    }
+
+    /**
+     * Copies the object's deeplink to clipboard.
+     */
+    fun onCopyLink(targetId: Id) {
+        Timber.d("onCopyLink, id:[$targetId]")
+        viewModelScope.launch {
+            val link = deepLinkResolver.createObjectDeepLink(
+                obj = targetId,
+                space = vmParams.space
+            )
+            dispatch(ObjectSetCommand.CopyLinkToClipboard(link = link))
+        }
+    }
+
+    /**
+     * Moves the object to bin (archives it).
+     * Only Owner or Editor can perform this action, and the object must not have DELETE restriction.
+     */
+    fun onMoveToBin(targetId: Id) {
+        Timber.d("onMoveToBin, id:[$targetId]")
+        viewModelScope.launch {
+            // Defensive permission check
+            if (!isOwnerOrEditor) {
+                toast(NOT_ALLOWED)
+                return@launch
+            }
+
+            // Defensive restriction check
+            val obj = objectStore.get(targetId)
+            if (obj?.restrictions?.contains(ObjectRestriction.DELETE) == true) {
+                toast(NOT_ALLOWED)
+                return@launch
+            }
+
+            val params = SetObjectListIsArchived.Params(
+                targets = listOf(targetId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully moved object to bin: $targetId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while moving object to bin")
+                    toast("Error while moving to bin. Please try again.")
+                }
+            )
+        }
+    }
+
+    /**
+     * Removes the object from the current collection (does not delete the object).
+     * Only available when viewing a Collection.
+     */
+    fun onRemoveFromCollection(targetId: Id) {
+        Timber.d("onRemoveFromCollection, id:[$targetId]")
+        viewModelScope.launch {
+            val params = RemoveObjectFromCollection.Params(
+                collectionId = vmParams.ctx,
+                objectIdsToRemove = listOf(targetId)
+            )
+            removeObjectFromCollection.async(params).fold(
+                onSuccess = {
+                    Timber.d("Successfully removed object from collection: $targetId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error removing object from collection")
+                    toast("Error removing from collection. Please try again.")
+                }
+            )
+        }
+    }
+
     fun onRelationTextValueChanged(
         value: Any?,
         objectId: Id,
@@ -1383,20 +1514,29 @@ class ObjectSetViewModel(
         response: CreateDataViewObject.Result,
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
-        if (obj.layout == ObjectType.Layout.NOTE) {
-            proceedWithOpeningObject(
-                target = response.objectId,
-                layout = obj.layout,
-                space = vmParams.space.id
-            )
-        } else {
-            dispatch(
-                ObjectSetCommand.Modal.SetNameForCreatedObject(
-                    ctx = vmParams.ctx,
+        when (obj.layout) {
+            ObjectType.Layout.NOTE -> {
+                proceedWithOpeningObject(
                     target = response.objectId,
+                    layout = obj.layout,
                     space = vmParams.space.id
                 )
-            )
+            }
+            ObjectType.Layout.CHAT_DERIVED -> {
+                proceedWithOpeningChat(
+                    target = obj.id,
+                    space = vmParams.space.id
+                )
+            }
+            else -> {
+                dispatch(
+                    ObjectSetCommand.Modal.SetNameForCreatedObject(
+                        ctx = vmParams.ctx,
+                        target = response.objectId,
+                        space = vmParams.space.id
+                    )
+                )
+            }
         }
     }
 
@@ -1586,6 +1726,30 @@ class ObjectSetViewModel(
         )
     }
 
+    private suspend fun proceedWithOpeningChat(
+        target: Id,
+        space: Id
+    ) {
+        isCustomizeViewPanelVisible.value = false
+        val navigateCommand = AppNavigation.Command.OpenChat(
+            target = target,
+            space = space,
+            popUpToVault = false
+        )
+        closeObject.async(
+            CloseObject.Params(
+                target = vmParams.ctx,
+                space = vmParams.space
+            )
+        ).fold(
+            onSuccess = { navigate(EventWrapper(navigateCommand)) },
+            onFailure = {
+                Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
+                navigate(EventWrapper(navigateCommand))
+            }
+        )
+    }
+
     private fun proceedWithOpeningTemplate(target: Id, targetTypeId: Id, targetTypeKey: Id) {
         isCustomizeViewPanelVisible.value = false
         val event = AppNavigation.Command.OpenModalTemplateSelect(
@@ -1718,6 +1882,17 @@ class ObjectSetViewModel(
                         AppNavigation.Command.OpenDateObject(
                             objectId = target,
                             space = space
+                        )
+                    )
+                )
+            }
+            ObjectType.Layout.CHAT_DERIVED -> {
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenChat(
+                            target = target,
+                            space = space,
+                            popUpToVault = false
                         )
                     )
                 )
@@ -2344,8 +2519,13 @@ class ObjectSetViewModel(
     }
 
     private suspend fun fetchAndProcessObjectTypes(selectedType: Id, widgetState: TypeTemplatesWidgetUI.Data) {
+        // Get space UX type for context-aware filtering
+        val spaceView = spaceViews.get(vmParams.space)
+        val spaceUxType = spaceView?.spaceUxType
+        val createLayouts = getCreateObjectLayouts(spaceUxType)
+        
         val filters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.createObjectLayouts
+            recommendedLayouts = createLayouts
         )
         val params = GetObjectTypes.Params(
             space = vmParams.space,
@@ -2728,6 +2908,10 @@ class ObjectSetViewModel(
                     onEvent(ViewerEvent.SetActive(
                         viewer = action.id,
                         onResult = {
+                            viewersWidgetState.value = viewersWidgetState.value.copy(
+                                showWidget = false,
+                                isEditing = false
+                            )
                             logEvent(
                                 state = state,
                                 analytics = analytics,

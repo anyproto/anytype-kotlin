@@ -31,6 +31,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -48,7 +49,6 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
-import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
@@ -57,6 +57,8 @@ import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListene
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectListener
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
@@ -66,7 +68,8 @@ import timber.log.Timber
 
 class WidgetsScreenFragment : Fragment(),
     ObjectTypeSelectionListener,
-    WidgetSourceTypeListener {
+    WidgetSourceTypeListener,
+    CreateChatObjectListener {
 
     private val deepLink: String? get() = argOrNull(DEEP_LINK_KEY)
 
@@ -74,14 +77,13 @@ class WidgetsScreenFragment : Fragment(),
 
     private var isMnemonicReminderDialogNeeded: Boolean
         get() = argOrNull<Boolean>(SHOW_MNEMONIC_KEY) == true
-        set(value) { arguments?.putBoolean(SHOW_MNEMONIC_KEY, value) }
-
-    @Inject
-    lateinit var featureToggles: FeatureToggles
+        set(value) {
+            arguments?.putBoolean(SHOW_MNEMONIC_KEY, value)
+        }
 
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
-    
+
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -169,6 +171,7 @@ class WidgetsScreenFragment : Fragment(),
                     onDismiss = { vm.onHideQrCodeScreen() }
                 )
             }
+
             else -> {}
         }
 
@@ -247,6 +250,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while navigation")
                 }
             }
+
             is Command.SelectWidgetSource -> {
                 runCatching {
                     findNavController().navigate(
@@ -262,6 +266,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while navigation")
                 }
             }
+
             is Command.ChangeWidgetType -> {
                 runCatching {
                     findNavController().navigate(
@@ -279,6 +284,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while navigation")
                 }
             }
+
             is Command.SelectWidgetType -> {
                 runCatching {
                     findNavController().navigate(
@@ -295,12 +301,14 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while navigation")
                 }
             }
+
             is Command.Deeplink.Invite -> {
                 findNavController().navigate(
                     R.id.requestJoinSpaceScreen,
                     RequestJoinSpaceFragment.args(link = command.link)
                 )
             }
+
             is Command.Deeplink.GalleryInstallation -> {
                 findNavController().navigate(
                     R.id.galleryInstallationScreen,
@@ -310,6 +318,7 @@ class WidgetsScreenFragment : Fragment(),
                     )
                 )
             }
+
             is Command.Deeplink.MembershipScreen -> {
                 runCatching {
                     findNavController().navigate(
@@ -321,11 +330,13 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening membership screen")
                 }
             }
+
             is Command.Deeplink.DeepLinkToObjectNotWorking -> {
                 toast(
                     getString(R.string.multiplayer_deeplink_to_your_object_error)
                 )
             }
+
             is Command.ShareSpace -> {
                 runCatching {
                     findNavController().navigate(
@@ -336,6 +347,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening share screen")
                 }
             }
+
             is Command.ShowLeaveSpaceWarning -> {
                 val dialog = LeaveSpaceWarning.new()
                 dialog.onLeaveSpaceAccepted = {
@@ -344,6 +356,7 @@ class WidgetsScreenFragment : Fragment(),
                 }
                 dialog.show(childFragmentManager, null)
             }
+
             is Command.CreateSourceForNewWidget -> {
                 val dialog = WidgetSourceTypeFragment.new(
                     space = command.space.id,
@@ -351,6 +364,7 @@ class WidgetsScreenFragment : Fragment(),
                 )
                 dialog.show(childFragmentManager, null)
             }
+
             is Command.OpenSpaceSettings -> {
                 runCatching {
                     findNavController().navigate(
@@ -361,12 +375,14 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(e, "Error while opening space settings")
                 }
             }
+
             is Command.OpenObjectCreateDialog -> {
                 val dialog = ObjectTypeSelectionFragment.new(
                     space = command.space.id
                 )
                 dialog.show(childFragmentManager, "object-create-dialog")
             }
+
             is Command.OpenGlobalSearchScreen -> {
                 runCatching {
                     navigation().openGlobalSearch(
@@ -376,6 +392,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening global search screen")
                 }
             }
+
             is Command.OpenVault -> {
                 runCatching {
                     findNavController().navigate(R.id.action_open_vault)
@@ -383,6 +400,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening vault from home screen")
                 }
             }
+
             is Command.HandleChatSpaceBackNavigation -> {
                 runCatching {
                     // Deterministic navigation based on space type, not back stack
@@ -411,12 +429,18 @@ class WidgetsScreenFragment : Fragment(),
                 }
                 startActivity(Intent.createChooser(intent, null))
             }
+
             is Command.CreateNewType -> {
                 runCatching {
                     navigation().openCreateObjectTypeScreen(spaceId = command.space)
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening create new type screen")
                 }
+            }
+
+            is Command.CreateChatObject -> {
+                val dialog = CreateChatObjectFragment.new(space = command.space.id)
+                dialog.show(childFragmentManager, "create-chat-object-dialog")
             }
         }
     }
@@ -430,6 +454,7 @@ class WidgetsScreenFragment : Fragment(),
                     space = destination.space
                 )
             }
+
             is Navigation.OpenSet -> runCatching {
                 navigation().openObjectSet(
                     target = destination.ctx,
@@ -437,18 +462,22 @@ class WidgetsScreenFragment : Fragment(),
                     view = destination.view
                 )
             }
+
             is Navigation.OpenChat -> runCatching {
                 navigation().openChat(
                     target = destination.ctx,
-                    space = destination.space
+                    space = destination.space,
+                    popUpToVault = false
                 )
             }
+
             is Navigation.ExpandWidget -> runCatching {
                 navigation().launchCollections(
                     subscription = destination.subscription,
                     space = destination.space
                 )
             }
+
             is Navigation.OpenAllContent -> {
                 runCatching {
                     navigation().openAllContent(space = destination.space)
@@ -456,6 +485,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(e, "Error while opening all content from widgets")
                 }
             }
+
             is Navigation.OpenDateObject -> {
                 runCatching {
                     navigation().openDateObject(
@@ -466,16 +496,18 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(e, "Error while opening date object from widgets")
                 }
             }
+
             is Navigation.OpenParticipant -> {
                 runCatching {
                     navigation().openParticipantObject(
                         objectId = destination.objectId,
                         space = destination.space
                     )
-                    }.onFailure { e ->
+                }.onFailure { e ->
                     Timber.e(e, "Error while opening participant from widgets")
                 }
             }
+
             is Navigation.OpenType -> {
                 runCatching {
                     navigation().openObjectType(
@@ -486,6 +518,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(e, "Error while opening participant from widgets")
                 }
             }
+
             is Navigation.OpenOwnerOrEditorSpaceSettings -> {
                 runCatching {
                     findNavController()
@@ -499,6 +532,7 @@ class WidgetsScreenFragment : Fragment(),
                     Timber.e(it, "Error while opening space settings")
                 }
             }
+
             is Navigation.OpenBookmarkUrl -> {
                 try {
                     ActivityCustomTabsHelper.openUrl(
@@ -526,6 +560,15 @@ class WidgetsScreenFragment : Fragment(),
         vm.onCreateNewObjectClicked(objType = objType)
     }
 
+    override fun onChatObjectCreated(objectId: Id) {
+        Timber.d("Chat object created from widget: $objectId")
+        navigation().openChat(
+            target = objectId,
+            space = space,
+            popUpToVault = false
+        )
+    }
+
     companion object {
         const val SHOW_MNEMONIC_KEY = "arg.home-screen.show-mnemonic"
         const val DEEP_LINK_KEY = "arg.home-screen.deep-link"
@@ -534,7 +577,7 @@ class WidgetsScreenFragment : Fragment(),
         fun args(
             space: Id,
             deeplink: String? = null
-        ) : Bundle = bundleOf(
+        ): Bundle = bundleOf(
             DEEP_LINK_KEY to deeplink,
             SPACE_ID_KEY to space
         )

@@ -230,14 +230,14 @@ object ObjectMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun addToFeaturedRelations(repo: BlockRepository): AddToFeaturedRelations =
-        AddToFeaturedRelations(repo)
+    fun addToFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): AddToFeaturedRelations =
+        AddToFeaturedRelations(repo, dispatchers)
 
     @JvmStatic
     @Provides
     @PerDialog
-    fun removeFromFeaturedRelations(repo: BlockRepository): RemoveFromFeaturedRelations =
-        RemoveFromFeaturedRelations(repo)
+    fun removeFromFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): RemoveFromFeaturedRelations =
+        RemoveFromFeaturedRelations(repo, dispatchers)
 }
 
 @Module
@@ -404,12 +404,12 @@ object ObjectSetMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun addToFeaturedRelations(repo: BlockRepository): AddToFeaturedRelations =
-        AddToFeaturedRelations(repo)
+    fun addToFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): AddToFeaturedRelations =
+        AddToFeaturedRelations(repo, dispatchers)
 
     @JvmStatic
     @Provides
     @PerDialog
-    fun removeFromFeaturedRelations(repo: BlockRepository): RemoveFromFeaturedRelations =
-        RemoveFromFeaturedRelations(repo)
+    fun removeFromFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): RemoveFromFeaturedRelations =
+        RemoveFromFeaturedRelations(repo, dispatchers)
 }

@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
@@ -267,18 +268,18 @@ suspend fun List<Block>.parseWidgets(
                 val sourceContent = child.content
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
-                    val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
+                    val raw = details[target].orEmpty()
                     val targetObj = ObjectWrapper.Basic(raw)
-                    val icon = targetObj.objectIcon(
-                        builder = urlBuilder,
-                        objType = storeOfObjectTypes.getTypeOfObject(targetObj)
-                    )
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
                         Widget.Source.Default(obj = targetObj)
                     }
                     if (source.hasValidSource() && !WidgetConfig.excludedTypes.contains(source.type)) {
+                        val icon = targetObj.objectIcon(
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(targetObj)
+                        )
                         when (source) {
                             is Widget.Source.Bundled.AllObjects -> {
                                 add(
@@ -390,13 +391,11 @@ data class WidgetUiParams(
 /**
  * Result of building widgets, separated into sections.
  *
- * @property chatWidget The space chat widget, displayed separately at the top (for shared spaces)
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
-    val chatWidget: Widget.Chat? = null,
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
     val binWidget: Widget.Bin? = null
@@ -410,12 +409,6 @@ suspend fun buildWidgetSections(
     storeOfObjectTypes: StoreOfObjectTypes
 ): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
-
-    // Build space chat widget (displayed separately at top for shared spaces)
-    val chatWidget = buildChatWidget(
-        spaceView = spaceView,
-        state = state
-    )
 
     // Build pinned section
     val pinnedWidgets = buildPinnedSection(
@@ -441,7 +434,6 @@ suspend fun buildWidgetSections(
     )
 
     return WidgetSections(
-        chatWidget = chatWidget,
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
         binWidget = binWidget
@@ -508,11 +500,12 @@ private suspend fun buildTypeSection(
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
     if (!isObjectTypeSectionCollapsed) {
+        val spaceUxType = if (isChatSpace) SpaceUxType.CHAT else null
         val types = mapSpaceTypesToWidgets(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,
             storeOfObjectTypes = storeOfObjectTypes,
-            isChatSpace = isChatSpace
+            spaceUxType = spaceUxType
         )
         addAll(types)
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
@@ -541,13 +534,21 @@ internal suspend fun mapSpaceTypesToWidgets(
     isOwnerOrEditor: Boolean,
     config: Config,
     storeOfObjectTypes: StoreOfObjectTypes,
-    isChatSpace: Boolean
+    spaceUxType: SpaceUxType?
 ): List<Widget> {
     val allTypes = storeOfObjectTypes.getAll()
+    
+    // Get system layouts based on space context
+    val systemLayoutsForSpace = getSystemLayouts(spaceUxType)
+    val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(
+        ObjectType.Layout.OBJECT_TYPE,
+        ObjectType.Layout.PARTICIPANT
+    )
+    
     val filteredObjectTypes = allTypes
         .mapNotNull { objectType ->
             if (!objectType.isValid ||
-                SupportedLayouts.excludedSpaceTypeLayouts.contains(objectType.recommendedLayout) ||
+                excludedLayouts.contains(objectType.recommendedLayout) ||
                 objectType.isArchived == true ||
                 objectType.isDeleted == true ||
                 objectType.uniqueKey == ObjectTypeIds.TEMPLATE
@@ -561,11 +562,13 @@ internal suspend fun mapSpaceTypesToWidgets(
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
     // Define custom sort order based on uniqueKey
+    val isChatSpace = spaceUxType == SpaceUxType.CHAT
     val customUniqueKeyOrder = if (!isChatSpace) {
         listOf(
             ObjectTypeIds.PAGE,
             ObjectTypeIds.NOTE,
             ObjectTypeIds.TASK,
+            ObjectTypeIds.CHAT_DERIVED,
             ObjectTypeIds.COLLECTION,
             ObjectTypeIds.SET,
             ObjectTypeIds.BOOKMARK,
@@ -632,7 +635,7 @@ private fun sortObjectTypesByPriority(
 /**
  * Creates a WidgetView from ObjectWrapper.Type based on the widget layout configuration.
  */
-private fun createWidgetViewFromType(objectType: ObjectWrapper.Type, config: Config): Widget {
+private fun createWidgetViewFromType(objectType: Type, config: Config): Widget {
     val widgetSource = Widget.Source.Default(obj = objectType.toBasic())
     val icon = objectType.objectIcon()
     val widgetLimit = objectType.widgetLimit ?: 0

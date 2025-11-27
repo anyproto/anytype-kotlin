@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -29,6 +30,7 @@ class LinkToObjectViewModel(
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -37,7 +39,8 @@ class LinkToObjectViewModel(
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     fieldParser = fieldParser,
-    storeOfObjectTypes = storeOfObjectTypes
+    storeOfObjectTypes = storeOfObjectTypes,
+    spaceViews = spaceViews
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -49,9 +52,15 @@ class LinkToObjectViewModel(
     override suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         space = vmParams.space,
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore
-        ),
+        filters = buildList {
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            addAll(
+                ObjectSearchConstants.getFilterLinkTo(
+                    ignore = ignore,
+                    spaceUxType = spaceUxType
+                )
+            )
+        },
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys
@@ -76,9 +85,11 @@ class LinkToObjectViewModel(
     }
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+        val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
         objects.emit(
             Resultat.success(data.filter {
-                SupportedLayouts.layouts.contains(it.layout)
+                supportedLayouts.contains(it.layout)
             })
         )
     }

@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -27,6 +27,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
@@ -60,7 +61,8 @@ class SelectObjectTypeViewModel(
     private val createPrefilledNote: CreatePrefilledNote,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<SelectTypeViewState>(SelectTypeViewState.Loading)
@@ -84,13 +86,18 @@ class SelectObjectTypeViewModel(
         }
         viewModelScope.launch {
             query.onStart { emit(EMPTY_QUERY) }.flatMapLatest { query ->
+                // Get space UX type for context-aware filtering
+                val spaceView = spaceViews.get(vmParams.space)
+                val spaceUxType = spaceView?.spaceUxType
+                val createLayouts = getCreateObjectLayouts(spaceUxType)
+                
                 val types = getObjectTypes.stream(
                     GetObjectTypes.Params(
                         // TODO DROID-2916 Merge with marketplace object types query results
                         space = vmParams.space,
                         sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
                         filters = ObjectSearchConstants.filterTypes(
-                            recommendedLayouts = SupportedLayouts.createObjectLayouts,
+                            recommendedLayouts = createLayouts,
                             excludedTypeKeys = vmParams.excludedTypeKeys
                         ),
                         keys = ObjectSearchConstants.defaultKeysObjectType,
@@ -140,7 +147,8 @@ class SelectObjectTypeViewModel(
                                         isPinned = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -180,7 +188,8 @@ class SelectObjectTypeViewModel(
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinned = false,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -199,7 +208,8 @@ class SelectObjectTypeViewModel(
                                         isPinnable = false,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -468,7 +478,8 @@ class SelectObjectTypeViewModel(
         private val createPrefilledNote: CreatePrefilledNote,
         private val analytics: Analytics,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(
@@ -485,7 +496,8 @@ class SelectObjectTypeViewModel(
             createPrefilledNote = createPrefilledNote,
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            spaceViews = spaceViews
         ) as T
     }
 
@@ -527,7 +539,7 @@ sealed class SelectTypeView {
         val isLastInSection: Boolean = false,
         val isPinnable: Boolean = true,
         val isDefault: Boolean = false,
-        val canBeDefault: Boolean = true
+        val canBeDefault: Boolean
     ) : SelectTypeView()
 }
 

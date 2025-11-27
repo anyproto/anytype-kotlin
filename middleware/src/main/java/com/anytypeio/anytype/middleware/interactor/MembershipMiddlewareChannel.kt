@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.middleware.interactor
 
 import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipTiers
 import com.anytypeio.anytype.data.auth.event.MembershipRemoteChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.mappers.toCoreModel
@@ -28,6 +29,23 @@ class MembershipMiddlewareChannel(
                             } else {
                                 null
                             }
+                        }
+                        else -> null
+                    }
+                }
+            }.filter { events -> events.isNotEmpty() }
+    }
+
+    override fun observeTiers(): Flow<List<MembershipTiers.Event>> {
+        return eventsProxy.flow()
+            .mapNotNull { emission ->
+                emission.messages.mapNotNull { message ->
+                    when {
+                        message.membershipTiersUpdate != null -> {
+                            val event = message.membershipTiersUpdate
+                            checkNotNull(event)
+                            val tiers = event.tiers.map { it.toCoreModel() }
+                            MembershipTiers.Event(tiers = tiers)
                         }
                         else -> null
                     }

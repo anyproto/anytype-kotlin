@@ -26,6 +26,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.OffsetMapping
 import androidx.compose.ui.text.input.TransformedText
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.IntOffset
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.feature_chats.R
@@ -141,9 +142,48 @@ class AnnotatedTextTransformation(
 ) : VisualTransformation {
     override fun filter(text: AnnotatedString): TransformedText {
         val annotatedString = AnnotatedString.Builder(text).apply {
-            spans.forEach { span ->
-                if (span.start in text.indices && span.end <= text.length) {
-                    addStyle(span.style, span.start, span.end)
+            val processedRanges = mutableSetOf<Int>()
+            
+            spans.forEachIndexed { index, span ->
+                if (index in processedRanges) return@forEachIndexed
+                if (span.start !in text.indices || span.end > text.length) return@forEachIndexed
+                
+                // Find all spans with the same range
+                val sameRangeSpans = mutableListOf(span)
+                for (i in (index + 1) until spans.size) {
+                    val other = spans[i]
+                    if (other.start == span.start && other.end == span.end) {
+                        sameRangeSpans.add(other)
+                        processedRanges.add(i)
+                    }
+                }
+                
+                // Collect text decorations
+                val decorations = sameRangeSpans.mapNotNull { it.style.textDecoration }
+                
+                if (decorations.size > 1) {
+                    // Multiple text decorations - combine them
+                    val combinedDecoration = TextDecoration.combine(decorations)
+                    
+                    // Apply non-decoration styles
+                    sameRangeSpans.forEach { s ->
+                        if (s.style.textDecoration == null) {
+                            addStyle(s.style, span.start, span.end)
+                        } else {
+                            val nonDecorationStyle = s.style.copy(textDecoration = null)
+                            if (nonDecorationStyle != SpanStyle()) {
+                                addStyle(nonDecorationStyle, span.start, span.end)
+                            }
+                        }
+                    }
+                    
+                    // Apply combined decoration once
+                    addStyle(SpanStyle(textDecoration = combinedDecoration), span.start, span.end)
+                } else {
+                    // No conflict - apply normally
+                    sameRangeSpans.forEach { s ->
+                        addStyle(s.style, span.start, span.end)
+                    }
                 }
             }
         }.toAnnotatedString()

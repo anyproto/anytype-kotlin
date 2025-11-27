@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -30,6 +31,7 @@ class BackLinkOrAddToObjectViewModel(
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
+    spaceViews: SpaceViewSubscriptionContainer
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
@@ -38,7 +40,8 @@ class BackLinkOrAddToObjectViewModel(
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     fieldParser = fieldParser,
-    storeOfObjectTypes = storeOfObjectTypes
+    storeOfObjectTypes = storeOfObjectTypes,
+    spaceViews = spaceViews
 ) {
 
     private val _commands = MutableSharedFlow<Command>(replay = 0)

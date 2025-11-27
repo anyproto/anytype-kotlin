@@ -15,6 +15,7 @@ import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.picker.EmojiPickerView
 import javax.inject.Inject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.FlowPreview
@@ -46,7 +47,7 @@ class SelectChatReactionViewModel @Inject constructor(
     /**
      * Default emoji list, including categories.
      */
-    private val default = MutableStateFlow<List<ReactionPickerView>>(emptyList())
+    private val default = MutableStateFlow<List<EmojiPickerView>>(emptyList())
 
     private val recentlyUsed = MutableStateFlow<List<String>>(emptyList())
 
@@ -65,7 +66,7 @@ class SelectChatReactionViewModel @Inject constructor(
                 emptyList()
             } else {
                 suggester.search(query).map { result ->
-                    ReactionPickerView.Emoji(
+                    EmojiPickerView.Emoji(
                         unicode = result.emoji,
                         page = -1,
                         index = -1,
@@ -80,10 +81,10 @@ class SelectChatReactionViewModel @Inject constructor(
     val views = combine(default, recentlyUsed, queries) { default, recentlyUsed, (query, results) ->
         buildList {
             if (query.isEmpty() && recentlyUsed.isNotEmpty()) {
-                add(ReactionPickerView.RecentUsedSection)
+                add(EmojiPickerView.Section(RECENTLY_USED_SECTION_KEY))
                 addAll(
                     recentlyUsed.map { unicode ->
-                        ReactionPickerView.Emoji(
+                        EmojiPickerView.Emoji(
                             unicode = unicode,
                             page = -1,
                             index = -1,
@@ -118,11 +119,11 @@ class SelectChatReactionViewModel @Inject constructor(
 
     private suspend fun loadEmojiWithCategories() = withContext(dispatchers.io) {
 
-        val views = mutableListOf<ReactionPickerView>()
+        val views = mutableListOf<EmojiPickerView>()
 
         provider.emojis.forEachIndexed { categoryIndex, emojis ->
             views.add(
-                ReactionPickerView.Category(
+                EmojiPickerView.Category(
                     index = categoryIndex
                 )
             )
@@ -130,7 +131,7 @@ class SelectChatReactionViewModel @Inject constructor(
                 val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
                 if (!skin)
                     views.add(
-                        ReactionPickerView.Emoji(
+                        EmojiPickerView.Emoji(
                             unicode = emoji,
                             page = categoryIndex,
                             index = emojiIndex,
@@ -196,19 +197,9 @@ class SelectChatReactionViewModel @Inject constructor(
         val msg: Id
     )
 
-    sealed class ReactionPickerView {
-        data object RecentUsedSection: ReactionPickerView()
-        data class Category(val index: Int) : ReactionPickerView()
-        data class Emoji(
-            val unicode: String,
-            val page: Int,
-            val index: Int,
-            val emojified: String = ""
-        ) : ReactionPickerView()
-    }
-
     companion object {
         const val MAX_RECENTLY_USED_COUNT = 20
         const val DEBOUNCE_DURATION = 300L
+        const val RECENTLY_USED_SECTION_KEY = "__recently_used__"
     }
 }

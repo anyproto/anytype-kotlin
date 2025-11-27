@@ -121,6 +121,10 @@ object Relations {
     const val WIDGET_LIMIT = "widgetLimit"
     const val WIDGET_VIEW_ID = "widgetViewId"
 
+    const val PUSH_NOTIFICATION_FORCE_ALL_IDS = "spacePushNotificationForceAllIds"
+    const val PUSH_NOTIFICATION_FORCE_MUTE_IDS = "spacePushNotificationForceMuteIds"
+    const val PUSH_NOTIFICATION_FORCE_MENTION_IDS = "spacePushNotificationForceMentionIds"
+
     const val ORDER_ID = "orderId"
 
     val systemRelationKeys = listOf(

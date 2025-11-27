@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Eigenschaftseinstellungen</string>
     <string name="type_editing_uninstall">Entfernen</string>
     <string name="empty_tree_widget_reader_access">Dieses Objekt ist mit keinem anderen Objekt verlinkt</string>
-    <string name="empty_list_widget_no_objects">Keine Objekte innerhalb</string>
+    <string name="empty_list_widget_no_objects">Hier gibt es keine Objekte</string>
     <string name="empty_list_widget_no_view">Diese Datenansicht hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="this_widget_has_no_object">Dieses Widget hat keine Objekte.\nVersuche ein neues zu erstellen.</string>
     <string name="emoji">Emoji</string>
@@ -838,7 +838,7 @@
     <string name="create_space">Create space</string>
     <string name="create_chat">Chat erstellen</string>
     <string name="create_space_change_icon">Symbol ändern</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Chatname</string>
     <string name="create_space_space_name">Space-Name</string>
     <string name="generic_error">Etwas ist schiefgelaufen. Bitte versuche es erneut.</string>
     <string name="type">Typ</string>
@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
+    <string name="multiplayer_make_private">Privat machen</string>
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Privater Kommentar für einen Space-Eigentümer</string>
     <string name="multiplayer_request_to_join_explanation">Sobald der Spacebesitzer Ihre Anfrage genehmigt, werden Sie dem Space beitreten, wobei der Eigentümer die Zugriffsrechte festgelegt.</string>
@@ -1628,7 +1629,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="version_history_error_get_version">Fehler beim Abrufen des Versionsverlaufs</string>
     <string name="version_history_error_get_members">Fehler beim Abrufen der Mitglieder</string>
     <string name="new_object">Neues Objekt</string>
-    <string name="vault_my_spaces">Meine Spaces</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Ungelesen</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="vault_pinned_section_title">Angeheftet</string>
@@ -1916,9 +1917,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notifications_modal_success_button">Benachrichtigungen aktivieren</string>
     <string name="notifications_modal_cancel_button">Nicht jetzt</string>
     <string name="vault_create_chat">Neuer Chat</string>
-    <string name="vault_create_chat_description">Für Echtzeit-Unterhaltungen</string>
+    <string name="vault_create_chat_description">For real-time conversations</string>
     <string name="vault_create_space">New Space</string>
-    <string name="vault_create_space_description">Für organisierte Inhalte und Daten</string>
+    <string name="vault_create_space_description">For organized content and data</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
     <string name="spaces_introduction_page1_description">Anytype unterstützt jetzt Echtzeit-Chats in geteilten Kanälen — so können eure Gedanken und Dialoge gemeinsam wachsen.</string>
@@ -1937,9 +1938,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="chat_box_record_video">Video aufnehmen</string>
     <string name="chat_camera_permission_denied">Kameraberechtigung verweigert</string>
     <string name="notifications_title">Benachrichtigungen</string>
-    <string name="notifications_all">Alle Aktivitäten</string>
+    <string name="notifications_all">Alle neuen Nachrichten</string>
     <string name="notifications_mentions">Nur Erwähnungen</string>
-    <string name="notifications_disable">Benachrichtigungen deaktivieren</string>
+    <string name="notifications_disable">Nichts</string>
     <string name="notifications_all_short">Alle</string>
     <string name="notifications_mentions_short">Erwähnungen</string>
     <string name="notifications_disable_short">Deaktivieren</string>
@@ -1978,6 +1979,8 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
@@ -2000,6 +2003,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">Dieses Widget kann nicht wiederhergestellt werden</string>
     <string name="widget_unpin_alert_button_unpin">Loslösen</string>
+    <string name="widgets_see_all">Alles ansehen</string>
     <string name="my_sites">Meine Seiten</string>
     <string name="my_sites_empty_state_text">Es gibt noch keine veröffentlichten Objekte</string>
     <string name="my_sites_it_s_empty_here">Hier ist es leer</string>
@@ -2021,4 +2025,17 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Genehmigen</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
+    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
+    <string name="chat_edit_info">Edit Info</string>
+    <string name="chat_move_to_bin">In den Papierkorb verschieben</string>
+    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
+    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
+    <string name="chat_edit_info_upload_image">Bild hochladen</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat-spezifische Benachrichtigungen</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

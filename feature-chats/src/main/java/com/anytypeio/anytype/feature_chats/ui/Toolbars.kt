@@ -18,12 +18,17 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.DropdownMenu
+import androidx.compose.material.DropdownMenuItem
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,17 +41,22 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.datasource.LoremIpsum
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ChatTopToolbar(
     modifier: Modifier,
@@ -54,8 +64,15 @@ fun ChatTopToolbar(
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
     onSpaceNameClicked: () -> Unit,
-    onInviteMembersClicked: () -> Unit
+    onInviteMembersClicked: () -> Unit,
+    onEditInfo: () -> Unit,
+    onPin: () -> Unit,
+    onCopyLink: () -> Unit = {},
+    onMoveToBin: () -> Unit,
+    onProperties: () -> Unit = {},
+    onNotificationSettingChanged: (NotificationSetting) -> Unit
 ) {
+    var showDropdownMenu by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.height(52.dp)
@@ -71,31 +88,48 @@ fun ChatTopToolbar(
             contentDescription = stringResource(R.string.content_desc_back_button),
             contentScale = ContentScale.Inside
         )
-        if (header is ChatViewModel.HeaderView.Default) {
-            Image(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 48.dp)
-                    .height(52.dp)
-                    .width(40.dp)
-                    .noRippleClickable {
-                        onInviteMembersClicked()
-                    },
-                contentScale = ContentScale.Inside,
-                painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
-                contentDescription = "Invite members icon",
-                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-            )
-            SpaceIconView(
-                modifier = Modifier
-                    .align(Alignment.CenterEnd)
-                    .padding(end = 16.dp),
-                mainSize = 28.dp,
-                icon = header.icon,
-                onSpaceIconClick = {
-                    onSpaceIconClicked()
-                }
-            )
+        
+        when(header) {
+            is ChatViewModel.HeaderView.ChatObject -> {
+                ListWidgetObjectIcon(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp)
+                        .noRippleClickable {
+                            showDropdownMenu = !showDropdownMenu
+                        }
+                    ,
+                    iconSize = 28.dp,
+                    icon = header.icon
+                )
+            }
+            is ChatViewModel.HeaderView.Default -> {
+                Image(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 48.dp)
+                        .height(52.dp)
+                        .width(40.dp)
+                        .noRippleClickable {
+                            onInviteMembersClicked()
+                        },
+                    contentScale = ContentScale.Inside,
+                    painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
+                    contentDescription = "Invite members icon",
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
+                )
+                SpaceIconView(
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = 16.dp),
+                    mainSize = 28.dp,
+                    icon = header.icon,
+                    onSpaceIconClick = { onSpaceIconClicked() }
+                )
+            }
+            ChatViewModel.HeaderView.Init -> {
+                // Do nothing
+            }
         }
 
         Row(
@@ -103,7 +137,13 @@ fun ChatTopToolbar(
                 .fillMaxHeight()
                 .padding(horizontal = 100.dp)
                 .fillMaxWidth()
-                .noRippleClickable { onSpaceNameClicked() },
+                .noRippleClickable {
+                    if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
+                        showDropdownMenu = !showDropdownMenu
+                    } else {
+                        onSpaceNameClicked()
+                    }
+                },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -114,7 +154,9 @@ fun ChatTopToolbar(
                     is ChatViewModel.HeaderView.Default -> header.title.ifEmpty {
                         stringResource(R.string.untitled)
                     }
-
+                    is ChatViewModel.HeaderView.ChatObject -> header.title.ifEmpty {
+                        stringResource(R.string.untitled)
+                    }
                     is ChatViewModel.HeaderView.Init -> ""
                 },
                 color = colorResource(R.color.text_primary),
@@ -134,6 +176,43 @@ fun ChatTopToolbar(
                 )
             }
         }
+
+        if (header is ChatViewModel.HeaderView.ChatObject && header.showDropDownMenu) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(top = 52.dp)
+                    .align(Alignment.TopEnd)
+            ) {
+                ChatMenu(
+                    expanded = showDropdownMenu,
+                    currentNotificationSetting = header.notificationSetting,
+                    onDismissRequest = {
+                        showDropdownMenu = false
+                    },
+                    onPropertiesClick = {
+                        onProperties()
+                        showDropdownMenu = false
+                    },
+                    onEditInfoClick = {
+                        onEditInfo()
+                        showDropdownMenu = false
+                    },
+                    onNotificationSettingChanged = { setting ->
+                        onNotificationSettingChanged(setting)
+                        showDropdownMenu = false
+                    },
+                    onPinClick = {
+                        onPin()
+                        showDropdownMenu = false
+                    },
+                    onMoveToBinClick = {
+                        onMoveToBin()
+                        showDropdownMenu = false
+                    }
+                )
+            }
+        }
     }
 }
 
@@ -150,7 +229,13 @@ fun ChatTopToolbarPreview() {
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {},
-        onInviteMembersClicked = {}
+        onInviteMembersClicked = {},
+        onEditInfo = {},
+        onPin = {},
+        onCopyLink = {},
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 
@@ -167,7 +252,13 @@ fun ChatTopToolbarMutedPreview() {
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
         onSpaceNameClicked = {},
-        onInviteMembersClicked = {}
+        onInviteMembersClicked = {},
+        onEditInfo = {},
+        onPin = {},
+        onCopyLink = {},
+        onMoveToBin = {},
+        onProperties = {},
+        onNotificationSettingChanged = {}
     )
 }
 

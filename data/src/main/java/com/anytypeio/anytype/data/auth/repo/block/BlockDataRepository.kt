@@ -462,6 +462,14 @@ class BlockDataRepository(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult = remote.crossSpaceSearchSubscribe(command)
+
+    override suspend fun objectCrossSpaceUnsubscribe(subscription: String) {
+        remote.objectCrossSpaceUnsubscribe(subscription)
+    }
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = remote.cancelObjectSearchSubscription(subscriptions).also {
@@ -903,6 +911,10 @@ class BlockDataRepository(
         return remote.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return remote.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return remote.setQueryToSet(command)
     }
@@ -1139,6 +1151,14 @@ class BlockDataRepository(
 
     override suspend fun unsubscribeFromMessagePreviews(subscription: Id) {
         remote.unsubscribeFromMessagePreviews(subscription)
+    }
+
+    override suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        return remote.setSpaceChatsNotifications(command)
+    }
+
+    override suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        return remote.resetSpaceChatsNotifications(command)
     }
 
     override suspend fun objectRelationListWithValue(command: Command.RelationListWithValue): List<RelationListWithValueItem> {

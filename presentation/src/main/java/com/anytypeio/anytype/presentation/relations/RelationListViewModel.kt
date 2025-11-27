@@ -427,14 +427,14 @@ class RelationListViewModel(
         viewModelScope.launch {
             if (view.featured) {
                 viewModelScope.launch {
-                    removeFromFeaturedRelations(
+                    removeFromFeaturedRelations.async(
                         RemoveFromFeaturedRelations.Params(
                             ctx = ctx,
                             relations = listOf(relationKey)
                         )
-                    ).process(
-                        failure = { Timber.e(it, "Error while removing from featured relations") },
-                        success = {
+                    ).fold(
+                        onFailure = { Timber.e(it, "Error while removing from featured relations") },
+                        onSuccess = {
                             dispatcher.send(it)
                             analytics.sendAnalyticsRelationEvent(
                                 eventName = objectRelationUnfeature,
@@ -447,14 +447,14 @@ class RelationListViewModel(
                 }
             } else {
                 viewModelScope.launch {
-                    addToFeaturedRelations(
+                    addToFeaturedRelations.async(
                         AddToFeaturedRelations.Params(
                             ctx = ctx,
                             relations = listOf(relationKey)
                         )
-                    ).process(
-                        failure = { Timber.e(it, "Error while adding to featured relations") },
-                        success = {
+                    ).fold(
+                        onFailure = { Timber.e(it, "Error while adding to featured relations") },
+                        onSuccess = {
                             dispatcher.send(it)
                             analytics.sendAnalyticsRelationEvent(
                                 eventName = objectRelationFeature,

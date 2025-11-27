@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -40,6 +41,7 @@ class VaultViewModelFactory @Inject constructor(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
+    private val chatsDetailsContainer: ChatsDetailsSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -70,6 +72,7 @@ class VaultViewModelFactory @Inject constructor(
         spaceInviteResolver = spaceInviteResolver,
         profileContainer = profileContainer,
         chatPreviewContainer = chatPreviewContainer,
+        chatsDetailsContainer = chatsDetailsContainer,
         pendingIntentStore = pendingIntentStore,
         stringResourceProvider = stringResourceProvider,
         dateProvider = dateProvider,

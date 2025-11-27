@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/open_as_object"
+        android:title="@string/all_content_item_menu_open" />
+    <item
+        android:id="@+id/copy_link"
+        android:title="@string/copy_link" />
+    <item
+        android:id="@+id/move_to_bin"
+        android:title="@string/object_type_fields_menu_move_to_bin" />
+    <item
+        android:id="@+id/remove_from_collection"
+        android:title="@string/remove_from_collection" />
+</menu>

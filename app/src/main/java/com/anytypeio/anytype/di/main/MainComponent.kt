@@ -31,6 +31,7 @@ import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
+import com.anytypeio.anytype.di.feature.chats.SelectChatIconDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -63,6 +64,7 @@ import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateSelectDependencies
 import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
+import com.anytypeio.anytype.di.feature.widgets.CreateChatObjectDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
@@ -138,6 +140,7 @@ interface MainComponent :
     DateObjectDependencies,
     ObjectTypeDependencies,
     SelectChatReactionDependencies,
+    SelectChatIconDependencies,
     ChatReactionDependencies,
     ParticipantComponentDependencies,
     EditTypePropertiesDependencies,
@@ -148,7 +151,8 @@ interface MainComponent :
     PushContentDependencies,
     PublishToWebDependencies,
     MySitesDependencies,
-    MediaDependencies
+    MediaDependencies,
+    CreateChatObjectDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -381,6 +385,11 @@ abstract class ComponentDependenciesModule {
 
     @Binds
     @IntoMap
+    @ComponentDependenciesKey(SelectChatIconDependencies::class)
+    abstract fun provideSelectChatIconDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
     @ComponentDependenciesKey(ChatReactionDependencies::class)
     abstract fun provideChatReactionDependencies(component: MainComponent): ComponentDependencies
 
@@ -433,4 +442,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(MediaDependencies::class)
     abstract fun mediaDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateChatObjectDependencies::class)
+    abstract fun createChatObjectDependencies(component: MainComponent): ComponentDependencies
 }

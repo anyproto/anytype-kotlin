@@ -10,7 +10,7 @@
     <string name="appearance">Aparência</string>
     <string name="file_storage">Armazenamento de arquivos</string>
     <string name="key">Chave</string>
-    <string name="login_key">Login Key</string>
+    <string name="login_key">Chave de acesso</string>
     <string name="clear_file_cache">Limpar cache de arquivos</string>
     <string name="debug_sync_report">Relatório de Depuração de Sincronização</string>
     <string name="debug">Depuração</string>
@@ -31,7 +31,7 @@
     <string name="settings">Configurações</string>
     <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">Preferências</string>
-    <string name="settings_application">Application</string>
+    <string name="settings_application">Aplicação</string>
     <string name="vault_key">Vault &amp; Key</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
@@ -52,7 +52,7 @@
     <string name="default_space">Entrar no Espaço</string>
     <string name="space_settings_apply_random_gradient">Aplicar cor sólida aleatória</string>
     <string name="space_settings_apply_upload_image">Carregue uma imagem</string>
-    <string name="space_settings_chage_space_icon_color">Change icon color</string>
+    <string name="space_settings_chage_space_icon_color">Alterar cor do ícone</string>
     <string name="profile_settings_apply_upload_image">Carregue uma imagem</string>
     <string name="remove_image">Remover imagem</string>
     <string name="delete_space">Excluir Espaço</string>
@@ -68,10 +68,10 @@
     <string name="get_more_space">Obtenha mais espaço</string>
     <string name="account_name">Nome</string>
     <string name="space_settings">Configurações do espaço</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Não foi possível alterar o tipo do espaço. Tente novamente.</string>
+    <string name="space_settings_error_wallpaper">Falha ao atualizar plano de fundo. Tente novamente.</string>
+    <string name="space_settings_error_name">Falha ao atualizar o nome do espaço. Tente novamente.</string>
+    <string name="space_settings_error_icon">Falha ao atualizar o ícone de espaço. Tente novamente.</string>
     <string name="data_management">Gerenciamento de dados</string>
     <string name="deleted_account_danger_zone_msg">Após solicitar a exclusão do seu vault, você terá 30 dias para cancelar esta solicitação. Após 30 dias, os dados criptografados do vault serão removidos permanentemente do nosso nó de backup e você não conseguirá acessar o Anytype em novos dispositivos.</string>
     <string name="danger_zone">Zona de perigo</string>
@@ -330,7 +330,7 @@
     <string name="unknown_object_type">Tipo desconhecido</string>
     <string name="relation_format_short_text">Texto curto</string>
     <string name="relation_format_long_text">Texto</string>
-    <string name="set_new_relation">Definir nova prioridade</string>
+    <string name="set_new_relation">Definir nova propriedade</string>
     <string name="relation_deleted">Propriedade deletada</string>
     <string name="content_description_document_cover">Document\'s cover</string>
     <string name="content_description_cover_image_view">Cover image view</string>
@@ -812,7 +812,7 @@
     <string name="relation_editing_title">Configurações da propriedade</string>
     <string name="type_editing_uninstall">Remover</string>
     <string name="empty_tree_widget_reader_access">Esse objeto não possui ligações para outros objetos.</string>
-    <string name="empty_list_widget_no_objects">No objects inside</string>
+    <string name="empty_list_widget_no_objects">Não há objetos aqui</string>
     <string name="empty_list_widget_no_view">Esta visualização de dados não tem objetos. \nTente criar objetos.</string>
     <string name="this_widget_has_no_object">Esse componente não tem objetos. \nTente criar um objeto.</string>
     <string name="emoji">Emoji</string>
@@ -836,9 +836,9 @@
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
-    <string name="create_chat">Create chat</string>
+    <string name="create_chat">Criar conversa</string>
     <string name="create_space_change_icon">Alterar ícone</string>
-    <string name="create_space_chat_name">Chat name</string>
+    <string name="create_space_chat_name">Nome da conversa</string>
     <string name="create_space_space_name">Nome do espaço</string>
     <string name="generic_error">Algo deu errado. Por favor, tente novamente.</string>
     <string name="type">Tipo</string>
@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
     <string name="multiplayer_copy_link">Copiar link</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Juntar-se a um espaço</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
     <string name="multiplayer_request_to_join_explanation">Quando o dono do espaço aprovar sua solicitação, você se juntará ao espaço com as permissões que o dono determinar.</string>
@@ -1625,7 +1626,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_version">Erro ao obter histórico de versões</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
-    <string name="vault_my_spaces">Meus Espaços</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Todos</string>
     <string name="vault_pinned_section_title">Fixado</string>
@@ -1934,9 +1935,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_box_record_video">Record Video</string>
     <string name="chat_camera_permission_denied">Camera permission denied</string>
     <string name="notifications_title">Notifications</string>
-    <string name="notifications_all">All activity</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Mentions only</string>
-    <string name="notifications_disable">Disable notifications</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Todos</string>
     <string name="notifications_mentions_short">Mentions</string>
     <string name="notifications_disable_short">Disable</string>
@@ -1975,6 +1976,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="share_space_error_incorrect_permissions">You do not have the necessary permissions. Please contact the space owner for assistance.</string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
@@ -1997,6 +2000,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
     <string name="widget_unpin_alert_button_unpin">Desafixar</string>
+    <string name="widgets_see_all">See all</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
@@ -2018,4 +2022,17 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
+    <string name="chat_pinned_as_widget_success">This chat has been pinned to your widgets.</string>
+    <string name="chat_edit_info">Edit Info</string>
+    <string name="chat_move_to_bin">Move to Bin</string>
+    <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
+    <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
+    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

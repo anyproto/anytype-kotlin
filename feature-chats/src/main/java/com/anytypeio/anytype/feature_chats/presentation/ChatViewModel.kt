@@ -17,17 +17,20 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
+import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
+import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -50,9 +53,13 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
@@ -60,6 +67,8 @@ import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
+import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
+import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
@@ -71,15 +80,12 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
-import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
+import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import java.text.SimpleDateFormat
 import javax.inject.Inject
 import kotlinx.coroutines.Job
@@ -129,8 +135,15 @@ class ChatViewModel @Inject constructor(
     private val getObject: GetObject,
     private val analytics: Analytics,
     private val spaceInviteLinkStore: SpaceInviteLinkStore,
-    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel
-) : BaseViewModel(), ExitToVaultDelegate by exitToVaultDelegate {
+    private val getCurrentInviteAccessLevel: GetCurrentInviteAccessLevel,
+    private val pinObjectAsWidgetDelegate: PinObjectAsWidgetDelegate,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val setObjectDetails: SetObjectDetails,
+    private val setSpaceDetails: SetSpaceDetails,
+    private val setChatNotificationMode: SetChatNotificationMode
+) : BaseViewModel(),
+    ExitToVaultDelegate by exitToVaultDelegate,
+    PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
 
     private val preloadingJobs = mutableListOf<Job>()
 
@@ -149,11 +162,14 @@ class ChatViewModel @Inject constructor(
     val chatBoxMode = MutableStateFlow<ChatBoxMode>(ChatBoxMode.Default())
     val mentionPanelState = MutableStateFlow<MentionPanelState>(MentionPanelState.Hidden)
     val showNotificationPermissionDialog = MutableStateFlow(false)
+    val showMoveToBinDialog = MutableStateFlow(false)
+
     val canCreateInviteLink = MutableStateFlow(false)
     private val spaceAccessType = MutableStateFlow<SpaceAccessType?>(null)
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
     val uiQrCodeState = MutableStateFlow<UiSpaceQrCodeState>(UiSpaceQrCodeState.Hidden)
-    val inviteLinkAccessLevel = MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
+    val inviteLinkAccessLevel =
+        MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
@@ -191,15 +207,51 @@ class ChatViewModel @Inject constructor(
             spaceViews
                 .observe(
                     vmParams.space
-                ).map { view ->
-                    val isMuted = NotificationStateCalculator.calculateMutedState(view)
-                    HeaderView.Default(
-                        title = view.name.orEmpty(),
-                        icon = view.spaceIcon(builder = urlBuilder),
-                        isMuted = isMuted
-                    )
-                }.collect {
-                    header.value = it
+                ).collect { view ->
+                    val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(view)
+                    val notificationSetting = NotificationStateCalculator
+                        .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
+                        .toNotificationSetting()
+                    getObject.async(
+                        GetObject.Params(
+                            target = vmParams.ctx,
+                            space = vmParams.space
+                        )
+                    ).onSuccess { objectView ->
+                        // Chat space
+                        if (view.spaceUxType == SpaceUxType.CHAT) {
+                            header.value = HeaderView.Default(
+                                title = view.name.orEmpty(),
+                                icon = view.spaceIcon(builder = urlBuilder),
+                                isMuted = isMuted,
+                                notificationSetting = notificationSetting
+                            )
+                        } else {
+                            // Chat object
+                            val wrapper = ObjectWrapper.Basic(
+                                objectView.details[vmParams.ctx].orEmpty()
+                            )
+                            val type = storeOfObjectTypes.getTypeOfObject(wrapper)
+                            header.value = HeaderView.ChatObject(
+                                title = wrapper.name.orEmpty(),
+                                icon = wrapper.objectIcon(
+                                    builder = urlBuilder,
+                                    objType = type
+                                ),
+                                isMuted = isMuted,
+                                notificationSetting = notificationSetting
+                            )
+                        }
+                    }.onFailure {
+                        Timber.e(it, "Failed to fetch object for chat header")
+                        // Fallback to space name
+                        header.value = HeaderView.Default(
+                            title = view.name.orEmpty(),
+                            icon = view.spaceIcon(builder = urlBuilder),
+                            isMuted = isMuted,
+                            notificationSetting = notificationSetting
+                        )
+                    }
                 }
         }
 
@@ -218,7 +270,7 @@ class ChatViewModel @Inject constructor(
                     account = acc.id
                 }
                 .onFailure {
-                    Timber.e(it,"Failed to find account for space-level chat")
+                    Timber.e(it, "Failed to find account for space-level chat")
                 }
 
             proceedWithObservingChatMessages(
@@ -279,7 +331,8 @@ class ChatViewModel @Inject constructor(
     ) {
         combine(
             chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
-            chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space).distinctUntilChanged(),
+            chatContainer.subscribeToAttachments(vmParams.ctx, vmParams.space)
+                .distinctUntilChanged(),
             chatContainer.fetchReplies(chat = chat).distinctUntilChanged()
         ) { result, dependencies, replies ->
             Timber.d("DROID-2966 Chat counter state from container: ${result.state}, unread section: ${result.initialUnreadSectionMessageId}")
@@ -346,6 +399,7 @@ class ChatViewModel @Inject constructor(
                                         is Store.Data -> type.members.find { member ->
                                             member.identity == replyMessage.creator
                                         }?.name.orEmpty()
+
                                         is Store.Empty -> ""
                                     }
                                 }
@@ -395,8 +449,7 @@ class ChatViewModel @Inject constructor(
                                     isSelected = ids.contains(account)
                                 )
                             }
-                            .take(ChatConfig.MAX_REACTION_COUNT)
-                        ,
+                            .take(ChatConfig.MAX_REACTION_COUNT),
                         attachments = msg.attachments.map { attachment ->
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
@@ -404,13 +457,14 @@ class ChatViewModel @Inject constructor(
                                     ChatView.Message.Attachment.Image(
                                         obj = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
-                                        name =  wrapper?.name.orEmpty(),
+                                        name = wrapper?.name.orEmpty(),
                                         ext = wrapper?.fileExt.orEmpty(),
                                         status = wrapper
                                             ?.syncStatus()
                                             ?: ChatView.Message.Attachment.SyncStatus.Unknown
                                     )
                                 }
+
                                 else -> {
                                     val wrapper = dependencies[attachment.target]
                                     when (wrapper?.layout) {
@@ -423,6 +477,7 @@ class ChatViewModel @Inject constructor(
                                                 status = wrapper.syncStatus()
                                             )
                                         }
+
                                         ObjectType.Layout.VIDEO -> {
                                             ChatView.Message.Attachment.Video(
                                                 obj = attachment.target,
@@ -432,20 +487,24 @@ class ChatViewModel @Inject constructor(
                                                 status = wrapper.syncStatus()
                                             )
                                         }
+
                                         ObjectType.Layout.BOOKMARK -> {
                                             ChatView.Message.Attachment.Bookmark(
                                                 id = wrapper.id,
-                                                url = wrapper.getSingleValue<String>(Relations.SOURCE).orEmpty(),
+                                                url = wrapper.getSingleValue<String>(Relations.SOURCE)
+                                                    .orEmpty(),
                                                 title = wrapper.name.orEmpty(),
                                                 description = wrapper.description.orEmpty(),
-                                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE).let { hash ->
-                                                    if (!hash.isNullOrEmpty())
-                                                        urlBuilder.large(hash)
-                                                    else
-                                                        null
-                                                }
+                                                imageUrl = wrapper.getSingleValue<String?>(Relations.PICTURE)
+                                                    .let { hash ->
+                                                        if (!hash.isNullOrEmpty())
+                                                            urlBuilder.large(hash)
+                                                        else
+                                                            null
+                                                    }
                                             )
                                         }
+
                                         else -> {
                                             val type = wrapper?.type?.firstOrNull()
                                             ChatView.Message.Attachment.Link(
@@ -453,7 +512,9 @@ class ChatViewModel @Inject constructor(
                                                 wrapper = wrapper,
                                                 icon = wrapper?.objectIcon(
                                                     builder = urlBuilder,
-                                                    objType = storeOfObjectTypes.getTypeOfObject(wrapper)
+                                                    objType = storeOfObjectTypes.getTypeOfObject(
+                                                        wrapper
+                                                    )
                                                 ) ?: ObjectIcon.None,
                                                 typeName = if (type != null)
                                                     storeOfObjectTypes.get(type)?.name.orEmpty()
@@ -467,7 +528,8 @@ class ChatViewModel @Inject constructor(
                             }
                         }.let { results ->
                             if (results.size >= 2) {
-                                val images = results.filterIsInstance<ChatView.Message.Attachment.Image>()
+                                val images =
+                                    results.filterIsInstance<ChatView.Message.Attachment.Image>()
                                 if (images.size == results.size) {
                                     listOf(
                                         ChatView.Message.Attachment.Gallery(
@@ -543,7 +605,7 @@ class ChatViewModel @Inject constructor(
                 syncStatus.value = status
             }
     }
-    
+
     fun onChatBoxInputChanged(
         selection: IntRange,
         text: String
@@ -623,12 +685,15 @@ class ChatViewModel @Inject constructor(
 
             preloadingJobs.cancel()
 
+            // Discard mention panel state on send action
+            mentionPanelState.value = MentionPanelState.Hidden
+
             // Use LinkDetector to find all types of links (URLs, emails, phones)
             val detectedLinkMarks = LinkDetector.addLinkMarksToText(
                 text = msg,
                 existingMarks = markup
             )
-            
+
             // The LinkDetector already handles deduplication, so we can use its result directly
             val normalizedMarkup = detectedLinkMarks.sortedBy { it.range.first }
 
@@ -638,7 +703,7 @@ class ChatViewModel @Inject constructor(
             val attachments = buildList {
                 val currAttachments = chatBoxAttachments.value
                 currAttachments.forEachIndexed { idx, attachment ->
-                    when(attachment) {
+                    when (attachment) {
                         is ChatView.Message.ChatBoxAttachment.Link -> {
                             add(
                                 Chat.Message.Attachment(
@@ -647,6 +712,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.ChatBoxAttachment.Existing.Link -> {
                             add(
                                 Chat.Message.Attachment(
@@ -655,6 +721,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.ChatBoxAttachment.Existing.Image -> {
                             add(
                                 Chat.Message.Attachment(
@@ -663,6 +730,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.ChatBoxAttachment.Existing.Video -> {
                             add(
                                 Chat.Message.Attachment(
@@ -671,6 +739,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.ChatBoxAttachment.Media -> {
                             chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                 set(
@@ -746,6 +815,7 @@ class ChatViewModel @Inject constructor(
                                 }
                             }
                         }
+
                         is ChatView.Message.ChatBoxAttachment.Bookmark -> {
                             chatBoxAttachments.value = currAttachments.toMutableList().apply {
                                 set(
@@ -775,6 +845,7 @@ class ChatViewModel @Inject constructor(
                                 Timber.e(it, "DROID-2966 Error while creating object from url")
                             }
                         }
+
                         is ChatView.Message.ChatBoxAttachment.File -> {
                             var preloadedFileId: Id? = null
                             var path: String? = null
@@ -811,24 +882,29 @@ class ChatViewModel @Inject constructor(
                                             type = Chat.Message.Attachment.Type.File
                                         )
                                     )
-                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
-                                        set(
-                                            index = idx,
-                                            element = attachment.copy(
-                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                    chatBoxAttachments.value =
+                                        currAttachments.toMutableList().apply {
+                                            set(
+                                                index = idx,
+                                                element = attachment.copy(
+                                                    state = ChatView.Message.ChatBoxAttachment.State.Uploaded
+                                                )
                                             )
-                                        )
-                                    }
+                                        }
                                 }.onFailure {
-                                    Timber.e(it, "DROID-2966 Error while uploading file as attachment")
-                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
-                                        set(
-                                            index = idx,
-                                            element = attachment.copy(
-                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                    Timber.e(
+                                        it,
+                                        "DROID-2966 Error while uploading file as attachment"
+                                    )
+                                    chatBoxAttachments.value =
+                                        currAttachments.toMutableList().apply {
+                                            set(
+                                                index = idx,
+                                                element = attachment.copy(
+                                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
+                                                )
                                             )
-                                        )
-                                    }
+                                        }
                                 }
                             }
                         }
@@ -861,6 +937,7 @@ class ChatViewModel @Inject constructor(
                     chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
+
                 is ChatBoxMode.EditMessage -> {
                     editChatMessage.async(
                         params = Command.ChatCommand.EditMessage(
@@ -884,6 +961,7 @@ class ChatViewModel @Inject constructor(
                     chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
+
                 is ChatBoxMode.Reply -> {
                     addChatMessage.async(
                         params = Command.ChatCommand.AddMessage(
@@ -905,6 +983,7 @@ class ChatViewModel @Inject constructor(
                     chatBoxAttachments.value = emptyList()
                     chatBoxMode.value = ChatBoxMode.Default()
                 }
+
                 is ChatBoxMode.ReadOnly -> {
                     // Do nothing.
                 }
@@ -939,7 +1018,7 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             chatBoxAttachments.value = buildList {
                 msg.attachments.forEach { a ->
-                    when(a) {
+                    when (a) {
                         is ChatView.Message.Attachment.Image -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Image(
@@ -948,6 +1027,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.Attachment.Video -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Video(
@@ -956,6 +1036,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.Attachment.Bookmark -> {
                             add(
                                 ChatView.Message.ChatBoxAttachment.Existing.Link(
@@ -966,6 +1047,7 @@ class ChatViewModel @Inject constructor(
                                 )
                             )
                         }
+
                         is ChatView.Message.Attachment.Gallery -> {
                             a.images.forEach { image ->
                                 add(
@@ -976,14 +1058,20 @@ class ChatViewModel @Inject constructor(
                                 )
                             }
                         }
+
                         is ChatView.Message.Attachment.Link -> {
                             val wrapper = a.wrapper
                             if (wrapper != null) {
                                 val type = wrapper.type.firstOrNull()
+                                val name = if (wrapper.layout == ObjectType.Layout.NOTE) {
+                                    wrapper.snippet.orEmpty()
+                                } else {
+                                    wrapper.name.orEmpty()
+                                }
                                 add(
                                     ChatView.Message.ChatBoxAttachment.Existing.Link(
                                         target = wrapper.id,
-                                        name = wrapper.name.orEmpty(),
+                                        name = name,
                                         icon = wrapper.objectIcon(
                                             builder = urlBuilder,
                                             objType = storeOfObjectTypes.getTypeOfObject(wrapper)
@@ -1035,13 +1123,18 @@ class ChatViewModel @Inject constructor(
                         builder = urlBuilder,
                         objType = type
                     )
+                    val title = if (wrapper.layout == ObjectType.Layout.NOTE) {
+                        wrapper.snippet.orEmpty()
+                    } else {
+                        wrapper.name.orEmpty()
+                    }
                     chatBoxAttachments.value += listOf(
                         ChatView.Message.ChatBoxAttachment.Link(
                             target = target,
                             wrapper = GlobalSearchItemView(
                                 id = target,
                                 obj = wrapper,
-                                title = wrapper.name.orEmpty(),
+                                title = title,
                                 icon = icon,
                                 layout = wrapper.layout ?: ObjectType.Layout.BASIC,
                                 space = vmParams.space,
@@ -1063,7 +1156,7 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             var path: String? = null
-            val preloaded = when(attachment) {
+            val preloaded = when (attachment) {
                 is ChatView.Message.ChatBoxAttachment.File -> {
                     val state = attachment.state
                     if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
@@ -1073,6 +1166,7 @@ class ChatViewModel @Inject constructor(
                         null
                     }
                 }
+
                 is ChatView.Message.ChatBoxAttachment.Media -> {
                     val state = attachment.state
                     if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
@@ -1082,6 +1176,7 @@ class ChatViewModel @Inject constructor(
                         null
                     }
                 }
+
                 else -> null
             }
 
@@ -1161,7 +1256,7 @@ class ChatViewModel @Inject constructor(
                 text = msg.content.msg.ifEmpty {
                     // Fallback to attachment name if empty
                     if (msg.attachments.isNotEmpty()) {
-                        when(val attachment = msg.attachments.last()) {
+                        when (val attachment = msg.attachments.last()) {
                             is ChatView.Message.Attachment.Image -> {
                                 if (attachment.ext.isNotEmpty()) {
                                     "${attachment.name}.${attachment.ext}"
@@ -1169,6 +1264,7 @@ class ChatViewModel @Inject constructor(
                                     attachment.name
                                 }
                             }
+
                             is ChatView.Message.Attachment.Video -> {
                                 if (attachment.ext.isNotEmpty()) {
                                     "${attachment.name}.${attachment.ext}"
@@ -1176,6 +1272,7 @@ class ChatViewModel @Inject constructor(
                                     attachment.name
                                 }
                             }
+
                             is ChatView.Message.Attachment.Gallery -> {
                                 val first = attachment.images.firstOrNull()
                                 if (first != null) {
@@ -1188,9 +1285,11 @@ class ChatViewModel @Inject constructor(
                                     EMPTY_STRING_VALUE
                                 }
                             }
+
                             is ChatView.Message.Attachment.Link -> {
-                                attachment.wrapper?.name.orEmpty()
+                                attachment.title
                             }
+
                             is ChatView.Message.Attachment.Bookmark -> {
                                 attachment.url
                             }
@@ -1241,17 +1340,17 @@ class ChatViewModel @Inject constructor(
     }
 
     fun onAttachmentMenuTriggered() {
-       viewModelScope.launch {
-           analytics.sendEvent(
-               eventName = EventsDictionary.chatScreenChatAttach
-           )
-       }
+        viewModelScope.launch {
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatScreenChatAttach
+            )
+        }
     }
 
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
         Timber.d("onAttachmentClicked: m")
         viewModelScope.launch {
-            when(attachment) {
+            when (attachment) {
                 is ChatView.Message.Attachment.Image -> {
                     val images = msg.attachments
                         .flatMap { a ->
@@ -1259,10 +1358,14 @@ class ChatViewModel @Inject constructor(
                                 is ChatView.Message.Attachment.Image -> {
                                     listOf(a)
                                 }
+
                                 is ChatView.Message.Attachment.Gallery -> {
                                     a.images
                                 }
-                                else -> { emptyList() }
+
+                                else -> {
+                                    emptyList()
+                                }
                             }
                         }
                     val index = images.indexOfFirst {
@@ -1277,15 +1380,19 @@ class ChatViewModel @Inject constructor(
                         )
                     )
                 }
+
                 is ChatView.Message.Attachment.Video -> {
                     // TODO
                 }
+
                 is ChatView.Message.Attachment.Gallery -> {
                     // Do nothing.
                 }
+
                 is ChatView.Message.Attachment.Bookmark -> {
                     commands.emit(ViewModelCommand.Browse(attachment.url))
                 }
+
                 is ChatView.Message.Attachment.Link -> {
                     val wrapper = attachment.wrapper
                     if (wrapper != null && !attachment.isDeleted) {
@@ -1434,7 +1541,7 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    fun onBackButtonPressed() {
+    fun onBackButtonPressed(isExitingVault: Boolean) {
         Timber.d("onBackButtonPressed")
         viewModelScope.launch {
             withContext(dispatchers.io) {
@@ -1442,6 +1549,7 @@ class ChatViewModel @Inject constructor(
             }
             withContext(dispatchers.io) {
                 runCatching {
+                    // TODO DROID-4115 check whether we need to close object
                     objectWatcher.unwatch(target = vmParams.ctx, space = vmParams.space)
                 }.onFailure {
                     Timber.e(it, "DROID-2966 Failed to unsubscribe object watcher")
@@ -1449,14 +1557,11 @@ class ChatViewModel @Inject constructor(
                     Timber.d("DROID-2966 ObjectWatcher unwatched")
                 }
             }
-            proceedWithClearingSpaceBeforeExitingToVault()
+            if (isExitingVault) {
+                proceedWithClearingSpaceBeforeExitingToVault()
+            }
             commands.emit(ViewModelCommand.Exit)
         }
-    }
-
-    fun onSpaceNameClicked() {
-        Timber.d("onSpaceNameClicked")
-        onBackButtonPressed()
     }
 
     fun onSpaceIconClicked() {
@@ -1471,6 +1576,358 @@ class ChatViewModel @Inject constructor(
         viewModelScope.launch {
             commands.emit(ViewModelCommand.OpenSpaceMembers(space = vmParams.space))
         }
+    }
+
+    fun onEditInfo() {
+        viewModelScope.launch {
+            val headerView = header.value
+            if (headerView is HeaderView.ChatObject) {
+                val name = headerView.title
+                commands.emit(
+                    ViewModelCommand.OpenChatInfo(
+                        name = name,
+                        icon = headerView.icon
+                    )
+                )
+            }
+        }
+    }
+
+    fun onPinChatAsWidget() {
+        Timber.d("onPinChatAsWidget clicked")
+        viewModelScope.launch(dispatchers.io) {
+            pinChat(
+                space = vmParams.space,
+                obj = vmParams.ctx
+            ).onSuccess {
+                Timber.d("Pinned chat as widget successfully")
+                commands.emit(ViewModelCommand.Toast.PinnedChatAsWidget)
+            }.onFailure {
+                Timber.e(it, "Error while pinning object as widget")
+            }
+        }
+    }
+
+    fun onCopyChatLink() {
+        // TODO: Implement copy link functionality
+    }
+
+    fun onChatInfoSaved(newName: String) {
+        viewModelScope.launch {
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = vmParams.ctx,
+                    details = mapOf(Relations.NAME to newName)
+                )
+            ).onSuccess {
+                Timber.d("Successfully updated chat name to: $newName")
+                // Update local state
+                val currentHeader = header.value
+                if (currentHeader is HeaderView.Default) {
+                    header.value = currentHeader.copy(title = newName)
+                }
+                sendToast("Chat name updated")
+            }.onFailure { e ->
+                Timber.e(e, "Error while updating chat name")
+                sendToast("Failed to update chat name")
+            }
+        }
+    }
+
+    fun onUpdateChatObjectInfoRequested(
+        originalName: String,
+        originalIcon: ObjectIcon,
+        update: ChatInfoUpdate
+    ) {
+        viewModelScope.launch {
+            // Only update name if it has changed
+            val nameChanged = update.name != originalName
+            if (nameChanged && update.name.isNotEmpty()) {
+                setObjectDetails.async(
+                    SetObjectDetails.Params(
+                        ctx = vmParams.ctx,
+                        details = mapOf(Relations.NAME to update.name)
+                    )
+                ).onSuccess {
+                    val currentHeader = header.value
+                    when (currentHeader) {
+                        is HeaderView.Default -> {
+                            header.value = currentHeader.copy(title = update.name)
+                        }
+                        is HeaderView.ChatObject -> {
+                            header.value = currentHeader.copy(title = update.name)
+                        }
+                        else -> {}
+                    }
+                }.onFailure { e ->
+                    Timber.e(e, "Failed to update chat name while saving chat info")
+                }
+            }
+
+            // Only update icon if it has changed
+            when (val icon = update.chatIcon) {
+                is ChatObjectIcon.Image -> {
+                    // Upload and set image icon for chat object
+                    uploadFile.async(
+                        UploadFile.Params(
+                            path = icon.uri,
+                            space = vmParams.space,
+                            type = Block.Content.File.Type.IMAGE
+                        )
+                    ).onSuccess { file ->
+                        setObjectDetails.async(
+                            SetObjectDetails.Params(
+                                ctx = vmParams.ctx,
+                                details = mapOf(
+                                    Relations.ICON_IMAGE to file.id,
+                                    Relations.ICON_EMOJI to ""
+                                )
+                            )
+                        ).onSuccess {
+                            Timber.d("Successfully updated chat object icon with image")
+                            // Update local header state immediately
+                            val currentHeader = header.value
+                            if (currentHeader is HeaderView.ChatObject) {
+                                header.value = currentHeader.copy(
+                                    icon = ObjectIcon.Profile.Image(
+                                        hash = urlBuilder.thumbnail(file.id),
+                                        name = update.name
+                                    )
+                                )
+                            }
+                            sendToast("Chat icon updated")
+                        }.onFailure { e ->
+                            Timber.e(e, "Error while setting uploaded chat icon")
+                            sendToast("Failed to update chat icon")
+                        }
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while uploading chat icon from uri")
+                        sendToast("Failed to upload image")
+                    }
+                }
+                is ChatObjectIcon.Emoji -> {
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(
+                                Relations.ICON_EMOJI to icon.unicode,
+                                Relations.ICON_IMAGE to ""
+                            )
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully updated chat object icon with emoji")
+                        // Update local header state immediately
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.ChatObject) {
+                            header.value = currentHeader.copy(
+                                icon = ObjectIcon.Basic.Emoji(unicode = icon.unicode)
+                            )
+                        }
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while setting emoji icon for chat")
+                        sendToast("Failed to update chat icon")
+                    }
+                }
+                ChatObjectIcon.Removed -> {
+                    // User explicitly removed icon - clear both image and emoji
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(
+                                Relations.ICON_IMAGE to "",
+                                Relations.ICON_EMOJI to ""
+                            )
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully removed chat object icon")
+                        // Update local header state immediately
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.ChatObject) {
+                            header.value = currentHeader.copy(
+                                icon = ObjectIcon.None
+                            )
+                        }
+                        sendToast("Chat icon removed")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while removing chat icon")
+                        sendToast("Failed to remove chat icon")
+                    }
+                }
+                ChatObjectIcon.None -> {
+                    // No change to icon requested
+                }
+            }
+        }
+    }
+
+    fun onChatIconImageSelected(url: Url) {
+        Timber.d("onChatIconImageSelected: $url")
+        viewModelScope.launch {
+            val spaceView = spaceViews.get(vmParams.space)
+            if (spaceView == null) {
+                Timber.e("Space view not available")
+                sendToast("Failed to upload image")
+                return@launch
+            }
+
+            // Upload the file
+            uploadFile.async(
+                UploadFile.Params(
+                    path = url,
+                    space = vmParams.space,
+                    type = Block.Content.File.Type.IMAGE
+                )
+            ).onSuccess { file ->
+                // Update icon based on space type
+                if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                    // For chat spaces, update space details
+                    setSpaceDetails.async(
+                        SetSpaceDetails.Params(
+                            space = vmParams.space,
+                            details = mapOf(Relations.ICON_IMAGE to file.id)
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully updated chat space icon")
+                        // Update local header state
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.Default) {
+                            header.value = currentHeader.copy(
+                                icon = SpaceIconView.ChatSpace.Image(
+                                    url = urlBuilder.thumbnail(file.id)
+                                )
+                            )
+                        }
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while updating chat space icon")
+                        sendToast("Failed to update chat icon")
+                    }
+                } else {
+                    // For non-chat spaces, update chat object details
+                    setObjectDetails.async(
+                        SetObjectDetails.Params(
+                            ctx = vmParams.ctx,
+                            details = mapOf(Relations.ICON_IMAGE to file.id)
+                        )
+                    ).onSuccess {
+                        Timber.d("Successfully updated chat object icon")
+                        // Update local header state
+                        val currentHeader = header.value
+                        if (currentHeader is HeaderView.Default) {
+                            header.value = currentHeader.copy(
+                                icon = SpaceIconView.ChatSpace.Image(
+                                    url = urlBuilder.thumbnail(file.id)
+                                )
+                            )
+                        }
+                        sendToast("Chat icon updated")
+                    }.onFailure { e ->
+                        Timber.e(e, "Error while updating chat object icon")
+                        sendToast("Failed to update chat icon")
+                    }
+                }
+            }.onFailure { e ->
+                Timber.e(e, "Error while uploading chat icon")
+                sendToast("Failed to upload image")
+            }
+        }
+    }
+
+    fun onChatIconRemove() {
+        Timber.d("onChatIconRemove")
+        viewModelScope.launch {
+            val spaceView = spaceViews.get(vmParams.space)
+            if (spaceView == null) {
+                Timber.e("Space view not available")
+                sendToast("Failed to remove icon")
+                return@launch
+            }
+
+            // Reset to random color placeholder
+            val randomColor = SystemColor.entries.random()
+            val details = mapOf(
+                Relations.ICON_IMAGE to "",
+                Relations.ICON_OPTION to randomColor.index.toDouble()
+            )
+
+            if (spaceView.spaceUxType == SpaceUxType.CHAT) {
+                // For chat spaces, update space details
+                setSpaceDetails.async(
+                    SetSpaceDetails.Params(
+                        space = vmParams.space,
+                        details = details
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully removed chat space icon")
+                    // Update local header state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(
+                            icon = SpaceIconView.ChatSpace.Placeholder(
+                                name = currentHeader.title,
+                                color = randomColor
+                            )
+                        )
+                    }
+                    sendToast("Chat icon removed")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while removing chat space icon")
+                    sendToast("Failed to remove chat icon")
+                }
+            } else {
+                // For non-chat spaces, update chat object details
+                setObjectDetails.async(
+                    SetObjectDetails.Params(
+                        ctx = vmParams.ctx,
+                        details = details
+                    )
+                ).onSuccess {
+                    Timber.d("Successfully removed chat object icon")
+                    // Update local header state
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.Default) {
+                        header.value = currentHeader.copy(
+                            icon = SpaceIconView.ChatSpace.Placeholder(
+                                name = currentHeader.title,
+                                color = randomColor
+                            )
+                        )
+                    }
+                    sendToast("Chat icon removed")
+                }.onFailure { e ->
+                    Timber.e(e, "Error while removing chat object icon")
+                    sendToast("Failed to remove chat icon")
+                }
+            }
+        }
+    }
+
+    fun onMoveToBin() {
+        showMoveToBinDialog.value = true
+    }
+
+    fun onMoveToBinConfirmed() {
+        viewModelScope.launch {
+            setObjectListIsArchived.async(
+                SetObjectListIsArchived.Params(
+                    targets = listOf(vmParams.ctx),
+                    isArchived = true
+                )
+            ).onSuccess {
+                Timber.d("Successfully moved chat to bin")
+                showMoveToBinDialog.value = false
+                onBackButtonPressed(isExitingVault = false)
+            }.onFailure { e ->
+                Timber.e(e, "Error while moving chat to bin")
+                sendToast("Failed to move chat to bin")
+                showMoveToBinDialog.value = false
+            }
+        }
+    }
+
+    fun onMoveToBinCancelled() {
+        showMoveToBinDialog.value = false
     }
 
     fun onMediaPreview(objects: List<Id>, index: Int) {
@@ -1566,30 +2023,58 @@ class ChatViewModel @Inject constructor(
         uiQrCodeState.value = UiSpaceQrCodeState.Hidden
     }
 
+    fun onNotificationSettingChanged(setting: NotificationSetting) {
+        viewModelScope.launch {
+            // Convert UI setting to domain model
+            val mode = setting.toNotificationState()
+
+            // Update header optimistically for instant UI feedback
+            val currentHeader = header.value
+            val updatedHeader = when (currentHeader) {
+                is HeaderView.Default -> currentHeader.copy(notificationSetting = setting)
+                is HeaderView.ChatObject -> currentHeader.copy(notificationSetting = setting)
+                else -> currentHeader
+            }
+            header.value = updatedHeader
+
+            setChatNotificationMode.async(
+                params = SetChatNotificationMode.Params(
+                    space = vmParams.space,
+                    chatIds = listOf(vmParams.ctx),
+                    mode = mode
+                )
+            ).onSuccess { payload ->
+                Timber.d("Notification setting changed successfully to: $setting")
+            }.onFailure { e ->
+                Timber.e(e, "Failed to change notification setting")
+                // Revert header to previous state on error
+                header.value = currentHeader
+                sendToast("Failed to update notification setting")
+            }
+        }
+    }
+
     private fun proceedWithShowingQRCode(link: String) {
         viewModelScope.launch {
-            val (spaceName, spaceIcon) = when (val state = header.value) {
-                is HeaderView.Default -> {
-                    val name = state.title
-                    val icon = state.icon
-                    name to icon
-                }
-                HeaderView.Init -> {
-                    "" to null
-                }
-            }
-            uiQrCodeState.value = SpaceInvite(
-                link = link,
-                spaceName = spaceName,
-                icon = spaceIcon
-            )
-
-            analytics.sendEvent(
-                eventName = screenQr,
-                props = Props(
-                    mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.CHAT)
+            val currentHeader = header.value
+            if (currentHeader is HeaderView.Default) {
+                val name = currentHeader.title
+                val icon = currentHeader.icon
+                val (spaceName, spaceIcon) = name to icon
+                uiQrCodeState.value = SpaceInvite(
+                    link = link,
+                    spaceName = spaceName,
+                    icon = spaceIcon
                 )
-            )
+                analytics.sendEvent(
+                    eventName = screenQr,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.route to EventsDictionary.ScreenQrRoutes.CHAT)
+                    )
+                )
+            } else {
+                Timber.e("Sharing QR is not supported for non-chat spaces")
+            }
         }
     }
 
@@ -1782,7 +2267,7 @@ class ChatViewModel @Inject constructor(
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
-    
+
     fun onCameraPermissionDenied() {
         errorState.value = UiErrorState.CameraPermissionDenied
     }
@@ -1814,6 +2299,10 @@ class ChatViewModel @Inject constructor(
         data class ViewMemberCard(val member: Id, val space: SpaceId) : ViewModelCommand()
         data class ShareInviteLink(val link: String) : ViewModelCommand()
         data class ShareQrCode(val link: String) : ViewModelCommand()
+        data class OpenChatInfo(val name: String, val icon: ObjectIcon) : ViewModelCommand()
+        sealed class Toast : ViewModelCommand() {
+            data object PinnedChatAsWidget : Toast()
+        }
     }
 
     sealed class UXCommand {
@@ -1824,7 +2313,8 @@ class ChatViewModel @Inject constructor(
             val objects: List<Id>,
             val idx: Int = 0
         ) : UXCommand()
-        data object ShowRateLimitWarning: UXCommand()
+
+        data object ShowRateLimitWarning : UXCommand()
     }
 
     sealed class ChatBoxMode {
@@ -1834,19 +2324,22 @@ class ChatViewModel @Inject constructor(
         data object ReadOnly : ChatBoxMode() {
             override val isSendingMessageBlocked: Boolean = true
         }
+
         data class Default(
             override val isSendingMessageBlocked: Boolean = false
         ) : ChatBoxMode()
+
         data class EditMessage(
             val msg: Id,
             override val isSendingMessageBlocked: Boolean = false
         ) : ChatBoxMode()
+
         data class Reply(
             val msg: Id,
             val text: String,
             val author: String,
             override val isSendingMessageBlocked: Boolean = false
-        ): ChatBoxMode()
+        ) : ChatBoxMode()
     }
 
     private fun ChatBoxMode.updateIsSendingBlocked(isBlocked: Boolean): ChatBoxMode {
@@ -1864,12 +2357,14 @@ class ChatViewModel @Inject constructor(
             val results: List<Member>,
             val query: Query
         ) : MentionPanelState()
+
         data class Member(
             val id: Id,
             val name: String,
             val icon: SpaceMemberIconView,
             val isUser: Boolean = false
         )
+
         data class Query(
             val query: String,
             val range: IntRange
@@ -1881,7 +2376,18 @@ class ChatViewModel @Inject constructor(
         data class Default(
             val icon: SpaceIconView,
             val title: String,
-            val isMuted: Boolean = false
+            val isMuted: Boolean = false,
+            val showDropDownMenu: Boolean = true,
+            val showAddMembers: Boolean = true,
+            val notificationSetting: NotificationSetting = NotificationSetting.ALL
+        ) : HeaderView()
+        data class ChatObject(
+            val icon: ObjectIcon,
+            val title: String,
+            val isMuted: Boolean = false,
+            val showDropDownMenu: Boolean = true,
+            val showAddMembers: Boolean = false,
+            val notificationSetting: NotificationSetting = NotificationSetting.ALL
         ) : HeaderView()
     }
 
@@ -1893,6 +2399,7 @@ class ChatViewModel @Inject constructor(
 
     sealed class Params {
         abstract val space: Space
+
         data class Default(
             val ctx: Id,
             override val space: Space,

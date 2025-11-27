@@ -195,6 +195,12 @@ interface BlockRemote {
         keys: List<String>
     ): SearchResult
 
+    suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult
+
+    suspend fun objectCrossSpaceUnsubscribe(subscription: String)
+
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?
@@ -392,6 +398,7 @@ interface BlockRemote {
     suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
+    suspend fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
@@ -478,6 +485,8 @@ interface BlockRemote {
     suspend fun unsubscribeChat(chat: Id)
     suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview>
     suspend fun unsubscribeFromMessagePreviews(subscription: Id)
+    suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload
+    suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload
 
     //endregion
 

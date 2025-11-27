@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.presentation.spaces.ChatNotificationItem
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.*
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
@@ -68,6 +69,7 @@ import timber.log.Timber
 fun NewSpaceSettingsScreen(
     uiState: UiSpaceSettingsState,
     uiWallpaperState: List<WallpaperView>,
+    chatsWithCustomNotifications: List<ChatNotificationItem>,
     locale: Locale?,
     uiEvent: (UiEvent) -> Unit
 ) {
@@ -586,10 +588,8 @@ fun NewSpaceSettingsScreen(
         NotificationsPreferenceSheet(
             targetSpaceId = uiState.targetSpaceId,
             currentState = uiState.notificationState,
-            uiEvent = {
-                showNotificationsSettings = false
-                uiEvent(it)
-            },
+            chatsWithCustomNotifications = chatsWithCustomNotifications,
+            uiEvent = uiEvent,
             onDismiss = {
                 showNotificationsSettings = false
             }

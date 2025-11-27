@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation.Format.FILE
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -60,7 +62,8 @@ class ObjectValueViewModel(
     private val duplicateObject: DuplicateObject,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfRelations: StoreOfRelations,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<ObjectValueViewState>(ObjectValueViewState.Loading())
@@ -137,9 +140,11 @@ class ObjectValueViewModel(
             }
             else -> {
                 if (isEditableRelation) {
+                    val spaceUxType = spaceViews.get(viewModelParams.space)?.spaceUxType
                     ObjectSearchConstants.filterAddObjectToRelation(
                         space = viewModelParams.space.id,
-                        targetTypes = relation.relationFormatObjectTypes
+                        targetTypes = relation.relationFormatObjectTypes,
+                        spaceUxType = spaceUxType
                     )
                 } else {
                     ObjectSearchConstants.filterObjectsByIds(

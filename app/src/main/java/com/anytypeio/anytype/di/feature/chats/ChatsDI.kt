@@ -20,9 +20,13 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
+import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
+import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
@@ -32,6 +36,7 @@ import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
+import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import dagger.Binds
 import dagger.BindsInstance
@@ -79,6 +84,19 @@ object ChatModule {
         clearLastOpenedSpace = clearLastOpenedSpace
     )
 
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun providePinObjectAsWidgetDelegate(
+        spaceManager: SpaceManager,
+        createWidget: CreateWidget,
+        showObject: GetObject
+    ) : PinObjectAsWidgetDelegate = PinObjectAsWidgetDelegate.Default(
+        spaceManager = spaceManager,
+        createWidget = createWidget,
+        showObject = showObject
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -117,4 +135,6 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun notificationBuilder(): NotificationBuilder
     fun eventChannel(): EventChannel
     fun spaceLinkInfoStore(): SpaceInviteLinkStore
+    fun setChatNotificationMode(): SetChatNotificationMode
+    fun resetSpaceChatNotification(): ResetSpaceChatNotification
 }

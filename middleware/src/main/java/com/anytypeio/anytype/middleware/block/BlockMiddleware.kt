@@ -422,6 +422,16 @@ class BlockMiddleware(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult = middleware.objectCrossSpaceSearchSubscribe(
+        command
+    )
+
+    override suspend fun objectCrossSpaceUnsubscribe(subscription: String) {
+        middleware.objectCrossSpaceUnsubscribe(subscription)
+    }
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = middleware.objectSearchUnsubscribe(subscriptions = subscriptions)
@@ -868,6 +878,10 @@ class BlockMiddleware(
         return middleware.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return middleware.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return middleware.setQueryToSet(command)
     }
@@ -1108,6 +1122,14 @@ class BlockMiddleware(
 
     override suspend fun unsubscribeFromMessagePreviews(subscription: Id) {
         middleware.chatUnsubscribeFromMessagePreviews(subscription)
+    }
+
+    override suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload {
+        return middleware.setSpaceChatsNotifications(command)
+    }
+
+    override suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload {
+        return middleware.resetSpaceChatsNotifications(command)
     }
 
     override suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload {

@@ -580,18 +580,33 @@ fun NewSettingsTextField(
 
     val focusRequester = remember { FocusRequester() }
 
-    val textFieldValue = TextFieldValue(
-        text = value,
-        selection = TextRange(value.length)
-    )
+    val textFieldValue = remember {
+        mutableStateOf(
+            TextFieldValue(
+                text = value,
+                selection = TextRange(value.length)
+            )
+        )
+    }
+
+    LaunchedEffect(value) {
+        if (textFieldValue.value.text != value) {
+            textFieldValue.value = TextFieldValue(
+                text = value,
+                selection = TextRange(value.length)
+            )
+        }
+    }
+
     BasicTextField(
-        value = textFieldValue,
+        value = textFieldValue.value,
         modifier = Modifier
             .padding(top = 4.dp)
             .fillMaxWidth()
             .focusRequester(focusRequester)
         ,
         onValueChange = { update ->
+            textFieldValue.value = update
             onValueChange(update.text)
         },
         enabled = isEditEnabled,

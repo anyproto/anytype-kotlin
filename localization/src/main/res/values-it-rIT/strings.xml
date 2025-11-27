@@ -753,7 +753,7 @@
     <string name="object_not_exist">Questo oggetto non esiste</string>
     <string name="back_to_dashboard">Back to dashboard</string>
     <string name="go_back">Indietro</string>
-    <string name="snack_object_set_not_found">Query not found for this type.</string>
+    <string name="snack_object_set_not_found">Query non trovata per questo tipo.</string>
     <string name="create_new_set">Crea</string>
     <string name="shortcut_create_new_object_of_type">Nuovo %1$s</string>
     <string name="close">Chiudi</string>
@@ -785,9 +785,9 @@
     <string name="without_template">Without template</string>
     <string name="unsplash_generic_error">Error while searching for images on Unsplash. Please try again later.</string>
     <string name="do_not_forget_to_save_recovery_phrase_msg">Non dimenticare di prendere nota della tua Chiave dalle impostazioni e salvarla.</string>
-    <string name="unlock_your_object_to_add_new_relation">Unlock your object to add new property</string>
+    <string name="unlock_your_object_to_add_new_relation">Sblocca il tuo oggetto per aggiungere una nuova proprietà</string>
     <string name="unlock_your_object_to_edit_relations">Unlock your object to edit relations</string>
-    <string name="fragment_relation_create_from_scratch_title">Select property type</string>
+    <string name="fragment_relation_create_from_scratch_title">Seleziona tipo di proprietà</string>
     <string name="fragment_dashboard_restore">Ripristina</string>
     <string name="your_account_deleted">La tua cassaforte è stata eliminata.</string>
     <plurals name="fragment_dashboard_selected_count">
@@ -809,10 +809,10 @@
     <string name="snack_move_to">moved to</string>
     <string name="recovery_phrase_copied">Chiave copiata</string>
     <string name="type_editing_title">Type settings</string>
-    <string name="relation_editing_title">Property settings</string>
+    <string name="relation_editing_title">Impostazioni della proprietà</string>
     <string name="type_editing_uninstall">Rimuovi</string>
     <string name="empty_tree_widget_reader_access">Questo oggetto non ha collegamenti con altri oggetti.</string>
-    <string name="empty_list_widget_no_objects">Nessun oggetto all\'interno</string>
+    <string name="empty_list_widget_no_objects">Non ci sono oggetti qui</string>
     <string name="empty_list_widget_no_view">This data view has no objects.\nTry to create a new one.</string>
     <string name="this_widget_has_no_object">This widget has no objects.\nTry to create a new one.</string>
     <string name="emoji">Emoji</string>
@@ -1000,7 +1000,7 @@
     <string name="widget_type_compact_list_description">Widget con una vista a elenco compatta</string>
     <string name="widget_type_list">Lista</string>
     <string name="widget_type_view">Vista</string>
-    <string name="widget_type_view_description">Widget with a Query or Collection layout</string>
+    <string name="widget_type_view_description">Widget con layout Query o Collezione</string>
     <string name="widget_type_compact_list">Compact list</string>
     <string name="widget_change_source">Cambia fonte</string>
     <string name="widget_change_type">Cambia Tipo di Widget</string>
@@ -1245,6 +1245,7 @@
     <string name="multiplayer_change_to_request_confirmation">Chiunque abbia il link dovrà richiedere l\'accesso allo spazio.</string>
     <string name="multiplayer_invite_link_copied">Link d\'invito copiato negli appunti</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
+    <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
     <string name="multiplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
@@ -1352,7 +1353,7 @@
         <item quantity="other">%1$d richieste</item>
     </plurals>
     <string name="multiplayer_you_as_member">tu</string>
-    <string name="multiplayer_spaces">Spazi</string>
+    <string name="multiplayer_spaces">Canali</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
     <string name="multiplayer_space_status_removing">Rimosso</string>
@@ -1629,7 +1630,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">I miei Spazi</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
     <string name="vault_pinned_section_title">Fissato</string>
@@ -1650,10 +1651,10 @@ Please provide specific details of your needs here.</string>
     <string name="all_content_sort_by">Sort by</string>
     <string name="all_content_sort_name_desc">Z → A</string>
     <string name="all_content_sort_name_asc">A → Z</string>
-    <string name="all_content_sort_date_desc">Newest first</string>
-    <string name="all_content_sort_date_asc">Oldest first</string>
-    <string name="all_content_sort_date_updated">Date updated</string>
-    <string name="all_content_sort_date_created">Date created</string>
+    <string name="all_content_sort_date_desc">Prima i più recenti</string>
+    <string name="all_content_sort_date_asc">Prima i più vecchi</string>
+    <string name="all_content_sort_date_updated">Data di aggiornamento</string>
+    <string name="all_content_sort_date_created">Data di creazione</string>
     <string name="all_content_sort_date_used">Data ultimo utilizzo</string>
     <string name="all_content_sort_name">Nome</string>
     <string name="all_content_item_menu_open">Apri come Oggetto</string>
@@ -1696,10 +1697,10 @@ Please provide specific details of your needs here.</string>
     <string name="chats_edit_message">Modifica messaggio</string>
     <string name="chats_message_edited">modificato</string>
     <string name="chat_empty_state_message">Non ci sono ancora messaggi.\nSii il primo ad avviare una discussione.</string>
-    <string name="chat_empty_state_title">Nessun messaggio</string>
+    <string name="chat_empty_state_title">Chatta senza il cloud</string>
     <string name="chat_empty_state_subtitle">Invita le persone e inizia la conversazione!</string>
     <string name="chat_empty_state_feature_yours_forever">Tuo per sempre</string>
-    <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
+    <string name="chat_empty_state_feature_offline">Messaggi, documenti &amp; file disponibili offline</string>
     <string name="chat_empty_state_feature_encrypted">Completamente privato e crittografato</string>
     <string name="chat_empty_state_add_members_button">Aggiungi membri</string>
     <string name="chat_empty_state_show_qr_button">Mostra codice QR</string>
@@ -1938,9 +1939,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Registra Video</string>
     <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
     <string name="notifications_title">Notifiche</string>
-    <string name="notifications_all">Tutte le attività</string>
+    <string name="notifications_all">All new messages</string>
     <string name="notifications_mentions">Solo menzioni</string>
-    <string name="notifications_disable">Disattiva le notifiche</string>
+    <string name="notifications_disable">Nothing</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
@@ -1979,6 +1980,8 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
+    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    </string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
     <string name="publish_to_web">Pubblica sul Web</string>
@@ -2001,6 +2004,7 @@ Please provide specific details of your needs here.</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>
     <string name="widget_unpin_alert_title">Questo Widget Non Può Essere Ripristinato</string>
     <string name="widget_unpin_alert_button_unpin">Togli</string>
+    <string name="widgets_see_all">Mostra tutto</string>
     <string name="my_sites">I miei Siti</string>
     <string name="my_sites_empty_state_text">Non ci sono ancora oggetti pubblicati</string>
     <string name="my_sites_it_s_empty_here">Qui è vuoto</string>
@@ -2022,4 +2026,17 @@ Please provide specific details of your needs here.</string>
     </plurals>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approva</string>
+    <string name="chats_warning_you_can_upload_only_10_files_at_a_time">È possibile caricare solo 10 file alla volta</string>
+    <string name="chat_pinned_as_widget_success">Questa chat è stata fissata ai tuoi widget.</string>
+    <string name="chat_edit_info">Modifica Informazioni</string>
+    <string name="chat_move_to_bin">Sposta nel Cestino</string>
+    <string name="move_chat_to_bin_warning_title">Spostare la chat nel Cestino?</string>
+    <string name="chat_move_to_bin_warning_description">Questa chat e tutti i suoi allegati saranno spostati nel Cestino. Nessuno potrà inviare nuovi messaggi. È possibile ripristinarla dal Cestino fino a quando non verrà eliminata definitivamente.</string>
+    <string name="chat_edit_info_upload_image">Carica Immagine</string>
+    <string name="chat_notifications_receive_all">Receive all</string>
+    <string name="chat_notifications_mute_all">Mute all</string>
+    <string name="chat_specific_notifications">Chat specific notifications</string>
+    <string name="notify_me_about">Notify me about</string>
+    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
+    <string name="toast_moved_to_bin">Object moved to bin.</string>
 </resources>

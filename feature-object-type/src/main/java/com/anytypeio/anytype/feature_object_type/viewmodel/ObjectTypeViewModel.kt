@@ -4,15 +4,20 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
 import com.anytypeio.anytype.core_models.permissions.toObjectPermissionsForTypes
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -20,6 +25,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.DeleteObjects
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -28,34 +34,44 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.templates.CreateTemplate
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.*
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.Back
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenAddNewPropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.*
-import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.*
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.ErrorEditingTypeDetails
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Reason.Other
+import com.anytypeio.anytype.feature_object_type.ui.UiErrorState.Show
 import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
-import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
-import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
+import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState
-import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.*
+import com.anytypeio.anytype.feature_object_type.ui.UiLayoutTypeState.Visible
+import com.anytypeio.anytype.feature_object_type.ui.UiPropertiesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiSyncStatusBadgeState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesButtonState
 import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.buildUiPropertiesList
 import com.anytypeio.anytype.feature_object_type.ui.create.UiTypeSetupTitleAndIconState
+import com.anytypeio.anytype.feature_object_type.ui.menu.ObjectTypeMenuEvent
+import com.anytypeio.anytype.feature_object_type.ui.menu.UiObjectTypeMenuState
 import com.anytypeio.anytype.feature_object_type.ui.toTemplateView
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible.View
@@ -75,7 +91,7 @@ import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import com.anytypeio.anytype.presentation.util.Dispatcher
-import kotlin.collections.map
+import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -114,7 +130,14 @@ class ObjectTypeViewModel(
     private val objectTypeSetRecommendedFields: SetObjectTypeRecommendedFields,
     private val setDataViewProperties: SetDataViewProperties,
     private val dispatcher: Dispatcher<Payload>,
-    private val setObjectListIsArchived: SetObjectListIsArchived
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val createWidget: CreateWidget,
+    private val deleteWidget: DeleteWidget,
+    private val spaceManager: SpaceManager,
+    private val getObject: GetObject,
+    private val addToFeaturedRelations: AddToFeaturedRelations,
+    private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
+    private val updateText: UpdateText
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -128,6 +151,7 @@ class ObjectTypeViewModel(
     //header
     val uiTitleState = MutableStateFlow<UiTitleState>(UiTitleState.Companion.EMPTY)
     val uiIconState = MutableStateFlow<UiIconState>(UiIconState.Companion.EMPTY)
+    val uiDescriptionState = MutableStateFlow<UiDescriptionState>(UiDescriptionState.EMPTY)
 
     //layout, properties and templates buttons
     val uiHorizontalButtonsState =
@@ -161,6 +185,9 @@ class ObjectTypeViewModel(
     //icons picker screen
     val uiIconsPickerScreen = MutableStateFlow<UiIconsPickerState>(UiIconsPickerState.Hidden)
 
+    //menu
+    val uiMenuState = MutableStateFlow<UiObjectTypeMenuState>(UiObjectTypeMenuState.Hidden)
+
     //title and icon update screen
     val uiTitleAndIconUpdateState =
         MutableStateFlow<UiTypeSetupTitleAndIconState>(UiTypeSetupTitleAndIconState.Hidden)
@@ -173,6 +200,9 @@ class ObjectTypeViewModel(
     private val _objTypeState = MutableStateFlow<ObjectWrapper.Type?>(null)
     private val _objectTypePermissionsState = MutableStateFlow<ObjectPermissions?>(null)
     private val _objectTypeConflictingFieldIds = MutableStateFlow<List<Id>>(emptyList())
+    private val pinnedWidgetBlockId = MutableStateFlow<Id?>(null)
+    private var targetWidgetBlockId: Id? = null  // Cached first widget block ID for positioning
+    private val _isDescriptionFeatured = MutableStateFlow<Boolean>(false)
     //endregion
 
     val showPropertiesScreen = MutableStateFlow<Boolean>(false)
@@ -190,6 +220,9 @@ class ObjectTypeViewModel(
     fun onStart() {
         Timber.d("onStart, vmParams: $vmParams")
         startSubscriptions()
+        viewModelScope.launch {
+            checkIfTypeIsPinned(ctx = vmParams.objectId, space = vmParams.spaceId)
+        }
     }
 
     fun sendAnalyticsScreenObjectType() {
@@ -354,6 +387,10 @@ class ObjectTypeViewModel(
         (uiTitleAndIconUpdateState.value as? UiTypeSetupTitleAndIconState.Visible.EditType)?.let {
             uiTitleAndIconUpdateState.value = it.copy(icon = newIcon)
         }
+
+        // Update description state
+        updateDescriptionState(objType, objectPermissions)
+
         //turn off button, we give Move to Bin logic in Library now
 //        if (objectPermissions.canDelete) {
 //            uiEditButtonState.value = UiEditButton.Visible
@@ -412,9 +449,9 @@ class ObjectTypeViewModel(
 
         val currentValue = uiTemplatesModalListState.value
         uiTemplatesModalListState.value = when (currentValue) {
-            is UiTemplatesModalListState.Hidden -> currentValue.copy(updatedTemplates)
+            is UiTemplatesModalListState.Hidden -> currentValue.copy(items = updatedTemplates)
             is UiTemplatesModalListState.Visible -> currentValue.copy(
-                updatedTemplates,
+                items = updatedTemplates,
                 showAddIcon = permissions.canCreateTemplatesForThisType
             )
         }
@@ -520,6 +557,10 @@ class ObjectTypeViewModel(
                 showTitleAndIconUpdateScreen()
             }
 
+            is TypeEvent.OnDescriptionChanged -> {
+                onDescriptionChanged(event.text)
+            }
+
             TypeEvent.OnMenuItemDeleteClick -> {
                 uiAlertState.value = UiDeleteAlertState.Show
             }
@@ -585,6 +626,45 @@ class ObjectTypeViewModel(
             TypeEvent.OnIconPickerRemovedClick -> {
                 uiIconsPickerScreen.value = UiIconsPickerState.Hidden
                 removeIcon()
+            }
+
+            TypeEvent.OnMenuClick -> {
+                // Check current description status before showing menu
+                checkDescriptionFeaturedStatus()
+                uiMenuState.value = uiMenuState.value.copy(
+                    isVisible = true,
+                    icon = uiIconState.value.icon,
+                    isPinned = pinnedWidgetBlockId.value != null,
+                    canDelete = _objectTypePermissionsState.value?.canDelete ?: false,
+                    isDescriptionFeatured = _isDescriptionFeatured.value
+                )
+            }
+        }
+    }
+
+    fun onMenuEvent(event: ObjectTypeMenuEvent) {
+        when (event) {
+            ObjectTypeMenuEvent.OnDismiss -> {
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+            }
+            ObjectTypeMenuEvent.OnIconClick -> {
+                // Close menu and show icon picker
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                uiIconsPickerScreen.value = UiIconsPickerState.Visible
+            }
+            ObjectTypeMenuEvent.OnDescriptionClick -> {
+                proceedWithDescriptionToggle()
+            }
+            ObjectTypeMenuEvent.OnToBinClick -> {
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                proceedWithMoveTypeToBin()
+            }
+            ObjectTypeMenuEvent.OnPinToggleClick -> {
+                if (uiMenuState.value.isPinned) {
+                    proceedWithUnpinType()
+                } else {
+                    proceedWithPinType()
+                }
             }
         }
     }
@@ -681,6 +761,43 @@ class ObjectTypeViewModel(
         }
     }
 
+    private fun onDescriptionChanged(text: String) {
+        viewModelScope.launch {
+            val params = UpdateText.Params(
+                context = vmParams.objectId,
+                target = Relations.DESCRIPTION,
+                text = text,
+                marks = listOf()
+            )
+            updateText(params).proceed(
+                failure = {
+                    Timber.e(it, "Error while updating description")
+                },
+                success = {
+                    Timber.d("Description updated")
+                }
+            )
+        }
+    }
+
+    private fun updateDescriptionState(
+        objType: ObjectWrapper.Type,
+        objectPermissions: ObjectPermissions
+    ) {
+        // Access description and featured relations directly from objType
+        val descriptionText = objType.description.orEmpty()
+        val isDescriptionFeatured = objType.featuredRelations.contains(Relations.DESCRIPTION)
+
+        // Update both UI states from the same source of truth (the store)
+        _isDescriptionFeatured.value = isDescriptionFeatured
+
+        uiDescriptionState.value = UiDescriptionState(
+            description = descriptionText,
+            isVisible = isDescriptionFeatured,
+            isEditable = objectPermissions.canEditDetails
+        )
+    }
+
     private fun updateIcon(
         iconName: String,
         newColor: CustomIconColor?
@@ -689,7 +806,7 @@ class ObjectTypeViewModel(
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.ICON_EMOJI to null,
+                    Relations.ICON_EMOJI to "",
                     Relations.ICON_NAME to iconName,
                     Relations.ICON_OPTION to newColor?.iconOption?.toDouble()
                 )
@@ -710,8 +827,8 @@ class ObjectTypeViewModel(
             val params = SetObjectDetails.Params(
                 ctx = vmParams.objectId,
                 details = mapOf(
-                    Relations.ICON_EMOJI to null,
-                    Relations.ICON_NAME to null,
+                    Relations.ICON_EMOJI to "",
+                    Relations.ICON_NAME to "",
                     Relations.ICON_OPTION to null
                 )
             )
@@ -1066,6 +1183,185 @@ class ObjectTypeViewModel(
                 }
             )
         }
+    }
+
+    private fun proceedWithMoveTypeToBin() {
+        val params = SetObjectListIsArchived.Params(
+            targets = listOf(vmParams.objectId),
+            isArchived = true
+        )
+        viewModelScope.launch {
+            setObjectListIsArchived.async(params).fold(
+                onSuccess = {
+                    Timber.d("Object type ${vmParams.objectId} moved to bin")
+                    commands.emit(ObjectTypeCommand.Back)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
+                }
+            )
+        }
+    }
+
+    private fun proceedWithPinType() {
+        viewModelScope.launch {
+            val config = spaceManager.getConfig(vmParams.spaceId)
+            if (config != null) {
+                // Use cached target from fetchWidgetsAndUpdatePinnedState
+                val params = CreateWidget.Params(
+                    ctx = config.widgets,
+                    source = vmParams.objectId,
+                    type = WidgetLayout.COMPACT_LIST,
+                    position = Position.TOP,
+                    target = targetWidgetBlockId
+                )
+                createWidget.async(params).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        Timber.d("Widget created for type ${vmParams.objectId}")
+                        // Update pinned state
+                        checkIfTypeIsPinned(vmParams.objectId, vmParams.spaceId)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        commands.emit(ObjectTypeCommand.ShowToast("Widget created"))
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while creating widget for type")
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            } else {
+                Timber.e("Could not create widget: config is missing.")
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+            }
+        }
+    }
+
+    private fun proceedWithUnpinType() {
+        val widgetId = pinnedWidgetBlockId.value ?: return
+        viewModelScope.launch {
+            val config = spaceManager.getConfig(vmParams.spaceId)
+            deleteWidget.async(
+                params = DeleteWidget.Params(
+                    ctx = config?.widgets ?: return@launch,
+                    targets = listOf(widgetId)
+                )
+            ).fold(
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                    pinnedWidgetBlockId.value = null
+                    Timber.d("Widget removed for type ${vmParams.objectId}")
+                    uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    commands.emit(ObjectTypeCommand.ShowToast("Widget unpinned"))
+                },
+                onFailure = {
+                    Timber.e(it, "Error while deleting widget for type")
+                    uiMenuState.value = UiObjectTypeMenuState.Hidden
+                }
+            )
+        }
+    }
+
+    /**
+     * Checks if description is in featured relations using cached object type state.
+     * Updates the internal state accordingly.
+     */
+    private fun checkDescriptionFeaturedStatus() {
+        val objType = _objTypeState.value
+        _isDescriptionFeatured.value = objType?.featuredRelations?.contains(Relations.DESCRIPTION) ?: false
+    }
+
+    private fun proceedWithDescriptionToggle() {
+        viewModelScope.launch {
+            // Permission check
+            if (userPermissionProvider.get(space = vmParams.spaceId)?.isOwnerOrEditor() != true) {
+                Timber.w("User doesn't have permission to modify featured relations")
+                commands.emit(ObjectTypeCommand.ShowToast("Permission denied"))
+                uiMenuState.value = UiObjectTypeMenuState.Hidden
+                return@launch
+            }
+
+            val isCurrentlyFeatured = _isDescriptionFeatured.value
+
+            if (isCurrentlyFeatured) {
+                // Remove description from featured relations
+                val params = RemoveFromFeaturedRelations.Params(
+                    ctx = vmParams.objectId,
+                    relations = listOf(Relations.DESCRIPTION)
+                )
+                removeFromFeaturedRelations.async(params = params).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        Timber.d("Description removed from featured relations")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error removing description from featured relations")
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to hide description"))
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            } else {
+                // Add description to featured relations
+                addToFeaturedRelations.async(
+                    params = AddToFeaturedRelations.Params(
+                        ctx = vmParams.objectId,
+                        relations = listOf(Relations.DESCRIPTION)
+                    )
+                ).fold(
+                    onSuccess = { payload ->
+                        dispatcher.send(payload)
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                        Timber.d("Description added to featured relations")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error adding description to featured relations")
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to show description"))
+                        uiMenuState.value = UiObjectTypeMenuState.Hidden
+                    }
+                )
+            }
+        }
+    }
+
+    /**
+     * Checks if the given object type is pinned as a widget in the space's home screen.
+     * Updates [pinnedWidgetBlockId] with the widget block ID if found, or null otherwise.
+     */
+    private suspend fun checkIfTypeIsPinned(ctx: Id, space: SpaceId) {
+        spaceManager.getConfig(space)?.let { config ->
+            fetchWidgetsAndUpdatePinnedState(
+                ctx = ctx,
+                widgetsObjectId = config.widgets,
+                space = space
+            )
+        }
+    }
+
+    /**
+     * Fetches the widgets object and updates the pinned state for the given type.
+     */
+    private suspend fun fetchWidgetsAndUpdatePinnedState(
+        ctx: Id,
+        widgetsObjectId: Id,
+        space: SpaceId
+    ) {
+        val params = GetObject.Params(
+            target = widgetsObjectId,
+            space = space,
+            saveAsLastOpened = false
+        )
+        getObject.async(params).fold(
+            onFailure = { error ->
+                Timber.e(error, "Error fetching widgets object")
+                pinnedWidgetBlockId.value = null
+            },
+            onSuccess = { obj ->
+                // Update pinned status
+                pinnedWidgetBlockId.value = findWidgetBlockForObject(ctx, obj.blocks)
+                // Cache first widget block ID for positioning new widgets
+                targetWidgetBlockId = obj.blocks.find { it.content is Block.Content.Widget }?.id
+            }
+        )
     }
 
     private fun proceedWithTemplateDelete(template: Id) {

@@ -3,13 +3,16 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -18,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -31,11 +35,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ParagraphStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextIndent
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -46,6 +56,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -53,11 +64,13 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
@@ -67,6 +80,7 @@ fun DataViewListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -124,7 +138,8 @@ fun DataViewListWidgetCard(
                             icon = element.objectIcon,
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName()
+                            name = element.getPrettyName(),
+                            counter = if (element is WidgetView.Element.Chat) element.counter else null
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -139,8 +154,143 @@ fun DataViewListWidgetCard(
                     }
                 }
                 if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
                     SeeAllButton(
-                        onClick = { onWidgetSourceClicked(item.id) }
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
+                    )
+                }
+            } else {
+                if (item.isExpanded) {
+                    EmptyWidgetPlaceholder(R.string.empty_list_widget_no_objects)
+                    Spacer(modifier = Modifier.height(2.dp))
+                }
+            }
+        }
+
+        WidgetLongClickMenu(
+            menuItems = menuItems,
+            isCardMenuExpanded = isCardMenuExpanded,
+            onDropDownMenuAction = onDropDownMenuAction
+        )
+    }
+}
+
+@Composable
+fun ChatListWidgetCard(
+    item: WidgetView.ChatList,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
+    onWidgetMenuTriggered: (WidgetId) -> Unit,
+    onDropDownMenuAction: (DropDownMenuAction) -> Unit,
+    onChangeWidgetView: (WidgetId, ViewId) -> Unit,
+    onToggleExpandedWidgetState: (WidgetId) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    onCreateElement: (WidgetView) -> Unit = {},
+    menuItems: List<WidgetMenuItem> = emptyList(),
+    isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
+    modifier: Modifier = Modifier
+) {
+    // For now, both Compact and Preview display modes use the same rendering
+    // In the future, when displayMode is Preview, we can render a different UI with message previews
+    Box(modifier = modifier) {
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 0.dp, vertical = 6.dp)
+        ) {
+            WidgetHeader(
+                title = item.name.getPrettyName(),
+                icon = item.icon,
+                isCardMenuExpanded = isCardMenuExpanded,
+                onWidgetHeaderClicked = {
+                    if (mode !is InteractionMode.Edit) {
+                        onWidgetSourceClicked(item.id)
+                    }
+                },
+                onExpandElement = { onToggleExpandedWidgetState(item.id) },
+                isExpanded = item.isExpanded,
+                isInEditMode = mode is InteractionMode.Edit,
+                hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
+                canCreateObject = item.canCreateObjectOfType,
+                onCreateElement = { onCreateElement(item) },
+                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+            )
+            if (item.tabs.size > 1 && item.isExpanded) {
+                DataViewTabs(
+                    tabs = item.tabs,
+                    onChangeWidgetView = { tab ->
+                        onChangeWidgetView(item.id, tab)
+                    }
+                )
+            }
+            if (item.elements.isNotEmpty()) {
+                val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+
+                if (item.isCompact && !usePreviewMode) {
+                    CompactListWidgetList(
+                        mode = mode,
+                        elements = item.elements,
+                        onWidgetElementClicked = onWidgetObjectClicked,
+                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                    )
+                } else {
+                    // Check if we should use Preview mode with ChatWidgetCard
+                    android.util.Log.d("ChatListWidgetCard", "Rendering with displayMode=${item.displayMode}, usePreviewMode=$usePreviewMode, elements=${item.elements.size}")
+                    
+                    item.elements.forEachIndexed { idx, element ->
+                        if (usePreviewMode && element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Use ChatWidgetCard for preview mode
+                            android.util.Log.d("ChatListWidgetCard", "Rendering ChatWidgetCard for element idx=$idx, chatName=${element.getPrettyName()}, creator=${element.creatorName}, message=${element.messageText?.take(30)}")
+                            ChatWidgetCard(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                chatIcon = element.objectIcon,
+                                chatName = element.getPrettyName(),
+                                creatorName = element.creatorName,
+                                messageText = element.messageText,
+                                messageTime = element.messageTime,
+                                attachmentPreviews = element.attachmentPreviews,
+                                unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
+                                unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                chatNotificationState = element.chatNotificationState,
+                                onClick = { onWidgetObjectClicked(element.obj) }
+                            )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
+                        } else {
+                            // Use ListWidgetElement for compact mode
+                            ListWidgetElement(
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                obj = element.obj,
+                                icon = element.objectIcon,
+                                mode = mode,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                name = element.getPrettyName(),
+                                counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
+                        }
+                        if (idx == item.elements.lastIndex) {
+                            Spacer(modifier = Modifier.height(2.dp))
+                        }
+                    }
+                }
+                if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
+                    SeeAllButton(
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
                     )
                 }
             } else {
@@ -165,6 +315,7 @@ fun GalleryWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -222,6 +373,8 @@ fun GalleryWidgetCard(
                         item(key = element.obj.id) {
                             GalleryWidgetItemCard(
                                 item = element,
+                                showIcon = item.showIcon,
+                                showCover = item.showCover,
                                 onItemClicked = {
                                     onWidgetObjectClicked(element.obj)
                                 }
@@ -229,9 +382,13 @@ fun GalleryWidgetCard(
                         }
                         if (idx == item.elements.lastIndex) {
                             item {
+                                // Height should match gallery items based on showCover
+                                val seeAllHeight = if (item.showCover) 136.dp else 54.dp
+
                                 Box(
                                     modifier = Modifier
-                                        .size(136.dp)
+                                        .width(136.dp)
+                                        .height(seeAllHeight)
                                         .border(
                                             width = 1.dp,
                                             color = colorResource(id = R.color.shape_transparent_primary),
@@ -239,7 +396,8 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.id)
+                                            val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
+                                            onSeeAllClicked(item.id, activeViewId)
                                         }
                                 ) {
                                     Text(
@@ -325,7 +483,8 @@ fun ListWidgetElement(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     icon: ObjectIcon,
     obj: ObjectWrapper.Basic,
-    name: String
+    name: String,
+    counter: WidgetView.ChatCounter? = null
 ) {
     Box(
         modifier = Modifier
@@ -387,40 +546,81 @@ fun ListWidgetElement(
                 )
             )
         }
+
+        if (counter != null) {
+            androidx.compose.foundation.layout.Row(
+                modifier = Modifier.align(Alignment.CenterEnd),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                if (counter.unreadMentionCount > 0) {
+                    Box(
+                        modifier = Modifier
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            )
+                            .size(20.dp),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.ic_chat_widget_mention),
+                            contentDescription = null
+                        )
+                    }
+                }
+                if (counter.unreadMessageCount > 0) {
+                    if (counter.unreadMentionCount > 0) {
+                        Spacer(modifier = Modifier.width(8.dp))
+                    }
+                    Box(
+                        modifier = Modifier
+                            .height(20.dp)
+                            .defaultMinSize(minWidth = 20.dp)
+                            .background(
+                                color = colorResource(R.color.color_accent),
+                                shape = CircleShape
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier.padding(horizontal = 6.dp),
+                            text = counter.unreadMessageCount.toString(),
+                            style = Caption1Regular,
+                            color = colorResource(id = R.color.text_white),
+                        )
+                    }
+                }
+            }
+        }
     }
 }
 
 @Composable
 private fun GalleryWidgetItemCard(
     item: WidgetView.SetOfObjects.Element,
+    showIcon: Boolean = false,
+    showCover: Boolean = true,
     onItemClicked: () -> Unit
 ) {
     val isImageType = item.obj.layout == ObjectType.Layout.IMAGE
     val hasCover = item.cover != null
+    
+    val cardHeight = if (showCover) 136.dp else 54.dp
 
-    Box(
-        modifier = Modifier
-            .size(136.dp)
-            .clip(RoundedCornerShape(8.dp))
-            .clickable {
-                onItemClicked()
-            }
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .border(
-                    width = 1.dp,
-                    color = colorResource(id = R.color.shape_transparent_primary),
-                    shape = RoundedCornerShape(8.dp)
-                )
-        )
-
-        when {
-            // Case 1: Image type - show full 136x136 image
-            isImageType -> {
-                when (val cover = item.cover) {
-                    is CoverView.Image -> {
+    when {
+        isImageType -> {
+            when (val cover = item.cover) {
+                // Case 1: Image type - show full 136x136 image
+                is CoverView.Image -> {
+                    Box(
+                        modifier = Modifier
+                            .width(136.dp)
+                            .height(cardHeight)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onItemClicked()
+                            }
+                    ) {
                         AsyncImage(
                             model = cover.url,
                             contentDescription = "Image object",
@@ -429,16 +629,45 @@ private fun GalleryWidgetItemCard(
                                 .clip(RoundedCornerShape(8.dp)),
                             contentScale = ContentScale.Crop,
                         )
+                        GalleryItemBorder()
                     }
-                    else -> {
-                        // Fallback for image type without cover
-                        TitleOnlyContent(item)
+                }
+                // Case 2: Image type - Fallback for image type without cover
+                else -> {
+                    Box(
+                        modifier = Modifier
+                            .height(cardHeight)
+                            .width(136.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .clickable {
+                                onItemClicked()
+                            }
+                    ) {
+                        GalleryIconTitleContent(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 9.dp, start = 12.dp, end = 12.dp),
+                            item = item,
+                            showIcon = showIcon,
+                            showCover = showCover
+                        )
+                        GalleryItemBorder()
                     }
                 }
             }
+        }
 
-            // Case 2: Has cover - show 136x80 cover + title at bottom
-            hasCover -> {
+        // Case 3: Has cover - show 136x80 cover + title at bottom
+        hasCover -> {
+            Box(
+                modifier = Modifier
+                    .width(136.dp)
+                    .height(cardHeight)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onItemClicked()
+                    }
+            ) {
                 Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
@@ -455,7 +684,10 @@ private fun GalleryWidgetItemCard(
                                         .fillMaxSize()
                                         .background(
                                             color = Color(cover.coverColor.color),
-                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                            shape = RoundedCornerShape(
+                                                topEnd = 8.dp,
+                                                topStart = 8.dp
+                                            )
                                         )
                                 )
                             }
@@ -468,7 +700,10 @@ private fun GalleryWidgetItemCard(
                                             Brush.horizontalGradient(
                                                 colors = gradient(cover.gradient)
                                             ),
-                                            shape = RoundedCornerShape(topEnd = 8.dp, topStart = 8.dp)
+                                            shape = RoundedCornerShape(
+                                                topEnd = 8.dp,
+                                                topStart = 8.dp
+                                            )
                                         )
                                 )
                             }
@@ -494,52 +729,109 @@ private fun GalleryWidgetItemCard(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp)
-                            .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                            .height(56.dp),
                         contentAlignment = Alignment.TopStart
                     ) {
-                        Text(
-                            text = when (val name = item.name) {
-                                is WidgetView.Name.Default -> name.prettyPrintName
-                                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
-                                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
-                            },
-                            style = Caption1Medium,
-                            color = colorResource(id = R.color.text_primary),
-                            maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                        GalleryIconTitleContent(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                            item = item,
+                            showIcon = showIcon,
+                            showCover = showCover
                         )
                     }
                 }
+                GalleryItemBorder()
             }
+        }
 
-            // Case 3: No cover - show 136x136 with centered title
-            else -> {
-                TitleOnlyContent(item)
+        // Case 3: No cover - show 136x54 with title and icon
+        else -> {
+            Box(
+                modifier = Modifier
+                    .width(136.dp)
+                    .height(cardHeight)
+                    .clip(RoundedCornerShape(8.dp))
+                    .clickable {
+                        onItemClicked()
+                    }
+            ) {
+                GalleryIconTitleContent(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(top = 8.dp, start = 12.dp, end = 12.dp),
+                    item = item,
+                    showIcon = showIcon,
+                    showCover = showCover
+                )
+                GalleryItemBorder()
             }
         }
     }
 }
 
 @Composable
-private fun TitleOnlyContent(item: WidgetView.SetOfObjects.Element) {
+private fun BoxScope.GalleryItemBorder() {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(top = 9.dp, start = 12.dp, end = 12.dp),
-        contentAlignment = Alignment.TopStart
+            .border(
+                width = 1.dp,
+                color = colorResource(id = R.color.shape_transparent_primary),
+                shape = RoundedCornerShape(8.dp)
+            )
+    )
+}
+
+@Composable
+private fun GalleryIconTitleContent(
+    modifier: Modifier = Modifier,
+    item: WidgetView.SetOfObjects.Element,
+    showIcon: Boolean = false,
+    showCover: Boolean = true
+) {
+    val hasIcon = showIcon && item.objectIcon != ObjectIcon.None
+
+    Box(
+        modifier = modifier
     ) {
+        // Show icon when showIcon is true and icon is not None
+        if (hasIcon) {
+            ListWidgetObjectIcon(
+                icon = item.objectIcon,
+                iconSize = 16.dp,
+                iconWithoutBackgroundMaxSize = 20.dp,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+            )
+        }
+
+        val titleText = when (val name = item.name) {
+            is WidgetView.Name.Default -> name.prettyPrintName
+            is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
+            WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+        }
+
         Text(
-            text = when (val name = item.name) {
-                is WidgetView.Name.Default -> name.prettyPrintName
-                is WidgetView.Name.Bundled -> stringResource(id = name.source.res())
-                WidgetView.Name.Empty -> stringResource(id = R.string.untitled)
+            text = buildAnnotatedString {
+                withStyle(
+                    style = ParagraphStyle(
+                        textIndent = TextIndent(
+                            firstLine = if (hasIcon) 20.sp else 0.sp,
+                            restLine = 0.sp
+                        )
+                    )
+                ) {
+                    append(titleText)
+                }
             },
             style = Caption1Medium,
             color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Start,
             maxLines = 2,
-            overflow = TextOverflow.Ellipsis
+            overflow = TextOverflow.Ellipsis,
+            modifier = Modifier
+                .align(Alignment.TopStart)
         )
     }
 }
@@ -550,7 +842,7 @@ private fun TitleOnlyContent(item: WidgetView.SetOfObjects.Element) {
 @Composable
 fun GalleryWidgetItemCard_ImageType_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -573,7 +865,7 @@ fun GalleryWidgetItemCard_ImageType_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithImageCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -596,8 +888,9 @@ fun GalleryWidgetItemCard_WithImageCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithColorCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
-            objectIcon = ObjectIcon.None,
+        showIcon = true,
+        item = WidgetView.SetOfObjects.Element.Regular(
+            objectIcon = ObjectIcon.TypeIcon.Default.DEFAULT,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
                     Relations.NAME to "Meeting Notes",
@@ -619,7 +912,7 @@ fun GalleryWidgetItemCard_WithColorCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_WithGradientCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -642,7 +935,7 @@ fun GalleryWidgetItemCard_WithGradientCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_NoCover_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
+        item = WidgetView.SetOfObjects.Element.Regular(
             objectIcon = ObjectIcon.None,
             obj = ObjectWrapper.Basic(
                 map = mapOf(
@@ -665,8 +958,12 @@ fun GalleryWidgetItemCard_NoCover_Preview() {
 @Composable
 fun GalleryWidgetItemCard_NoCoverShort_Preview() {
     GalleryWidgetItemCard(
-        item = WidgetView.SetOfObjects.Element(
-            objectIcon = ObjectIcon.None,
+        showIcon = true,
+        item = WidgetView.SetOfObjects.Element.Regular(
+            objectIcon = ObjectIcon.TypeIcon.Default(
+                rawValue = "american-football",
+                color = CustomIconColor.Blue
+            ),
             obj = ObjectWrapper.Basic(
                 map = mapOf(
                     Relations.NAME to "Tasks",
@@ -674,7 +971,7 @@ fun GalleryWidgetItemCard_NoCoverShort_Preview() {
                 )
             ),
             name = WidgetView.Name.Default(
-                prettyPrintName = "Tasks"
+                prettyPrintName = "Buy, study, and share this game as an example of video games as true art."
             ),
             cover = null
         ),
@@ -700,7 +997,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💡"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -711,7 +1008,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Product Ideas")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📊"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -722,7 +1019,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
                     ),
                     name = WidgetView.Name.Default("Q4 Planning")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("✅"),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -740,6 +1037,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -762,22 +1060,22 @@ fun DataViewListWidgetCard_Compact_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🏠"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Home Dashboard")),
                     name = WidgetView.Name.Default("Home Dashboard")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📁"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Projects Folder")),
                     name = WidgetView.Name.Default("Projects Folder")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Reading List")),
                     name = WidgetView.Name.Default("Reading List")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🔖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-4", Relations.NAME to "Bookmarks")),
                     name = WidgetView.Name.Default("Bookmarks")
@@ -790,6 +1088,7 @@ fun DataViewListWidgetCard_Compact_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -819,6 +1118,7 @@ fun DataViewListWidgetCard_Loading_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -848,6 +1148,7 @@ fun DataViewListWidgetCard_Empty_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -870,7 +1171,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📖"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Book 1")),
                     name = WidgetView.Name.Default("Book 1")
@@ -883,6 +1184,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -921,7 +1223,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                 )
             ),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(
                         mapOf(
@@ -932,7 +1234,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
                     ),
                     name = WidgetView.Name.Default("Design mockups")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Task(isChecked = false),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "task-2", Relations.NAME to "Code review")),
                     name = WidgetView.Name.Default("Code review")
@@ -945,6 +1247,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -967,12 +1270,12 @@ fun DataViewListWidgetCard_EditMode_Preview() {
             ),
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📄"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Document 1")),
                     name = WidgetView.Name.Default("Document 1")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("📝"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Document 2")),
                     name = WidgetView.Name.Default("Document 2")
@@ -985,6 +1288,7 @@ fun DataViewListWidgetCard_EditMode_Preview() {
         mode = InteractionMode.Edit,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1005,17 +1309,17 @@ fun DataViewListWidgetCard_Favorites_Preview() {
             source = Widget.Source.Bundled.Favorites,
             tabs = emptyList(),
             elements = listOf(
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("💼"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-1", Relations.NAME to "Work Notes")),
                     name = WidgetView.Name.Default("Work Notes")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🎨"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-2", Relations.NAME to "Design System")),
                     name = WidgetView.Name.Default("Design System")
                 ),
-                WidgetView.SetOfObjects.Element(
+                WidgetView.SetOfObjects.Element.Regular(
                     objectIcon = ObjectIcon.Basic.Emoji("🚀"),
                     obj = ObjectWrapper.Basic(mapOf(Relations.ID to "obj-3", Relations.NAME to "Launch Plan")),
                     name = WidgetView.Name.Default("Launch Plan")
@@ -1028,6 +1332,7 @@ fun DataViewListWidgetCard_Favorites_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },

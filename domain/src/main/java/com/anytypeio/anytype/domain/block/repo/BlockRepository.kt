@@ -236,6 +236,17 @@ interface BlockRepository {
         keys: List<String>
     ): SearchResult
 
+    /**
+     * Subscribe to search results across all user spaces.
+     * Unlike searchObjectsWithSubscription which is scoped to a single space,
+     * this searches across all spaces globally.
+     */
+    suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult
+
+    suspend fun objectCrossSpaceUnsubscribe(subscription: String)
+
     suspend fun cancelObjectSearchSubscription(subscriptions: List<Id>)
 
     suspend fun addRelationToObject(ctx: Id, relation: Key): Payload?
@@ -441,6 +452,7 @@ interface BlockRepository {
     suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
+    suspend fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
     suspend fun nodeUsage(): NodeUsageInfo
@@ -518,6 +530,8 @@ interface BlockRepository {
     suspend fun unsubscribeChat(chat: Id)
     suspend fun subscribeToMessagePreviews(subscription: Id): List<Chat.Preview>
     suspend fun unsubscribeFromMessagePreviews(subscription: Id)
+    suspend fun setSpaceChatsNotifications(command: Command.SpaceChatsNotifications.SetForceModeIds): Payload
+    suspend fun resetSpaceChatsNotifications(command: Command.SpaceChatsNotifications.ResetIds): Payload
 
     //endregion
 

@@ -35,7 +35,7 @@ class SpaceChatWidgetContainer @Inject constructor(
 
                 // Find the space view for this widget's space
                 val spaceView = spaceViews.find { it.targetSpaceId == widget.config.space }
-                val isMuted = NotificationStateCalculator.calculateMutedState(spaceView)
+                val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
 
                 WidgetView.SpaceChat(
                     id = widget.id,

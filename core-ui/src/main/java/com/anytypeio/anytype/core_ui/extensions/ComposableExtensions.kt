@@ -148,6 +148,7 @@ fun SystemColor.res(): Color {
 
 fun SystemColor.resInt(): Int {
     return when (this) {
+        SystemColor.GRAY -> R.color.palette_system_gray
         SystemColor.YELLOW -> R.color.palette_system_yellow
         SystemColor.AMBER -> R.color.palette_system_amber_100
         SystemColor.RED -> R.color.palette_system_red
@@ -162,6 +163,7 @@ fun SystemColor.resInt(): Int {
 
 fun SystemColor.resLightInt(): Int {
     return when (this) {
+        SystemColor.GRAY -> R.color.palette_light_grey
         SystemColor.YELLOW -> R.color.palette_light_yellow
         SystemColor.AMBER -> R.color.palette_light_orange
         SystemColor.RED -> R.color.palette_light_red

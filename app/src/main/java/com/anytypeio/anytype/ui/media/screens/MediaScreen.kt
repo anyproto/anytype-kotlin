@@ -51,6 +51,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -62,6 +63,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
@@ -74,7 +76,8 @@ fun ImageGallery(
     onBackClick: () -> Unit = {},
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
-    onDeleteClick: (Id) -> Unit = {}
+    onDeleteClick: (Id) -> Unit = {},
+    onOpenBinClick: () -> Unit = {}
 ) {
     val pagerState = rememberPagerState(initialPage = index) { images.size }
     var chromeVisible by remember { mutableStateOf(true) }
@@ -82,6 +85,9 @@ fun ImageGallery(
     LaunchedEffect(pagerState.settledPage) {
         chromeVisible = true
     }
+
+    val currentImage = images.getOrNull(pagerState.settledPage)
+    val isCurrentImageArchived = currentImage?.isArchived ?: false
 
     Box(Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -101,6 +107,24 @@ fun ImageGallery(
             )
         }
 
+        // Archived banner (top-center)
+        if (isCurrentImageArchived) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { onOpenBinClick() }
+            ) {
+                Text(
+                    text = stringResource(R.string.media_object_in_bin),
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
+
         // Page counter chip (top-center)
 
         if (images.size > 1) {
@@ -113,7 +137,7 @@ fun ImageGallery(
                 Box(
                     modifier = Modifier
                         .systemBarsPadding()
-                        .padding(top = 48.dp)
+                        .padding(top = if (isCurrentImageArchived) 48.dp else 48.dp)
                         .background(
                             color = colorResource(R.color.home_screen_toolbar_button),
                             shape = RoundedCornerShape(12.dp)
@@ -140,6 +164,7 @@ fun ImageGallery(
         ) {
             MediaActionToolbar(
                 modifier = Modifier.padding(bottom = 32.dp),
+                isArchived = isCurrentImageArchived,
                 onBackClick = onBackClick,
                 onDownloadClick = {
                     onDownloadClick(images[pagerState.settledPage].obj)
@@ -221,37 +246,14 @@ private fun ImageViewer(
 }
 
 @Composable
-fun AudioPlayerBox(
-    name: String,
-    url: String
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        AudioPlayer(
-            url = url,
-            name = name
-        )
-    }
-}
-
-@Composable
-fun VideoPlayerBox(
-    url: String
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        VideoPlayer(
-            url = url
-        )
-    }
-}
-
-@Composable
 fun ImageGalleryBox(
     images: List<MediaViewModel.MediaViewState.ImageContent.Image> =  emptyList(),
     index: Int = 0,
     onBackClick: () -> Unit = {},
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
-    onDeleteClick: (Id) -> Unit = {}
+    onDeleteClick: (Id) -> Unit = {},
+    onOpenBinClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ImageGallery(
@@ -260,8 +262,73 @@ fun ImageGalleryBox(
             onBackClick = onBackClick,
             onDownloadClick = onDownloadClick,
             onDeleteClick = onDeleteClick,
-            onOpenClick = onOpenClick
+            onOpenClick = onOpenClick,
+            onOpenBinClick = onOpenBinClick
         )
+    }
+}
+
+@Composable
+fun AudioPlayerBox(
+    name: String,
+    url: String,
+    isArchived: Boolean = false,
+    onOpenBinClick: () -> Unit = {}
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        AudioPlayer(
+            url = url,
+            name = name
+        )
+        
+        // Archived banner (top-center)
+        if (isArchived) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { onOpenBinClick() }
+            ) {
+                Text(
+                    text = stringResource(R.string.media_object_in_bin),
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VideoPlayerBox(
+    url: String,
+    isArchived: Boolean = false,
+    onOpenBinClick: () -> Unit = {}
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        VideoPlayer(
+            url = url
+        )
+        
+        // Archived banner (top-center)
+        if (isArchived) {
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { onOpenBinClick() }
+            ) {
+                Text(
+                    text = stringResource(R.string.media_object_in_bin),
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary),
+                    textDecoration = TextDecoration.Underline
+                )
+            }
+        }
     }
 }
 

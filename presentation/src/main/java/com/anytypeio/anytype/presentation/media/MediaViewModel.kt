@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 import kotlinx.coroutines.flow.SharedFlow
 import timber.log.Timber
+import kotlinx.coroutines.async
 
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
@@ -37,39 +38,72 @@ class MediaViewModel(
     private val _viewState = MutableStateFlow<MediaViewState>(MediaViewState.Loading)
     val viewState = _viewState.asStateFlow()
 
-    fun processImage(objects: List<String>, index: Int = 0) {
+    fun processImage(objects: List<String>, index: Int = 0, space: SpaceId) {
         viewModelScope.launch {
             if (objects.isEmpty()) {
                 _viewState.value = MediaViewState.Error("No image object IDs provided")
                 return@launch
             }
 
-            _viewState.value = MediaViewState.ImageContent(
-                images = objects.map {
+            // Fetch archived status for all images
+            val imagesWithArchived = objects.map { id ->
+                async {
+                    val obj = fetchObject.async(
+                        params = FetchObject.Params(
+                            space = space,
+                            obj = id,
+                            keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                        )
+                    ).getOrNull()
+
+                    if (obj == null) {
+                        Timber.w("Image object not found: $id")
+                    } else {
+                        Timber.d("Image object found: $obj")
+                    }
+
+                    val isArchived = obj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: true
                     MediaViewState.ImageContent.Image(
-                        obj = it,
-                        url = urlBuilder.large(it)
+                        obj = id,
+                        url = urlBuilder.large(id),
+                        isArchived = isArchived
                     )
-                },
+                }
+            }.map { it.await() }
+
+            Timber.d("Images with archived status: $imagesWithArchived")
+
+            _viewState.value = MediaViewState.ImageContent(
+                images = imagesWithArchived,
                 currentIndex = index
             )
         }
     }
 
-    fun processVideo(obj: Id) {
+    fun processVideo(obj: Id, space: SpaceId) {
         viewModelScope.launch {
             if (obj.isBlank()) {
                 _viewState.value = MediaViewState.Error("No video object ID provided")
                 return@launch
             }
 
+            val fetchedObj = fetchObject.async(
+                params = FetchObject.Params(
+                    space = space,
+                    obj = obj,
+                    keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                )
+            ).getOrNull()
+            val isArchived = fetchedObj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: false
+
             _viewState.value = MediaViewState.VideoContent(
-                url = urlBuilder.original(obj)
+                url = urlBuilder.original(obj),
+                isArchived = isArchived
             )
         }
     }
 
-    fun processAudio(obj: Id, name: String = "") {
+    fun processAudio(obj: Id, name: String = "", space: SpaceId) {
         viewModelScope.launch {
             val hash = urlBuilder.original(obj)
             if (hash.isBlank()) {
@@ -77,9 +111,19 @@ class MediaViewModel(
                 return@launch
             }
 
+            val fetchedObj = fetchObject.async(
+                params = FetchObject.Params(
+                    space = space,
+                    obj = obj,
+                    keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                )
+            ).getOrNull()
+            val isArchived = fetchedObj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: false
+
             _viewState.value = MediaViewState.AudioContent(
                 url = hash,
-                name = name
+                name = name,
+                isArchived = isArchived
             )
         }
     }
@@ -102,6 +146,12 @@ class MediaViewModel(
                 _commands.emit(Command.ShowToast.MovedToBin)
                 _commands.emit(Command.Dismiss)
             }
+        }
+    }
+
+    fun onOpenBinClicked(space: SpaceId) {
+        viewModelScope.launch {
+            _commands.emit(Command.OpenBin(space))
         }
     }
 
@@ -159,22 +209,28 @@ class MediaViewModel(
         ) : MediaViewState() {
             data class Image(
                 val obj: Id,
-                val url: String
+                val url: String,
+                val isArchived: Boolean = false
             )
+            val currentImage: Image? get() = images.getOrNull(currentIndex)
+            val isCurrentImageArchived: Boolean get() = currentImage?.isArchived ?: false
         }
 
         data class VideoContent(
-            val url: String
+            val url: String,
+            val isArchived: Boolean = false
         ) : MediaViewState()
 
         data class AudioContent(
             val url: String,
-            val name: String
+            val name: String,
+            val isArchived: Boolean = false
         ) : MediaViewState()
     }
 
     sealed class Command {
         data object Dismiss : Command()
+        data class OpenBin(val space: SpaceId) : Command()
         sealed class ShowToast : Command() {
             data class Generic(val message: String) : Command()
             data class ErrorWhileDownloadingObject(val exception: String) : Command()

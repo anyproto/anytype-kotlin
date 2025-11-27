@@ -16,6 +16,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
+import android.content.Intent
+import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -23,9 +25,11 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.localization.R
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
 import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
+import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import java.util.ArrayList
 import javax.inject.Inject
 import kotlinx.coroutines.launch
@@ -69,7 +73,16 @@ class MediaActivity : ComponentActivity() {
                         finish()
                     }
                     is MediaViewState.VideoContent -> {
-                        VideoPlayerBox(url = state.url)
+                        VideoPlayerBox(
+                            url = state.url,
+                            isArchived = state.isArchived,
+                            onOpenBinClick = {
+                                val givenSpace = space
+                                if (givenSpace != null) {
+                                    vm.onOpenBinClicked(SpaceId(givenSpace))
+                                }
+                            }
+                        )
                     }
                     is MediaViewState.ImageContent -> {
                         ImageGalleryBox(
@@ -87,13 +100,26 @@ class MediaActivity : ComponentActivity() {
                                     toast("Space not found")
                                 }
                             },
-                            onDeleteClick = vm::onDeleteObject
+                            onDeleteClick = vm::onDeleteObject,
+                            onOpenBinClick = {
+                                val givenSpace = space
+                                if (givenSpace != null) {
+                                    vm.onOpenBinClicked(SpaceId(givenSpace))
+                                }
+                            }
                         )
                     }
                     is MediaViewState.AudioContent -> {
                         AudioPlayerBox(
                             name = state.name,
-                            url = state.url
+                            url = state.url,
+                            isArchived = state.isArchived,
+                            onOpenBinClick = {
+                                val givenSpace = space
+                                if (givenSpace != null) {
+                                    vm.onOpenBinClicked(SpaceId(givenSpace))
+                                }
+                            }
                         )
                     }
                 }
@@ -108,6 +134,19 @@ class MediaActivity : ComponentActivity() {
                     vm.commands.collect { command ->
                         when (command) {
                             is MediaViewModel.Command.Dismiss -> {
+                                finish()
+                            }
+                            is MediaViewModel.Command.OpenBin -> {
+                                val intent = Intent(
+                                    Intent.ACTION_VIEW,
+                                    Uri.parse("anytype://main/homeScreenWidgets")
+                                ).apply {
+                                    putExtras(CollectionFragment.args(
+                                        subscription = Subscriptions.SUBSCRIPTION_BIN,
+                                        space = command.space.id
+                                    ))
+                                }
+                                startActivity(intent)
                                 finish()
                             }
                             is MediaViewModel.Command.ShowToast.Generic -> {
@@ -138,11 +177,21 @@ class MediaActivity : ComponentActivity() {
         val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
         val index = intent.getIntExtra(EXTRA_IMAGE_INDEX, 0)
+        val givenSpace = space
+        
+        if (givenSpace == null) {
+            Timber.e("Space ID is missing")
+            toast("Space not found")
+            finish()
+            return
+        }
+        
+        val spaceId = SpaceId(givenSpace)
         
         when (mediaType) {
-            TYPE_IMAGE -> vm.processImage(objects, index)
-            TYPE_VIDEO -> vm.processVideo(objects.firstOrNull().orEmpty())
-            TYPE_AUDIO -> vm.processAudio(objects.firstOrNull().orEmpty(), name.orEmpty())
+            TYPE_IMAGE -> vm.processImage(objects, index, spaceId)
+            TYPE_VIDEO -> vm.processVideo(objects.firstOrNull().orEmpty(), spaceId)
+            TYPE_AUDIO -> vm.processAudio(objects.firstOrNull().orEmpty(), name.orEmpty(), spaceId)
             else -> {
                 Timber.e("Invalid media type: $mediaType")
                 finish()

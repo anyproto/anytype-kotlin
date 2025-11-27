@@ -2070,4 +2070,6 @@
     <string name="notify_me_about">Уведомить меня о</string>
     <string name="error_while_downloading_object">Ошибка при загрузке объекта: %1$s</string>
     <string name="toast_moved_to_bin">Объект перемещен в корзину.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
 </resources>

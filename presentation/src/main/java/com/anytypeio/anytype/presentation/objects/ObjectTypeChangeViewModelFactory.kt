@@ -6,6 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 
@@ -15,7 +16,8 @@ class ObjectTypeChangeViewModelFactory(
     private val dispatchers: AppCoroutineDispatchers,
     private val spaceManager: SpaceManager,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -26,7 +28,8 @@ class ObjectTypeChangeViewModelFactory(
             dispatchers = dispatchers,
             spaceManager = spaceManager,
             getDefaultObjectType = getDefaultObjectType,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            spaceViews = spaceViews
         ) as T
     }
 }

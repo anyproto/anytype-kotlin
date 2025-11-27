@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -18,6 +19,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -43,7 +45,8 @@ class ObjectTypeChangeViewModel(
     private val dispatchers: AppCoroutineDispatchers,
     private val spaceManager: SpaceManager,
     private val getDefaultObjectType: GetDefaultObjectType,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
@@ -58,10 +61,15 @@ class ObjectTypeChangeViewModel(
     val commands = MutableSharedFlow<Command>()
 
     private val pipeline = combine(searchQuery, setup) { query, setup ->
+        // Determine space UX type to decide whether CHAT types should be shown
+        val spaceView = spaceViews.get(SpaceId(spaceManager.get()))
+        val spaceUxType = spaceView?.spaceUxType
+        val createLayouts = getCreateObjectLayouts(spaceUxType)
+
         val recommendedLayouts = if (setup.isWithFiles) {
-            SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+            createLayouts + SupportedLayouts.fileLayouts
         } else {
-            SupportedLayouts.editorLayouts
+            createLayouts
         }
         val myTypes = proceedWithGettingMyTypes(
             query = query,
@@ -71,7 +79,8 @@ class ObjectTypeChangeViewModel(
         val marketplaceTypes = proceedWithGettingMarketplaceTypes(
             myTypes = myTypes,
             setup = setup,
-            query = query
+            query = query,
+            createLayouts = createLayouts
         )
         _objTypes.value = myTypes + marketplaceTypes
         val filteredLibraryTypes = filterLibraryTypesByExcluded(
@@ -253,7 +262,8 @@ class ObjectTypeChangeViewModel(
     private suspend fun proceedWithGettingMarketplaceTypes(
         myTypes: List<ObjectWrapper.Type>,
         setup: Setup,
-        query: String
+        query: String,
+        createLayouts: List<ObjectType.Layout>
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
             addAll(myTypes.map { it.uniqueKey })
@@ -261,13 +271,14 @@ class ObjectTypeChangeViewModel(
                 add(MarketplaceObjectTypeIds.BOOKMARK)
             }
         }
+        // For marketplace, still respect the same create layouts logic so UI is consistent
         val marketplaceTypes = getObjectTypes.run(
             GetObjectTypes.Params(
                 space = SpaceId(Marketplace.MARKETPLACE_SPACE_ID),
                 filters = buildList {
                     addAll(
                         ObjectSearchConstants.filterTypes(
-                            recommendedLayouts = SupportedLayouts.editorLayouts
+                            recommendedLayouts = createLayouts
                         )
                     )
                     if (excludedMarketplaceTypes.isNotEmpty()) {

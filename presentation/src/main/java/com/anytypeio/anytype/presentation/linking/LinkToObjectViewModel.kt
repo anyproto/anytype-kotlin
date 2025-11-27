@@ -39,7 +39,8 @@ class LinkToObjectViewModel(
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     fieldParser = fieldParser,
-    storeOfObjectTypes = storeOfObjectTypes
+    storeOfObjectTypes = storeOfObjectTypes,
+    spaceViews = spaceViews
 ) {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
@@ -51,9 +52,15 @@ class LinkToObjectViewModel(
     override suspend fun getSearchObjectsParams(ignore: Id?) = SearchObjects.Params(
         space = vmParams.space,
         limit = SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore
-        ),
+        filters = buildList {
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            addAll(
+                ObjectSearchConstants.getFilterLinkTo(
+                    ignore = ignore,
+                    spaceUxType = spaceUxType
+                )
+            )
+        },
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys

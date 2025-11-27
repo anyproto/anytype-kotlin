@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_utils.di.scope.CreateFromScratch
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -28,10 +29,13 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.GetObjectTypeConflictingFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeHeaderRecommendedFields
 import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.CreateRelation
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.types.CreateObjectType
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
@@ -167,6 +171,31 @@ object ObjectTypeModule {
         dispatchers: AppCoroutineDispatchers
     ): SetObjectListIsArchived = SetObjectListIsArchived(repo, dispatchers)
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideAddToFeaturedRelations(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddToFeaturedRelations = AddToFeaturedRelations(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveFromFeaturedRelations(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveFromFeaturedRelations = RemoveFromFeaturedRelations(repo, dispatchers)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideUpdateBlockUseCase(
+        repo: BlockRepository
+    ): UpdateText = UpdateText(
+        repo = repo
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -196,6 +225,7 @@ interface ObjectTypeDependencies : ComponentDependencies {
     fun provideEventChannel(): EventChannel
     fun provideStringResourceProvider(): StringResourceProvider
     fun dispatcher(): Dispatcher<Payload>
+    fun spaceManager(): SpaceManager
 }
 
 //region Space Types Screen

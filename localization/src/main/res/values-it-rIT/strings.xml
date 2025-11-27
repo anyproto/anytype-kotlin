@@ -1353,7 +1353,7 @@
         <item quantity="other">%1$d richieste</item>
     </plurals>
     <string name="multiplayer_you_as_member">tu</string>
-    <string name="multiplayer_spaces">Spazi</string>
+    <string name="multiplayer_spaces">Canali</string>
     <string name="multiplayer_space_status_joining">Accesso in corso</string>
     <string name="multiplayer_space_status_active">Attivo</string>
     <string name="multiplayer_space_status_removing">Rimosso</string>
@@ -1630,7 +1630,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">I miei Spazi</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
     <string name="vault_pinned_section_title">Fissato</string>

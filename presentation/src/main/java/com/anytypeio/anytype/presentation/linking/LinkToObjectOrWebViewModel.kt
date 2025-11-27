@@ -237,9 +237,15 @@ class LinkToObjectOrWebViewModel(
     fun getSearchObjectsParams(ignore: Id) = SearchObjects.Params(
         space = vmParams.space,
         limit = ObjectSearchViewModel.SEARCH_LIMIT,
-        filters = ObjectSearchConstants.getFilterLinkTo(
-            ignore = ignore
-        ),
+        filters = buildList {
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            addAll(
+                ObjectSearchConstants.getFilterLinkTo(
+                    ignore = ignore,
+                    spaceUxType = spaceUxType
+                )
+            )
+        },
         sorts = ObjectSearchConstants.sortLinkTo,
         fulltext = ObjectSearchViewModel.EMPTY_QUERY,
         keys = ObjectSearchConstants.defaultKeys

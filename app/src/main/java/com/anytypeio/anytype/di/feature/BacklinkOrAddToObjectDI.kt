@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -79,4 +80,5 @@ interface BacklinkOrAddToObjectDependencies : ComponentDependencies {
     fun dateProvider(): DateProvider
     fun fieldParser(): FieldParser
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

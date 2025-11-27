@@ -320,6 +320,9 @@ message Rpc {
                 string spaceName = 3;
                 string spaceIconCid = 4;
                 string creatorName = 5;
+                string creatorIconCid = 10;
+                uint32 spaceIconOption = 8;
+                uint32 spaceUxType = 9;
                 bool   isGuestUserInvite = 6; // deprecated, use inviteType
                 model.InviteType inviteType = 7;
 

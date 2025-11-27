@@ -60,7 +60,8 @@ fun TopToolbar(
             )
         }
         Row(
-            modifier = Modifier.align(Alignment.CenterEnd)
+            modifier = Modifier.align(Alignment.CenterEnd),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             if (uiSyncStatusBadgeState is UiSyncStatusBadgeState.Visible) {
                 Box(
@@ -83,50 +84,21 @@ fun TopToolbar(
                     )
                 }
             }
-//            if (uiEditButtonState is UiEditButton.Visible) {
-//                IconButton(
-//                    modifier = Modifier
-//                        .size(48.dp),
-//                    onClick = {
-//                        isIconMenuExpanded.value = !isIconMenuExpanded.value
-//                    }
-//                ) {
-//                    Image(
-//                        modifier = Modifier.size(24.dp),
-//                        painter = painterResource(id = R.drawable.ic_space_list_dots),
-//                        contentDescription = "More options"
-//                    )
-//                    DropdownMenu(
-//                        modifier = Modifier
-//                            .width(244.dp),
-//                        expanded = isIconMenuExpanded.value,
-//                        offset = DpOffset(x = 0.dp, y = 0.dp),
-//                        onDismissRequest = {
-//                            isIconMenuExpanded.value = false
-//                        },
-//                        shape = RoundedCornerShape(10.dp),
-//                        containerColor = colorResource(id = R.color.background_secondary),
-//                        border = BorderStroke(
-//                            width = 0.5.dp,
-//                            color = colorResource(id = R.color.background_secondary)
-//                        )
-//                    ) {
-//                        DropdownMenuItem(
-//                            text = {
-//                                Text(
-//                                    text = stringResource(R.string.object_type_settings_item_remove),
-//                                    style = BodyRegular,
-//                                    color = colorResource(id = R.color.palette_system_red)
-//                                )
-//                            },
-//                            onClick = {
-//                                onTypeEvent(TypeEvent.OnMenuItemDeleteClick)
-//                                isIconMenuExpanded.value = false
-//                            },
-//                        )
-//                    }
-//                }
-//            }
+            Box(
+                modifier = Modifier
+                    .width(48.dp)
+                    .fillMaxHeight()
+                    .noRippleThrottledClickable {
+                        onTypeEvent(TypeEvent.OnMenuClick)
+                    },
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    modifier = Modifier.size(24.dp),
+                    painter = painterResource(id = R.drawable.ic_space_list_dots),
+                    contentDescription = stringResource(R.string.more)
+                )
+            }
         }
     }
 }

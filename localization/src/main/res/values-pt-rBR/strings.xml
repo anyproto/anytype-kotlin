@@ -1626,7 +1626,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_version">Erro ao obter histórico de versões</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
-    <string name="vault_my_spaces">Meus Espaços</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Todos</string>
     <string name="vault_pinned_section_title">Fixado</string>

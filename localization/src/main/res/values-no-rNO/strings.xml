@@ -1352,7 +1352,7 @@
         <item quantity="other">%1$d requests</item>
     </plurals>
     <string name="multiplayer_you_as_member">you</string>
-    <string name="multiplayer_spaces">Rom</string>
+    <string name="multiplayer_spaces">Channels</string>
     <string name="multiplayer_space_status_joining">Kobler til</string>
     <string name="multiplayer_space_status_active">Aktiv</string>
     <string name="multiplayer_space_status_removing">Removed</string>
@@ -1629,7 +1629,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Error getting version history</string>
     <string name="version_history_error_get_members">Error getting members</string>
     <string name="new_object">Nytt objekt</string>
-    <string name="vault_my_spaces">My Spaces</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">Alle</string>
     <string name="vault_pinned_section_title">Festet</string>

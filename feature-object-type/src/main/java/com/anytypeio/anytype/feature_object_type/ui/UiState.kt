@@ -30,6 +30,8 @@ sealed class ObjectTypeCommand {
     ) : ObjectTypeCommand()
 
     data class OpenAddNewPropertyScreen(val typeId: Id, val space: Id) : ObjectTypeCommand()
+
+    data class ShowToast(val msg: String) : ObjectTypeCommand()
 }
 
 //region OBJECT TYPE HEADER (title + icon)
@@ -42,6 +44,20 @@ data class UiTitleState(val title: String, val originalName: String, val isEdita
 data class UiIconState(val icon: ObjectIcon.TypeIcon, val isEditable: Boolean) {
     companion object {
         val EMPTY = UiIconState(icon = ObjectIcon.TypeIcon.Default.DEFAULT, isEditable = false)
+    }
+}
+
+data class UiDescriptionState(
+    val description: String,
+    val isVisible: Boolean,
+    val isEditable: Boolean
+) {
+    companion object {
+        val EMPTY = UiDescriptionState(
+            description = "",
+            isVisible = false,
+            isEditable = false
+        )
     }
 }
 //endregion

@@ -2421,6 +2421,17 @@ class Middleware @Inject constructor(
         return response.event.toPayload()
     }
 
+    fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload {
+        val request = Rpc.ObjectCollection.Remove.Request(
+            contextId = command.ctx,
+            objectIds = command.ids
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.removeObjectFromCollection(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
     fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         val request = Rpc.Object.SetSource.Request(
             contextId = command.ctx,

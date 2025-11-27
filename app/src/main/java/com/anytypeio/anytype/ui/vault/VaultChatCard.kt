@@ -18,7 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.InlineTextContent
 import androidx.compose.foundation.text.appendInlineContent
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -45,7 +45,6 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
@@ -65,7 +64,7 @@ import com.anytypeio.anytype.presentation.vault.VaultSpaceView
  * - Enabled chats with unread messages: Show as primary color (unread state)
  */
 @Composable
-private fun getChatTextColor(
+internal fun getChatTextColor(
     notificationMode: NotificationState?,
     unreadMessageCount: Int,
     unreadMentionCount: Int
@@ -122,7 +121,6 @@ fun VaultChatSpaceCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
@@ -176,6 +174,8 @@ fun VaultChatSpaceCard(
             mainSize = 64.dp,
             modifier = Modifier
         )
+        val isSpaceMuted = spaceView.spaceNotificationState == NotificationState.DISABLE
+
         ContentChat(
             modifier = Modifier
                 .fillMaxWidth()
@@ -189,7 +189,8 @@ fun VaultChatSpaceCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted,
+            isMuted = isSpaceMuted,
+            spaceNotificationState = spaceView.spaceNotificationState,
             isPinned = isPinned
         )
 
@@ -197,11 +198,11 @@ fun VaultChatSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isSpaceMuted,
+            isMuted = isSpaceMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isSpaceMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (isSpaceMuted) onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
             onPinToggle = {
@@ -229,6 +230,7 @@ private fun RowScope.ContentChat(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
@@ -271,6 +273,7 @@ private fun RowScope.ContentChat(
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
                 isMuted = isMuted,
+                notificationMode = spaceNotificationState,
                 isPinned = isPinned
             )
         }
@@ -361,21 +364,21 @@ internal fun UnreadIndicatorsRow(
         }
 
         if (unreadMessageCount > 0) {
-            val shape = if (unreadMentionCount > MENTION_COUNT_THRESHOLD) {
-                CircleShape
+            val (shape, boxModifier) = if (unreadMessageCount <= MENTION_COUNT_THRESHOLD) {
+                CircleShape to Modifier.size(18.dp)
             } else {
-                RoundedCornerShape(100.dp)
+                RoundedCornerShape(100.dp) to Modifier
+                    .padding(horizontal = 4.dp, vertical = 2.2.dp)
             }
             Box(
                 modifier = Modifier
-                    .height(18.dp)
                     .background(
                         color = getUnreadMessageCountBadgeColor(
                             notificationMode = notificationMode
                         ),
                         shape = shape
                     )
-                    .padding(horizontal = 4.dp, vertical = 2.dp),
+                    .then(boxModifier),
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -716,9 +719,8 @@ fun ChatWithMentionAndMessage() {
             creatorName = "John Doe",
             messageText = "Hello, this is a preview message that might be long enough to show how it looks with multiple lines.",
             messageTime = "18:32",
-            unreadMessageCount = 999,
+            unreadMessageCount = 1,
             unreadMentionCount = 1,
-            isMuted = true,
             chatPreview =
                 Chat.Preview(
                 space = SpaceId("space-id"),
@@ -745,6 +747,7 @@ fun ChatWithMentionAndMessage() {
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
+                spaceNotificationState = NotificationState.DISABLE
             )
         )
     }

@@ -1617,7 +1617,7 @@
     <string name="version_history_error_get_version">変更履歴取得エラー</string>
     <string name="version_history_error_get_members">メンバー取得エラー</string>
     <string name="new_object">新しいオブジェクト</string>
-    <string name="vault_my_spaces">自分のスペース</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">未読</string>
     <string name="vault_all_section_title">すべて</string>
     <string name="vault_pinned_section_title">ピン留め</string>

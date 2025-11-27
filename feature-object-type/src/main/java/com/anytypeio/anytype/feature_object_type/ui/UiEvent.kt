@@ -10,6 +10,7 @@ sealed class TypeEvent {
     //region TopBar
     data class OnSyncStatusClick(val status: SpaceSyncAndP2PStatusState) : TypeEvent()
     data object OnSyncStatusDismiss : TypeEvent()
+    data object OnMenuClick : TypeEvent()
     data object OnMenuItemDeleteClick : TypeEvent()
     data object OnAlertDeleteDismiss : TypeEvent()
     data object OnAlertDeleteConfirm : TypeEvent()
@@ -20,6 +21,7 @@ sealed class TypeEvent {
     data object OnObjectTypeIconClick : TypeEvent()
     data class OnObjectTypeTitleUpdate(val title: String) : TypeEvent()
     data object OnObjectTypeTitleClick : TypeEvent()
+    data class OnDescriptionChanged(val text: String) : TypeEvent()
     //endregion
 
     //region Templates

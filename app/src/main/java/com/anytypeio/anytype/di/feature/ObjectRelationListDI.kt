@@ -94,14 +94,14 @@ object ObjectRelationListModule {
     @JvmStatic
     @Provides
     @PerModal
-    fun addToFeaturedRelations(repo: BlockRepository): AddToFeaturedRelations =
-        AddToFeaturedRelations(repo)
+    fun addToFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): AddToFeaturedRelations =
+        AddToFeaturedRelations(repo, dispatchers)
 
     @JvmStatic
     @Provides
     @PerModal
-    fun removeFromFeaturedRelations(repo: BlockRepository): RemoveFromFeaturedRelations =
-        RemoveFromFeaturedRelations(repo)
+    fun removeFromFeaturedRelations(repo: BlockRepository, dispatchers: AppCoroutineDispatchers): RemoveFromFeaturedRelations =
+        RemoveFromFeaturedRelations(repo = repo, dispatchers = dispatchers)
 
     @JvmStatic
     @Provides

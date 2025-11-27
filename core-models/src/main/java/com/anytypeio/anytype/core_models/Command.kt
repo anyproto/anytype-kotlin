@@ -483,6 +483,7 @@ sealed class Command {
     data class SortRelations(val ctx: Id, val dv: Id, val view: Id, val keys: List<Key>)
 
     data class AddObjectToCollection(val ctx: Id, val afterId: Id, val ids: List<Id>)
+    data class RemoveObjectFromCollection(val ctx: Id, val ids: List<Id>)
     data class SetQueryToSet(val ctx: Id, val query: String)
 
     data class SetInternalFlags(val ctx: Id, val flags: List<InternalFlags>)

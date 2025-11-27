@@ -121,7 +121,6 @@ fun VaultChatSpaceCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
@@ -175,6 +174,8 @@ fun VaultChatSpaceCard(
             mainSize = 64.dp,
             modifier = Modifier
         )
+        val isSpaceMuted = spaceView.spaceNotificationState == NotificationState.DISABLE
+
         ContentChat(
             modifier = Modifier
                 .fillMaxWidth()
@@ -188,7 +189,8 @@ fun VaultChatSpaceCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted,
+            isMuted = isSpaceMuted,
+            spaceNotificationState = spaceView.spaceNotificationState,
             isPinned = isPinned
         )
 
@@ -196,11 +198,11 @@ fun VaultChatSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isSpaceMuted,
+            isMuted = isSpaceMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isSpaceMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (isSpaceMuted) onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },
             onPinToggle = {
@@ -228,6 +230,7 @@ private fun RowScope.ContentChat(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
@@ -270,6 +273,7 @@ private fun RowScope.ContentChat(
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
                 isMuted = isMuted,
+                notificationMode = spaceNotificationState,
                 isPinned = isPinned
             )
         }
@@ -717,7 +721,6 @@ fun ChatWithMentionAndMessage() {
             messageTime = "18:32",
             unreadMessageCount = 1,
             unreadMentionCount = 1,
-            isMuted = true,
             chatPreview =
                 Chat.Preview(
                 space = SpaceId("space-id"),
@@ -744,6 +747,7 @@ fun ChatWithMentionAndMessage() {
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
+                spaceNotificationState = NotificationState.DISABLE
             )
         )
     }

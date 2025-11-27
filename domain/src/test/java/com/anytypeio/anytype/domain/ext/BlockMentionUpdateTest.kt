@@ -81,9 +81,7 @@ class BlockMentionUpdateTest {
                 text = "NewPage ",
                 color = "red",
                 align = Block.Align.AlignCenter,
-                isChecked = true,
-                iconEmoji = "",
-                iconImage = ""
+                isChecked = true
             ),
             children = emptyList(),
             backgroundColor = "lime"
@@ -343,9 +341,7 @@ class BlockMentionUpdateTest {
                     )
                 ),
                 style = Block.Content.Text.Style.P,
-                text = "page about Avant-Garde Jazz  music",
-                iconEmoji = "",
-                iconImage = ""
+                text = "page about Avant-Garde Jazz  music"
             ),
             children = emptyList()
         )
@@ -441,9 +437,7 @@ class BlockMentionUpdateTest {
                     )
                 ),
                 style = Block.Content.Text.Style.P,
-                text = "Avant-Garde Jazz  page about music",
-                iconEmoji = "",
-                iconImage = ""
+                text = "Avant-Garde Jazz  page about music"
             ),
             children = emptyList()
         )
@@ -539,9 +533,7 @@ class BlockMentionUpdateTest {
                     )
                 ),
                 style = Block.Content.Text.Style.P,
-                text = "Avant  page about music",
-                iconEmoji = "",
-                iconImage = ""
+                text = "Avant  page about music"
             ),
             children = emptyList()
         )
@@ -623,9 +615,7 @@ class BlockMentionUpdateTest {
                     )
                 ),
                 style = Block.Content.Text.Style.P,
-                text = "page about Avant-Garde Jazz ",
-                iconEmoji = "",
-                iconImage = ""
+                text = "page about Avant-Garde Jazz "
             ),
             children = emptyList()
         )

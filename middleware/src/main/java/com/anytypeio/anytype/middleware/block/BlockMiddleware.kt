@@ -878,6 +878,10 @@ class BlockMiddleware(
         return middleware.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return middleware.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return middleware.setQueryToSet(command)
     }

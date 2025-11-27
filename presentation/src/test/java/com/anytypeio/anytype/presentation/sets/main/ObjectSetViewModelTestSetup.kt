@@ -74,6 +74,8 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.home.UserPermissionProviderStub
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -169,6 +171,9 @@ open class ObjectSetViewModelTestSetup {
     lateinit var subscriptionEventChannel: SubscriptionEventChannel
 
     @Mock
+    lateinit var removeObjectFromCollection: RemoveObjectFromCollection
+
+    @Mock
     lateinit var addObjectToCollection: AddObjectToCollection
 
     lateinit var storeOfObjectTypes: StoreOfObjectTypes
@@ -218,6 +223,9 @@ open class ObjectSetViewModelTestSetup {
 
     @Mock
     lateinit var spacedViews: SpaceViewSubscriptionContainer
+
+    @Mock
+    lateinit var deepLinkResolver: DeepLinkResolver
 
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
@@ -334,7 +342,9 @@ open class ObjectSetViewModelTestSetup {
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
             spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
             fieldParser = fieldParser,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            deepLinkResolver = deepLinkResolver,
+            removeObjectFromCollection = removeObjectFromCollection
         )
     }
 

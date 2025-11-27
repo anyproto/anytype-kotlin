@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 @Composable
 fun MediaActionToolbar(
     modifier: Modifier = Modifier,
+    isArchived: Boolean = false,
     onBackClick: () -> Unit = {},
     onDownloadClick: () -> Unit = {},
     onOpenClick: () -> Unit = {},
@@ -35,6 +36,7 @@ fun MediaActionToolbar(
                 color = colorResource(id = R.color.home_screen_toolbar_button),
                 shape = RoundedCornerShape(16.dp)
             )
+            .padding(horizontal = 20.dp)
         ,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp)
@@ -43,16 +45,16 @@ fun MediaActionToolbar(
         Image(
             painter = painterResource(R.drawable.ic_nav_panel_back),
             contentDescription = null,
-            modifier = Modifier
-                .padding(start = 20.dp)
-                .noRippleClickable { onBackClick() }
+            modifier = Modifier.noRippleClickable { onBackClick() }
         )
 
-        Image(
-            modifier = Modifier.noRippleClickable { onDownloadClick() },
-            painter = painterResource(R.drawable.ic_object_action_download),
-            contentDescription = null
-        )
+        if (!isArchived) {
+            Image(
+                modifier = Modifier.noRippleClickable { onDownloadClick() },
+                painter = painterResource(R.drawable.ic_object_action_download),
+                contentDescription = null
+            )
+        }
 
 //        Image(
 //            modifier = Modifier.clickable { onOpenClick() },
@@ -60,13 +62,13 @@ fun MediaActionToolbar(
 //            contentDescription = null
 //        )
 
-        Image(
-            painter = painterResource(R.drawable.icon_delete_red),
-            contentDescription = null,
-            modifier = Modifier
-                .padding(end = 20.dp)
-                .noRippleClickable { onDeleteClick() }
-        )
+        if (!isArchived) {
+            Image(
+                painter = painterResource(R.drawable.icon_delete_red),
+                contentDescription = null,
+                modifier = Modifier.noRippleClickable { onDeleteClick() }
+            )
+        }
     }
 }
 

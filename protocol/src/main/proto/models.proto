@@ -1053,6 +1053,7 @@ enum SpaceUxType {
     Data = 1; // objects-first UX
     Stream = 2; // stream UX (chat with limited amount of owners)
     Chat = 3; // chat UX
+    OneToOne = 4; // onetoone UX (space with chat and immutable ACL between two participants)
 }
 
 message Metadata {
@@ -1248,6 +1249,11 @@ message IdentityProfile {
     repeated FileEncryptionKey iconEncryptionKeys = 4;
     string description = 5;
     string globalName = 6;
+}
+
+message IdentityProfileWithKey {
+    IdentityProfile identityProfile = 1;
+    bytes requestMetadata = 2;
 }
 
 message FileInfo {

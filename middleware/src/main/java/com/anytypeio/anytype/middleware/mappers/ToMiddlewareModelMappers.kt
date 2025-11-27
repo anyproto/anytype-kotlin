@@ -666,6 +666,7 @@ fun SpaceCreationUseCase.toMiddlewareModel(): Rpc.Object.ImportUseCase.Request.U
     SpaceCreationUseCase.GET_STARTED_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.GET_STARTED_MOBILE
     SpaceCreationUseCase.CHAT_SPACE -> Rpc.Object.ImportUseCase.Request.UseCase.CHAT_SPACE
     SpaceCreationUseCase.DATA_SPACE_MOBILE -> Rpc.Object.ImportUseCase.Request.UseCase.DATA_SPACE_MOBILE
+    SpaceCreationUseCase.ONE_TO_ONE_SPACE -> Rpc.Object.ImportUseCase.Request.UseCase.CHAT_SPACE
 }
 
 fun NotificationState.toMiddlewareModel(): Rpc.PushNotification.Mode = when (this) {

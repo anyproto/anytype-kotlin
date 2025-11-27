@@ -52,6 +52,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -77,7 +81,7 @@ fun ImageGallery(
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
     onDeleteClick: (Id) -> Unit = {},
-    onOpenBinClick: () -> Unit = {}
+    onRestoreClick: (Id) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(initialPage = index) { images.size }
     var chromeVisible by remember { mutableStateOf(true) }
@@ -109,18 +113,40 @@ fun ImageGallery(
 
         // Archived banner (top-center)
         if (isCurrentImageArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    // Add text before "Restore it?"
+                    append(fullText.substring(0, startIndex))
+                    // Add "Restore it?" with underline
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    // Add any text after (shouldn't be any in this case)
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
-                    .clickable { onOpenBinClick() }
+                    .clickable { 
+                        currentImage?.let { onRestoreClick(it.obj) }
+                    }
             ) {
                 Text(
-                    text = stringResource(R.string.media_object_in_bin),
+                    text = annotatedText,
                     style = BodyCallout,
-                    color = colorResource(R.color.text_secondary),
-                    textDecoration = TextDecoration.Underline
+                    color = colorResource(R.color.text_secondary)
                 )
             }
         }
@@ -253,7 +279,7 @@ fun ImageGalleryBox(
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
     onDeleteClick: (Id) -> Unit = {},
-    onOpenBinClick: () -> Unit = {}
+    onRestoreClick: (Id) -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ImageGallery(
@@ -263,7 +289,7 @@ fun ImageGalleryBox(
             onDownloadClick = onDownloadClick,
             onDeleteClick = onDeleteClick,
             onOpenClick = onOpenClick,
-            onOpenBinClick = onOpenBinClick
+            onRestoreClick = onRestoreClick
         )
     }
 }
@@ -273,7 +299,7 @@ fun AudioPlayerBox(
     name: String,
     url: String,
     isArchived: Boolean = false,
-    onOpenBinClick: () -> Unit = {}
+    onRestoreClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         AudioPlayer(
@@ -283,18 +309,35 @@ fun AudioPlayerBox(
         
         // Archived banner (top-center)
         if (isArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    append(fullText.substring(0, startIndex))
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
-                    .clickable { onOpenBinClick() }
+                    .clickable { onRestoreClick() }
             ) {
                 Text(
-                    text = stringResource(R.string.media_object_in_bin),
+                    text = annotatedText,
                     style = BodyCallout,
-                    color = colorResource(R.color.text_secondary),
-                    textDecoration = TextDecoration.Underline
+                    color = colorResource(R.color.text_secondary)
                 )
             }
         }
@@ -305,7 +348,7 @@ fun AudioPlayerBox(
 fun VideoPlayerBox(
     url: String,
     isArchived: Boolean = false,
-    onOpenBinClick: () -> Unit = {}
+    onRestoreClick: () -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         VideoPlayer(
@@ -314,18 +357,35 @@ fun VideoPlayerBox(
         
         // Archived banner (top-center)
         if (isArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    append(fullText.substring(0, startIndex))
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
             Box(
                 modifier = Modifier
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
-                    .clickable { onOpenBinClick() }
+                    .clickable { onRestoreClick() }
             ) {
                 Text(
-                    text = stringResource(R.string.media_object_in_bin),
+                    text = annotatedText,
                     style = BodyCallout,
-                    color = colorResource(R.color.text_secondary),
-                    textDecoration = TextDecoration.Underline
+                    color = colorResource(R.color.text_secondary)
                 )
             }
         }

@@ -149,9 +149,23 @@ class MediaViewModel(
         }
     }
 
-    fun onOpenBinClicked(space: SpaceId) {
+    fun onRestoreObjectClicked(id: Id) {
         viewModelScope.launch {
-            _commands.emit(Command.OpenBin(space))
+            setObjectListIsArchived.async(
+                params = SetObjectListIsArchived.Params(
+                    targets = listOf(id),
+                    isArchived = false
+                )
+            ).onFailure { error ->
+                Timber.e(error, "Error while restoring media object").also {
+                    _commands.emit(
+                        Command.ShowToast.Generic("Error: ${error.message}")
+                    )
+                }
+            }.onSuccess {
+                _commands.emit(Command.ShowToast.Restored)
+                _commands.emit(Command.Dismiss)
+            }
         }
     }
 
@@ -230,11 +244,11 @@ class MediaViewModel(
 
     sealed class Command {
         data object Dismiss : Command()
-        data class OpenBin(val space: SpaceId) : Command()
         sealed class ShowToast : Command() {
             data class Generic(val message: String) : Command()
             data class ErrorWhileDownloadingObject(val exception: String) : Command()
             data object MovedToBin : Command()
+            data object Restored : Command()
         }
     }
 

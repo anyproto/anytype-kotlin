@@ -16,7 +16,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.anytypeio.anytype.BuildConfig
-import android.net.Uri
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -33,7 +32,6 @@ import java.util.ArrayList
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
 class MediaActivity : ComponentActivity() {
 
     @Inject
@@ -72,14 +70,12 @@ class MediaActivity : ComponentActivity() {
                         finish()
                     }
                     is MediaViewState.VideoContent -> {
+                        val videoId = intent.getStringArrayListExtra(EXTRA_OBJECTS)?.firstOrNull()
                         VideoPlayerBox(
                             url = state.url,
                             isArchived = state.isArchived,
-                            onOpenBinClick = {
-                                val givenSpace = space
-                                if (givenSpace != null) {
-                                    vm.onOpenBinClicked(SpaceId(givenSpace))
-                                }
+                            onRestoreClick = {
+                                videoId?.let { vm.onRestoreObjectClicked(it) }
                             }
                         )
                     }
@@ -100,24 +96,19 @@ class MediaActivity : ComponentActivity() {
                                 }
                             },
                             onDeleteClick = vm::onDeleteObject,
-                            onOpenBinClick = {
-                                val givenSpace = space
-                                if (givenSpace != null) {
-                                    vm.onOpenBinClicked(SpaceId(givenSpace))
-                                }
+                            onRestoreClick = { obj ->
+                                vm.onRestoreObjectClicked(obj)
                             }
                         )
                     }
                     is MediaViewState.AudioContent -> {
+                        val audioId = intent.getStringArrayListExtra(EXTRA_OBJECTS)?.firstOrNull()
                         AudioPlayerBox(
                             name = state.name,
                             url = state.url,
                             isArchived = state.isArchived,
-                            onOpenBinClick = {
-                                val givenSpace = space
-                                if (givenSpace != null) {
-                                    vm.onOpenBinClicked(SpaceId(givenSpace))
-                                }
+                            onRestoreClick = {
+                                audioId?.let { vm.onRestoreObjectClicked(it) }
                             }
                         )
                     }
@@ -135,19 +126,6 @@ class MediaActivity : ComponentActivity() {
                             is MediaViewModel.Command.Dismiss -> {
                                 finish()
                             }
-                            is MediaViewModel.Command.OpenBin -> {
-                                val intent = Intent(
-                                    Intent.ACTION_VIEW,
-                                    Uri.parse("anytype://main/homeScreenWidgets")
-                                ).apply {
-                                    putExtras(CollectionFragment.args(
-                                        subscription = Subscriptions.SUBSCRIPTION_BIN,
-                                        space = command.space.id
-                                    ))
-                                }
-                                startActivity(intent)
-                                finish()
-                            }
                             is MediaViewModel.Command.ShowToast.Generic -> {
                                 toast(command.message)
                             }
@@ -160,6 +138,9 @@ class MediaActivity : ComponentActivity() {
                             }
                             MediaViewModel.Command.ShowToast.MovedToBin -> {
                                 toast(getString(R.string.toast_moved_to_bin))
+                            }
+                            MediaViewModel.Command.ShowToast.Restored -> {
+                                toast(getString(R.string.toast_restored))
                             }
                         }
                     }

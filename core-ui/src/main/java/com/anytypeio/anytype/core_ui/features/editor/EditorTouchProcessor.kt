@@ -100,7 +100,7 @@ class EditorTouchProcessor(
                         val offset = layout.getOffsetForHorizontal(line, x.toFloat())
                         val link = v.editableText.getSpans(offset, offset, ClickableSpan::class.java)
                         if (link.isNotEmpty()) {
-                            v.disable()
+                            v.clearFocus()
                             link[0].onClick(v)
                             return true
                         }

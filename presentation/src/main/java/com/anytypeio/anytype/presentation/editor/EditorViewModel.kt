@@ -3387,6 +3387,18 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.CHAT_DERIVED -> {
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenChat(
+                                target = target,
+                                space = vmParams.space.id,
+                                popUpToVault = false
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }
@@ -4366,7 +4378,12 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
+            val exclude = listOf(
+                ObjectTypeUniqueKeys.SET,
+                ObjectTypeUniqueKeys.COLLECTION,
+                ObjectTypeUniqueKeys.CHAT,
+                ObjectTypeUniqueKeys.CHAT_DERIVED
+            )
             proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
@@ -6526,11 +6543,13 @@ class EditorViewModel(
                 return
             }
             val fullText = filter.removePrefix(MENTION_PREFIX)
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
             val params = SearchObjects.Params(
                 space = vmParams.space,
                 limit = ObjectSearchViewModel.SEARCH_LIMIT,
                 filters = ObjectSearchConstants.getFilterLinkTo(
-                    ignore = context
+                    ignore = context,
+                    spaceUxType = spaceUxType
                 ),
                 sorts = ObjectSearchConstants.sortLinkTo,
                 fulltext = fullText,
@@ -6659,7 +6678,13 @@ class EditorViewModel(
 
     private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        proceedWithOpeningSelectingObjectTypeScreen(fromFeatured = false)
+        val exclude = listOf(
+            ObjectTypeUniqueKeys.SET,
+            ObjectTypeUniqueKeys.COLLECTION,
+            ObjectTypeUniqueKeys.CHAT,
+            ObjectTypeUniqueKeys.CHAT_DERIVED
+        )
+        proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = false)
     }
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {

@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.core_utils.tools.AppInfo
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
@@ -122,4 +123,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun provideVaultChatPreviewContainer(): ChatPreviewContainer
     fun appInfo(): AppInfo
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
+    fun chatSubscriptionContainer(): ChatsDetailsSubscriptionContainer
 }

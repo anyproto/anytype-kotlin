@@ -40,10 +40,12 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.FREE_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.NEW_EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
 import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
+import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRO_MONTHLY_ID
 import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierConditionInfo
@@ -184,6 +186,18 @@ fun mapTierToResources(tier: Tier): TierResources {
             colors = toValue(tier.color),
             features = tier.features,
         )
+        FREE_ID -> TierResources(
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
+        PRO_MONTHLY_ID -> TierResources(
+            mediumIcon = R.drawable.logo_co_creator_96,
+            smallIcon = R.drawable.logo_co_creator_64,
+            colors = toValue(tier.color),
+            features = tier.features,
+        )
         else -> TierResources(
             smallIcon = R.drawable.logo_custom_64,
             mediumIcon = R.drawable.logo_custom_64,
@@ -226,6 +240,16 @@ fun mapTierPreviewToResources(tier: TierPreview): TierResources {
             mediumIcon = R.drawable.logo_new_explorer_96,
             smallIcon = R.drawable.logo_new_explorer_64,
             colors = toValue(tier.color)
+        )
+        FREE_ID -> TierResources(
+            mediumIcon = R.drawable.logo_explorer_96,
+            smallIcon = R.drawable.logo_explorer_64,
+            colors = toValue(tier.color),
+        )
+        PRO_MONTHLY_ID -> TierResources(
+            mediumIcon = R.drawable.logo_co_creator_96,
+            smallIcon = R.drawable.logo_co_creator_64,
+            colors = toValue(tier.color),
         )
         else -> TierResources(
             smallIcon = R.drawable.logo_custom_64,
@@ -290,12 +314,12 @@ data class TierColors(
 fun TierPreviewViewPreview() {
     TierPreviewView(
         tier = TierPreview(
-            id = TierId(NEW_EXPLORER_ID),
-            title = "Explorer",
+            id = TierId(PRO_MONTHLY_ID),
+            title = "Pro (monthly)",
             subtitle = "For those who want to build and create",
             conditionInfo = TierConditionInfo.Visible.Price("99.99", TierPeriod.Year(1)),
             isActive = true,
-            color = "ice"
+            color = "red"
         )
     ) {}
 }

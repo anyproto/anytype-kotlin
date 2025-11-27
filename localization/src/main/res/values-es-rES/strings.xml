@@ -1244,6 +1244,7 @@
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
+    <string name="multiplayer_make_private">Hacer privado</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentario privado para el propietario del espacio</string>
     <string name="multiplayer_request_to_join_explanation">Cuando el propietario del espacio apruebe tu solicitud, tendrás acceso al espacio con los derechos que el propietario determine.</string>
@@ -1628,7 +1629,7 @@ En concreto,
     <string name="version_history_error_get_version">Error al obtener el historial de versiones</string>
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
-    <string name="vault_my_spaces">Mis espacios</string>
+    <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">No leído</string>
     <string name="vault_all_section_title">Todo</string>
     <string name="vault_pinned_section_title">Anclado</string>
@@ -1937,9 +1938,9 @@ En concreto,
     <string name="chat_box_record_video">Grabar vídeo</string>
     <string name="chat_camera_permission_denied">Sin acceso a la cámara</string>
     <string name="notifications_title">Notificaciones</string>
-    <string name="notifications_all">Toda la actividad</string>
+    <string name="notifications_all">Todos los mensajes nuevos</string>
     <string name="notifications_mentions">Solo menciones</string>
-    <string name="notifications_disable">Desactivar las notificaciones</string>
+    <string name="notifications_disable">Nada</string>
     <string name="notifications_all_short">Todo</string>
     <string name="notifications_mentions_short">Menciones</string>
     <string name="notifications_disable_short">Desactivar</string>
@@ -1978,6 +1979,7 @@ En concreto,
     <string name="share_space_error_incorrect_permissions">No tienes los permisos necesarios. Ponte en contacto con el propietario del espacio.</string>
     <string name="share_space_error_no_such_space">        El espacio que intentas compartir no existe. Comprueba el ID del espacio e inténtalo de nuevo.
     </string>
+    <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
@@ -2028,5 +2030,11 @@ En concreto,
     <string name="chat_move_to_bin">Mover a la papelera</string>
     <string name="move_chat_to_bin_warning_title">¿Mover el chat a la papelera?</string>
     <string name="chat_move_to_bin_warning_description">Este chat y sus archivos adjuntos se moverán a la papelera. Nadie podrá enviar más mensajes. Puedes restaurarlo desde la papelera antes de que se elimine definitivamente.</string>
-    <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="chat_edit_info_upload_image">Cargar imagen</string>
+    <string name="chat_notifications_receive_all">Recibir todas</string>
+    <string name="chat_notifications_mute_all">Silenciar todas</string>
+    <string name="chat_specific_notifications">Notificaciones del chat</string>
+    <string name="notify_me_about">Notifícame sobre</string>
+    <string name="error_while_downloading_object">Error al descargar el objeto %1$s</string>
+    <string name="toast_moved_to_bin">Objeto movido a la papelera.</string>
 </resources>

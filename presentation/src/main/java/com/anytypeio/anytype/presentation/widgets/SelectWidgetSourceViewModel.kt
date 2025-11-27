@@ -65,7 +65,8 @@ class SelectWidgetSourceViewModel(
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     fieldParser = fieldParser,
-    storeOfObjectTypes = storeOfObjectTypes
+    storeOfObjectTypes = storeOfObjectTypes,
+    spaceViews = spaceViews
 ) {
 
     private val suggested = MutableStateFlow<SuggestedWidgetsState>(SuggestedWidgetsState.Init)
@@ -275,9 +276,11 @@ class SelectWidgetSourceViewModel(
     }
 
     override suspend fun getSearchObjectsParams(ignore: Id?): SearchObjects.Params {
+        val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
         return super.getSearchObjectsParams(ignore).copy(
             filters = ObjectSearchConstants.filterSearchObjects(
-                excludeTypes = true
+                excludeTypes = true,
+                spaceUxType = spaceUxType
             )
         )
     }

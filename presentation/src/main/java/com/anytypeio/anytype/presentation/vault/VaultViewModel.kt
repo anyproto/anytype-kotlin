@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.ext.hasChatFunctionality
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
@@ -22,6 +21,7 @@ import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
@@ -52,6 +52,7 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
@@ -72,6 +73,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.map
@@ -80,6 +82,14 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
+
+/**
+ * Data class to hold aggregated unread counts for all chats in a space
+ */
+private data class UnreadCounts(
+    val unreadMessages: Int,
+    val unreadMentions: Int
+)
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class VaultViewModel(
@@ -93,6 +103,7 @@ class VaultViewModel(
     private val spaceInviteResolver: SpaceInviteResolver,
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
+    private val chatsDetailsContainer: ChatsDetailsSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -147,6 +158,11 @@ class VaultViewModel(
                 NotificationPermissionManagerImpl.PermissionState.NotRequested
             )
 
+    private val chatDetailsFlow: StateFlow<List<ObjectWrapper.Basic>> =
+        chatsDetailsContainer.observe()
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
             name = obj.name.orEmpty(),
@@ -163,9 +179,10 @@ class VaultViewModel(
             previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
             spaceFlow,
             permissionsFlow,
-            notificationsFlow
-        ) { previews, spaces, perms, _ ->
-            transformToVaultSpaceViews(spaces, previews.items, perms)
+            notificationsFlow,
+            chatDetailsFlow
+        ) { previews, spaces, perms, _, chatDetails ->
+            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails)
         }.onEach { sections ->
             val previousState = _uiState.value
 
@@ -243,16 +260,34 @@ class VaultViewModel(
     private suspend fun transformToVaultSpaceViews(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         chatPreviews: List<Chat.Preview>,
-        permissions: Map<Id, SpaceMemberPermissions>
+        permissions: Map<Id, SpaceMemberPermissions>,
+        chatDetails: List<ObjectWrapper.Basic>
     ): VaultUiState.Sections {
         // Fetch all space wallpapers once
         val wallpapers: Map<Id, Wallpaper> = getSpaceWallpapers.async(Unit).getOrNull() ?: run {
             Timber.w("Failed to fetch space wallpapers")
             emptyMap()
         }
-        
-        // Index chatPreviews by space.id for O(1) lookup
-        val chatPreviewMap = chatPreviews.associateBy { it.space.id }
+
+        // Index chatPreviews by space.id for O(1) lookup, selecting most recent per space
+        val chatPreviewMap = chatPreviews.groupBy { it.space.id }
+            .mapValues { (_, previews) ->
+                // Select preview with latest timestamp, falling back to first if all timestamps are invalid
+                previews.maxByOrNull { it.message?.createdAt ?: 0L } ?: previews.firstOrNull()
+            }
+
+        // Calculate total unread counts for all chats per space
+        val unreadCountsPerSpace = chatPreviews.groupBy { it.space.id }
+            .mapValues { (_, previews) ->
+                // Message count: sum all messages and cap at 999 (displayed as number badge in UI)
+                val totalUnreadMessages = previews.sumOf { it.state?.unreadMessages?.counter ?: 0 }.coerceAtMost(999)
+                // Mention count: 1 if ANY chat has mentions, 0 otherwise (displayed as icon-only indicator in UI)
+                val hasMentions = if (previews.any { (it.state?.unreadMentions?.counter ?: 0) > 0 }) 1 else 0
+                UnreadCounts(totalUnreadMessages, hasMentions)
+            }
+
+        // Index chatDetails by chat ID for O(1) lookup of chat names
+        val chatDetailsMap = chatDetails.associateBy { it.id }
         // Map all active spaces to VaultSpaceView objects
         val allSpacesRaw = spacesFromFlow
             .filter { space -> (space.isActive || space.isLoading) }
@@ -260,14 +295,12 @@ class VaultViewModel(
         val allSpaces = allSpacesRaw.map { space ->
             val chatPreview = space.targetSpaceId?.let { spaceId ->
                 chatPreviewMap[spaceId]
-            }?.takeIf { preview ->
-                // Only use chat preview if it matches the main space chat ID
-                // This filters out previews from other chats in multi-chat spaces
-                space.chatId?.let { spaceChatId ->
-                    preview.chat == spaceChatId
-                } == true // If no chatId is set, don't show preview
             }
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, permissions, wallpapers)
+            val unreadCounts = space.targetSpaceId?.let { spaceId ->
+                unreadCountsPerSpace[spaceId]
+            }
+
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -322,15 +355,24 @@ class VaultViewModel(
     private suspend fun mapToVaultSpaceViewItemWithCanPin(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>
+        wallpapers: Map<Id, Wallpaper>,
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
     ): VaultSpaceView {
-        return if (space.hasChatFunctionality()) {
-            // Spaces with chat functionality (CHAT spaces or DATA/STREAM spaces with chatId)
-            createChatView(space, chatPreview, permissions, wallpapers)
-        } else {
-            // Other spaces without chat use standard space view
-            createStandardSpaceView(space, permissions, wallpapers)
+        return when {
+            // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
+            space.spaceUxType == SpaceUxType.CHAT && chatPreview != null -> {
+                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
+            }
+            // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
+            chatPreview != null -> {
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
+            }
+            // any other space without chat preview → VaultSpaceView.DataSpace
+            else -> {
+                createDataSpaceView(space, permissions, wallpapers)
+            }
         }
     }
 
@@ -422,13 +464,17 @@ class VaultViewModel(
     }
 
 
-
-    private suspend fun createChatView(
+    /**
+     * Create a Vault View for a Chat Space with a chat preview
+     */
+    private suspend fun createChatSpaceView(
         space: ObjectWrapper.SpaceView,
         chatPreview: Chat.Preview?,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>
-    ): VaultSpaceView.Chat {
+        wallpapers: Map<Id, Wallpaper>,
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
+    ): VaultSpaceView.ChatSpace {
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
 
@@ -469,41 +515,118 @@ class VaultViewModel(
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
-        val isMuted = NotificationStateCalculator.calculateMutedState(space)
 
         val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
         val wallpaperResult = computeWallpaperResult(
             icon = icon,
             wallpaper = wallpaper
         )
-        
-        return VaultSpaceView.Chat(
+
+        return VaultSpaceView.ChatSpace(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
             creatorName = creatorName,
             messageText = messageText,
             messageTime = messageTime,
-            unreadMessageCount = chatPreview?.state?.unreadMessages?.counter ?: 0,
-            unreadMentionCount = chatPreview?.state?.unreadMentions?.counter ?: 0,
+            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
+            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
             attachmentPreviews = attachmentPreviews,
             isOwner = isOwner,
-            isMuted = isMuted,
+            spaceNotificationState = space.spacePushNotificationMode,
             wallpaper = wallpaperResult
         )
     }
 
-    private fun createStandardSpaceView(
+    /**
+     * Create a Vault View for Data Space with a chat preview
+     */
+    private suspend fun createDataSpaceWithChatView(
         space: ObjectWrapper.SpaceView,
+        chatPreview: Chat.Preview,
+        unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
-        wallpapers: Map<Id, Wallpaper>
-    ): VaultSpaceView.Space {
+        wallpapers: Map<Id, Wallpaper>,
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
+    ): VaultSpaceView.DataSpaceWithChat {
+        val creatorId = chatPreview.message?.creator
+        val messageText = chatPreview.message?.content?.text
+
+        val creatorName = if (!creatorId.isNullOrEmpty()) {
+            val creatorObj = chatPreview.dependencies.find {
+                it.getSingleValue<String>(
+                    Relations.IDENTITY
+                ) == creatorId
+            }
+            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
+        } else {
+            null
+        }
+
+        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+            if (timeInSeconds > 0) {
+                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
+            } else null
+        }
+
+        // Build attachment previews with proper URLs
+        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
+            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+            val attachmentPreview = mapToAttachmentPreview(
+                attachment = attachment,
+                dependency = dependency
+            )
+            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+            attachmentPreview
+        } ?: emptyList()
+
+        val icon = space.spaceIcon(urlBuilder)
+
         val perms =
             space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
         val isOwner = perms.isOwner()
 
-        // Standard spaces without chat functionality have no notification/mute state
-        val isMuted = null
+        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
+        val wallpaperResult = computeWallpaperResult(
+            icon = icon,
+            wallpaper = wallpaper
+        )
+
+        // Lookup chat name from chat details subscription
+        val chatName = chatDetailsMap[chatPreview.chat]?.name.orEmpty()
+
+        return VaultSpaceView.DataSpaceWithChat(
+            space = space,
+            icon = icon,
+            chatPreview = chatPreview,
+            creatorName = creatorName,
+            messageText = messageText,
+            messageTime = messageTime,
+            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
+            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
+            attachmentPreviews = attachmentPreviews,
+            isOwner = isOwner,
+            chatNotificationState = calculateChatNotificationState(
+                chatSpace = space,
+                chatId = chatPreview.chat
+            ),
+            wallpaper = wallpaperResult,
+            spaceNotificationState = space.spacePushNotificationMode,
+            chatName = chatName
+        )
+    }
+
+    /**
+     * Create a Vault View for Data Space WITHOUT chat preview
+     */
+    private fun createDataSpaceView(
+        space: ObjectWrapper.SpaceView,
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>
+    ): VaultSpaceView.DataSpace {
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -515,12 +638,11 @@ class VaultViewModel(
             wallpaper = wallpaper
         )
 
-        return VaultSpaceView.Space(
+        return VaultSpaceView.DataSpace(
             space = space,
             icon = icon,
             accessType = accessType,
             isOwner = isOwner,
-            isMuted = isMuted,
             wallpaper = wallpaperResult
         )
     }

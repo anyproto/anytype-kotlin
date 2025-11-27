@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.view.LayoutInflater
+import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView.NO_POSITION
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.presentation.sets.model.Viewer.ListView.Item.Task
 
 class ListViewAdapter(
     private val onListItemClicked: (Id) -> Unit,
+    private val onListItemLongClicked: (Id, View) -> Unit,
     private val onTaskCheckboxClicked: (Id) -> Unit
 ) : ListAdapter<Viewer.ListView.Item, ListViewHolder>(ListViewDiffer) {
 
@@ -34,7 +36,16 @@ class ListViewAdapter(
                             }
                         }
                     }
-
+                    itemView.setOnLongClickListener { view ->
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item is Viewer.ListView.Item) {
+                                onListItemLongClicked(item.objectId, view)
+                            }
+                        }
+                        true
+                    }
                 }
             }
             VIEW_TYPE_PROFILE -> {
@@ -49,6 +60,16 @@ class ListViewAdapter(
                             }
                         }
                     }
+                    itemView.setOnLongClickListener { view ->
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item is Viewer.ListView.Item) {
+                                onListItemLongClicked(item.objectId, view)
+                            }
+                        }
+                        true
+                    }
                 }
             }
             VIEW_TYPE_TASK -> {
@@ -62,6 +83,16 @@ class ListViewAdapter(
                                 onListItemClicked(item.objectId)
                             }
                         }
+                    }
+                    itemView.setOnLongClickListener { view ->
+                        val pos = bindingAdapterPosition
+                        if (pos != NO_POSITION) {
+                            val item = getItem(pos)
+                            if (item is Viewer.ListView.Item) {
+                                onListItemLongClicked(item.objectId, view)
+                            }
+                        }
+                        true
                     }
                     icon.setOnClickListener {
                         val pos = bindingAdapterPosition

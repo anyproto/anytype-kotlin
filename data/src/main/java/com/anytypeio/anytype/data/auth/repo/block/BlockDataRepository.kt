@@ -462,6 +462,14 @@ class BlockDataRepository(
         keys = keys
     )
 
+    override suspend fun crossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult = remote.crossSpaceSearchSubscribe(command)
+
+    override suspend fun objectCrossSpaceUnsubscribe(subscription: String) {
+        remote.objectCrossSpaceUnsubscribe(subscription)
+    }
+
     override suspend fun cancelObjectSearchSubscription(
         subscriptions: List<Id>
     ) = remote.cancelObjectSearchSubscription(subscriptions).also {
@@ -901,6 +909,10 @@ class BlockDataRepository(
 
     override suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload {
         return remote.addObjectToCollection(command)
+    }
+
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return remote.removeObjectFromCollection(command)
     }
 
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import sh.calvin.reorderable.ReorderableItem
@@ -95,8 +96,9 @@ fun WidgetsScreen(
 
             val fromType = from.contentType as? SectionType
 
-            val fromId = from.key as? Id
-            val toId = to.key as? Id
+            // Extract widget IDs from composite keys using extractWidgetId() extension
+            val fromId = (from.key as? String)?.extractWidgetId()
+            val toId = (to.key as? String)?.extractWidgetId()
 
             when (fromType) {
                 SectionType.PINNED -> {
@@ -177,6 +179,7 @@ fun WidgetsScreen(
                 },
                 onWidgetElementClicked = viewModel::onWidgetElementClicked,
                 onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
+                onSeeAllClicked = viewModel::onSeeAllClicked,
                 onWidgetMenuTriggered = viewModel::onWidgetMenuTriggered,
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
@@ -213,6 +216,7 @@ fun WidgetsScreen(
                 },
                 onWidgetElementClicked = viewModel::onWidgetElementClicked,
                 onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
+                onSeeAllClicked = viewModel::onSeeAllClicked,
                 onWidgetMenuTriggered = viewModel::onWidgetMenuTriggered,
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,

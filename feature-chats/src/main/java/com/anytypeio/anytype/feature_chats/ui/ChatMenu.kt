@@ -83,17 +83,17 @@ fun BoxScope.ChatMenu(
             onDismissRequest = onDismissRequest,
             properties = PopupProperties(focusable = false)
         ) {
-            // Properties
-            DropdownMenuItem(
-                content = {
-                    ChatMenuItemContent(
-                        text = stringResource(R.string.properties),
-                        iconRes = R.drawable.ic_chat_menu_properties_24
-                    )
-                },
-                onClick = { onPropertiesClick() }
-            )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+//            // Properties
+//            DropdownMenuItem(
+//                content = {
+//                    ChatMenuItemContent(
+//                        text = stringResource(R.string.properties),
+//                        iconRes = R.drawable.ic_chat_menu_properties_24
+//                    )
+//                },
+//                onClick = { onPropertiesClick() }
+//            )
+//            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             // Edit Info
             DropdownMenuItem(

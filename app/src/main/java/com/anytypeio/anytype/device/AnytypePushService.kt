@@ -59,7 +59,7 @@ class AnytypePushService : FirebaseMessagingService() {
         scope.launch(dispatchers.io) {
             checkAuthorizationStatus.async(Unit).fold(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
-                onSuccess = { (status, account) ->
+                onSuccess = { (status, _ ) ->
                     if (status == AuthStatus.UNAUTHORIZED) {
                         Timber.w("User is unauthorized, skipping push message processing")
                         // If the user is unauthorized, we do not process push messages
@@ -71,7 +71,7 @@ class AnytypePushService : FirebaseMessagingService() {
         }
     }
 
-    private fun proceedWithPushMessage(message: RemoteMessage) {
+    private suspend fun proceedWithPushMessage(message: RemoteMessage) {
         runSafely("processing push message") {
             processor.process(
                 messageData = message.data,

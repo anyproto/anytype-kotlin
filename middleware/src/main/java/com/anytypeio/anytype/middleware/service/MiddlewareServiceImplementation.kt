@@ -910,6 +910,17 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun removeObjectFromCollection(request: Rpc.ObjectCollection.Remove.Request): Rpc.ObjectCollection.Remove.Response {
+        val encoded = Service.objectCollectionRemove(Rpc.ObjectCollection.Remove.Request.ADAPTER.encode(request))
+        val response = Rpc.ObjectCollection.Remove.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.ObjectCollection.Remove.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response {
         val encoded = Service.objectSetSource(Rpc.Object.SetSource.Request.ADAPTER.encode(request))
         val response = Rpc.Object.SetSource.Response.ADAPTER.decode(encoded)
@@ -2891,6 +2902,32 @@ class MiddlewareServiceImplementation @Inject constructor(
         val response = Rpc.PushNotification.ResetIds.Response.ADAPTER.decode(encoded)
         val error = response.error
         if (error != null && error.code != Rpc.PushNotification.ResetIds.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCrossSpaceSubscribe(request: Rpc.Object.CrossSpaceSearchSubscribe.Request): Rpc.Object.CrossSpaceSearchSubscribe.Response {
+        val encoded = Service.objectCrossSpaceSearchSubscribe(
+            Rpc.Object.CrossSpaceSearchSubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CrossSpaceSearchSubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CrossSpaceSearchSubscribe.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
+    override fun objectCrossSpaceUnsubscribe(request: Rpc.Object.CrossSpaceSearchUnsubscribe.Request): Rpc.Object.CrossSpaceSearchUnsubscribe.Response {
+        val encoded = Service.objectCrossSpaceSearchUnsubscribe(
+            Rpc.Object.CrossSpaceSearchUnsubscribe.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Object.CrossSpaceSearchUnsubscribe.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Object.CrossSpaceSearchUnsubscribe.Response.Error.Code.NULL) {
             throw Exception(error.description)
         } else {
             return response

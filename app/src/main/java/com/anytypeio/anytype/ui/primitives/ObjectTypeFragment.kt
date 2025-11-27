@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_object_type.fields.ui.FieldsMainScreen
@@ -35,6 +36,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconsPickerState
 import com.anytypeio.anytype.feature_object_type.ui.create.SetTypeTitlesAndIconScreen
 import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreen
+import com.anytypeio.anytype.feature_object_type.ui.menu.ObjectTypeMenu
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeVMFactory
 import com.anytypeio.anytype.feature_object_type.viewmodel.ObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
@@ -105,6 +107,10 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         Timber.e(it, "Error while opening edit object type properties screen")
                     }
                 }
+
+                is ObjectTypeCommand.ShowToast -> {
+                    toast(command.msg)
+                }
             }
         }
         vm.sendAnalyticsScreenObjectType()
@@ -135,6 +141,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiSyncStatusBadgeState = vm.uiSyncStatusBadgeState.collectAsStateWithLifecycle().value,
                     uiIconState = vm.uiIconState.collectAsStateWithLifecycle().value,
                     uiTitleState = vm.uiTitleState.collectAsStateWithLifecycle().value,
+                    uiDescriptionState = vm.uiDescriptionState.collectAsStateWithLifecycle().value,
                     uiHorizontalButtonsState = vm.uiHorizontalButtonsState.collectAsStateWithLifecycle().value,
                     uiTemplatesModalListState = vm.uiTemplatesModalListState.collectAsStateWithLifecycle().value,
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
@@ -152,6 +159,16 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         uiEditPropertyState = vm.uiEditPropertyScreen.collectAsStateWithLifecycle().value,
                         uiFieldLocalInfoState = vm.uiFieldLocalInfoState.collectAsStateWithLifecycle().value,
                         fieldEvent = vm::onFieldEvent
+                    )
+                }
+
+                val menuState = vm.uiMenuState.collectAsStateWithLifecycle().value
+                if (menuState.isVisible) {
+                    ObjectTypeMenu(
+                        isPinned = menuState.isPinned,
+                        canDelete = menuState.canDelete,
+                        isDescriptionFeatured = menuState.isDescriptionFeatured,
+                        onEvent = vm::onMenuEvent
                     )
                 }
             }

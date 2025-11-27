@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
+import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
@@ -33,6 +34,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -215,6 +217,7 @@ object ObjectSetModule {
         dataViewSubscription: DataViewSubscription,
         @Named("object-set-store") objectStore: ObjectStore,
         addObjectToCollection: AddObjectToCollection,
+        removeObjectFromCollection: RemoveObjectFromCollection,
         convertObjectToCollection: ConvertObjectToCollection,
         storeOfObjectTypes: StoreOfObjectTypes,
         getObjectTypes: GetObjectTypes,
@@ -229,7 +232,8 @@ object ObjectSetModule {
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         fieldParser: FieldParser,
-        spaceViews: SpaceViewSubscriptionContainer
+        spaceViews: SpaceViewSubscriptionContainer,
+        deepLinkResolver: DeepLinkResolver
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -270,7 +274,9 @@ object ObjectSetModule {
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         spaceSyncAndP2PStatusProvider = spaceSyncAndP2PStatusProvider,
         fieldParser = fieldParser,
-        spaceViews = spaceViews
+        spaceViews = spaceViews,
+        deepLinkResolver = deepLinkResolver,
+        removeObjectFromCollection = removeObjectFromCollection
     )
 
     @JvmStatic
@@ -545,6 +551,17 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): AddObjectToCollection = AddObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideRemoveObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): RemoveObjectFromCollection = RemoveObjectFromCollection(
         repo = repo,
         dispatchers = dispatchers
     )

@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.history.DiffVersionResponse
 import com.anytypeio.anytype.core_models.history.ShowVersionResponse
 import com.anytypeio.anytype.core_models.history.Version
@@ -1381,6 +1382,49 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun objectCrossSpaceSearchSubscribe(
+        command: Command.CrossSpaceSearchSubscribe
+    ): SearchResult {
+        val request = Rpc.Object.CrossSpaceSearchSubscribe.Request(
+            subId = command.subscription,
+            filters = command.filters.map { it.toMiddlewareModel() },
+            sorts = command.sorts.map { it.toMiddlewareModel() },
+            keys = command.keys,
+            source = command.source,
+            noDepSubscription = command.noDepSubscription,
+            collectionId = command.collectionId.orEmpty()
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceSubscribe(request) }
+        logResponseIfDebug(response, time)
+        return SearchResult(
+            results = response.records.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            dependencies = response.dependencies.mapNotNull { record ->
+                if (record != null && record.isNotEmpty() && record.isValidObject())
+                    ObjectWrapper.Basic(record)
+                else
+                    null
+            },
+            counter = response.counters?.parse()
+        )
+    }
+
+    @Throws(Exception::class)
+    fun objectCrossSpaceUnsubscribe(subscription: String) {
+        val request = Rpc.Object.CrossSpaceSearchUnsubscribe.Request(
+            subId = subscription
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.objectCrossSpaceUnsubscribe(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws(Exception::class)
     fun objectSearchUnsubscribe(subscriptions: List<String>) {
         val request = Rpc.Object.SearchUnsubscribe.Request(
             subIds = subscriptions
@@ -2373,6 +2417,17 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.addObjectToCollection(request) }
+        logResponseIfDebug(response, time)
+        return response.event.toPayload()
+    }
+
+    fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload {
+        val request = Rpc.ObjectCollection.Remove.Request(
+            contextId = command.ctx,
+            objectIds = command.ids
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.removeObjectFromCollection(request) }
         logResponseIfDebug(response, time)
         return response.event.toPayload()
     }

@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.WidgetId
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
 import com.anytypeio.anytype.ui.widgets.menu.WidgetMenuItem
 
@@ -79,6 +80,7 @@ fun DataViewListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -152,8 +154,9 @@ fun DataViewListWidgetCard(
                     }
                 }
                 if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
                     SeeAllButton(
-                        onClick = { onWidgetSourceClicked(item.id) }
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
                     )
                 }
             } else {
@@ -178,6 +181,7 @@ fun ChatListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -222,7 +226,9 @@ fun ChatListWidgetCard(
                 )
             }
             if (item.elements.isNotEmpty()) {
-                if (item.isCompact) {
+                val usePreviewMode = item.displayMode == WidgetView.ChatList.DisplayMode.Preview
+
+                if (item.isCompact && !usePreviewMode) {
                     CompactListWidgetList(
                         mode = mode,
                         elements = item.elements,
@@ -230,22 +236,51 @@ fun ChatListWidgetCard(
                         onObjectCheckboxClicked = onObjectCheckboxClicked
                     )
                 } else {
+                    // Check if we should use Preview mode with ChatWidgetCard
+                    android.util.Log.d("ChatListWidgetCard", "Rendering with displayMode=${item.displayMode}, usePreviewMode=$usePreviewMode, elements=${item.elements.size}")
+                    
                     item.elements.forEachIndexed { idx, element ->
-                        ListWidgetElement(
-                            onWidgetObjectClicked = onWidgetObjectClicked,
-                            obj = element.obj,
-                            icon = element.objectIcon,
-                            mode = mode,
-                            onObjectCheckboxClicked = onObjectCheckboxClicked,
-                            name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null
-                        )
-                        if (idx != item.elements.lastIndex) {
-                            Divider(
-                                thickness = 0.5.dp,
-                                modifier = Modifier.padding(end = 16.dp, start = 16.dp),
-                                color = colorResource(id = R.color.widget_divider)
+                        if (usePreviewMode && element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Use ChatWidgetCard for preview mode
+                            android.util.Log.d("ChatListWidgetCard", "Rendering ChatWidgetCard for element idx=$idx, chatName=${element.getPrettyName()}, creator=${element.creatorName}, message=${element.messageText?.take(30)}")
+                            ChatWidgetCard(
+                                modifier = Modifier.padding(vertical = 4.dp),
+                                chatIcon = element.objectIcon,
+                                chatName = element.getPrettyName(),
+                                creatorName = element.creatorName,
+                                messageText = element.messageText,
+                                messageTime = element.messageTime,
+                                attachmentPreviews = element.attachmentPreviews,
+                                unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
+                                unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                chatNotificationState = element.chatNotificationState,
+                                onClick = { onWidgetObjectClicked(element.obj) }
                             )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
+                        } else {
+                            // Use ListWidgetElement for compact mode
+                            ListWidgetElement(
+                                onWidgetObjectClicked = onWidgetObjectClicked,
+                                obj = element.obj,
+                                icon = element.objectIcon,
+                                mode = mode,
+                                onObjectCheckboxClicked = onObjectCheckboxClicked,
+                                name = element.getPrettyName(),
+                                counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            )
+                            if (idx != item.elements.lastIndex) {
+                                Divider(
+                                    thickness = 0.5.dp,
+                                    modifier = Modifier.padding(end = 16.dp, start = 16.dp),
+                                    color = colorResource(id = R.color.widget_divider)
+                                )
+                            }
                         }
                         if (idx == item.elements.lastIndex) {
                             Spacer(modifier = Modifier.height(2.dp))
@@ -253,8 +288,9 @@ fun ChatListWidgetCard(
                     }
                 }
                 if (item.hasMore && item.isExpanded) {
+                    val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
                     SeeAllButton(
-                        onClick = { onWidgetSourceClicked(item.id) }
+                        onClick = { onSeeAllClicked(item.id, activeViewId) }
                     )
                 }
             } else {
@@ -279,6 +315,7 @@ fun GalleryWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
+    onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
     onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
@@ -359,7 +396,8 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            onWidgetSourceClicked(item.id)
+                                            val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
+                                            onSeeAllClicked(item.id, activeViewId)
                                         }
                                 ) {
                                     Text(
@@ -999,6 +1037,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1049,6 +1088,7 @@ fun DataViewListWidgetCard_Compact_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1078,6 +1118,7 @@ fun DataViewListWidgetCard_Loading_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1107,6 +1148,7 @@ fun DataViewListWidgetCard_Empty_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1142,6 +1184,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1204,6 +1247,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1244,6 +1288,7 @@ fun DataViewListWidgetCard_EditMode_Preview() {
         mode = InteractionMode.Edit,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
@@ -1287,6 +1332,7 @@ fun DataViewListWidgetCard_Favorites_Preview() {
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
         onWidgetSourceClicked = {},
+        onSeeAllClicked = { _, _ -> },
         onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },

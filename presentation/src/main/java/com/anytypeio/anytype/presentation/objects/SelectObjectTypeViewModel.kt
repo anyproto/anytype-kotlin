@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
@@ -148,7 +147,8 @@ class SelectObjectTypeViewModel(
                                         isPinned = true,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -188,7 +188,8 @@ class SelectObjectTypeViewModel(
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
                                         isPinned = false,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -207,7 +208,8 @@ class SelectObjectTypeViewModel(
                                         isPinnable = false,
                                         isFirstInSection = index == 0,
                                         isLastInSection = index == pinnedTypes.lastIndex,
-                                        isDefault = type.uniqueKey == default.key
+                                        isDefault = type.uniqueKey == default.key,
+                                        canBeDefault = type.uniqueKey != ObjectTypeUniqueKeys.CHAT_DERIVED
                                     )
                                 }
                             )
@@ -537,7 +539,7 @@ sealed class SelectTypeView {
         val isLastInSection: Boolean = false,
         val isPinnable: Boolean = true,
         val isDefault: Boolean = false,
-        val canBeDefault: Boolean = true
+        val canBeDefault: Boolean
     ) : SelectTypeView()
 }
 

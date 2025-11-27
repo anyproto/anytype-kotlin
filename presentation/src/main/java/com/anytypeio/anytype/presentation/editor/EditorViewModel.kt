@@ -4378,7 +4378,12 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
+            val exclude = listOf(
+                ObjectTypeUniqueKeys.SET,
+                ObjectTypeUniqueKeys.COLLECTION,
+                ObjectTypeUniqueKeys.CHAT,
+                ObjectTypeUniqueKeys.CHAT_DERIVED
+            )
             proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
@@ -6673,7 +6678,13 @@ class EditorViewModel(
 
     private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        proceedWithOpeningSelectingObjectTypeScreen(fromFeatured = false)
+        val exclude = listOf(
+            ObjectTypeUniqueKeys.SET,
+            ObjectTypeUniqueKeys.COLLECTION,
+            ObjectTypeUniqueKeys.CHAT,
+            ObjectTypeUniqueKeys.CHAT_DERIVED
+        )
+        proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = false)
     }
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {

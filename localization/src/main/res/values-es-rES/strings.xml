@@ -2039,4 +2039,6 @@ En concreto,
     <string name="notify_me_about">Notifícame sobre</string>
     <string name="error_while_downloading_object">Error al descargar el objeto %1$s</string>
     <string name="toast_moved_to_bin">Objeto movido a la papelera.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
 </resources>

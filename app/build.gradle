@@ -198,6 +198,7 @@ dependencies {
     implementation libs.appcompat
     implementation libs.design
     implementation libs.recyclerView
+    implementation libs.flexbox
     implementation libs.constraintLayout
     implementation libs.composeConstraintLayout
     implementation libs.coilCompose

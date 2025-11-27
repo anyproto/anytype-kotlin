@@ -51,6 +51,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
@@ -62,6 +67,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyCallout
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Caption2Medium
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import kotlinx.coroutines.delay
 import me.saket.telephoto.zoomable.coil3.ZoomableAsyncImage
@@ -74,7 +80,8 @@ fun ImageGallery(
     onBackClick: () -> Unit = {},
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
-    onDeleteClick: (Id) -> Unit = {}
+    onDeleteClick: (Id) -> Unit = {},
+    onRestoreClick: (Id) -> Unit = {}
 ) {
     val pagerState = rememberPagerState(initialPage = index) { images.size }
     var chromeVisible by remember { mutableStateOf(true) }
@@ -82,6 +89,9 @@ fun ImageGallery(
     LaunchedEffect(pagerState.settledPage) {
         chromeVisible = true
     }
+
+    val currentImage = images.getOrNull(pagerState.settledPage)
+    val isCurrentImageArchived = currentImage?.isArchived ?: false
 
     Box(Modifier.fillMaxSize()) {
         HorizontalPager(
@@ -101,6 +111,46 @@ fun ImageGallery(
             )
         }
 
+        // Archived banner (top-center)
+        if (isCurrentImageArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    // Add text before "Restore it?"
+                    append(fullText.substring(0, startIndex))
+                    // Add "Restore it?" with underline
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    // Add any text after (shouldn't be any in this case)
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { 
+                        currentImage?.let { onRestoreClick(it.obj) }
+                    }
+            ) {
+                Text(
+                    text = annotatedText,
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary)
+                )
+            }
+        }
+
         // Page counter chip (top-center)
 
         if (images.size > 1) {
@@ -113,7 +163,7 @@ fun ImageGallery(
                 Box(
                     modifier = Modifier
                         .systemBarsPadding()
-                        .padding(top = 48.dp)
+                        .padding(top = if (isCurrentImageArchived) 48.dp else 48.dp)
                         .background(
                             color = colorResource(R.color.home_screen_toolbar_button),
                             shape = RoundedCornerShape(12.dp)
@@ -140,6 +190,7 @@ fun ImageGallery(
         ) {
             MediaActionToolbar(
                 modifier = Modifier.padding(bottom = 32.dp),
+                isArchived = isCurrentImageArchived,
                 onBackClick = onBackClick,
                 onDownloadClick = {
                     onDownloadClick(images[pagerState.settledPage].obj)
@@ -221,37 +272,14 @@ private fun ImageViewer(
 }
 
 @Composable
-fun AudioPlayerBox(
-    name: String,
-    url: String
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        AudioPlayer(
-            url = url,
-            name = name
-        )
-    }
-}
-
-@Composable
-fun VideoPlayerBox(
-    url: String
-) {
-    Box(modifier = Modifier.fillMaxSize()) {
-        VideoPlayer(
-            url = url
-        )
-    }
-}
-
-@Composable
 fun ImageGalleryBox(
     images: List<MediaViewModel.MediaViewState.ImageContent.Image> =  emptyList(),
     index: Int = 0,
     onBackClick: () -> Unit = {},
     onDownloadClick: (Id) -> Unit = {},
     onOpenClick: (Id) -> Unit = {},
-    onDeleteClick: (Id) -> Unit = {}
+    onDeleteClick: (Id) -> Unit = {},
+    onRestoreClick: (Id) -> Unit = {}
 ) {
     Box(modifier = Modifier.fillMaxSize()) {
         ImageGallery(
@@ -260,8 +288,107 @@ fun ImageGalleryBox(
             onBackClick = onBackClick,
             onDownloadClick = onDownloadClick,
             onDeleteClick = onDeleteClick,
-            onOpenClick = onOpenClick
+            onOpenClick = onOpenClick,
+            onRestoreClick = onRestoreClick
         )
+    }
+}
+
+@Composable
+fun AudioPlayerBox(
+    name: String,
+    url: String,
+    isArchived: Boolean = false,
+    onRestoreClick: () -> Unit = {}
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        AudioPlayer(
+            url = url,
+            name = name
+        )
+        
+        // Archived banner (top-center)
+        if (isArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    append(fullText.substring(0, startIndex))
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { onRestoreClick() }
+            ) {
+                Text(
+                    text = annotatedText,
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary)
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun VideoPlayerBox(
+    url: String,
+    isArchived: Boolean = false,
+    onRestoreClick: () -> Unit = {}
+) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        VideoPlayer(
+            url = url
+        )
+        
+        // Archived banner (top-center)
+        if (isArchived) {
+            val fullText = stringResource(R.string.media_object_in_bin)
+            val restoreText = "Restore it?"
+            val startIndex = fullText.indexOf(restoreText)
+            
+            val annotatedText = buildAnnotatedString {
+                if (startIndex >= 0) {
+                    append(fullText.substring(0, startIndex))
+                    withStyle(style = SpanStyle(textDecoration = TextDecoration.Underline)) {
+                        append(restoreText)
+                    }
+                    if (startIndex + restoreText.length < fullText.length) {
+                        append(fullText.substring(startIndex + restoreText.length))
+                    }
+                } else {
+                    append(fullText)
+                }
+            }
+            
+            Box(
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .systemBarsPadding()
+                    .padding(top = 16.dp)
+                    .clickable { onRestoreClick() }
+            ) {
+                Text(
+                    text = annotatedText,
+                    style = BodyCallout,
+                    color = colorResource(R.color.text_secondary)
+                )
+            }
+        }
     }
 }
 

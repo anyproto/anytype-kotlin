@@ -1243,8 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Quien tenga el enlace solo podra ver el contenido del espacio.</string>
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
-    <string name="link_copied">Link copied to clipboard</string>
-    <string name="remove_from_collection">Unlink from Collection</string>
+    <string name="link_copied">Enlace copiado al portapapeles</string>
+    <string name="remove_from_collection">Desconectar de la colección</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
     <string name="multiplayer_make_private">Hacer privado</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
@@ -1631,7 +1631,7 @@ En concreto,
     <string name="version_history_error_get_version">Error al obtener el historial de versiones</string>
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">Mis canales</string>
     <string name="vault_unread_section_title">No leído</string>
     <string name="vault_all_section_title">Todo</string>
     <string name="vault_pinned_section_title">Anclado</string>
@@ -2039,6 +2039,6 @@ En concreto,
     <string name="notify_me_about">Notifícame sobre</string>
     <string name="error_while_downloading_object">Error al descargar el objeto %1$s</string>
     <string name="toast_moved_to_bin">Objeto movido a la papelera.</string>
-    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
-    <string name="toast_restored">Object restored.</string>
+    <string name="media_object_in_bin">Este objeto está en la papelera. ¿Restaurarlo?</string>
+    <string name="toast_restored">Objeto restaurado.</string>
 </resources>

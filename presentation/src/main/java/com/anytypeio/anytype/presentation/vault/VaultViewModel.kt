@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -104,6 +105,7 @@ class VaultViewModel(
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsContainer: ChatsDetailsSubscriptionContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -163,6 +165,11 @@ class VaultViewModel(
             .distinctUntilChanged()
             .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
 
+    private val participantsFlow: StateFlow<List<ObjectWrapper.SpaceMember>> =
+        participantContainer.observe()
+            .distinctUntilChanged()
+            .stateIn(viewModelScope, SharingStarted.Eagerly, emptyList())
+
     val profileView = profileContainer.observe().map { obj ->
         AccountProfile.Data(
             name = obj.name.orEmpty(),
@@ -176,13 +183,18 @@ class VaultViewModel(
     init {
         Timber.i("VaultViewModel - init started")
         combine(
-            previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
-            spaceFlow,
-            permissionsFlow,
-            notificationsFlow,
-            chatDetailsFlow
-        ) { previews, spaces, perms, _, chatDetails ->
-            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails)
+            combine(
+                previewFlow.filterIsInstance<ChatPreviewContainer.PreviewState.Ready>(),
+                spaceFlow,
+                permissionsFlow
+            ) { previews, spaces, perms -> Triple(previews, spaces, perms) },
+            combine(
+                notificationsFlow,
+                chatDetailsFlow,
+                participantsFlow
+            ) { _, chatDetails, participants -> Pair(chatDetails, participants) }
+        ) { (previews, spaces, perms), (chatDetails, participants) ->
+            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants)
         }.onEach { sections ->
             val previousState = _uiState.value
 
@@ -261,8 +273,12 @@ class VaultViewModel(
         spacesFromFlow: List<ObjectWrapper.SpaceView>,
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>,
-        chatDetails: List<ObjectWrapper.Basic>
+        chatDetails: List<ObjectWrapper.Basic>,
+        participants: List<ObjectWrapper.SpaceMember>
     ): VaultUiState.Sections {
+        // Index participants by identity for O(1) lookup when resolving creator names
+        val participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember> = participants.associateBy { it.identity }
+
         // Fetch all space wallpapers once
         val wallpapers: Map<Id, Wallpaper> = getSpaceWallpapers.async(Unit).getOrNull() ?: run {
             Timber.w("Failed to fetch space wallpapers")
@@ -300,7 +316,7 @@ class VaultViewModel(
                 unreadCountsPerSpace[spaceId]
             }
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -358,16 +374,17 @@ class VaultViewModel(
         unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView {
         return when {
             // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
             space.spaceUxType == SpaceUxType.CHAT && chatPreview != null -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
+                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
             }
             // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
             }
             // any other space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -473,18 +490,16 @@ class VaultViewModel(
         unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.ChatSpace {
         val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
 
+        // Resolve creator name from cross-space participants container
         val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val creatorObj = chatPreview.dependencies.find {
-                it.getSingleValue<String>(
-                    Relations.IDENTITY
-                ) == creatorId
-            }
-            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
+            val participant = participantsByIdentity[creatorId]
+            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
         } else {
             null
         }
@@ -547,18 +562,16 @@ class VaultViewModel(
         unreadCounts: UnreadCounts?,
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
-        chatDetailsMap: Map<Id, ObjectWrapper.Basic>
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.DataSpaceWithChat {
         val creatorId = chatPreview.message?.creator
         val messageText = chatPreview.message?.content?.text
 
+        // Resolve creator name from cross-space participants container
         val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val creatorObj = chatPreview.dependencies.find {
-                it.getSingleValue<String>(
-                    Relations.IDENTITY
-                ) == creatorId
-            }
-            creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
+            val participant = participantsByIdentity[creatorId]
+            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
         } else {
             null
         }

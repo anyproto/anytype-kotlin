@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
@@ -186,6 +187,23 @@ object SubscriptionsModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         logger: Logger,
     ): ChatsDetailsSubscriptionContainer = ChatsDetailsSubscriptionContainer.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStart = awaitAccountStartManager,
+        logger = logger,
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun participantSubscriptionContainer(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: CrossSpaceSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        logger: Logger,
+    ): ParticipantSubscriptionContainer = ParticipantSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,

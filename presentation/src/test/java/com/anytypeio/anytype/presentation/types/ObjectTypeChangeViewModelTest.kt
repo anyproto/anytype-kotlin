@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.core_models.SupportedLayouts
@@ -62,6 +63,9 @@ class ObjectTypeChangeViewModelTest {
 
     @Mock
     lateinit var spaceManager: SpaceManager
+
+    @Mock
+    lateinit var spaceViews: SpaceViewSubscriptionContainer
 
     private val dispatchers = AppCoroutineDispatchers(
         io = coroutineTestRule.testDispatcher,
@@ -605,7 +609,8 @@ class ObjectTypeChangeViewModelTest {
         dispatchers = dispatchers,
         spaceManager = spaceManager,
         getDefaultObjectType = getDefaultObjectType,
-        urlBuilder = urlBuilder
+        urlBuilder = urlBuilder,
+        spaceViews = spaceViews
     )
 
     fun stubSpaceManager(spaceId: Id) {

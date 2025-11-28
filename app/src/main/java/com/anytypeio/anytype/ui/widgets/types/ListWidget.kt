@@ -80,8 +80,8 @@ fun ListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null,
-                            notificationState = if (element is WidgetView.ListOfObjects.Element.Chat) element.chatNotificationState else null
+                            counter = (element as? WidgetView.ListOfObjects.Element.Chat)?.counter,
+                            notificationState = (element as? WidgetView.ListOfObjects.Element.Chat)?.chatNotificationState
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(

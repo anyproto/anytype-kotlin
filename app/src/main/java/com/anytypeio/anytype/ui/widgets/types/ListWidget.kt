@@ -47,7 +47,6 @@ fun ListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -66,15 +65,11 @@ fun ListWidgetCard(
             WidgetHeader(
                 title = title,
                 icon = icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {

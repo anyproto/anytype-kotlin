@@ -103,7 +103,6 @@ import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.home.Command.ShareSpace
@@ -1117,18 +1116,6 @@ class HomeScreenViewModel(
             } else {
                 sendToast("You don't have permission to create new type")
             }
-        }
-    }
-
-
-
-    fun onWidgetMenuTriggered(widget: Id) {
-        Timber.d("onWidgetMenuTriggered: $widget")
-        viewModelScope.launch {
-            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
-            analytics.sendScreenWidgetMenuEvent(
-                isAutoCreated = isAutoCreated
-            )
         }
     }
 

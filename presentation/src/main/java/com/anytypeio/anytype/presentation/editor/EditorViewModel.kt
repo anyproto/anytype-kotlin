@@ -242,13 +242,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenTemplateSelectorEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
@@ -4711,7 +4711,15 @@ class EditorViewModel(
                 )
             }
             is OpenObjectNavigation.OpenChat -> {
-                sendToast("not implemented")
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenChat(
+                            target = navigation.target,
+                            space = navigation.space,
+                            popUpToVault = false
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")

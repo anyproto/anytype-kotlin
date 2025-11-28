@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.presentation.widgets
 
-import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -17,10 +17,10 @@ class LinkWidgetContainer(
 ) : WidgetContainer {
     override val view: Flow<WidgetView.Link> = run {
         val source = widget.source
-        val isChatDerived = source is Widget.Source.Default && 
-            source.obj.uniqueKey == ObjectTypeIds.CHAT_DERIVED
-        
-        if (isChatDerived && source is Widget.Source.Default) {
+        val isChatDerived = source is Widget.Source.Default &&
+                source.obj.layout == ObjectType.Layout.CHAT_DERIVED
+
+        if (isChatDerived) {
             chatPreviewContainer
                 .observePreviewsBySpaceId(space)
                 .distinctUntilChanged()

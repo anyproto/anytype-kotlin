@@ -7,7 +7,7 @@
     <string name="account_and_data"><![CDATA[Account & Daten]]></string>
     <string name="profile">Profil</string>
     <string name="personalization">Personalisierung</string>
-    <string name="appearance">Erscheinungsbild</string>
+    <string name="appearance">Darstellung</string>
     <string name="file_storage">Dateispeicher</string>
     <string name="key">Schlüssel</string>
     <string name="login_key">Anmeldeschlüssel</string>
@@ -34,10 +34,10 @@
     <string name="settings_application">Anwendung</string>
     <string name="vault_key">Tresor &amp; Schlüssel</string>
     <string name="have_you_back_up_your_recovery_phrase">Hast du deinen Schlüssel gesichert?</string>
-    <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
+    <string name="you_will_need_to_sign_in">Du brauchst ihn um deinen Tresor zu öffnen. Bewahre ihn an einem sicheren Ort auf. Wenn du ihn verlierst, kannst du deinen Tresor nicht mehr öffnen.</string>
     <string name="about_help_and_community">Hilfe &amp; Community</string>
     <string name="about_what_is_new">Was ist neu?</string>
-    <string name="about_anytype_community">Anytype Gemeinschaft</string>
+    <string name="about_anytype_community">Anytype Community</string>
     <string name="about_help_and_tutorials">Hilfe &amp; Tutorials</string>
     <string name="about_legal">Impressum</string>
     <string name="about_terms_of_use">Nutzungsbedingungen</string>
@@ -88,7 +88,7 @@
     <string name="option_text_highlighted">Hervorhebung</string>
     <string name="option_list_checkbox">Checkbox</string>
     <string name="option_list_bulleted_list">Stichpunkte</string>
-    <string name="option_list_numbered_list">Nummerierung</string>
+    <string name="option_list_numbered_list">Aufzählung (nummeriert)</string>
     <string name="option_list_toggle_list">Liste umschalten</string>
     <string name="option_tool_task">Aufgabe</string>
     <string name="option_tool_page">Seite</string>
@@ -905,7 +905,7 @@
     <string name="slash_widget_style_checkbox_subtitle">Aufgabe mit To-do-Liste erstellen und verwalten</string>
     <string name="slash_widget_style_bulleted">Aufzählung</string>
     <string name="slash_widget_style_bulleted_subtitle">Einfach mit dem Schreiben eines reinen Textes beginnen</string>
-    <string name="slash_widget_style_numbered">Nummerierung</string>
+    <string name="slash_widget_style_numbered">Aufzählung (nummeriert)</string>
     <string name="slash_widget_style_numbered_subtitle">Liste mit Nummerierung</string>
     <string name="slash_widget_style_toggle">Ein-/Ausblenden</string>
     <string name="slash_widget_style_toggle_subtitle">Inhalte ein-/ausblenden</string>
@@ -1243,8 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Jeder mit dem Link kann den Inhalt des Spaces nur anzeigen.</string>
     <string name="multiplayer_change_to_request_confirmation">Jeder mit dem Link muss den Zugang zum Space anfragen.</string>
     <string name="multiplayer_invite_link_copied">Einladungslink in die Zwischenablage kopiert</string>
-    <string name="link_copied">Link copied to clipboard</string>
-    <string name="remove_from_collection">Unlink from Collection</string>
+    <string name="link_copied">Link in die Zwischenablage kopiert</string>
+    <string name="remove_from_collection">Aus Sammlung entfernen</string>
     <string name="multiplayer_copy_link">Link kopieren</string>
     <string name="multiplayer_make_private">Privat machen</string>
     <string name="multiplayer_join_a_space">Einem Space beitreten</string>
@@ -1556,7 +1556,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="membership_support_already_acquired">Du hast bereits einen Mitgliedschaftsplan mit einem anderen Anytype Account erworben.</string>
     <string name="membership_support_different_subscription">Ein Abonnement mit einer anderen ID gefunden</string>
     <string name="membership_support_more_then_one_subscription">Mehr als ein Abonnement gefunden</string>
-    <string name="multiplayer_space_join_request_participants_error">Space participant\'s error</string>
+    <string name="multiplayer_space_join_request_participants_error">Fehler beim Beitritt in den Space</string>
     <string name="multiplayer_space_join_request_new_member_error">Request\'s member error</string>
     <string name="multiplayer_space_join_request_current_user_error">Current user status error</string>
     <string name="multiplayer_space_join_request_membership_status_error">Aktueller Mitgliedschaftsstatus Fehler</string>

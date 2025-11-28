@@ -124,15 +124,18 @@ fun VaultDataSpaceChatCard(
             isPinned = isPinned
         )
 
+        val isSpaceOnlyMentionsOrMuted =
+            spaceNotificationState == NotificationState.MENTIONS || isSpaceMuted
+
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = isSpaceMuted,
+            isMuted = isSpaceOnlyMentionsOrMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (isSpaceMuted)
+                    if (isSpaceOnlyMentionsOrMuted)
                         onUnmuteSpace(it) else onMuteSpace(it)
                 }
             },

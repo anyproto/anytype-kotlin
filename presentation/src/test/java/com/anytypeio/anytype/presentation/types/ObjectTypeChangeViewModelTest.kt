@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObjectType
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -17,15 +18,14 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.AddObjectToSpace
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.util.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -114,7 +114,7 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+            recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null) + SupportedLayouts.fileLayouts
         )
 
         // TESTING
@@ -157,7 +157,7 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+            recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null) + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -165,7 +165,7 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorLayouts
+                    recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null)
                 )
             )
             add(
@@ -253,7 +253,7 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+            recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null) + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -261,7 +261,7 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorLayouts
+                    recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null)
                 )
             )
             add(
@@ -431,7 +431,7 @@ class ObjectTypeChangeViewModelTest {
         val expectedInstalledTypeUniqueKey = ObjectTypeIds.PAGE
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+            recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null) + SupportedLayouts.fileLayouts
         )
         val expectedMyTypeKeys = ObjectSearchConstants.defaultKeysObjectType
 
@@ -439,7 +439,7 @@ class ObjectTypeChangeViewModelTest {
         val expectedMarketplaceTypeFilters = buildList {
             addAll(
                 ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorLayouts + SupportedLayouts.fileLayouts
+                    recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null) + SupportedLayouts.fileLayouts
                 )
             )
             add(
@@ -571,7 +571,7 @@ class ObjectTypeChangeViewModelTest {
         val vm = givenViewModel()
 
         val expectedMyTypesFilters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = SupportedLayouts.editorLayouts
+            recommendedLayouts = SupportedLayouts.getCreateObjectLayouts(null)
         )
 
         // TESTING

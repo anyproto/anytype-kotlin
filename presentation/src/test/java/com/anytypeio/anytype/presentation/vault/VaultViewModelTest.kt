@@ -4,14 +4,16 @@ import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubSpaceView
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.core_models.stubChatPreview
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
@@ -20,7 +22,6 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
-import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -58,6 +59,8 @@ class VaultViewModelTest {
     private lateinit var shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge
     private lateinit var setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen
     private lateinit var appInfo: AppInfo
+    private lateinit var participantSubscriptionContainer: ParticipantSubscriptionContainer
+    private lateinit var chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer
 
     @Before
     fun setup() {
@@ -73,12 +76,20 @@ class VaultViewModelTest {
         shouldShowCreateSpaceBadge = mock()
         setCreateSpaceBadgeSeen = mock()
         appInfo = mock()
+        participantSubscriptionContainer = mock()
+        chatsDetailsSubscriptionContainer = mock()
 
         getSpaceWallpapers.stub {
             onBlocking { async(Unit) }.thenReturn(Resultat.Success(emptyMap()))
         }
         shouldShowCreateSpaceBadge.stub {
             onBlocking { async(any()) }.thenReturn(Resultat.Success(false))
+        }
+        participantSubscriptionContainer.stub {
+            onBlocking { observe() }.thenReturn(flowOf(emptyList()))
+        }
+        chatsDetailsSubscriptionContainer.stub {
+            onBlocking { observe() }.thenReturn(flowOf(emptyList()))
         }
         whenever(appInfo.versionName).thenReturn("1.0.0")
     }
@@ -101,6 +112,8 @@ class VaultViewModelTest {
         whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
         whenever(notificationPermissionManager.permissionState()).thenReturn(permissionStateFlow)
         whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
+        whenever(chatsDetailsSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+        whenever(participantSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
 
         // When
         val viewModel = VaultViewModelFabric.create(
@@ -108,7 +121,9 @@ class VaultViewModelTest {
             chatPreviewContainer = chatPreviewContainer,
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         // Then
@@ -228,7 +243,9 @@ class VaultViewModelTest {
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
                     stringResourceProvider = stringResourceProvider,
-                    getSpaceWallpaper = getSpaceWallpapers
+                    getSpaceWallpaper = getSpaceWallpapers,
+                    chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                    participantSubscriptionContainer = participantSubscriptionContainer
                 )
 
                 viewModel.uiState.test {
@@ -336,7 +353,9 @@ class VaultViewModelTest {
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
                 stringResourceProvider = stringResourceProvider,
-                getSpaceWallpaper = getSpaceWallpapers
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
             )
 
             // When & Then
@@ -443,7 +462,9 @@ class VaultViewModelTest {
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
                 stringResourceProvider = stringResourceProvider,
-                getSpaceWallpaper = getSpaceWallpapers
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
             )
 
             // When & Then
@@ -532,7 +553,9 @@ class VaultViewModelTest {
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
                 stringResourceProvider = stringResourceProvider,
-                getSpaceWallpaper = getSpaceWallpapers
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
             )
 
             viewModel.uiState.test {
@@ -609,7 +632,9 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         viewModel.uiState.test {
@@ -686,7 +711,9 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         viewModel.uiState.test {
@@ -782,7 +809,9 @@ class VaultViewModelTest {
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
             setSpaceOrder = setSpaceOrder,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         turbineScope {
@@ -863,7 +892,9 @@ class VaultViewModelTest {
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
             setSpaceOrder = setSpaceOrder,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         viewModel.uiState.test {
@@ -941,7 +972,9 @@ class VaultViewModelTest {
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
             setSpaceOrder = setSpaceOrder,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         turbineScope {
@@ -1034,7 +1067,9 @@ class VaultViewModelTest {
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
                     stringResourceProvider = stringResourceProvider,
-                    getSpaceWallpaper = getSpaceWallpapers
+                    getSpaceWallpaper = getSpaceWallpapers,
+                    chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                    participantSubscriptionContainer = participantSubscriptionContainer
                 )
 
                 viewModel.uiState.test {
@@ -1168,7 +1203,9 @@ class VaultViewModelTest {
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
                 stringResourceProvider = stringResourceProvider,
-                getSpaceWallpaper = getSpaceWallpapers
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
             )
 
             viewModel.uiState.test {
@@ -1241,7 +1278,9 @@ class VaultViewModelTest {
                     userPermissionProvider = userPermissionProvider,
                     notificationPermissionManager = notificationPermissionManager,
                     stringResourceProvider = stringResourceProvider,
-                    getSpaceWallpaper = getSpaceWallpapers
+                    getSpaceWallpaper = getSpaceWallpapers,
+                    chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                    participantSubscriptionContainer = participantSubscriptionContainer
                 )
 
                 viewModel.uiState.test {
@@ -1318,7 +1357,9 @@ class VaultViewModelTest {
             userPermissionProvider = userPermissionProvider,
             notificationPermissionManager = notificationPermissionManager,
             stringResourceProvider = stringResourceProvider,
-            getSpaceWallpaper = getSpaceWallpapers
+            getSpaceWallpaper = getSpaceWallpapers,
+            chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+            participantSubscriptionContainer = participantSubscriptionContainer
         )
 
         viewModel.uiState.test {
@@ -1469,7 +1510,9 @@ class VaultViewModelTest {
                 userPermissionProvider = userPermissionProvider,
                 notificationPermissionManager = notificationPermissionManager,
                 stringResourceProvider = stringResourceProvider,
-                getSpaceWallpaper = getSpaceWallpapers
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
             )
 
             viewModel.uiState.test {

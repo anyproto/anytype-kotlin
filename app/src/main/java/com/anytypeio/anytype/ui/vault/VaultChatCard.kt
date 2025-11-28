@@ -174,7 +174,8 @@ fun VaultChatSpaceCard(
             mainSize = 64.dp,
             modifier = Modifier
         )
-        val isSpaceMuted = spaceView.spaceNotificationState == NotificationState.DISABLE
+        val shouldShowAsMuted = spaceView.spaceNotificationState == NotificationState.DISABLE ||
+                spaceView.spaceNotificationState == NotificationState.MENTIONS
 
         ContentChat(
             modifier = Modifier
@@ -189,7 +190,7 @@ fun VaultChatSpaceCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isSpaceMuted,
+            isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
             spaceNotificationState = spaceView.spaceNotificationState,
             isPinned = isPinned
         )
@@ -198,11 +199,15 @@ fun VaultChatSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = isSpaceMuted,
+            isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (isSpaceMuted) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (shouldShowAsMuted) {
+                        onUnmuteSpace(it)
+                    } else {
+                        onMuteSpace(it)
+                    }
                 }
             },
             onPinToggle = {
@@ -272,7 +277,6 @@ private fun RowScope.ContentChat(
                 chatPreview = chatPreview,
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
-                isMuted = isMuted,
                 notificationMode = spaceNotificationState,
                 isPinned = isPinned
             )
@@ -289,7 +293,6 @@ private fun ChatSubtitleRow(
     chatPreview: Chat.Preview?,
     unreadMessageCount: Int,
     unreadMentionCount: Int,
-    isMuted: Boolean?,
     notificationMode: NotificationState? = null,
     isPinned: Boolean
 ) {

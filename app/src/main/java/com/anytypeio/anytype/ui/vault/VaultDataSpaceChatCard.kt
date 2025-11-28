@@ -48,7 +48,6 @@ fun VaultDataSpaceChatCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    chatNotificationState: NotificationState,
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
@@ -118,25 +117,27 @@ fun VaultDataSpaceChatCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            chatNotificationState = chatNotificationState,
             spaceNotificationState = spaceNotificationState,
             isMuted = isSpaceMuted,
             isPinned = isPinned
         )
 
-        val isSpaceOnlyMentionsOrMuted =
+        val shouldShowAsMuted =
             spaceNotificationState == NotificationState.MENTIONS || isSpaceMuted
 
         // Include dropdown menu inside the card
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = isSpaceOnlyMentionsOrMuted,
+            isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (isSpaceOnlyMentionsOrMuted)
-                        onUnmuteSpace(it) else onMuteSpace(it)
+                    if (shouldShowAsMuted) {
+                        onUnmuteSpace(it)
+                    } else {
+                        onMuteSpace(it)
+                    }
                 }
             },
             onPinToggle = {
@@ -164,7 +165,6 @@ private fun ContentDataSpaceChat(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
-    chatNotificationState: NotificationState,
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false
 ) {
@@ -304,7 +304,6 @@ fun DataSpaceChatWithMessage() {
             messageTime = "17:01",
             unreadMessageCount = 2,
             unreadMentionCount = 1,
-            chatNotificationState = NotificationState.ALL,
             spaceNotificationState = NotificationState.ALL,
             isPinned = false,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE0F7FA)),
@@ -341,7 +340,6 @@ fun DataSpaceChatMuted() {
             messageTime = "09:15",
             unreadMessageCount = 5,
             unreadMentionCount = 0,
-            chatNotificationState = NotificationState.DISABLE,
             spaceNotificationState = NotificationState.DISABLE,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFFFF3E0)),
@@ -378,7 +376,6 @@ fun DataSpaceChatNoMessage() {
             messageTime = null,
             unreadMessageCount = 0,
             unreadMentionCount = 0,
-            chatNotificationState = NotificationState.ALL,
             spaceNotificationState = NotificationState.ALL,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFE8F5E9)),

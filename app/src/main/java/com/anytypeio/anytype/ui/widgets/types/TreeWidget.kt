@@ -46,7 +46,6 @@ fun TreeWidgetCard(
     onExpandElement: (TreePath) -> Unit,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuClicked: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -66,13 +65,9 @@ fun TreeWidgetCard(
             WidgetHeader(
                 title = title,
                 icon = icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode == InteractionMode.ReadOnly,
-                onWidgetMenuTriggered = { onWidgetMenuClicked(item.id) },
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
                 onObjectCheckboxClicked = { isChecked ->

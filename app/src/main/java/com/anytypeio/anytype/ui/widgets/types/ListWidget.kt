@@ -1,18 +1,12 @@
 package com.anytypeio.anytype.ui.widgets.types
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -21,7 +15,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -29,7 +22,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.home.InteractionMode
@@ -47,7 +39,6 @@ fun ListWidgetCard(
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -66,15 +57,11 @@ fun ListWidgetCard(
             WidgetHeader(
                 title = title,
                 icon = icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = { onWidgetSourceClicked(item.id) },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
             )
             if (item.elements.isNotEmpty()) {
                 if (item.isCompact) {
@@ -93,7 +80,8 @@ fun ListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            counter = (element as? WidgetView.ListOfObjects.Element.Chat)?.counter,
+                            notificationState = (element as? WidgetView.ListOfObjects.Element.Chat)?.chatNotificationState
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -195,52 +183,13 @@ fun CompactListWidgetList(
                     style = PreviewTitle2Medium,
                     color = color
                 )
-                
+
+                // Display chat counter badges with notification-aware colors
                 if (element is WidgetView.Element.Chat) {
-                    element.counter?.let { counter ->
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            if (counter.unreadMentionCount > 0) {
-                            Box(
-                                modifier = Modifier
-                                    .background(
-                                        color = colorResource(R.color.color_accent),
-                                        shape = CircleShape
-                                    )
-                                    .size(20.dp),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                Image(
-                                    painter = painterResource(R.drawable.ic_chat_widget_mention),
-                                    contentDescription = null
-                                )
-                            }
-                        }
-                            if (counter.unreadMessageCount > 0) {
-                                if (counter.unreadMentionCount > 0) {
-                                    Spacer(modifier = Modifier.width(8.dp))
-                                }
-                                Box(
-                                    modifier = Modifier
-                                        .height(20.dp)
-                                        .defaultMinSize(minWidth = 20.dp)
-                                        .background(
-                                            color = colorResource(R.color.color_accent),
-                                            shape = CircleShape
-                                        ),
-                                    contentAlignment = Alignment.Center
-                                ) {
-                                    Text(
-                                        modifier = Modifier.padding(horizontal = 6.dp),
-                                        text = counter.unreadMessageCount.toString(),
-                                        style = Caption1Regular,
-                                        color = colorResource(id = R.color.text_white),
-                                    )
-                                }
-                            }
-                        }
-                    }
+                    ChatCounterBadges(
+                        counter = element.counter,
+                        notificationState = (element as? WidgetView.ListOfObjects.Element.Chat)?.chatNotificationState
+                    )
                 }
             }
             if (idx != elements.lastIndex) {

@@ -10,10 +10,6 @@ object WidgetConfig {
         ObjectTypeIds.OBJECT_TYPE,
         ObjectTypeIds.RELATION,
         ObjectTypeIds.TEMPLATE,
-        ObjectTypeIds.IMAGE,
-        ObjectTypeIds.FILE,
-        ObjectTypeIds.VIDEO,
-        ObjectTypeIds.AUDIO,
         ObjectTypeIds.DASHBOARD,
         ObjectTypeIds.DATE,
         ObjectTypeIds.RELATION_OPTION

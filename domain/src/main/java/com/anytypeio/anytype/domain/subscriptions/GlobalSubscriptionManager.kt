@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationOptionsSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.SpaceDeletedStatusWatcher
 import javax.inject.Inject
@@ -19,6 +20,7 @@ interface GlobalSubscriptionManager {
     class Default @Inject constructor(
         private val types: ObjectTypesSubscriptionManager,
         private val relations: RelationsSubscriptionManager,
+        private val relationOptions: RelationOptionsSubscriptionManager,
         private val permissions: UserPermissionProvider,
         private val isSpaceDeleted: SpaceDeletedStatusWatcher,
         private val profile: ProfileSubscriptionManager,
@@ -33,6 +35,7 @@ interface GlobalSubscriptionManager {
             pushKeyProvider.start()
             types.onStart()
             relations.onStart()
+            relationOptions.onStart()
             permissions.start()
             isSpaceDeleted.onStart()
             profile.onStart()
@@ -45,6 +48,7 @@ interface GlobalSubscriptionManager {
             pushKeyProvider.stop()
             types.onStop()
             relations.onStop()
+            relationOptions.onStop()
             permissions.stop()
             isSpaceDeleted.onStop()
             profile.onStop()

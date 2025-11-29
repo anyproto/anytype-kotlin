@@ -46,6 +46,7 @@ object Relations {
     const val RELATION_KEY = "relationKey"
     const val RELATION_OPTION_COLOR = "relationOptionColor"
     const val RELATION_OPTION_DICT = "relationOptionsDict"
+    const val RELATION_OPTION_ORDER = "relationOptionOrder"
     const val SCOPE = "scope"
     const val RESTRICTIONS = "restrictions"
     const val MAX_COUNT = "relationMaxCount"

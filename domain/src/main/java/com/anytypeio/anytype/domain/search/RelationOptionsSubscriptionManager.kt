@@ -119,7 +119,8 @@ class RelationOptionsSubscriptionManager(
                     Relations.NAME,
                     Relations.RELATION_OPTION_COLOR,
                     Relations.RELATION_KEY,
-                    Relations.RELATION_OPTION_ORDER
+                    Relations.RELATION_OPTION_ORDER,
+                    Relations.ORDER_ID
                 ),
                 ignoreWorkspace = true
             )

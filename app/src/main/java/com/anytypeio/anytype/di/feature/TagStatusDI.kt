@@ -5,17 +5,14 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.debugging.Logger
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
-import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.value.tagstatus.SUB_MY_OPTIONS
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModelFactory
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -49,22 +46,6 @@ object TagOrStatusValueObjectModule {
     @JvmStatic
     @Provides
     @PerModal
-    @Named(SUB_MY_OPTIONS)
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers,
-        logger: Logger
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers,
-        logger = logger
-    )
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideDeleteRelationOptions(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -88,29 +69,27 @@ object TagOrStatusValueObjectModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         params: TagOrStatusValueViewModel.ViewModelParams,
-        @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
         setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        storeOfRelationOptions: StoreOfRelationOptions
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        storeOfRelationOptions = storeOfRelationOptions
     )
 }
 //endregion
@@ -138,22 +117,6 @@ object TagOrStatusValueSetModule {
     @JvmStatic
     @Provides
     @PerModal
-    @Named(SUB_MY_OPTIONS)
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers,
-        logger: Logger
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers,
-        logger = logger
-    )
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideDeleteRelationOptions(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -177,29 +140,27 @@ object TagOrStatusValueSetModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         params: TagOrStatusValueViewModel.ViewModelParams,
-        @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
         setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        storeOfRelationOptions: StoreOfRelationOptions
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        storeOfRelationOptions = storeOfRelationOptions
     )
 }
 //endregion
@@ -227,22 +188,6 @@ object TagOrStatusValueDataViewModule {
     @JvmStatic
     @Provides
     @PerModal
-    @Named(SUB_MY_OPTIONS)
-    fun provideStoreLessSubscriptionContainer(
-        repo: BlockRepository,
-        channel: SubscriptionEventChannel,
-        dispatchers: AppCoroutineDispatchers,
-        logger: Logger
-    ): StorelessSubscriptionContainer = StorelessSubscriptionContainer.Impl(
-        repo = repo,
-        channel = channel,
-        dispatchers = dispatchers,
-        logger = logger
-    )
-
-    @JvmStatic
-    @Provides
-    @PerModal
     fun provideDeleteRelationOptions(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -266,29 +211,27 @@ object TagOrStatusValueDataViewModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
         params: TagOrStatusValueViewModel.ViewModelParams,
-        @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
         setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-        storeOfRelations: StoreOfRelations
+        storeOfRelations: StoreOfRelations,
+        storeOfRelationOptions: StoreOfRelationOptions
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
-        storeOfRelations = storeOfRelations
+        storeOfRelations = storeOfRelations,
+        storeOfRelationOptions = storeOfRelationOptions
     )
 }
 //endregion

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -38,17 +38,17 @@ object RelationTextValueModule {
     @Provides
     @PerModal
     fun provideRelationTextValueViewModelFactory(
-        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         reloadObject: ReloadObject,
         analytics: Analytics,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        storeOfRelations: StoreOfRelations
     ) = RelationTextValueViewModel.Factory(
-        relations = relations,
         values = values,
         reloadObject = reloadObject,
         analytics = analytics,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -78,17 +78,17 @@ object RelationDataViewTextValueModule {
     @Provides
     @PerModal
     fun provideRelationTextValueViewModelFactory(
-        @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
         reloadObject: ReloadObject,
         analytics: Analytics,
-        storeOfObjectTypes: StoreOfObjectTypes
+        storeOfObjectTypes: StoreOfObjectTypes,
+        storeOfRelations: StoreOfRelations
     ) = RelationTextValueViewModel.Factory(
-        relations = relations,
         values = values,
         reloadObject = reloadObject,
         analytics = analytics,
-        storeOfObjectTypes = storeOfObjectTypes
+        storeOfObjectTypes = storeOfObjectTypes,
+        storeOfRelations = storeOfRelations
     )
 
     @JvmStatic
@@ -118,10 +118,10 @@ object RelationDateValueModule {
     @Provides
     @PerModal
     fun provideEditGridCellViewModelFactory(
-        @Named(INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
-        dateProvider: DateProvider
-    ) = RelationDateValueViewModel.Factory(relations, values, dateProvider)
+        dateProvider: DateProvider,
+        storeOfRelations: StoreOfRelations
+    ) = RelationDateValueViewModel.Factory(values, dateProvider, storeOfRelations)
 }
 
 @Subcomponent(modules = [RelationDataViewDateValueModule::class])
@@ -143,8 +143,8 @@ object RelationDataViewDateValueModule {
     @Provides
     @PerModal
     fun provideEditGridCellViewModelFactory(
-        @Named(DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
+        storeOfRelations: StoreOfRelations,
         dateProvider: DateProvider
-    ) = RelationDateValueViewModel.Factory(relations, values, dateProvider)
+    ) = RelationDateValueViewModel.Factory(values, dateProvider, storeOfRelations)
 }

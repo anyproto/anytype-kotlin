@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.relations
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -27,6 +28,7 @@ import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
@@ -55,7 +57,7 @@ fun TagItem(
             .noRippleCombinedClickable(
                 onClick = { action(TagStatusAction.Click(state)) },
                 onLongClicked = {
-                    if (isEditable) {
+                    if (isEditable && !isDragging) {
                         haptics.performHapticFeedback(HapticFeedbackType.LongPress)
                         isMenuExpanded.value = !isMenuExpanded.value
                     }
@@ -70,11 +72,20 @@ fun TagItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             if (isEditable) {
-                Image(
-                    modifier = dragHandleModifier.size(24.dp),
-                    painter = painterResource(id = R.drawable.ic_drag_handle_dots),
-                    contentDescription = "Drag to reorder"
-                )
+                Box(
+                    modifier = Modifier
+                        .pointerInput(Unit) {
+                            detectTapGestures(
+                                onLongPress = { /* Consumed - do nothing */ }
+                            )
+                        }
+                ) {
+                    Image(
+                        modifier = dragHandleModifier.size(24.dp),
+                        painter = painterResource(id = R.drawable.ic_drag_handle_dots),
+                        contentDescription = "Drag to reorder"
+                    )
+                }
                 Spacer(modifier = Modifier.width(8.dp))
             }
             TagItemText(state = state)

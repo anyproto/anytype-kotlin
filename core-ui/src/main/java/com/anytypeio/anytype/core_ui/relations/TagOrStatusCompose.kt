@@ -96,22 +96,18 @@ private fun Search(
 ) {
     when (state) {
         is TagStatusViewState.Content -> {
-            if (state.isRelationEditable) {
-                SearchField(
-                    onFocused = {},
-                    onQueryChanged = onQueryChanged
-                )
-                Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-            }
+            SearchField(
+                onFocused = {},
+                onQueryChanged = onQueryChanged
+            )
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
         }
         is TagStatusViewState.Empty -> {
-            if (state.isRelationEditable) {
-                SearchField(
-                    onFocused = {},
-                    onQueryChanged = onQueryChanged
-                )
-                Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-            }
+            SearchField(
+                onFocused = {},
+                onQueryChanged = onQueryChanged
+            )
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
         }
         else -> { /* Do nothing */}
     }

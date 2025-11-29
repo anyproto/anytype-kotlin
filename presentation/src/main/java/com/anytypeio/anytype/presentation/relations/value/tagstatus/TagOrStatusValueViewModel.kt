@@ -13,19 +13,15 @@ import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.delay
@@ -40,16 +36,15 @@ import timber.log.Timber
 
 class TagOrStatusValueViewModel(
     private val viewModelParams: ViewModelParams,
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
-    private val subscription: StorelessSubscriptionContainer,
     private val deleteRelationOptions: DeleteRelationOptions,
     private val setRelationOptionOrder: SetRelationOptionOrder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfRelationOptions: StoreOfRelationOptions
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
@@ -57,38 +52,27 @@ class TagOrStatusValueViewModel(
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    private val initialIds = mutableListOf<Id>()
-    private var isInitialSortDone = false
+    private var isInitialExpandDone = false
 
     init {
         viewModelScope.launch {
-            val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
+            val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
-            val searchParams = StoreSearchParams(
-                space = viewModelParams.space,
-                subscription = SUB_MY_OPTIONS,
-                keys = ObjectSearchConstants.keysRelationOptions,
-                filters = ObjectSearchConstants.filterRelationOptions(
-                    relationKey = viewModelParams.relationKey
-                )
-            )
             combine(
                 values.subscribe(
                     ctx = viewModelParams.ctx,
                     target = viewModelParams.objectId
                 ),
                 query.onStart { emit("") },
-                subscription.subscribe(searchParams)
-            ) { record, query, options ->
+                storeOfRelationOptions.trackChanges()
+            ) { record, query, _ ->
+                val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
+                    .sortedBy { it.orderId }
                 val ids = getRecordValues(record)
-                if (!isInitialSortDone) {
-                    initialIds.clear()
-                    if (ids.isNotEmpty()) {
-                        initialIds.addAll(ids)
-                    } else {
-                        if (isEditableRelation) {
-                            emitCommand(Command.Expand)
-                        }
+                if (!isInitialExpandDone) {
+                    isInitialExpandDone = true
+                    if (ids.isEmpty() && isEditableRelation) {
+                        emitCommand(Command.Expand)
                     }
                 }
                 initViewState(
@@ -107,15 +91,13 @@ class TagOrStatusValueViewModel(
 
     private fun filterOptions(
         query: String,
-        options: List<ObjectWrapper.Basic>,
+        options: List<ObjectWrapper.Option>,
         ids: List<Id>
     ): List<ObjectWrapper.Option> {
         return if (isEditableRelation) {
-            options.map { ObjectWrapper.Option(map = it.map) }
-                .filter { it.name?.contains(query, true) == true }
+            options.filter { it.name?.contains(query, true) == true }
         } else {
-            options.map { ObjectWrapper.Option(map = it.map) }
-                .filter { ids.contains(it.id) }
+            options.filter { ids.contains(it.id) }
         }
     }
 
@@ -157,7 +139,7 @@ class TagOrStatusValueViewModel(
 
             TagStatusAction.Plus -> openOptionScreen(
                 Command.OpenOptionScreen(
-                    color = ThemeColor.values().drop(1).random().code,
+                    color = ThemeColor.entries.drop(1).random().code,
                     relationKey = viewModelParams.relationKey,
                     ctx = viewModelParams.ctx,
                     objectId = viewModelParams.objectId
@@ -420,49 +402,36 @@ class TagOrStatusValueViewModel(
         }
     }
 
+    /**
+     * Maps options to Tag items.
+     * Options from store are already sorted by relationOptionOrder.
+     */
     private fun mapTagOptions(
         ids: List<Id>,
         options: List<ObjectWrapper.Option>
     ) = options.map { option ->
-        val index = ids.indexOf(option.id)
-        val isSelected = index != -1
-        val number = if (isSelected) index + 1 else Int.MAX_VALUE
         RelationsListItem.Item.Tag(
             optionId = option.id,
             name = option.name.orEmpty(),
             color = getOrDefault(option.color),
-            isSelected = isSelected,
-            number = number
+            isSelected = ids.contains(option.id),
+            number = ids.indexOf(option.id).takeIf { it != -1 }?.plus(1) ?: Int.MAX_VALUE
         )
-    }.let { mappedOptions ->
-        if (!isInitialSortDone) {
-            isInitialSortDone = true
-            mappedOptions.sortedWith(
-                compareBy(
-                    { !initialIds.contains(it.optionId) },
-                    { it.number })
-            )
-        } else {
-            mappedOptions.sortedWith(
-                compareBy(
-                    { !initialIds.contains(it.optionId) },
-                    { initialIds.indexOf(it.optionId) })
-            )
-        }
     }
 
+    /**
+     * Maps options to Status items.
+     * Options from store are already sorted by relationOptionOrder, then by name.
+     */
     private fun mapStatusOptions(
         ids: List<Id>,
         options: List<ObjectWrapper.Option>
     ) = options.map { option ->
-        val index = ids.indexOf(option.id)
-        val isSelected = index != -1
-        isInitialSortDone = true
         RelationsListItem.Item.Status(
             optionId = option.id,
             name = option.name.orEmpty(),
             color = getOrDefault(option.color),
-            isSelected = isSelected
+            isSelected = ids.contains(option.id)
         )
     }
 
@@ -477,13 +446,6 @@ class TagOrStatusValueViewModel(
                 || relation.isDeleted == true
                 || relation.isArchived == true
                 || !relation.isValid)
-    }
-
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            subscription.unsubscribe(listOf(SUB_MY_OPTIONS))
-        }
     }
 
     data class ViewModelParams(
@@ -568,5 +530,4 @@ sealed class RelationsListItem {
     }
 }
 
-const val SUB_MY_OPTIONS = "subscription.relation-options"
 const val DELAY_UNTIL_CLOSE = 300L

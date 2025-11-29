@@ -10,6 +10,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
+import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -76,6 +77,17 @@ object TagOrStatusValueObjectModule {
     @JvmStatic
     @Provides
     @PerModal
+    fun provideSetRelationOptionOrder(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetRelationOptionOrder = SetRelationOptionOrder(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -86,6 +98,7 @@ object TagOrStatusValueObjectModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
+        setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
@@ -98,6 +111,7 @@ object TagOrStatusValueObjectModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
+        setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations
     )
@@ -154,6 +168,17 @@ object TagOrStatusValueSetModule {
     @JvmStatic
     @Provides
     @PerModal
+    fun provideSetRelationOptionOrder(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetRelationOptionOrder = SetRelationOptionOrder(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -164,6 +189,7 @@ object TagOrStatusValueSetModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
+        setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
@@ -176,6 +202,7 @@ object TagOrStatusValueSetModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
+        setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations
     )
@@ -232,6 +259,17 @@ object TagOrStatusValueDataViewModule {
     @JvmStatic
     @Provides
     @PerModal
+    fun provideSetRelationOptionOrder(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetRelationOptionOrder = SetRelationOptionOrder(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerModal
     fun provideFactory(
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
@@ -242,6 +280,7 @@ object TagOrStatusValueDataViewModule {
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
+        setRelationOptionOrder: SetRelationOptionOrder,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
         storeOfRelations: StoreOfRelations
     ): TagOrStatusValueViewModelFactory = TagOrStatusValueViewModelFactory(
@@ -254,6 +293,7 @@ object TagOrStatusValueDataViewModule {
         spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
+        setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations
     )

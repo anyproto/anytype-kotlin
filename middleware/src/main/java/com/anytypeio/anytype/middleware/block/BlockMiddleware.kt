@@ -910,6 +910,10 @@ class BlockMiddleware(
         return middleware.deleteRelationOptions(command)
     }
 
+    override suspend fun setRelationOptionOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        return middleware.setRelationOptionsOrder(command)
+    }
+
     override suspend fun makeSpaceShareable(space: SpaceId) {
         middleware.makeSpaceShareable(space = space)
     }

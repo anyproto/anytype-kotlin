@@ -10,7 +10,7 @@
         app:startDestination="@id/pageScreen">
         <fragment
             android:id="@+id/pageScreen"
-            android:name="com.anytypeio.anytype.ui.editor.EditorFragment"
+            android:name="com.anytypeio.anytype.ui.objects.ObjectFragment"
             android:label="Page screen"
             tools:layout="@layout/fragment_editor">
             <action

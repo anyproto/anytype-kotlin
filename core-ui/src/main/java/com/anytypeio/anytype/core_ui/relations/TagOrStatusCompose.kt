@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.core_ui.relations
 
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,10 +23,14 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -32,7 +38,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.AlertDescription
 import com.anytypeio.anytype.core_ui.foundation.AlertIcon
 import com.anytypeio.anytype.core_ui.foundation.AlertTitle
@@ -49,6 +58,8 @@ import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusAction
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagStatusViewState
+import sh.calvin.reorderable.ReorderableItem
+import sh.calvin.reorderable.rememberReorderableLazyListState
 
 @Composable
 fun TagOrStatusValueScreen(
@@ -196,34 +207,122 @@ fun RelationsViewContent(
     state: TagStatusViewState.Content,
     action: (TagStatusAction) -> Unit
 ) {
+    val view = LocalView.current
     val lazyListState = rememberLazyListState()
-    LazyColumn(
-        state = lazyListState,
-        modifier = Modifier
-            .fillMaxSize()
-    ) {
-        itemsIndexed(
-            items = state.items,
-            itemContent = { index, item ->
-                val isLastItem = index == state.items.size - 1
-                when (item) {
-                    is RelationsListItem.Item.Tag -> TagItem(
-                        state = item,
-                        action = action,
-                        isEditable = state.isRelationEditable,
-                        showDivider = !isLastItem
-                    )
 
-                    is RelationsListItem.Item.Status -> StatusItem(
-                        state = item,
-                        action = action,
-                        isEditable = state.isRelationEditable,
-                        showDivider = !isLastItem
+    if (state.isRelationEditable) {
+        // Use reorderable list for both Tags and Status
+        val items = remember { mutableStateListOf<RelationsListItem.Item>() }
+        items.swapList(state.items.filterIsInstance<RelationsListItem.Item>())
+
+        val lastFromIndex = remember { mutableStateOf<Int?>(null) }
+        val lastToIndex = remember { mutableStateOf<Int?>(null) }
+
+        val onDragStoppedHandler = {
+            val from = lastFromIndex.value
+            val to = lastToIndex.value
+            if (from != null && to != null && from != to) {
+                action(TagStatusAction.OnMove(from = from, to = to))
+            }
+            lastFromIndex.value = null
+            lastToIndex.value = null
+        }
+
+        val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
+            lastFromIndex.value = from.index
+            lastToIndex.value = to.index
+
+            val newList = items.toMutableList().apply {
+                add(to.index, removeAt(from.index))
+            }
+            items.swapList(newList)
+
+            ViewCompat.performHapticFeedback(
+                view,
+                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+            )
+        }
+
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            items(
+                count = items.size,
+                key = { index -> items[index].optionId }
+            ) { index ->
+                val item = items[index]
+                val isLastItem = index == items.size - 1
+                ReorderableItem(reorderableLazyListState, key = item.optionId) { isDragging ->
+                    val currentItem = LocalView.current
+                    if (isDragging) {
+                        currentItem.isHapticFeedbackEnabled = true
+                        currentItem.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    }
+                    val dragHandleModifier = Modifier.longPressDraggableHandle(
+                        onDragStarted = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.GESTURE_START
+                            )
+                        },
+                        onDragStopped = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.GESTURE_END
+                            )
+                            onDragStoppedHandler()
+                        }
                     )
-                    is RelationsListItem.CreateItem.Status -> ItemTagOrStatusCreate(item, action)
-                    is RelationsListItem.CreateItem.Tag -> ItemTagOrStatusCreate(item, action)
+                    when (item) {
+                        is RelationsListItem.Item.Tag -> TagItem(
+                            state = item,
+                            action = action,
+                            isEditable = state.isRelationEditable,
+                            showDivider = !isLastItem,
+                            isDragging = isDragging,
+                            dragHandleModifier = dragHandleModifier
+                        )
+                        is RelationsListItem.Item.Status -> StatusItem(
+                            state = item,
+                            action = action,
+                            isEditable = state.isRelationEditable,
+                            showDivider = !isLastItem,
+                            isDragging = isDragging,
+                            dragHandleModifier = dragHandleModifier
+                        )
+                    }
                 }
-            })
+            }
+        }
+    } else {
+        // Regular list for read-only
+        LazyColumn(
+            state = lazyListState,
+            modifier = Modifier.fillMaxSize()
+        ) {
+            itemsIndexed(
+                items = state.items,
+                itemContent = { index, item ->
+                    val isLastItem = index == state.items.size - 1
+                    when (item) {
+                        is RelationsListItem.Item.Tag -> TagItem(
+                            state = item,
+                            action = action,
+                            isEditable = state.isRelationEditable,
+                            showDivider = !isLastItem
+                        )
+
+                        is RelationsListItem.Item.Status -> StatusItem(
+                            state = item,
+                            action = action,
+                            isEditable = state.isRelationEditable,
+                            showDivider = !isLastItem
+                        )
+                    }
+                }
+            )
+        }
     }
 }
 

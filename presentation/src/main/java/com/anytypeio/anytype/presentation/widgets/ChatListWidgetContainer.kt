@@ -75,12 +75,6 @@ class ChatListWidgetContainer(
 
     companion object {
         const val DEFAULT_FALLBACK_WIDGET_LIMIT = 6
-        // Hard-coded flag to control display mode (can be changed later)
-        private const val USE_PREVIEW_MODE = true
-    }
-    
-    init {
-        Timber.d("ChatListWidgetContainer initialized with USE_PREVIEW_MODE = $USE_PREVIEW_MODE")
     }
 
     /**
@@ -421,7 +415,7 @@ class ChatListWidgetContainer(
             val hasMore = objects.size > displayLimit
             val displayObjects = objects.take(displayLimit)
 
-            val displayMode = if (USE_PREVIEW_MODE) {
+            val displayMode = if (!isCompact) {
                 WidgetView.ChatList.DisplayMode.Preview
             } else {
                 WidgetView.ChatList.DisplayMode.Compact
@@ -588,7 +582,7 @@ class ChatListWidgetContainer(
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType,
-                displayMode = if (USE_PREVIEW_MODE) {
+                displayMode = if (!widget.isCompact) {
                     WidgetView.ChatList.DisplayMode.Preview
                 } else {
                     WidgetView.ChatList.DisplayMode.Compact
@@ -606,11 +600,7 @@ class ChatListWidgetContainer(
                     icon = widget.icon,
                     name = widget.source.getPrettyName(fieldParser),
                     sectionType = widget.sectionType,
-                    displayMode = if (USE_PREVIEW_MODE) {
-                        WidgetView.ChatList.DisplayMode.Preview
-                    } else {
-                        WidgetView.ChatList.DisplayMode.Compact
-                    }
+                    displayMode = WidgetView.ChatList.DisplayMode.Preview
                 )
             }
 

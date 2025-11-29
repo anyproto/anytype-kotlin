@@ -2831,6 +2831,15 @@ class HomeScreenViewModel(
 
     fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
+        
+        // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
+        if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
+            viewModelScope.launch {
+                commands.emit(Command.CreateChatObject(vmParams.spaceId))
+            }
+            return
+        }
+        
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = objType?.uniqueKey.getCreateObjectParams(

@@ -2491,6 +2491,19 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun setRelationOptionsOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        val request = Rpc.Relation.Option.SetOrder.Request(
+            spaceId = command.space.id,
+            relationKey = command.relationKey.key,
+            relationOptionOrder = command.orderedIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setRelationOptionsOrder(request) }
+        logResponseIfDebug(response, time)
+        return response.relationOptionOrder
+    }
+
+    @Throws(Exception::class)
     fun debugStackGoroutines(path: String) {
         val request = Rpc.Debug.StackGoroutines.Request(
             path = path

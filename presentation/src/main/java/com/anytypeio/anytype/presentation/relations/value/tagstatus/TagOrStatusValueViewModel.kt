@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
@@ -17,6 +18,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
+import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -46,6 +48,7 @@ class TagOrStatusValueViewModel(
     private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
     private val deleteRelationOptions: DeleteRelationOptions,
+    private val setRelationOptionOrder: SetRelationOptionOrder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
@@ -154,7 +157,7 @@ class TagOrStatusValueViewModel(
                 }
             }
 
-            TagStatusAction.Plus -> emitCommand(
+            TagStatusAction.Plus -> openOptionScreen(
                 Command.OpenOptionScreen(
                     color = ThemeColor.values().drop(1).random().code,
                     relationKey = viewModelParams.relationKey,
@@ -167,7 +170,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.Duplicate -> {
                 val item = action.item
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         color = item.color.code,
                         text = item.name,
@@ -179,7 +182,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.Edit -> {
                 val item = action.item
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         optionId = item.optionId,
                         color = item.color.code,
@@ -191,7 +194,7 @@ class TagOrStatusValueViewModel(
                 )
             }
             TagStatusAction.Create -> {
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         text = "",
                         relationKey = viewModelParams.relationKey,
@@ -199,6 +202,33 @@ class TagOrStatusValueViewModel(
                         objectId = viewModelParams.objectId
                     )
                 )
+            }
+            is TagStatusAction.OnMove -> {
+                Timber.d("OnMove from ${action.from} to ${action.to}")
+                viewModelScope.launch {
+                    val currentState = viewState.value
+                    if (currentState !is TagStatusViewState.Content) return@launch
+                    val reorderedIds = currentState.items
+                        .filterIsInstance<RelationsListItem.Item>()
+                        .toMutableList()
+                        .apply { add(action.to, removeAt(action.from)) }
+                        .map { it.optionId }
+                    setRelationOptionOrder.async(
+                        SetRelationOptionOrder.Params(
+                            spaceId = viewModelParams.space,
+                            relationKey = RelationKey(viewModelParams.relationKey),
+                            orderedIds = reorderedIds
+                        )
+                    ).fold(
+                        onSuccess = {
+                            Timber.d("Option order saved successfully")
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Failed to save option order")
+                            sendToast("Failed to save order")
+                        }
+                    )
+                }
             }
         }
     }
@@ -210,7 +240,14 @@ class TagOrStatusValueViewModel(
         }
     }
 
-    private fun onActionClick(item: RelationsListItem) {
+    private fun openOptionScreen(command: Command.OpenOptionScreen) {
+        viewModelScope.launch {
+            query.emit("")
+            commands.emit(command)
+        }
+    }
+
+    private fun onActionClick(item: RelationsListItem.Item) {
         when (item) {
             is RelationsListItem.Item.Status -> {
                 if (item.isSelected) {
@@ -225,26 +262,6 @@ class TagOrStatusValueViewModel(
                 } else {
                     addTag(item.optionId)
                 }
-            }
-            is RelationsListItem.CreateItem.Status -> {
-                emitCommand(
-                    Command.OpenOptionScreen(
-                        text = item.text,
-                        relationKey = viewModelParams.relationKey,
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId
-                    )
-                )
-            }
-            is RelationsListItem.CreateItem.Tag -> {
-                emitCommand(
-                    Command.OpenOptionScreen(
-                        text = item.text,
-                        relationKey = viewModelParams.relationKey,
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId
-                    )
-                )
             }
         }
     }
@@ -264,9 +281,6 @@ class TagOrStatusValueViewModel(
                         options = options
                     )
                 )
-                if (query.isNotBlank()) {
-                    result.add(RelationsListItem.CreateItem.Status(query))
-                }
             }
             Relation.Format.TAG -> {
                 result.addAll(
@@ -275,9 +289,6 @@ class TagOrStatusValueViewModel(
                         options = options
                     )
                 )
-                if (query.isNotBlank()) {
-                    result.add(RelationsListItem.CreateItem.Tag(query))
-                }
             }
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")
@@ -519,7 +530,7 @@ sealed class TagStatusViewState {
 }
 
 sealed class TagStatusAction {
-    data class Click(val item: RelationsListItem) : TagStatusAction()
+    data class Click(val item: RelationsListItem.Item) : TagStatusAction()
     data class LongClick(val item: RelationsListItem.Item) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
@@ -527,6 +538,7 @@ sealed class TagStatusAction {
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val item: RelationsListItem.Item) : TagStatusAction()
     object Create : TagStatusAction()
+    data class OnMove(val from: Int, val to: Int) : TagStatusAction()
 }
 
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }
@@ -555,13 +567,6 @@ sealed class RelationsListItem {
             override val color: ThemeColor,
             override val isSelected: Boolean
         ) : Item()
-    }
-
-    sealed class CreateItem(
-        val text: String
-    ) : RelationsListItem() {
-        class Tag(text: String) : CreateItem(text)
-        class Status(text: String) : CreateItem(text)
     }
 }
 

@@ -50,6 +50,7 @@ fun BoxScope.ChatMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     currentNotificationSetting: NotificationSetting,
+    isPinned: Boolean = false,
     onDismissRequest: () -> Unit,
     onPropertiesClick: () -> Unit,
     onEditInfoClick: () -> Unit,
@@ -107,11 +108,14 @@ fun BoxScope.ChatMenu(
             )
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
 
-            // Pin
+            // Pin/Unpin
             DropdownMenuItem(
                 content = {
                     ChatMenuItemContent(
-                        text = stringResource(R.string.object_action_pin),
+                        text = stringResource(
+                            if (isPinned) R.string.object_action_unpin
+                            else R.string.object_action_pin
+                        ),
                         iconRes = R.drawable.ic_pin_24
                     )
                 },
@@ -262,6 +266,7 @@ fun ChatMenuPreview() {
         ChatMenu(
             expanded = true,
             currentNotificationSetting = NotificationSetting.ALL,
+            isPinned = false,
             onDismissRequest = {},
             onPropertiesClick = {},
             onEditInfoClick = {},

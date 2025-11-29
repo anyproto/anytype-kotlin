@@ -45,7 +45,6 @@ class TagOrStatusValueViewModel(
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
     private val deleteRelationOptions: DeleteRelationOptions,
     private val setRelationOptionOrder: SetRelationOptionOrder,
@@ -66,8 +65,7 @@ class TagOrStatusValueViewModel(
             val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
             val searchParams = StoreSearchParams(
-                // TODO DROID-2916 Provide space id to vm params
-                space = SpaceId(spaceManager.get()),
+                space = viewModelParams.space,
                 subscription = SUB_MY_OPTIONS,
                 keys = ObjectSearchConstants.keysRelationOptions,
                 filters = ObjectSearchConstants.filterRelationOptions(
@@ -343,7 +341,7 @@ class TagOrStatusValueViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 }
             )
@@ -369,7 +367,7 @@ class TagOrStatusValueViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 })
         }
@@ -391,7 +389,7 @@ class TagOrStatusValueViewModel(
                         eventName = EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                     emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
                 }
@@ -415,7 +413,7 @@ class TagOrStatusValueViewModel(
                         eventName = EventsDictionary.relationDeleteValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 }
             )
@@ -469,7 +467,7 @@ class TagOrStatusValueViewModel(
     }
 
     private fun getOrDefault(code: String?): ThemeColor {
-        return ThemeColor.values().find { it.code == code } ?: ThemeColor.DEFAULT
+        return ThemeColor.entries.find { it.code == code } ?: ThemeColor.DEFAULT
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {

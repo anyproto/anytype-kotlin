@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
 import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -94,7 +93,6 @@ object TagOrStatusValueObjectModule {
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        spaceManager: SpaceManager,
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
@@ -108,7 +106,6 @@ object TagOrStatusValueObjectModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,
@@ -185,7 +182,6 @@ object TagOrStatusValueSetModule {
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        spaceManager: SpaceManager,
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
@@ -199,7 +195,6 @@ object TagOrStatusValueSetModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,
@@ -276,7 +271,6 @@ object TagOrStatusValueDataViewModule {
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
         analytics: Analytics,
-        spaceManager: SpaceManager,
         params: TagOrStatusValueViewModel.ViewModelParams,
         @Named(SUB_MY_OPTIONS) subscription: StorelessSubscriptionContainer,
         deleteRelationOptions: DeleteRelationOptions,
@@ -290,7 +284,6 @@ object TagOrStatusValueDataViewModule {
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
-        spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
         setRelationOptionOrder = setRelationOptionOrder,

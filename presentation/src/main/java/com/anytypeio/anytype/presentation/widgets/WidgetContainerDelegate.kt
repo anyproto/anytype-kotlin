@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -137,6 +138,22 @@ class WidgetContainerDelegateImpl(
         )
     }
 
+    /**
+     * Determines if a widget displays chat objects based on its source.
+     * Only Sets can be detected (via setOf field). Collections are manually curated
+     * so we cannot determine their content type from the Collection object itself.
+     */
+    private fun isListWidgetChatWidget(source: Widget.Source): Boolean {
+        return when (source) {
+            is Widget.Source.Default -> {
+                // For sets, check if setOf points to CHAT_DERIVED type
+                val setOfType = source.obj.map[Relations.SET_OF] as? Id
+                setOfType == ObjectTypeIds.CHAT_DERIVED
+            }
+            else -> false
+        }
+    }
+
     private fun createListContainer(
         widget: Widget.List,
         currentlyDisplayedViews: List<WidgetView>
@@ -168,9 +185,7 @@ class WidgetContainerDelegateImpl(
             )
         } else {
             // Check if this is a chat widget by source type
-            val isChatWidget = (widget.source as? Widget.Source.Default)?.obj?.uniqueKey == ObjectTypeIds.CHAT_DERIVED
-            
-            if (isChatWidget) {
+            if (isListWidgetChatWidget(widget.source)) {
                 ChatListWidgetContainer(
                     space = spaceId,
                     widget = widget,
@@ -238,9 +253,7 @@ class WidgetContainerDelegateImpl(
         currentlyDisplayedViews: List<WidgetView>
     ): WidgetContainer {
         // Check if this is a chat widget by source type
-        val isChatWidget = (widget.source as? Widget.Source.Default)?.obj?.uniqueKey == ObjectTypeIds.CHAT_DERIVED
-        
-        return if (isChatWidget) {
+        return if (isListWidgetChatWidget(widget.source)) {
             ChatListWidgetContainer(
                 space = spaceId,
                 widget = widget,

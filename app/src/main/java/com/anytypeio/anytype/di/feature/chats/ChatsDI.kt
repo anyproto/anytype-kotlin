@@ -27,10 +27,12 @@ import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModelFactory
 import com.anytypeio.anytype.middleware.EventProxy
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
@@ -90,11 +92,15 @@ object ChatModule {
     fun providePinObjectAsWidgetDelegate(
         spaceManager: SpaceManager,
         createWidget: CreateWidget,
-        showObject: GetObject
+        deleteWidget: DeleteWidget,
+        showObject: GetObject,
+        payloadDelegator: PayloadDelegator
     ) : PinObjectAsWidgetDelegate = PinObjectAsWidgetDelegate.Default(
         spaceManager = spaceManager,
         createWidget = createWidget,
-        showObject = showObject
+        deleteWidget = deleteWidget,
+        showObject = showObject,
+        payloadDelegator = payloadDelegator
     )
 
     @Module
@@ -137,4 +143,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun spaceLinkInfoStore(): SpaceInviteLinkStore
     fun setChatNotificationMode(): SetChatNotificationMode
     fun resetSpaceChatNotification(): ResetSpaceChatNotification
+    fun payloadDelegator(): PayloadDelegator
 }

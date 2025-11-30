@@ -1915,7 +1915,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_email_error">Falsche E-Mail-Adresse</string>
     <string name="onboarding_name_error">Name eingeben</string>
     <string name="notifications_modal_title">Push-Benachrichtigungen einschalten</string>
-    <string name="notifications_modal_description">Get notified instantly when someone messages or mentions you in your spaces.</string>
+    <string name="notifications_modal_description">Werde sofort benachrichtigt, wenn dir jemand eine Nachricht sendet oder dich in einem deiner Space erwähnt.</string>
     <string name="notifications_modal_success_button">Benachrichtigungen aktivieren</string>
     <string name="notifications_modal_cancel_button">Nicht jetzt</string>
     <string name="vault_create_chat">Neuer Chat</string>
@@ -1977,7 +1977,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_not_shareable">Es sieht so aus, als ob der Space nicht mehr geteilt ist. Bitte stellen Sie sicher, dass Ihre Geräte synchronisiert sind.</string>
     <string name="share_space_error_request_failed">Hoppla! Die Anfrage ist fehlgeschlagen. Bitte überprüfe deine Internetverbindung und versuche es erneut.</string>
     <string name="share_space_error_space_deleted">Es sieht so aus, als sei der Speicherplatz gelöscht worden. Bitte stelle sicher, dass deine Geräte synchronisiert sind.</string>
-    <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
+    <string name="share_space_error_generic">Ein unerwarteter Fehler ist aufgetreten: %1$s. Bitte versuche es später erneut.</string>
     <string name="share_space_error_incorrect_permissions">Dir fehlen die erforderlichen Berechtigungen. Bitte kontaktiere den Space-Besitzer für Unterstützung. </string>
     <string name="share_space_error_no_such_space">        The space you are trying to share does not exist. Please check the space ID and try again.
     </string>
@@ -2010,16 +2010,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="my_sites_empty_state_text">Es gibt noch keine veröffentlichten Objekte</string>
     <string name="my_sites_it_s_empty_here">Hier ist es leer</string>
     <string name="my_sites_publish_your_first_website_to_get_started">Veröffentliche deine erste Webseite, um loszulegen.</string>
-    <string name="members_limits_incentive_editors">You’ve reached the limit of %1$d editors</string>
+    <string name="members_limits_incentive_editors">Du hast die Grenze von %1$d Bearbeitern erreicht</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
-    <string name="members_limits_incentive_viewers">You’ve reached the limit of %1$d viewers</string>
+    <string name="members_limits_incentive_viewers">Du hast die Grenze von %1$d Lesern erreicht</string>
     <string name="space_settings_space_type_chat_title">Kanaltyp</string>
     <string name="space_settings_space_type_chat_item_title">Chat</string>
     <string name="space_settings_space_type_chat_descr">Gruppenchat mit geteilten Daten. Am besten geeignet für kleine Gruppen oder eine einzelne fortlaufende Konversation.</string>
     <string name="space_settings_space_type_space_item_title">Space</string>
     <string name="space_settings_space_type_space_descr">Hub für fortgeschrittene Datenverwaltung. Mehrfach-Chats nach Thema bald verfügbar. Ideal für größere Teams.</string>
     <string name="alert_change_space_type_title">Kanaltyp konvertieren?</string>
-    <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
+    <string name="alert_change_space_type_subtitle">Der Wechsel zwischen Space und Chat wird das Erlebnis erheblich verändern.</string>
     <string name="alert_change_space_type_button">Ja, konvertieren</string>
     <plurals name="notification_messages_count">
         <item quantity="one">%d neue Nachricht</item>

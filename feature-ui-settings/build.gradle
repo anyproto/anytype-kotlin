@@ -46,4 +46,14 @@ dependencies {
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
+
+    testImplementation project(':test:android-utils')
+    testImplementation project(':test:utils')
+    testImplementation project(":test:core-models-stub")
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
+    testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.timberJUnit
+    testImplementation libs.turbine
 }

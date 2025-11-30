@@ -1251,8 +1251,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Любой, у кого есть ссылка, сможет просматривать только содержимое места.</string>
     <string name="multiplayer_change_to_request_confirmation">Любой, у кого есть ссылка, должен будет запросить доступ для входа в пространство.</string>
     <string name="multiplayer_invite_link_copied">Ссылка скопирована в буфер обмена.</string>
-    <string name="link_copied">Link copied to clipboard</string>
-    <string name="remove_from_collection">Unlink from Collection</string>
+    <string name="link_copied">Ссылка скопирована</string>
+    <string name="remove_from_collection">Отвязать от коллекции</string>
     <string name="multiplayer_copy_link">Скопировать ссылку</string>
     <string name="multiplayer_make_private">Сделать приватным</string>
     <string name="multiplayer_join_a_space">Присоединиться к пространству</string>
@@ -1660,7 +1660,7 @@
     <string name="version_history_error_get_version">Ошибка получения истории версий</string>
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">Мои каналы</string>
     <string name="vault_unread_section_title">Непрочитанные</string>
     <string name="vault_all_section_title">Все</string>
     <string name="vault_pinned_section_title">Закреплённые</string>
@@ -2070,6 +2070,6 @@
     <string name="notify_me_about">Уведомить меня о</string>
     <string name="error_while_downloading_object">Ошибка при загрузке объекта: %1$s</string>
     <string name="toast_moved_to_bin">Объект перемещен в корзину.</string>
-    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
-    <string name="toast_restored">Object restored.</string>
+    <string name="media_object_in_bin">Этот объект в корзине. Восстановить его?</string>
+    <string name="toast_restored">Объект восстановлен.</string>
 </resources>

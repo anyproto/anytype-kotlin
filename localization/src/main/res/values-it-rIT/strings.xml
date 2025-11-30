@@ -1247,7 +1247,7 @@
     <string name="link_copied">Link copiato negli appunti</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copia collegamento</string>
-    <string name="multiplayer_make_private">Make Private</string>
+    <string name="multiplayer_make_private">Rendi Privato</string>
     <string name="multiplayer_join_a_space">Unisciti a uno spazio</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Commento privato per il proprietario dello spazio</string>
     <string name="multiplayer_request_to_join_explanation">Una volta che il proprietario dello spazio approva la tua richiesta, entrerai nello spazio con i diritti di accesso determinati dal proprietario.</string>
@@ -1632,7 +1632,7 @@ Please provide specific details of your needs here.</string>
     <string name="version_history_error_get_version">Errore nell\'ottenere la cronologia delle versioni</string>
     <string name="version_history_error_get_members">Errore nell\'ottenere i membri</string>
     <string name="new_object">Nuovo oggetto</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">I miei Canali</string>
     <string name="vault_unread_section_title">Non letto</string>
     <string name="vault_all_section_title">Tutto</string>
     <string name="vault_pinned_section_title">Fissato</string>
@@ -1941,9 +1941,9 @@ Please provide specific details of your needs here.</string>
     <string name="chat_box_record_video">Registra Video</string>
     <string name="chat_camera_permission_denied">Autorizzazione fotocamera negata</string>
     <string name="notifications_title">Notifiche</string>
-    <string name="notifications_all">All new messages</string>
+    <string name="notifications_all">Tutti i nuovi messaggi</string>
     <string name="notifications_mentions">Solo menzioni</string>
-    <string name="notifications_disable">Nothing</string>
+    <string name="notifications_disable">Niente</string>
     <string name="notifications_all_short">Tutto</string>
     <string name="notifications_mentions_short">Menzioni</string>
     <string name="notifications_disable_short">Disattiva</string>
@@ -1982,7 +1982,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_incorrect_permissions">Non si dispone delle autorizzazioni necessarie. Contattare il proprietario dello spazio per ricevere assistenza.</string>
     <string name="share_space_error_no_such_space">        Lo spazio che si sta cercando di condividere non esiste. Controllare l\'ID dello spazio e riprovare.
     </string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">        Impossibile rendere privato lo spazio. Riprova più tardi.
     </string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
@@ -2035,12 +2035,12 @@ Please provide specific details of your needs here.</string>
     <string name="move_chat_to_bin_warning_title">Spostare la chat nel Cestino?</string>
     <string name="chat_move_to_bin_warning_description">Questa chat e tutti i suoi allegati saranno spostati nel Cestino. Nessuno potrà inviare nuovi messaggi. È possibile ripristinarla dal Cestino fino a quando non verrà eliminata definitivamente.</string>
     <string name="chat_edit_info_upload_image">Carica Immagine</string>
-    <string name="chat_notifications_receive_all">Receive all</string>
-    <string name="chat_notifications_mute_all">Mute all</string>
-    <string name="chat_specific_notifications">Chat specific notifications</string>
-    <string name="notify_me_about">Notify me about</string>
-    <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
-    <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="chat_notifications_receive_all">Ricevi tutto</string>
+    <string name="chat_notifications_mute_all">Silenzia tutti</string>
+    <string name="chat_specific_notifications">Notifiche specifiche della chat</string>
+    <string name="notify_me_about">Avvisami su</string>
+    <string name="error_while_downloading_object">Errore durante il download dell\'oggetto: %1$s</string>
+    <string name="toast_moved_to_bin">Oggetto spostato nel cestino.</string>
     <string name="media_object_in_bin">Questo oggetto è nel cestino. Vuoi ripristinarlo?</string>
     <string name="toast_restored">Oggetto ripristinato.</string>
 </resources>

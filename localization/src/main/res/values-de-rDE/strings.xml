@@ -29,7 +29,7 @@
     <string name="dark">Dunkel</string>
     <string name="system">System</string>
     <string name="settings">Einstellungen</string>
-    <string name="vault_settings_section_misc">Misc</string>
+    <string name="vault_settings_section_misc">Sonstiges</string>
     <string name="app_preferences">App-Einstellungen</string>
     <string name="settings_application">Anwendung</string>
     <string name="vault_key">Tresor &amp; Schlüssel</string>
@@ -1737,7 +1737,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_section_local_fields">In Objekten gefunden </string>
     <string name="object_type_fields_section_empty_state_text">Noch keine Eigenschaften</string>
     <string name="object_type_fields_title">Eigenschaften</string>
-    <string name="object_type_fields_info_text">You\'re editing type</string>
+    <string name="object_type_fields_info_text">Du bearbeitest den Typ</string>
     <string name="object_type_fields_edit_field">Feld bearbeiten</string>
     <string name="object_type_fields_new_field">Neues Feld</string>
     <string name="object_type_fields_preview_field">Vorschaufeld</string>
@@ -1748,13 +1748,13 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="object_type_fields_menu_add_to_type">Zum aktuellen Typ hinzufügen</string>
     <string name="object_type_fields_menu_remove">Entfernen</string>
     <string name="object_type_fields_local_info_title">In Objekten gefunden</string>
-    <string name="object_type_fields_local_info_description">These properties exist in some objects but aren’t part of the Type. Add them to make them appear in all objects of this Type.</string>
+    <string name="object_type_fields_local_info_description">Diese Eigenschaften existieren in einigen Objekten aber sind nicht Teil des Typs. Füge sie hinzu, um sie in allen Objekten dieses Typs erscheinen zu lassen.</string>
     <string name="object_type_fields_local_info_button">Verstanden</string>
     <string name="object_type_templates_empty">Dieser Typ hat\nkeine Vorlagen</string>
     <string name="object_properties_section_local">Lokal</string>
     <string name="object_properties_section_hidden">Ausgeblendet</string>
     <string name="object_properties_local_info_title">Lokale Eigenschaften</string>
-    <string name="object_properties_local_info_description">These properties exist only in this object and aren’t part of its type. Add to the type to use in all objects, or remove.</string>
+    <string name="object_properties_local_info_description">Diese Eigenschaften existieren nur in diesem Objekt und gehören nicht zu seinem Typ. Füge sie dem Typ hinzu, um sie in allen Objekten zu verwenden, oder entferne sie.</string>
     <string name="object_properties_empty_state">Noch keine Eigenschaften. Füge welche zu diesem Typ hinzu</string>
     <string name="object_type_open_type_error">Fehler beim Öffnen des Objekttyps</string>
     <string name="object_type_edit_type_details_error">Die Bearbeitung dieses Typs ist nicht zulässig.</string>
@@ -1771,7 +1771,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="images">Bilder</string>
     <string name="attachment">Anhang</string>
     <string name="attachments">Anhänge</string>
-    <string name="space_list_empty_state_create_your_first_space_to_get_started">Create your first space to get started</string>
+    <string name="space_list_empty_state_create_your_first_space_to_get_started">Erstelle deinen ersten Space um loszulegen</string>
     <string name="space_list_empty_state_it_is_empty_here">Hier ist es leer.</string>
     <string name="emoji_category_smileys_and_people">Smileys &amp; Leute</string>
     <string name="emoji_category_animals_and_nature">Tiere &amp; Natur</string>
@@ -1793,7 +1793,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="migration_this_shouldn_t_take_long">Dies kann einige Zeit dauern. Bitte schließe die App nicht, bis der Vorgang abgeschlossen ist.</string>
     <string name="migration_error_try_again">Erneut versuchen</string>
     <string name="migration_migration_failed">Migration fehlgeschlagen</string>
-    <string name="migration_error_please_free_up_space_and_run_the_process_again">Please clear ≈ %1$s MB of space and run the process again</string>
+    <string name="migration_error_please_free_up_space_and_run_the_process_again">Bitte mache ca. %1$s MB Speicherplatz frei und führe den Vorgang erneut aus</string>
     <string name="fields_screen_title">Eigenschaften</string>
     <string name="field_text_title">Text</string>
     <string name="field_text_empty">Eingeben</string>
@@ -1824,7 +1824,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_section_content_model">Inhaltsmodell</string>
     <string name="space_settings_section_preferences">Einstellungen</string>
     <string name="space_settings_section_data_management">Datenverwaltung</string>
-    <string name="space_settings_section_misc">Misc</string>
+    <string name="space_settings_section_misc">Sonstiges</string>
     <string name="space_settings_invite">Einladen</string>
     <string name="space_settings_share_link">Link teilen</string>
     <string name="space_settings_copy_link">Link kopieren</string>
@@ -1858,10 +1858,10 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="property_edit_menu_unlink">Verlinkung mit Typ aufheben</string>
     <string name="property_limit_objects_title">Objekte einschränken</string>
     <string name="property_include_time_section">Zeit einbeziehen</string>
-    <string name="delete_space_checkbox_text">I have read and want to delete this space</string>
+    <string name="delete_space_checkbox_text">Ich verstehe und möchte diesen Space löschen</string>
     <string name="migration_screen_new_version_update">Aktualisierung auf neue Version</string>
     <string name="migration_screen_description_1">We\'re laying the groundwork for our new chats. Including counters, notifications and other features needed for smooth chat experience.</string>
-    <string name="migration_screen_description_2">It might take a little while, but don\'t worry, your data is safe.</string>
+    <string name="migration_screen_description_2">Es kann etwas dauern, aber keine Sorge, deine Daten sind sicher.</string>
     <string name="migration_screen_start_update">Aktualisierung starten</string>
     <string name="migration_screen_read_more">Weiterlesen</string>
     <string name="migration_screen_what_to_expect">Was dich erwartet</string>

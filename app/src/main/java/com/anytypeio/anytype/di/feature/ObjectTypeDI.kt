@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
@@ -46,7 +47,8 @@ object ObjectTypeChangeModule {
         dispatchers: AppCoroutineDispatchers,
         spaceManager: SpaceManager,
         getDefaultObjectType: GetDefaultObjectType,
-        urlBuilder: UrlBuilder
+        urlBuilder: UrlBuilder,
+        spaceViews: SpaceViewSubscriptionContainer
     ): ObjectTypeChangeViewModelFactory {
         return ObjectTypeChangeViewModelFactory(
             getObjectTypes = getObjectTypes,
@@ -54,7 +56,8 @@ object ObjectTypeChangeModule {
             dispatchers = dispatchers,
             spaceManager = spaceManager,
             getDefaultObjectType = getDefaultObjectType,
-            urlBuilder = urlBuilder
+            urlBuilder = urlBuilder,
+            spaceViews = spaceViews
         )
     }
 

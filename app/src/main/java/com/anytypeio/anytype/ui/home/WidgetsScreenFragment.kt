@@ -84,7 +84,6 @@ class WidgetsScreenFragment : Fragment(),
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
 
-
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {

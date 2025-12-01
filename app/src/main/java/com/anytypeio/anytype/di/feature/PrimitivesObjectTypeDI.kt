@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvid
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObjects
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -279,6 +280,7 @@ interface SpaceTypesDependencies : ComponentDependencies {
     fun storeOfObjectTypes(): StoreOfObjectTypes
     fun userPermissionProvider(): UserPermissionProvider
     fun fieldParser(): FieldParser
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
 }
 //endregion
 

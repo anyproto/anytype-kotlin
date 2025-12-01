@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -103,7 +104,6 @@ import com.anytypeio.anytype.presentation.extension.sendClickWidgetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendDeleteWidgetEvent
 import com.anytypeio.anytype.presentation.extension.sendOpenSidebarObjectEvent
 import com.anytypeio.anytype.presentation.extension.sendReorderWidgetEvent
-import com.anytypeio.anytype.presentation.extension.sendScreenWidgetMenuEvent
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType
 import com.anytypeio.anytype.presentation.home.Command.ChangeWidgetType.Companion.UNDEFINED_LAYOUT_CODE
 import com.anytypeio.anytype.presentation.home.Command.ShareSpace
@@ -243,6 +243,7 @@ class HomeScreenViewModel(
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
@@ -1117,18 +1118,6 @@ class HomeScreenViewModel(
             } else {
                 sendToast("You don't have permission to create new type")
             }
-        }
-    }
-
-
-
-    fun onWidgetMenuTriggered(widget: Id) {
-        Timber.d("onWidgetMenuTriggered: $widget")
-        viewModelScope.launch {
-            val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
-            analytics.sendScreenWidgetMenuEvent(
-                isAutoCreated = isAutoCreated
-            )
         }
     }
 
@@ -2844,6 +2833,15 @@ class HomeScreenViewModel(
 
     fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
+        
+        // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
+        if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
+            viewModelScope.launch {
+                commands.emit(Command.CreateChatObject(vmParams.spaceId))
+            }
+            return
+        }
+        
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = objType?.uniqueKey.getCreateObjectParams(
@@ -3209,6 +3207,7 @@ class HomeScreenViewModel(
         WidgetContainerDelegateImpl(
             spaceId = vmParams.spaceId,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             notificationPermissionManager = notificationPermissionManager,
             fieldParser = fieldParser,
@@ -3287,6 +3286,7 @@ class HomeScreenViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
+        private val participantContainer: ParticipantSubscriptionContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
@@ -3349,6 +3349,7 @@ class HomeScreenViewModel(
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,

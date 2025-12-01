@@ -23,14 +23,15 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.localization.R
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.presentation.media.MediaViewModel.MediaViewState
+import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.ui.media.screens.AudioPlayerBox
 import com.anytypeio.anytype.ui.media.screens.ImageGalleryBox
 import com.anytypeio.anytype.ui.media.screens.VideoPlayerBox
+import com.anytypeio.anytype.ui.widgets.collection.CollectionFragment
 import java.util.ArrayList
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import timber.log.Timber
-
 class MediaActivity : ComponentActivity() {
 
     @Inject
@@ -69,7 +70,14 @@ class MediaActivity : ComponentActivity() {
                         finish()
                     }
                     is MediaViewState.VideoContent -> {
-                        VideoPlayerBox(url = state.url)
+                        val videoId = intent.getStringArrayListExtra(EXTRA_OBJECTS)?.firstOrNull()
+                        VideoPlayerBox(
+                            url = state.url,
+                            isArchived = state.isArchived,
+                            onRestoreClick = {
+                                videoId?.let { vm.onRestoreObjectClicked(it) }
+                            }
+                        )
                     }
                     is MediaViewState.ImageContent -> {
                         ImageGalleryBox(
@@ -87,13 +95,21 @@ class MediaActivity : ComponentActivity() {
                                     toast("Space not found")
                                 }
                             },
-                            onDeleteClick = vm::onDeleteObject
+                            onDeleteClick = vm::onDeleteObject,
+                            onRestoreClick = { obj ->
+                                vm.onRestoreObjectClicked(obj)
+                            }
                         )
                     }
                     is MediaViewState.AudioContent -> {
+                        val audioId = intent.getStringArrayListExtra(EXTRA_OBJECTS)?.firstOrNull()
                         AudioPlayerBox(
                             name = state.name,
-                            url = state.url
+                            url = state.url,
+                            isArchived = state.isArchived,
+                            onRestoreClick = {
+                                audioId?.let { vm.onRestoreObjectClicked(it) }
+                            }
                         )
                     }
                 }
@@ -123,6 +139,9 @@ class MediaActivity : ComponentActivity() {
                             MediaViewModel.Command.ShowToast.MovedToBin -> {
                                 toast(getString(R.string.toast_moved_to_bin))
                             }
+                            MediaViewModel.Command.ShowToast.Restored -> {
+                                toast(getString(R.string.toast_restored))
+                            }
                         }
                     }
                 }
@@ -138,11 +157,21 @@ class MediaActivity : ComponentActivity() {
         val name = intent.getStringExtra(EXTRA_MEDIA_NAME)
         val mediaType = intent.getIntExtra(EXTRA_MEDIA_TYPE, TYPE_UNKNOWN)
         val index = intent.getIntExtra(EXTRA_IMAGE_INDEX, 0)
+        val givenSpace = space
+        
+        if (givenSpace == null) {
+            Timber.e("Space ID is missing")
+            toast("Space not found")
+            finish()
+            return
+        }
+        
+        val spaceId = SpaceId(givenSpace)
         
         when (mediaType) {
-            TYPE_IMAGE -> vm.processImage(objects, index)
-            TYPE_VIDEO -> vm.processVideo(objects.firstOrNull().orEmpty())
-            TYPE_AUDIO -> vm.processAudio(objects.firstOrNull().orEmpty(), name.orEmpty())
+            TYPE_IMAGE -> vm.processImage(objects, index, spaceId)
+            TYPE_VIDEO -> vm.processVideo(objects.firstOrNull().orEmpty(), spaceId)
+            TYPE_AUDIO -> vm.processAudio(objects.firstOrNull().orEmpty(), name.orEmpty(), spaceId)
             else -> {
                 Timber.e("Invalid media type: $mediaType")
                 finish()

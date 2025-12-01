@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -307,6 +308,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun analyticSpaceHelperDelegate(): AnalyticSpaceHelperDelegate
     fun storeOfRelations(): StoreOfRelations
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
     fun featureToggles(): FeatureToggles
     fun payloadDelegator(): PayloadDelegator
     fun fieldParser(): FieldParser

@@ -168,6 +168,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                         isPinned = menuState.isPinned,
                         canDelete = menuState.canDelete,
                         isDescriptionFeatured = menuState.isDescriptionFeatured,
+                        canEditDetails = menuState.canEditDetails,
                         onEvent = vm::onMenuEvent
                     )
                 }

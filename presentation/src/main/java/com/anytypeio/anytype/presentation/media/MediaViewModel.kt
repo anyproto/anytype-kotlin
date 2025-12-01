@@ -52,7 +52,12 @@ class MediaViewModel(
                         params = FetchObject.Params(
                             space = space,
                             obj = id,
-                            keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                            keys = listOf(
+                                Relations.ID,
+                                Relations.NAME,
+                                Relations.IS_DELETED,
+                                Relations.IS_ARCHIVED
+                            )
                         )
                     ).getOrNull()
 
@@ -62,7 +67,7 @@ class MediaViewModel(
                         Timber.d("Image object found: $obj")
                     }
 
-                    val isArchived = obj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: true
+                    val isArchived = obj?.let { ObjectWrapper.Basic(it.map).isArchived == true } ?: false
                     MediaViewState.ImageContent.Image(
                         obj = id,
                         url = urlBuilder.large(id),

@@ -41,6 +41,7 @@ fun ObjectTypeMenu(
     isPinned: Boolean,
     canDelete: Boolean,
     isDescriptionFeatured: Boolean,
+    canEditDetails: Boolean,
     onEvent: (ObjectTypeMenuEvent) -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -84,24 +85,26 @@ fun ObjectTypeMenu(
                 onClick = { onEvent(ObjectTypeMenuEvent.OnIconClick) }
             )
 
-            Divider(paddingStart = 20.dp, paddingEnd = 20.dp)
+            if (canEditDetails) {
+                Divider(paddingStart = 20.dp, paddingEnd = 20.dp)
 
-            // Description cell
-            MenuCell(
-                iconRes = R.drawable.ic_obj_settings_description_24,
-                title = stringResource(R.string.description),
-                trailingContent = {
-                    Text(
-                        text = if (isDescriptionFeatured)
-                            stringResource(R.string.modal_hide)
-                        else
-                            stringResource(R.string.show),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(R.color.text_secondary)
-                    )
-                },
-                onClick = { onEvent(ObjectTypeMenuEvent.OnDescriptionClick) }
-            )
+                // Description cell
+                MenuCell(
+                    iconRes = R.drawable.ic_obj_settings_description_24,
+                    title = stringResource(R.string.description),
+                    trailingContent = {
+                        Text(
+                            text = if (isDescriptionFeatured)
+                                stringResource(R.string.modal_hide)
+                            else
+                                stringResource(R.string.show),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(R.color.text_secondary)
+                        )
+                    },
+                    onClick = { onEvent(ObjectTypeMenuEvent.OnDescriptionClick) }
+                )
+            }
 
             // Divider before bottom section
             Box(
@@ -223,6 +226,7 @@ fun ObjectTypeMenuPreview() {
         isPinned = false,
         canDelete = true,
         isDescriptionFeatured = false,
+        canEditDetails = true,
         onEvent = {}
     )
 }

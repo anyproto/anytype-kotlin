@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
+import timber.log.Timber
 
 /**
  * Delegate responsible for transforming Widget models into WidgetContainer instances.
@@ -39,7 +41,7 @@ interface WidgetContainerDelegate {
      * @param currentlyDisplayedViews Current views for cache optimization
      * @return A widget container, or null if the widget type is not supported by this delegate
      */
-    fun createContainer(
+    suspend fun createContainer(
         widget: Widget,
         currentlyDisplayedViews: List<WidgetView>
     ): WidgetContainer?
@@ -74,7 +76,7 @@ class WidgetContainerDelegateImpl(
     private val isWidgetCollapsed: (Widget, Set<Id>, Set<String>) -> Boolean
 ) : WidgetContainerDelegate {
 
-    override fun createContainer(
+    override suspend fun createContainer(
         widget: Widget,
         currentlyDisplayedViews: List<WidgetView>
     ): WidgetContainer? {
@@ -143,18 +145,33 @@ class WidgetContainerDelegateImpl(
      * Only Sets can be detected (via setOf field). Collections are manually curated
      * so we cannot determine their content type from the Collection object itself.
      */
-    private fun isListWidgetChatWidget(source: Widget.Source): Boolean {
+    private suspend fun isListWidgetChatWidget(
+        source: Widget.Source,
+    ): Boolean {
         return when (source) {
             is Widget.Source.Default -> {
                 // For sets, check if setOf points to CHAT_DERIVED type
-                val setOfType = source.obj.map[Relations.SET_OF] as? Id
-                setOfType == ObjectTypeIds.CHAT_DERIVED
+                when(source.obj.layout) {
+                    ObjectType.Layout.OBJECT_TYPE -> {
+                        source.obj.uniqueKey == ObjectTypeIds.CHAT_DERIVED
+                    }
+                    ObjectType.Layout.SET -> {
+                        val setOfTypeId = source.obj.setOf.firstOrNull()
+                        if (setOfTypeId != null) {
+                            val wrapperOfType = storeOfObjectTypes.get(setOfTypeId)
+                            wrapperOfType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED || wrapperOfType?.recommendedLayout == ObjectType.Layout.CHAT_DERIVED
+                        } else {
+                            false
+                        }
+                    }
+                    else -> false
+                }
             }
             else -> false
         }
     }
 
-    private fun createListContainer(
+    private suspend fun createListContainer(
         widget: Widget.List,
         currentlyDisplayedViews: List<WidgetView>
     ): WidgetContainer {
@@ -248,7 +265,7 @@ class WidgetContainerDelegateImpl(
         }
     }
 
-    private fun createViewContainer(
+    private suspend fun createViewContainer(
         widget: Widget.View,
         currentlyDisplayedViews: List<WidgetView>
     ): WidgetContainer {

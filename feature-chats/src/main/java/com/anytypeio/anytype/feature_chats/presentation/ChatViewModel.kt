@@ -171,6 +171,7 @@ class ChatViewModel @Inject constructor(
         MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
+    private val currentPermission = MutableStateFlow<SpaceMemberPermissions?>(null)
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
@@ -191,6 +192,7 @@ class ChatViewModel @Inject constructor(
             spacePermissionProvider
                 .observe(vmParams.space)
                 .collect { permission ->
+                    currentPermission.value = permission
                     if (permission?.isOwnerOrEditor() == true) {
                         if (chatBoxMode.value is ChatBoxMode.ReadOnly) {
                             chatBoxMode.value = ChatBoxMode.Default()
@@ -199,6 +201,21 @@ class ChatViewModel @Inject constructor(
                         chatBoxMode.value = ChatBoxMode.ReadOnly
                     }
                     canCreateInviteLink.value = permission?.isOwner() == true
+                    // Update header with new permission if already set
+                    val currentHeader = header.value
+                    when (currentHeader) {
+                        is HeaderView.Default -> {
+                            header.value = currentHeader.copy(
+                                canEdit = permission?.isOwnerOrEditor() == true
+                            )
+                        }
+                        is HeaderView.ChatObject -> {
+                            header.value = currentHeader.copy(
+                                canEdit = permission?.isOwnerOrEditor() == true
+                            )
+                        }
+                        else -> {}
+                    }
                 }
         }
 
@@ -211,6 +228,7 @@ class ChatViewModel @Inject constructor(
                     val notificationSetting = NotificationStateCalculator
                         .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
                         .toNotificationSetting()
+                    val canEdit = currentPermission.value?.isOwnerOrEditor() == true
                     getObject.async(
                         GetObject.Params(
                             target = vmParams.ctx,
@@ -223,7 +241,8 @@ class ChatViewModel @Inject constructor(
                                 title = view.name.orEmpty(),
                                 icon = view.spaceIcon(builder = urlBuilder),
                                 isMuted = isMuted,
-                                notificationSetting = notificationSetting
+                                notificationSetting = notificationSetting,
+                                canEdit = canEdit
                             )
                         } else {
                             // Chat object
@@ -241,7 +260,8 @@ class ChatViewModel @Inject constructor(
                                 ),
                                 isMuted = isMuted,
                                 notificationSetting = notificationSetting,
-                                isPinned = isPinned
+                                isPinned = isPinned,
+                                canEdit = canEdit
                             )
                         }
                     }.onFailure {
@@ -251,7 +271,8 @@ class ChatViewModel @Inject constructor(
                             title = view.name.orEmpty(),
                             icon = view.spaceIcon(builder = urlBuilder),
                             isMuted = isMuted,
-                            notificationSetting = notificationSetting
+                            notificationSetting = notificationSetting,
+                            canEdit = canEdit
                         )
                     }
                 }
@@ -2399,7 +2420,8 @@ class ChatViewModel @Inject constructor(
             val isMuted: Boolean = false,
             val showDropDownMenu: Boolean = true,
             val showAddMembers: Boolean = true,
-            val notificationSetting: NotificationSetting = NotificationSetting.ALL
+            val notificationSetting: NotificationSetting = NotificationSetting.ALL,
+            val canEdit: Boolean = true
         ) : HeaderView()
         data class ChatObject(
             val icon: ObjectIcon,
@@ -2408,7 +2430,8 @@ class ChatViewModel @Inject constructor(
             val showDropDownMenu: Boolean = true,
             val showAddMembers: Boolean = false,
             val notificationSetting: NotificationSetting = NotificationSetting.ALL,
-            val isPinned: Boolean = false
+            val isPinned: Boolean = false,
+            val canEdit: Boolean = true
         ) : HeaderView()
     }
 

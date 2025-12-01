@@ -482,6 +482,56 @@ class VaultViewModel(
 
 
     /**
+     * Data class holding extracted message preview data.
+     * Used to avoid duplicating preview extraction logic.
+     */
+    private data class MessagePreviewData(
+        val creatorName: String?,
+        val messageText: String?,
+        val messageTime: String?,
+        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
+    )
+
+    /**
+     * Extracts message preview data from a chat preview.
+     * Returns null values when message is deleted (null).
+     */
+    private suspend fun extractMessagePreviewData(
+        chatPreview: Chat.Preview?,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+    ): MessagePreviewData {
+        val message = chatPreview?.message
+
+        val creatorName = if (message != null) {
+            participantsByIdentity.resolveParticipantName(
+                identity = message.creator,
+                fallback = stringResourceProvider.getUntitledCreatorName()
+            )
+        } else null
+
+        val messageText = message?.content?.text
+
+        val messageTime = message?.createdAt?.let { timeInSeconds ->
+            if (timeInSeconds > 0) {
+                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
+            } else null
+        }
+
+        val attachmentPreviews = if (chatPreview != null && message != null) {
+            message.attachments?.map { attachment ->
+                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+                val preview = mapToAttachmentPreview(attachment, dependency)
+                Timber.d("Created attachment preview: $preview for attachment: $attachment")
+                preview
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
+
+        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews)
+    }
+
+    /**
      * Create a Vault View for a Chat Space with a chat preview
      */
     private suspend fun createChatSpaceView(
@@ -493,39 +543,7 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.ChatSpace {
-        // Extract message - if null (deleted), all preview fields should be null
-        val message = chatPreview?.message
-
-        val messageText = message?.content?.text
-
-        // Only resolve creator name if message exists
-        val creatorName = if (message != null) {
-            participantsByIdentity.resolveParticipantName(
-                identity = message.creator,
-                fallback = stringResourceProvider.getUntitledCreatorName()
-            )
-        } else null
-
-        val messageTime = message?.createdAt?.let { timeInSeconds ->
-            if (timeInSeconds > 0) {
-                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
-            } else null
-        }
-
-        // Build attachment previews only if message exists
-        val attachmentPreviews = if (chatPreview != null && message != null) {
-            message.attachments?.map { attachment ->
-                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val attachmentPreview = mapToAttachmentPreview(
-                    attachment = attachment,
-                    dependency = dependency
-                )
-                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-                attachmentPreview
-            } ?: emptyList()
-        } else {
-            emptyList()
-        }
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -543,12 +561,12 @@ class VaultViewModel(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
+            creatorName = previewData.creatorName,
+            messageText = previewData.messageText,
+            messageTime = previewData.messageTime,
             unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
             unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = attachmentPreviews,
+            attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
             wallpaper = wallpaperResult
@@ -567,39 +585,7 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.DataSpaceWithChat {
-        // Extract message - if null (deleted), all preview fields should be null
-        val message = chatPreview.message
-
-        val messageText = message?.content?.text
-
-        // Only resolve creator name if message exists
-        val creatorName = if (message != null) {
-            participantsByIdentity.resolveParticipantName(
-                identity = message.creator,
-                fallback = stringResourceProvider.getUntitledCreatorName()
-            )
-        } else null
-
-        val messageTime = message?.createdAt?.let { timeInSeconds ->
-            if (timeInSeconds > 0) {
-                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
-            } else null
-        }
-
-        // Build attachment previews only if message exists
-        val attachmentPreviews = if (message != null) {
-            message.attachments?.map { attachment ->
-                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val attachmentPreview = mapToAttachmentPreview(
-                    attachment = attachment,
-                    dependency = dependency
-                )
-                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-                attachmentPreview
-            } ?: emptyList()
-        } else {
-            emptyList()
-        }
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -620,12 +606,12 @@ class VaultViewModel(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
+            creatorName = previewData.creatorName,
+            messageText = previewData.messageText,
+            messageTime = previewData.messageTime,
             unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
             unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = attachmentPreviews,
+            attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             chatNotificationState = calculateChatNotificationState(
                 chatSpace = space,

@@ -493,23 +493,28 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.ChatSpace {
-        val messageText = chatPreview?.message?.content?.text
+        // Extract message - if null (deleted), all preview fields should be null
+        val message = chatPreview?.message
 
-        // Resolve creator name from cross-space participants container
-        val creatorName = participantsByIdentity.resolveParticipantName(
-            identity = chatPreview?.message?.creator,
-            fallback = stringResourceProvider.getUntitledCreatorName()
-        )
+        val messageText = message?.content?.text
 
-        val messageTime = chatPreview?.message?.createdAt?.let { timeInSeconds ->
+        // Only resolve creator name if message exists
+        val creatorName = if (message != null) {
+            participantsByIdentity.resolveParticipantName(
+                identity = message.creator,
+                fallback = stringResourceProvider.getUntitledCreatorName()
+            )
+        } else null
+
+        val messageTime = message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
                 dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
             } else null
         }
 
-        // Build attachment previews with proper URLs
-        val attachmentPreviews = if (chatPreview != null) {
-            chatPreview.message?.attachments?.map { attachment ->
+        // Build attachment previews only if message exists
+        val attachmentPreviews = if (chatPreview != null && message != null) {
+            message.attachments?.map { attachment ->
                 val dependency = chatPreview.dependencies.find { it.id == attachment.target }
                 val attachmentPreview = mapToAttachmentPreview(
                     attachment = attachment,
@@ -562,30 +567,39 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.DataSpaceWithChat {
-        val messageText = chatPreview.message?.content?.text
+        // Extract message - if null (deleted), all preview fields should be null
+        val message = chatPreview.message
 
-        // Resolve creator name from cross-space participants container
-        val creatorName = participantsByIdentity.resolveParticipantName(
-            identity = chatPreview.message?.creator,
-            fallback = stringResourceProvider.getUntitledCreatorName()
-        )
+        val messageText = message?.content?.text
 
-        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
+        // Only resolve creator name if message exists
+        val creatorName = if (message != null) {
+            participantsByIdentity.resolveParticipantName(
+                identity = message.creator,
+                fallback = stringResourceProvider.getUntitledCreatorName()
+            )
+        } else null
+
+        val messageTime = message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
                 dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
             } else null
         }
 
-        // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
-            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            val attachmentPreview = mapToAttachmentPreview(
-                attachment = attachment,
-                dependency = dependency
-            )
-            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-            attachmentPreview
-        } ?: emptyList()
+        // Build attachment previews only if message exists
+        val attachmentPreviews = if (message != null) {
+            message.attachments?.map { attachment ->
+                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+                val attachmentPreview = mapToAttachmentPreview(
+                    attachment = attachment,
+                    dependency = dependency
+                )
+                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
+                attachmentPreview
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
 
         val icon = space.spaceIcon(urlBuilder)
 

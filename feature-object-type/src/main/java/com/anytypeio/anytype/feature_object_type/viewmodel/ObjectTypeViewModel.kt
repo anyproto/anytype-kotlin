@@ -636,7 +636,8 @@ class ObjectTypeViewModel(
                     icon = uiIconState.value.icon,
                     isPinned = pinnedWidgetBlockId.value != null,
                     canDelete = _objectTypePermissionsState.value?.canDelete ?: false,
-                    isDescriptionFeatured = _isDescriptionFeatured.value
+                    isDescriptionFeatured = _isDescriptionFeatured.value,
+                    canEditDetails = _objectTypePermissionsState.value?.canEditDetails ?: false
                 )
             }
         }
@@ -793,7 +794,7 @@ class ObjectTypeViewModel(
 
         uiDescriptionState.value = UiDescriptionState(
             description = descriptionText,
-            isVisible = isDescriptionFeatured,
+            isVisible = isDescriptionFeatured && objectPermissions.canEditDetails,
             isEditable = objectPermissions.canEditDetails
         )
     }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -165,7 +166,7 @@ class ChatListWidgetContainer(
                                         obj = ctx.obj,
                                         activeView = activeView,
                                         params = ctx.params,
-                                        isCompact = isCompact,
+                                        isCompact = isCompact || ctx.target?.type != DVViewerType.LIST,
                                         displayLimit = ctx.displayLimit,
                                         storeOfObjectTypes = storeOfObjectTypes
                                     )
@@ -199,7 +200,7 @@ class ChatListWidgetContainer(
                                                     spaceViews,
                                                     participantsFlow
                                                 ) { spaces, participantsByIdentity ->
-                                                    view.copy(
+                                                    val transformed = view.copy(
                                                         elements = view.elements.map { element ->
                                                             val preview = previewList.find { p ->
                                                                 p.chat == element.obj.id
@@ -246,6 +247,11 @@ class ChatListWidgetContainer(
                                                             }
                                                         }
                                                     )
+                                                    if (ctx.target?.type == DVViewerType.GALLERY) {
+                                                        transformed.toGallery()
+                                                    } else {
+                                                        transformed
+                                                    }
                                                 }
                                             }
                                     }

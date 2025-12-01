@@ -177,6 +177,20 @@ sealed class WidgetView {
              */
             data object Preview : DisplayMode()
         }
+
+        fun toGallery(): WidgetView.Gallery {
+            return WidgetView.Gallery(
+                id = id,
+                icon = icon,
+                name = name,
+                tabs = tabs,
+                elements = elements,
+                isExpanded = isExpanded,
+                source = source,
+                hasMore = hasMore,
+                sectionType = sectionType
+            )
+        }
     }
 
     data class ListOfObjects(

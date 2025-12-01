@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -242,6 +243,7 @@ class HomeScreenViewModel(
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
@@ -3205,6 +3207,7 @@ class HomeScreenViewModel(
         WidgetContainerDelegateImpl(
             spaceId = vmParams.spaceId,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             notificationPermissionManager = notificationPermissionManager,
             fieldParser = fieldParser,
@@ -3283,6 +3286,7 @@ class HomeScreenViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
+        private val participantContainer: ParticipantSubscriptionContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
@@ -3345,6 +3349,7 @@ class HomeScreenViewModel(
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,

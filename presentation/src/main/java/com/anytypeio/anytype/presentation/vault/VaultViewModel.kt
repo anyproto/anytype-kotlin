@@ -23,11 +23,11 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
-import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -46,13 +46,13 @@ import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.extension.resolveParticipantName
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
@@ -493,16 +493,13 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.ChatSpace {
-        val creatorId = chatPreview?.message?.creator
         val messageText = chatPreview?.message?.content?.text
 
         // Resolve creator name from cross-space participants container
-        val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val participant = participantsByIdentity[creatorId]
-            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
-        } else {
-            null
-        }
+        val creatorName = participantsByIdentity.resolveParticipantName(
+            identity = chatPreview?.message?.creator,
+            fallback = stringResourceProvider.getUntitledCreatorName()
+        )
 
         val messageTime = chatPreview?.message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {
@@ -565,16 +562,13 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.DataSpaceWithChat {
-        val creatorId = chatPreview.message?.creator
         val messageText = chatPreview.message?.content?.text
 
         // Resolve creator name from cross-space participants container
-        val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val participant = participantsByIdentity[creatorId]
-            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
-        } else {
-            null
-        }
+        val creatorName = participantsByIdentity.resolveParticipantName(
+            identity = chatPreview.message?.creator,
+            fallback = stringResourceProvider.getUntitledCreatorName()
+        )
 
         val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
             if (timeInSeconds > 0) {

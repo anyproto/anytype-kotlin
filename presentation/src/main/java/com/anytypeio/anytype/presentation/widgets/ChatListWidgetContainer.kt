@@ -166,7 +166,11 @@ class ChatListWidgetContainer(
                                         obj = ctx.obj,
                                         activeView = activeView,
                                         params = ctx.params,
-                                        isCompact = isCompact || ctx.target?.type != DVViewerType.LIST,
+                                        isCompact = if (widget is Widget.View) {
+                                            ctx.target?.type != DVViewerType.LIST
+                                        } else {
+                                            isCompact
+                                        },
                                         displayLimit = ctx.displayLimit,
                                         storeOfObjectTypes = storeOfObjectTypes
                                     )

@@ -437,6 +437,15 @@ class MainViewModel(
                     is DeepLinkToObjectDelegate.Result.Error -> {
                         val link = deeplink.invite
                         if (link != null) {
+                            viewModelScope.sendEvent(
+                                analytics = analytics,
+                                eventName = EventsDictionary.openObjectByLink,
+                                props = Props(
+                                    mapOf(
+                                        EventsPropertiesKey.type to EventsDictionary.OpenObjectByLinkType.INVITE.value
+                                    )
+                                )
+                            )
                             commands.emit(
                                 Command.Deeplink.Invite(
                                     spaceInviteResolver.createInviteLink(
@@ -476,6 +485,15 @@ class MainViewModel(
                                             result = result
                                         )
                                     } else {
+                                        viewModelScope.sendEvent(
+                                            analytics = analytics,
+                                            eventName = EventsDictionary.openObjectByLink,
+                                            props = Props(
+                                                mapOf(
+                                                    EventsPropertiesKey.type to EventsDictionary.OpenObjectByLinkType.OBJECT.value
+                                                )
+                                            )
+                                        )
                                         commands.emit(
                                             Command.Deeplink.DeepLinkToObject(
                                                 navigation = result.obj.navigation(),
@@ -495,6 +513,15 @@ class MainViewModel(
                                             result = result
                                         )
                                     } else {
+                                        viewModelScope.sendEvent(
+                                            analytics = analytics,
+                                            eventName = EventsDictionary.openObjectByLink,
+                                            props = Props(
+                                                mapOf(
+                                                    EventsPropertiesKey.type to EventsDictionary.OpenObjectByLinkType.OBJECT.value
+                                                )
+                                            )
+                                        )
                                         commands.emit(
                                             Command.Deeplink.DeepLinkToObject(
                                                 navigation = result.obj.navigation(),
@@ -538,6 +565,15 @@ class MainViewModel(
                 val sideEffect = Command.Deeplink.DeepLinkToObject.SideEffect.SwitchSpace(
                     chat = chat,
                     home = home
+                )
+                viewModelScope.sendEvent(
+                    analytics = analytics,
+                    eventName = EventsDictionary.openObjectByLink,
+                    props = Props(
+                        mapOf(
+                            EventsPropertiesKey.type to EventsDictionary.OpenObjectByLinkType.OBJECT.value
+                        )
+                    )
                 )
                 commands.emit(
                     Command.Deeplink.DeepLinkToObject(

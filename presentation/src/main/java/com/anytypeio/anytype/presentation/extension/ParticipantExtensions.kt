@@ -8,14 +8,14 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
  * Uses the standard fallback chain: name → globalName → fallback.
  *
  * @param identity The identity ID to look up
- * @param fallback The fallback string if participant not found or has no name
- * @return The resolved name, or null if identity is null/empty
+ * @param fallback The fallback string if participant not found, has no name, or identity is null/empty
+ * @return The resolved name or fallback - always returns a non-null value
  */
 fun Map<Id, ObjectWrapper.SpaceMember>.resolveParticipantName(
     identity: Id?,
     fallback: String
-): String? {
-    if (identity.isNullOrEmpty()) return null
+): String {
+    if (identity.isNullOrEmpty()) return fallback
     val participant = this[identity]
     return participant?.name
         ?: participant?.globalName

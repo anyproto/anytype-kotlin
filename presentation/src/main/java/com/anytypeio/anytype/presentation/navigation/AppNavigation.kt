@@ -41,7 +41,8 @@ interface AppNavigation {
 
     fun openObjectType(
         objectId: Id,
-        space: Id
+        space: Id,
+        view: Id? = null
     )
 
     fun openCurrentObjectTypeFields(
@@ -121,7 +122,8 @@ interface AppNavigation {
 
         data class OpenTypeObject(
             val target: Id,
-            val space: Id
+            val space: Id,
+            val view: Id? = null
         ) : Command()
 
         data class OpenParticipant(

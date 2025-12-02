@@ -23,6 +23,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.views.BaseAlertDialog
+import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -54,6 +55,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
 
     private val space get() = argString(ARG_SPACE)
     private val objectId get() = argString(ARG_OBJECT_ID)
+    private val view: Id? get() = argOrNull<Id>(ARG_VIEW_ID)
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -149,6 +151,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
                     objectId = objectId,
                     space = space,
+                    view = view,
                     onTypeEvent = vm::onTypeEvent
                 )
                 if (showPropertiesScreen) {
@@ -248,7 +251,8 @@ class ObjectTypeFragment : BaseComposeFragment() {
         val params = ObjectTypeVmParams(
             spaceId = SpaceId(space),
             objectId = objectId,
-            showHiddenFields = true
+            showHiddenFields = true,
+            initialViewId = view
         )
         componentManager().objectTypeComponent.get(params).inject(this)
     }
@@ -265,10 +269,12 @@ class ObjectTypeFragment : BaseComposeFragment() {
         private const val OBJ_TYPE_MAIN = "obj_type_main"
         const val ARG_SPACE = "arg.object.type.space"
         const val ARG_OBJECT_ID = "arg.object.type.object_id"
+        const val ARG_VIEW_ID = "arg.object.type.view_id"
 
-        fun args(space: Id, objectId: Id) = bundleOf(
+        fun args(space: Id, objectId: Id, view: Id? = null) = bundleOf(
             ARG_SPACE to space,
-            ARG_OBJECT_ID to objectId
+            ARG_OBJECT_ID to objectId,
+            ARG_VIEW_ID to view
         )
     }
 }

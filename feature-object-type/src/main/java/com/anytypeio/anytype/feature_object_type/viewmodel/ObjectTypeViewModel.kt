@@ -194,6 +194,9 @@ class ObjectTypeViewModel(
 
     //error
     val errorState = MutableStateFlow<UiErrorState>(UiErrorState.Hidden)
+    
+    //initial view ID for embedded set
+    val initialViewId: Id? = vmParams.initialViewId
     //endregion
 
     //region INNER STATE

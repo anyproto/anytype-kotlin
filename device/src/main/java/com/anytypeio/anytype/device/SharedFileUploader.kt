@@ -9,6 +9,7 @@ import com.anytypeio.anytype.localization.R
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import kotlin.jvm.Throws
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -50,6 +51,7 @@ class SharedFileUploader @Inject constructor(
         }
     }
 
+    @Throws(Exception::class)
     private fun parsePathFromUri(extra: Uri) : String {
         val name = if (extra.scheme == CONTENT_URI_SCHEME) {
             context.contentResolver.query(

@@ -1285,17 +1285,36 @@ class HomeScreenViewModel(
                     widget = widgetId,
                     source = source
                 )
-                // Check if it's a Set or Collection layout and we have a viewId
+                // Check if it's a Set, Collection, or Type layout and we have a viewId
                 val layout = source.obj.layout
-                if ((layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) && viewId != null) {
-                    viewModelScope.launch {
-                        navigate(
-                            Navigation.OpenSet(
-                                ctx = source.obj.id,
-                                space = vmParams.spaceId.id,
-                                view = viewId
-                            )
-                        )
+                if (viewId != null) {
+                    when (layout) {
+                        ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
+                            viewModelScope.launch {
+                                navigate(
+                                    Navigation.OpenSet(
+                                        ctx = source.obj.id,
+                                        space = vmParams.spaceId.id,
+                                        view = viewId
+                                    )
+                                )
+                            }
+                        }
+                        ObjectType.Layout.OBJECT_TYPE -> {
+                            viewModelScope.launch {
+                                navigate(
+                                    Navigation.OpenType(
+                                        target = source.obj.id,
+                                        space = vmParams.spaceId.id,
+                                        view = viewId
+                                    )
+                                )
+                            }
+                        }
+                        else -> {
+                            // Fall back to standard navigation without view
+                            proceedWithOpeningObject(source.obj)
+                        }
                     }
                 } else {
                     // Fall back to standard navigation without view
@@ -1784,7 +1803,8 @@ class HomeScreenViewModel(
                 navigate(
                     Navigation.OpenType(
                         target = navigation.target,
-                        space = navigation.space
+                        space = navigation.space,
+                        view = null
                     )
                 )
             }
@@ -3171,7 +3191,7 @@ class HomeScreenViewModel(
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
-        data class OpenType(val target: Id, val space: Id) : Navigation()
+        data class OpenType(val target: Id, val space: Id, val view: Id? = null) : Navigation()
         data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
         data class OpenBookmarkUrl(val url: String) : Navigation() // Added for opening bookmark URLs from widgets
     }

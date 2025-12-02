@@ -511,7 +511,8 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     navigation().openObjectType(
                         objectId = destination.target,
-                        space = destination.space
+                        space = destination.space,
+                        view = destination.view
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening participant from widgets")

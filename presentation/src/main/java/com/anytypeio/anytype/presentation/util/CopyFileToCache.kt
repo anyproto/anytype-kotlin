@@ -102,10 +102,12 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         listener: CopyFileToCacheStatus
     ) {
         job = scope.launch {
+            // Notify listener on the caller's thread (typically main thread)
+            listener.onCopyFileStart()
             var path: String? = null
             try {
                 withContext(Dispatchers.IO) {
-                    path = copyFileToCacheDir(uri, listener)
+                    path = copyFileToCacheDir(uri)
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
@@ -120,10 +122,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
     }
 
-    private fun copyFileToCacheDir(
-        uri: Uri,
-        listener: CopyFileToCacheStatus
-    ): String? {
+    private fun copyFileToCacheDir(uri: Uri): String? {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
             val cacheDir = context.getExternalFilesDirTemp()
@@ -135,15 +134,14 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                 // This ensures no FD leak if getFileName throws
                 val fileName = getFileName(context, uri)
                 newFile = File(cacheDir?.path + "/" + fileName)
-                listener.onCopyFileStart()
-                Timber.d("Start copy file to cache : ${newFile.path}")
+                Timber.d("Start copy file to cache : ${newFile?.path}")
 
                 // Open input stream and immediately protect with .use {}
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(newFile).use { output ->
                         input.copyTo(output)
                     }
-                    return newFile.path
+                    return newFile?.path
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()
@@ -285,11 +283,13 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
         listener: CopyFileToCacheStatus
     ) {
         job = scope.launch {
+            // Notify listener on the caller's thread (typically main thread)
+            listener.onCopyFileStart()
             var path: String? = null
             var fileName: String? = null
             try {
                 withContext(Dispatchers.IO) {
-                    val pair = copyFileToCacheDir(uri, listener)
+                    val pair = copyFileToCacheDir(uri)
                     path = pair.first
                     fileName = pair.second
                 }
@@ -306,10 +306,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
         }
     }
 
-    private fun copyFileToCacheDir(
-        uri: Uri,
-        listener: CopyFileToCacheStatus
-    ): Pair<String?, String?> {
+    private fun copyFileToCacheDir(uri: Uri): Pair<String?, String?> {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
             // Pre-calculate filename BEFORE opening input stream
@@ -322,7 +319,6 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             try {
                 // Prepare file path BEFORE opening input stream
                 newFile = File(cacheDir?.path + "/" + CONFIG_FILE_NAME)
-                listener.onCopyFileStart()
                 Timber.d("Start copy file to cache : ${newFile?.path}")
 
                 // Open input stream and immediately protect with .use {}
@@ -330,7 +326,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                     FileOutputStream(newFile).use { output ->
                         input.copyTo(output)
                     }
-                    return Pair(newFile.path, fileName)
+                    return Pair(newFile?.path, fileName)
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()

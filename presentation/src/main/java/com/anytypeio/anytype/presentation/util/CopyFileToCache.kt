@@ -51,7 +51,12 @@ interface CopyFileToCacheDirectory {
      */
     fun isActive(): Boolean
 
-    fun delete(uri: String): Boolean
+    /**
+     * Deletes a file at the given path that was previously copied to the cache.
+     * @param path The absolute file path (not a content:// URI)
+     * @return true if deletion was successful, false otherwise
+     */
+    fun delete(path: String): Boolean
 }
 
 /**
@@ -271,9 +276,14 @@ class CopyFileToCacheDirectoryImpl(
         return result
     }
 
-    override fun delete(uri: String): Boolean {
+    override fun delete(path: String): Boolean {
         return try {
-            val path = Uri.parse(uri).path ?: return false
+            // Validate this is a file path, not a content:// or file:// URI
+            if (path.startsWith("content://") || path.startsWith("file://")) {
+                Timber.w("delete() expects a file path, not a URI: $path")
+                return false
+            }
+
             val file = File(path)
 
             val allowedRoots = listOfNotNull(
@@ -295,7 +305,7 @@ class CopyFileToCacheDirectoryImpl(
                 false
             }
         } catch (e: Exception) {
-            Timber.e(e, "Error deleting file at $uri")
+            Timber.e(e, "Error deleting file at $path")
             false
         }
     }

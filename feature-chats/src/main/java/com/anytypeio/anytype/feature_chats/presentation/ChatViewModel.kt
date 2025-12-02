@@ -775,13 +775,16 @@ class ChatViewModel @Inject constructor(
                             val state = attachment.state
                             var preloadedFileId: Id? = null
                             var path: String
+                            var wasCopiedToCache = false
 
                             if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
                                 preloadedFileId = state.preloadedFileId
                                 path = state.path
+                                wasCopiedToCache = true
                             } else {
                                 path = if (attachment.capturedByCamera) {
                                     shouldClearChatTempFolder = true
+                                    wasCopiedToCache = true
                                     try {
                                         withContext(dispatchers.io) {
                                             copyFileToCacheDirectory.copy(attachment.uri)
@@ -809,12 +812,14 @@ class ChatViewModel @Inject constructor(
                                     preloadFileId = preloadedFileId
                                 )
                             ).onSuccess { file ->
-                                withContext(dispatchers.io) {
-                                    val isDeleted = copyFileToCacheDirectory.delete(path)
-                                    if (isDeleted) {
-                                        Timber.d("DROID-2966 Successfully deleted temp file: ${attachment.uri}")
-                                    } else {
-                                        Timber.w("DROID-2966 Error while deleting temp file: ${attachment.uri}")
+                                if (wasCopiedToCache) {
+                                    withContext(dispatchers.io) {
+                                        val isDeleted = copyFileToCacheDirectory.delete(path)
+                                        if (isDeleted) {
+                                            Timber.d("DROID-2966 Successfully deleted temp file: ${attachment.uri}")
+                                        } else {
+                                            Timber.w("DROID-2966 Error while deleting temp file: ${attachment.uri}")
+                                        }
                                     }
                                 }
                                 add(

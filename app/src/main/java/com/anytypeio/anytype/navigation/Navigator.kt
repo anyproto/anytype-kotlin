@@ -333,13 +333,15 @@ class Navigator : AppNavigation {
 
     override fun openObjectType(
         objectId: Id,
-        space: Id
+        space: Id,
+        view: Id?
     ) {
         navController?.navigate(
             resId = R.id.objectTypeNavigation,
             args = ObjectTypeFragment.args(
                 objectId = objectId,
-                space = space
+                space = space,
+                view = view
             )
         )
     }

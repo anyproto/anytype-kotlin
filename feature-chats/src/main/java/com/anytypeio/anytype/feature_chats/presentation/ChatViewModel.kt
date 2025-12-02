@@ -1629,6 +1629,11 @@ class ChatViewModel @Inject constructor(
                     obj = vmParams.ctx
                 ).onSuccess {
                     Timber.d("Unpinned chat widget successfully")
+                    // Update header state immediately
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.ChatObject) {
+                        header.value = currentHeader.copy(isPinned = false)
+                    }
                     // Payload dispatched automatically, HomeScreenViewModel will update
                 }.onFailure {
                     Timber.e(it, "Error while unpinning chat widget")
@@ -1640,6 +1645,11 @@ class ChatViewModel @Inject constructor(
                     obj = vmParams.ctx
                 ).onSuccess {
                     Timber.d("Pinned chat as widget successfully")
+                    // Update header state immediately
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.ChatObject) {
+                        header.value = currentHeader.copy(isPinned = true)
+                    }
                     commands.emit(ViewModelCommand.Toast.PinnedChatAsWidget)
                     // Payload dispatched automatically, HomeScreenViewModel will update
                 }.onFailure {

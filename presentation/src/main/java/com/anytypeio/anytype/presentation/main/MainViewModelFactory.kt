@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -54,7 +55,8 @@ class MainViewModelFactory @Inject constructor(
     private val scope: CoroutineScope,
     private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
     private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
-    private val appInfo: AppInfo
+    private val appInfo: AppInfo,
+    private val chatPreviewContainer: ChatPreviewContainer
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -84,6 +86,7 @@ class MainViewModelFactory @Inject constructor(
         scope = scope,
         observeShowSpacesIntroduction = observeShowSpacesIntroduction,
         setSpacesIntroductionShown = setSpacesIntroductionShown,
-        appInfo = appInfo
+        appInfo = appInfo,
+        chatPreviewContainer = chatPreviewContainer
     ) as T
 }

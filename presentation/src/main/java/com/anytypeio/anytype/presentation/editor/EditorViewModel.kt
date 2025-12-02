@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.editor
 
+import CopyFileStatus
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -288,7 +289,6 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
-import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher

@@ -6,7 +6,6 @@ import android.provider.OpenableColumns
 import com.anytypeio.anytype.core_utils.ext.msg
 import java.io.File
 import java.io.FileOutputStream
-import java.lang.ref.WeakReference
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -30,7 +29,15 @@ interface CopyFileToCacheDirectory {
      */
     fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus)
 
-    suspend fun copy(uri: String): String?
+    /**
+     * Copies the file at the given [uri] to the cache directory.
+     *
+     * @param uri The URI string of the file to be copied.
+     * @return The path of the copied file in the cache directory.
+     * @throws IllegalStateException if the cache directory is not available or the input stream cannot be opened.
+     * @throws IllegalArgumentException if the file name cannot be determined.
+     */
+    suspend fun copy(uri: String): String
 
     /**
      * Cancels the ongoing file copying operation.
@@ -56,154 +63,172 @@ interface CopyFileToCacheStatus {
     fun onCopyFileError(msg: String)
 }
 
-const val SCHEME_CONTENT = "content"
-const val CHAR_SLASH = '/'
+private const val SCHEME_CONTENT = "content"
+private const val CHAR_SLASH = '/'
 const val TEMPORARY_DIRECTORY_NAME = "TemporaryFiles"
+private const val NETWORK_MODE_DIRECTORY = "networkModeConfig"
+private const val NETWORK_MODE_CONFIG_FILE = "configCustom.txt"
 
 /**
- * Represents the status of a file copying operation.
+ * Configuration for file copying behavior.
  */
-sealed class CopyFileStatus {
-    data class Error(val msg: String) : CopyFileStatus()
-    object Started : CopyFileStatus()
-    data class Completed(val result: String?) : CopyFileStatus()
+sealed class CopyFileConfig {
+    /**
+     * Keeps the original filename from the URI.
+     * Used for general file attachments (editor, chats, etc.)
+     */
+    data class KeepOriginalName(
+        val directory: String,
+        val deleteOnCancel: Boolean = true
+    ) : CopyFileConfig()
+
+    /**
+     * Uses a fixed filename regardless of the source URI.
+     * Used for network config import where the file must be at a specific location.
+     */
+    data class FixedFileName(
+        val directory: String,
+        val fileName: String,
+        val deleteOnCancel: Boolean = false
+    ) : CopyFileConfig()
 }
 
-class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
+/**
+ * Factory function to create a CopyFileToCacheDirectory for general file attachments.
+ * Files are copied to TemporaryFiles directory with their original names.
+ */
+fun defaultCopyFileToCacheDirectory(context: Context): CopyFileToCacheDirectory =
+    CopyFileToCacheDirectoryImpl(
+        context = context,
+        config = CopyFileConfig.KeepOriginalName(
+            directory = TEMPORARY_DIRECTORY_NAME,
+            deleteOnCancel = true
+        )
+    )
 
-    private var mContext: WeakReference<Context>? = null
+/**
+ * Factory function to create a CopyFileToCacheDirectory for network config import.
+ * Files are copied to networkModeConfig directory with a fixed name (configCustom.txt).
+ */
+fun networkModeCopyFileToCacheDirectory(context: Context): CopyFileToCacheDirectory =
+    CopyFileToCacheDirectoryImpl(
+        context = context,
+        config = CopyFileConfig.FixedFileName(
+            directory = NETWORK_MODE_DIRECTORY,
+            fileName = NETWORK_MODE_CONFIG_FILE,
+            deleteOnCancel = false
+        )
+    )
+
+/**
+ * Unified implementation of [CopyFileToCacheDirectory] that supports different
+ * file copying configurations via [CopyFileConfig].
+ */
+class CopyFileToCacheDirectoryImpl(
+    private val context: Context,
+    private val config: CopyFileConfig
+) : CopyFileToCacheDirectory {
+
     private var job: Job? = null
-
-    init {
-        mContext = WeakReference(context)
-    }
 
     override fun isActive(): Boolean = job?.isActive == true
 
     override fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus) {
-        getNewPathInCacheDir(
-            uri = uri,
-            scope = scope,
-            listener = listener,
-        )
-    }
-
-    override suspend fun copy(uri: String): String? {
-        return copyFileToCacheDir(uri)
-    }
-
-    override fun cancel() {
+        // Cancel previous job before starting new one
         job?.cancel()
-        mContext?.get()?.deleteTemporaryFolder()
-    }
-
-    private fun getNewPathInCacheDir(
-        uri: Uri,
-        scope: CoroutineScope,
-        listener: CopyFileToCacheStatus
-    ) {
         job = scope.launch {
-            // Notify listener on the caller's thread (typically main thread)
             listener.onCopyFileStart()
-            var path: String? = null
             try {
-                withContext(Dispatchers.IO) {
-                    path = copyFileToCacheDir(uri)
+                val (path, originalFileName) = withContext(Dispatchers.IO) {
+                    copyFileToCacheDir(uri)
+                }
+                if (isActive) {
+                    listener.onCopyFileResult(path, originalFileName)
                 }
             } catch (e: CancellationException) {
                 throw e
             } catch (e: Exception) {
-                Timber.e(e, "Error while getNewPathInCacheDir")
+                Timber.e(e, "Error while copying file to cache")
                 if (isActive) {
                     listener.onCopyFileError(e.msg())
                 }
-            } finally {
-                if (isActive) {
-                    listener.onCopyFileResult(path)
+            }
+        }
+    }
+
+    override suspend fun copy(uri: String): String {
+        return copyFileToCacheDir(Uri.parse(uri)).first
+    }
+
+    override fun cancel() {
+        job?.cancel()
+        if (config is CopyFileConfig.KeepOriginalName && config.deleteOnCancel) {
+            context.getExternalFilesDir(config.directory)?.let { folder ->
+                if (folder.deleteRecursively()) {
+                    Timber.d("${folder.absolutePath} deleted successfully")
+                } else {
+                    Timber.d("${folder.absolutePath} deletion failed")
                 }
             }
         }
     }
 
-    private fun copyFileToCacheDir(uri: Uri): String? {
-        var newFile: File? = null
-        mContext?.get()?.let { context: Context ->
-            val cacheDir = context.getExternalFilesDirTemp()
-            if (cacheDir == null) {
-                Timber.e("External files directory is not available")
-                return null
-            }
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs()
-            }
-            try {
-                // Pre-calculate filename BEFORE opening input stream
-                // This ensures no FD leak if getFileName throws
-                val fileName = getFileName(context, uri)
-                if (fileName.isNullOrEmpty()) {
-                    Timber.e("Could not determine file name for uri: $uri")
-                    return null
-                }
-                newFile = File(cacheDir.path + "/" + fileName)
-                Timber.d("Start copy file to cache : ${newFile.path}")
+    /**
+     * Copies file to cache directory.
+     * @return Pair of (path to copied file, original filename from URI)
+     * @throws IllegalStateException if the cache directory is not available or the input stream cannot be opened.
+     * @throws IllegalArgumentException if the file name cannot be determined (for KeepOriginalName config).
+     */
+    @Throws(IllegalStateException::class, IllegalArgumentException::class)
+    private fun copyFileToCacheDir(uri: Uri): Pair<String, String?> {
+        val originalFileName = getFileName(uri)
 
-                // Open input stream and immediately protect with .use {}
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    FileOutputStream(newFile).use { output ->
-                        input.copyTo(output)
-                    }
-                    return newFile.path
-                }
-            } catch (e: Exception) {
-                val deleteResult = newFile?.deleteRecursively()
-                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
-                Timber.e(e, "Error while coping file")
-            }
+        val cacheDir = context.getExternalFilesDir(getDirectoryName())
+            ?: throw IllegalStateException("External files directory is not available")
+
+        if (!cacheDir.exists()) {
+            cacheDir.mkdirs()
         }
-        return null
+
+        val targetFileName = getTargetFileName(originalFileName, uri)
+        val newFile = File(cacheDir.path + "/" + targetFileName)
+        Timber.d("Start copy file to cache: ${newFile.path}")
+
+        try {
+            val inputStream = context.contentResolver.openInputStream(uri)
+                ?: throw IllegalStateException("Could not open input stream for uri: $uri")
+
+            inputStream.use { input ->
+                FileOutputStream(newFile).use { output ->
+                    input.copyTo(output)
+                }
+            }
+            return Pair(newFile.path, originalFileName)
+        } catch (e: Exception) {
+            val deleteResult = newFile.deleteRecursively()
+            Timber.d("Exception while copying file, deleteRecursively success: $deleteResult")
+            throw e
+        }
     }
 
-    private fun copyFileToCacheDir(
-        uri: String
-    ): String? {
-        var newFile: File? = null
-        mContext?.get()?.let { context: Context ->
-            val cacheDir = context.getExternalFilesDirTemp()
-            if (cacheDir == null) {
-                Timber.e("External files directory is not available")
-                return null
-            }
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs()
-            }
-            try {
-                // Parse URI once and pre-calculate filename BEFORE opening input stream
-                val parsedUri = Uri.parse(uri)
-                val fileName = getFileName(context, parsedUri)
-                if (fileName.isNullOrEmpty()) {
-                    Timber.e("Could not determine file name for uri: $uri")
-                    return null
-                }
-                newFile = File(cacheDir.path + "/" + fileName)
-                Timber.d("Start copy file to cache : ${newFile?.path}")
-
-                // Open input stream and immediately protect with .use {}
-                context.contentResolver.openInputStream(parsedUri)?.use { input ->
-                    FileOutputStream(newFile).use { output ->
-                        input.copyTo(output)
-                    }
-                    return newFile?.path
-                }
-            } catch (e: Exception) {
-                val deleteResult = newFile?.deleteRecursively()
-                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
-                Timber.e(e, "Error while coping file")
-            }
-        }
-        return null
+    private fun getDirectoryName(): String = when (config) {
+        is CopyFileConfig.KeepOriginalName -> config.directory
+        is CopyFileConfig.FixedFileName -> config.directory
     }
 
-    private fun getFileName(context: Context, uri: Uri): String? {
+    private fun getTargetFileName(originalFileName: String?, uri: Uri): String {
+        return when (config) {
+            is CopyFileConfig.KeepOriginalName -> {
+                if (originalFileName.isNullOrEmpty()) {
+                    throw IllegalArgumentException("Could not determine file name for uri: $uri")
+                }
+                originalFileName
+            }
+            is CopyFileConfig.FixedFileName -> config.fileName
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
         var result: String? = null
         if (uri.scheme == SCHEME_CONTENT) {
             context.contentResolver.query(
@@ -233,12 +258,10 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
     }
 
     override fun delete(uri: String): Boolean {
-        val context = mContext?.get() ?: return false
         return try {
             val path = Uri.parse(uri).path ?: return false
             val file = File(path)
 
-            // Optional: check if file is in cache or external files dir
             val allowedRoots = listOfNotNull(
                 context.cacheDir?.absolutePath,
                 context.getExternalFilesDir(null)?.absolutePath
@@ -263,187 +286,3 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         }
     }
 }
-
-/**
- * Network mode-specific implementation of the [CopyFileToCacheDirectory] interface.
- *
- * @param context The application context.
- */
-class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirectory {
-
-    private var mContext: WeakReference<Context>? = null
-    private var job: Job? = null
-
-    init {
-        mContext = WeakReference(context)
-    }
-
-    override fun isActive(): Boolean = job?.isActive == true
-
-    override fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus) {
-        getNewPathInCacheDir(
-            uri = uri,
-            scope = scope,
-            listener = listener,
-        )
-    }
-
-    override suspend fun copy(uri: String): String? {
-        throw UnsupportedOperationException()
-    }
-
-    override fun cancel() {
-        job?.cancel()
-    }
-
-    private fun getNewPathInCacheDir(
-        uri: Uri,
-        scope: CoroutineScope,
-        listener: CopyFileToCacheStatus
-    ) {
-        job = scope.launch {
-            // Notify listener on the caller's thread (typically main thread)
-            listener.onCopyFileStart()
-            var path: String? = null
-            var fileName: String? = null
-            try {
-                withContext(Dispatchers.IO) {
-                    val pair = copyFileToCacheDir(uri)
-                    path = pair.first
-                    fileName = pair.second
-                }
-            } catch (e: CancellationException) {
-                throw e
-            } catch (e: Exception) {
-                Timber.e(e, "Error while getNewPathInCacheDir")
-                if (isActive) {
-                    listener.onCopyFileError(e.msg())
-                }
-            } finally {
-                if (isActive) {
-                    listener.onCopyFileResult(path, fileName)
-                }
-            }
-        }
-    }
-
-    private fun copyFileToCacheDir(uri: Uri): Pair<String?, String?> {
-        var newFile: File? = null
-        mContext?.get()?.let { context: Context ->
-            // Pre-calculate filename BEFORE opening input stream
-            val fileName = getFileName(context, uri)
-
-            val cacheDir = context.getExternalCustomNetworkDirTemp()
-            if (cacheDir == null) {
-                Timber.e("External files directory is not available")
-                return Pair(null, null)
-            }
-            if (!cacheDir.exists()) {
-                cacheDir.mkdirs()
-            }
-            try {
-                // Prepare file path BEFORE opening input stream
-                newFile = File(cacheDir.path + "/" + CONFIG_FILE_NAME)
-                Timber.d("Start copy file to cache : ${newFile?.path}")
-
-                // Open input stream and immediately protect with .use {}
-                context.contentResolver.openInputStream(uri)?.use { input ->
-                    FileOutputStream(newFile).use { output ->
-                        input.copyTo(output)
-                    }
-                    return Pair(newFile?.path, fileName)
-                }
-            } catch (e: Exception) {
-                val deleteResult = newFile?.deleteRecursively()
-                Timber.d("Get exception while copying file, deleteRecursively success: $deleteResult")
-                Timber.e(e, "Error while coping file")
-            }
-        }
-        return Pair(null, null)
-    }
-
-    private fun getFileName(context: Context, uri: Uri): String? {
-        var result: String? = null
-        if (uri.scheme == SCHEME_CONTENT) {
-            context.contentResolver.query(
-                uri,
-                null,
-                null,
-                null,
-                null
-            )?.use { cursor ->
-                if (cursor.moveToFirst()) {
-                    val index = cursor.getColumnIndex(OpenableColumns.DISPLAY_NAME)
-                    if (index != -1) {
-                        result = cursor.getString(index)
-                    }
-                }
-            }
-        }
-        if (result == null) {
-            uri.path?.let { path ->
-                val cut = path.lastIndexOf(CHAR_SLASH)
-                if (cut != -1) {
-                    result = path.substring(cut + 1)
-                }
-            }
-        }
-        return result
-    }
-
-    override fun delete(uri: String): Boolean {
-        val context = mContext?.get() ?: return false
-        return try {
-            val path = Uri.parse(uri).path ?: return false
-            val file = File(path)
-
-            val allowedRoots = listOfNotNull(
-                context.cacheDir?.absolutePath,
-                context.getExternalFilesDir(null)?.absolutePath
-            )
-
-            if (allowedRoots.any { file.absolutePath.startsWith(it) }) {
-                if (!file.exists()) {
-                    Timber.w("File does not exist: $path")
-                    return false
-                }
-                val deleted = file.delete()
-                Timber.d("Attempting to delete file: $path → deleted=$deleted")
-                deleted
-            } else {
-                Timber.w("Blocked delete attempt outside allowed folders: $path")
-                false
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error deleting file at $uri")
-            false
-        }
-    }
-
-    companion object {
-        const val CONFIG_FILE_NAME = "configCustom.txt"
-    }
-}
-
-/**
- * Delete the /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME folder.
- */
-private fun Context.deleteTemporaryFolder() {
-    getExternalFilesDirTemp()?.let { folder ->
-        if (folder.deleteRecursively()) {
-            Timber.d("${folder.absolutePath} delete successfully")
-        } else {
-            Timber.d("${folder.absolutePath} delete is unsuccessfully")
-        }
-    }
-}
-
-/**
- * Return /storage/emulated/0/Android/data/package/files/$TEMPORARY_DIRECTORY_NAME directory
- */
-fun Context.getExternalFilesDirTemp(): File? = getExternalFilesDir(TEMPORARY_DIRECTORY_NAME)
-
-/**
- * Return /storage/emulated/0/Android/data/io.anytype.app/files/networkModeConfig directory
- */
-private fun Context.getExternalCustomNetworkDirTemp(): File? = getExternalFilesDir("networkModeConfig")

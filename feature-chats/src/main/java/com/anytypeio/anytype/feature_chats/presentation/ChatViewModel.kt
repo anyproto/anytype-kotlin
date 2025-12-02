@@ -782,9 +782,17 @@ class ChatViewModel @Inject constructor(
                             } else {
                                 path = if (attachment.capturedByCamera) {
                                     shouldClearChatTempFolder = true
-                                    withContext(dispatchers.io) {
-                                        copyFileToCacheDirectory.copy(attachment.uri)
-                                    }.orEmpty()
+                                    try {
+                                        withContext(dispatchers.io) {
+                                            copyFileToCacheDirectory.copy(attachment.uri)
+                                        }
+                                    } catch (e: Exception) {
+                                        Timber.e(e, "Failed to copy media file to cache: ${attachment.uri}")
+                                        chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                            set(idx, attachment.copy(state = ChatView.Message.ChatBoxAttachment.State.Failed))
+                                        }
+                                        return@forEachIndexed
+                                    }
                                 } else {
                                     attachment.uri
                                 }
@@ -877,8 +885,16 @@ class ChatViewModel @Inject constructor(
                                 preloadedFileId = state.preloadedFileId
                                 path = state.path
                             } else {
-                                path = withContext(dispatchers.io) {
-                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                path = try {
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to copy file to cache: ${attachment.uri}")
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(idx, attachment.copy(state = ChatView.Message.ChatBoxAttachment.State.Failed))
+                                    }
+                                    return@forEachIndexed
                                 }
                             }
                             if (path != null) {

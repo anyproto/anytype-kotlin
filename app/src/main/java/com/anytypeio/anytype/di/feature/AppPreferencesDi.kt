@@ -13,7 +13,7 @@ import com.anytypeio.anytype.domain.networkmode.SetNetworkMode
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.settings.PreferencesViewModel
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.NetworkModeCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.networkModeCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.anytypeio.anytype.ui.onboarding.OnboardingNetworkSetupDialog
 import com.anytypeio.anytype.ui.settings.system.PreferenceFragment
@@ -45,7 +45,7 @@ object AppPreferencesModule {
     @PerScreen
     fun provideCopyFileToCache(
         context: Context
-    ): CopyFileToCacheDirectory = NetworkModeCopyFileToCacheDirectory(context)
+    ): CopyFileToCacheDirectory = networkModeCopyFileToCacheDirectory(context)
 
     @JvmStatic
     @Provides

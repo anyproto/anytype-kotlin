@@ -14,6 +14,7 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import kotlin.coroutines.cancellation.CancellationException
 
 /**
  * Interface defining the contract for copying files to a cache directory.
@@ -109,6 +110,8 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                 withContext(Dispatchers.IO) {
                     path = copyFileToCacheDir(uri)
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
                 if (isActive) {
@@ -126,22 +129,30 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
             val cacheDir = context.getExternalFilesDirTemp()
-            if (cacheDir != null && !cacheDir.exists()) {
+            if (cacheDir == null) {
+                Timber.e("External files directory is not available")
+                return null
+            }
+            if (!cacheDir.exists()) {
                 cacheDir.mkdirs()
             }
             try {
                 // Pre-calculate filename BEFORE opening input stream
                 // This ensures no FD leak if getFileName throws
                 val fileName = getFileName(context, uri)
-                newFile = File(cacheDir?.path + "/" + fileName)
-                Timber.d("Start copy file to cache : ${newFile?.path}")
+                if (fileName.isNullOrEmpty()) {
+                    Timber.e("Could not determine file name for uri: $uri")
+                    return null
+                }
+                newFile = File(cacheDir.path + "/" + fileName)
+                Timber.d("Start copy file to cache : ${newFile.path}")
 
                 // Open input stream and immediately protect with .use {}
                 context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(newFile).use { output ->
                         input.copyTo(output)
                     }
-                    return newFile?.path
+                    return newFile.path
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()
@@ -158,14 +169,22 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
             val cacheDir = context.getExternalFilesDirTemp()
-            if (cacheDir != null && !cacheDir.exists()) {
+            if (cacheDir == null) {
+                Timber.e("External files directory is not available")
+                return null
+            }
+            if (!cacheDir.exists()) {
                 cacheDir.mkdirs()
             }
             try {
                 // Parse URI once and pre-calculate filename BEFORE opening input stream
                 val parsedUri = Uri.parse(uri)
                 val fileName = getFileName(context, parsedUri)
-                newFile = File(cacheDir?.path + "/" + fileName)
+                if (fileName.isNullOrEmpty()) {
+                    Timber.e("Could not determine file name for uri: $uri")
+                    return null
+                }
+                newFile = File(cacheDir.path + "/" + fileName)
                 Timber.d("Start copy file to cache : ${newFile?.path}")
 
                 // Open input stream and immediately protect with .use {}
@@ -206,7 +225,7 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
             uri.path?.let { path ->
                 val cut = path.lastIndexOf(CHAR_SLASH)
                 if (cut != -1) {
-                    result = path.substring(cut)
+                    result = path.substring(cut + 1)
                 }
             }
         }
@@ -293,6 +312,8 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                     path = pair.first
                     fileName = pair.second
                 }
+            } catch (e: CancellationException) {
+                throw e
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
                 if (isActive) {
@@ -313,12 +334,16 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
             val fileName = getFileName(context, uri)
 
             val cacheDir = context.getExternalCustomNetworkDirTemp()
-            if (cacheDir != null && !cacheDir.exists()) {
+            if (cacheDir == null) {
+                Timber.e("External files directory is not available")
+                return Pair(null, null)
+            }
+            if (!cacheDir.exists()) {
                 cacheDir.mkdirs()
             }
             try {
                 // Prepare file path BEFORE opening input stream
-                newFile = File(cacheDir?.path + "/" + CONFIG_FILE_NAME)
+                newFile = File(cacheDir.path + "/" + CONFIG_FILE_NAME)
                 Timber.d("Start copy file to cache : ${newFile?.path}")
 
                 // Open input stream and immediately protect with .use {}
@@ -355,18 +380,42 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                 }
             }
         }
+        if (result == null) {
+            uri.path?.let { path ->
+                val cut = path.lastIndexOf(CHAR_SLASH)
+                if (cut != -1) {
+                    result = path.substring(cut + 1)
+                }
+            }
+        }
         return result
     }
 
     override fun delete(uri: String): Boolean {
         val context = mContext?.get() ?: return false
         return try {
-            val file = File(Uri.parse(uri).path ?: return false)
-            val deleted = file.delete()
-            Timber.d("Attempting to delete file by uri: $uri → $deleted")
-            deleted
+            val path = Uri.parse(uri).path ?: return false
+            val file = File(path)
+
+            val allowedRoots = listOfNotNull(
+                context.cacheDir?.absolutePath,
+                context.getExternalFilesDir(null)?.absolutePath
+            )
+
+            if (allowedRoots.any { file.absolutePath.startsWith(it) }) {
+                if (!file.exists()) {
+                    Timber.w("File does not exist: $path")
+                    return false
+                }
+                val deleted = file.delete()
+                Timber.d("Attempting to delete file: $path → deleted=$deleted")
+                deleted
+            } else {
+                Timber.w("Blocked delete attempt outside allowed folders: $path")
+                false
+            }
         } catch (e: Exception) {
-            Timber.e(e, "Error deleting file by uri: $uri")
+            Timber.e(e, "Error deleting file at $uri")
             false
         }
     }

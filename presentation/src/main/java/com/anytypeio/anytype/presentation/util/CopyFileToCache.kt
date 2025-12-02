@@ -101,17 +101,19 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
         scope: CoroutineScope,
         listener: CopyFileToCacheStatus
     ) {
-        var path: String? = null
         job = scope.launch {
+            var path: String? = null
             try {
                 withContext(Dispatchers.IO) {
                     path = copyFileToCacheDir(uri, listener)
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
-                listener.onCopyFileError(e.msg())
+                if (isActive) {
+                    listener.onCopyFileError(e.msg())
+                }
             } finally {
-                if (scope.isActive) {
+                if (isActive) {
                     listener.onCopyFileResult(path)
                 }
             }
@@ -129,20 +131,19 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                 cacheDir.mkdirs()
             }
             try {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                inputStream?.use { input ->
-                    newFile = File(cacheDir?.path + "/" + getFileName(context, uri));
-                    listener.onCopyFileStart()
-                    Timber.d("Start copy file to cache : ${newFile?.path}")
+                // Pre-calculate filename BEFORE opening input stream
+                // This ensures no FD leak if getFileName throws
+                val fileName = getFileName(context, uri)
+                newFile = File(cacheDir?.path + "/" + fileName)
+                listener.onCopyFileStart()
+                Timber.d("Start copy file to cache : ${newFile.path}")
+
+                // Open input stream and immediately protect with .use {}
+                context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(newFile).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int = input.read(buffer)
-                        while (read != -1) {
-                            output.write(buffer, 0, read)
-                            read = input.read(buffer)
-                        }
+                        input.copyTo(output)
                     }
-                    return newFile?.path
+                    return newFile.path
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()
@@ -163,19 +164,18 @@ class DefaultCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDirecto
                 cacheDir.mkdirs()
             }
             try {
-                val inputStream = context.contentResolver.openInputStream(Uri.parse(uri))
-                inputStream?.use { input ->
-                    newFile = File(cacheDir?.path + "/" + getFileName(context, Uri.parse(uri)));
-                    Timber.d("Start copy file to cache : ${newFile.path}")
+                // Parse URI once and pre-calculate filename BEFORE opening input stream
+                val parsedUri = Uri.parse(uri)
+                val fileName = getFileName(context, parsedUri)
+                newFile = File(cacheDir?.path + "/" + fileName)
+                Timber.d("Start copy file to cache : ${newFile?.path}")
+
+                // Open input stream and immediately protect with .use {}
+                context.contentResolver.openInputStream(parsedUri)?.use { input ->
                     FileOutputStream(newFile).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int = input.read(buffer)
-                        while (read != -1) {
-                            output.write(buffer, 0, read)
-                            read = input.read(buffer)
-                        }
+                        input.copyTo(output)
                     }
-                    return newFile.path
+                    return newFile?.path
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()
@@ -284,9 +284,9 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
         scope: CoroutineScope,
         listener: CopyFileToCacheStatus
     ) {
-        var path: String? = null
-        var fileName: String? = null
         job = scope.launch {
+            var path: String? = null
+            var fileName: String? = null
             try {
                 withContext(Dispatchers.IO) {
                     val pair = copyFileToCacheDir(uri, listener)
@@ -295,9 +295,11 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error while getNewPathInCacheDir")
-                listener.onCopyFileError(e.msg())
+                if (isActive) {
+                    listener.onCopyFileError(e.msg())
+                }
             } finally {
-                if (scope.isActive) {
+                if (isActive) {
                     listener.onCopyFileResult(path, fileName)
                 }
             }
@@ -310,7 +312,7 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
     ): Pair<String?, String?> {
         var newFile: File? = null
         mContext?.get()?.let { context: Context ->
-
+            // Pre-calculate filename BEFORE opening input stream
             val fileName = getFileName(context, uri)
 
             val cacheDir = context.getExternalCustomNetworkDirTemp()
@@ -318,20 +320,17 @@ class NetworkModeCopyFileToCacheDirectory(context: Context) : CopyFileToCacheDir
                 cacheDir.mkdirs()
             }
             try {
-                val inputStream = context.contentResolver.openInputStream(uri)
-                inputStream?.use { input ->
-                    newFile = File(cacheDir?.path + "/" + CONFIG_FILE_NAME);
-                    listener.onCopyFileStart()
-                    Timber.d("Start copy file to cache : ${newFile?.path}")
+                // Prepare file path BEFORE opening input stream
+                newFile = File(cacheDir?.path + "/" + CONFIG_FILE_NAME)
+                listener.onCopyFileStart()
+                Timber.d("Start copy file to cache : ${newFile?.path}")
+
+                // Open input stream and immediately protect with .use {}
+                context.contentResolver.openInputStream(uri)?.use { input ->
                     FileOutputStream(newFile).use { output ->
-                        val buffer = ByteArray(1024)
-                        var read: Int = input.read(buffer)
-                        while (read != -1) {
-                            output.write(buffer, 0, read)
-                            read = input.read(buffer)
-                        }
+                        input.copyTo(output)
                     }
-                    return Pair(newFile?.path, fileName)
+                    return Pair(newFile.path, fileName)
                 }
             } catch (e: Exception) {
                 val deleteResult = newFile?.deleteRecursively()

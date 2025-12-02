@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.startFilePicker
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.other.MediaPermissionHelper
-import com.anytypeio.anytype.presentation.util.CopyFileStatus
+import com.anytypeio.anytype.presentation.editor.model.CopyFileStatus
 import com.google.android.material.snackbar.Snackbar
 import com.hbisoft.pickit.PickiT
 import com.hbisoft.pickit.PickiTCallbacks

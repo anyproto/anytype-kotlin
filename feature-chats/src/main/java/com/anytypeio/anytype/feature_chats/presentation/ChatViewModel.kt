@@ -902,54 +902,52 @@ class ChatViewModel @Inject constructor(
                                     return@forEachIndexed
                                 }
                             }
-                            if (path != null) {
-                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
-                                    set(
-                                        index = idx,
-                                        element = attachment.copy(
-                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
-                                        )
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        state = ChatView.Message.ChatBoxAttachment.State.Uploading
                                     )
-                                }
-                                uploadFile.async(
-                                    UploadFile.Params(
-                                        space = vmParams.space,
-                                        path = path,
-                                        type = Block.Content.File.Type.NONE,
-                                        preloadFileId = preloadedFileId
+                                )
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = Block.Content.File.Type.NONE,
+                                    preloadFileId = preloadedFileId
+                                )
+                            ).onSuccess { file ->
+                                copyFileToCacheDirectory.delete(path)
+                                add(
+                                    Chat.Message.Attachment(
+                                        target = file.id,
+                                        type = Chat.Message.Attachment.Type.File
                                     )
-                                ).onSuccess { file ->
-                                    copyFileToCacheDirectory.delete(path)
-                                    add(
-                                        Chat.Message.Attachment(
-                                            target = file.id,
-                                            type = Chat.Message.Attachment.Type.File
-                                        )
-                                    )
-                                    chatBoxAttachments.value =
-                                        currAttachments.toMutableList().apply {
-                                            set(
-                                                index = idx,
-                                                element = attachment.copy(
-                                                    state = ChatView.Message.ChatBoxAttachment.State.Uploaded
-                                                )
+                                )
+                                chatBoxAttachments.value =
+                                    currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
                                             )
-                                        }
-                                }.onFailure {
-                                    Timber.e(
-                                        it,
-                                        "DROID-2966 Error while uploading file as attachment"
-                                    )
-                                    chatBoxAttachments.value =
-                                        currAttachments.toMutableList().apply {
-                                            set(
-                                                index = idx,
-                                                element = attachment.copy(
-                                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
-                                                )
+                                        )
+                                    }
+                            }.onFailure {
+                                Timber.e(
+                                    it,
+                                    "DROID-2966 Error while uploading file as attachment"
+                                )
+                                chatBoxAttachments.value =
+                                    currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
                                             )
-                                        }
-                                }
+                                        )
+                                    }
                             }
                         }
                     }

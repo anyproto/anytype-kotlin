@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.editor
 
-import CopyFileStatus
 import android.net.Uri
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.viewModelScope
@@ -192,6 +191,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
+import com.anytypeio.anytype.presentation.editor.model.CopyFileStatus
 import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent

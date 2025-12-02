@@ -28,6 +28,7 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
@@ -98,7 +99,8 @@ class MainViewModel(
     private val scope: CoroutineScope,
     private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
     private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
-    private val appInfo: AppInfo
+    private val appInfo: AppInfo,
+    private val chatPreviewContainer: ChatPreviewContainer
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -253,6 +255,7 @@ class MainViewModel(
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
                     globalSubscriptionManager.onStart()
+                    chatPreviewContainer.start()
                     val analyticsID = configStorage.getOrNull()?.analytics
                     val networkID = configStorage.getOrNull()?.network
                     if (analyticsID != null) {

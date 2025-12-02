@@ -135,8 +135,10 @@ class CopyFileToCacheDirectoryImpl(
     override fun isActive(): Boolean = job?.isActive == true
 
     override fun execute(uri: Uri, scope: CoroutineScope, listener: CopyFileToCacheStatus) {
-        // Cancel previous job before starting new one
+        // Cancel previous job and clean up any partial file from it
         job?.cancel()
+        cleanupTrackedFile()
+
         job = scope.launch {
             listener.onCopyFileStart()
             try {
@@ -164,12 +166,20 @@ class CopyFileToCacheDirectoryImpl(
 
     override fun cancel() {
         job?.cancel()
+        cleanupTrackedFile()
+    }
+
+    /**
+     * Cleans up any tracked temporary file from a cancelled or replaced operation.
+     * Only deletes if config allows (KeepOriginalName with deleteOnCancel = true).
+     */
+    private fun cleanupTrackedFile() {
         if (config is CopyFileConfig.KeepOriginalName && config.deleteOnCancel) {
             lastCreatedFilePath?.let { path ->
                 val file = File(path)
                 if (file.exists()) {
                     val deleted = file.delete()
-                    Timber.d("Cancel: deleted temp file $path: $deleted")
+                    Timber.d("Cleanup: deleted temp file $path: $deleted")
                 }
                 lastCreatedFilePath = null
             }

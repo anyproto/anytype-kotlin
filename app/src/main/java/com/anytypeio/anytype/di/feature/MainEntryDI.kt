@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -93,7 +94,8 @@ object MainEntryModule {
         scope: CoroutineScope,
         observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
         setSpacesIntroductionShown: SetSpacesIntroductionShown,
-        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo
+        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo,
+        chatPreviewContainer: ChatPreviewContainer
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -119,7 +121,8 @@ object MainEntryModule {
         scope = scope,
         observeShowSpacesIntroduction = observeShowSpacesIntroduction,
         setSpacesIntroductionShown = setSpacesIntroductionShown,
-        appInfo = appInfo
+        appInfo = appInfo,
+        chatPreviewContainer = chatPreviewContainer
     )
 
     @JvmStatic

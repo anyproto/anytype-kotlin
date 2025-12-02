@@ -130,6 +130,7 @@ class CopyFileToCacheDirectoryImpl(
 ) : CopyFileToCacheDirectory {
 
     private var job: Job? = null
+    private var lastCreatedFilePath: String? = null
 
     override fun isActive(): Boolean = job?.isActive == true
 
@@ -143,6 +144,7 @@ class CopyFileToCacheDirectoryImpl(
                     copyFileToCacheDir(uri)
                 }
                 if (isActive) {
+                    lastCreatedFilePath = null // Clear on success, file ownership transferred
                     listener.onCopyFileResult(path, originalFileName)
                 }
             } catch (e: CancellationException) {
@@ -163,12 +165,13 @@ class CopyFileToCacheDirectoryImpl(
     override fun cancel() {
         job?.cancel()
         if (config is CopyFileConfig.KeepOriginalName && config.deleteOnCancel) {
-            context.getExternalFilesDir(config.directory)?.let { folder ->
-                if (folder.deleteRecursively()) {
-                    Timber.d("${folder.absolutePath} deleted successfully")
-                } else {
-                    Timber.d("${folder.absolutePath} deletion failed")
+            lastCreatedFilePath?.let { path ->
+                val file = File(path)
+                if (file.exists()) {
+                    val deleted = file.delete()
+                    Timber.d("Cancel: deleted temp file $path: $deleted")
                 }
+                lastCreatedFilePath = null
             }
         }
     }
@@ -192,6 +195,7 @@ class CopyFileToCacheDirectoryImpl(
 
         val targetFileName = getTargetFileName(originalFileName, uri)
         val newFile = File(cacheDir.path + "/" + targetFileName)
+        lastCreatedFilePath = newFile.path
         Timber.d("Start copy file to cache: ${newFile.path}")
 
         try {

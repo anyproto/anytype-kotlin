@@ -582,7 +582,7 @@
     <string name="sign_up">Kaydol</string>
     <string name="type_your_recovery_phrase">veya anahtarınızı yazın</string>
     <string name="login_with_recovery_phrase">Anahtarınızla giriş yapın</string>
-    <string name="or_scan_qr_code">Karekod tarayın</string>
+    <string name="or_scan_qr_code">Karekodu tara</string>
     <string name="choose_pin_code">Pin kodunu belirleyin</string>
     <string name="congratulations">Tebrikler!</string>
     <string name="time_to_update_title">Güncelleme zamanı</string>
@@ -721,7 +721,7 @@
     <string name="btn_upload_gallery">Galeriden yükle</string>
     <string name="btn_upload_storage">Harici depolamadan yükle</string>
     <string name="btn_upload">Yükle</string>
-    <string name="alert_qr_camera">Giriş yapma karekodunu bulmak için masaüstünde Ayarlar - Anahtar kısmına gidin.</string>
+    <string name="alert_qr_camera">Karekod ile giriş yapmak için masaüstünde Ayarlar - Giriş Anahtarı kısmına git.</string>
     <string name="alert_qr_camera_ok">Tamam</string>
     <string name="choose_option">Seçeneği seçin</string>
     <string name="find_a_relation">Bir özellik bul</string>
@@ -1303,7 +1303,7 @@
     <string name="multiplayer_show_qr_code">Kare kodu göster</string>
     <string name="multiplayer_how_to_share_space">Bir alan nasıl paylaşılır?</string>
     <string name="multiplayer_how_to_share_space_step_1">Lütfen işbirliği yapmak istediğiniz kişinin bağlantısını sağlayın.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Bu karekodu işbirliği yapmak istediğiniz kişiye gösterin.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Bu karekodu işbirliği yapmak istediğin kişiye göster.</string>
     <string name="multiplayer_how_to_share_space_step_2">Bir kişi bağlantıya tıklayarak alana katılmayı talep eder.</string>
     <string name="multiplayer_how_to_share_space_step_3">Talebi onayladıktan sonra söz konusu kişi için erişim haklarını seçebilirsiniz.</string>
     <string name="multiplayer_how_share_one">1.</string>
@@ -1964,11 +1964,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_qr_scan_error_title">Karekod taranamadı</string>
     <string name="vault_qr_scan_error_description">Görünür olduğundan emin olun ve tekrar deneyin.</string>
     <string name="vault_qr_invalid_title">Geçersiz karekod</string>
-    <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar deneyin.</string>
+    <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar dene.</string>
     <string name="vault_qr_try_again">Tekrar deneyin</string>
     <string name="camera_permission_required_title">Kamera izni gerekli</string>
-    <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kameranıza erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
-    <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarınızda kamera erişimine izin vermeniz gerekir.</string>
+    <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kamerana erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
+    <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarında kamera erişimine izin vermen gerekiyor.</string>
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>

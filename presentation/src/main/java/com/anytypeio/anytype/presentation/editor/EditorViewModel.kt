@@ -191,6 +191,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
+import com.anytypeio.anytype.presentation.editor.model.CopyFileStatus
 import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent
@@ -288,7 +289,6 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
-import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher

@@ -73,7 +73,7 @@
     <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="data_management">Veri yönetimi</string>
-    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
+    <string name="deleted_account_danger_zone_msg">Kasanın silinmesini talep edersen bu talebi iptal etmek için 30 günün olacaktır. 30 gün sonra şifrelenmiş kasa verilerin yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsın.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
     <string name="snackbar_template_add">Bu türe yeni bir şablon eklendi</string>
     <string name="settings_membership">Üyelik</string>
@@ -541,7 +541,7 @@
     <string name="choose">Seçin</string>
     <string name="attributes">Özellikler</string>
     <string name="file_delete_alert_title">Dosyaları kalıcı olarak silmek istediğinden emin misin?</string>
-    <string name="file_delete_alert_subtitle">Bu eylemi geri alamazsınız.</string>
+    <string name="file_delete_alert_subtitle">Bu eylemi geri alamazsın.</string>
     <string name="file_delete_cancel">İptal</string>
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
@@ -747,8 +747,8 @@
     <string name="soon">Yakında</string>
     <string name="are_you_sure_delete_one_object">1 nesneyi silmek istediğinden emin misin?</string>
     <string name="are_you_sure_delete_n_objects">%1$d nesneyi silmek istediğinden emin misin?</string>
-    <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsınız.</string>
-    <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsınız.</string>
+    <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
+    <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
     <string name="shared">Paylaşılan</string>
     <string name="object_not_exist">Bu nesne mevcut değil</string>
     <string name="back_to_dashboard">Kontrol paneline geri dön</string>
@@ -1249,12 +1249,12 @@
     <string name="multiplayer_make_private">Özel Yap</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Alan sahibi için özel bir yorum bırakın</string>
-    <string name="multiplayer_request_to_join_explanation">Alan sahibi talebinizi onayladığında, alana erişim hakları sahibinin belirlediği şekilde katılırsınız.</string>
+    <string name="multiplayer_request_to_join_explanation">Alan sahibi talebini onayladığında,alana erişim hakları sahibinin belirlediği şekilde katılırsın.</string>
     <string name="multiplayer_request_to_join_without_approve_title">%1$s alanına katıl</string>
     <string name="multiplayer_request_to_join_without_approve_desc">%2$s tarafından oluşturulan %1$s alanına katılmaya davet edildiniz</string>
     <string name="multiplayer_request_to_join_without_approve_button">Alana Katıl</string>
     <string name="multiplayer_request_to_join_sent_title">İstek gönderildi</string>
-    <string name="multiplayer_request_to_join_sent_description">Alan sahibi talebinizi onayladığında bir bildirim alacaksınız.</string>
+    <string name="multiplayer_request_to_join_sent_description">Alan sahibi talebini onayladığında bir bildirim alacaksın.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Alanları yönet</string>
     <string name="multiplayer_request_to_join_loading_text">  Sıkı durun! Sizin için bir şeyler ayarlıyoruz. Bu sadece bir dakika sürecektir.</string>
     <string name="multiplayer_space_request_to_join">Katılma isteği gönder</string>
@@ -1378,7 +1378,7 @@
     <string name="payments_header">Üyelik</string>
     <string name="payments_subheader">Anytype ağına katılmak, hikayesine katkıda bulunmak anlamına gelir</string>
     <string name="payments_card_text_1">Vizyonu Birlikte Yaratın</string>
-    <string name="payments_card_description_1">Değerli bir üye olarak sesiniz önemli! Özel etkinliklere katılın, stratejik seçimleri şekillendirin ve yol haritamızı etkileyin.</string>
+    <string name="payments_card_description_1">Değerli bir üye olarak sesin önemli! Özel etkinliklere katıl, stratejik seçimleri şekillendir ve yol haritamızı şekillendir.</string>
     <string name="payments_card_text_2">Üye Avantajlarının Kilidini Açın</string>
     <string name="payments_card_description_2">Üyeler daha yüksek yedekleme depolama &amp; eşitleme limitlerine, birden fazla misafirin paylaşılan alanlarda işbirliği yapması için davetlere ve Anytype Ağı\'nda benzersiz bir kimliğe sahiptir.</string>
     <string name="payments_card_text_3">Dijital Bağımsızlığı Destekleyin</string>
@@ -1403,7 +1403,7 @@
     <string name="payments_member_link">Üyelik plan detayları</string>
     <string name="payments_privacy_link">Gizlilik politikası</string>
     <string name="payments_terms_link">Şartlar ve koşullar</string>
-    <string name="payments_let_us_link_start">Anytype\'ı iş, eğitim vb. için kullanmak ister misiniz?</string>
+    <string name="payments_let_us_link_start">Anytype\'ı iş, eğitim vb. için kullanmak ister misin?</string>
     <string name="payments_let_us_link_end">Lütfen bize buradan bildirin.</string>
     <string name="payments_current_label">Şu anki</string>
     <!-- Tier details -->
@@ -1452,14 +1452,14 @@
     <string name="payments_tier_current_paid_by_apple">Apple aboneliği</string>
     <string name="payments_tier_current_paid_by_google">Google aboneliği</string>
     <string name="payments_tier_current_button">Ödemeyi yönet</string>
-    <string name="membership_manage_tier_desktop">Masaüstü platformunda katmanı yönetebilirsiniz</string>
-    <string name="membership_manage_tier_ios">iOS platformunda katmanı yönetebilirsiniz</string>
-    <string name="membership_manage_tier_another_account">Katmanı başka bir Google hesabından yönetebilirsiniz</string>
+    <string name="membership_manage_tier_desktop">Katmanı Masaüstü platformunda yönetebilirsin</string>
+    <string name="membership_manage_tier_ios">Katmanı iOS platformunda yönetebilirsin</string>
+    <string name="membership_manage_tier_another_account">Katmanı başka bir Google hesabından yönetebilirsin</string>
     <string name="payments_tier_current_change_email_button">E-postayı değiştir</string>
     <!-- Payments Code -->
-    <string name="payments_code_title">E-posta adresinize gönderilen kodu girin</string>
+    <string name="payments_code_title">E-posta adresine gönderilen kodu gir</string>
     <string name="payments_code_resend">Tekrar Gönder</string>
-    <string name="payments_code_resend_in">%1$d saniye içinde yeniden gönderebilirsiniz</string>
+    <string name="payments_code_resend_in">%1$d saniye içinde yeniden gönderebilirsin</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">%1$s\nAğa hoş geldiniz</string>
     <string name="payments_welcome_subtitle">Merakınız için kocaman bir alkış!</string>
@@ -1524,13 +1524,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_alert_error_import_canceled">İçe aktarma işlemi kullanıcı tarafından iptal edildi.</string>
     <string name="notifications_alert_error_limit_exceeded">Satırlar veya özellikler için içe aktarma sınırı aşıldı. Lütfen miktarı azaltın ve tekrar deneyin.</string>
     <string name="notifications_alert_error_file_load">Dosya yüklenirken bir hata oluştu. Lütfen dosyayı kontrol edin ve tekrar deneyin.</string>
-    <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsiniz. Lütfen izinlerinizi kontrol edin ve tekrar deneyin.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsin. Lütfen izinlerini kontrol et ve tekrar dene.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Yaratan</string>
     <string name="gallery_experience_install">Kur</string>
     <string name="gallery_experience_install_new">Yeni alana kurun</string>
     <string name="gallery_experience_alert_title_success">Deneyim yüklendi</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" yeni bir alana yüklendi. Artık açabilir ve kullanmaya başlayabilirsiniz.</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" yeni bir alana yüklendi. Artık açabilir ve kullanmaya başlayabilirsin.</string>
     <string name="gallery_experience_alert_title_error">Hay aksi!</string>
     <string name="gallery_experience_alert_button_space">Alan açın</string>
     <string name="gallery_experience_alert_button_error">Kapat</string>
@@ -1665,8 +1665,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="allContent_group_prev_7">Son 7 gün</string>
     <string name="allContent_group_prev_14">Önceki 14 gün</string>
     <string name="introduce_vault_text_1">Kasa tüm alanlarınız için yeni evinizdir.\nAlanlar oluşturun, katılın veya paylaşın - her şey burada güvenli bir şekilde saklanır.</string>
-    <string name="introduce_vault_text_2">Artık sürükle ve bırak özelliğini kullanarak Alanlarınızı kolayca yeniden sıralayabilir ve daha kolay gezinebilirsiniz.</string>
-    <string name="introduce_vault_text_3">Alanınızın simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsiniz.</string>
+    <string name="introduce_vault_text_2">Artık sürükle ve bırak özelliğini kullanarak Alanlarını kolayca yeniden sıralayabilir ve daha kolay gezinebilirsin.</string>
+    <string name="introduce_vault_text_3">Alanının simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsin.</string>
     <string name="introduce_vault_welcome_to_the_vault">Kasaya Hoşgeldiniz</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Basit & Esnek]]></string>
     <string name="allContent_empty_state_title">Burası boş.</string>
@@ -1864,11 +1864,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_screen_description_2">Biraz zaman alabilir ancak endişelenmeyin, verileriniz güvende.</string>
     <string name="migration_screen_start_update">Güncellemeyi Başlat</string>
     <string name="migration_screen_read_more">Daha Fazla Oku</string>
-    <string name="migration_screen_what_to_expect">Ne Beklemelisiniz</string>
+    <string name="migration_screen_what_to_expect">Ne Beklemelisin</string>
     <string name="migration_screen_your_data_remains_safe">Verileriniz Güvende Kalır</string>
     <string name="migration_screen_your_data_description">Bu güncelleme sırasında verileriniz tamamen güvende kalır. Güncelleme doğrudan cihazınızda gerçekleştirilir ve senkronize edilmiş verileriniz etkilenmez. Sadece yeni bir formata kopyalayacağız ve cihazınızda önceki formattaki tüm verilerinizi içeren yerel bir yedek oluşturulacak.</string>
     <string name="migration_screen_your_data_description_2">Bu yedeği saklamamızın nedeni öngörülemeyen durumlarda hata ayıklamak ve size yardımcı olmaktır.</string>
-    <string name="migration_screen_what_to_expect_description">Güncelleme sırasında bir yükleme ekranı göreceksiniz. Tamamlandığında uygulamayı normal şekilde kullanmaya devam edebilirsiniz.</string>
+    <string name="migration_screen_what_to_expect_description">Güncelleme sırasında bir yükleme ekranı göreceksin. Tamamlandığında uygulamayı normal şekilde kullanmaya devam edebilirsin.</string>
     <string name="object_type_icon_change_title">Simgeyi değiştir</string>
     <string name="object_type_icon_remove">Kaldır</string>
     <string name="object_type_icon_change_title_search_hint">Ara...</string>
@@ -1897,7 +1897,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="onboarding_error_network_error">Ağ hatası nedeniyle hesap oluşturulamadı. Lütfen bağlantınızı kontrol edin.</string>
     <string name="onboarding_error_offline_device">Cihazınız çevrimdışı görünüyor. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="onboarding_error_account_created_but_failed_to_start_node">Hesap oluşturuldu ancak düğüm başlatılamadı. Lütfen tekrar giriş yapmayı deneyin.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Hesap oluşturuldu ancak isim ayarlanamadı. Ayarlarından daha sonra güncelleyebilirsiniz.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Hesap oluşturuldu ancak isim ayarlanamadı. Ayarlardan daha sonra güncelleyebilirsin.</string>
     <string name="onboarding_error_failed_to_stop_running_node">Çalışan düğüm durdurulamadı. Lütfen uygulamayı yeniden başlatın ve tekrar deneyin.</string>
     <string name="onboarding_error_failed_to_write_config">Yapılandırma kaydedilemedi. Lütfen depolama izinlerini kontrol edin.</string>
     <string name="onboarding_error_failed_to_create_local_repo">Yerel depo oluşturulamadı. Lütfen kullanılabilir depolama alanını kontrol edin.</string>
@@ -1978,7 +1978,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="share_space_error_generic">Beklenmeyen bir hata oluştu: %1$s. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsiniz. Yardım için lütfen alan sahibiyle iletişime geçin.</string>
+    <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsin. Yardım için lütfen alan sahibiyle iletişime geç.</string>
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
     <string name="share_space_error_make_private_failed">        Alan özel hale getirilemedi. Lütfen daha sonra tekrar dene.

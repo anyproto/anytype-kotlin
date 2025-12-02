@@ -28,11 +28,23 @@ class MDNSProvider @Inject constructor(
     }
 
     fun start() {
-        delegate.start()
+        try {
+            delegate.start()
+        } catch (e: Error) {
+            Timber.e(e, "Critical error starting MDNS discovery")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to start MDNS discovery")
+        }
     }
 
     fun stop() {
-        delegate.stop()
+        try {
+            delegate.stop()
+        } catch (e: Error) {
+            Timber.e(e, "Critical error stopping MDNS discovery")
+        } catch (e: Exception) {
+            Timber.e(e, "Failed to stop MDNS discovery")
+        }
     }
 
 }

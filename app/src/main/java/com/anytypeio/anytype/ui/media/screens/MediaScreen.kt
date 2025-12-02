@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -139,9 +140,15 @@ fun ImageGallery(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(shape = RoundedCornerShape(8.dp))
                     .clickable { 
                         currentImage?.let { onRestoreClick(it.obj) }
                     }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,
@@ -332,7 +339,12 @@ fun AudioPlayerBox(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
                     .clickable { onRestoreClick() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,
@@ -380,7 +392,12 @@ fun VideoPlayerBox(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
                     .clickable { onRestoreClick() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,

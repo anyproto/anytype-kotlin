@@ -166,7 +166,9 @@ class CopyFileToCacheDirectoryImpl(
     }
 
     override suspend fun copy(uri: String): String = withContext(Dispatchers.IO) {
-        copyFileToCacheDir(Uri.parse(uri)).first
+        val result = copyFileToCacheDir(Uri.parse(uri)).first
+        lastCreatedFilePath = null  // Clear tracking - ownership transferred to caller
+        result
     }
 
     override fun cancel() {

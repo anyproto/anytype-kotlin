@@ -29,7 +29,9 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -100,7 +102,9 @@ class MainViewModel(
     private val observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
     private val setSpacesIntroductionShown: SetSpacesIntroductionShown,
     private val appInfo: AppInfo,
-    private val chatPreviewContainer: ChatPreviewContainer
+    private val chatPreviewContainer: ChatPreviewContainer,
+    private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
+    private val participantSubscriptionContainer: ParticipantSubscriptionContainer
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -254,8 +258,28 @@ class MainViewModel(
         runBlocking {
             resumeAccount.run(params = BaseUseCase.None).process(
                 success = {
+
+                    // Verify SpaceManager has a valid state after account resume
+                    val spaceState = spaceManager.getState()
+                    when (spaceState) {
+                        is SpaceManager.State.Init -> {
+                            Timber.w("SpaceManager is in Init state after restore - unexpected")
+                        }
+                        is SpaceManager.State.NoSpace -> {
+                            Timber.w("SpaceManager has no space set after restore - user may need to select a space")
+                        }
+                        is SpaceManager.State.Space.Idle -> {
+                            Timber.d("SpaceManager state after restore: Idle with space ${spaceState.space.id}")
+                        }
+                        is SpaceManager.State.Space.Active -> {
+                            Timber.d("SpaceManager state after restore: Active with space ${spaceState.config.space}")
+                        }
+                    }
+
                     globalSubscriptionManager.onStart()
                     chatPreviewContainer.start()
+                    chatsDetailsSubscriptionContainer.start()
+                    participantSubscriptionContainer.start()
                     val analyticsID = configStorage.getOrNull()?.analytics
                     val networkID = configStorage.getOrNull()?.network
                     if (analyticsID != null) {

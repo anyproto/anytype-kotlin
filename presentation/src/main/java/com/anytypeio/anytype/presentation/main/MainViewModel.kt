@@ -121,7 +121,6 @@ class MainViewModel(
     val showSpacesIntroduction: MutableStateFlow<Account?> = MutableStateFlow(null)
 
     init {
-        subscribeToShowSpacesIntroduction()
         subscribeToActiveSpaceWallpaper()
         viewModelScope.launch {
             interceptAccountStatus.build().collect { status ->

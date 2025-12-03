@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedDeque
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,8 +77,8 @@ interface ChatPreviewContainer {
         private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
 
-        // Buffer of last N preview messages per chat for fallback on deletion
-        private val messageHistory = ConcurrentHashMap<Id, ArrayDeque<Chat.Message>>()
+        // Buffer of last N preview messages per chat for fallback on deletion (thread-safe)
+        private val messageHistory = ConcurrentHashMap<Id, ConcurrentLinkedDeque<Chat.Message>>()
 
         // Hot shared state for UI collectors
         @OptIn(ExperimentalCoroutinesApi::class)
@@ -129,7 +130,7 @@ interface ChatPreviewContainer {
                 // Initialize history from initial previews
                 initial.forEach { preview ->
                     preview.message?.let { message ->
-                        val history = messageHistory.getOrPut(preview.chat) { ArrayDeque(MAX_MESSAGE_HISTORY) }
+                        val history = messageHistory.getOrPut(preview.chat) { ConcurrentLinkedDeque() }
                         history.addLast(message)
                     }
                 }
@@ -233,7 +234,7 @@ interface ChatPreviewContainer {
         ): List<Chat.Preview> {
             // Store message in history buffer for fallback on deletion
             val chatId = event.context
-            val history = messageHistory.getOrPut(chatId) { ArrayDeque(MAX_MESSAGE_HISTORY) }
+            val history = messageHistory.getOrPut(chatId) { ConcurrentLinkedDeque() }
             if (history.size >= MAX_MESSAGE_HISTORY) {
                 history.removeFirst()
             }

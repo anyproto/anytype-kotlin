@@ -46,6 +46,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import java.util.LinkedList
 import javax.inject.Inject
+import timber.log.Timber
 
 class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
 

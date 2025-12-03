@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationExcep
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
@@ -28,22 +29,26 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.presentation.main.MainViewModel.Command.ShowDeletedAccountScreen
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
@@ -53,11 +58,6 @@ import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.splash.SplashViewModel
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
-import com.anytypeio.anytype.core_utils.tools.AppInfo
-import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
-import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
-import com.anytypeio.anytype.presentation.main.MainViewModel.Command.*
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
@@ -733,15 +733,19 @@ class MainViewModel(
     }
 
     override fun onCleared() {
-        scope.launch {
-            try {
-                Timber.d("App shutdown started")
-                appShutdown.async(Unit)
-                Timber.d("App shutdown completed")
-            } catch (e: Exception) {
-                Timber.e(e, "Error during app shutdown")
-            }
-        }
+        // TODO: DROID-3763 - Disabled to test if appShutdown causes FD crashes on restore
+        // The async fire-and-forget pattern may leave middleware in inconsistent state
+        // if process is killed before shutdown completes
+        // scope.launch {
+        //     try {
+        //         Timber.d("App shutdown started")
+        //         appShutdown.async(Unit)
+        //         Timber.d("App shutdown completed")
+        //     } catch (e: Exception) {
+        //         Timber.e(e, "Error during app shutdown")
+        //     }
+        // }
+        Timber.d("onCleared called - appShutdown disabled for FD crash testing")
         super.onCleared()
     }
 

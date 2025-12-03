@@ -124,7 +124,7 @@ import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvide
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
@@ -948,7 +948,7 @@ object EditorUseCaseModule {
     @PerScreen
     fun provideCopyFileToCache(
         context: Context
-    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+    ): CopyFileToCacheDirectory = defaultCopyFileToCacheDirectory(context)
 
     @JvmStatic
     @Provides

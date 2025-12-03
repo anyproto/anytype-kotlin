@@ -35,7 +35,7 @@ import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
@@ -73,7 +73,7 @@ object ChatModule {
     @PerScreen
     fun provideCopyFileToCache(
         context: Context
-    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+    ): CopyFileToCacheDirectory = defaultCopyFileToCacheDirectory(context)
 
     @JvmStatic
     @PerScreen

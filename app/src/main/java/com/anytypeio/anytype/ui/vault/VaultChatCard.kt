@@ -181,7 +181,7 @@ fun VaultChatSpaceCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title,
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,

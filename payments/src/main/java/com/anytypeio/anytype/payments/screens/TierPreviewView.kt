@@ -31,6 +31,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
 import androidx.compose.ui.unit.sp
+import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
@@ -38,20 +39,11 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.fontInterSemibold
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.BUILDER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.CO_CREATOR_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.FREE_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.NEW_EXPLORER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.OLD_EXPLORER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.STARTER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.PIONEER_ID
-import com.anytypeio.anytype.core_models.membership.MembershipConstants.PRO_MONTHLY_ID
-import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.payments.models.Tier
 import com.anytypeio.anytype.payments.models.TierConditionInfo
 import com.anytypeio.anytype.payments.models.TierPeriod
+import com.anytypeio.anytype.payments.models.TierPreview
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
-import com.anytypeio.anytype.core_models.membership.TierId
 
 @Composable
 fun TierPreviewView(
@@ -146,117 +138,47 @@ fun TierPreviewView(
     }
 }
 
-@Composable
-fun mapTierToResources(tier: Tier): TierResources {
-    return when (tier.id.value) {
-        BUILDER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_builder_96,
-            smallIcon = R.drawable.logo_builder_64,
-            colors = toValue(tier.color),
-            features = tier.features,
+/**
+ * Maps color code to icon resources (smallIcon, mediumIcon)
+ */
+private fun getIconsForColor(colorCode: String): Pair<Int, Int> {
+    return when (colorCode) {
+        CoverColor.RED.code -> Pair(R.drawable.logo_co_creator_64, R.drawable.logo_co_creator_96)
+        CoverColor.BLUE.code -> Pair(
+            R.drawable.logo_new_explorer_64,
+            R.drawable.logo_new_explorer_96
         )
 
-        CO_CREATOR_ID -> TierResources(
-            mediumIcon = R.drawable.logo_co_creator_96,
-            smallIcon = R.drawable.logo_co_creator_64,
-            colors = toValue(tier.color),
-            features = tier.features,
+        CoverColor.GREEN.code -> Pair(R.drawable.logo_explorer_64, R.drawable.logo_explorer_96)
+        CoverColor.PURPLE.code -> Pair(R.drawable.logo_custom_64, R.drawable.logo_custom_64)
+        CoverColor.ICE.code -> Pair(
+            R.drawable.logo_new_explorer_64,
+            R.drawable.logo_new_explorer_96
         )
-        OLD_EXPLORER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        STARTER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        PIONEER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_custom_64,
-            smallIcon = R.drawable.logo_custom_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        NEW_EXPLORER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_new_explorer_96,
-            smallIcon = R.drawable.logo_new_explorer_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        FREE_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        PRO_MONTHLY_ID -> TierResources(
-            mediumIcon = R.drawable.logo_co_creator_96,
-            smallIcon = R.drawable.logo_co_creator_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
-        else -> TierResources(
-            smallIcon = R.drawable.logo_custom_64,
-            mediumIcon = R.drawable.logo_custom_64,
-            colors = toValue(tier.color),
-            features = tier.features,
-        )
+
+        else -> Pair(R.drawable.logo_custom_64, R.drawable.logo_custom_64)
     }
 }
 
 @Composable
-fun mapTierPreviewToResources(tier: TierPreview): TierResources {
-    return when (tier.id.value) {
-        BUILDER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_builder_96,
-            smallIcon = R.drawable.logo_builder_64,
-            colors = toValue(tier.color)
-        )
+fun mapTierToResources(tier: Tier): TierResources {
+    val (smallIcon, mediumIcon) = getIconsForColor(tier.color)
+    return TierResources(
+        mediumIcon = mediumIcon,
+        smallIcon = smallIcon,
+        colors = toValue(tier.color),
+        features = tier.features,
+    )
+}
 
-        CO_CREATOR_ID -> TierResources(
-            mediumIcon = R.drawable.logo_co_creator_96,
-            smallIcon = R.drawable.logo_co_creator_64,
-            colors = toValue(tier.color)
-        )
-        OLD_EXPLORER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color)
-        )
-        STARTER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color)
-        )
-        PIONEER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_custom_64,
-            smallIcon = R.drawable.logo_custom_64,
-            colors = toValue(tier.color)
-        )
-        NEW_EXPLORER_ID -> TierResources(
-            mediumIcon = R.drawable.logo_new_explorer_96,
-            smallIcon = R.drawable.logo_new_explorer_64,
-            colors = toValue(tier.color)
-        )
-        FREE_ID -> TierResources(
-            mediumIcon = R.drawable.logo_explorer_96,
-            smallIcon = R.drawable.logo_explorer_64,
-            colors = toValue(tier.color),
-        )
-        PRO_MONTHLY_ID -> TierResources(
-            mediumIcon = R.drawable.logo_co_creator_96,
-            smallIcon = R.drawable.logo_co_creator_64,
-            colors = toValue(tier.color),
-        )
-        else -> TierResources(
-            smallIcon = R.drawable.logo_custom_64,
-            mediumIcon = R.drawable.logo_custom_64,
-            colors = toValue(tier.color)
-        )
-    }
+@Composable
+fun mapTierPreviewToResources(tier: TierPreview): TierResources {
+    val (smallIcon, mediumIcon) = getIconsForColor(tier.color)
+    return TierResources(
+        mediumIcon = mediumIcon,
+        smallIcon = smallIcon,
+        colors = toValue(tier.color),
+    )
 }
 
 @Composable
@@ -314,7 +236,7 @@ data class TierColors(
 fun TierPreviewViewPreview() {
     TierPreviewView(
         tier = TierPreview(
-            id = TierId(PRO_MONTHLY_ID),
+            id = TierId(221),
             title = "Pro (monthly)",
             subtitle = "For those who want to build and create",
             conditionInfo = TierConditionInfo.Visible.Price("99.99", TierPeriod.Year(1)),

@@ -2025,6 +2025,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
         <item quantity="one">%d nieuw bericht</item>
         <item quantity="other">%d nieuwe berichten</item>
     </plurals>
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Keur goed</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>

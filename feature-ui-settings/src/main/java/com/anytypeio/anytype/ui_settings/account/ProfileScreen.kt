@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,9 +23,6 @@ import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.ModalBottomSheet
-import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.CircularProgressIndicator
@@ -34,6 +32,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +66,9 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -73,18 +76,12 @@ import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.OptionMembership
+import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
-import com.anytypeio.anytype.core_models.membership.TierId
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.Arrow
-import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.ui_settings.R
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.debounce
@@ -427,6 +424,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
+
         is AccountProfile.Idle -> {}
     }
 }
@@ -617,6 +615,7 @@ fun ProfileImageBlock(
                     }
             )
         }
+
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
                 stringResource(id = R.string.account_default_name)
@@ -650,7 +649,8 @@ fun ProfileImageBlock(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(10.dp),
-                    color = colorResource(id = R.color.background_secondary)),
+                    color = colorResource(id = R.color.background_secondary)
+                ),
             expanded = isIconMenuExpanded.value,
             offset = DpOffset(x = 0.dp, y = 6.dp),
             onDismissRequest = {
@@ -738,18 +738,26 @@ fun AnyIdInfoSheet(
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
+        modifier = Modifier.navigationBarsPadding(),
         onDismissRequest = onDismiss,
-        containerColor = colorResource(id = R.color.background_secondary),
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp),
-        dragHandle = null
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        dragHandle = null,
     ) {
         GenericAlert(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(R.color.background_secondary),
+                    shape = RoundedCornerShape(16.dp)
+                )
+                .padding(bottom = 32.dp),
             onFirstButtonClicked = onExplorePlans,
             config = AlertConfig.WithOneButton(
-                icon = R.drawable.ic_popup_question_56,
-                title = stringResource(LocalizationR.string.any_id_info_title),
-                description = stringResource(LocalizationR.string.any_id_info_description),
-                firstButtonText = stringResource(LocalizationR.string.any_id_info_button),
+                icon = R.drawable.ic_any_id,
+                title = stringResource(R.string.any_id_info_title),
+                description = stringResource(R.string.any_id_info_description),
+                firstButtonText = stringResource(R.string.any_id_info_button),
                 firstButtonType = BUTTON_SECONDARY
             )
         )

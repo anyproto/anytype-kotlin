@@ -2044,4 +2044,5 @@ En concreto,
     <string name="toast_moved_to_bin">Objeto movido a la papelera.</string>
     <string name="media_object_in_bin">Este objeto está en la papelera. ¿Restaurarlo?</string>
     <string name="toast_restored">Objeto restaurado.</string>
+    <string name="participant_btn_connect">Conectar</string>
 </resources>

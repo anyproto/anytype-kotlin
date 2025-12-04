@@ -2361,4 +2361,9 @@ Please provide specific details of your needs here.</string>
     <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
     <string name="toast_restored">Object restored.</string>
 
+    <!-- ANY ID Info Sheet -->
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
+
 </resources>

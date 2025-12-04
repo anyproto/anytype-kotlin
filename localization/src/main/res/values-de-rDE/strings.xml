@@ -2045,4 +2045,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="toast_moved_to_bin">Objekt in den Papierkorb verschoben.</string>
     <string name="media_object_in_bin">Dieses Objekt befindet sich im Papierkorb. Wiederherstellen?</string>
     <string name="toast_restored">Objekt wiederhergestellt.</string>
+    <string name="participant_btn_connect">Connect</string>
 </resources>

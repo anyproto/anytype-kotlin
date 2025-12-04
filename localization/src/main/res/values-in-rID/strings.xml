@@ -2030,4 +2030,5 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="toast_moved_to_bin">Objek dipindahkan ke Bak Sampah.</string>
     <string name="media_object_in_bin">Objek ini di bak sampah. Pulihkan?</string>
     <string name="toast_restored">Objek dipulihkan.</string>
+    <string name="participant_btn_connect">Hubungkan</string>
 </resources>

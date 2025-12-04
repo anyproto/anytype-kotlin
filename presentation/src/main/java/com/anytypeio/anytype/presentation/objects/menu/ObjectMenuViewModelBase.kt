@@ -49,7 +49,6 @@ import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.presentation.widgets.findWidgetBlockForObject
-import com.anytypeio.anytype.presentation.widgets.parseWidgets
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow

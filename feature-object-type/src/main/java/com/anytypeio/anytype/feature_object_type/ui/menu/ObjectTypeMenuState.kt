@@ -10,7 +10,8 @@ data class UiObjectTypeMenuState(
     val isPinned: Boolean = false,
     val canDelete: Boolean = true,
     val icon: ObjectIcon = ObjectIcon.None,
-    val isDescriptionFeatured: Boolean = false
+    val isDescriptionFeatured: Boolean = false,
+    val canEditDetails: Boolean = true
 ) {
     companion object {
         val Hidden = UiObjectTypeMenuState(isVisible = false)

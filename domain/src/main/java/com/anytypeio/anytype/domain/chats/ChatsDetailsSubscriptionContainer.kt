@@ -101,7 +101,10 @@ interface ChatsDetailsSubscriptionContainer {
                     keys = listOf(
                         Relations.ID,
                         Relations.NAME,
-                        Relations.PLURAL_NAME
+                        Relations.PLURAL_NAME,
+                        Relations.ICON_EMOJI,
+                        Relations.ICON_IMAGE,
+                        Relations.ICON_OPTION
                     ),
                     filters = listOf(
                         DVFilter(

@@ -41,6 +41,7 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -81,6 +82,7 @@ import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
+import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -596,17 +598,16 @@ class ChatFragment : Fragment() {
                     is OpenObjectNavigation.OpenType -> {
                         runCatching {
                             findNavController().navigate(
-                                R.id.objectNavigation,
-                                EditorFragment.args(
-                                    ctx = nav.target,
+                                resId = R.id.objectTypeNavigation,
+                                args = ObjectTypeFragment.args(
+                                    objectId = nav.target,
                                     space = nav.space
                                 )
                             )
                         }.onFailure {
-                            Timber.w("Error while opening type from chat.")
+                            Timber.w("Error while opening type from chat: ${it.message}")
                         }
                     }
-
                     is OpenObjectNavigation.OpenChat -> {
                         runCatching {
                             findNavController().navigate(

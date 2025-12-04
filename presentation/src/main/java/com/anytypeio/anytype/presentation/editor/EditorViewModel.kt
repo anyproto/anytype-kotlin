@@ -191,6 +191,7 @@ import com.anytypeio.anytype.presentation.editor.editor.table.EditorTableEvent
 import com.anytypeio.anytype.presentation.editor.editor.table.SimpleTableWidgetItem
 import com.anytypeio.anytype.presentation.editor.editor.toCoreModel
 import com.anytypeio.anytype.presentation.editor.editor.updateText
+import com.anytypeio.anytype.presentation.editor.model.CopyFileStatus
 import com.anytypeio.anytype.presentation.editor.model.EditorDatePickerState
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.model.OnEditorDatePickerEvent
@@ -242,13 +243,13 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectShowEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectTypeSelectOrChangeEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsOpenAsObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenTemplateSelectorEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchWordsEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSelectionMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetDescriptionEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenSlashMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
@@ -288,7 +289,6 @@ import com.anytypeio.anytype.presentation.sync.SyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.toSyncStatusWidgetState
 import com.anytypeio.anytype.presentation.sync.updateStatus
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
-import com.anytypeio.anytype.presentation.util.CopyFileStatus
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -3387,6 +3387,18 @@ class EditorViewModel(
                     )
                 }
 
+                ObjectType.Layout.CHAT_DERIVED -> {
+                    navigate(
+                        EventWrapper(
+                            AppNavigation.Command.OpenChat(
+                                target = target,
+                                space = vmParams.space.id,
+                                popUpToVault = false
+                            )
+                        )
+                    )
+                }
+
                 else -> {
                     sendToast("Cannot open object with layout: ${wrapper?.layout}")
                 }
@@ -4366,7 +4378,12 @@ class EditorViewModel(
                 Timber.d("No interaction allowed with this object type")
                 return
             }
-            val exclude = listOf(ObjectTypeUniqueKeys.SET, ObjectTypeUniqueKeys.COLLECTION)
+            val exclude = listOf(
+                ObjectTypeUniqueKeys.SET,
+                ObjectTypeUniqueKeys.COLLECTION,
+                ObjectTypeUniqueKeys.CHAT,
+                ObjectTypeUniqueKeys.CHAT_DERIVED
+            )
             proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = true)
         } else {
             sendToast("Your object is locked. To change its type, simply unlock it.")
@@ -4694,7 +4711,15 @@ class EditorViewModel(
                 )
             }
             is OpenObjectNavigation.OpenChat -> {
-                sendToast("not implemented")
+                navigate(
+                    EventWrapper(
+                        AppNavigation.Command.OpenChat(
+                            target = navigation.target,
+                            space = navigation.space,
+                            popUpToVault = false
+                        )
+                    )
+                )
             }
             is OpenObjectNavigation.UnexpectedLayoutError -> {
                 sendToast("Unexpected layout: ${navigation.layout}")
@@ -6661,7 +6686,13 @@ class EditorViewModel(
 
     private fun onTypesWidgetSearchClicked() {
         Timber.d("onObjectTypesWidgetSearchClicked, ")
-        proceedWithOpeningSelectingObjectTypeScreen(fromFeatured = false)
+        val exclude = listOf(
+            ObjectTypeUniqueKeys.SET,
+            ObjectTypeUniqueKeys.COLLECTION,
+            ObjectTypeUniqueKeys.CHAT,
+            ObjectTypeUniqueKeys.CHAT_DERIVED
+        )
+        proceedWithOpeningSelectingObjectTypeScreen(exclude = exclude, fromFeatured = false)
     }
 
     private fun proceedWithGettingObjectTypesForTypesWidget() {

@@ -15,7 +15,8 @@ import com.anytypeio.anytype.presentation.templates.TemplateView
 data class ObjectTypeVmParams(
     val objectId: Id,
     val spaceId: SpaceId,
-    val showHiddenFields: Boolean
+    val showHiddenFields: Boolean,
+    val initialViewId: Id? = null
 )
 
 sealed class ObjectTypeCommand {

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui.widgets.types
 import android.content.res.Configuration.UI_MODE_NIGHT_NO
 import android.content.res.Configuration.UI_MODE_NIGHT_YES
 import androidx.annotation.StringRes
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -12,16 +11,13 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.defaultMinSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
@@ -35,7 +31,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -56,7 +51,6 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.features.wallpaper.gradient
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -79,9 +73,7 @@ fun DataViewListWidgetCard(
     item: WidgetView.SetOfObjects,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
     onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -100,19 +92,11 @@ fun DataViewListWidgetCard(
             WidgetHeader(
                 title = item.getPrettyName(),
                 icon = item.icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = {
-                    if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id)
-                    }
-                },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 canCreateObject = item.canCreateObjectOfType,
-                onCreateElement = { onCreateElement(item) },
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+                onCreateElement = { onCreateElement(item) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(
@@ -139,7 +123,8 @@ fun DataViewListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = if (element is WidgetView.Element.Chat) element.counter else null
+                            counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
+                            notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -180,9 +165,7 @@ fun ChatListWidgetCard(
     item: WidgetView.ChatList,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
     onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
@@ -203,19 +186,11 @@ fun ChatListWidgetCard(
             WidgetHeader(
                 title = item.name.getPrettyName(),
                 icon = item.icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = {
-                    if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id)
-                    }
-                },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
                 canCreateObject = item.canCreateObjectOfType,
-                onCreateElement = { onCreateElement(item) },
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) }
+                onCreateElement = { onCreateElement(item) }
             )
             if (item.tabs.size > 1 && item.isExpanded) {
                 DataViewTabs(
@@ -272,7 +247,8 @@ fun ChatListWidgetCard(
                                 mode = mode,
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 name = element.getPrettyName(),
-                                counter = if (element is WidgetView.Element.Chat) element.counter else null
+                                counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
+                                notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState
                             )
                             if (idx != item.elements.lastIndex) {
                                 Divider(
@@ -314,13 +290,10 @@ fun GalleryWidgetCard(
     item: WidgetView.Gallery,
     mode: InteractionMode,
     onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
-    onWidgetSourceClicked: (WidgetId) -> Unit,
     onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onDropDownMenuAction: (DropDownMenuAction) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
     menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
@@ -335,17 +308,9 @@ fun GalleryWidgetCard(
             WidgetHeader(
                 title = item.getPrettyName(),
                 icon = item.icon,
-                isCardMenuExpanded = isCardMenuExpanded,
-                onWidgetHeaderClicked = {
-                    if (mode !is InteractionMode.Edit) {
-                        onWidgetSourceClicked(item.id)
-                    }
-                },
                 onExpandElement = { onToggleExpandedWidgetState(item.id) },
                 isExpanded = item.isExpanded,
-                isInEditMode = mode is InteractionMode.Edit,
                 hasReadOnlyAccess = mode is InteractionMode.ReadOnly,
-                onWidgetMenuTriggered = { onWidgetMenuTriggered(item.id) },
                 canCreateObject = item.canCreateObjectOfType,
                 onCreateElement = { onCreateElement(item) },
             )
@@ -396,7 +361,8 @@ fun GalleryWidgetCard(
                                         )
                                         .clip(RoundedCornerShape(8.dp))
                                         .clickable {
-                                            val activeViewId = item.tabs.firstOrNull { it.isSelected }?.id
+                                            val activeViewId =
+                                                item.tabs.firstOrNull { it.isSelected }?.id
                                             onSeeAllClicked(item.id, activeViewId)
                                         }
                                 ) {
@@ -484,7 +450,8 @@ fun ListWidgetElement(
     icon: ObjectIcon,
     obj: ObjectWrapper.Basic,
     name: String,
-    counter: WidgetView.ChatCounter? = null
+    counter: WidgetView.ChatCounter? = null,
+    notificationState: com.anytypeio.anytype.core_models.chats.NotificationState? = null
 ) {
     Box(
         modifier = Modifier
@@ -547,51 +514,12 @@ fun ListWidgetElement(
             )
         }
 
-        if (counter != null) {
-            androidx.compose.foundation.layout.Row(
-                modifier = Modifier.align(Alignment.CenterEnd),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                if (counter.unreadMentionCount > 0) {
-                    Box(
-                        modifier = Modifier
-                            .background(
-                                color = colorResource(R.color.color_accent),
-                                shape = CircleShape
-                            )
-                            .size(20.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.ic_chat_widget_mention),
-                            contentDescription = null
-                        )
-                    }
-                }
-                if (counter.unreadMessageCount > 0) {
-                    if (counter.unreadMentionCount > 0) {
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    Box(
-                        modifier = Modifier
-                            .height(20.dp)
-                            .defaultMinSize(minWidth = 20.dp)
-                            .background(
-                                color = colorResource(R.color.color_accent),
-                                shape = CircleShape
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            modifier = Modifier.padding(horizontal = 6.dp),
-                            text = counter.unreadMessageCount.toString(),
-                            style = Caption1Regular,
-                            color = colorResource(id = R.color.text_white),
-                        )
-                    }
-                }
-            }
-        }
+        // Display chat counter badges with notification-aware colors
+        ChatCounterBadges(
+            counter = counter,
+            notificationState = notificationState,
+            modifier = Modifier.align(Alignment.CenterEnd)
+        )
     }
 }
 
@@ -1036,9 +964,7 @@ fun DataViewListWidgetCard_Standard_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1087,9 +1013,7 @@ fun DataViewListWidgetCard_Compact_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1117,9 +1041,7 @@ fun DataViewListWidgetCard_Loading_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1147,9 +1069,7 @@ fun DataViewListWidgetCard_Empty_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1183,9 +1103,7 @@ fun DataViewListWidgetCard_Collapsed_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1246,9 +1164,7 @@ fun DataViewListWidgetCard_WithTabs_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1287,9 +1203,7 @@ fun DataViewListWidgetCard_EditMode_Preview() {
         ),
         mode = InteractionMode.Edit,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},
@@ -1331,9 +1245,7 @@ fun DataViewListWidgetCard_Favorites_Preview() {
         ),
         mode = InteractionMode.Default,
         onWidgetObjectClicked = {},
-        onWidgetSourceClicked = {},
         onSeeAllClicked = { _, _ -> },
-        onWidgetMenuTriggered = {},
         onDropDownMenuAction = {},
         onChangeWidgetView = { _, _ -> },
         onToggleExpandedWidgetState = {},

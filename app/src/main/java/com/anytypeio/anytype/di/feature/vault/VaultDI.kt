@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -124,4 +125,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun appInfo(): AppInfo
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun chatSubscriptionContainer(): ChatsDetailsSubscriptionContainer
+    fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
 }

@@ -5,7 +5,9 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -13,8 +15,11 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -27,6 +32,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -49,23 +56,30 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.membership.Membership
+import com.anytypeio.anytype.core_models.membership.MembershipConstants
+import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
+import com.anytypeio.anytype.core_models.membership.MembershipStatus
+import com.anytypeio.anytype.core_models.membership.TierId
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Option
 import com.anytypeio.anytype.core_ui.foundation.OptionMembership
+import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.core_models.membership.MembershipStatus
-import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.Arrow
-import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
@@ -95,7 +109,8 @@ fun ProfileSettingsScreen(
     onDebugClicked: () -> Unit,
     onHeaderTitleClicked: () -> Unit,
     notificationsDisabled: Boolean,
-    onOpenNotificationSettings: () -> Unit
+    onOpenNotificationSettings: () -> Unit,
+    onIdentityClicked: () -> Unit = onMembershipClicked
 ) {
     LazyColumn(
         modifier = Modifier
@@ -109,7 +124,8 @@ fun ProfileSettingsScreen(
                 onNameSet = onNameChange,
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
-                onTitleClicked = onHeaderTitleClicked
+                onTitleClicked = onHeaderTitleClicked,
+                onIdentityClicked = onIdentityClicked
             )
         }
         item {
@@ -133,7 +149,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
         item {
             OptionWithBadge(
@@ -144,7 +160,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
 
         item {
@@ -155,7 +171,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
         if (showMembership?.isShowing == true) {
             item {
@@ -167,7 +183,7 @@ fun ProfileSettingsScreen(
                 )
             }
             item {
-                Divider(paddingStart = 60.dp)
+                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
             }
         }
 
@@ -183,7 +199,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
 
         item {
@@ -194,7 +210,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
         item {
             Option(
@@ -204,7 +220,7 @@ fun ProfileSettingsScreen(
             )
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
 
         item {
@@ -220,7 +236,7 @@ fun ProfileSettingsScreen(
         }
         if (isDebugEnabled) {
             item {
-                Divider(paddingStart = 60.dp)
+                Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
             }
             item {
                 Option(
@@ -231,7 +247,7 @@ fun ProfileSettingsScreen(
             }
         }
         item {
-            Divider(paddingStart = 60.dp)
+            Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
         }
         item {
             LogoutButton(onLogoutClicked, isLogoutInProgress)
@@ -250,6 +266,8 @@ private fun LogoutButton(
     Row(
         modifier = Modifier
             .height(52.dp)
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
             .clickable {
                 onLogoutClicked()
             },
@@ -258,9 +276,7 @@ private fun LogoutButton(
         Image(
             painter = painterResource(R.drawable.ic_settings_log_out),
             contentDescription = "Option icon",
-            modifier = Modifier.padding(
-                start = 20.dp
-            )
+            modifier = Modifier.size(24.dp)
         )
         Box(
             modifier = Modifier
@@ -291,7 +307,11 @@ private fun LogoutButton(
             modifier = Modifier,
             contentAlignment = Alignment.CenterEnd
         ) {
-            Arrow()
+            Image(
+                painter = painterResource(R.drawable.ic_arrow_forward),
+                contentDescription = "Arrow forward",
+                modifier = Modifier
+            )
         }
     }
 }
@@ -307,7 +327,7 @@ fun Section(name: String) {
         Text(
             text = name,
             modifier = Modifier.padding(
-                start = 20.dp,
+                start = 16.dp,
                 bottom = 8.dp
             ),
             color = colorResource(R.color.text_secondary),
@@ -383,15 +403,16 @@ private fun Header(
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
     clearProfileImage: () -> Unit,
-    onTitleClicked: () -> Unit
+    onTitleClicked: () -> Unit,
+    onIdentityClicked: () -> Unit
 ) {
     when (account) {
         is AccountProfile.Data -> {
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
-            Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
-                ProfileTitleBlock(onTitleClicked)
+            Box(modifier = modifier.padding(top = 12.dp, bottom = 20.dp)) {
+                ProfileTitleBlock(account, onIdentityClicked)
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -403,6 +424,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
+
         is AccountProfile.Idle -> {}
     }
 }
@@ -428,7 +450,7 @@ fun ProfileNameBlock(
             }
     }
 
-    Column(modifier = modifier.padding(start = 20.dp)) {
+    Column(modifier = modifier.padding(start = 16.dp)) {
         Text(
             text = stringResource(id = R.string.name),
             color = colorResource(id = R.color.text_secondary),
@@ -495,19 +517,76 @@ fun ProfileNameBlock(
 }
 
 @Composable
-fun ProfileTitleBlock(
+fun BoxScope.ProfileTitleBlock(
+    account: AccountProfile.Data,
     onClick: () -> Unit
 ) {
-    Text(
-        text = stringResource(R.string.settings),
-        style = Title1,
-        color = colorResource(id = R.color.text_primary),
-        modifier = Modifier.noRippleClickable {
-            onClick()
+    val globalName = account.globalName
+    val identity = account.identity
+    val modifier = if (globalName.isNullOrEmpty()) {
+        Modifier
+            .wrapContentWidth()
+            .height(32.dp)
+            .background(
+                color = colorResource(id = R.color.control_accent_25),
+                shape = RoundedCornerShape(16.dp)
+            )
+    } else {
+        Modifier
+            .height(32.dp)
+    }
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 32.dp),
+        contentAlignment = Alignment.Center
+    ) {
+        Row(
+            modifier = modifier,
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            if (!globalName.isNullOrEmpty()) {
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(R.drawable.ic_account_name_18),
+                    contentDescription = "Account any name"
+                )
+                Text(
+                    text = globalName,
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_primary),
+                    textAlign = TextAlign.Center,
+                    overflow = TextOverflow.MiddleEllipsis,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .noRippleClickable { onClick() }
+                )
+            } else {
+                Spacer(modifier = Modifier.width(8.dp))
+                Image(
+                    modifier = Modifier.size(18.dp),
+                    painter = painterResource(R.drawable.ic_account_identity_16),
+                    contentDescription = "Account any name",
+                    contentScale = ContentScale.Fit
+                )
+                Text(
+                    text = identity.orEmpty(),
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_primary),
+                    overflow = TextOverflow.MiddleEllipsis,
+                    textAlign = TextAlign.Center,
+                    maxLines = 1,
+                    modifier = Modifier
+                        .width(108.dp)
+                        .noRippleClickable { onClick() }
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+            }
         }
-    )
+    }
 }
-
 
 @Composable
 fun ProfileImageBlock(
@@ -536,6 +615,7 @@ fun ProfileImageBlock(
                     }
             )
         }
+
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
                 stringResource(id = R.string.account_default_name)
@@ -569,7 +649,8 @@ fun ProfileImageBlock(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(10.dp),
-                    color = colorResource(id = R.color.background_secondary)),
+                    color = colorResource(id = R.color.background_secondary)
+                ),
             expanded = isIconMenuExpanded.value,
             offset = DpOffset(x = 0.dp, y = 6.dp),
             onDismissRequest = {
@@ -621,14 +702,24 @@ private fun ProfileSettingPreview() {
         onProfileIconClick = {},
         account = AccountProfile.Data(
             "Walter",
-            icon = ProfileIconView.Placeholder("Walter")
+            icon = ProfileIconView.Placeholder("Walter"),
+            //globalName = "Konstantin.any",
+            identity = "hdjsakjflkjdshlfkdsjkhfjkasdhjkfhdskjhfjksdhakjfhsadjkhfkjlasdhjkfhjsdhfjkhsadj"
         ),
         onAppearanceClicked = {},
         onDataManagementClicked = {},
         onAboutClicked = {},
         onSpacesClicked = {},
         onMembershipClicked = {},
-        membershipStatus = null,
+        membershipStatus = MembershipStatus(
+            status = Membership.Status.STATUS_ACTIVE,
+            activeTier = TierId(MembershipConstants.CO_CREATOR_ID),
+            dateEnds = 1714199910,
+            paymentMethod = MembershipPaymentMethod.METHOD_CRYPTO,
+            anyName = "AnyName1983",
+            tiers = listOf(),
+            formattedDateEnds = "formattedDateEnds-fdsfadsfdsafs"
+        ),
         showMembership = ShowMembership(true),
         clearProfileImage = {},
         onDebugClicked = {},
@@ -637,6 +728,50 @@ private fun ProfileSettingPreview() {
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
         onMySitesClicked = {}
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnyIdInfoSheet(
+    onExplorePlans: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        modifier = Modifier,
+        onDismissRequest = onDismiss,
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        dragHandle = null,
+    ) {
+        GenericAlert(
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(R.color.background_secondary),
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            onFirstButtonClicked = onExplorePlans,
+            config = AlertConfig.WithOneButton(
+                icon = R.drawable.ic_any_id,
+                title = stringResource(R.string.any_id_info_title),
+                description = stringResource(R.string.any_id_info_description),
+                firstButtonText = stringResource(R.string.any_id_info_button),
+                firstButtonType = BUTTON_SECONDARY
+            )
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun AnyIdInfoSheetPreview() {
+    AnyIdInfoSheet(
+        onExplorePlans = {},
+        onDismiss = {}
     )
 }
 

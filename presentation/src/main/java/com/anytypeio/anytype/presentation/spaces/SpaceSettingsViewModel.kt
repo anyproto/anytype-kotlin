@@ -1087,13 +1087,18 @@ class SpaceSettingsViewModel(
                 spaceViewContainer.observe(vmParams.space)
             ) { chats, spaceView ->
 
-                // Filter chats that have custom notification states (different from space default)
+                // Show chats that are present in any of the notification override lists
                 chats.mapNotNull { chat ->
-                    val chatState = NotificationStateCalculator.calculateChatNotificationState(
-                        chatSpace = spaceView,
-                        chatId = chat.id
-                    )
-                    if (chatState != spaceView.spacePushNotificationMode) {
+                    // Check if chat is in any of the force notification lists
+                    val isInForceAllList = chat.id in spaceView.spacePushNotificationForceAllIds
+                    val isInForceMuteList = chat.id in spaceView.spacePushNotificationForceMuteIds
+                    val isInForceMentionList = chat.id in spaceView.spacePushNotificationForceMentionIds
+
+                    if (isInForceAllList || isInForceMuteList || isInForceMentionList) {
+                        val chatState = NotificationStateCalculator.calculateChatNotificationState(
+                            chatSpace = spaceView,
+                            chatId = chat.id
+                        )
                         val objectType = storeOfObjectTypes.getTypeOfObject(chat)
                         ChatNotificationItem(
                             id = chat.id,

@@ -911,6 +911,10 @@ class BlockDataRepository(
         return remote.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return remote.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return remote.setQueryToSet(command)
     }

@@ -2073,4 +2073,5 @@
     <string name="toast_moved_to_bin">Object moved to bin.</string>
     <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
     <string name="toast_restored">Object restored.</string>
+    <string name="participant_btn_connect">Connect</string>
 </resources>

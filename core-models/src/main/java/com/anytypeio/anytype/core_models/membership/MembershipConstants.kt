@@ -11,15 +11,6 @@ object MembershipConstants {
     const val CO_CREATOR_ID = 5
     const val ANY_TEAM_ID = 7
 
-    // New tier IDs
-    const val FREE_ID = 31
-    const val PLUS_ID = 40
-    const val PLUS_MONTHLY_ID = 41
-    const val PRO_ID = 42
-    const val PRO_MONTHLY_ID = 43
-    const val ULTRA_ID = 44
-    const val ULTRA_MONTHLY_ID = 45
-
     const val MEMBERSHIP_LEVEL_DETAILS = "https://anytype.io/pricing"
     const val PRIVACY_POLICY = "https://anytype.io/app_privacy"
     const val TERMS_OF_SERVICE = "https://anytype.io/terms_of_use"

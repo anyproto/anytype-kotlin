@@ -46,6 +46,7 @@ import com.google.accompanist.navigation.material.bottomSheet
 import com.google.accompanist.navigation.material.rememberBottomSheetNavigator
 import java.util.LinkedList
 import javax.inject.Inject
+import timber.log.Timber
 
 class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
 
@@ -150,7 +151,14 @@ class VersionHistoryFragment : BaseBottomSheetComposeFragment() {
     }
 
     private fun exitToObjectMenu() {
-        findNavController().popBackStack(R.id.objectMenuScreen, true)
+        // Avoid IllegalArgumentException when the object menu isn't in the back stack
+        val controller = findNavController()
+        try {
+            controller.popBackStack(R.id.objectMenuScreen, true)
+        } catch (e: IllegalArgumentException) {
+            Timber.w(e, "objectMenuScreen not in back stack, doing regular popBackStack")
+            controller.popBackStack()
+        }
     }
 
     private fun navigateToRelationMultiSelect(navigation: Command.RelationMultiSelect) {

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.navigation
 
+import androidx.annotation.IdRes
 import androidx.core.os.bundleOf
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
@@ -34,6 +35,15 @@ import timber.log.Timber
 class Navigator : AppNavigation {
 
     private var navController: NavController? = null
+
+    private fun NavController.safePopBackStack(@IdRes destinationId: Int, inclusive: Boolean): Boolean {
+        return try {
+            popBackStack(destinationId, inclusive)
+        } catch (e: IllegalArgumentException) {
+            Timber.w(e, "popBackStack failed - destination not in back stack: id=$destinationId")
+            false
+        }
+    }
 
     override fun openSpaceSettings() {
         try {
@@ -153,22 +163,23 @@ class Navigator : AppNavigation {
     }
 
     override fun exitToDesktop(space: Id) {
-        val popped = navController?.popBackStack(R
-            .id.homeScreen,
-            false
-        )
-        if (popped == false) {
-            navController?.navigate(
-                R.id.homeScreen,
-                WidgetsScreenFragment.args(space = space)
-            )
+        navController?.let { controller ->
+            val popped = controller.safePopBackStack(R.id.homeScreen, inclusive = false)
+            if (!popped) {
+                controller.navigate(
+                    R.id.homeScreen,
+                    WidgetsScreenFragment.args(space = space)
+                )
+            }
         }
     }
 
     override fun exitToVault() {
-        val popped = navController?.popBackStack(R.id.vaultScreen, true)
-        if (popped == false) {
-            navController?.navigate(R.id.vaultScreen)
+        navController?.let { controller ->
+            val popped = controller.safePopBackStack(R.id.vaultScreen, inclusive = true)
+            if (!popped) {
+                controller.navigate(R.id.vaultScreen)
+            }
         }
     }
 
@@ -333,13 +344,15 @@ class Navigator : AppNavigation {
 
     override fun openObjectType(
         objectId: Id,
-        space: Id
+        space: Id,
+        view: Id?
     ) {
         navController?.navigate(
             resId = R.id.objectTypeNavigation,
             args = ObjectTypeFragment.args(
                 objectId = objectId,
-                space = space
+                space = space,
+                view = view
             )
         )
     }

@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -31,6 +32,8 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -63,19 +66,20 @@ import coil3.compose.rememberAsyncImagePainter
 import com.anytypeio.anytype.core_models.membership.Membership
 import com.anytypeio.anytype.core_models.membership.MembershipConstants
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
-import com.anytypeio.anytype.core_ui.foundation.Divider
-import com.anytypeio.anytype.core_ui.foundation.Dragger
-import com.anytypeio.anytype.core_ui.foundation.Option
-import com.anytypeio.anytype.core_ui.foundation.OptionMembership
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.Arrow
+import com.anytypeio.anytype.core_ui.foundation.AlertConfig
+import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.Dragger
+import com.anytypeio.anytype.core_ui.foundation.GenericAlert
+import com.anytypeio.anytype.core_ui.foundation.Option
+import com.anytypeio.anytype.core_ui.foundation.OptionMembership
 import com.anytypeio.anytype.core_ui.foundation.OptionWithBadge
+import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import com.anytypeio.anytype.ui_settings.R
@@ -105,7 +109,8 @@ fun ProfileSettingsScreen(
     onDebugClicked: () -> Unit,
     onHeaderTitleClicked: () -> Unit,
     notificationsDisabled: Boolean,
-    onOpenNotificationSettings: () -> Unit
+    onOpenNotificationSettings: () -> Unit,
+    onIdentityClicked: () -> Unit = onMembershipClicked
 ) {
     LazyColumn(
         modifier = Modifier
@@ -120,7 +125,7 @@ fun ProfileSettingsScreen(
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
                 onTitleClicked = onHeaderTitleClicked,
-                onIdentityClicked = onMembershipClicked
+                onIdentityClicked = onIdentityClicked
             )
         }
         item {
@@ -406,7 +411,7 @@ private fun Header(
             Box(modifier = modifier.padding(vertical = 6.dp)) {
                 Dragger()
             }
-            Box(modifier = modifier.padding(top = 12.dp, bottom = 28.dp)) {
+            Box(modifier = modifier.padding(top = 12.dp, bottom = 20.dp)) {
                 ProfileTitleBlock(account, onIdentityClicked)
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
@@ -419,6 +424,7 @@ private fun Header(
             }
             ProfileNameBlock(name = account.name, onNameSet = onNameSet)
         }
+
         is AccountProfile.Idle -> {}
     }
 }
@@ -517,16 +523,26 @@ fun BoxScope.ProfileTitleBlock(
 ) {
     val globalName = account.globalName
     val identity = account.identity
+    val modifier = if (globalName.isNullOrEmpty()) {
+        Modifier
+            .wrapContentWidth()
+            .height(32.dp)
+            .background(
+                color = colorResource(id = R.color.control_accent_25),
+                shape = RoundedCornerShape(16.dp)
+            )
+    } else {
+        Modifier
+            .height(32.dp)
+    }
     Box(
-        modifier = Modifier.fillMaxWidth()
+        modifier = Modifier
+            .fillMaxWidth()
             .padding(horizontal = 32.dp),
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier
-                .height(22.dp)
-                .wrapContentWidth()
-                .align(Alignment.Center),
+            modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -548,6 +564,7 @@ fun BoxScope.ProfileTitleBlock(
                         .noRippleClickable { onClick() }
                 )
             } else {
+                Spacer(modifier = Modifier.width(8.dp))
                 Image(
                     modifier = Modifier.size(18.dp),
                     painter = painterResource(R.drawable.ic_account_identity_16),
@@ -565,6 +582,7 @@ fun BoxScope.ProfileTitleBlock(
                         .width(108.dp)
                         .noRippleClickable { onClick() }
                 )
+                Spacer(modifier = Modifier.width(8.dp))
             }
         }
     }
@@ -597,6 +615,7 @@ fun ProfileImageBlock(
                     }
             )
         }
+
         else -> {
             val nameFirstChar = if (name.isEmpty()) {
                 stringResource(id = R.string.account_default_name)
@@ -630,7 +649,8 @@ fun ProfileImageBlock(
             modifier = Modifier
                 .background(
                     shape = RoundedCornerShape(10.dp),
-                    color = colorResource(id = R.color.background_secondary)),
+                    color = colorResource(id = R.color.background_secondary)
+                ),
             expanded = isIconMenuExpanded.value,
             offset = DpOffset(x = 0.dp, y = 6.dp),
             onDismissRequest = {
@@ -708,6 +728,50 @@ private fun ProfileSettingPreview() {
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
         onMySitesClicked = {}
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AnyIdInfoSheet(
+    onExplorePlans: () -> Unit,
+    onDismiss: () -> Unit
+) {
+    ModalBottomSheet(
+        modifier = Modifier,
+        onDismissRequest = onDismiss,
+        containerColor = Color.Transparent,
+        contentColor = Color.Transparent,
+        dragHandle = null,
+    ) {
+        GenericAlert(
+            modifier = Modifier
+                .navigationBarsPadding()
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 16.dp)
+                .fillMaxWidth()
+                .background(
+                    color = colorResource(R.color.background_secondary),
+                    shape = RoundedCornerShape(16.dp)
+                ),
+            onFirstButtonClicked = onExplorePlans,
+            config = AlertConfig.WithOneButton(
+                icon = R.drawable.ic_any_id,
+                title = stringResource(R.string.any_id_info_title),
+                description = stringResource(R.string.any_id_info_description),
+                firstButtonText = stringResource(R.string.any_id_info_button),
+                firstButtonType = BUTTON_SECONDARY
+            )
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun AnyIdInfoSheetPreview() {
+    AnyIdInfoSheet(
+        onExplorePlans = {},
+        onDismiss = {}
     )
 }
 

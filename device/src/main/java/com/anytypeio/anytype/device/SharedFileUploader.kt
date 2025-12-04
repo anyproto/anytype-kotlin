@@ -9,6 +9,7 @@ import com.anytypeio.anytype.localization.R
 import java.io.File
 import java.io.FileOutputStream
 import javax.inject.Inject
+import kotlin.jvm.Throws
 import kotlinx.coroutines.withContext
 import timber.log.Timber
 
@@ -50,7 +51,9 @@ class SharedFileUploader @Inject constructor(
         }
     }
 
+    @Throws(Exception::class)
     private fun parsePathFromUri(extra: Uri) : String {
+        // Pre-calculate name BEFORE opening any file descriptors
         val name = if (extra.scheme == CONTENT_URI_SCHEME) {
             context.contentResolver.query(
                 extra,
@@ -78,23 +81,27 @@ class SharedFileUploader @Inject constructor(
                 ""
             }
         }
-        val inputStream = context.contentResolver.openInputStream(extra)
+
+        // Setup cache directory BEFORE opening input stream
+        // This ensures no FD leak if directory operations fail
         val cacheDir = context.getExternalFilesDir(null)
         if (cacheDir != null && !cacheDir.exists()) {
             cacheDir.mkdirs()
         }
         var path = ""
-        inputStream?.use { input ->
-            val newFile = File(cacheDir?.path + "/" + name);
-            FileOutputStream(newFile).use { output ->
-                val buffer = ByteArray(1024)
-                var read: Int = input.read(buffer)
-                while (read != -1) {
-                    output.write(buffer, 0, read)
-                    read = input.read(buffer)
+        // Wrap file operations in try-catch for robust error handling
+        try {
+            // Open input stream and immediately protect with .use {}
+            // This ensures FD is always closed, even if FileOutputStream throws
+            context.contentResolver.openInputStream(extra)?.use { input ->
+                val newFile = File(cacheDir?.path + "/" + name)
+                FileOutputStream(newFile).use { output ->
+                    input.copyTo(output)
                 }
+                path = newFile.path
             }
-            path = newFile.path
+        } catch (e: Exception) {
+            Timber.e(e, "Error while copying file from URI: $extra")
         }
 
         return path

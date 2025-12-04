@@ -775,16 +775,27 @@ class ChatViewModel @Inject constructor(
                             val state = attachment.state
                             var preloadedFileId: Id? = null
                             var path: String
+                            var wasCopiedToCache = false
 
                             if (state is ChatView.Message.ChatBoxAttachment.State.Preloaded) {
                                 preloadedFileId = state.preloadedFileId
                                 path = state.path
+                                wasCopiedToCache = true
                             } else {
                                 path = if (attachment.capturedByCamera) {
                                     shouldClearChatTempFolder = true
-                                    withContext(dispatchers.io) {
-                                        copyFileToCacheDirectory.copy(attachment.uri)
-                                    }.orEmpty()
+                                    wasCopiedToCache = true
+                                    try {
+                                        withContext(dispatchers.io) {
+                                            copyFileToCacheDirectory.copy(attachment.uri)
+                                        }
+                                    } catch (e: Exception) {
+                                        Timber.e(e, "Failed to copy media file to cache: ${attachment.uri}")
+                                        chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                            set(idx, attachment.copy(state = ChatView.Message.ChatBoxAttachment.State.Failed))
+                                        }
+                                        return@forEachIndexed
+                                    }
                                 } else {
                                     attachment.uri
                                 }
@@ -801,12 +812,14 @@ class ChatViewModel @Inject constructor(
                                     preloadFileId = preloadedFileId
                                 )
                             ).onSuccess { file ->
-                                withContext(dispatchers.io) {
-                                    val isDeleted = copyFileToCacheDirectory.delete(path)
-                                    if (isDeleted) {
-                                        Timber.d("DROID-2966 Successfully deleted temp file: ${attachment.uri}")
-                                    } else {
-                                        Timber.w("DROID-2966 Error while deleting temp file: ${attachment.uri}")
+                                if (wasCopiedToCache) {
+                                    withContext(dispatchers.io) {
+                                        val isDeleted = copyFileToCacheDirectory.delete(path)
+                                        if (isDeleted) {
+                                            Timber.d("DROID-2966 Successfully deleted temp file: ${attachment.uri}")
+                                        } else {
+                                            Timber.w("DROID-2966 Error while deleting temp file: ${attachment.uri}")
+                                        }
                                     }
                                 }
                                 add(
@@ -877,58 +890,64 @@ class ChatViewModel @Inject constructor(
                                 preloadedFileId = state.preloadedFileId
                                 path = state.path
                             } else {
-                                path = withContext(dispatchers.io) {
-                                    copyFileToCacheDirectory.copy(attachment.uri)
+                                path = try {
+                                    withContext(dispatchers.io) {
+                                        copyFileToCacheDirectory.copy(attachment.uri)
+                                    }
+                                } catch (e: Exception) {
+                                    Timber.e(e, "Failed to copy file to cache: ${attachment.uri}")
+                                    chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                        set(idx, attachment.copy(state = ChatView.Message.ChatBoxAttachment.State.Failed))
+                                    }
+                                    return@forEachIndexed
                                 }
                             }
-                            if (path != null) {
-                                chatBoxAttachments.value = currAttachments.toMutableList().apply {
-                                    set(
-                                        index = idx,
-                                        element = attachment.copy(
-                                            state = ChatView.Message.ChatBoxAttachment.State.Uploading
-                                        )
+                            chatBoxAttachments.value = currAttachments.toMutableList().apply {
+                                set(
+                                    index = idx,
+                                    element = attachment.copy(
+                                        state = ChatView.Message.ChatBoxAttachment.State.Uploading
                                     )
-                                }
-                                uploadFile.async(
-                                    UploadFile.Params(
-                                        space = vmParams.space,
-                                        path = path,
-                                        type = Block.Content.File.Type.NONE,
-                                        preloadFileId = preloadedFileId
+                                )
+                            }
+                            uploadFile.async(
+                                UploadFile.Params(
+                                    space = vmParams.space,
+                                    path = path,
+                                    type = Block.Content.File.Type.NONE,
+                                    preloadFileId = preloadedFileId
+                                )
+                            ).onSuccess { file ->
+                                copyFileToCacheDirectory.delete(path)
+                                add(
+                                    Chat.Message.Attachment(
+                                        target = file.id,
+                                        type = Chat.Message.Attachment.Type.File
                                     )
-                                ).onSuccess { file ->
-                                    copyFileToCacheDirectory.delete(path)
-                                    add(
-                                        Chat.Message.Attachment(
-                                            target = file.id,
-                                            type = Chat.Message.Attachment.Type.File
-                                        )
-                                    )
-                                    chatBoxAttachments.value =
-                                        currAttachments.toMutableList().apply {
-                                            set(
-                                                index = idx,
-                                                element = attachment.copy(
-                                                    state = ChatView.Message.ChatBoxAttachment.State.Uploaded
-                                                )
+                                )
+                                chatBoxAttachments.value =
+                                    currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Uploaded
                                             )
-                                        }
-                                }.onFailure {
-                                    Timber.e(
-                                        it,
-                                        "DROID-2966 Error while uploading file as attachment"
-                                    )
-                                    chatBoxAttachments.value =
-                                        currAttachments.toMutableList().apply {
-                                            set(
-                                                index = idx,
-                                                element = attachment.copy(
-                                                    state = ChatView.Message.ChatBoxAttachment.State.Failed
-                                                )
+                                        )
+                                    }
+                            }.onFailure {
+                                Timber.e(
+                                    it,
+                                    "DROID-2966 Error while uploading file as attachment"
+                                )
+                                chatBoxAttachments.value =
+                                    currAttachments.toMutableList().apply {
+                                        set(
+                                            index = idx,
+                                            element = attachment.copy(
+                                                state = ChatView.Message.ChatBoxAttachment.State.Failed
                                             )
-                                        }
-                                }
+                                        )
+                                    }
                             }
                         }
                     }
@@ -1629,6 +1648,11 @@ class ChatViewModel @Inject constructor(
                     obj = vmParams.ctx
                 ).onSuccess {
                     Timber.d("Unpinned chat widget successfully")
+                    // Update header state immediately
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.ChatObject) {
+                        header.value = currentHeader.copy(isPinned = false)
+                    }
                     // Payload dispatched automatically, HomeScreenViewModel will update
                 }.onFailure {
                     Timber.e(it, "Error while unpinning chat widget")
@@ -1640,6 +1664,11 @@ class ChatViewModel @Inject constructor(
                     obj = vmParams.ctx
                 ).onSuccess {
                     Timber.d("Pinned chat as widget successfully")
+                    // Update header state immediately
+                    val currentHeader = header.value
+                    if (currentHeader is HeaderView.ChatObject) {
+                        header.value = currentHeader.copy(isPinned = true)
+                    }
                     commands.emit(ViewModelCommand.Toast.PinnedChatAsWidget)
                     // Payload dispatched automatically, HomeScreenViewModel will update
                 }.onFailure {

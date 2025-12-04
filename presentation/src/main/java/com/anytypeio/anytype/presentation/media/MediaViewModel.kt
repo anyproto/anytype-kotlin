@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.media
 
-import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -13,22 +12,23 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.FetchObject
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import javax.inject.Inject
+import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import kotlinx.coroutines.flow.SharedFlow
 import timber.log.Timber
-import kotlinx.coroutines.async
 
 class MediaViewModel(
     private val urlBuilder: UrlBuilder,
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val downloadFile: DownloadFile,
+    private val getObject: GetObject,
     private val fetchObject: FetchObject
 ) : BaseViewModel() {
 
@@ -48,11 +48,10 @@ class MediaViewModel(
             // Fetch archived status for all images
             val imagesWithArchived = objects.map { id ->
                 async {
-                    val obj = fetchObject.async(
-                        params = FetchObject.Params(
+                    val obj = getObject.async(
+                        params = GetObject.Params(
                             space = space,
-                            obj = id,
-                            keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                            target = id
                         )
                     ).getOrNull()
 
@@ -62,7 +61,10 @@ class MediaViewModel(
                         Timber.d("Image object found: $obj")
                     }
 
-                    val isArchived = obj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: true
+                    val wrapper = obj?.details[id]
+
+                    val isArchived = wrapper?.let { ObjectWrapper.Basic(it).isArchived == true } ?: false
+
                     MediaViewState.ImageContent.Image(
                         obj = id,
                         url = urlBuilder.large(id),
@@ -87,14 +89,16 @@ class MediaViewModel(
                 return@launch
             }
 
-            val fetchedObj = fetchObject.async(
-                params = FetchObject.Params(
+            val fetchedObj = getObject.async(
+                params = GetObject.Params(
                     space = space,
-                    obj = obj,
-                    keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                    target = obj
                 )
             ).getOrNull()
-            val isArchived = fetchedObj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: false
+
+            val wrapper = fetchedObj?.details?.get(obj)
+
+            val isArchived = wrapper?.let { ObjectWrapper.Basic(it).isArchived } ?: false
 
             _viewState.value = MediaViewState.VideoContent(
                 url = urlBuilder.original(obj),
@@ -111,14 +115,16 @@ class MediaViewModel(
                 return@launch
             }
 
-            val fetchedObj = fetchObject.async(
-                params = FetchObject.Params(
+            val fetchedObj = getObject.async(
+                params = GetObject.Params(
                     space = space,
-                    obj = obj,
-                    keys = listOf(Relations.ID, Relations.IS_ARCHIVED)
+                    target = obj
                 )
             ).getOrNull()
-            val isArchived = fetchedObj?.let { ObjectWrapper.Basic(it.map).isArchived } ?: false
+
+            val wrapper = fetchedObj?.details?.get(obj)
+
+            val isArchived = wrapper?.let { ObjectWrapper.Basic(it).isArchived } ?: false
 
             _viewState.value = MediaViewState.AudioContent(
                 url = hash,
@@ -256,7 +262,8 @@ class MediaViewModel(
         private val urlBuilder: UrlBuilder,
         private val setObjectListIsArchived: SetObjectListIsArchived,
         private val downloadFile: DownloadFile,
-        private val fetchObject: FetchObject
+        private val fetchObject: FetchObject,
+        private val getObject: GetObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -264,6 +271,7 @@ class MediaViewModel(
                 urlBuilder = urlBuilder,
                 setObjectListIsArchived = setObjectListIsArchived,
                 downloadFile = downloadFile,
+                getObject = getObject,
                 fetchObject = fetchObject
             ) as T
         }

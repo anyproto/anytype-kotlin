@@ -129,6 +129,9 @@ message Event {
       Chat.UpdateState chatStateUpdate =
           133; // in case new unread messages received or chat state changed
                // (e.g. message read on another device)
+
+      MembershipV2.Update membershipV2Update = 138;
+      MembershipV2.ProductsUpdate membershipV2ProductsUpdate = 139;
     }
   }
 
@@ -988,6 +991,11 @@ message Event {
   message Membership {
     message Update { anytype.model.Membership data = 1; }
     message TiersUpdate { repeated anytype.model.MembershipTierData tiers = 1; }
+  }
+
+  message MembershipV2 {
+    message Update { anytype.model.MembershipV2.Data data = 1; }
+    message ProductsUpdate { repeated anytype.model.MembershipV2.Product products = 1; }
   }
 
   message Notification {

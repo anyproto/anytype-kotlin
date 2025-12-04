@@ -7,6 +7,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -15,6 +16,7 @@ import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
@@ -378,8 +380,12 @@ class VaultViewModel(
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView {
         return when {
+            // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
+            space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
+                createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+            }
             // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
-            space.spaceUxType == SpaceUxType.CHAT && chatPreview != null -> {
+            space.spaceUxType == SpaceUxType.CHAT -> {
                 createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
             }
             // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
@@ -574,6 +580,47 @@ class VaultViewModel(
     }
 
     /**
+     * Create a Vault View for One-to-One Space with a chat preview
+     */
+    private suspend fun createOneToOneSpaceView(
+        space: ObjectWrapper.SpaceView,
+        chatPreview: Chat.Preview?,
+        unreadCounts: UnreadCounts?,
+        permissions: Map<Id, SpaceMemberPermissions>,
+        wallpapers: Map<Id, Wallpaper>,
+        chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+    ): VaultSpaceView.OneToOneSpace {
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+
+        val icon = space.spaceIcon(urlBuilder)
+
+        val perms =
+            space.targetSpaceId?.let { permissions[it] } ?: SpaceMemberPermissions.NO_PERMISSIONS
+        val isOwner = perms.isOwner()
+
+        val wallpaper = space.targetSpaceId.let { wallpapers[it] } ?: Wallpaper.Default
+        val wallpaperResult = computeWallpaperResult(
+            icon = icon,
+            wallpaper = wallpaper
+        )
+
+        return VaultSpaceView.OneToOneSpace(
+            space = space,
+            icon = icon,
+            chatPreview = chatPreview,
+            messageText = previewData.messageText,
+            messageTime = previewData.messageTime,
+            unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
+            unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
+            attachmentPreviews = previewData.attachmentPreviews,
+            isOwner = isOwner,
+            spaceNotificationState = space.spacePushNotificationMode,
+            wallpaper = wallpaperResult
+        )
+    }
+
+    /**
      * Create a Vault View for Data Space with a chat preview
      */
     private suspend fun createDataSpaceWithChatView(
@@ -655,7 +702,7 @@ class VaultViewModel(
     }
 
     fun onSpaceClicked(view: VaultSpaceView) {
-        Timber.i("onSpaceClicked")
+        Timber.i("onSpaceClicked, view: $view")
         viewModelScope.launch {
             handleSpaceSelection(view, emitSettings = false)
         }
@@ -683,10 +730,11 @@ class VaultViewModel(
                 onFailure = {
                     Timber.e(it, "Could not select space")
                 },
-                onSuccess = {
+                onSuccess = { config ->
+                    Timber.d("Selected space: $targetSpace")
                     proceedWithSavingCurrentSpace(
-                        targetSpace = targetSpace,
-                        chat = view.space.chatId?.ifEmpty { null },
+                        targetSpace = SpaceId(targetSpace),
+                        config = config,
                         spaceUxType = view.space.spaceUxType,
                         emitSettings = emitSettings
                     )
@@ -912,37 +960,49 @@ class VaultViewModel(
     }
 
     private suspend fun proceedWithSavingCurrentSpace(
-        targetSpace: String,
-        chat: Id?,
+        targetSpace: SpaceId,
+        config: Config,
         spaceUxType: SpaceUxType?,
         emitSettings: Boolean = false
     ) {
         saveCurrentSpace.async(
-            SaveCurrentSpace.Params(SpaceId(targetSpace))
+            SaveCurrentSpace.Params(space = targetSpace)
         ).fold(
             onFailure = {
                 Timber.e(it, "Error while saving current space on vault screen")
             },
             onSuccess = {
-                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType, Chat ID: $chat")
-                if (emitSettings) {
-                    commands.emit(VaultCommand.OpenSpaceSettings(SpaceId(targetSpace)))
-                } else if (spaceUxType == SpaceUxType.CHAT && chat != null) {
-                    commands.emit(
-                        VaultCommand.EnterSpaceLevelChat(
-                            space = Space(targetSpace),
-                            chat = chat
-                        )
-                    )
-                } else {
-                    commands.emit(
-                        VaultCommand.EnterSpaceHomeScreen(
-                            space = Space(targetSpace)
-                        )
-                    )
-                }
+                Timber.d("Successfully saved current space: $targetSpace, Space UX Type: $spaceUxType")
+                val command = resolveNavigationCommand(
+                    targetSpace = targetSpace,
+                    config = config,
+                    spaceUxType = spaceUxType,
+                    emitSettings = emitSettings
+                )
+                commands.emit(command)
             }
         )
+    }
+
+    private fun resolveNavigationCommand(
+        targetSpace: SpaceId,
+        config: Config,
+        spaceUxType: SpaceUxType?,
+        emitSettings: Boolean
+    ): VaultCommand {
+        val chat = config.spaceChatId
+        return when {
+            emitSettings -> {
+                VaultCommand.OpenSpaceSettings(space = targetSpace)
+            }
+            spaceUxType.shouldNavigateDirectlyToChat && chat != null -> {
+                Timber.d("Navigating to chat: $chat")
+                VaultCommand.EnterSpaceLevelChat(space = targetSpace, chat = chat)
+            }
+            else -> {
+                VaultCommand.EnterSpaceHomeScreen(space = targetSpace)
+            }
+        }
     }
 
     private fun proceedWithNavigation(navigation: OpenObjectNavigation) {

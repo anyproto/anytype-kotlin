@@ -65,6 +65,14 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
                     Timber.w("Error while opening participant screen")
                 }
             }
+
+            is ParticipantViewModel.Command.SwitchToVault -> {
+                runCatching {
+                    findNavController().popBackStack(R.id.vaultScreen, false)
+                }.onFailure {
+                    Timber.e(it, "Error while opening space")
+                }
+            }
         }
     }
 

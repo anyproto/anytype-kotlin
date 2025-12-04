@@ -202,6 +202,7 @@ fun VaultScreenContent(
                             is VaultSpaceView.ChatSpace -> TYPE_CHAT
                             is VaultSpaceView.DataSpace -> TYPE_SPACE
                             is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
+                            is VaultSpaceView.OneToOneSpace -> TYPE_ONE_TO_ONE
                         }
                     }
                 ) { index, item ->
@@ -349,6 +350,52 @@ fun VaultScreenContent(
                                     onSpaceSettings = onSpaceSettings
                                 )
                             }
+
+                            is VaultSpaceView.OneToOneSpace -> {
+                                VaultOneToOneSpaceCard(
+                                    modifier = Modifier
+                                        .combinedClickable(
+                                            onClick = {
+                                                onSpaceClicked(item)
+                                            },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )
+                                        .graphicsLayer(alpha = alpha.value)
+                                        .animateItem()
+                                        .longPressDraggableHandle(
+                                            onDragStarted = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    ReorderHapticFeedbackType.START
+                                                )
+                                            },
+                                            onDragStopped = {
+                                                hapticFeedback.performHapticFeedback(
+                                                    ReorderHapticFeedbackType.MOVE
+                                                )
+                                            }
+                                        ),
+                                    title = item.space.name.orEmpty(),
+                                    icon = item.icon,
+                                    spaceBackground = spaceBackgroundValue.value,
+                                    messageText = item.messageText,
+                                    messageTime = item.messageTime,
+                                    chatPreview = item.chatPreview,
+                                    unreadMessageCount = item.unreadMessageCount,
+                                    unreadMentionCount = item.unreadMentionCount,
+                                    attachmentPreviews = item.attachmentPreviews,
+                                    isPinned = item.isPinned,
+                                    spaceView = item,
+                                    expandedSpaceId = expandedSpaceId,
+                                    onDismissMenu = { expandedSpaceId = null },
+                                    onMuteSpace = onMuteSpace,
+                                    onUnmuteSpace = onUnmuteSpace,
+                                    onPinSpace = onPinSpace,
+                                    onUnpinSpace = onUnpinSpace,
+                                    onSpaceSettings = onSpaceSettings
+                                )
+                            }
                         }
                     }
                 }
@@ -364,6 +411,7 @@ fun VaultScreenContent(
                             is VaultSpaceView.ChatSpace -> TYPE_CHAT
                             is VaultSpaceView.DataSpace -> TYPE_SPACE
                             is VaultSpaceView.DataSpaceWithChat -> TYPE_DATA_SPACE_WITH_CHAT
+                            is VaultSpaceView.OneToOneSpace -> TYPE_ONE_TO_ONE
                         }
                     }
                 ) { _, item ->
@@ -461,6 +509,38 @@ fun VaultScreenContent(
                                 onSpaceSettings = onSpaceSettings
                             )
                         }
+
+                        is VaultSpaceView.OneToOneSpace -> {
+                            VaultOneToOneSpaceCard(
+                                modifier = Modifier
+                                    .animateItem()
+                                    .then(
+                                        createCombinedClickableModifier(
+                                            onClick = { onSpaceClicked(item) },
+                                            onLongClick = {
+                                                expandedSpaceId = item.space.id
+                                            }
+                                        )),
+                                title = item.space.name.orEmpty(),
+                                icon = item.icon,
+                                spaceBackground = spaceBackgroundValue.value,
+                                messageText = item.messageText,
+                                messageTime = item.messageTime,
+                                chatPreview = item.chatPreview,
+                                unreadMessageCount = item.unreadMessageCount,
+                                unreadMentionCount = item.unreadMentionCount,
+                                attachmentPreviews = item.attachmentPreviews,
+                                isPinned = item.isPinned,
+                                spaceView = item,
+                                expandedSpaceId = expandedSpaceId,
+                                onDismissMenu = { expandedSpaceId = null },
+                                onMuteSpace = onMuteSpace,
+                                onUnmuteSpace = onUnmuteSpace,
+                                onPinSpace = onPinSpace,
+                                onUnpinSpace = onUnpinSpace,
+                                onSpaceSettings = onSpaceSettings
+                            )
+                        }
                     }
                 }
             }
@@ -471,6 +551,7 @@ fun VaultScreenContent(
 const val TYPE_CHAT = "chat"
 const val TYPE_SPACE = "space"
 const val TYPE_DATA_SPACE_WITH_CHAT = "data_space_with_chat"
+const val TYPE_ONE_TO_ONE = "one_to_one"
 
 
 fun createCombinedClickableModifier(

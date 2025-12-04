@@ -236,7 +236,7 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess { objectView ->
                         // Chat space
-                        if (view.spaceUxType == SpaceUxType.CHAT) {
+                        if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) {
                             header.value = HeaderView.Default(
                                 title = view.name.orEmpty(),
                                 icon = view.spaceIcon(builder = urlBuilder),

@@ -2046,4 +2046,5 @@ Please provide specific details of your needs here.</string>
     <string name="toast_moved_to_bin">Oggetto spostato nel cestino.</string>
     <string name="media_object_in_bin">Questo oggetto è nel cestino. Vuoi ripristinarlo?</string>
     <string name="toast_restored">Oggetto ripristinato.</string>
+    <string name="participant_btn_connect">Connetti</string>
 </resources>

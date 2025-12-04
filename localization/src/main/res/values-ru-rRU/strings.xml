@@ -2075,4 +2075,5 @@
     <string name="toast_moved_to_bin">Объект перемещен в корзину.</string>
     <string name="media_object_in_bin">Этот объект в корзине. Восстановить его?</string>
     <string name="toast_restored">Объект восстановлен.</string>
+    <string name="participant_btn_connect">Подключиться</string>
 </resources>

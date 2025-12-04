@@ -2045,4 +2045,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="toast_moved_to_bin">Nesne çöp kutusuna taşındı.</string>
     <string name="media_object_in_bin">Bu nesne çöp kutusunda. Geri yüklemek ister misin?</string>
     <string name="toast_restored">Nesne geri yüklendi.</string>
+    <string name="participant_btn_connect">Bağlan</string>
 </resources>

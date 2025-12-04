@@ -22,6 +22,7 @@ sealed class VaultSpaceView {
         get() = when (this) {
             is ChatSpace -> chatPreview?.message?.createdAt
             is DataSpaceWithChat -> chatPreview?.message?.createdAt
+            is OneToOneSpace -> chatPreview?.message?.createdAt
             else -> null
         }
 
@@ -60,6 +61,20 @@ sealed class VaultSpaceView {
         val chatMessage: com.anytypeio.anytype.core_models.chats.Chat.Message.Content? = null,
         val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,
         val creatorName: String? = null,
+        val messageText: String? = null,
+        val messageTime: String? = null,
+        val attachmentPreviews: List<AttachmentPreview> = emptyList(),
+        val spaceNotificationState: NotificationState = NotificationState.ALL
+    ) : VaultSpaceView()
+
+    data class OneToOneSpace(
+        override val space: ObjectWrapper.SpaceView,
+        override val icon: SpaceIconView,
+        override val isOwner: Boolean,
+        override val wallpaper: WallpaperResult = WallpaperResult.None,
+        val unreadMessageCount: Int = 0,
+        val unreadMentionCount: Int = 0,
+        val chatPreview: com.anytypeio.anytype.core_models.chats.Chat.Preview? = null,
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),

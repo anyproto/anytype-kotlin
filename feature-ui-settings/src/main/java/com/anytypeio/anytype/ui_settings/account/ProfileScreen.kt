@@ -738,7 +738,7 @@ fun AnyIdInfoSheet(
     onDismiss: () -> Unit
 ) {
     ModalBottomSheet(
-        modifier = Modifier.navigationBarsPadding(),
+        modifier = Modifier,
         onDismissRequest = onDismiss,
         containerColor = Color.Transparent,
         contentColor = Color.Transparent,
@@ -746,12 +746,14 @@ fun AnyIdInfoSheet(
     ) {
         GenericAlert(
             modifier = Modifier
+                .navigationBarsPadding()
+                .padding(horizontal = 8.dp)
+                .padding(bottom = 16.dp)
                 .fillMaxWidth()
                 .background(
                     color = colorResource(R.color.background_secondary),
                     shape = RoundedCornerShape(16.dp)
-                )
-                .padding(bottom = 32.dp),
+                ),
             onFirstButtonClicked = onExplorePlans,
             config = AlertConfig.WithOneButton(
                 icon = R.drawable.ic_any_id,

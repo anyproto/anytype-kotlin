@@ -84,7 +84,6 @@ class WidgetsScreenFragment : Fragment(),
     @Inject
     lateinit var factory: HomeScreenViewModel.Factory
 
-
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -512,7 +511,8 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     navigation().openObjectType(
                         objectId = destination.target,
-                        space = destination.space
+                        space = destination.space,
+                        view = destination.view
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening participant from widgets")

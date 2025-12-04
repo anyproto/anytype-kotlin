@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -139,9 +140,15 @@ fun ImageGallery(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .clip(shape = RoundedCornerShape(8.dp))
                     .clickable { 
                         currentImage?.let { onRestoreClick(it.obj) }
                     }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,
@@ -332,7 +339,12 @@ fun AudioPlayerBox(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
                     .clickable { onRestoreClick() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,
@@ -380,7 +392,12 @@ fun VideoPlayerBox(
                     .align(Alignment.TopCenter)
                     .systemBarsPadding()
                     .padding(top = 16.dp)
+                    .background(
+                        color = colorResource(R.color.home_screen_toolbar_button),
+                        shape = RoundedCornerShape(8.dp)
+                    )
                     .clickable { onRestoreClick() }
+                    .padding(horizontal = 12.dp, vertical = 8.dp)
             ) {
                 Text(
                     text = annotatedText,
@@ -412,11 +429,11 @@ private fun VideoPlayer(url: String) {
         }
     }
 
-    // Auto-hide controls after n seconds
-    LaunchedEffect(showControls, isPlaying) {
-        if (showControls && isPlaying) {
+    // Auto-hide controls after n seconds (but not while user is seeking)
+    LaunchedEffect(showControls, isPlaying, userSeeking) {
+        if (showControls && isPlaying && !userSeeking) {
             delay(DELAY_BEFORE_HIDING_CONTROLS)
-            showControls = false
+            if (!userSeeking) showControls = false
         }
     }
 
@@ -507,15 +524,22 @@ private fun VideoPlayer(url: String) {
                     DotScrubberSlider(
                         value = currentPosition.toFloat(),
                         onValueChange = {
-                            userSeeking = true
                             currentPosition = it.toInt()
                             videoViewRef.value?.seekTo(currentPosition)
-                            userSeeking = false
                         },
                         valueRange = 0f..videoDuration.coerceAtLeast(1).toFloat(),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = 8.dp),
+                        onDragStart = {
+                            // Keep controls visible while dragging
+                            showControls = true
+                            userSeeking = true
+                        },
+                        onDragEnd = {
+                            // Allow auto-hide after dragging stops
+                            userSeeking = false
+                        }
                     )
                     Text(
                         text = formatMillis(videoDuration),
@@ -821,7 +845,9 @@ fun DotScrubberSlider(
     modifier: Modifier = Modifier,
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     trackHeight: Dp = 4.dp,
-    dotRadius: Dp = 6.dp
+    dotRadius: Dp = 6.dp,
+    onDragStart: () -> Unit = {},
+    onDragEnd: () -> Unit = {}
 ) {
     val density = LocalDensity.current
     val trackHeightPx = with(density) { trackHeight.toPx() }
@@ -831,16 +857,43 @@ fun DotScrubberSlider(
 
     BoxWithConstraints(
         modifier = modifier
-            .height(dotRadius * 2)
+            .height(48.dp)
             .fillMaxWidth()
             .pointerInput(Unit) {
                 detectTapGestures { offset ->
+                    // Handle tap/click at specific point
                     val ratio = offset.x / size.width
                     val newValue =
                         (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
                             .coerceIn(valueRange)
                     onValueChange(newValue)
                 }
+            }
+            .pointerInput(Unit) {
+                detectDragGestures(
+                    onDragStart = { offset ->
+                        onDragStart()
+                        val ratio = offset.x / size.width
+                        val newValue =
+                            (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
+                                .coerceIn(valueRange)
+                        onValueChange(newValue)
+                    },
+                    onDrag = { change, _ ->
+                        val x = change.position.x.coerceIn(0f, size.width.toFloat())
+                        val ratio = x / size.width
+                        val newValue =
+                            (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
+                                .coerceIn(valueRange)
+                        onValueChange(newValue)
+                    },
+                    onDragEnd = {
+                        onDragEnd()
+                    },
+                    onDragCancel = {
+                        onDragEnd()
+                    }
+                )
             }
     ) {
         sliderWidth = constraints.maxWidth.toFloat()
@@ -872,17 +925,6 @@ fun DotScrubberSlider(
                 center = Offset(thumbCenterX, size.height / 2)
             )
         }
-
-        // Drag support
-        Modifier
-            .pointerInput(Unit) {
-                detectDragGestures { change, _ ->
-                    val x = change.position.x.coerceIn(0f, sliderWidth)
-                    val newRatio = x / sliderWidth
-                    val newValue = valueRange.start + newRatio * (valueRange.endInclusive - valueRange.start)
-                    onValueChange(newValue.coerceIn(valueRange))
-                }
-            }
     }
 }
 

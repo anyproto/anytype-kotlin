@@ -2,40 +2,43 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DV
+import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_models.ext.content
 import com.anytypeio.anytype.core_models.ext.isValidObject
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
+import com.anytypeio.anytype.presentation.extension.resolveParticipantName
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.relations.cover
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
-import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
+import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.emptyFlow
@@ -69,18 +72,13 @@ class ChatListWidgetContainer(
     private val dateProvider: DateProvider,
     private val stringResourceProvider: StringResourceProvider,
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     isSessionActiveFlow: Flow<Boolean>,
     onRequestCache: () -> WidgetView? = { null },
 ) : WidgetContainer {
 
     companion object {
         const val DEFAULT_FALLBACK_WIDGET_LIMIT = 6
-        // Hard-coded flag to control display mode (can be changed later)
-        private const val USE_PREVIEW_MODE = true
-    }
-    
-    init {
-        Timber.d("ChatListWidgetContainer initialized with USE_PREVIEW_MODE = $USE_PREVIEW_MODE")
     }
 
     /**
@@ -168,7 +166,11 @@ class ChatListWidgetContainer(
                                         obj = ctx.obj,
                                         activeView = activeView,
                                         params = ctx.params,
-                                        isCompact = isCompact,
+                                        isCompact = if (widget is Widget.View) {
+                                            ctx.target?.type != DVViewerType.LIST
+                                        } else {
+                                            isCompact
+                                        },
                                         displayLimit = ctx.displayLimit,
                                         storeOfObjectTypes = storeOfObjectTypes
                                     )
@@ -178,6 +180,14 @@ class ChatListWidgetContainer(
                                     
                                     val spaceViews = spaceViewSubscriptionContainer
                                         .observe()
+                                        .distinctUntilChanged()
+
+                                    // Observe global participants for creator name resolution
+                                    val participantsFlow = participantContainer
+                                        .observe()
+                                        .map { participants ->
+                                            participants.associateBy { it.identity }
+                                        }
                                         .distinctUntilChanged()
 
                                     val chats = view.flatMapLatest { view ->
@@ -190,16 +200,23 @@ class ChatListWidgetContainer(
                                             }
                                             .distinctUntilChanged()
                                             .flatMapLatest { previewList ->
-                                                spaceViews.map { spaces ->
-                                                    view.copy(
+                                                combine(
+                                                    spaceViews,
+                                                    participantsFlow
+                                                ) { spaces, participantsByIdentity ->
+                                                    val transformed = view.copy(
                                                         elements = view.elements.map { element ->
                                                             val preview = previewList.find { p ->
                                                                 p.chat == element.obj.id
                                                             }
                                                             val state = preview?.state
                                                             if (preview != null && state != null) {
-                                                                // Extract preview data
-                                                                val creatorName = extractCreatorName(preview)
+                                                                // Extract preview data using participant subscription for creator names
+                                                                val creatorName =
+                                                                    participantsByIdentity.resolveParticipantName(
+                                                                        identity = preview.message?.creator,
+                                                                        fallback = stringResourceProvider.getUntitledCreatorName()
+                                                                    )
                                                                 val messageText = preview.message?.content?.text
                                                                 val messageTime = preview.message?.createdAt?.let { timeInSeconds ->
                                                                     if (timeInSeconds > 0) {
@@ -234,6 +251,11 @@ class ChatListWidgetContainer(
                                                             }
                                                         }
                                                     )
+                                                    if (ctx.target?.type == DVViewerType.GALLERY) {
+                                                        transformed.toGallery()
+                                                    } else {
+                                                        transformed
+                                                    }
                                                 }
                                             }
                                     }
@@ -421,7 +443,7 @@ class ChatListWidgetContainer(
             val hasMore = objects.size > displayLimit
             val displayObjects = objects.take(displayLimit)
 
-            val displayMode = if (USE_PREVIEW_MODE) {
+            val displayMode = if (!isCompact) {
                 WidgetView.ChatList.DisplayMode.Preview
             } else {
                 WidgetView.ChatList.DisplayMode.Compact
@@ -454,19 +476,6 @@ class ChatListWidgetContainer(
                 displayMode = displayMode
             )
         }
-    }
-
-    /**
-     * Extracts creator name from chat preview dependencies.
-     */
-    private fun extractCreatorName(preview: Chat.Preview): String? {
-        val creatorId = preview.message?.creator
-        if (creatorId.isNullOrEmpty()) return null
-        
-        val creatorObj = preview.dependencies.find { 
-            it.getSingleValue<String>(Relations.IDENTITY) == creatorId
-        }
-        return creatorObj?.name ?: stringResourceProvider.getUntitledCreatorName()
     }
     
     /**
@@ -588,7 +597,7 @@ class ChatListWidgetContainer(
                 icon = widget.icon,
                 name = widget.source.getPrettyName(fieldParser),
                 sectionType = widget.sectionType,
-                displayMode = if (USE_PREVIEW_MODE) {
+                displayMode = if (!widget.isCompact) {
                     WidgetView.ChatList.DisplayMode.Preview
                 } else {
                     WidgetView.ChatList.DisplayMode.Compact
@@ -606,11 +615,7 @@ class ChatListWidgetContainer(
                     icon = widget.icon,
                     name = widget.source.getPrettyName(fieldParser),
                     sectionType = widget.sectionType,
-                    displayMode = if (USE_PREVIEW_MODE) {
-                        WidgetView.ChatList.DisplayMode.Preview
-                    } else {
-                        WidgetView.ChatList.DisplayMode.Compact
-                    }
+                    displayMode = WidgetView.ChatList.DisplayMode.Preview
                 )
             }
 

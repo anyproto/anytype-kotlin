@@ -269,11 +269,14 @@ fun Bubble(
                                         style = SpanStyle(
                                             fontWeight = if (part.isBold) FontWeight.Bold else null,
                                             fontStyle = if (part.isItalic) FontStyle.Italic else null,
-                                            textDecoration = if (part.underline)
-                                                TextDecoration.Underline
-                                            else if (part.isStrike)
-                                                TextDecoration.LineThrough
-                                            else null,
+                                            textDecoration = when {
+                                                part.underline && part.isStrike -> TextDecoration.combine(
+                                                    listOf(TextDecoration.Underline, TextDecoration.LineThrough)
+                                                )
+                                                part.underline -> TextDecoration.Underline
+                                                part.isStrike -> TextDecoration.LineThrough
+                                                else -> null
+                                            },
                                             fontFamily = if (part.isCode) fontIBM else null,
                                         )
                                     ) {

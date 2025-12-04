@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -242,6 +243,7 @@ class HomeScreenViewModel(
     private val spaceMembers: ActiveSpaceMemberSubscriptionContainer,
     private val setAsFavourite: SetObjectListIsFavorite,
     private val chatPreviews: ChatPreviewContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
@@ -1283,17 +1285,36 @@ class HomeScreenViewModel(
                     widget = widgetId,
                     source = source
                 )
-                // Check if it's a Set or Collection layout and we have a viewId
+                // Check if it's a Set, Collection, or Type layout and we have a viewId
                 val layout = source.obj.layout
-                if ((layout == ObjectType.Layout.SET || layout == ObjectType.Layout.COLLECTION) && viewId != null) {
-                    viewModelScope.launch {
-                        navigate(
-                            Navigation.OpenSet(
-                                ctx = source.obj.id,
-                                space = vmParams.spaceId.id,
-                                view = viewId
-                            )
-                        )
+                if (viewId != null) {
+                    when (layout) {
+                        ObjectType.Layout.SET, ObjectType.Layout.COLLECTION -> {
+                            viewModelScope.launch {
+                                navigate(
+                                    Navigation.OpenSet(
+                                        ctx = source.obj.id,
+                                        space = vmParams.spaceId.id,
+                                        view = viewId
+                                    )
+                                )
+                            }
+                        }
+                        ObjectType.Layout.OBJECT_TYPE -> {
+                            viewModelScope.launch {
+                                navigate(
+                                    Navigation.OpenType(
+                                        target = source.obj.id,
+                                        space = vmParams.spaceId.id,
+                                        view = viewId
+                                    )
+                                )
+                            }
+                        }
+                        else -> {
+                            // Fall back to standard navigation without view
+                            proceedWithOpeningObject(source.obj)
+                        }
                     }
                 } else {
                     // Fall back to standard navigation without view
@@ -1782,7 +1803,8 @@ class HomeScreenViewModel(
                 navigate(
                     Navigation.OpenType(
                         target = navigation.target,
-                        space = navigation.space
+                        space = navigation.space,
+                        view = null
                     )
                 )
             }
@@ -2831,6 +2853,15 @@ class HomeScreenViewModel(
 
     fun onCreateNewObjectClicked(objType: ObjectWrapper.Type? = null) {
         Timber.d("onCreateNewObjectClicked, type:[${objType?.uniqueKey}]")
+        
+        // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
+        if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
+            viewModelScope.launch {
+                commands.emit(Command.CreateChatObject(vmParams.spaceId))
+            }
+            return
+        }
+        
         val startTime = System.currentTimeMillis()
         viewModelScope.launch {
             val params = objType?.uniqueKey.getCreateObjectParams(
@@ -3160,7 +3191,7 @@ class HomeScreenViewModel(
         data class OpenAllContent(val space: Id) : Navigation()
         data class OpenDateObject(val ctx: Id, val space: Id) : Navigation()
         data class OpenParticipant(val objectId: Id, val space: Id) : Navigation()
-        data class OpenType(val target: Id, val space: Id) : Navigation()
+        data class OpenType(val target: Id, val space: Id, val view: Id? = null) : Navigation()
         data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
         data class OpenBookmarkUrl(val url: String) : Navigation() // Added for opening bookmark URLs from widgets
     }
@@ -3196,6 +3227,7 @@ class HomeScreenViewModel(
         WidgetContainerDelegateImpl(
             spaceId = vmParams.spaceId,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             notificationPermissionManager = notificationPermissionManager,
             fieldParser = fieldParser,
@@ -3274,6 +3306,7 @@ class HomeScreenViewModel(
         private val activeSpaceMemberSubscriptionContainer: ActiveSpaceMemberSubscriptionContainer,
         private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val chatPreviews: ChatPreviewContainer,
+        private val participantContainer: ParticipantSubscriptionContainer,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
@@ -3336,6 +3369,7 @@ class HomeScreenViewModel(
             spaceMembers = activeSpaceMemberSubscriptionContainer,
             setAsFavourite = setObjectListIsFavorite,
             chatPreviews = chatPreviews,
+            participantContainer = participantContainer,
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,

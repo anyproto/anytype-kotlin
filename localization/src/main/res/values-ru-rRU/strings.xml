@@ -2055,9 +2055,9 @@
         <item quantity="many">%d новых сообщений</item>
         <item quantity="other">%d новые сообщения</item>
     </plurals>
-    <string name="any_id_info_title">This is your ANY ID</string>
-    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
-    <string name="any_id_info_button">Explore plans</string>
+    <string name="any_id_info_title">Это Ваш ANY ID</string>
+    <string name="any_id_info_description">Станьте участником, чтобы сделать свой ID читаемым для людей — так другие участники смогут легко найти вас и связаться.</string>
+    <string name="any_id_info_button">Изучить планы</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Подтвердить</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Вы можете загрузить только 10 файлов за раз</string>

@@ -2342,6 +2342,10 @@ Please provide specific details of your needs here.</string>
         <item quantity="other">%d new messages</item>
     </plurals>
 
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
+
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
@@ -2358,6 +2362,8 @@ Please provide specific details of your needs here.</string>
 
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
     <string name="participant_btn_connect">Connect</string>
 
 </resources>

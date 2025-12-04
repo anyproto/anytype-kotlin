@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentLinkedDeque
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -76,6 +77,9 @@ interface ChatPreviewContainer {
         private val previews = MutableStateFlow<List<Chat.Preview>?>(null)
         private val attachmentIds = MutableStateFlow<Map<SpaceId, Set<Id>>>(emptyMap())
 
+        // Buffer of last N preview messages per chat for fallback on deletion (thread-safe)
+        private val messageHistory = ConcurrentHashMap<Id, ConcurrentLinkedDeque<Chat.Message>>()
+
         // Hot shared state for UI collectors
         @OptIn(ExperimentalCoroutinesApi::class)
         private val previewsState: StateFlow<PreviewState> = previews
@@ -115,12 +119,21 @@ interface ChatPreviewContainer {
 
                 attachmentIds.value = emptyMap() // Reset attachment tracking
                 previews.value = null // Reset previews
+                messageHistory.clear() // Reset message history
 
                 val initial = runCatching {
                     repo.subscribeToMessagePreviews(SUBSCRIPTION_ID)
                 }.onFailure {
                     logger.logWarning("Error while getting initial previews: ${it.message}")
                 }.getOrDefault(emptyList())
+
+                // Initialize history from initial previews
+                initial.forEach { preview ->
+                    preview.message?.let { message ->
+                        val history = messageHistory.getOrPut(preview.chat) { ConcurrentLinkedDeque() }
+                        history.addLast(message)
+                    }
+                }
 
                 previews.value = initial            // ← Ready (may be empty)
                 trackMissingAttachments(initial)
@@ -133,6 +146,7 @@ interface ChatPreviewContainer {
                 job?.cancel()
                 job = null
                 previews.value = null           // back to Loading for next start()
+                messageHistory.clear()          // clear message history
                 unsubscribeAll()
                 attachmentFlows.clear()         // let the cached StateFlows be GC-ed
             }
@@ -200,7 +214,11 @@ interface ChatPreviewContainer {
 
                 is Event.Command.Chats.Delete -> state.map { preview ->
                     if (preview.chat == event.context && preview.message?.id == event.message) {
-                        preview.copy(message = null)
+                        // Remove deleted message from history and get previous message
+                        val history = messageHistory[event.context]
+                        history?.removeIf { it.id == event.message }
+                        val previousMessage = history?.lastOrNull()
+                        preview.copy(message = previousMessage)
                     } else preview
                 }
 
@@ -214,6 +232,14 @@ interface ChatPreviewContainer {
             state: List<Chat.Preview>,
             event: Event.Command.Chats.Add
         ): List<Chat.Preview> {
+            // Store message in history buffer for fallback on deletion
+            val chatId = event.context
+            val history = messageHistory.getOrPut(chatId) { ConcurrentLinkedDeque() }
+            if (history.size >= MAX_MESSAGE_HISTORY) {
+                history.removeFirst()
+            }
+            history.addLast(event.message)
+
             // Extract attachment IDs
             val messageAttachmentIds = event.message.attachments.map { it.target }.toSet()
             val dependencyIds = event.dependencies.map { it.id }.toSet()
@@ -359,6 +385,7 @@ interface ChatPreviewContainer {
         companion object {
             private const val SUBSCRIPTION_ID = "chat-previews-subscription"
             private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "chat-previews-attachments"
+            private const val MAX_MESSAGE_HISTORY = 10
         }
     }
 }

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -31,11 +32,12 @@ import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import timber.log.Timber
-import kotlinx.coroutines.flow.StateFlow
 
 class ProfileSettingsViewModel(
     private val analytics: Analytics,
@@ -48,7 +50,8 @@ class ProfileSettingsViewModel(
     private val getNetworkMode: GetNetworkMode,
     private val profileContainer: ProfileSubscriptionManager,
     private val removeObjectIcon: RemoveObjectIcon,
-    private val notificationPermissionManager: NotificationPermissionManager
+    private val notificationPermissionManager: NotificationPermissionManager,
+    private val userPermissionProvider: UserPermissionProvider
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -70,16 +73,21 @@ class ProfileSettingsViewModel(
             }
         }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT), true)
 
-    val profileData = profileContainer.observe().map { obj ->
-        AccountProfile.Data(
-            name = obj.name.orEmpty(),
-            icon = obj.profileIcon(urlBuilder)
+    val profileData = profileContainer
+        .observe()
+        .combine(userPermissionProvider.getCurrent()) { profile, spaceMember ->
+            Timber.d("profileData, profile:[$profile], spaceMember:[$spaceMember]")
+            AccountProfile.Data(
+                name = profile.name.orEmpty(),
+                icon = profile.profileIcon(urlBuilder),
+                identity = spaceMember?.identity,
+                globalName = spaceMember?.globalName
+            )
+        }.stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
+            AccountProfile.Idle
         )
-    }.stateIn(
-        viewModelScope,
-        SharingStarted.WhileSubscribed(STOP_SUBSCRIPTION_TIMEOUT),
-        AccountProfile.Idle
-    )
 
     init {
         viewModelScope.launch {
@@ -205,7 +213,8 @@ class ProfileSettingsViewModel(
         private val getNetworkMode: GetNetworkMode,
         private val profileSubscriptionManager: ProfileSubscriptionManager,
         private val removeObjectIcon: RemoveObjectIcon,
-        private val notificationPermissionManager: NotificationPermissionManager
+        private val notificationPermissionManager: NotificationPermissionManager,
+        private val userPermissionProvider: UserPermissionProvider
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -220,7 +229,8 @@ class ProfileSettingsViewModel(
                 getNetworkMode = getNetworkMode,
                 profileContainer = profileSubscriptionManager,
                 removeObjectIcon = removeObjectIcon,
-                notificationPermissionManager = notificationPermissionManager
+                notificationPermissionManager = notificationPermissionManager,
+                userPermissionProvider = userPermissionProvider
             ) as T
         }
     }

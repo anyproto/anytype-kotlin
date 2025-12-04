@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -42,6 +43,7 @@ class VaultViewModelFactory @Inject constructor(
     private val profileContainer: ProfileSubscriptionManager,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsContainer: ChatsDetailsSubscriptionContainer,
+    private val participantContainer: ParticipantSubscriptionContainer,
     private val pendingIntentStore: PendingIntentStore,
     private val stringResourceProvider: StringResourceProvider,
     private val dateProvider: DateProvider,
@@ -73,6 +75,7 @@ class VaultViewModelFactory @Inject constructor(
         profileContainer = profileContainer,
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsContainer = chatsDetailsContainer,
+        participantContainer = participantContainer,
         pendingIntentStore = pendingIntentStore,
         stringResourceProvider = stringResourceProvider,
         dateProvider = dateProvider,

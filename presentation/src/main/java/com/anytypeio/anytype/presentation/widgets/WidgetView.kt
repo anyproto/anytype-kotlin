@@ -74,7 +74,8 @@ sealed class WidgetView {
         val name: Name,
         val source: Widget.Source,
         override val sectionType: SectionType? = null,
-        val counter: ChatCounter? = null
+        val counter: ChatCounter? = null,
+        val notificationState: NotificationState? = null
     ) : WidgetView(), Draggable {
         override val canCreateObjectOfType: Boolean
             get() = source.canCreateObjectOfType()
@@ -175,6 +176,20 @@ sealed class WidgetView {
              * Will be replaced with rich preview UI in the future.
              */
             data object Preview : DisplayMode()
+        }
+
+        fun toGallery(): WidgetView.Gallery {
+            return WidgetView.Gallery(
+                id = id,
+                icon = icon,
+                name = name,
+                tabs = tabs,
+                elements = elements,
+                isExpanded = isExpanded,
+                source = source,
+                hasMore = hasMore,
+                sectionType = sectionType
+            )
         }
     }
 

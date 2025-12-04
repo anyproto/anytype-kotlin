@@ -187,6 +187,8 @@ fun ChatTopToolbar(
                 ChatMenu(
                     expanded = showDropdownMenu,
                     currentNotificationSetting = header.notificationSetting,
+                    isPinned = header.isPinned,
+                    canEdit = header.canEdit,
                     onDismissRequest = {
                         showDropdownMenu = false
                     },

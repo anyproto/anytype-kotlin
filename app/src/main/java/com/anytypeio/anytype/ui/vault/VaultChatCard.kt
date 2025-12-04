@@ -121,7 +121,6 @@ fun VaultChatSpaceCard(
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
-    isMuted: Boolean? = null,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
@@ -175,11 +174,14 @@ fun VaultChatSpaceCard(
             mainSize = 64.dp,
             modifier = Modifier
         )
+        val shouldShowAsMuted = spaceView.spaceNotificationState == NotificationState.DISABLE ||
+                spaceView.spaceNotificationState == NotificationState.MENTIONS
+
         ContentChat(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title,
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,
@@ -188,7 +190,8 @@ fun VaultChatSpaceCard(
             unreadMessageCount = unreadMessageCount,
             unreadMentionCount = unreadMentionCount,
             attachmentPreviews = attachmentPreviews,
-            isMuted = isMuted,
+            isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
+            spaceNotificationState = spaceView.spaceNotificationState,
             isPinned = isPinned
         )
 
@@ -196,11 +199,15 @@ fun VaultChatSpaceCard(
         SpaceActionsDropdownMenu(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
-            isMuted = spaceView.isSpaceMuted,
+            isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
-                    if (spaceView.isSpaceMuted == true) onUnmuteSpace(it) else onMuteSpace(it)
+                    if (shouldShowAsMuted) {
+                        onUnmuteSpace(it)
+                    } else {
+                        onMuteSpace(it)
+                    }
                 }
             },
             onPinToggle = {
@@ -228,6 +235,7 @@ private fun RowScope.ContentChat(
     unreadMentionCount: Int = 0,
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
+    spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
@@ -269,7 +277,7 @@ private fun RowScope.ContentChat(
                 chatPreview = chatPreview,
                 unreadMessageCount = unreadMessageCount,
                 unreadMentionCount = unreadMentionCount,
-                isMuted = isMuted,
+                notificationMode = spaceNotificationState,
                 isPinned = isPinned
             )
         }
@@ -285,7 +293,6 @@ private fun ChatSubtitleRow(
     chatPreview: Chat.Preview?,
     unreadMessageCount: Int,
     unreadMentionCount: Int,
-    isMuted: Boolean?,
     notificationMode: NotificationState? = null,
     isPinned: Boolean
 ) {
@@ -717,7 +724,6 @@ fun ChatWithMentionAndMessage() {
             messageTime = "18:32",
             unreadMessageCount = 1,
             unreadMentionCount = 1,
-            isMuted = true,
             chatPreview =
                 Chat.Preview(
                 space = SpaceId("space-id"),
@@ -744,6 +750,7 @@ fun ChatWithMentionAndMessage() {
                 space = ObjectWrapper.SpaceView(map = mapOf("name" to "Space 1", "id" to "spaceId1")),
                 icon = SpaceIconView.ChatSpace.Placeholder(),
                 isOwner = true,
+                spaceNotificationState = NotificationState.DISABLE
             )
         )
     }

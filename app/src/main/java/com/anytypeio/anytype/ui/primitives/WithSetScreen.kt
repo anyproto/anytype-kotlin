@@ -71,6 +71,7 @@ fun WithSetScreen(
     onTypeEvent: (TypeEvent) -> Unit,
     objectId: String,
     space: String,
+    view: String? = null,
 ) {
     val topAppBarScrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior(
         state = rememberTopAppBarState()
@@ -106,6 +107,7 @@ fun WithSetScreen(
                 uiHorizontalButtonsState = uiHorizontalButtonsState,
                 objectId = objectId,
                 space = space,
+                view = view,
                 onTypeEvent = onTypeEvent,
                 objectSetFragment = objectSetFragment
             )
@@ -150,6 +152,7 @@ private fun MainContentSet(
     uiHorizontalButtonsState: UiHorizontalButtonsState,
     objectId: String,
     space: String,
+    view: String?,
     onTypeEvent: (TypeEvent) -> Unit,
     objectSetFragment: MutableState<ObjectSetFragment?>
 ) {
@@ -209,7 +212,8 @@ private fun MainContentSet(
                 .fillMaxSize(),
             arguments = ObjectSetFragment.args(
                 ctx = objectId,
-                space = space
+                space = space,
+                view = view
             )
         ) { fragment ->
             objectSetFragment.value = fragment

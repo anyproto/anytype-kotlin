@@ -6,8 +6,6 @@ import androidx.compose.animation.core.LinearOutSlowInEasing
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,14 +18,12 @@ import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -46,14 +42,10 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 fun WidgetHeader(
     icon: ObjectIcon,
     title: String,
-    isCardMenuExpanded: MutableState<Boolean>,
-    onWidgetHeaderClicked: () -> Unit,
-    onWidgetMenuTriggered: () -> Unit,
     onObjectCheckboxClicked: (Boolean) -> Unit = {},
     onExpandElement: () -> Unit = {},
     onCreateElement: () -> Unit = {},
     isExpanded: Boolean = false,
-    isInEditMode: Boolean = true,
     hasReadOnlyAccess: Boolean = false,
     canCreateObject: Boolean
 ) {
@@ -66,7 +58,7 @@ fun WidgetHeader(
         verticalAlignment = Alignment.CenterVertically
     ) {
         ListWidgetObjectIcon(
-            iconSize = 18.dp,
+            iconSize = 20.dp,
             icon = icon,
             modifier = Modifier.padding(end = 12.dp),
             onTaskIconClicked = onObjectCheckboxClicked,
@@ -156,13 +148,9 @@ fun WidgetHeaderPreview() {
     WidgetHeader(
         icon = ObjectIcon.TypeIcon.Default.DEFAULT,
         title = "Widget title",
-        isCardMenuExpanded = remember { mutableStateOf(false) },
-        onWidgetHeaderClicked = {},
-        onWidgetMenuTriggered = {},
         onObjectCheckboxClicked = {},
         onExpandElement = {},
         onCreateElement = {},
-        isInEditMode = false,
         hasReadOnlyAccess = false,
         canCreateObject = true
     )

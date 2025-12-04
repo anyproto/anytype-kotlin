@@ -2025,6 +2025,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
         <item quantity="one">%d neue Nachricht</item>
         <item quantity="other">%d neue Nachrichten</item>
     </plurals>
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Genehmigen</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Du kannst nur 10 Dateien auf einmal hochladen</string>

@@ -63,6 +63,7 @@ enum class SpaceUxType(val code: Int) {
     DATA(1),
     STREAM(2),
     CHAT(3),
+    ONE_TO_ONE(4)
 }
 
 sealed class SpaceInviteError : Exception() {

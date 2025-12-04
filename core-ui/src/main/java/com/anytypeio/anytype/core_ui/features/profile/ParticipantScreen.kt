@@ -42,6 +42,8 @@ import com.anytypeio.anytype.presentation.profile.ParticipantEvent
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel.UiParticipantScreenState
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 import coil3.compose.AsyncImage
+import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -134,6 +136,19 @@ fun ParticipantScreen(
                             .padding(horizontal = 32.dp)
                             .align(Alignment.CenterHorizontally),
                         description = uiState.description!!
+                    )
+                }
+                if (!uiState.isOwner) {
+                    Spacer(modifier = Modifier.height(24.dp))
+                    ButtonSecondaryLoading(
+                        text = stringResource(R.string.participant_btn_connect),
+                        onClick = { onEvent(ParticipantEvent.OnConnectClicked) },
+                        enabled = !uiState.isConnecting,
+                        size = ButtonSize.Large,
+                        loading = uiState.isConnecting,
+                        modifierButton = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 24.dp)
                     )
                 }
                 val h = spacer + 16.dp

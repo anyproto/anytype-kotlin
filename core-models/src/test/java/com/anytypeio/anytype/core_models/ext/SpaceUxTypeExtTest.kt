@@ -105,4 +105,37 @@ class SpaceUxTypeExtTest {
         val nullType: SpaceUxType? = null
         assertTrue(nullType.shouldShowMemberCount)
     }
+
+    // canCreateAdditionalChats tests
+
+    @Test
+    fun `CHAT space should not allow creating additional chats`() {
+        assertFalse(SpaceUxType.CHAT.canCreateAdditionalChats)
+    }
+
+    @Test
+    fun `ONE_TO_ONE space should not allow creating additional chats`() {
+        assertFalse(SpaceUxType.ONE_TO_ONE.canCreateAdditionalChats)
+    }
+
+    @Test
+    fun `DATA space should allow creating additional chats`() {
+        assertTrue(SpaceUxType.DATA.canCreateAdditionalChats)
+    }
+
+    @Test
+    fun `STREAM space should allow creating additional chats`() {
+        assertTrue(SpaceUxType.STREAM.canCreateAdditionalChats)
+    }
+
+    @Test
+    fun `NONE space should allow creating additional chats`() {
+        assertTrue(SpaceUxType.NONE.canCreateAdditionalChats)
+    }
+
+    @Test
+    fun `null space type should allow creating additional chats`() {
+        val nullType: SpaceUxType? = null
+        assertTrue(nullType.canCreateAdditionalChats)
+    }
 }

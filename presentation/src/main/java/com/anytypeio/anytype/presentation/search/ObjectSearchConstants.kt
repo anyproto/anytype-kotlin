@@ -64,8 +64,8 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
-        // Exclude chat types in chat spaces
-        if (spaceUxType == SpaceUxType.CHAT) {
+        // Exclude chat types in chat and 1-1 spaces
+        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
             // Filter out objects whose type is chat
             add(
                 DVFilter(
@@ -150,8 +150,8 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
-        // Exclude chat types in chat spaces
-        if (spaceUxType == SpaceUxType.CHAT) {
+        // Exclude chat types in chat and 1-1 spaces
+        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
             // Filter out objects whose type is chat
             add(
                 DVFilter(

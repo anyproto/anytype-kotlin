@@ -126,7 +126,7 @@ object SupportedLayouts {
     /**
      * Get system layouts for a specific space context.
      *
-     * In chat spaces (UX type == CHAT), CHAT_DERIVED is a system layout.
+     * In chat and 1-1 spaces, CHAT_DERIVED is a system layout.
      * In data spaces, CHAT_DERIVED should be treated as a regular object type.
      *
      * @param spaceUxType The UX type of the current space
@@ -134,7 +134,8 @@ object SupportedLayouts {
      */
     fun getSystemLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
         return when (spaceUxType) {
-            SpaceUxType.CHAT -> baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED, ObjectType.Layout.CHAT)
+            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> 
+                baseSystemLayouts + listOf(ObjectType.Layout.CHAT_DERIVED, ObjectType.Layout.CHAT)
             else -> baseSystemLayouts
         }
     }
@@ -143,14 +144,14 @@ object SupportedLayouts {
      * Get create object layouts for a specific space context.
      *
      * In data spaces, users should be able to create CHAT_DERIVED objects.
-     * In chat spaces (UX type == CHAT), CHAT_DERIVED creation is handled separately.
+     * In chat and 1-1 spaces, CHAT_DERIVED creation is handled separately.
      *
      * @param spaceUxType The UX type of the current space
      * @return List of layouts that can be created in the "New Object" flow
      */
     fun getCreateObjectLayouts(spaceUxType: SpaceUxType?): List<ObjectType.Layout> {
         return when (spaceUxType) {
-            SpaceUxType.CHAT -> baseCreateObjectLayouts
+            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> baseCreateObjectLayouts
             else -> baseCreateObjectLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
         }
     }
@@ -159,14 +160,14 @@ object SupportedLayouts {
      * Get supported layouts for a specific space context.
      *
      * In data spaces, CHAT_DERIVED objects should be visible and manageable.
-     * In chat spaces (UX type == CHAT), CHAT_DERIVED is handled through special UI.
+     * In chat and 1-1 spaces, CHAT_DERIVED is handled through special UI.
      *
      * @param spaceUxType The UX type of the current space
      * @return List of layouts that are supported for display/interaction
      */
     fun getLayouts(spaceUxType: SpaceUxType? = null): List<ObjectType.Layout> {
         return when (spaceUxType) {
-            SpaceUxType.CHAT -> baseLayouts
+            SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> baseLayouts
             else -> baseLayouts + listOf(ObjectType.Layout.CHAT_DERIVED)
         }
     }

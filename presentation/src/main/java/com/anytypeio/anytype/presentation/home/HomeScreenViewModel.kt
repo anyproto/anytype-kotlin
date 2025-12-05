@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
@@ -2505,11 +2506,17 @@ class HomeScreenViewModel(
         val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
         val space = vmParams.spaceId.id
         if (type.key == ObjectTypeIds.CHAT_DERIVED) {
-            commands.emit(
-                Command.CreateChatObject(
-                    space = SpaceId(space)
+            // Check if chat creation is allowed based on space UX type
+            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
+            if (currentSpaceUxType.canCreateAdditionalChats) {
+                commands.emit(
+                    Command.CreateChatObject(
+                        space = SpaceId(space)
+                    )
                 )
-            )
+            } else {
+                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
+            }
         } else {
             val startTime = System.currentTimeMillis()
             createDataViewObject.async(
@@ -2856,8 +2863,14 @@ class HomeScreenViewModel(
         
         // Special handling for CHAT_DERIVED: show create chat screen instead of direct creation
         if (objType?.uniqueKey == ObjectTypeIds.CHAT_DERIVED) {
-            viewModelScope.launch {
-                commands.emit(Command.CreateChatObject(vmParams.spaceId))
+            // Check if chat creation is allowed based on space UX type
+            val currentSpaceUxType = (spaceViewState.value as? SpaceViewState.Success)?.spaceUxType
+            if (currentSpaceUxType.canCreateAdditionalChats) {
+                viewModelScope.launch {
+                    commands.emit(Command.CreateChatObject(vmParams.spaceId))
+                }
+            } else {
+                Timber.d("Chat creation not allowed in $currentSpaceUxType space")
             }
             return
         }

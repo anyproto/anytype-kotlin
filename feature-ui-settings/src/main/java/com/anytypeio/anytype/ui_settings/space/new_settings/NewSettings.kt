@@ -120,23 +120,25 @@ fun NewSpaceSettingsScreen(
                         contentDescription = stringResource(R.string.content_desc_back_button)
                     )
                 }
-                Box(
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .fillMaxHeight()
-                        .noRippleThrottledClickable {
-                            showEditTitle = true
-                        }
-                        .align(Alignment.CenterEnd),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
+                if (uiState.isEditEnabled) {
+                    Box(
                         modifier = Modifier
-                            .padding(horizontal = 16.dp),
-                        text = stringResource(id = R.string.edit),
-                        color = colorResource(id = R.color.glyph_active),
-                        style = BodyRegular
-                    )
+                            .wrapContentWidth()
+                            .fillMaxHeight()
+                            .noRippleThrottledClickable {
+                                showEditTitle = true
+                            }
+                            .align(Alignment.CenterEnd),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            modifier = Modifier
+                                .padding(horizontal = 16.dp),
+                            text = stringResource(id = R.string.edit),
+                            color = colorResource(id = R.color.glyph_active),
+                            style = BodyRegular
+                        )
+                    }
                 }
             }
         },

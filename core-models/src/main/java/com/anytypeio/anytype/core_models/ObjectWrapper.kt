@@ -308,6 +308,8 @@ sealed class ObjectWrapper {
         val name: String? get() = getSingleValue(Relations.NAME)
         val color: String = relationOptionColor.orEmpty()
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)
+        val relationKey: Key? get() = getSingleValue(Relations.RELATION_KEY)
+        val orderId: String? get() = getSingleValue(Relations.ORDER_ID)
     }
 
     data class SpaceView(override val map: Struct) : ObjectWrapper() {

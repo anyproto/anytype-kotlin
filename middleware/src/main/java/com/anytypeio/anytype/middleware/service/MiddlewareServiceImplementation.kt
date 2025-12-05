@@ -1915,6 +1915,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun setRelationOptionsOrder(request: Rpc.Relation.Option.SetOrder.Request): Rpc.Relation.Option.SetOrder.Response {
+        val encoded = Service.relationOptionSetOrder(
+            Rpc.Relation.Option.SetOrder.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Relation.Option.SetOrder.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Relation.Option.SetOrder.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun spaceInviteGenerate(request: Rpc.Space.InviteGenerate.Request): Rpc.Space.InviteGenerate.Response {
         val encoded = Service.spaceInviteGenerate(
             Rpc.Space.InviteGenerate.Request.ADAPTER.encode(request)

@@ -94,6 +94,9 @@ interface MiddlewareService {
     fun deleteRelationOptions(request: Rpc.Relation.ListRemoveOption.Request): Rpc.Relation.ListRemoveOption.Response
 
     @Throws(Exception::class)
+    fun setRelationOptionsOrder(request: Rpc.Relation.Option.SetOrder.Request): Rpc.Relation.Option.SetOrder.Response
+
+    @Throws(Exception::class)
     fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response
 
     @Throws(Exception::class)

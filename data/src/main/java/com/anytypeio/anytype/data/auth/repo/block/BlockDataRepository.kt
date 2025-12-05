@@ -947,6 +947,10 @@ class BlockDataRepository(
         return remote.deleteRelationOption(command)
     }
 
+    override suspend fun setRelationOptionOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        return remote.setRelationOptionOrder(command)
+    }
+
     override suspend fun makeSpaceShareable(space: SpaceId) {
         remote.makeSpaceShareable(space)
     }

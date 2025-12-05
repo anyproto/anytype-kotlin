@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 
@@ -514,6 +515,11 @@ sealed class Command {
     data class ApplyTemplate(val objectId: Id, val template: Id?)
 
     data class DeleteRelationOptions(val optionIds: List<Id>)
+    data class SetRelationOptionsOrder(
+        val space: SpaceId,
+        val relationKey: RelationKey,
+        val orderedIds: List<Id>
+    )
 
     data class RelationListWithValue(val space: SpaceId, val value: String)
 

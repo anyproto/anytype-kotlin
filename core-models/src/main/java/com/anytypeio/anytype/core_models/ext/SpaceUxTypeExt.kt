@@ -15,3 +15,10 @@ val SpaceUxType?.shouldNavigateDirectlyToChat: Boolean
  */
 val SpaceUxType?.shouldShowMessageAuthorInPreview: Boolean
     get() = this != SpaceUxType.ONE_TO_ONE
+
+/**
+ * Whether to show the member count for this space type.
+ * In ONE_TO_ONE spaces, there can only be two people, so showing the count is redundant.
+ */
+val SpaceUxType?.shouldShowMemberCount: Boolean
+    get() = this != SpaceUxType.ONE_TO_ONE

@@ -2012,6 +2012,7 @@
     <string name="share_space_error_make_private_failed">        Не удалось сделать пространство приватным. Пожалуйста, попробуйте позже.
     </string>
     <string name="private_local_yours_forever">зашифрованный, локальный, ваш навсегда</string>
+    <string name="private_channel">Private channel</string>
     <string name="wallpaper_item_space_icon_color">Цвет по умолчанию</string>
     <string name="publish_to_web">Опубликовать в веб</string>
     <string name="preferences">Настройки</string>

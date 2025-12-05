@@ -467,7 +467,7 @@ class SpaceSettingsViewModel(
                 UiSpaceSettingsState.SpaceSettings(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
-                    isEditEnabled = permission?.isOwnerOrEditor() == true,
+                    isEditEnabled = permission?.isOwnerOrEditor() == true && !spaceView.isOneToOneSpace,
                     notificationState = spaceView.spacePushNotificationMode,
                     targetSpaceId = targetSpaceId
                 )

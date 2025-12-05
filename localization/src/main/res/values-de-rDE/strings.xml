@@ -1901,7 +1901,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="onboarding_error_failed_to_stop_running_node">Failed to stop running node. Please restart the app and try again.</string>
     <string name="onboarding_error_failed_to_write_config">Failed to save configuration. Please check storage permissions.</string>
     <string name="onboarding_error_failed_to_create_local_repo">Failed to create local repository. Please check available storage space.</string>
-    <string name="onboarding_error_account_creation_canceled">Account creation was canceled.</string>
+    <string name="onboarding_error_account_creation_canceled">Kontoerstellung wurde abgebrochen.</string>
     <string name="onboarding_error_config_file_not_found">Konfigurationsdatei nicht gefunden. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_invalid">Ungültige Konfigurationsdatei. Bitte die App neu installieren.</string>
     <string name="onboarding_error_config_file_network_id_mismatch">Netzwerkkonfiguration stimmt nicht überein. Bitte überprüfe deine Netzwerkeinstellungen.</string>
@@ -1984,7 +1984,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
-    <string name="private_channel">Private channel</string>
+    <string name="private_channel">Privater Kanal</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>
@@ -2046,5 +2046,5 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="toast_moved_to_bin">Objekt in den Papierkorb verschoben.</string>
     <string name="media_object_in_bin">Dieses Objekt befindet sich im Papierkorb. Wiederherstellen?</string>
     <string name="toast_restored">Objekt wiederhergestellt.</string>
-    <string name="participant_btn_connect">Connect</string>
+    <string name="participant_btn_connect">Verbinden</string>
 </resources>

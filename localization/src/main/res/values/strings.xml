@@ -2292,6 +2292,7 @@ Please provide specific details of your needs here.</string>
         Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_channel">Private channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
 
     <string name="publish_to_web">Publish to Web</string>

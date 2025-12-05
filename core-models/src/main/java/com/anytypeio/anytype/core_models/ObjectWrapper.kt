@@ -401,6 +401,10 @@ sealed class ObjectWrapper {
             return spaceAccessType == SpaceAccessType.SHARED
         }
 
+        val isOneToOneSpace: Boolean get() {
+            return spaceUxType == SpaceUxType.ONE_TO_ONE
+        }
+
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
                 ?.let { code ->

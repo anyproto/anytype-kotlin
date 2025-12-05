@@ -254,7 +254,7 @@ class SplashViewModel(
                             val target = result.objectId
                             val view = awaitActiveSpaceView(space)
                             if (view != null) {
-                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) view.chatId else null
                                 // Layout may not be known here; open as an object and let UI resolve.
                                 commands.emit(
                                     Command.NavigateToObject(
@@ -409,7 +409,7 @@ class SplashViewModel(
                             val view = awaitActiveSpaceView(SpaceId(space))
                             if (view != null) {
                                 val chatId =
-                                    if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                    if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) view.chatId else null
                                 emitNavigationForObject(
                                     id = id,
                                     space = space,
@@ -442,7 +442,7 @@ class SplashViewModel(
                 Timber.i("Space view loaded: $view")
                 val chat = view.chatId
                 when {
-                    view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
+                    (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) && chat != null -> {
                         Timber.i("Navigating to space level chat with id: $chat")
                         commands.emit(
                             Command.NavigateToChat(

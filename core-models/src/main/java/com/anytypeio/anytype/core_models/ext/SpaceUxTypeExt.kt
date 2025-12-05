@@ -22,3 +22,10 @@ val SpaceUxType?.shouldShowMessageAuthorInPreview: Boolean
  */
 val SpaceUxType?.shouldShowMemberCount: Boolean
     get() = this != SpaceUxType.ONE_TO_ONE
+
+/**
+ * Whether users can create additional chats in this space type.
+ * In CHAT and ONE_TO_ONE spaces, users cannot create additional chat objects.
+ */
+val SpaceUxType?.canCreateAdditionalChats: Boolean
+    get() = this != SpaceUxType.CHAT && this != SpaceUxType.ONE_TO_ONE

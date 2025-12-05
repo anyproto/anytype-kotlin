@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
@@ -351,7 +352,9 @@ class SpaceSettingsViewModel(
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(height = 4))
-                            add(MembersSmall(count = spaceMemberCount))
+                            if (spaceView.spaceUxType.shouldShowMemberCount) {
+                                add(MembersSmall(count = spaceMemberCount))
+                            }
                         }
 
                         SpaceAccessType.DEFAULT, null -> {

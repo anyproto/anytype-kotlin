@@ -72,4 +72,37 @@ class SpaceUxTypeExtTest {
         val nullType: SpaceUxType? = null
         assertTrue(nullType.shouldShowMessageAuthorInPreview)
     }
+
+    // shouldShowMemberCount tests
+
+    @Test
+    fun `CHAT space should show member count`() {
+        assertTrue(SpaceUxType.CHAT.shouldShowMemberCount)
+    }
+
+    @Test
+    fun `ONE_TO_ONE space should not show member count`() {
+        assertFalse(SpaceUxType.ONE_TO_ONE.shouldShowMemberCount)
+    }
+
+    @Test
+    fun `DATA space should show member count`() {
+        assertTrue(SpaceUxType.DATA.shouldShowMemberCount)
+    }
+
+    @Test
+    fun `STREAM space should show member count`() {
+        assertTrue(SpaceUxType.STREAM.shouldShowMemberCount)
+    }
+
+    @Test
+    fun `NONE space should show member count`() {
+        assertTrue(SpaceUxType.NONE.shouldShowMemberCount)
+    }
+
+    @Test
+    fun `null space type should show member count`() {
+        val nullType: SpaceUxType? = null
+        assertTrue(nullType.shouldShowMemberCount)
+    }
 }

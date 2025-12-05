@@ -93,23 +93,33 @@ fun HomeScreenToolbar(
             overflow = TextOverflow.Ellipsis
         )
 
-        if (spaceViewState.spaceUxType.shouldShowMemberCount) {
-            val context = LocalContext.current
-            val locale = context.resources.configuration.locales[0]
-            val text = if (locale != null && spaceViewState.membersCount > 0) {
-                pluralStringResource(
-                    id = R.plurals.multiplayer_number_of_space_members,
-                    spaceViewState.membersCount,
-                    spaceViewState.membersCount,
-                    spaceViewState.membersCount
-                )
-            } else {
-                if (locale == null) {
-                    Timber.e("Error getting the locale")
+        // Show either member count or "Private channel" based on space type
+        val subtitleText: String? = when (spaceViewState.spaceUxType) {
+            SpaceUxType.ONE_TO_ONE -> stringResource(id = R.string.private_channel)
+            else -> {
+                if (spaceViewState.spaceUxType.shouldShowMemberCount) {
+                    val context = LocalContext.current
+                    val locale = context.resources.configuration.locales[0]
+                    if (locale != null && spaceViewState.membersCount > 0) {
+                        pluralStringResource(
+                            id = R.plurals.multiplayer_number_of_space_members,
+                            spaceViewState.membersCount,
+                            spaceViewState.membersCount,
+                            spaceViewState.membersCount
+                        )
+                    } else {
+                        if (locale == null) {
+                            Timber.e("Error getting the locale")
+                        }
+                        stringResource(id = R.string.three_dots_text_placeholder)
+                    }
+                } else {
+                    null
                 }
-                stringResource(id = R.string.three_dots_text_placeholder)
             }
+        }
 
+        subtitleText?.let { text ->
             Text(
                 text = text,
                 style = Relations2,

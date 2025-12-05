@@ -1983,6 +1983,7 @@ En concreto,
     </string>
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
+    <string name="private_channel">Private channel</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>

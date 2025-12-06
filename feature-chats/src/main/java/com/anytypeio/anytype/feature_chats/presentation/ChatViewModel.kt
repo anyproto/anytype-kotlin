@@ -245,7 +245,8 @@ class ChatViewModel @Inject constructor(
                                 icon = view.spaceIcon(builder = urlBuilder),
                                 isMuted = isMuted,
                                 notificationSetting = notificationSetting,
-                                canEdit = canEdit
+                                canEdit = canEdit,
+                                showAddMembers = view.spaceUxType != SpaceUxType.ONE_TO_ONE
                             )
                         } else {
                             // Chat object

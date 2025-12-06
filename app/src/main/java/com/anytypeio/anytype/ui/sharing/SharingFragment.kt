@@ -12,6 +12,7 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
@@ -69,85 +70,85 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            MaterialTheme(
-                typography = typography
-            ) {
-                AddToAnytypeScreen(
-                    content = vm.state.map { state ->
-                        when (state) {
-                            is AddToAnytypeViewModel.ViewState.Default -> state.content
-                            AddToAnytypeViewModel.ViewState.Init -> ""
+    ) = content {
+        MaterialTheme(
+            typography = typography
+        ) {
+            AddToAnytypeScreen(
+                content = vm.state.map { state ->
+                    when (state) {
+                        is AddToAnytypeViewModel.ViewState.Default -> state.content
+                        AddToAnytypeViewModel.ViewState.Init -> ""
+                    }
+                }.collectAsState(initial = "").value,
+                data = sharedData,
+                onAddClicked = { option ->
+                    when (option) {
+                        SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
+                        SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
+                        SAVE_AS_FILE -> {
+                            vm.onShareFiles(uris = listOf(sharedData.data))
                         }
-                    }.collectAsState(initial = "").value,
-                    data = sharedData,
-                    onAddClicked = { option ->
-                        when(option) {
-                            SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
-                            SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                            SAVE_AS_FILE -> {
-                                vm.onShareFiles(uris = listOf(sharedData.data),)
+
+                        SAVE_AS_FILES -> {
+                            val data = sharedData
+                            if (data is SharingData.Files) {
+                                vm.onShareFiles(uris = data.uris)
+                            } else {
+                                toast("Unexpected data format")
                             }
-                            SAVE_AS_FILES -> {
-                                val data = sharedData
-                                if (data is SharingData.Files) {
-                                    vm.onShareFiles(uris = data.uris)
-                                } else {
+                        }
+
+                        SAVE_AS_IMAGES, SAVE_AS_IMAGE, SAVE_AS_VIDEOS -> {
+                            when (val data = sharedData) {
+                                is SharingData.Image -> vm.onShareFiles(uris = listOf(data.uri))
+                                is SharingData.Images -> vm.onShareFiles(uris = data.uris)
+                                is SharingData.Videos -> vm.onShareFiles(uris = data.uris)
+                                else -> {
                                     toast("Unexpected data format")
                                 }
                             }
-                            SAVE_AS_IMAGES, SAVE_AS_IMAGE, SAVE_AS_VIDEOS -> {
-                                when (val data = sharedData) {
-                                    is SharingData.Image -> vm.onShareFiles(uris = listOf(data.uri))
-                                    is SharingData.Images -> vm.onShareFiles(uris = data.uris)
-                                    is SharingData.Videos -> vm.onShareFiles(uris = data.uris)
-                                    else -> {
-                                        toast("Unexpected data format")
-                                    }
-                                }
-                            }
                         }
-                    },
-                    onCancelClicked = {
-                        vm.onCancelClicked().also {
+                    }
+                },
+                onCancelClicked = {
+                    vm.onCancelClicked().also {
+                        dismiss()
+                    }
+                },
+                spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
+                onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
+                progressState = vm.progressState.collectAsStateWithLifecycle().value,
+                onOpenClicked = vm::proceedWithNavigation,
+            )
+            LaunchedEffect(Unit) {
+                vm.navigation.collect { nav ->
+                    when (nav) {
+                        is OpenObjectNavigation.OpenEditor -> {
                             dismiss()
-                        }
-                    },
-                    spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
-                    onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
-                    progressState = vm.progressState.collectAsStateWithLifecycle().value,
-                    onOpenClicked = vm::proceedWithNavigation,
-                )
-                LaunchedEffect(Unit) {
-                    vm.navigation.collect { nav ->
-                        when(nav) {
-                            is OpenObjectNavigation.OpenEditor -> {
-                                dismiss()
-                                findNavController().navigate(
-                                    R.id.objectNavigation,
-                                    EditorFragment.args(
-                                        ctx = nav.target,
-                                        space = nav.space
-                                    )
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = nav.target,
+                                    space = nav.space
                                 )
-                            }
-                            else -> {
-                                // Do nothing.
-                            }
+                            )
+                        }
+
+                        else -> {
+                            // Do nothing.
                         }
                     }
                 }
-                LaunchedEffect(Unit) {
-                    vm.toasts.collect { toast ->
-                        toast(toast)
-                    }
+            }
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { toast ->
+                    toast(toast)
                 }
-                LaunchedEffect(Unit) {
-                    vm.commands.collect { command ->
-                        proceedWithCommand(command)
-                    }
+            }
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command ->
+                    proceedWithCommand(command)
                 }
             }
         }

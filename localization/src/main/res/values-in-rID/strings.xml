@@ -2011,7 +2011,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>
-    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_title">Ini ANY ID-mu</string>
     <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
     <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->

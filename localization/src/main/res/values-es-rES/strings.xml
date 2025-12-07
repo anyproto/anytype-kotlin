@@ -1983,7 +1983,7 @@ En concreto,
     </string>
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
-    <string name="private_channel">Private channel</string>
+    <string name="private_channel">Canal privado</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -2025,9 +2025,9 @@ En concreto,
         <item quantity="one">%d mensaje nuevo</item>
         <item quantity="other">%d mensajes nuevos</item>
     </plurals>
-    <string name="any_id_info_title">This is your ANY ID</string>
-    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
-    <string name="any_id_info_button">Explore plans</string>
+    <string name="any_id_info_title">Este es tu ID ANY</string>
+    <string name="any_id_info_description">Suscríbete para que tu ID sea legible y otras personas puedan encontrarte y ponerse en contacto contigo fácilmente.</string>
+    <string name="any_id_info_button">Explorar planes</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Aprobar</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">No puedes subir más de 10 archivos al mismo tiempo</string>

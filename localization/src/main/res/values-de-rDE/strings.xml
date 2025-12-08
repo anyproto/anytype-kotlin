@@ -1984,7 +1984,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">verschlüsselt, lokal, für immer deins</string>
-    <string name="private_channel">Privater Kanal</string>
+    <string name="private_channel">Direkter Kanal</string>
     <string name="wallpaper_item_space_icon_color">Standardfarbe</string>
     <string name="publish_to_web">Im Web veröffentlichen</string>
     <string name="preferences">Einstellungen</string>

@@ -1970,7 +1970,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
-    <string name="private_channel">Private channel</string>
+    <string name="private_channel">Kanal langsung</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>

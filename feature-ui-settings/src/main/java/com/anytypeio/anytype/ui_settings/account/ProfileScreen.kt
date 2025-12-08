@@ -110,7 +110,8 @@ fun ProfileSettingsScreen(
     onHeaderTitleClicked: () -> Unit,
     notificationsDisabled: Boolean,
     onOpenNotificationSettings: () -> Unit,
-    onIdentityClicked: () -> Unit = onMembershipClicked
+    onIdentityClicked: () -> Unit = onMembershipClicked,
+    onShowQrCodeClicked: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -125,7 +126,8 @@ fun ProfileSettingsScreen(
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
                 onTitleClicked = onHeaderTitleClicked,
-                onIdentityClicked = onIdentityClicked
+                onIdentityClicked = onIdentityClicked,
+                onShowQrCodeClicked = onShowQrCodeClicked
             )
         }
         item {
@@ -404,7 +406,8 @@ private fun Header(
     onNameSet: (String) -> Unit,
     clearProfileImage: () -> Unit,
     onTitleClicked: () -> Unit,
-    onIdentityClicked: () -> Unit
+    onIdentityClicked: () -> Unit,
+    onShowQrCodeClicked: () -> Unit
 ) {
     when (account) {
         is AccountProfile.Data -> {
@@ -412,7 +415,11 @@ private fun Header(
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 20.dp)) {
-                ProfileTitleBlock(account, onIdentityClicked)
+                ProfileTitleBlock(
+                    account = account,
+                    onIdentityClicked = onIdentityClicked,
+                    onShowQrCodeClicked = onShowQrCodeClicked
+                )
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -519,7 +526,8 @@ fun ProfileNameBlock(
 @Composable
 fun BoxScope.ProfileTitleBlock(
     account: AccountProfile.Data,
-    onClick: () -> Unit
+    onIdentityClicked: () -> Unit,
+    onShowQrCodeClicked: () -> Unit
 ) {
     val globalName = account.globalName
     val identity = account.identity
@@ -536,11 +544,23 @@ fun BoxScope.ProfileTitleBlock(
             .height(32.dp)
     }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp),
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 16.dp)
+                .size(44.dp)
+                .clickable { onShowQrCodeClicked() },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(R.drawable.ic_qr_code_24),
+                contentDescription = "Show QR code",
+                contentScale = ContentScale.Fit,
+            )
+        }
         Row(
             modifier = modifier,
             verticalAlignment = Alignment.CenterVertically,
@@ -561,7 +581,7 @@ fun BoxScope.ProfileTitleBlock(
                     maxLines = 1,
                     modifier = Modifier
                         .wrapContentWidth()
-                        .noRippleClickable { onClick() }
+                        .noRippleClickable { onIdentityClicked() }
                 )
             } else {
                 Spacer(modifier = Modifier.width(8.dp))
@@ -580,7 +600,7 @@ fun BoxScope.ProfileTitleBlock(
                     maxLines = 1,
                     modifier = Modifier
                         .width(108.dp)
-                        .noRippleClickable { onClick() }
+                        .noRippleClickable { onIdentityClicked() }
                 )
                 Spacer(modifier = Modifier.width(8.dp))
             }

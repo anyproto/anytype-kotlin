@@ -15,6 +15,7 @@ import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GenerateOneToOneChatLink
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -60,7 +61,8 @@ object ProfileModule {
         profileSubscriptionManager: ProfileSubscriptionManager,
         removeObjectIcon: RemoveObjectIcon,
         notificationPermissionManager: NotificationPermissionManager,
-        userPermissionProvider: UserPermissionProvider
+        userPermissionProvider: UserPermissionProvider,
+        generateOneToOneChatLink: GenerateOneToOneChatLink
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         analytics = analytics,
         container = storelessSubscriptionContainer,
@@ -73,7 +75,8 @@ object ProfileModule {
         profileSubscriptionManager = profileSubscriptionManager,
         removeObjectIcon = removeObjectIcon,
         notificationPermissionManager = notificationPermissionManager,
-        userPermissionProvider = userPermissionProvider
+        userPermissionProvider = userPermissionProvider,
+        generateOneToOneChatLink = generateOneToOneChatLink
     )
 
     @Provides
@@ -140,6 +143,15 @@ object ProfileModule {
     fun provideSetDocumentImageIcon(
         repo: BlockRepository
     ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGenerateOneToOneChatLink(
+        dispatchers: AppCoroutineDispatchers
+    ): GenerateOneToOneChatLink = GenerateOneToOneChatLink(
+        dispatchers = dispatchers
+    )
 
     @Module
     interface Bindings {

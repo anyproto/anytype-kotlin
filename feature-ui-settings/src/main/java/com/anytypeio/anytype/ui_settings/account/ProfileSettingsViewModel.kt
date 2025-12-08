@@ -18,18 +18,21 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GenerateOneToOneChatLink
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.profile.AccountProfile
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
+import com.anytypeio.anytype.presentation.profile.AccountProfile
+import com.anytypeio.anytype.presentation.profile.UiProfileQrCodeState
+import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
@@ -51,7 +54,8 @@ class ProfileSettingsViewModel(
     private val profileContainer: ProfileSubscriptionManager,
     private val removeObjectIcon: RemoveObjectIcon,
     private val notificationPermissionManager: NotificationPermissionManager,
-    private val userPermissionProvider: UserPermissionProvider
+    private val userPermissionProvider: UserPermissionProvider,
+    private val generateOneToOneChatLink: GenerateOneToOneChatLink
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
@@ -64,6 +68,8 @@ class ProfileSettingsViewModel(
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
     val isDebugEnabled = MutableStateFlow(BuildConfig.DEBUG)
+
+    val profileQrCodeState = MutableStateFlow<UiProfileQrCodeState>(UiProfileQrCodeState.Hidden)
 
     val notificationsDisabled: StateFlow<Boolean> =
         notificationPermissionManager.permissionState().map { state ->
@@ -202,6 +208,66 @@ class ProfileSettingsViewModel(
         notificationPermissionManager.refreshPermissionState()
     }
 
+    fun onShowQrCodeClicked() {
+        viewModelScope.launch {
+
+            val config = configStorage.getOrNull() ?: return@launch
+            val profile = (profileData.value as? AccountProfile.Data) ?: return@launch
+
+            val identity = profile.identity
+            val name = profile.name
+            val icon = profile.icon
+
+            if (identity == null || config.metaDataKey.isEmpty()) {
+                Timber.e("Cannot generate QR code: profile=$profile, identity=$identity")
+                sendToast("Failed to generate QR code")
+                return@launch
+            }
+
+            generateOneToOneChatLink.async(
+                GenerateOneToOneChatLink.Params(
+                    identity = identity,
+                    metaDataKey = config.metaDataKey,
+                    name = name
+                )
+            ).fold(
+                onSuccess = { linkData ->
+                    profileQrCodeState.value = UiProfileQrCodeState.ProfileLink(
+                        link = linkData.link,
+                        name = linkData.name,
+                        icon = icon,
+                        globalName = profile.globalName,
+                        identity = profile.identity
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error generating 1-1 chat link")
+                    sendToast("Failed to generate QR code")
+                }
+            )
+        }
+    }
+
+    fun onHideQrCodeScreen() {
+        profileQrCodeState.value = UiProfileQrCodeState.Hidden
+    }
+
+    fun onQrCodeScanned(qrCode: String) {
+        viewModelScope.launch {
+            // First, dismiss the QR code sheet
+            profileQrCodeState.value = UiProfileQrCodeState.Hidden
+            // Emit command to process the scanned QR code
+            commands.emit(Command.ProcessScannedQrCode(qrCode))
+        }
+    }
+
+    sealed class Command {
+        data class ShareLink(val link: String) : Command()
+        data class ProcessScannedQrCode(val qrCode: String) : Command()
+    }
+
+    val commands = MutableSharedFlow<Command>(replay = 0)
+
     class Factory(
         private val analytics: Analytics,
         private val container: StorelessSubscriptionContainer,
@@ -214,7 +280,8 @@ class ProfileSettingsViewModel(
         private val profileSubscriptionManager: ProfileSubscriptionManager,
         private val removeObjectIcon: RemoveObjectIcon,
         private val notificationPermissionManager: NotificationPermissionManager,
-        private val userPermissionProvider: UserPermissionProvider
+        private val userPermissionProvider: UserPermissionProvider,
+        private val generateOneToOneChatLink: GenerateOneToOneChatLink
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -230,7 +297,8 @@ class ProfileSettingsViewModel(
                 profileContainer = profileSubscriptionManager,
                 removeObjectIcon = removeObjectIcon,
                 notificationPermissionManager = notificationPermissionManager,
-                userPermissionProvider = userPermissionProvider
+                userPermissionProvider = userPermissionProvider,
+                generateOneToOneChatLink = generateOneToOneChatLink
             ) as T
         }
     }

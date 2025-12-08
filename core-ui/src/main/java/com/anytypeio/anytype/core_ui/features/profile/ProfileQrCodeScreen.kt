@@ -164,7 +164,7 @@ private fun QrCodeToolbar(
             .padding(horizontal = 4.dp),
     ) {
 
-        ProfileUserName(
+        GlobalNameOrIdentity(
             modifier = Modifier.align(Alignment.Center),
             globalName = globalName,
             identity = identity,

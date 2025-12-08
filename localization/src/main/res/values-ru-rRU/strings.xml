@@ -1870,6 +1870,13 @@
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
     <string name="space_settings_join_space_by_qr_title">Присоединись</string>
+    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_share_button">Поделиться</string>
+    <string name="profile_qr_copy_button">Скопировать ссылку</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Ссылка скопирована</string>
     <string name="object_type_add_property_screen_title">Добавить свойство</string>
     <string name="object_type_add_property_screen_create">Создать свойство \"%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Формат свойств</string>

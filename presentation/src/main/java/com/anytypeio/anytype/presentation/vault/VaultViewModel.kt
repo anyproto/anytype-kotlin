@@ -11,13 +11,14 @@ import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
+import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
-import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.tools.AppInfo
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -39,6 +41,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
@@ -122,7 +125,9 @@ class VaultViewModel(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
-    private val appInfo: AppInfo
+    private val appInfo: AppInfo,
+    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val createSpace: CreateSpace
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -828,6 +833,22 @@ class VaultViewModel(
         vaultErrors.value = VaultErrors.Hidden
         viewModelScope.launch {
             try {
+                // First, check if it's a 1-1 chat link (hi.any.coop)
+                val oneToOneChatRegex = Regex("""hi\.any\.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)""")
+                val oneToOneMatch = oneToOneChatRegex.find(qrCode)
+                if (oneToOneMatch != null) {
+                    val identity = oneToOneMatch.groupValues.getOrNull(1)
+                    val metadataKey = oneToOneMatch.groupValues.getOrNull(2)
+                    if (identity != null && metadataKey != null) {
+                        proceedWithOneToOneChatInitiation(
+                            identity = identity,
+                            metadataKey = metadataKey
+                        )
+                        return@launch
+                    }
+                }
+
+                // Otherwise, check if it's a space invite link
                 val fileKey = spaceInviteResolver.parseFileKey(qrCode)
                 val contentId = spaceInviteResolver.parseContentId(qrCode)
 
@@ -935,6 +956,13 @@ class VaultViewModel(
                         VaultCommand.Deeplink.MembershipScreen(
                             tierId = deeplink.tierId
                         )
+                    )
+                }
+
+                is DeepLinkResolver.Action.InitiateOneToOneChat -> {
+                    proceedWithOneToOneChatInitiation(
+                        identity = deeplink.identity,
+                        metadataKey = deeplink.metadataKey
                     )
                 }
 
@@ -1333,6 +1361,94 @@ class VaultViewModel(
         Timber.d("VaultViewModel - Clearing drag state")
         pendingPinnedSpacesOrder = null
         lastMovedSpaceId = null
+    }
+    //endregion
+
+    //region One-to-One Chat Initiation
+    /**
+     * Initiates a 1-1 chat with a participant identified by their identity.
+     * First checks if a chat already exists with this identity, and if so, navigates to it.
+     * Otherwise, creates a new ONE_TO_ONE space and navigates to it.
+     *
+     * @param identity The identity of the participant to chat with
+     * @param metadataKey The metadata key for the chat (used for encryption)
+     */
+    private fun proceedWithOneToOneChatInitiation(identity: Id, metadataKey: String) {
+        Timber.d("proceedWithOneToOneChatInitiation: identity=$identity")
+        viewModelScope.launch {
+            // First, check if a 1-1 chat already exists with this identity
+            findOneToOneChatByIdentity.async(
+                FindOneToOneChatByIdentity.Params(identity = identity)
+            ).fold(
+                onSuccess = { existingChat ->
+                    if (existingChat != null) {
+                        // Navigate to existing chat
+                        Timber.d("Found existing 1-1 chat: ${existingChat.spaceId}")
+                        navigateToOneToOneChat(existingChat.spaceId)
+                    } else {
+                        // Create new ONE_TO_ONE space
+                        Timber.d("No existing 1-1 chat found, creating new space")
+                        createOneToOneSpace(identity)
+                    }
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error finding existing 1-1 chat")
+                    // Try to create a new space anyway
+                    createOneToOneSpace(identity)
+                }
+            )
+        }
+    }
+
+    /**
+     * Creates a new ONE_TO_ONE space with the given participant identity.
+     */
+    private suspend fun createOneToOneSpace(identity: Id) {
+        val params = CreateSpace.Params(
+            details = mapOf(
+                Relations.ONE_TO_ONE_IDENTITY to identity,
+                Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
+                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
+                Relations.SPACE_DASHBOARD_ID to "chat"
+            ),
+            useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
+        )
+
+        createSpace.async(params).fold(
+            onSuccess = { response ->
+                Timber.d("Successfully created 1-1 space: ${response.space.id}")
+                navigateToOneToOneChat(response.space)
+            },
+            onFailure = { error ->
+                Timber.e(error, "Failed to create 1-1 space")
+                navigations.emit(
+                    VaultNavigation.ShowError(error.message ?: "Failed to start chat")
+                )
+            }
+        )
+    }
+
+    /**
+     * Navigates to a 1-1 chat space.
+     */
+    private suspend fun navigateToOneToOneChat(spaceId: SpaceId) {
+        spaceManager.set(spaceId.id).fold(
+            onFailure = { error ->
+                Timber.e(error, "Could not select space")
+                navigations.emit(
+                    VaultNavigation.ShowError(error.message ?: "Failed to open chat")
+                )
+            },
+            onSuccess = { config ->
+                Timber.d("Selected space: ${spaceId.id}")
+                proceedWithSavingCurrentSpace(
+                    targetSpace = spaceId,
+                    config = config,
+                    spaceUxType = SpaceUxType.ONE_TO_ONE,
+                    emitSettings = false
+                )
+            }
+        )
     }
     //endregion
 }

@@ -32,7 +32,6 @@ import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.NodeUsage
 import com.anytypeio.anytype.core_models.NodeUsageInfo
 import com.anytypeio.anytype.core_models.Notification
-import com.anytypeio.anytype.core_models.NotificationActionType
 import com.anytypeio.anytype.core_models.NotificationPayload
 import com.anytypeio.anytype.core_models.NotificationStatus
 import com.anytypeio.anytype.core_models.ObjectOrder
@@ -854,7 +853,8 @@ fun Account.Info.config(): Config = Config(
     network = networkId,
     workspaceObjectId = workspaceObjectId,
     ethereumAddress = ethereumAddress,
-    spaceChatId = spaceChatId.ifEmpty { null }
+    spaceChatId = spaceChatId.ifEmpty { null },
+    metaDataKey = metaDataKey
 )
 
 fun MManifestInfo.toCoreModel(): ManifestInfo {

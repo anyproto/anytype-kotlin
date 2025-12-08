@@ -4,7 +4,6 @@ import anytype.Rpc
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountSetup
 import com.anytypeio.anytype.core_models.AccountStatus
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.middleware.mappers.config
 import com.anytypeio.anytype.middleware.mappers.core
 
@@ -32,24 +31,8 @@ fun Rpc.Account.Select.Response.toAccountSetup(): AccountSetup {
     val status = acc.status
 
     return AccountSetup(
-        account = Account(
-            id = acc.id
-        ),
-        config = Config(
-            home = info.homeObjectId,
-            profile = info.profileObjectId,
-            gateway = info.gatewayUrl,
-            spaceView = info.spaceViewId,
-            space = info.accountSpaceId,
-            widgets = info.widgetsId,
-            analytics = info.analyticsId,
-            device = info.deviceId,
-            network = info.networkId,
-            techSpace = info.techSpaceId,
-            workspaceObjectId = info.workspaceObjectId,
-            ethereumAddress = info.ethereumAddress,
-            spaceChatId = info.spaceChatId.ifEmpty { null }
-        ),
+        account = Account(acc.id),
+        config = info.config(),
         status = status?.core() ?: AccountStatus.Unknown
     )
 }

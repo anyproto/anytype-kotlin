@@ -60,6 +60,7 @@ fun Messages(
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
     spaceUxType: SpaceUxType? = null
 ) {
+    val isOneToOneSpace = spaceUxType == SpaceUxType.ONE_TO_ONE
     Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
@@ -106,7 +107,7 @@ fun Messages(
                     else
                         Arrangement.Start
                 ) {
-                    if (!msg.isUserAuthor) {
+                    if (!msg.isUserAuthor && !isOneToOneSpace) {
                         ChatUserAvatar(
                             msg = msg,
                             avatar = msg.avatar,
@@ -126,7 +127,7 @@ fun Messages(
                         timestamp = msg.timestamp,
                         attachments = msg.attachments,
                         isUserAuthor = msg.isUserAuthor,
-                        shouldHideUsername = msg.shouldHideUsername,
+                        shouldHideUsername = msg.shouldHideUsername || isOneToOneSpace,
                         isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,
                         isSynced = msg.isSynced,

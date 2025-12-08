@@ -31,24 +31,21 @@ fun GlobalNameOrIdentity(
     identity: String?,
     onIdentityClicked: () -> Unit
 ) {
-    if (globalName.isNullOrEmpty()) {
-        modifier
-            .then(
-                Modifier
-                    .wrapContentWidth()
-                    .height(32.dp)
-                    .background(
-                        color = colorResource(id = R.color.control_accent_25),
-                        shape = RoundedCornerShape(16.dp)
-                    )
-            )
-
+    val effectiveModifier = if (globalName.isNullOrEmpty()) {
+        modifier.then(
+            Modifier
+                .wrapContentWidth()
+                .height(32.dp)
+                .background(
+                    color = colorResource(id = R.color.control_accent_25),
+                    shape = RoundedCornerShape(16.dp)
+                )
+        )
     } else {
-        modifier
-            .height(32.dp)
+        modifier.height(32.dp)
     }
     Row(
-        modifier = modifier,
+        modifier = effectiveModifier,
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {

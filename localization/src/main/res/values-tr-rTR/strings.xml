@@ -1841,12 +1841,12 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_icon_title">Resmi düzenle</string>
     <string name="space_settings_save_button">Kaydet</string>
     <string name="space_settings_join_space_by_qr_title">Katıl</string>
-    <string name="profile_qr_code_title">Connect with me</string>
-    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
-    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_code_title">Benimle bağlantı kur</string>
+    <string name="profile_qr_code_title_with_name">%1$s ile bağlantı kur</string>
+    <string name="profile_qr_code_button">Karekodum</string>
     <string name="profile_qr_share_button">Paylaş</string>
     <string name="profile_qr_copy_button">Bağlantıyı kopyala</string>
-    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_circular_text">BNEİMLE ANYTYPE ÜZERİNDEN BAĞLANTI KUR </string>
     <string name="profile_qr_link_copied">Bağlantı panoya kopyalandı</string>
     <string name="object_type_add_property_screen_title">Özellik ekle</string>
     <string name="object_type_add_property_screen_create">\'%1$s\' özelliğini oluştur</string>

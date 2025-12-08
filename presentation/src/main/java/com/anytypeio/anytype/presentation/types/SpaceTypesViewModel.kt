@@ -76,8 +76,8 @@ class SpaceTypesViewModel(
                     // Build dynamic exclusion list based on space type
                     val excludedLayouts = buildList {
                         addAll(baseSystemLayouts)
-                        // Only exclude CHAT_DERIVED and CHAT in Chat Spaces
-                        if (spaceUxType == SpaceUxType.CHAT) {
+                        // Exclude CHAT_DERIVED and CHAT in Chat and One-to-One Spaces
+                        if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
                             add(ObjectType.Layout.CHAT_DERIVED)
                             add(ObjectType.Layout.CHAT)
                         }

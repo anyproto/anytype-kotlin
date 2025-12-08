@@ -187,7 +187,9 @@ fun NewSpaceSettingsScreen(
                                         .padding(horizontal = 16.dp)
                                         .animateItem()
                                         .noRippleClickable {
-                                            showEditTitle = true
+                                            if (uiState.isEditEnabled) {
+                                                showEditTitle = true
+                                            }
                                         },
                                     text = item.name,
                                     style = HeadlineHeading,

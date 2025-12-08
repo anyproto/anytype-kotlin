@@ -438,7 +438,7 @@ class MainViewModel(
     }
 
     private suspend fun proceedWithNewDeepLink(deeplink: DeepLinkResolver.Action) {
-        Timber.d("Proceeding with the new deep link")
+        Timber.d("Proceeding with the new deep link, deeplink: $deeplink")
         when (deeplink) {
             is DeepLinkResolver.Action.Import.Experience -> {
                 commands.emit(
@@ -567,6 +567,15 @@ class MainViewModel(
             is DeepLinkResolver.Action.DeepLinkToMembership -> {
                 commands.emit(
                     Command.Deeplink.MembershipScreen(tierId = deeplink.tierId)
+                )
+            }
+
+            is DeepLinkResolver.Action.InitiateOneToOneChat -> {
+                commands.emit(
+                    Command.Deeplink.InitiateOneToOneChat(
+                        identity = deeplink.identity,
+                        metadataKey = deeplink.metadataKey
+                    )
                 )
             }
 
@@ -797,6 +806,10 @@ class MainViewModel(
             ) : Deeplink()
 
             data class MembershipScreen(val tierId: String?) : Deeplink()
+            data class InitiateOneToOneChat(
+                val identity: Id,
+                val metadataKey: String
+            ) : Deeplink()
         }
     }
 

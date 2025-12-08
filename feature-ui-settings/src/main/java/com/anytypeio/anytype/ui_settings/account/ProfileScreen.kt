@@ -5,7 +5,6 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
@@ -18,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -56,8 +53,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.VisualTransformation
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
@@ -69,6 +64,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.membership.TierId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
+import com.anytypeio.anytype.core_ui.features.profile.GlobalNameOrIdentity
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -110,7 +106,8 @@ fun ProfileSettingsScreen(
     onHeaderTitleClicked: () -> Unit,
     notificationsDisabled: Boolean,
     onOpenNotificationSettings: () -> Unit,
-    onIdentityClicked: () -> Unit = onMembershipClicked
+    onIdentityClicked: () -> Unit = onMembershipClicked,
+    onShowQrCodeClicked: () -> Unit = {}
 ) {
     LazyColumn(
         modifier = Modifier
@@ -125,7 +122,8 @@ fun ProfileSettingsScreen(
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
                 onTitleClicked = onHeaderTitleClicked,
-                onIdentityClicked = onIdentityClicked
+                onIdentityClicked = onIdentityClicked,
+                onShowQrCodeClicked = onShowQrCodeClicked
             )
         }
         item {
@@ -404,7 +402,8 @@ private fun Header(
     onNameSet: (String) -> Unit,
     clearProfileImage: () -> Unit,
     onTitleClicked: () -> Unit,
-    onIdentityClicked: () -> Unit
+    onIdentityClicked: () -> Unit,
+    onShowQrCodeClicked: () -> Unit
 ) {
     when (account) {
         is AccountProfile.Data -> {
@@ -412,7 +411,11 @@ private fun Header(
                 Dragger()
             }
             Box(modifier = modifier.padding(top = 12.dp, bottom = 20.dp)) {
-                ProfileTitleBlock(account, onIdentityClicked)
+                ProfileTitleBlock(
+                    account = account,
+                    onIdentityClicked = onIdentityClicked,
+                    onShowQrCodeClicked = onShowQrCodeClicked
+                )
             }
             Box(modifier = modifier.padding(bottom = 16.dp)) {
                 ProfileImageBlock(
@@ -519,72 +522,34 @@ fun ProfileNameBlock(
 @Composable
 fun BoxScope.ProfileTitleBlock(
     account: AccountProfile.Data,
-    onClick: () -> Unit
+    onIdentityClicked: () -> Unit,
+    onShowQrCodeClicked: () -> Unit
 ) {
     val globalName = account.globalName
     val identity = account.identity
-    val modifier = if (globalName.isNullOrEmpty()) {
-        Modifier
-            .wrapContentWidth()
-            .height(32.dp)
-            .background(
-                color = colorResource(id = R.color.control_accent_25),
-                shape = RoundedCornerShape(16.dp)
-            )
-    } else {
-        Modifier
-            .height(32.dp)
-    }
     Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 32.dp),
+        modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
-        Row(
-            modifier = modifier,
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        Box(
+            modifier = Modifier
+                .align(Alignment.CenterStart)
+                .padding(start = 16.dp)
+                .size(44.dp)
+                .clickable { onShowQrCodeClicked() },
+            contentAlignment = Alignment.Center
         ) {
-            if (!globalName.isNullOrEmpty()) {
-                Image(
-                    modifier = Modifier.size(18.dp),
-                    painter = painterResource(R.drawable.ic_account_name_18),
-                    contentDescription = "Account any name"
-                )
-                Text(
-                    text = globalName,
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_primary),
-                    textAlign = TextAlign.Center,
-                    overflow = TextOverflow.MiddleEllipsis,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .wrapContentWidth()
-                        .noRippleClickable { onClick() }
-                )
-            } else {
-                Spacer(modifier = Modifier.width(8.dp))
-                Image(
-                    modifier = Modifier.size(18.dp),
-                    painter = painterResource(R.drawable.ic_account_identity_16),
-                    contentDescription = "Account any name",
-                    contentScale = ContentScale.Fit
-                )
-                Text(
-                    text = identity.orEmpty(),
-                    style = Caption1Regular,
-                    color = colorResource(id = R.color.text_primary),
-                    overflow = TextOverflow.MiddleEllipsis,
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    modifier = Modifier
-                        .width(108.dp)
-                        .noRippleClickable { onClick() }
-                )
-                Spacer(modifier = Modifier.width(8.dp))
-            }
+            Image(
+                painter = painterResource(R.drawable.ic_qr_code_24),
+                contentDescription = "Show QR code",
+                contentScale = ContentScale.Fit,
+            )
         }
+        GlobalNameOrIdentity(
+            globalName = globalName,
+            identity = identity,
+            onIdentityClicked = onIdentityClicked
+        )
     }
 }
 

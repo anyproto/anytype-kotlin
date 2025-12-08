@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -59,6 +60,7 @@ object VaultViewModelFabric {
         unpinSpace: UnpinSpace = mock(),
         setSpaceOrder: SetSpaceOrder = mock(),
         getSpaceWallpaper: GetSpaceWallpapers = mock(),
+        findOneToOneChatByIdentity: FindOneToOneChatByIdentity = mock(),
         shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock {
             on { runBlocking { async(any()) } }.thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(false))
         },
@@ -94,6 +96,8 @@ object VaultViewModelFabric {
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
         appInfo = appInfo,
-        participantContainer = participantSubscriptionContainer
+        participantContainer = participantSubscriptionContainer,
+        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        createSpace = mock()
     )
 } 

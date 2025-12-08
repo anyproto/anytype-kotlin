@@ -876,8 +876,8 @@
     <string name="synced_files">Dosyaları temizle</string>
     <string name="log_in">Giriş yap</string>
     <string name="create_object_section_library">Anytype Kitaplığı</string>
-    <string name="bin_empty_title">Çöp kutunuz boş.</string>
-    <string name="bin_empty_subtitle">Düzenli ve tertipli görünüyorsunuz!</string>
+    <string name="bin_empty_title">Çöp kutun boş.</string>
+    <string name="bin_empty_subtitle">Görünüşe göre her şey düzenli ve organize!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stil</string>
     <string name="slash_widget_main_media">Medya</string>

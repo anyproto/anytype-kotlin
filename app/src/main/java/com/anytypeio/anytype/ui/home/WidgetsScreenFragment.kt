@@ -404,12 +404,14 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     // Deterministic navigation based on space type, not back stack
                     val chatId = command.spaceChatId
-                    if ((command.spaceUxType == SpaceUxType.CHAT || command.spaceUxType == SpaceUxType.ONE_TO_ONE) && !chatId.isNullOrEmpty()) {
+                    if (command.spaceUxType == SpaceUxType.CHAT && !chatId.isNullOrEmpty()) {
                         // Chat and One-to-One spaces: navigate to chat object
                         navigation().openChat(
                             target = chatId,
                             space = space
                         )
+                    } else if (command.spaceUxType == SpaceUxType.ONE_TO_ONE) {
+                        findNavController().popBackStack()
                     } else {
                         // Data space: always navigate to vault
                         vm.proceedWithExitingToVault()

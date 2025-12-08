@@ -55,7 +55,7 @@ sealed class NavPanelState {
             spaceAccess: SpaceAccessType? = null,
             spaceUxType: SpaceUxType
         ): NavPanelState {
-            val isChat = (spaceUxType == SpaceUxType.CHAT)
+            val isChat = (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE)
             val createEnabled = when (permission) {
                 SpaceMemberPermissions.WRITER,
                 SpaceMemberPermissions.OWNER -> true

@@ -1985,7 +1985,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_make_private_failed">        Impossibile rendere privato lo spazio. Riprova più tardi.
     </string>
     <string name="private_local_yours_forever">privato, locale, tuo per sempre</string>
-    <string name="private_channel">Private channel</string>
+    <string name="private_channel">Direct channel</string>
     <string name="wallpaper_item_space_icon_color">Colore Predefinito</string>
     <string name="publish_to_web">Pubblica sul Web</string>
     <string name="preferences">Preferenze</string>

@@ -405,6 +405,8 @@ sealed class ObjectWrapper {
             return spaceUxType == SpaceUxType.ONE_TO_ONE
         }
 
+        val oneToOneIdentity: Id? get() = getSingleValue(Relations.ONE_TO_ONE_IDENTITY)
+
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)
                 ?.let { code ->

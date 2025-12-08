@@ -3,12 +3,14 @@ package com.anytypeio.anytype.presentation.vault
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -18,6 +20,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
@@ -28,7 +31,6 @@ import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.core_utils.tools.AppInfo
 import javax.inject.Inject
 
 class VaultViewModelFactory @Inject constructor(
@@ -58,7 +60,9 @@ class VaultViewModelFactory @Inject constructor(
     private val getSpaceWallpapers: GetSpaceWallpapers,
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
-    private val appInfo: AppInfo
+    private val appInfo: AppInfo,
+    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val createSpace: CreateSpace
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -90,6 +94,8 @@ class VaultViewModelFactory @Inject constructor(
         getSpaceWallpapers = getSpaceWallpapers,
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
-        appInfo = appInfo
+        appInfo = appInfo,
+        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        createSpace = createSpace
     ) as T
 }

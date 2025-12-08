@@ -334,7 +334,8 @@ class SpaceSettingsViewModel(
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
                     isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
-                    deviceToken = deviceToken
+                    deviceToken = deviceToken,
+                    isOneToOne = spaceView.isOneToOneSpace
                 )
 
                 val items = buildList {

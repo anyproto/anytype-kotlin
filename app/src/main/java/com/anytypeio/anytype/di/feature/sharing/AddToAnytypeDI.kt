@@ -42,7 +42,6 @@ interface AddToAnytypeComponent {
         fun create(dependency: AddToAnytypeDependencies): AddToAnytypeComponent
     }
 
-    fun inject(fragment: SharingFragment)
 }
 
 @Module

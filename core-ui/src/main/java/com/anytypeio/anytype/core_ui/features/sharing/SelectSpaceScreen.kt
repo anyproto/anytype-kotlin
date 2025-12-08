@@ -1,10 +1,14 @@
 package com.anytypeio.anytype.core_ui.features.sharing
 
+import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -13,21 +17,40 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -35,12 +58,15 @@ import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
 
@@ -51,7 +77,8 @@ data class SelectableSpaceItem(
     val id: String,
     val icon: SpaceIcon,
     val name: String,
-    val isSelected: Boolean = false
+    val isSelected: Boolean = false,
+    val isChatSpace: Boolean = false
 )
 
 /**
@@ -67,7 +94,7 @@ data class SelectableSpaceItem(
  * @param modifier Modifier for the screen
  */
 @Composable
-fun SelectSpaceScreen(
+fun BoxScope.SelectSpaceScreen(
     spaces: List<SelectableSpaceItem>,
     searchQuery: String,
     commentText: String,
@@ -79,80 +106,79 @@ fun SelectSpaceScreen(
 ) {
     val hasSelectedSpace = spaces.any { it.isSelected }
 
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(color = colorResource(id = R.color.background_primary))
-    ) {
-        // Main content (Header + Search + Grid or Empty State)
+    if (spaces.isEmpty()) {
+        EmptySpaceState(
+            modifier = Modifier.fillMaxSize()
+        )
+    } else {
         Column(
-            modifier = Modifier
-                .weight(1f)
-                .padding(top = 20.dp)
+            modifier = modifier
+                .padding(top = 64.dp)
+                .fillMaxSize()
         ) {
-            // Header
-            Text(
-                text = stringResource(R.string.select_space),
-                style = BodyBold,
-                color = colorResource(id = R.color.text_primary),
-                textAlign = TextAlign.Center,
+
+            // Search Bar
+            DefaultSearchBar(
+                value = searchQuery,
+                onQueryChanged = onSearchQueryChanged,
+                hint = R.string.search,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 20.dp)
+                    .padding(horizontal = 16.dp)
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Show empty state if no spaces, otherwise show search and grid
-            if (spaces.isEmpty()) {
-                EmptySpaceState(
-                    modifier = Modifier.fillMaxSize()
-                )
-            } else {
-                // Search Bar
-                DefaultSearchBar(
-                    value = searchQuery,
-                    onQueryChanged = onSearchQueryChanged,
-                    hint = R.string.search,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                )
-
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Space Grid
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(3),
-                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    verticalArrangement = Arrangement.spacedBy(20.dp),
-                    modifier = Modifier.fillMaxSize()
-                ) {
-                    items(
-                        items = spaces,
-                        key = { it.id }
-                    ) { space ->
-                        SpaceGridItem(
-                            icon = space.icon,
-                            name = space.name,
-                            isSelected = space.isSelected,
-                            onClick = { onSpaceSelected(space) }
-                        )
-                    }
+            // Space Grid
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(3),
+                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 22.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                items(
+                    items = spaces,
+                    key = { it.id }
+                ) { space ->
+                    SpaceGridItem(
+                        icon = space.icon,
+                        name = space.name,
+                        isSelected = space.isSelected,
+                        onClick = { onSpaceSelected(space) }
+                    )
                 }
             }
-        }
 
-        // Bottom section (Comment + Send button) - only shown when space is selected
-        if (hasSelectedSpace) {
-            CommentSection(
-                commentText = commentText,
-                onCommentChanged = onCommentChanged,
-                onSendClicked = onSendClicked,
-                modifier = Modifier.fillMaxWidth()
-            )
+            // Bottom section (Comment + Send button) - only shown when space is selected
+            if (hasSelectedSpace) {
+                CommentSection(
+                    commentText = commentText,
+                    onCommentChanged = onCommentChanged,
+                    onSendClicked = onSendClicked,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
         }
+    }
+}
+
+@Composable
+fun SelectSpaceScreenHeader(modifier: Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Dragger(
+            modifier = Modifier
+                .padding(vertical = 6.dp)
+        )
+        Text(
+            text = stringResource(R.string.select_space),
+            style = BodyBold,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp, vertical = 12.dp)
+        )
     }
 }
 
@@ -175,53 +201,50 @@ private fun SpaceGridItem(
 ) {
     Column(
         modifier = modifier
-            .noRippleClickable(onClick = onClick)
-            .padding(vertical = 8.dp),
+            .noRippleClickable(onClick = onClick),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Space Icon with checkmark overlay
         Box(
-            modifier = Modifier.size(64.dp),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .height(86.dp)
+                .width(92.dp),
+            contentAlignment = Alignment.TopCenter
         ) {
             SpaceIconView(
                 icon = icon,
-                mainSize = 64.dp,
+                mainSize = 80.dp,
                 onSpaceIconClick = onClick
             )
 
-            // Blue checkmark overlay for selected state
             if (isSelected) {
                 Box(
                     modifier = Modifier
-                        .size(20.dp)
+                        .size(24.dp)
                         .align(Alignment.BottomEnd)
-                        .offset(x = (-2).dp, y = (-2).dp)
                         .clip(CircleShape)
                         .background(color = colorResource(id = R.color.glyph_active)),
                     contentAlignment = Alignment.Center
                 ) {
                     Image(
-                        painter = painterResource(id = R.drawable.ic_tick_24),
+                        painter = painterResource(id = R.drawable.ic_checked_24),
                         contentDescription = "Selected",
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(24.dp)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         // Space Name
         Text(
             text = name,
-            style = Caption1Medium,
+            style = Relations3,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
             maxLines = 2,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier
                 .fillMaxWidth()
+                .height(30.dp)
                 .padding(horizontal = 4.dp)
         )
     }
@@ -242,41 +265,91 @@ private fun CommentSection(
     onSendClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(""))
+    }
+
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
     Column(
         modifier = modifier
             .background(color = colorResource(id = R.color.background_primary))
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         // Comment Text Field
-        Box(
+        OutlinedTextField(
+            value = innerValue,
+            onValueChange = {
+                innerValue = it
+            },
+            textStyle = BodySemiBold.copy(
+                color = colorResource(id = R.color.text_primary)
+            ),
+            singleLine = true,
+            enabled = true,
+            colors = TextFieldDefaults.colors(
+                disabledTextColor = colorResource(id = R.color.text_primary),
+                cursorColor = colorResource(id = R.color.color_accent),
+                focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+            ),
             modifier = Modifier
                 .fillMaxWidth()
-                .background(
-                    color = colorResource(id = R.color.shape_primary),
-                    shape = RoundedCornerShape(8.dp)
+                .wrapContentHeight()
+                .padding(start = 0.dp, top = 12.dp)
+                .focusRequester(focusRequester),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            },
+            shape = RoundedCornerShape(size = 26.dp),
+            placeholder = {
+                Text(
+                    modifier = Modifier.padding(start = 1.dp),
+                    text = stringResource(id = R.string.add_a_comment),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_tertiary)
                 )
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            BasicTextField(
-                value = commentText,
-                onValueChange = onCommentChanged,
-                textStyle = BodyRegular.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                cursorBrush = SolidColor(colorResource(id = R.color.glyph_active)),
-                modifier = Modifier.fillMaxWidth(),
-                decorationBox = { innerTextField ->
-                    if (commentText.isEmpty()) {
-                        Text(
-                            text = stringResource(R.string.add_a_comment),
-                            style = BodyRegular,
-                            color = colorResource(id = R.color.text_secondary)
-                        )
-                    }
-                    innerTextField()
-                }
-            )
-        }
+            }
+        )
+//        Box(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .border(
+//                    width = 0.5.dp,
+//                    color = colorResource(R.color.shape_primary),
+//                    shape = RoundedCornerShape(12.dp)
+//                )
+//                .padding(horizontal = 16.dp, vertical = 12.dp)
+//        ) {
+//            BasicTextField(
+//                value = commentText,
+//                onValueChange = onCommentChanged,
+//                textStyle = BodyRegular.copy(
+//                    color = colorResource(id = R.color.text_primary)
+//                ),
+//                cursorBrush = SolidColor(colorResource(id = R.color.glyph_active)),
+//                modifier = Modifier.fillMaxWidth(),
+//                decorationBox = { innerTextField ->
+//                    if (commentText.isEmpty()) {
+//                        Text(
+//                            modifier = Modifier.padding(start = 1.dp),
+//                            text = stringResource(R.string.add_a_comment),
+//                            style = BodyRegular,
+//                            color = colorResource(id = R.color.text_tertiary)
+//                        )
+//                    }
+//                    innerTextField()
+//                }
+//            )
+//        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -317,7 +390,7 @@ private fun EmptySpaceState(
         Text(
             text = stringResource(R.string.you_dont_have_any_spaces_yet),
             style = BodyRegular,
-            color = colorResource(id = R.color.text_secondary),
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
     }
@@ -414,27 +487,31 @@ private fun SelectSpaceScreenPreview() {
         )
     )
 
-    SelectSpaceScreen(
-        spaces = sampleSpaces,
-        searchQuery = "",
-        commentText = "",
-        onSearchQueryChanged = {},
-        onCommentChanged = {},
-        onSpaceSelected = {},
-        onSendClicked = {}
-    )
+    Box {
+        SelectSpaceScreen(
+            spaces = sampleSpaces,
+            searchQuery = "",
+            commentText = "",
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSpaceSelected = {},
+            onSendClicked = {}
+        )
+    }
 }
 
 @DefaultPreviews
 @Composable
 private fun SelectSpaceScreenEmptyPreview() {
-    SelectSpaceScreen(
-        spaces = emptyList(),
-        searchQuery = "",
-        commentText = "",
-        onSearchQueryChanged = {},
-        onCommentChanged = {},
-        onSpaceSelected = {},
-        onSendClicked = {}
-    )
+    Box {
+        SelectSpaceScreen(
+            spaces = emptyList(),
+            searchQuery = "",
+            commentText = "",
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSpaceSelected = {},
+            onSendClicked = {}
+        )
+    }
 }

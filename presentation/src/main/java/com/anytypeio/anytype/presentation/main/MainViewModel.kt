@@ -329,12 +329,35 @@ class MainViewModel(
         }
     }
 
+    /**
+     * Single entry point for all share intents.
+     * SharingFragment handles MIME type detection and content parsing internally.
+     *
+     * @param intent The share intent from Android system
+     */
+    fun onShareIntent(intent: android.content.Intent) {
+        Timber.d("onShareIntent: type=${intent.type}, action=${intent.action}")
+        viewModelScope.launch {
+            checkAuthorizationStatus.async(Unit).fold(
+                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
+                onSuccess = { (status, _) ->
+                    if (status == AuthStatus.AUTHORIZED) {
+                        commands.emit(Command.Sharing.Show(intent))
+                    }
+                }
+            )
+        }
+    }
+
+    // Legacy methods - kept for backward compatibility
+    @Deprecated("Use onShareIntent(intent) instead")
     fun onIntentTextShare(data: String) {
         viewModelScope.launch {
             checkAuthorizationStatus.async(Unit).fold(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
+                        @Suppress("DEPRECATION")
                         commands.emit(Command.Sharing.Text(data))
                     }
                 }
@@ -342,6 +365,7 @@ class MainViewModel(
         }
     }
 
+    @Deprecated("Use onShareIntent(intent) instead")
     fun onIntentMultipleFilesShare(uris: List<String>) {
         Timber.d("onIntentFileShare: $uris")
         viewModelScope.launch {
@@ -349,6 +373,7 @@ class MainViewModel(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
+                        @Suppress("DEPRECATION")
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.File(uris.first()))
                         } else {
@@ -360,6 +385,7 @@ class MainViewModel(
         }
     }
 
+    @Deprecated("Use onShareIntent(intent) instead")
     fun onIntentMultipleImageShare(uris: List<String>) {
         Timber.d("onIntentImageShare: $uris")
         viewModelScope.launch {
@@ -367,6 +393,7 @@ class MainViewModel(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
+                        @Suppress("DEPRECATION")
                         if (uris.size == 1) {
                             commands.emit(Command.Sharing.Image(uris.first()))
                         } else {
@@ -378,6 +405,7 @@ class MainViewModel(
         }
     }
 
+    @Deprecated("Use onShareIntent(intent) instead")
     fun onIntentMultipleVideoShare(uris: List<String>) {
         Timber.d("onIntentVideoShare: $uris")
         viewModelScope.launch {
@@ -385,6 +413,7 @@ class MainViewModel(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
                 onSuccess = { (status, account) ->
                     if (status == AuthStatus.AUTHORIZED) {
+                        @Suppress("DEPRECATION")
                         commands.emit(Command.Sharing.Videos(uris))
                     }
                 }
@@ -754,11 +783,24 @@ class MainViewModel(
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
         sealed class Sharing : Command() {
+            /**
+             * Single entry point for all share intents.
+             * SharingFragment handles MIME type detection internally.
+             */
+            data class Show(val intent: android.content.Intent) : Sharing()
+
+            // Legacy commands - kept for backward compatibility
+            @Deprecated("Use Show(intent) instead")
             data class Text(val data: String) : Sharing()
+            @Deprecated("Use Show(intent) instead")
             data class Image(val uri: String) : Sharing()
+            @Deprecated("Use Show(intent) instead")
             data class Images(val uris: List<String>) : Sharing()
+            @Deprecated("Use Show(intent) instead")
             data class Videos(val uris: List<String>) : Sharing()
+            @Deprecated("Use Show(intent) instead")
             data class File(val uri: String) : Sharing()
+            @Deprecated("Use Show(intent) instead")
             data class Files(val uris: List<String>) : Sharing()
         }
 

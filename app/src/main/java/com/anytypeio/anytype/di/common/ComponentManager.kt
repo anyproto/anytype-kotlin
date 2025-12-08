@@ -97,6 +97,7 @@ import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerAddToAnytypeComponent
+import com.anytypeio.anytype.di.feature.sharing.DaggerSharingComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
@@ -887,6 +888,12 @@ class ComponentManager(
 
     val addToAnytypeComponent = Component {
         DaggerAddToAnytypeComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val sharingComponent = Component {
+        DaggerSharingComponent
             .factory()
             .create(findComponentDependencies())
     }

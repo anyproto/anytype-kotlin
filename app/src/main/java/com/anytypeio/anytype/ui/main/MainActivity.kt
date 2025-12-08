@@ -162,37 +162,51 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
+                            // New single entry point for all share intents
+                            is Command.Sharing.Show -> {
+                                SharingFragment.newInstance(command.intent).show(
+                                    supportFragmentManager,
+                                    SHARE_DIALOG_LABEL
+                                )
+                            }
+                            // Legacy handlers - kept for backward compatibility
                             is Command.Sharing.Text -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.text(command.data).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
                             }
                             is Command.Sharing.Image -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.image(command.uri).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
                             }
                             is Command.Sharing.Images -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.images(command.uris).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
                             }
                             is Command.Sharing.Videos -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.videos(command.uris).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
                             }
                             is Command.Sharing.Files -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.files(command.uris).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
                                 )
                             }
                             is Command.Sharing.File -> {
+                                @Suppress("DEPRECATION")
                                 SharingFragment.file(command.uri).show(
                                     supportFragmentManager,
                                     SHARE_DIALOG_LABEL
@@ -555,87 +569,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * Main activity is responsible only for checking new deep links.
-     * Launch deep links are handled by SplashFragment.
+     * Single entry point for all share intents.
+     * Deep links are checked here, all other content is routed to SharingFragment.
+     * SharingFragment handles MIME type detection internally.
      */
     private fun proceedWithShareIntent(intent: Intent, checkDeepLink: Boolean = false) {
-        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
-        when {
-            intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
-                handleTextShare(
-                    intent = intent,
-                    checkDeepLink = checkDeepLink
-                )
-            }
-            intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
-                proceedWithImageShareIntent(intent)
-            }
-            intent.type?.startsWith(SHARE_VIDEO_INTENT_PATTERN) == true -> {
-                proceedWithVideoShareIntent(intent)
-            }
-            intent.type?.startsWith(SHARE_FILE_INTENT_PATTERN) == true -> {
-                proceedWithFileShareIntent(intent)
-            }
-            intent.type == Mimetype.MIME_FILE_ALL.value -> {
-                proceedWithFileShareIntent(intent)
-            }
-            else -> Timber.e("Unexpected scenario: ${intent.type}")
-        }
-    }
+        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: type=${intent.type}, action=${intent.action}")
 
-    private fun handleTextShare(intent: Intent, checkDeepLink: Boolean) {
-        val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString ?: return
-
-        when {
-            checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw) -> {
+        // Check for deep links in text content first
+        if (checkDeepLink && intent.type == Mimetype.MIME_TEXT_PLAIN.value) {
+            val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString
+            if (raw != null && DefaultDeepLinkResolver.isDeepLink(raw)) {
                 vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
-            }
-            raw.isNotEmpty() && !DefaultDeepLinkResolver.isDeepLink(raw) -> {
-                vm.onIntentTextShare(raw)
-            }
-            else -> {
-                Timber.d("handleTextShare, skip handle intent :$raw")
+                return
             }
         }
-    }
 
-    private fun proceedWithFileShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleFilesShare(intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleFilesShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
-    }
-
-    private fun proceedWithImageShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleImageShare(uris = intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleImageShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
-    }
-
-    private fun proceedWithVideoShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleVideoShare(uris = intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleVideoShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
+        // Single entry point: pass intent to SharingFragment via ViewModel
+        vm.onShareIntent(intent)
     }
 
     private fun proceedWithNotificationIntent(intent: Intent) {
@@ -819,8 +770,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     companion object {
         const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
-        const val SHARE_IMAGE_INTENT_PATTERN = "image/"
-        const val SHARE_VIDEO_INTENT_PATTERN = "video/"
-        const val SHARE_FILE_INTENT_PATTERN = "application/"
     }
 }

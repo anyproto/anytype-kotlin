@@ -1,208 +1,297 @@
 package com.anytypeio.anytype.ui.sharing
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.URLUtil
-import androidx.compose.material.MaterialTheme
+import androidx.activity.compose.BackHandler
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_utils.ext.arg
-import com.anytypeio.anytype.core_utils.ext.argStringList
+import com.anytypeio.anytype.core_ui.features.sharing.SharingScreen
+import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
+import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.sharing.AddToAnytypeViewModel
+import com.anytypeio.anytype.presentation.sharing.SharedContent
+import com.anytypeio.anytype.presentation.sharing.SharingCommand
+import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
-import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
-import kotlinx.coroutines.flow.map
+import timber.log.Timber
 
+/**
+ * SharingFragment is the single entry point for all share intents.
+ * It handles all MIME types: text, images, videos, audio, PDF, and generic files.
+ *
+ * ## Usage
+ * ```kotlin
+ * SharingFragment.newInstance(intent).show(supportFragmentManager, "share")
+ * ```
+ */
 class SharingFragment : BaseBottomSheetComposeFragment() {
 
-    private val sharedData: SharingData
-        get() {
-            val args = requireArguments()
-            return if (args.containsKey(SHARING_TEXT_KEY)) {
-                val result = arg<String>(SHARING_TEXT_KEY)
-                if (URLUtil.isValidUrl(result)) {
-                    SharingData.Url(result)
-                } else {
-                    SharingData.Text(result)
-                }
-            } else if (args.containsKey(SHARING_IMAGE_KEY)) {
-                val result = arg<String>(SHARING_IMAGE_KEY)
-                SharingData.Image(uri = result)
-            } else if (args.containsKey(SHARING_FILE_KEY)) {
-                val result = arg<String>(SHARING_FILE_KEY)
-                SharingData.File(uri = result)
-            } else if (args.containsKey(SHARING_MULTIPLE_IMAGES_KEY)) {
-                val result = argStringList(SHARING_MULTIPLE_IMAGES_KEY)
-                SharingData.Images(uris = result)
-            } else if (args.containsKey(SHARING_MULTIPLE_FILES_KEY)) {
-                val result = argStringList(SHARING_MULTIPLE_FILES_KEY)
-                SharingData.Files(uris = result)
-            } else if (args.containsKey(SHARING_MULTIPLE_VIDEOS_KEY)) {
-                val result = argStringList(SHARING_MULTIPLE_VIDEOS_KEY)
-                SharingData.Videos(uris = result)
-            }
-            else {
-                throw IllegalStateException("Unexpcted shared data")
-            }
-        }
-
     @Inject
-    lateinit var factory: AddToAnytypeViewModel.Factory
+    lateinit var factory: SharingViewModel.Factory
 
-    private val vm by viewModels<AddToAnytypeViewModel> { factory }
+    private val vm by viewModels<SharingViewModel> { factory }
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ) = content {
-        MaterialTheme(
-            typography = typography
-        ) {
-            AddToAnytypeScreen(
-                content = vm.state.map { state ->
-                    when (state) {
-                        is AddToAnytypeViewModel.ViewState.Default -> state.content
-                        AddToAnytypeViewModel.ViewState.Init -> ""
-                    }
-                }.collectAsState(initial = "").value,
-                data = sharedData,
-                onAddClicked = { option ->
-                    when (option) {
-                        SAVE_AS_BOOKMARK -> vm.onCreateBookmark(url = sharedData.data)
-                        SAVE_AS_NOTE -> vm.onCreateNote(sharedData.data)
-                        SAVE_AS_FILE -> {
-                            vm.onShareFiles(uris = listOf(sharedData.data))
-                        }
+        MaterialTheme {
+            // Handle back press
+            BackHandler {
+                if (!vm.onBackPressed()) {
+                    dismiss()
+                }
+            }
 
-                        SAVE_AS_FILES -> {
-                            val data = sharedData
-                            if (data is SharingData.Files) {
-                                vm.onShareFiles(uris = data.uris)
-                            } else {
-                                toast("Unexpected data format")
-                            }
-                        }
-
-                        SAVE_AS_IMAGES, SAVE_AS_IMAGE, SAVE_AS_VIDEOS -> {
-                            when (val data = sharedData) {
-                                is SharingData.Image -> vm.onShareFiles(uris = listOf(data.uri))
-                                is SharingData.Images -> vm.onShareFiles(uris = data.uris)
-                                is SharingData.Videos -> vm.onShareFiles(uris = data.uris)
-                                else -> {
-                                    toast("Unexpected data format")
-                                }
-                            }
-                        }
-                    }
-                },
-                onCancelClicked = {
-                    vm.onCancelClicked().also {
+            SharingScreen(
+                state = vm.screenState.collectAsStateWithLifecycle().value,
+                onSpaceSelected = vm::onSpaceSelected,
+                onSearchQueryChanged = vm::onSearchQueryChanged,
+                onCommentChanged = vm::onCommentChanged,
+                onSendClicked = vm::onSendClicked,
+                onObjectSelected = vm::onObjectSelected,
+                onBackPressed = {
+                    if (!vm.onBackPressed()) {
                         dismiss()
                     }
                 },
-                spaces = vm.spaceViews.collectAsStateWithLifecycle().value,
-                onSelectSpaceClicked = { vm.onSelectSpaceClicked(it) },
-                progressState = vm.progressState.collectAsStateWithLifecycle().value,
-                onOpenClicked = vm::proceedWithNavigation,
+                onCancelClicked = { dismiss() },
+                onRetryClicked = vm::onSendClicked
             )
-            LaunchedEffect(Unit) {
-                vm.navigation.collect { nav ->
-                    when (nav) {
-                        is OpenObjectNavigation.OpenEditor -> {
-                            dismiss()
-                            findNavController().navigate(
-                                R.id.objectNavigation,
-                                EditorFragment.args(
-                                    ctx = nav.target,
-                                    space = nav.space
-                                )
-                            )
-                        }
 
-                        else -> {
-                            // Do nothing.
-                        }
-                    }
-                }
-            }
-            LaunchedEffect(Unit) {
-                vm.toasts.collect { toast ->
-                    toast(toast)
-                }
-            }
+            // Handle commands
             LaunchedEffect(Unit) {
                 vm.commands.collect { command ->
                     proceedWithCommand(command)
                 }
             }
+
+            // Handle toasts
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { toast ->
+                    toast(toast)
+                }
+            }
         }
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        skipCollapsed()
+        expand()
     }
 
     override fun onStart() {
         super.onStart()
-        when(val data = sharedData) {
-            is SharingData.File -> {
-                vm.onSharedMediaData(listOf(data.uri))
+        val sharedContent = parseSharedContent()
+        vm.onSharedDataReceived(sharedContent)
+    }
+
+    /**
+     * Parses the shared content from the fragment arguments.
+     * Supports both new Intent-based entry point and legacy factory methods.
+     */
+    private fun parseSharedContent(): SharedContent {
+        val args = requireArguments()
+
+        // New single entry point: Intent passed directly
+        val intent: Intent? = argOrNull(SHARING_INTENT_KEY)
+        if (intent != null) {
+            return convertIntentToSharedContent(intent)
+        }
+
+        // Legacy support: individual keys for backward compatibility
+        return parseLegacySharedContent(args)
+    }
+
+    /**
+     * Single entry point for converting Android Intent to SharedContent.
+     * Handles all MIME types: text, images, videos, audio, PDF, and files.
+     */
+    private fun convertIntentToSharedContent(intent: Intent): SharedContent {
+        val mimeType = intent.type
+
+        Timber.d("Converting intent to SharedContent. MIME type: $mimeType, action: ${intent.action}")
+
+        return when {
+            // No MIME type - try to extract text
+            mimeType == null -> {
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+                if (URLUtil.isValidUrl(text)) {
+                    SharedContent.Url(text)
+                } else {
+                    SharedContent.Text(text)
+                }
             }
-            is SharingData.Files -> {
-                vm.onSharedMediaData(data.uris)
+
+            // Text content (plain text, URLs)
+            mimeType == MIME_TEXT_PLAIN -> {
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+                if (URLUtil.isValidUrl(text)) {
+                    SharedContent.Url(text)
+                } else {
+                    SharedContent.Text(text)
+                }
             }
-            is SharingData.Image -> {
-                vm.onSharedMediaData(listOf(data.uri))
+
+            // Images
+            mimeType.startsWith(MIME_IMAGE_PREFIX) -> {
+                parseMediaIntent(intent, SharedContent.MediaType.IMAGE)
             }
-            is SharingData.Images -> {
-                vm.onSharedMediaData(data.uris)
+
+            // Videos
+            mimeType.startsWith(MIME_VIDEO_PREFIX) -> {
+                parseMediaIntent(intent, SharedContent.MediaType.VIDEO)
             }
-            is SharingData.Text -> {
-                vm.onSharedTextData(data.raw)
+
+            // Audio (music, voice memos, podcasts)
+            mimeType.startsWith(MIME_AUDIO_PREFIX) -> {
+                parseMediaIntent(intent, SharedContent.MediaType.AUDIO)
             }
-            is SharingData.Url -> {
-                vm.onSharedTextData(data.url)
+
+            // PDF specifically
+            mimeType == MIME_PDF -> {
+                parseMediaIntent(intent, SharedContent.MediaType.PDF)
             }
-            is SharingData.Videos -> {
-                vm.onSharedMediaData(data.uris)
+
+            // Other application files (zip, doc, etc.)
+            mimeType.startsWith(MIME_APPLICATION_PREFIX) -> {
+                parseMediaIntent(intent, SharedContent.MediaType.FILE)
+            }
+
+            // Other text types (html, csv, xml) - treat as file
+            mimeType.startsWith(MIME_TEXT_PREFIX) -> {
+                parseMediaIntent(intent, SharedContent.MediaType.FILE)
+            }
+
+            // Fallback for unknown types
+            else -> {
+                Timber.w("Unknown MIME type: $mimeType, treating as generic file")
+                parseMediaIntent(intent, SharedContent.MediaType.FILE)
             }
         }
     }
 
-    private fun proceedWithCommand(command: AddToAnytypeViewModel.Command) {
+    /**
+     * Parses media content from an Intent, handling both single and multiple items.
+     */
+    private fun parseMediaIntent(intent: Intent, type: SharedContent.MediaType): SharedContent {
+        return if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
+            val uris = intent.parseActionSendMultipleUris()
+            if (uris.isNotEmpty()) {
+                SharedContent.MultipleMedia(uris = uris, type = type)
+            } else {
+                Timber.w("No URIs found in ACTION_SEND_MULTIPLE intent")
+                SharedContent.Text("")
+            }
+        } else {
+            val uri = intent.parseActionSendUri()
+            if (uri != null) {
+                SharedContent.SingleMedia(uri = uri, type = type)
+            } else {
+                // Fallback: try to get text content
+                val text = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+                SharedContent.Text(text)
+            }
+        }
+    }
+
+    /**
+     * Legacy content parsing for backward compatibility with old factory methods.
+     */
+    private fun parseLegacySharedContent(args: Bundle): SharedContent {
+        return when {
+            args.containsKey(SHARING_TEXT_KEY) -> {
+                val result = args.getString(SHARING_TEXT_KEY, "")
+                if (URLUtil.isValidUrl(result)) {
+                    SharedContent.Url(result)
+                } else {
+                    SharedContent.Text(result)
+                }
+            }
+            args.containsKey(SHARING_IMAGE_KEY) -> {
+                val uri = args.getString(SHARING_IMAGE_KEY, "")
+                SharedContent.SingleMedia(uri = uri, type = SharedContent.MediaType.IMAGE)
+            }
+            args.containsKey(SHARING_FILE_KEY) -> {
+                val uri = args.getString(SHARING_FILE_KEY, "")
+                SharedContent.SingleMedia(uri = uri, type = SharedContent.MediaType.FILE)
+            }
+            args.containsKey(SHARING_MULTIPLE_IMAGES_KEY) -> {
+                val uris = args.getStringArrayList(SHARING_MULTIPLE_IMAGES_KEY) ?: emptyList()
+                SharedContent.MultipleMedia(uris = uris, type = SharedContent.MediaType.IMAGE)
+            }
+            args.containsKey(SHARING_MULTIPLE_FILES_KEY) -> {
+                val uris = args.getStringArrayList(SHARING_MULTIPLE_FILES_KEY) ?: emptyList()
+                SharedContent.MultipleMedia(uris = uris, type = SharedContent.MediaType.FILE)
+            }
+            args.containsKey(SHARING_MULTIPLE_VIDEOS_KEY) -> {
+                val uris = args.getStringArrayList(SHARING_MULTIPLE_VIDEOS_KEY) ?: emptyList()
+                SharedContent.MultipleMedia(uris = uris, type = SharedContent.MediaType.VIDEO)
+            }
+            else -> {
+                Timber.e("Unexpected shared data - no recognized keys in bundle")
+                SharedContent.Text("")
+            }
+        }
+    }
+
+    private fun proceedWithCommand(command: SharingCommand) {
         when (command) {
-            AddToAnytypeViewModel.Command.Dismiss -> {
+            is SharingCommand.Dismiss -> {
                 dismiss()
             }
-            is AddToAnytypeViewModel.Command.ObjectAddToSpaceToast -> {
-                val name = command.spaceName ?: resources.getString(R.string.untitled)
-                val msg = resources.getString(R.string.sharing_menu_toast_object_added, name)
+            is SharingCommand.ShowToast -> {
+                toast(command.message)
+            }
+            is SharingCommand.NavigateToObject -> {
+                dismiss()
+                findNavController().navigate(
+                    R.id.objectNavigation,
+                    EditorFragment.args(
+                        ctx = command.objectId,
+                        space = command.spaceId
+                    )
+                )
+            }
+            is SharingCommand.ObjectAddedToSpaceToast -> {
+                val msg = resources.getString(
+                    R.string.sharing_menu_toast_object_added,
+                    command.spaceName
+                )
                 toast(msg = msg)
             }
         }
     }
 
     override fun injectDependencies() {
-        componentManager().addToAnytypeComponent.get().inject(this)
+        componentManager().sharingComponent.get().inject(this)
     }
 
     override fun releaseDependencies() {
-        componentManager().addToAnytypeComponent.release()
+        componentManager().sharingComponent.release()
     }
 
     companion object {
+        // New single entry point key
+        private const val SHARING_INTENT_KEY = "arg.sharing.intent"
+
+        // Legacy keys (kept for backward compatibility)
         private const val SHARING_TEXT_KEY = "arg.sharing.text-key"
         private const val SHARING_IMAGE_KEY = "arg.sharing.image-key"
         private const val SHARING_FILE_KEY = "arg.sharing.file-key"
@@ -210,27 +299,54 @@ class SharingFragment : BaseBottomSheetComposeFragment() {
         private const val SHARING_MULTIPLE_VIDEOS_KEY = "arg.sharing.multiple-videos-key"
         private const val SHARING_MULTIPLE_FILES_KEY = "arg.sharing.multiple-files-key"
 
-        fun text(data: String) : SharingFragment = SharingFragment().apply {
+        // MIME type constants
+        private const val MIME_TEXT_PLAIN = "text/plain"
+        private const val MIME_TEXT_PREFIX = "text/"
+        private const val MIME_IMAGE_PREFIX = "image/"
+        private const val MIME_VIDEO_PREFIX = "video/"
+        private const val MIME_AUDIO_PREFIX = "audio/"
+        private const val MIME_APPLICATION_PREFIX = "application/"
+        private const val MIME_PDF = "application/pdf"
+
+        /**
+         * Single entry point for all share intents.
+         * Handles all MIME types: text, images, videos, audio, PDF, and files.
+         *
+         * @param intent The share intent from Android system
+         * @return A new SharingFragment instance
+         */
+        fun newInstance(intent: Intent): SharingFragment = SharingFragment().apply {
+            arguments = bundleOf(SHARING_INTENT_KEY to intent)
+        }
+
+        // Legacy factory methods - kept for backward compatibility
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun text(data: String): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_TEXT_KEY to data)
         }
 
-        fun image(uri: String) : SharingFragment = SharingFragment().apply {
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun image(uri: String): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_IMAGE_KEY to uri)
         }
 
-        fun images(uris: List<String>) : SharingFragment = SharingFragment().apply {
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun images(uris: List<String>): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_IMAGES_KEY to ArrayList(uris))
         }
 
-        fun videos(uris: List<String>) : SharingFragment = SharingFragment().apply {
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun videos(uris: List<String>): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_VIDEOS_KEY to ArrayList(uris))
         }
 
-        fun files(uris: List<String>) : SharingFragment = SharingFragment().apply {
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun files(uris: List<String>): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_MULTIPLE_FILES_KEY to ArrayList(uris))
         }
 
-        fun file(uri: String) : SharingFragment = SharingFragment().apply {
+        @Deprecated("Use newInstance(intent) instead", ReplaceWith("newInstance(intent)"))
+        fun file(uri: String): SharingFragment = SharingFragment().apply {
             arguments = bundleOf(SHARING_FILE_KEY to uri)
         }
     }

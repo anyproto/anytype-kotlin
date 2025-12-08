@@ -19,6 +19,9 @@ const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
 const val DEEP_LINK_TO_OBJECT_REG_EXP = """object\.any\.coop/([a-zA-Z0-9?=&._-]+)"""
+const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"""
+const val DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP =
+    "anytype://hi/\\?id=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
 
 const val DEE_LINK_INVITE_CUSTOM_REG_EXP = "anytype://invite/\\?cid=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
 
@@ -42,11 +45,15 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     private val defaultInviteRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
     private val defaultLinkToObjectRegex = Regex(DEEP_LINK_TO_OBJECT_REG_EXP)
     private val customInviteRegex = Regex(DEE_LINK_INVITE_CUSTOM_REG_EXP)
+    private val oneToOneChatRegex = Regex(DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP)
+    private val oneToOneChatCustomRegex = Regex(DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP)
 
     override fun resolve(deeplink: String): DeepLinkResolver.Action {
         val uri = Uri.parse(deeplink)
         return when {
             deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> resolveImportExperience(uri)
+            oneToOneChatRegex.containsMatchIn(deeplink) -> resolveOneToOneChatLink(deeplink)
+            oneToOneChatCustomRegex.containsMatchIn(deeplink) -> resolveOneToOneChatCustomLink(uri)
             defaultInviteRegex.containsMatchIn(deeplink) -> DeepLinkResolver.Action.Invite(deeplink)
             customInviteRegex.containsMatchIn(deeplink) ->  DeepLinkResolver.Action.Invite(deeplink)
             defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
@@ -55,6 +62,33 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             else -> DeepLinkResolver.Action.Unknown
         }.also {
             Timber.d("Resolving deep link: $deeplink")
+        }
+    }
+
+    private fun resolveOneToOneChatLink(deeplink: String): DeepLinkResolver.Action {
+        val result = oneToOneChatRegex.find(deeplink)
+        val identity = result?.groupValues?.getOrNull(1)
+        val metadataKey = result?.groupValues?.getOrNull(2)
+        return if (identity != null && metadataKey != null) {
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            )
+        } else {
+            DeepLinkResolver.Action.Unknown
+        }
+    }
+
+    private fun resolveOneToOneChatCustomLink(uri: Uri): DeepLinkResolver.Action {
+        val identity = uri.getQueryParameter("id")
+        val metadataKey = uri.getQueryParameter("key")
+        return if (identity != null && metadataKey != null) {
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            )
+        } else {
+            DeepLinkResolver.Action.Unknown
         }
     }
 
@@ -141,6 +175,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     override fun isDeepLink(link: String): Boolean {
         return link.contains(defaultInviteRegex)
                 || link.contains(defaultLinkToObjectRegex)
+                || link.contains(oneToOneChatRegex)
+                || link.contains(oneToOneChatCustomRegex)
                 || link.contains(DEEP_LINK_PATTERN)
     }
 }

@@ -658,7 +658,8 @@ fun ChatScreen(
                 highlightedMessageId = highlightedMessageId,
                 onHighlightMessage = triggerHighlight,
                 onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered,
-                inviteLinkAccessLevel = inviteLinkAccessLevel
+                inviteLinkAccessLevel = inviteLinkAccessLevel,
+                spaceUxType = spaceUxType
             )
 
             GoToMentionButton(

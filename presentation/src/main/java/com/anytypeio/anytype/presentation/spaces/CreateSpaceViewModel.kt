@@ -85,7 +85,14 @@ class CreateSpaceViewModel(
     }
 
     val isDismissed = MutableStateFlow(false)
-    
+
+    /**
+     * Only CHAT spaces should automatically create invite links upon creation.
+     * ONE_TO_ONE spaces have immutable ACL between two participants and don't need invite links.
+     */
+    private val shouldCreateInviteLink: Boolean
+        get() = vmParams.spaceUxType == SpaceUxType.CHAT
+
     private val _createSpaceError = MutableStateFlow<CreateSpaceError?>(null)
     val createSpaceError: StateFlow<CreateSpaceError?> = _createSpaceError.asStateFlow()
 
@@ -131,7 +138,7 @@ class CreateSpaceViewModel(
                     onSuccess = {
                         onSpaceCreated(
                             response = it,
-                            isChatSpace = vmParams.spaceUxType == SpaceUxType.CHAT
+                            shouldCreateInviteLink = shouldCreateInviteLink
                         )
                     },
                     onFailure = { onError(it) }
@@ -142,7 +149,7 @@ class CreateSpaceViewModel(
 
     private suspend fun onSpaceCreated(
         response: com.anytypeio.anytype.core_models.Command.CreateSpace.Result,
-        isChatSpace: Boolean
+        shouldCreateInviteLink: Boolean
     ) {
         val icon = spaceIconView.value
         val spaceId = response.space.id
@@ -151,15 +158,16 @@ class CreateSpaceViewModel(
             props = Props(
                 mapOf(
                     EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
-                    if (isChatSpace)
-                        EventsPropertiesKey.uxType to "Chat"
-                    else
-                        EventsPropertiesKey.uxType to "Space"
+                    EventsPropertiesKey.uxType to when (vmParams.spaceUxType) {
+                        SpaceUxType.CHAT -> "Chat"
+                        SpaceUxType.ONE_TO_ONE -> "OneToOne"
+                        else -> "Space"
+                    }
                 )
             )
         )
 
-        val proceed: suspend () -> Unit = if (isChatSpace) {
+        val proceed: suspend () -> Unit = if (shouldCreateInviteLink) {
             {
                 proceedWithMakeChatSpaceSharable(
                     spaceId = SpaceId(spaceId),
@@ -301,6 +309,9 @@ class CreateSpaceViewModel(
     }
 
     //region Share and Create Chat Space Link
+    // Note: Only CHAT spaces create invite links.
+    // ONE_TO_ONE spaces have immutable ACL between two participants,
+    // so they don't need/support invite links.
     private suspend fun proceedWithMakeChatSpaceSharable(
         spaceId: SpaceId,
         startingObject: Id?

@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
@@ -22,9 +22,9 @@ class TagOrStatusValueViewModelFactory @Inject constructor(
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
     private val subscription: StorelessSubscriptionContainer,
     private val deleteRelationOptions: DeleteRelationOptions,
+    private val setRelationOptionOrder: SetRelationOptionOrder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val storeOfRelations: StoreOfRelations
 ) : ViewModelProvider.Factory {
@@ -38,9 +38,9 @@ class TagOrStatusValueViewModelFactory @Inject constructor(
         dispatcher = dispatcher,
         setObjectDetails = setObjectDetails,
         analytics = analytics,
-        spaceManager = spaceManager,
         subscription = subscription,
         deleteRelationOptions = deleteRelationOptions,
+        setRelationOptionOrder = setRelationOptionOrder,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
         storeOfRelations = storeOfRelations
     ) as T

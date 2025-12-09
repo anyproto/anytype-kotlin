@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
@@ -62,7 +63,8 @@ class VaultViewModelFactory @Inject constructor(
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
     private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
-    private val createSpace: CreateSpace
+    private val createSpace: CreateSpace,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -96,6 +98,7 @@ class VaultViewModelFactory @Inject constructor(
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
         appInfo = appInfo,
         findOneToOneChatByIdentity = findOneToOneChatByIdentity,
-        createSpace = createSpace
+        createSpace = createSpace,
+        deepLinkResolver = deepLinkResolver
     ) as T
 }

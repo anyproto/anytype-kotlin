@@ -1116,6 +1116,12 @@ class VaultViewModel(
         }
     }
 
+    fun onMuteSpace(spaceTargetId: Id, isOneToOne: Boolean) {
+        // For OneToOne spaces, use DISABLE since mentions are not possible (only 2 people)
+        val state = if (isOneToOne) NotificationState.DISABLE else NotificationState.MENTIONS
+        setSpaceNotificationState(spaceTargetId, state)
+    }
+
     fun setSpaceNotificationState(spaceTargetId: Id, newState: NotificationState) {
         Timber.d("Setting notification state for spaceTargetId: $spaceTargetId to $newState")
         viewModelScope.launch {

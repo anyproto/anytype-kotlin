@@ -5,7 +5,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SpaceCreationUseCase
@@ -140,6 +142,9 @@ class ParticipantViewModel(
         }
 
         viewModelScope.launch {
+            // Fire analytics event
+            analytics.sendEvent(eventName = EventsDictionary.clickConnectOneToOne)
+            
             // Set loading state
             uiState.value = state.copy(isConnecting = true)
 
@@ -155,6 +160,15 @@ class ParticipantViewModel(
 
             createSpace.async(params).suspendFold(
                 onSuccess = { response ->
+                    // Fire CreateSpace analytics event
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.createSpace,
+                        props = Props(
+                            mapOf(
+                                EventsPropertiesKey.uxType to "OneToOne"
+                            )
+                        )
+                    )
                     // Reset loading state
                     uiState.value = state.copy(isConnecting = false)
                     // Switch to the new space

@@ -73,8 +73,8 @@ class VaultFragment : BaseComposeFragment() {
     }
     
 
-    val onMuteSpace: (String) -> Unit = { spaceTargetId ->
-        vm.setSpaceNotificationState(spaceTargetId, NotificationState.MENTIONS)
+    val onMuteSpace: (String, Boolean) -> Unit = { spaceTargetId, isOneToOne ->
+        vm.onMuteSpace(spaceTargetId, isOneToOne)
     }
     val onUnmuteSpace: (String) -> Unit = { spaceTargetId ->
         vm.setSpaceNotificationState(spaceTargetId, NotificationState.ALL)

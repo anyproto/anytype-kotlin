@@ -52,7 +52,7 @@ fun VaultOneToOneSpaceCard(
     spaceView: VaultSpaceView.OneToOneSpace,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (Id) -> Unit = {},
+    onMuteSpace: (Id, Boolean) -> Unit = { _, _ -> },
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
@@ -133,7 +133,8 @@ fun VaultOneToOneSpaceCard(
                     if (shouldShowAsMuted) {
                         onUnmuteSpace(it)
                     } else {
-                        onMuteSpace(it)
+                        // OneToOneSpace: pass true so DISABLE is used instead of MENTIONS
+                        onMuteSpace(it, true)
                     }
                 }
             },

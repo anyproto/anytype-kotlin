@@ -53,6 +53,7 @@ fun NotificationsPreferenceSheet(
     targetSpaceId: String?,
     currentState: NotificationState,
     chatsWithCustomNotifications: List<ChatNotificationItem>,
+    isOneToOne: Boolean = false,
     uiEvent: (UiEvent) -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -115,18 +116,21 @@ fun NotificationsPreferenceSheet(
                     paddingEnd = 16.dp,
                 )
             }
-            item {
-                NotificationOption(
-                    title = stringResource(R.string.notifications_mentions),
-                    checked = currentState == NotificationState.MENTIONS,
-                    onClick = { uiEvent(UiEvent.OnNotificationsSetting.Mentions(targetSpaceId)) }
-                )
-            }
-            item {
-                Divider(
-                    paddingStart = 16.dp,
-                    paddingEnd = 16.dp,
-                )
+            // Only show "Mentions only" for spaces that support mentions (not 1-1 chats)
+            if (!isOneToOne) {
+                item {
+                    NotificationOption(
+                        title = stringResource(R.string.notifications_mentions),
+                        checked = currentState == NotificationState.MENTIONS,
+                        onClick = { uiEvent(UiEvent.OnNotificationsSetting.Mentions(targetSpaceId)) }
+                    )
+                }
+                item {
+                    Divider(
+                        paddingStart = 16.dp,
+                        paddingEnd = 16.dp,
+                    )
+                }
             }
             item {
                 NotificationOption(
@@ -278,6 +282,20 @@ fun NotificationsPreferenceSheetPreview() {
                 icon = ObjectIcon.TypeIcon.Default.DEFAULT
             )
         ),
+        isOneToOne = false,
+        uiEvent = {},
+        onDismiss = {}
+    )
+}
+
+@DefaultPreviews
+@Composable
+fun NotificationsPreferenceSheetOneToOnePreview() {
+    NotificationsPreferenceSheet(
+        targetSpaceId = "space_view_id",
+        currentState = NotificationState.ALL,
+        chatsWithCustomNotifications = emptyList(),
+        isOneToOne = true,
         uiEvent = {},
         onDismiss = {}
     )

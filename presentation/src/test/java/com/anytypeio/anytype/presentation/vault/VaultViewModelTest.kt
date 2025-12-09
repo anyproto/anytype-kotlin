@@ -4,6 +4,7 @@ import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -16,6 +17,7 @@ import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
@@ -38,6 +40,7 @@ import org.junit.Test
 import org.mockito.kotlin.any
 import org.mockito.kotlin.mock
 import org.mockito.kotlin.stub
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.whenever
 
 @OptIn(ExperimentalCoroutinesApi::class)
@@ -1568,6 +1571,92 @@ class VaultViewModelTest {
                     )
                 }
             }
+        }
+
+    //endregion
+
+    //region onMuteSpace Tests
+
+    @Test
+    fun `onMuteSpace should call setSpaceNotificationMode with DISABLE when isOneToOne is true`() =
+        runTest {
+            // Given
+            val spaceTargetId = "space123"
+            val setSpaceNotificationMode = mock<SetSpaceNotificationMode>()
+            whenever(setSpaceNotificationMode.async(any())).thenReturn(Resultat.Success(Unit))
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(emptyList()))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(emptyMap()))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                setSpaceNotificationMode = setSpaceNotificationMode,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
+            )
+
+            // When
+            viewModel.onMuteSpace(spaceTargetId, isOneToOne = true)
+            advanceUntilIdle()
+
+            // Then - For OneToOne spaces, should use DISABLE since mentions are not possible
+            verify(setSpaceNotificationMode).async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = spaceTargetId,
+                    mode = NotificationState.DISABLE
+                )
+            )
+        }
+
+    @Test
+    fun `onMuteSpace should call setSpaceNotificationMode with MENTIONS when isOneToOne is false`() =
+        runTest {
+            // Given
+            val spaceTargetId = "space456"
+            val setSpaceNotificationMode = mock<SetSpaceNotificationMode>()
+            whenever(setSpaceNotificationMode.async(any())).thenReturn(Resultat.Success(Unit))
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(emptyList()))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(emptyMap()))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                setSpaceNotificationMode = setSpaceNotificationMode,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
+            )
+
+            // When
+            viewModel.onMuteSpace(spaceTargetId, isOneToOne = false)
+            advanceUntilIdle()
+
+            // Then - For non-OneToOne spaces (Data/Chat), should use MENTIONS
+            verify(setSpaceNotificationMode).async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = spaceTargetId,
+                    mode = NotificationState.MENTIONS
+                )
+            )
         }
 
     //endregion

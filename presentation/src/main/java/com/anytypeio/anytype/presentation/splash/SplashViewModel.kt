@@ -457,6 +457,7 @@ class SplashViewModel(
                                 )
                             )
                         } else {
+                            Timber.w("Could not resolve chat ID for chat spaces")
                             commands.emit(
                                 Command.NavigateToWidgets(
                                     space = space.id,

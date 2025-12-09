@@ -140,6 +140,9 @@ class ParticipantViewModel(
         }
 
         viewModelScope.launch {
+            // Fire analytics event
+            analytics.sendEvent(eventName = EventsDictionary.clickConnectOneToOne)
+            
             // Set loading state
             uiState.value = state.copy(isConnecting = true)
 

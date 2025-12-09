@@ -101,6 +101,7 @@ class RequestJoinSpaceViewModel(
                                             when(spaceView.spaceUxType) {
                                                 SpaceUxType.DATA -> put(EventsPropertiesKey.uxType, "Space")
                                                 SpaceUxType.CHAT -> put(EventsPropertiesKey.uxType, "Chat")
+                                                SpaceUxType.ONE_TO_ONE -> put(EventsPropertiesKey.uxType, "OneToOne")
                                                 else -> {}
                                             }
                                             // Analytics Event #5: ScreenInviteRequest with type property
@@ -226,6 +227,9 @@ class RequestJoinSpaceViewModel(
                     )
                     SpaceUxType.CHAT -> mapOf(
                         EventsPropertiesKey.uxType to "Chat"
+                    )
+                    SpaceUxType.ONE_TO_ONE -> mapOf(
+                        EventsPropertiesKey.uxType to "OneToOne"
                     )
                     else -> emptyMap()
                 }

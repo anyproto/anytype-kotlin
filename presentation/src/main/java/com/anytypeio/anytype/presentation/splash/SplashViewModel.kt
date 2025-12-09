@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
@@ -66,7 +67,8 @@ class SplashViewModel(
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val migration: MigrationHelperDelegate
+    private val migration: MigrationHelperDelegate,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -447,6 +449,18 @@ class SplashViewModel(
 
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         Timber.d("proceedWithVaultNavigation deep link: $deeplink")
+
+        // For one-to-one chat deeplinks, always navigate to Vault
+        // where the proper handling logic exists in VaultViewModel
+        if (deeplink != null) {
+            val action = deepLinkResolver.resolve(deeplink)
+            if (action is DeepLinkResolver.Action.InitiateOneToOneChat) {
+                Timber.d("One-to-one chat deeplink detected, navigating to Vault")
+                commands.emit(Command.NavigateToVault(deeplink))
+                return
+            }
+        }
+
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null) {
             val view = awaitActiveSpaceView(SpaceId(space.id))

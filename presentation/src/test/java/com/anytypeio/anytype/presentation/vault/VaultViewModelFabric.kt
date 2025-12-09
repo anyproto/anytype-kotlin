@@ -98,6 +98,7 @@ object VaultViewModelFabric {
         appInfo = appInfo,
         participantContainer = participantSubscriptionContainer,
         findOneToOneChatByIdentity = findOneToOneChatByIdentity,
-        createSpace = mock()
+        createSpace = mock(),
+        deepLinkResolver = mock()
     )
 } 

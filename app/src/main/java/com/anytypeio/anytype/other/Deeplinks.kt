@@ -19,9 +19,9 @@ const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
 const val DEEP_LINK_TO_OBJECT_REG_EXP = """object\.any\.coop/([a-zA-Z0-9?=&._-]+)"""
-const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"""
+const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9_-]+)#([a-zA-Z0-9_+/=-]+)"""
 const val DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP =
-    "anytype://hi/\\?id=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
+    "anytype://hi/\\?id=([a-zA-Z0-9_-]+)&key=([a-zA-Z0-9_+/=-]+)"
 
 const val DEE_LINK_INVITE_CUSTOM_REG_EXP = "anytype://invite/\\?cid=([a-zA-Z0-9]+)&key=([a-zA-Z0-9]+)"
 

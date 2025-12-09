@@ -108,7 +108,7 @@ fun VaultDataSpaceChatCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title,
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             chatName = chatName,
             creatorName = creatorName,
             messageText = messageText,
@@ -199,7 +199,7 @@ private fun ContentDataSpaceChat(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = chatName,
+                text = chatName.ifEmpty { stringResource(id = R.string.untitled) },
                 style = CodeChatPreviewMedium,
                 color = getChatTextColor(
                     notificationMode = spaceNotificationState,

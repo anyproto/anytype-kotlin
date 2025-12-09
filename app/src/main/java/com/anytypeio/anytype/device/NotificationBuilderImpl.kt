@@ -11,6 +11,9 @@ import android.graphics.Canvas
 import android.graphics.Paint
 import android.graphics.Typeface
 import android.os.Build
+import android.text.Spannable
+import android.text.SpannableStringBuilder
+import android.text.style.StyleSpan
 import androidx.core.app.NotificationCompat
 import coil3.imageLoader
 import coil3.request.CachePolicy
@@ -78,7 +81,6 @@ class NotificationBuilderImpl(
 
         // Format the notification body text
         val bodyText = message.formatNotificationBody(attachmentText)
-        val singleLine = "${message.senderName.trim()}: $bodyText"
 
         // Generate unique notification ID based on message ID
         val notificationId = message.msgId.hashCode()
@@ -87,6 +89,32 @@ class NotificationBuilderImpl(
         // - For Data spaces: use the chat's icon (each chat has its own icon)
         // - For Chat spaces: use the space icon (space and chat are the same)
         val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
+
+        // For Data spaces (which can have multiple chats), include the chat name
+        // to help users identify which chat the notification is from
+        val chatName = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
+            chatsDetailsSubscriptionContainer.get(message.chatId)?.name?.takeIf { it.isNotBlank() }
+        } else {
+            null
+        }
+
+        // Build notification text with optional chat name prefix
+        // Use colon separator for collapsed view (newline doesn't render in collapsed state)
+        val singleLine = if (chatName != null) {
+            "$chatName: ${message.senderName.trim()}: $bodyText"
+        } else {
+            "${message.senderName.trim()}: $bodyText"
+        }
+
+        // For expanded style, make chat name bold using SpannableStringBuilder
+        val bigTextContent: CharSequence = if (chatName != null) {
+            SpannableStringBuilder()
+                .append(chatName, StyleSpan(Typeface.BOLD), Spannable.SPAN_EXCLUSIVE_EXCLUSIVE)
+                .append("\n")
+                .append("${message.senderName.trim()}: $bodyText")
+        } else {
+            singleLine
+        }
         val largeIcon = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
             loadChatIconBitmap(chatId = message.chatId)
                 ?: loadSpaceIconBitmap(spaceId)  // Fallback to space icon if chat icon fails
@@ -102,7 +130,7 @@ class NotificationBuilderImpl(
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.spaceName.trim())
             .setContentText(singleLine)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(singleLine))
+            .setStyle(NotificationCompat.BigTextStyle().bigText(bigTextContent))
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pending)

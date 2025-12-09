@@ -127,7 +127,8 @@ class VaultViewModel(
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
     private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
-    private val createSpace: CreateSpace
+    private val createSpace: CreateSpace,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -833,32 +834,33 @@ class VaultViewModel(
         vaultErrors.value = VaultErrors.Hidden
         viewModelScope.launch {
             try {
-                // First, check if it's a 1-1 chat link (hi.any.coop)
-                val oneToOneChatRegex = Regex("""hi\.any\.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)""")
-                val oneToOneMatch = oneToOneChatRegex.find(qrCode)
-                if (oneToOneMatch != null) {
-                    val identity = oneToOneMatch.groupValues.getOrNull(1)
-                    val metadataKey = oneToOneMatch.groupValues.getOrNull(2)
-                    if (identity != null && metadataKey != null) {
+                // Use DeepLinkResolver to parse the QR code
+                val action = deepLinkResolver.resolve(qrCode)
+                Timber.d("Resolved action: $action")
+                when (action) {
+                    is DeepLinkResolver.Action.InitiateOneToOneChat -> {
                         proceedWithOneToOneChatInitiation(
-                            identity = identity,
-                            metadataKey = metadataKey
+                            identity = action.identity,
+                            metadataKey = action.metadataKey
                         )
-                        return@launch
                     }
-                }
 
-                // Otherwise, check if it's a space invite link
-                val fileKey = spaceInviteResolver.parseFileKey(qrCode)
-                val contentId = spaceInviteResolver.parseContentId(qrCode)
+                    is DeepLinkResolver.Action.Invite -> {
+                        commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                    }
 
-                if (fileKey != null && contentId != null) {
-                    commands.emit(
-                        VaultCommand.NavigateToRequestJoinSpace(link = qrCode)
-                    )
-                } else {
-                    Timber.e("Failed to parse QR code: invalid format")
-                    vaultErrors.value = VaultErrors.QrCodeIsNotValid
+                    else -> {
+                        // Fallback for cases where DeepLinkResolver returns Unknown
+                        // but spaceInviteResolver can still parse it
+                        val fileKey = spaceInviteResolver.parseFileKey(qrCode)
+                        val contentId = spaceInviteResolver.parseContentId(qrCode)
+                        if (fileKey != null && contentId != null) {
+                            commands.emit(VaultCommand.NavigateToRequestJoinSpace(link = qrCode))
+                        } else {
+                            Timber.e("Failed to parse QR code: invalid format")
+                            vaultErrors.value = VaultErrors.QrCodeIsNotValid
+                        }
+                    }
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Error processing QR code")
@@ -983,6 +985,19 @@ class VaultViewModel(
                 Timber.d("Processing pending deeplink: $deeplink")
                 commands.emit(VaultCommand.Deeplink.Invite(deeplink))
                 pendingIntentStore.clearDeepLinkInvite()
+            }
+
+            // Check for pending one-to-one chat deeplink
+            val oneToOneData = pendingIntentStore.getOneToOneChatData()
+            Timber.d("processPendingDeeplink: oneToOneData = $oneToOneData")
+
+            oneToOneData?.let { data ->
+                Timber.d("Processing pending one-to-one chat: ${data.identity}")
+                proceedWithOneToOneChatInitiation(
+                    identity = data.identity,
+                    metadataKey = data.metadataKey
+                )
+                pendingIntentStore.clearOneToOneChatData()
             }
         }
     }
@@ -1374,7 +1389,7 @@ class VaultViewModel(
      * @param metadataKey The metadata key for the chat (used for encryption)
      */
     private fun proceedWithOneToOneChatInitiation(identity: Id, metadataKey: String) {
-        Timber.d("proceedWithOneToOneChatInitiation: identity=$identity")
+        Timber.d("proceedWithOneToOneChatInitiation")
         viewModelScope.launch {
             // First, check if a 1-1 chat already exists with this identity
             findOneToOneChatByIdentity.async(
@@ -1388,13 +1403,13 @@ class VaultViewModel(
                     } else {
                         // Create new ONE_TO_ONE space
                         Timber.d("No existing 1-1 chat found, creating new space")
-                        createOneToOneSpace(identity)
+                        createOneToOneSpace(identity, metadataKey)
                     }
                 },
                 onFailure = { error ->
                     Timber.e(error, "Error finding existing 1-1 chat")
                     // Try to create a new space anyway
-                    createOneToOneSpace(identity)
+                    createOneToOneSpace(identity, metadataKey)
                 }
             )
         }
@@ -1403,13 +1418,13 @@ class VaultViewModel(
     /**
      * Creates a new ONE_TO_ONE space with the given participant identity.
      */
-    private suspend fun createOneToOneSpace(identity: Id) {
+    private suspend fun createOneToOneSpace(identity: Id, metadataKey: String) {
         val params = CreateSpace.Params(
             details = mapOf(
-                Relations.ONE_TO_ONE_IDENTITY to identity,
                 Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
                 Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
-                Relations.SPACE_DASHBOARD_ID to "chat"
+                Relations.ONE_TO_ONE_IDENTITY to identity,
+                Relations.ONE_TO_ONE_REQUEST_METADATA to metadataKey
             ),
             useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
         )

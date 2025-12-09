@@ -416,6 +416,15 @@ class MainViewModel(
             saveInviteDeepLinkForLater(deeplink)
         } else {
             Timber.d("Proceeding with deeplink: $deeplink")
+            // Store one-to-one chat data IMMEDIATELY (before the NEW_DEEP_LINK_DELAY)
+            // so VaultViewModel can pick it up when it resumes
+            if (deeplink is DeepLinkResolver.Action.InitiateOneToOneChat) {
+                Timber.d("Storing one-to-one chat data IMMEDIATELY: ${deeplink.identity}")
+                pendingIntentStore.setOneToOneChatData(
+                    identity = deeplink.identity,
+                    metadataKey = deeplink.metadataKey
+                )
+            }
             launchDeepLinkProcessing(deeplink)
         }
     }
@@ -571,6 +580,9 @@ class MainViewModel(
             }
 
             is DeepLinkResolver.Action.InitiateOneToOneChat -> {
+                // Data was already stored immediately in processDeepLinkBasedOnAuth()
+                // to avoid race condition with VaultViewModel.processPendingDeeplink()
+                Timber.d("Emitting InitiateOneToOneChat command: ${deeplink.identity}")
                 commands.emit(
                     Command.Deeplink.InitiateOneToOneChat(
                         identity = deeplink.identity,

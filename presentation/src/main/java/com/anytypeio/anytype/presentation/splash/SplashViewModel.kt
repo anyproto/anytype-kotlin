@@ -409,10 +409,7 @@ class SplashViewModel(
                             val view = awaitActiveSpaceView(SpaceId(space))
                             if (view != null) {
                                 val chat = when(view.spaceUxType) {
-                                    SpaceUxType.CHAT -> {
-                                        view.chatId
-                                    }
-                                    SpaceUxType.ONE_TO_ONE -> {
+                                    SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
                                         view.chatId ?: spaceManager.getConfig()?.spaceChatId
                                     }
                                     else -> {

@@ -1000,6 +1000,17 @@ class SpaceSettingsViewModel(
                 onSuccess = {
                     _notificationState.value = newState
                     Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
+                    // Fire analytics event for space-level notification change if it's a chat/one-to-one space
+                    val spaceView = spaceViewContainer.get(vmParams.space)
+                    if (spaceView != null && 
+                        (spaceView.spaceUxType == SpaceUxType.CHAT || spaceView.spaceUxType == SpaceUxType.ONE_TO_ONE)) {
+                        analytics.sendEvent(
+                            eventName = EventsDictionary.changeMessageNotificationState,
+                            props = Props(
+                                mapOf(EventsPropertiesKey.uxType to "Chat")
+                            )
+                        )
+                    }
                 },
                 onFailure = { error ->
                     Timber.e("Failed to set notification state: $error")

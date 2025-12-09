@@ -1636,6 +1636,8 @@ class ChatViewModel @Inject constructor(
             val headerView = header.value
             if (headerView is HeaderView.ChatObject) {
                 val name = headerView.title
+                // Fire analytics event for opening chat info screen
+                analytics.sendEvent(eventName = EventsDictionary.screenChatInfo)
                 commands.emit(
                     ViewModelCommand.OpenChatInfo(
                         name = name,
@@ -2126,6 +2128,13 @@ class ChatViewModel @Inject constructor(
                 )
             ).onSuccess { payload ->
                 Timber.d("Notification setting changed successfully to: $setting")
+                // Fire analytics event for chat-level notification change
+                analytics.sendEvent(
+                    eventName = EventsDictionary.changeMessageNotificationState,
+                    props = Props(
+                        mapOf(EventsPropertiesKey.uxType to "Space")
+                    )
+                )
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")
                 // Revert header to previous state on error

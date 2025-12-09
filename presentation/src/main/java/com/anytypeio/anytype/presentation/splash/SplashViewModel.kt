@@ -254,7 +254,9 @@ class SplashViewModel(
                             val target = result.objectId
                             val view = awaitActiveSpaceView(space)
                             if (view != null) {
-                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) view.chatId else null
+                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) {
+                                    view.chatId ?: spaceManager.getConfig()?.spaceChatId
+                                } else null
                                 // Layout may not be known here; open as an object and let UI resolve.
                                 commands.emit(
                                     Command.NavigateToObject(

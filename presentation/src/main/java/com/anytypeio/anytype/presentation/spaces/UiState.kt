@@ -39,7 +39,8 @@ data class SpaceTechInfo(
     val networkId: Id,
     val creationDateInMillis: Long?,
     val isDebugVisible: Boolean = false,
-    val deviceToken: String? = null
+    val deviceToken: String? = null,
+    val isOneToOne: Boolean = false
 )
 
 /**

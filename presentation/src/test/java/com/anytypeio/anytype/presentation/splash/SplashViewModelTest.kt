@@ -40,6 +40,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
 import org.mockito.Mockito
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -135,7 +136,8 @@ class SplashViewModelTest {
             getLastOpenedSpace = getLastOpenedSpace,
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
             spaceViews = spaceViewSubscriptionContainer,
-            migration = migrationHelperDelegate
+            migration = migrationHelperDelegate,
+            deepLinkResolver = mock()
         )
     }
 

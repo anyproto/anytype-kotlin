@@ -80,7 +80,10 @@ fun PublishToWebScreen(
 
     var showEditUrl by remember { mutableStateOf(false) }
 
-    var showJoinSpaceBannerChecked by remember { mutableStateOf(true) }
+    // Initialize based on viewState.showJoinSpaceButton
+    var showJoinSpaceBannerChecked by remember(viewState) { 
+        mutableStateOf(viewState.showJoinSpaceButton)
+    }
 
     val initialUrl = if (viewState is PublishToWebViewState.Init) "" else "/${viewState.uri}"
     var url by rememberSaveable(viewState.uri) { mutableStateOf(initialUrl) }
@@ -153,38 +156,41 @@ fun PublishToWebScreen(
                     text = url
                 )
             }
-            Section(
-                title = stringResource(R.string.preferences)
-            )
-            Row(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .height(52.dp)
-                    .fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.ic_plus_rounded_24),
-                    contentDescription = stringResource(R.string.content_description_plus_button)
+            // Hide preferences section for ONE_TO_ONE spaces
+            if (viewState.showJoinSpaceButton) {
+                Section(
+                    title = stringResource(R.string.preferences)
                 )
-                Text(
-                    text = stringResource(R.string.web_publishing_join_space_button),
-                    style = BodyRegular,
-                    color = colorResource(R.color.text_primary),
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .fillMaxWidth()
-                        .padding(horizontal = 10.dp)
-                )
-                Switch(
-                    checked = showJoinSpaceBannerChecked,
-                    colors = SwitchDefaults.colors(
-                        checkedTrackColor = colorResource(R.color.color_accent_80)
-                    ),
-                    onCheckedChange = {
-                        showJoinSpaceBannerChecked = it
-                    }
-                )
+                        .padding(horizontal = 16.dp)
+                        .height(52.dp)
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.ic_plus_rounded_24),
+                        contentDescription = stringResource(R.string.content_description_plus_button)
+                    )
+                    Text(
+                        text = stringResource(R.string.web_publishing_join_space_button),
+                        style = BodyRegular,
+                        color = colorResource(R.color.text_primary),
+                        modifier = Modifier
+                            .weight(1f)
+                            .fillMaxWidth()
+                            .padding(horizontal = 10.dp)
+                    )
+                    Switch(
+                        checked = showJoinSpaceBannerChecked,
+                        colors = SwitchDefaults.colors(
+                            checkedTrackColor = colorResource(R.color.color_accent_80)
+                        ),
+                        onCheckedChange = {
+                            showJoinSpaceBannerChecked = it
+                        }
+                    )
+                }
             }
         }
 

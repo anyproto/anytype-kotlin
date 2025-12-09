@@ -54,6 +54,18 @@
                 <data android:scheme="http"/>
                 <data android:host="invite.any.coop" />
             </intent-filter>
+            <intent-filter
+                android:label="Anytype 1-1 Chat"
+                android:autoVerify="true">
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data android:scheme="https" />
+                <data android:scheme="http" />
+                <data android:host="hi.any.coop" />
+            </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />

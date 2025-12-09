@@ -1,13 +1,23 @@
 package com.anytypeio.anytype.ui.settings
 
+import android.app.Activity
+import android.content.ClipData
+import android.content.ClipboardManager
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.contract.ActivityResultContracts.PickVisualMedia
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.viewModels
@@ -18,8 +28,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_ui.common.ComposeDialogView
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
+import com.anytypeio.anytype.core_ui.features.profile.ProfileQrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.GetImageContract
 import com.anytypeio.anytype.core_utils.ext.Mimetype
+import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.ext.openNotificationSettings
 import com.anytypeio.anytype.core_utils.ext.parseImagePath
 import com.anytypeio.anytype.core_utils.ext.shareFile
 import com.anytypeio.anytype.core_utils.ext.subscribe
@@ -29,20 +42,15 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
+import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
 import com.anytypeio.anytype.ui_settings.account.AnyIdInfoSheet
 import com.anytypeio.anytype.ui_settings.account.NotificationSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
-import com.anytypeio.anytype.presentation.profile.AccountProfile
 import javax.inject.Inject
 import timber.log.Timber
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.openNotificationSettings
 
 class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
 
@@ -149,7 +157,8 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             } else {
                                 findNavController().navigate(R.id.paymentsScreen)
                             }
-                        }
+                        },
+                        onShowQrCodeClicked = { vm.onShowQrCodeClicked() }
                     )
                     if (showNotificationSettingsModal) {
                         NotificationSettingsScreen(
@@ -174,9 +183,60 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         )
                     }
+                    val profileQrCodeState =
+                        vm.profileQrCodeState.collectAsStateWithLifecycle().value
+                    ProfileQrCodeScreen(
+                        state = profileQrCodeState,
+                        onShare = { link -> shareProfileLink(link) },
+                        onCopyLink = { link -> copyProfileLink(link) },
+                        onScanQrCode = { launchQrScanner() },
+                        onDismiss = { vm.onHideQrCodeScreen() }
+                    )
                 }
             }
         }
+    }
+
+    private fun shareProfileLink(link: String) {
+        val intent = Intent(Intent.ACTION_SEND).apply {
+            type = "text/plain"
+            putExtra(Intent.EXTRA_TEXT, link)
+        }
+        startActivity(Intent.createChooser(intent, null))
+    }
+
+    private fun copyProfileLink(link: String) {
+        val clipboard =
+            requireContext().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+        val clip = ClipData.newPlainText("Anytype Profile Link", link)
+        clipboard.setPrimaryClip(clip)
+        toast(R.string.profile_qr_link_copied)
+    }
+
+    private val qrScannerLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            val qrCode = result.data?.getStringExtra(QrScannerActivity.SCAN_RESULT)
+            if (qrCode != null) {
+                vm.onQrCodeScanned(qrCode)
+            }
+        }
+    }
+
+    private fun launchQrScanner() {
+        val intent = Intent(requireContext(), QrScannerActivity::class.java)
+        qrScannerLauncher.launch(intent)
+    }
+
+    private fun handleScannedQrCode(qrCode: String) {
+        // Start the activity with the scanned QR code as a deep link
+        // This will trigger the MainActivity's onNewIntent handling
+        val intent = Intent(Intent.ACTION_VIEW, android.net.Uri.parse(qrCode)).apply {
+            setClass(requireContext(), requireActivity()::class.java)
+            addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP)
+        }
+        startActivity(intent)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -193,6 +253,19 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
         jobs += lifecycleScope.subscribe(vm.debugSyncReportUri) { uri ->
             if (uri != null) {
                 shareFile(uri)
+            }
+        }
+        jobs += lifecycleScope.subscribe(vm.commands) { command ->
+            when (command) {
+                is ProfileSettingsViewModel.Command.ShareLink -> {
+                    shareProfileLink(command.link)
+                }
+
+                is ProfileSettingsViewModel.Command.ProcessScannedQrCode -> {
+                    // Dismiss the bottom sheet and let the activity handle the deep link
+                    dismiss()
+                    handleScannedQrCode(command.qrCode)
+                }
             }
         }
     }

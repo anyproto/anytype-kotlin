@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.common.ShimmerEffect
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -121,6 +122,8 @@ fun ChatScreenWrapper(
         val mentionPanelState by vm.mentionPanelState.collectAsStateWithLifecycle()
 
         val inviteLinkAccessLevel by vm.inviteLinkAccessLevel.collectAsStateWithLifecycle()
+        
+        val spaceUxType by vm.currentSpaceUxType.collectAsStateWithLifecycle()
 
         ChatScreen(
             isLoading = vm.uiState.collectAsStateWithLifecycle().value.isLoading,
@@ -243,6 +246,7 @@ fun ChatScreenWrapper(
             isReadOnly = vm.chatBoxMode
                 .collectAsStateWithLifecycle()
                 .value is ChatBoxMode.ReadOnly,
+            spaceUxType = spaceUxType,
             onImageCaptured = {
                 vm.onChatBoxMediaPicked(
                     uris = listOf(
@@ -410,7 +414,8 @@ fun ChatScreen(
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
     onCreateAndAttachObject: () -> Unit,
     onCameraPermissionDenied: () -> Unit = {},
-    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled()
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
+    spaceUxType: SpaceUxType? = null
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -653,7 +658,8 @@ fun ChatScreen(
                 highlightedMessageId = highlightedMessageId,
                 onHighlightMessage = triggerHighlight,
                 onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered,
-                inviteLinkAccessLevel = inviteLinkAccessLevel
+                inviteLinkAccessLevel = inviteLinkAccessLevel,
+                spaceUxType = spaceUxType
             )
 
             GoToMentionButton(
@@ -907,7 +913,8 @@ fun ChatScreen(
                 onVideoCaptured = onVideoCaptured,
                 onCreateAndAttachObject = onCreateAndAttachObject,
                 onCameraPermissionDenied = onCameraPermissionDenied,
-                onAttachmentMenuTriggered = onAttachmentMenuTriggered
+                onAttachmentMenuTriggered = onAttachmentMenuTriggered,
+                spaceUxType = spaceUxType
             )
         }
     }

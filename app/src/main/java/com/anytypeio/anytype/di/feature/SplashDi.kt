@@ -9,7 +9,6 @@ import com.anytypeio.anytype.data.auth.event.EventProcessMigrationDateChannel
 import com.anytypeio.anytype.data.auth.event.EventProcessMigrationRemoteChannel
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
-import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
@@ -22,6 +21,7 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.launch.SetDefaultObjectType
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -220,4 +220,5 @@ interface SplashDependencies : ComponentDependencies {
     fun logger(): Logger
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
     fun eventProxy(): EventProxy
+    fun deepLinkResolver(): DeepLinkResolver
 }

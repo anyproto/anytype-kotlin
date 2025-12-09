@@ -13,12 +13,12 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
@@ -149,7 +149,6 @@ class ParticipantViewModel(
                     Relations.ONE_TO_ONE_IDENTITY to participantIdentity,
                     Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
                     Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
-                    Relations.SPACE_DASHBOARD_ID to "chat" // Chat dashboard ID
                 ),
                 useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
             )

@@ -120,6 +120,10 @@ sealed class VaultCommand {
         ) : Deeplink()
 
         data class MembershipScreen(val tierId: String?) : Deeplink()
+        data class InitiateOneToOneChat(
+            val identity: Id,
+            val metadataKey: String
+        ) : Deeplink()
     }
 }
 

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import javax.inject.Inject
+import kotlin.math.log
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.map
@@ -61,9 +62,11 @@ interface SpaceManager {
         }
 
         override suspend fun set(space: Id, withChat: Boolean) : Result<Config> = withContext(dispatchers.io) {
+            logger.logInfo("SPACE MANAGER: setting space: $space")
             runCatching { repo.spaceOpen(space, withChat) }.also { result ->
                 result.fold(
                     onSuccess = { config ->
+                        logger.logInfo("SPACE MANAGER: space opened: $space")
                         info[space] = config
                         currentSpace.value = space
                     },

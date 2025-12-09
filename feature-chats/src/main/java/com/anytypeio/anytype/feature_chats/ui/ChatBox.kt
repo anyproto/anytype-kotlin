@@ -75,6 +75,7 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.common.FULL_ALPHA
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -117,6 +118,7 @@ fun ChatBox(
     onImageCaptured: (Uri) -> Unit,
     onVideoCaptured: (Uri) -> Unit,
     onAttachmentMenuTriggered: () -> Unit,
+    spaceUxType: SpaceUxType? = null
     ) {
 
     val context = LocalContext.current
@@ -599,6 +601,7 @@ fun ChatBox(
                     )
                 } else {
                     ChatBoxEditPanel(
+                        spaceUxType = spaceUxType,
                         onAttachObjectClicked = onAttachObjectClicked,
                         onMentionClicked = {
                             val selection = text.selection
@@ -989,6 +992,7 @@ private fun MarkupIcon(
 @Composable
 fun ChatBoxEditPanel(
     modifier: Modifier = Modifier,
+    spaceUxType: SpaceUxType? = null,
     onAttachObjectClicked: () -> Unit,
     onStyleClicked: () -> Unit,
     onMentionClicked: () -> Unit,
@@ -1154,14 +1158,17 @@ fun ChatBoxEditPanel(
 
         Spacer(modifier = Modifier.width(20.dp))
 
-        Image(
-            painter = painterResource(id = R.drawable.ic_chat_mention),
-            contentDescription = "Plus button",
-            modifier = Modifier
-                .noRippleClickable {
-                    onMentionClicked()
-                }
-        )
+        // Hide mention button for ONE_TO_ONE spaces
+        if (spaceUxType != SpaceUxType.ONE_TO_ONE) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_chat_mention),
+                contentDescription = "Plus button",
+                modifier = Modifier
+                    .noRippleClickable {
+                        onMentionClicked()
+                    }
+            )
+        }
     }
 }
 

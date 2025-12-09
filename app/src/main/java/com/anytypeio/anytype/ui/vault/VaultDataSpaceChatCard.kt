@@ -53,7 +53,7 @@ fun VaultDataSpaceChatCard(
     spaceView: VaultSpaceView.DataSpaceWithChat,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (Id) -> Unit = {},
+    onMuteSpace: (Id, Boolean) -> Unit = { _, _ -> },
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
@@ -136,7 +136,8 @@ fun VaultDataSpaceChatCard(
                     if (shouldShowAsMuted) {
                         onUnmuteSpace(it)
                     } else {
-                        onMuteSpace(it)
+                        // DataSpaceWithChat is never OneToOne, so pass false
+                        onMuteSpace(it, false)
                     }
                 }
             },

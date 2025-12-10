@@ -245,6 +245,7 @@ class ParticipantViewModel(
                                 Timber.e(it, "Failed to set space after creating one-to-one space")
                             }
                     } else {
+                        Timber.w("Starting object was empty")
                         commands.emit(
                             Command.SwitchToVault(
                                 space = SpaceId(response.space.id),
@@ -255,6 +256,7 @@ class ParticipantViewModel(
                 },
                 onFailure = { error ->
                     // Reset loading state
+                    Timber.e(error, "Failed to create 1-on-1 space")
                     uiState.value = state.copy(isConnecting = false)
                     // Show error
                     commands.emit(

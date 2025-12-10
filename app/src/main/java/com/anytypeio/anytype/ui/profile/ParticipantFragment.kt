@@ -70,13 +70,16 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
             is ParticipantViewModel.Command.SwitchToVault -> {
                 runCatching {
                     findNavController().popBackStack(R.id.vaultScreen, false)
-                    findNavController().navigate(
-                        R.id.chatScreen,
-                        ChatFragment.args(
-                            space = command.space.id,
-                            ctx = command.chat
+                    val chat = command.chat
+                    if (chat != null) {
+                        findNavController().navigate(
+                            R.id.chatScreen,
+                            ChatFragment.args(
+                                space = command.space.id,
+                                ctx = chat
+                            )
                         )
-                    )
+                    }
                 }.onFailure {
                     Timber.e(it, "Error while opening space")
                 }

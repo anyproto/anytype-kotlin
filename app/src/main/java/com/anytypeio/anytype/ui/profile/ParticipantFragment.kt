@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -69,6 +70,13 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
             is ParticipantViewModel.Command.SwitchToVault -> {
                 runCatching {
                     findNavController().popBackStack(R.id.vaultScreen, false)
+                    findNavController().navigate(
+                        R.id.chatScreen,
+                        ChatFragment.args(
+                            space = command.space.id,
+                            ctx = command.chat
+                        )
+                    )
                 }.onFailure {
                     Timber.e(it, "Error while opening space")
                 }

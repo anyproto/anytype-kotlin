@@ -141,7 +141,13 @@ fun ParticipantScreen(
                 if (!uiState.isOwner) {
                     Spacer(modifier = Modifier.height(24.dp))
                     ButtonSecondaryLoading(
-                        text = stringResource(R.string.participant_btn_connect),
+                        text = stringResource(
+                            if (uiState.hasExistingOneToOneSpace) {
+                                R.string.participant_btn_send_message
+                            } else {
+                                R.string.participant_btn_connect
+                            }
+                        ),
                         onClick = { onEvent(ParticipantEvent.OnConnectClicked) },
                         enabled = !uiState.isConnecting,
                         size = ButtonSize.Large,

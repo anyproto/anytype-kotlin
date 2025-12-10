@@ -15,11 +15,15 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ExistingOneToOneChat
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.CreateSpace
@@ -39,7 +43,9 @@ class ParticipantViewModel(
     private val fieldsParser: FieldParser,
     private val userPermissionProvider: UserPermissionProvider,
     private val configStorage: ConfigStorage,
-    private val createSpace: CreateSpace
+    private val createSpace: CreateSpace,
+    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val spaces: SpaceViewSubscriptionContainer
 ) : ViewModel() {
 
     val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
@@ -76,19 +82,46 @@ class ParticipantViewModel(
                     if (participant.isNotEmpty()) {
                         val obj = participant.first()
                         val identityProfileLink = obj.getSingleValue<String>(Relations.IDENTITY_PROFILE_LINK)
-                        uiState.value = UiParticipantScreenState(
+                        val participantIdentity = obj.getSingleValue<String>(Relations.IDENTITY)
+                        
+                        val baseState = UiParticipantScreenState(
                             name = fieldsParser.getObjectName(obj),
                             icon = obj.profileIcon(urlBuilder),
                             isOwner = configStorage.getOrNull()?.profile == identityProfileLink,
-                            identity = obj.getSingleValue<String>(Relations.IDENTITY),
+                            identity = participantIdentity,
                             description = if (obj.description?.isBlank() == true) {
                                 null
                             } else {
                                 obj.description
                             }
                         )
+                        
+                        uiState.value = baseState
+                        
+                        // Check for existing one-to-one space if user is not the owner
+                        if (!baseState.isOwner && !participantIdentity.isNullOrBlank()) {
+                            checkForExistingOneToOneSpace(participantIdentity, baseState)
+                        }
                     }
                 }
+        }
+    }
+    
+    private fun checkForExistingOneToOneSpace(identity: String, currentState: UiParticipantScreenState) {
+        viewModelScope.launch {
+            findOneToOneChatByIdentity.async(
+                FindOneToOneChatByIdentity.Params(identity = identity)
+            ).fold(
+                onSuccess = { existingChat ->
+                    if (existingChat != null) {
+                        uiState.value = currentState.copy(
+                            hasExistingOneToOneSpace = true,
+                            existingSpaceId = existingChat.spaceId.id
+                        )
+                    }
+                },
+                onFailure = { /* Ignore error, keep default state */ }
+            )
         }
     }
 
@@ -126,7 +159,23 @@ class ParticipantViewModel(
             }
 
             ParticipantEvent.OnConnectClicked -> {
-                proceedWithCreatingOneToOneSpace()
+                val state = uiState.value
+                if (state.hasExistingOneToOneSpace && state.existingSpaceId != null) {
+                    val space = SpaceId(state.existingSpaceId)
+                    val spaceView = spaces.get(space)
+                    // Navigate to existing one-to-one space
+                    viewModelScope.launch {
+                        commands.emit(
+                            Command.SwitchToVault(
+                                space = space,
+                                chat = spaceView?.chatId.orEmpty()
+                            )
+                        )
+                    }
+                } else {
+                    // Create new one-to-one space
+                    proceedWithCreatingOneToOneSpace()
+                }
             }
         }
     }
@@ -172,7 +221,13 @@ class ParticipantViewModel(
                     // Reset loading state
                     uiState.value = state.copy(isConnecting = false)
                     // Switch to the new space
-                    commands.emit(Command.SwitchToVault(response.space.id))
+
+                    commands.emit(
+                        Command.SwitchToVault(
+                            space = SpaceId(response.space.id),
+                            chat = response.startingObject.orEmpty()
+                        )
+                    )
                 },
                 onFailure = { error ->
                     // Reset loading state
@@ -194,14 +249,18 @@ class ParticipantViewModel(
         val description: String? = null,
         val identity: String? = null,
         val isOwner: Boolean,
-        val isConnecting: Boolean = false
+        val isConnecting: Boolean = false,
+        val hasExistingOneToOneSpace: Boolean = false,
+        val existingSpaceId: Id? = null
     ) {
        companion object {
            val EMPTY = UiParticipantScreenState(
                name = "",
                icon = ProfileIconView.Loading,
                isOwner = false,
-               isConnecting = false
+               isConnecting = false,
+               hasExistingOneToOneSpace = false,
+               existingSpaceId = null
            )
        }
     }
@@ -218,7 +277,10 @@ class ParticipantViewModel(
 
         data object Dismiss : Command()
         data object OpenSettingsProfile : Command()
-        data class SwitchToVault(val spaceId: Id) : Command()
+        data class SwitchToVault(
+            val space: SpaceId,
+            val chat: Id
+        ) : Command()
     }
 
     companion object {
@@ -234,7 +296,9 @@ class ParticipantViewModel(
         private val fieldsParser: FieldParser,
         private val userPermissionProvider: UserPermissionProvider,
         private val configStorage: ConfigStorage,
-        private val createSpace: CreateSpace
+        private val createSpace: CreateSpace,
+        private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+        private val spaceViews: SpaceViewSubscriptionContainer
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -247,7 +311,9 @@ class ParticipantViewModel(
                 fieldsParser = fieldsParser,
                 userPermissionProvider = userPermissionProvider,
                 configStorage = configStorage,
-                createSpace = createSpace
+                createSpace = createSpace,
+                findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+                spaces = spaceViews
             ) as T
         }
     }

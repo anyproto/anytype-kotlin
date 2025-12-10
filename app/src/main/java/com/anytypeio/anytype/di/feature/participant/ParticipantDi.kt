@@ -13,6 +13,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -109,4 +111,6 @@ interface ParticipantComponentDependencies : ComponentDependencies {
     fun provideMembershipProvider(): MembershipProvider
     fun subEventChannel(): SubscriptionEventChannel
     fun provideConfigStorage(): ConfigStorage
+    fun findOneToOneChatByIdentity(): FindOneToOneChatByIdentity
+    fun spaceViews(): SpaceViewSubscriptionContainer
 }

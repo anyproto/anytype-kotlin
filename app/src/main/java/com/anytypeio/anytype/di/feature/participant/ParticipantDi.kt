@@ -19,6 +19,7 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
@@ -113,4 +114,5 @@ interface ParticipantComponentDependencies : ComponentDependencies {
     fun provideConfigStorage(): ConfigStorage
     fun findOneToOneChatByIdentity(): FindOneToOneChatByIdentity
     fun spaceViews(): SpaceViewSubscriptionContainer
+    fun spaceManager(): SpaceManager
 }

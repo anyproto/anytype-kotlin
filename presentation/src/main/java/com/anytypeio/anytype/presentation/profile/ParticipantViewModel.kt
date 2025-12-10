@@ -27,12 +27,14 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.CreateSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 class ParticipantViewModel(
     private val vmParams: VmParams,
@@ -45,7 +47,8 @@ class ParticipantViewModel(
     private val configStorage: ConfigStorage,
     private val createSpace: CreateSpace,
     private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
-    private val spaces: SpaceViewSubscriptionContainer
+    private val spaces: SpaceViewSubscriptionContainer,
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
@@ -163,14 +166,30 @@ class ParticipantViewModel(
                 if (state.hasExistingOneToOneSpace && state.existingSpaceId != null) {
                     val space = SpaceId(state.existingSpaceId)
                     val spaceView = spaces.get(space)
-                    // Navigate to existing one-to-one space
+                    val chat = spaceView?.chatId?.ifEmpty { null }
                     viewModelScope.launch {
-                        commands.emit(
-                            Command.SwitchToVault(
-                                space = space,
-                                chat = spaceView?.chatId?.ifEmpty { null }
+                        if (chat != null) {
+                            spaceManager
+                                .set(space.id)
+                                .onSuccess { config ->
+                                    commands.emit(
+                                        Command.SwitchToVault(
+                                            space = space,
+                                            chat = config.spaceChatId
+                                        )
+                                    )
+                                }
+                                .onFailure {
+                                    Timber.e(it, "Failed to set space after connecting")
+                                }
+                        } else {
+                            commands.emit(
+                                Command.SwitchToVault(
+                                    space = space,
+                                    chat = null
+                                )
                             )
-                        )
+                        }
                     }
                 } else {
                     // Create new one-to-one space
@@ -222,12 +241,28 @@ class ParticipantViewModel(
                     uiState.value = state.copy(isConnecting = false)
                     // Switch to the new space
 
-                    commands.emit(
-                        Command.SwitchToVault(
-                            space = SpaceId(response.space.id),
-                            chat = response.startingObject?.ifEmpty { null }
+                    if (response.startingObject != null) {
+                        spaceManager
+                            .set(response.space.id)
+                            .onSuccess { config ->
+                                commands.emit(
+                                    Command.SwitchToVault(
+                                        space = SpaceId(response.space.id),
+                                        chat = config.spaceChatId
+                                    )
+                                )
+                            }
+                            .onFailure {
+                                Timber.e(it, "Failed to set space after creating one-to-one space")
+                            }
+                    } else {
+                        commands.emit(
+                            Command.SwitchToVault(
+                                space = SpaceId(response.space.id),
+                                chat = null
+                            )
                         )
-                    )
+                    }
                 },
                 onFailure = { error ->
                     // Reset loading state
@@ -298,7 +333,8 @@ class ParticipantViewModel(
         private val configStorage: ConfigStorage,
         private val createSpace: CreateSpace,
         private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
-        private val spaceViews: SpaceViewSubscriptionContainer
+        private val spaceViews: SpaceViewSubscriptionContainer,
+        private val spaceManager: SpaceManager,
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -313,7 +349,8 @@ class ParticipantViewModel(
                 configStorage = configStorage,
                 createSpace = createSpace,
                 findOneToOneChatByIdentity = findOneToOneChatByIdentity,
-                spaces = spaceViews
+                spaces = spaceViews,
+                spaceManager = spaceManager
             ) as T
         }
     }

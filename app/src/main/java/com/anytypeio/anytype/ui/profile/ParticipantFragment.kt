@@ -79,6 +79,8 @@ class ParticipantFragment: BaseBottomSheetComposeFragment() {
                                 ctx = chat
                             )
                         )
+                    } else {
+                        Timber.w("Skipping one-to-one chat navigation: chat not found")
                     }
                 }.onFailure {
                     Timber.e(it, "Error while opening space")

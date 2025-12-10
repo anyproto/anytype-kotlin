@@ -165,31 +165,20 @@ class ParticipantViewModel(
                 val state = uiState.value
                 if (state.hasExistingOneToOneSpace && state.existingSpaceId != null) {
                     val space = SpaceId(state.existingSpaceId)
-                    val spaceView = spaces.get(space)
-                    val chat = spaceView?.chatId?.ifEmpty { null }
                     viewModelScope.launch {
-                        if (chat != null) {
-                            spaceManager
-                                .set(space.id)
-                                .onSuccess { config ->
-                                    commands.emit(
-                                        Command.SwitchToVault(
-                                            space = space,
-                                            chat = config.spaceChatId
-                                        )
+                        spaceManager
+                            .set(space.id)
+                            .onSuccess { config ->
+                                commands.emit(
+                                    Command.SwitchToVault(
+                                        space = space,
+                                        chat = config.spaceChatId
                                     )
-                                }
-                                .onFailure {
-                                    Timber.e(it, "Failed to set space after connecting")
-                                }
-                        } else {
-                            commands.emit(
-                                Command.SwitchToVault(
-                                    space = space,
-                                    chat = null
                                 )
-                            )
-                        }
+                            }
+                            .onFailure {
+                                Timber.e(it, "Failed to set space after connecting")
+                            }
                     }
                 } else {
                     // Create new one-to-one space

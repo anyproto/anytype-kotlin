@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import timber.log.Timber
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
@@ -68,8 +70,14 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     private fun resolveOneToOneChatLink(deeplink: String): DeepLinkResolver.Action {
         val result = oneToOneChatRegex.find(deeplink)
         val identity = result?.groupValues?.getOrNull(1)
-        val metadataKey = result?.groupValues?.getOrNull(2)
-        return if (identity != null && metadataKey != null) {
+        val metadataKeyRaw = result?.groupValues?.getOrNull(2)
+        return if (identity != null && metadataKeyRaw != null) {
+            val metadataKey = try {
+                URLDecoder.decode(metadataKeyRaw, StandardCharsets.UTF_8.toString())
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to URL-decode metadataKey: $metadataKeyRaw")
+                metadataKeyRaw
+            }
             DeepLinkResolver.Action.InitiateOneToOneChat(
                 identity = identity,
                 metadataKey = metadataKey
@@ -81,8 +89,15 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
 
     private fun resolveOneToOneChatCustomLink(uri: Uri): DeepLinkResolver.Action {
         val identity = uri.getQueryParameter("id")
-        val metadataKey = uri.getQueryParameter("key")
-        return if (identity != null && metadataKey != null) {
+        val metadataKeyRaw = uri.getQueryParameter("key")
+        return if (identity != null && metadataKeyRaw != null) {
+            // Uri.getQueryParameter already URL-decodes, but we ensure it's decoded
+            val metadataKey = try {
+                URLDecoder.decode(metadataKeyRaw, StandardCharsets.UTF_8.toString())
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to URL-decode metadataKey: $metadataKeyRaw")
+                metadataKeyRaw
+            }
             DeepLinkResolver.Action.InitiateOneToOneChat(
                 identity = identity,
                 metadataKey = metadataKey

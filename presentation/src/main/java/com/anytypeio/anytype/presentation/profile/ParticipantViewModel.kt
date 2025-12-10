@@ -168,7 +168,7 @@ class ParticipantViewModel(
                         commands.emit(
                             Command.SwitchToVault(
                                 space = space,
-                                chat = spaceView?.chatId.orEmpty()
+                                chat = spaceView?.chatId?.ifEmpty { null }
                             )
                         )
                     }
@@ -225,7 +225,7 @@ class ParticipantViewModel(
                     commands.emit(
                         Command.SwitchToVault(
                             space = SpaceId(response.space.id),
-                            chat = response.startingObject.orEmpty()
+                            chat = response.startingObject?.ifEmpty { null }
                         )
                     )
                 },
@@ -279,7 +279,7 @@ class ParticipantViewModel(
         data object OpenSettingsProfile : Command()
         data class SwitchToVault(
             val space: SpaceId,
-            val chat: Id
+            val chat: Id? = null
         ) : Command()
     }
 

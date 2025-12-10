@@ -373,50 +373,62 @@ class SpaceSettingsViewModel(
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(
-                                    Members(
-                                        count = requestsCount,
-                                        withColor = requestsCount != null,
-                                        editorLimit = isEditorLimitReached
+                                // Hide Members section for one-to-one spaces
+                                if (!spaceView.isOneToOneSpace) {
+                                    add(
+                                        Members(
+                                            count = requestsCount,
+                                            withColor = requestsCount != null,
+                                            editorLimit = isEditorLimitReached
+                                        )
                                     )
-                                )
+                                }
                             }
 
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(
-                                    Members(
-                                        count = requestsCount,
-                                        withColor = requestsCount != null,
-                                        editorLimit = isEditorLimitReached
+                                // Hide Members section for one-to-one spaces
+                                if (!spaceView.isOneToOneSpace) {
+                                    add(
+                                        Members(
+                                            count = requestsCount,
+                                            withColor = requestsCount != null,
+                                            editorLimit = isEditorLimitReached
+                                        )
                                     )
-                                )
+                                }
                             }
 
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
                                 add(Spacer(height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(
-                                    Members(
-                                        count = requestsCount,
-                                        withColor = requestsCount != null,
-                                        editorLimit = isEditorLimitReached
+                                // Hide Members section for one-to-one spaces
+                                if (!spaceView.isOneToOneSpace) {
+                                    add(
+                                        Members(
+                                            count = requestsCount,
+                                            withColor = requestsCount != null,
+                                            editorLimit = isEditorLimitReached
+                                        )
                                     )
-                                )
+                                }
                             }
 
                             is SpaceInviteLinkAccessLevel.LinkDisabled -> {
                                 add(UiSpaceSettingsItem.Section.Collaboration)
-                                add(
-                                    Members(
-                                        count = null,
-                                        withColor = false,
-                                        editorLimit = isEditorLimitReached
+                                // Hide Members section for one-to-one spaces
+                                if (!spaceView.isOneToOneSpace) {
+                                    add(
+                                        Members(
+                                            count = null,
+                                            withColor = false,
+                                            editorLimit = isEditorLimitReached
+                                        )
                                     )
-                                )
+                                }
                             }
                         }
                     }

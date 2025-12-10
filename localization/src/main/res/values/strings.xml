@@ -2373,5 +2373,6 @@ Please provide specific details of your needs here.</string>
     <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
     <string name="toast_restored">Object restored.</string>
     <string name="participant_btn_connect">Connect</string>
+    <string name="participant_btn_send_message">Send Message</string>
 
 </resources>

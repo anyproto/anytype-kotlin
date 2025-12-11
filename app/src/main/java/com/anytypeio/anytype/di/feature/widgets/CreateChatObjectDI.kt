@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature.widgets
 
 import androidx.lifecycle.ViewModelProvider
+import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -44,6 +45,7 @@ object CreateChatObjectModule {
 }
 
 interface CreateChatObjectDependencies : ComponentDependencies {
+    fun analytics(): Analytics
     fun repo(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun settings(): UserSettingsRepository

@@ -23,11 +23,11 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
-import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -46,13 +46,13 @@ import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
+import com.anytypeio.anytype.presentation.extension.resolveParticipantName
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
@@ -482,6 +482,56 @@ class VaultViewModel(
 
 
     /**
+     * Data class holding extracted message preview data.
+     * Used to avoid duplicating preview extraction logic.
+     */
+    private data class MessagePreviewData(
+        val creatorName: String?,
+        val messageText: String?,
+        val messageTime: String?,
+        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
+    )
+
+    /**
+     * Extracts message preview data from a chat preview.
+     * Returns null values when message is deleted (null).
+     */
+    private suspend fun extractMessagePreviewData(
+        chatPreview: Chat.Preview?,
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+    ): MessagePreviewData {
+        val message = chatPreview?.message
+
+        val creatorName = if (message != null) {
+            participantsByIdentity.resolveParticipantName(
+                identity = message.creator,
+                fallback = stringResourceProvider.getUntitledCreatorName()
+            )
+        } else null
+
+        val messageText = message?.content?.text
+
+        val messageTime = message?.createdAt?.let { timeInSeconds ->
+            if (timeInSeconds > 0) {
+                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
+            } else null
+        }
+
+        val attachmentPreviews = if (chatPreview != null && message != null) {
+            message.attachments?.map { attachment ->
+                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
+                val preview = mapToAttachmentPreview(attachment, dependency)
+                Timber.d("Created attachment preview: $preview for attachment: $attachment")
+                preview
+            } ?: emptyList()
+        } else {
+            emptyList()
+        }
+
+        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews)
+    }
+
+    /**
      * Create a Vault View for a Chat Space with a chat preview
      */
     private suspend fun createChatSpaceView(
@@ -493,37 +543,7 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.ChatSpace {
-        val creatorId = chatPreview?.message?.creator
-        val messageText = chatPreview?.message?.content?.text
-
-        // Resolve creator name from cross-space participants container
-        val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val participant = participantsByIdentity[creatorId]
-            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
-        } else {
-            null
-        }
-
-        val messageTime = chatPreview?.message?.createdAt?.let { timeInSeconds ->
-            if (timeInSeconds > 0) {
-                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
-            } else null
-        }
-
-        // Build attachment previews with proper URLs
-        val attachmentPreviews = if (chatPreview != null) {
-            chatPreview.message?.attachments?.map { attachment ->
-                val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val attachmentPreview = mapToAttachmentPreview(
-                    attachment = attachment,
-                    dependency = dependency
-                )
-                Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-                attachmentPreview
-            } ?: emptyList()
-        } else {
-            emptyList()
-        }
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -541,12 +561,12 @@ class VaultViewModel(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
+            creatorName = previewData.creatorName,
+            messageText = previewData.messageText,
+            messageTime = previewData.messageTime,
             unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
             unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = attachmentPreviews,
+            attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
             wallpaper = wallpaperResult
@@ -565,33 +585,7 @@ class VaultViewModel(
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
         participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
     ): VaultSpaceView.DataSpaceWithChat {
-        val creatorId = chatPreview.message?.creator
-        val messageText = chatPreview.message?.content?.text
-
-        // Resolve creator name from cross-space participants container
-        val creatorName = if (!creatorId.isNullOrEmpty()) {
-            val participant = participantsByIdentity[creatorId]
-            participant?.name ?: participant?.globalName ?: stringResourceProvider.getUntitledCreatorName()
-        } else {
-            null
-        }
-
-        val messageTime = chatPreview.message?.createdAt?.let { timeInSeconds ->
-            if (timeInSeconds > 0) {
-                dateProvider.getChatPreviewDate(timeInSeconds = timeInSeconds)
-            } else null
-        }
-
-        // Build attachment previews with proper URLs
-        val attachmentPreviews = chatPreview.message?.attachments?.map { attachment ->
-            val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-            val attachmentPreview = mapToAttachmentPreview(
-                attachment = attachment,
-                dependency = dependency
-            )
-            Timber.d("Created attachment preview: $attachmentPreview for attachment: $attachment")
-            attachmentPreview
-        } ?: emptyList()
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -612,12 +606,12 @@ class VaultViewModel(
             space = space,
             icon = icon,
             chatPreview = chatPreview,
-            creatorName = creatorName,
-            messageText = messageText,
-            messageTime = messageTime,
+            creatorName = previewData.creatorName,
+            messageText = previewData.messageText,
+            messageTime = previewData.messageTime,
             unreadMessageCount = unreadCounts?.unreadMessages ?: 0,
             unreadMentionCount = unreadCounts?.unreadMentions ?: 0,
-            attachmentPreviews = attachmentPreviews,
+            attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             chatNotificationState = calculateChatNotificationState(
                 chatSpace = space,

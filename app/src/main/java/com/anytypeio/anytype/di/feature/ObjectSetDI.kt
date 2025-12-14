@@ -92,7 +92,7 @@ import com.anytypeio.anytype.presentation.sets.viewer.DefaultViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.DefaultCopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
@@ -591,7 +591,7 @@ object ObjectSetModule {
     @PerScreen
     fun provideCopyFileToCache(
         context: Context
-    ): CopyFileToCacheDirectory = DefaultCopyFileToCacheDirectory(context)
+    ): CopyFileToCacheDirectory = defaultCopyFileToCacheDirectory(context)
 
     @Module
     interface Bindings {

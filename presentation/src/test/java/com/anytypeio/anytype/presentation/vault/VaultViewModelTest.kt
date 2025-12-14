@@ -85,13 +85,11 @@ class VaultViewModelTest {
         shouldShowCreateSpaceBadge.stub {
             onBlocking { async(any()) }.thenReturn(Resultat.Success(false))
         }
-        participantSubscriptionContainer.stub {
-            onBlocking { observe() }.thenReturn(flowOf(emptyList()))
-        }
-        chatsDetailsSubscriptionContainer.stub {
-            onBlocking { observe() }.thenReturn(flowOf(emptyList()))
-        }
+        whenever(participantSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+        whenever(chatsDetailsSubscriptionContainer.observe()).thenReturn(flowOf(emptyList()))
+        whenever(notificationPermissionManager.areNotificationsEnabled()).thenReturn(true)
         whenever(appInfo.versionName).thenReturn("1.0.0")
+        whenever(stringResourceProvider.getUntitledCreatorName()).thenReturn("Untitled")
     }
 
     @Test

@@ -610,7 +610,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 string mnemonic = 2; // Mnemonic of a new account (sequence of words, divided by spaces)
-
+                string accountKey = 3;
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -633,8 +633,9 @@ message Rpc {
             */
             message Request {
                 string rootPath = 1; // Path to a wallet directory
-                string mnemonic = 2; // Mnemonic of a wallet to recover
+                string mnemonic = 2; // Mnemonic of a wallet to recover (mutually exclusive with accountKey)
                 string fulltextPrimaryLanguage = 3; // optional, default fts language
+                string accountKey = 4; // optional: serialized account master node (base64 encoded), used to auth account instead of mnemonic
             }
 
             /**
@@ -686,8 +687,9 @@ message Rpc {
             message Request {
                 oneof auth {
                     string mnemonic = 1; // cold auth
-                    string appKey = 2; // persistent app key, that can be used to restore session
+                    string appKey = 2; // persistent app key, that can be used to restore session. Used for Local JSON API
                     string token = 3; // token from the previous session
+                    string accountKey = 4; // private key of specific account
                 }
             }
 
@@ -731,7 +733,6 @@ message Rpc {
                 }
             }
         }
-
     }
 
     message Account {
@@ -761,6 +762,9 @@ message Rpc {
                 bool preferYamuxTransport = 8; // optional, default is false, recommended in case of problems with QUIC transport
                 string jsonApiListenAddr = 9; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
                 string joinStreamUrl = 10; // anytype:// schema URL to join an embed stream
+                // if true - will run membership v2 polling loop, v2 methods will be available
+                // if false - will run membership v1 polling loop, v2 methods will return error
+                bool enableMembershipV2 = 11; // optional, default is false
             }
             /**
             * Middleware-to-front-end response for an account creation request, that can contain a NULL error and created account or a non-NULL error and an empty account
@@ -932,6 +936,9 @@ message Rpc {
                 string jsonApiListenAddr = 7; // optional, if empty json api will not be started; 127.0.0.1:31009 should be the default one
                 string fulltextPrimaryLanguage = 8; // optional, default fts language
                 string joinStreamURL = 9; // anytype:// schema URL to join an embed stream
+                // if true - will run membership v2 polling loop, v2 methods will be available
+                // if false - will run membership v1 polling loop, v2 methods will return error
+                bool enableMembershipV2 = 10; // optional, default is false
             }
 
             /**
@@ -8109,6 +8116,252 @@ message Rpc {
                         CODE_NOT_FOUND = 5;
                         CODE_ALREADY_USED = 6;
                         BAD_ANYNAME = 7;
+                    }
+                }
+            }
+        }
+    }
+
+    message MembershipV2 {
+        message GetPortalLink {
+            message Request {
+
+            }
+
+            message Response {
+                Error error = 1;
+
+                string url = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+
+                        AUTH_BAD = 5;
+
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 6;
+                    }
+                }
+            }
+        }
+
+        message GetProducts {
+            message Request {
+                // pass true to force the cache update
+                // by default this is false
+                bool noCache = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                repeated anytype.model.MembershipV2.Product products = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+
+                        AUTH_BAD = 5;
+
+                        CACHE_ERROR = 6;
+                        CAN_NOT_CONNECT = 7;
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 8;
+                    }
+                }
+            }
+        }
+
+        message GetStatus {
+            message Request {
+                // pass true to force the cache update
+                // by default this is false
+                bool noCache = 1;
+            }
+
+            message Response {
+                Error error = 1;
+
+                anytype.model.MembershipV2.Data data = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        MEMBERSHIP_NOT_FOUND = 6;
+                        MEMBERSHIP_WRONG_STATE = 7;
+                        CAN_NOT_CONNECT = 8;
+                        
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 9;
+                    }
+                }
+            }
+        }
+
+        /**
+        * Check if the requested name is valid and vacant for the requested tier
+        * before requesting a payment link and paying
+        */
+        message AnyNameIsValid {
+            message Request {
+                string nsName = 1;
+
+                anytype.model.NameserviceNameType nsNameType = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        TOO_SHORT = 3;
+                        TOO_LONG = 4;
+                        HAS_INVALID_CHARS = 5;
+
+                        // if nothing bought
+                        ACCOUNT_FEATURES_NO_NAME = 6;
+
+                        NOT_LOGGED_IN = 8;
+                        PAYMENT_NODE_ERROR = 9;
+                        CACHE_ERROR = 10;
+                        // for some probable future use (if needed)
+                        CAN_NOT_RESERVE = 11;
+                        CAN_NOT_CONNECT = 12;
+                        // Same as if NameService.ResolveName returned that name is already
+                        // occupied by some user
+                        NAME_IS_RESERVED = 13;
+
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 14;
+                    }
+                }
+            }
+        }
+
+        message AnyNameAllocate {
+            message Request {
+                // PP node will register that name on behalf of the user
+                string nsName = 1;
+
+                anytype.model.NameserviceNameType nsNameType = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NOT_LOGGED_IN = 3;
+                        PAYMENT_NODE_ERROR = 4;
+                        CACHE_ERROR = 5;
+
+                        MEMBERSHIP_NOT_FOUND = 6;
+                        MEMBERSHIP_WRONG_STATE = 7;
+
+                        BAD_ANYNAME = 8;
+
+                        CAN_NOT_CONNECT = 9;
+
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 10;
+                    }
+                }
+            }
+        }
+
+        message CartGet {
+            message Request {
+                
+            }
+
+            message Response {
+                Error error = 1;
+
+                anytype.model.MembershipV2.Cart cart = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2; 
+                        CAN_NOT_CONNECT = 3;
+
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 4;           
+                    }
+                }
+            }
+        }
+
+	    message CartUpdate {
+            message Request {
+                repeated string productIds = 1;
+
+                bool isYearly = 2;
+            }
+
+            message Response {
+                Error error = 1;
+
+                anytype.model.MembershipV2.Cart cart = 2;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                        CAN_NOT_CONNECT = 3;
+                        BAD_PRODUCT = 4;
+
+                        // set enableMembershipV2 in AccountCreate or AccountSelect
+                        V2_CALL_NOT_ENABLED = 5;                      
                     }
                 }
             }

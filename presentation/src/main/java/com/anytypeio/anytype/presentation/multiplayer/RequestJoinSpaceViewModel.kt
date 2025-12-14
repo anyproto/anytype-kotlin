@@ -232,7 +232,9 @@ class RequestJoinSpaceViewModel(
             )
         )
 
-        analytics.sendEvent(eventName = clickJoinSpaceWithoutApproval)
+        if (data.withoutApprove) {
+            analytics.sendEvent(eventName = clickJoinSpaceWithoutApproval)
+        }
 
         val shouldNotify = data.withoutApprove
         val notificationsEnabled = notificator.areNotificationsEnabled

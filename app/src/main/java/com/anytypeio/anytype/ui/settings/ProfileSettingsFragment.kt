@@ -30,9 +30,11 @@ import com.anytypeio.anytype.device.launchMediaPicker
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.other.MediaPermissionHelper
 import com.anytypeio.anytype.ui.profile.KeychainPhraseDialog
+import com.anytypeio.anytype.ui_settings.account.AnyIdInfoSheet
 import com.anytypeio.anytype.ui_settings.account.NotificationSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsScreen
 import com.anytypeio.anytype.ui_settings.account.ProfileSettingsViewModel
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import javax.inject.Inject
 import timber.log.Timber
 import androidx.compose.runtime.getValue
@@ -86,14 +88,16 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
             setContent {
                 MaterialTheme(typography = typography) {
                     var showNotificationSettingsModal by remember { mutableStateOf(false) }
+                    var showAnyIdInfoSheet by remember { mutableStateOf(false) }
                     val notificationsDisabled = vm.notificationsDisabled.collectAsStateWithLifecycle().value
+                    val accountProfile = vm.profileData.collectAsStateWithLifecycle().value
                     ProfileSettingsScreen(
                         onKeychainPhraseClicked = onKeychainPhraseClicked,
                         onLogoutClicked = onLogoutClicked,
                         isLogoutInProgress = vm.isLoggingOut.collectAsState().value,
                         onNameChange = { vm.onNameChange(it) },
                         onProfileIconClick = { proceedWithIconClick() },
-                        account = vm.profileData.collectAsStateWithLifecycle().value,
+                        account = accountProfile,
                         onAppearanceClicked = throttledClick(
                             onClick = {
                                 findNavController().navigate(R.id.appearanceScreen)
@@ -137,6 +141,14 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             runCatching {
                                 findNavController().navigate(R.id.mySitesScreen)
                             }
+                        },
+                        onIdentityClicked = {
+                            val account = accountProfile
+                            if (account is AccountProfile.Data && account.globalName.isNullOrEmpty()) {
+                                showAnyIdInfoSheet = true
+                            } else {
+                                findNavController().navigate(R.id.paymentsScreen)
+                            }
                         }
                     )
                     if (showNotificationSettingsModal) {
@@ -148,6 +160,17 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             onOpenSettings = {
                                 showNotificationSettingsModal = false
                                 requireContext().openNotificationSettings()
+                            }
+                        )
+                    }
+                    if (showAnyIdInfoSheet) {
+                        AnyIdInfoSheet(
+                            onExplorePlans = {
+                                showAnyIdInfoSheet = false
+                                findNavController().navigate(R.id.paymentsScreen)
+                            },
+                            onDismiss = {
+                                showAnyIdInfoSheet = false
                             }
                         )
                     }

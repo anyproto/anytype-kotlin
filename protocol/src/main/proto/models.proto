@@ -680,6 +680,7 @@ message Account {
         string analyticsId = 105;
         string networkId = 106; // network id to which anytype is connected
         string ethereumAddress = 107; // we have Any PK AND Ethereum PK derived from one seed phrase
+        string metaDataKey = 108; // symmetric key for encrypting profile metadata
     }
 
     message Auth {
@@ -1053,6 +1054,7 @@ enum SpaceUxType {
     Data = 1; // objects-first UX
     Stream = 2; // stream UX (chat with limited amount of owners)
     Chat = 3; // chat UX
+    OneToOne = 4; // onetoone UX (space with chat and immutable ACL between two participants)
 }
 
 message Metadata {
@@ -1250,6 +1252,11 @@ message IdentityProfile {
     string globalName = 6;
 }
 
+message IdentityProfileWithKey {
+    IdentityProfile identityProfile = 1;
+    bytes requestMetadata = 2;
+}
+
 message FileInfo {
     string fileId = 1;
     repeated FileEncryptionKey encryptionKeys = 2;
@@ -1401,6 +1408,137 @@ message MembershipTierData {
 
     // "limited offer" or somehing like that
     string offer = 19;
+}
+
+message MembershipV2 {
+    message Amount {
+        // ISO 4217 currency code
+        string currency = 1;
+
+        // $0.01 = 1
+        // $1.00 = 100
+        // also supports negative amounts! 
+        // some invoices can have negatice amount (refund)
+        int64 amountCents = 2;
+    }
+
+    enum PaymentProvider {
+        None = 0;
+        Stripe = 1;
+        Crypto = 2;
+        BillingPortal = 3;
+        AppStore = 4;
+        GooglePlay = 5;
+    }
+
+    enum Period {
+        Unlimited = 0;
+        Monthly = 1;
+        Yearly = 2;
+        ThreeYears = 3;
+    }
+
+    message Invoice {
+        uint64 date = 1;
+        Amount total = 2;
+    }
+
+    message Features {
+        uint64 storageBytes = 1;
+        uint32 spaceReaders = 2;
+        uint32 spaceWriters = 3;
+        uint32 sharedSpaces = 4;
+        uint32 teamSeats = 5;
+        uint32 anyNameCount = 6;
+        uint32 anyNameMinLen = 7;
+        uint32 privateSpaces = 8; 
+    }
+
+    message Product {
+        string id = 1;
+        string name = 2;
+        string description = 3;
+
+        bool isTopLevel = 4;
+        bool isHidden = 5;
+
+        // isIntro flag can be used as follows:
+        // 
+        // 1. if current user's top level product has isIntro flag -> 
+        // then you'd rather show a FULL list of all products 
+        // to enable upgrading from CURRENT product
+        // 2. but if current user's top level product has no isIntro flag ->
+        // then it means that this plan was aquired and user need to control it. 
+        // then show "second screen" to control that product instead
+        bool isIntro = 6;
+        
+        // isUpgradeable can be used as follows:
+        // 
+        // if current user's top level product has isUpgradeable flag ->
+        // show incentives to buy something else
+        bool isUpgradeable = 7;
+
+        repeated Amount pricesYearly = 8;
+        repeated Amount pricesMonthly = 9;
+
+        // green, blue, red, purple, custom, etc
+        string colorStr = 10;
+        string offer = 11;
+
+        Features features = 12;
+    }
+
+    message PurchaseInfo {
+        uint64 dateStarted = 1;
+        uint64 dateEnds = 2;
+        bool isAutoRenew = 3;
+        Period period = 4;
+    }
+
+    message ProductStatus {
+        enum Status {
+            StatusUnknown = 0;
+            StatusPending = 1;
+            StatusActive = 2;
+            StatusPendingRequiresAnyNameAllocation = 3;
+        }
+        Status status = 1;
+    }
+
+    message PurchasedProduct {
+        Product product = 1;
+        PurchaseInfo purchaseInfo = 2;
+        ProductStatus productStatus = 3;
+    }
+
+    message CartProduct {
+        Product product = 1;    
+        // otherwise - monthly
+        bool isYearly = 2;
+        // set to true if you want to remove this item from the customer
+        // it's like setting -1 to some product
+        bool remove = 3;
+    }
+
+    message Cart {
+        // if you add Nx the same product - it will be Nx in the 'products' array, i.e:
+        // each product instance has a unique index
+        repeated CartProduct products = 1;
+        // total amount of the cart (including discounts, etc)
+        Amount total = 2;
+
+        // in case you are paying in the middle of the period (for existing customers)
+        // the next invoice amount will also be generated
+        Amount totalNextInvoice = 3;
+        uint64 nextInvoiceDate = 4;
+    }
+
+    message Data {
+        repeated PurchasedProduct products = 1;
+        Invoice nextInvoice = 2;
+        string teamOwnerID = 3;
+        PaymentProvider paymentProvider = 4;
+    }
 }
 
 enum DeviceNetworkType {

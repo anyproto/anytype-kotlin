@@ -78,7 +78,6 @@ import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Section
-import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
@@ -506,6 +505,16 @@ private fun ShareSpaceHeader(
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_primary),
                             modifier = Modifier.weight(1.0f)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_object_action_lock),
+                            contentDescription = "Make space private icon",
+                            modifier = Modifier
+                                .size(22.dp)
+                                .align(Alignment.CenterVertically),
+                            colorFilter = ColorFilter.tint(
+                                colorResource(id = R.color.text_primary)
+                            )
                         )
                     }
                 }

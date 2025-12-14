@@ -452,7 +452,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             is OpenObjectNavigation.OpenType -> {
                 runCatching {
                     findNavController(R.id.fragment).navigate(
-                        resId = R.id.objectTypeScreen,
+                        resId = R.id.objectTypeNavigation,
                         args = ObjectTypeFragment.args(
                             objectId = dest.target,
                             space = dest.space

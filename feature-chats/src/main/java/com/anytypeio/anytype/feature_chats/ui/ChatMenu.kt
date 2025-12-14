@@ -50,6 +50,8 @@ fun BoxScope.ChatMenu(
     modifier: Modifier = Modifier,
     expanded: Boolean,
     currentNotificationSetting: NotificationSetting,
+    isPinned: Boolean = false,
+    canEdit: Boolean = true,
     onDismissRequest: () -> Unit,
     onPropertiesClick: () -> Unit,
     onEditInfoClick: () -> Unit,
@@ -95,29 +97,34 @@ fun BoxScope.ChatMenu(
 //            )
 //            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-            // Edit Info
-            DropdownMenuItem(
-                content = {
-                    ChatMenuItemContent(
-                        text = stringResource(R.string.chat_edit_info),
-                        iconRes = R.drawable.ic_edit_info_24
-                    )
-                },
-                onClick = { onEditInfoClick() }
-            )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+            // Edit Info - only show if user can edit
+            if (canEdit) {
+                DropdownMenuItem(
+                    content = {
+                        ChatMenuItemContent(
+                            text = stringResource(R.string.chat_edit_info),
+                            iconRes = R.drawable.ic_edit_info_24
+                        )
+                    },
+                    onClick = { onEditInfoClick() }
+                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
 
-            // Pin
-            DropdownMenuItem(
-                content = {
-                    ChatMenuItemContent(
-                        text = stringResource(R.string.object_action_pin),
-                        iconRes = R.drawable.ic_pin_24
-                    )
-                },
-                onClick = { onPinClick() }
-            )
-            Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                // Pin/Unpin - only show if user can edit
+                DropdownMenuItem(
+                    content = {
+                        ChatMenuItemContent(
+                            text = stringResource(
+                                if (isPinned) R.string.object_action_unpin
+                                else R.string.object_action_pin
+                            ),
+                            iconRes = R.drawable.ic_pin_24
+                        )
+                    },
+                    onClick = { onPinClick() }
+                )
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+            }
 
             // Notifications - expandable
             DropdownMenuItem(
@@ -188,17 +195,19 @@ fun BoxScope.ChatMenu(
 
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
-            // Move to Bin
-            DropdownMenuItem(
-                content = {
-                    ChatMenuItemContent(
-                        text = stringResource(R.string.chat_move_to_bin),
-                        iconRes = R.drawable.ic_chat_menu_to_bin_24,
-                        textColor = R.color.palette_system_red
-                    )
-                },
-                onClick = { onMoveToBinClick() }
-            )
+            // Move to Bin - only show if user can edit
+            if (canEdit) {
+                DropdownMenuItem(
+                    content = {
+                        ChatMenuItemContent(
+                            text = stringResource(R.string.chat_move_to_bin),
+                            iconRes = R.drawable.ic_chat_menu_to_bin_24,
+                            textColor = R.color.palette_system_red
+                        )
+                    },
+                    onClick = { onMoveToBinClick() }
+                )
+            }
         }
     }
 }
@@ -262,6 +271,8 @@ fun ChatMenuPreview() {
         ChatMenu(
             expanded = true,
             currentNotificationSetting = NotificationSetting.ALL,
+            isPinned = false,
+            canEdit = true,
             onDismissRequest = {},
             onPropertiesClick = {},
             onEditInfoClick = {},

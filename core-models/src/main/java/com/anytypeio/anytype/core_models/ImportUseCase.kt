@@ -11,4 +11,5 @@ enum class SpaceCreationUseCase(val value: Int) {
     GET_STARTED_MOBILE(4),
     CHAT_SPACE(5),
     DATA_SPACE_MOBILE(6),
+    ONE_TO_ONE_SPACE(7),
 } 

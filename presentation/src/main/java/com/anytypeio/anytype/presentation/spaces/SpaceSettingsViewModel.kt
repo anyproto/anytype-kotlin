@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
@@ -333,7 +334,8 @@ class SpaceSettingsViewModel(
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
                     isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
-                    deviceToken = deviceToken
+                    deviceToken = deviceToken,
+                    isOneToOne = spaceView.isOneToOneSpace
                 )
 
                 val items = buildList {
@@ -351,7 +353,9 @@ class SpaceSettingsViewModel(
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(height = 4))
-                            add(MembersSmall(count = spaceMemberCount))
+                            if (spaceView.spaceUxType.shouldShowMemberCount) {
+                                add(MembersSmall(count = spaceMemberCount))
+                            }
                         }
 
                         SpaceAccessType.DEFAULT, null -> {
@@ -467,7 +471,7 @@ class SpaceSettingsViewModel(
                 UiSpaceSettingsState.SpaceSettings(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
-                    isEditEnabled = permission?.isOwnerOrEditor() == true,
+                    isEditEnabled = permission?.isOwnerOrEditor() == true && !spaceView.isOneToOneSpace,
                     notificationState = spaceView.spacePushNotificationMode,
                     targetSpaceId = targetSpaceId
                 )
@@ -1149,6 +1153,7 @@ class SpaceSettingsViewModel(
      * 2. The space has a defined UX type (Chat or Data)
      * 3. The space is shared (not private or default)
      * 4. The space has a valid chat ID (not null or empty)
+     * 5. The space is not a ONE_TO_ONE space (cannot change type for 1-1 chats)
      *
      * @param permission The current user's permissions in the space
      * @param spaceView The space view data containing space configuration
@@ -1165,6 +1170,7 @@ class SpaceSettingsViewModel(
 
         return permission?.isOwner() == true
                 && spaceView.spaceUxType != null
+                && spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE
                 && spaceView.spaceAccessType == SpaceAccessType.SHARED
                 && !spaceView.chatId.isNullOrEmpty()
     }

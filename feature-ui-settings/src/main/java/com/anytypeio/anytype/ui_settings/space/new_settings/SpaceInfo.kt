@@ -52,19 +52,22 @@ fun SpaceInfoScreen(
                 )
             }
         )
-        SpaceInfoItem(
-            name = stringResource(R.string.created_by),
-            value = spaceTechInfo.createdBy.ifEmpty {
-                stringResource(id = R.string.unknown)
-            },
-            onClick = {
-                context.copyPlainTextToClipboard(
-                    plainText = spaceTechInfo.createdBy,
-                    label = "Created-by ID",
-                    successToast = context.getString(R.string.created_by_id_copied_toast_msg)
-                )
-            }
-        )
+        // Hide 'Created by' and 'Creation date' for ONE_TO_ONE spaces
+        if (!spaceTechInfo.isOneToOne) {
+            SpaceInfoItem(
+                name = stringResource(R.string.created_by),
+                value = spaceTechInfo.createdBy.ifEmpty {
+                    stringResource(id = R.string.unknown)
+                },
+                onClick = {
+                    context.copyPlainTextToClipboard(
+                        plainText = spaceTechInfo.createdBy,
+                        label = "Created-by ID",
+                        successToast = context.getString(R.string.created_by_id_copied_toast_msg)
+                    )
+                }
+            )
+        }
         SpaceInfoItem(
             name = stringResource(R.string.network_id),
             value = spaceTechInfo.networkId.ifEmpty {
@@ -78,15 +81,17 @@ fun SpaceInfoScreen(
                 )
             }
         )
-        SpaceInfoItem(
-            name = stringResource(R.string.creation_date),
-            value = spaceTechInfo.creationDateInMillis?.formatTimeInMillis(
-                DateConst.DEFAULT_DATE_FORMAT
-            ) ?: stringResource(id = R.string.unknown),
-            onClick = {
-                // Do nothing.
-            }
-        )
+        if (!spaceTechInfo.isOneToOne) {
+            SpaceInfoItem(
+                name = stringResource(R.string.creation_date),
+                value = spaceTechInfo.creationDateInMillis?.formatTimeInMillis(
+                    DateConst.DEFAULT_DATE_FORMAT
+                ) ?: stringResource(id = R.string.unknown),
+                onClick = {
+                    // Do nothing.
+                }
+            )
+        }
 
         // Device Token - shown if isDebugBuild or if title clicked 5+ times
         val deviceToken = spaceTechInfo.deviceToken

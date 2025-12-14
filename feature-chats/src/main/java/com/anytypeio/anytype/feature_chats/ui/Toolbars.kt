@@ -104,20 +104,22 @@ fun ChatTopToolbar(
                 )
             }
             is ChatViewModel.HeaderView.Default -> {
-                Image(
-                    modifier = Modifier
-                        .align(Alignment.CenterEnd)
-                        .padding(end = 48.dp)
-                        .height(52.dp)
-                        .width(40.dp)
-                        .noRippleClickable {
-                            onInviteMembersClicked()
-                        },
-                    contentScale = ContentScale.Inside,
-                    painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
-                    contentDescription = "Invite members icon",
-                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
-                )
+                if (header.showAddMembers) {
+                    Image(
+                        modifier = Modifier
+                            .align(Alignment.CenterEnd)
+                            .padding(end = 48.dp)
+                            .height(52.dp)
+                            .width(40.dp)
+                            .noRippleClickable {
+                                onInviteMembersClicked()
+                            },
+                        contentScale = ContentScale.Inside,
+                        painter = painterResource(id = R.drawable.ic_space_settings_invite_members),
+                        contentDescription = "Invite members icon",
+                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
+                    )
+                }
                 SpaceIconView(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)

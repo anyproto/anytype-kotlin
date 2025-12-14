@@ -424,7 +424,7 @@ suspend fun buildWidgetSections(
         params = params,
         isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
         storeOfObjectTypes = storeOfObjectTypes,
-        isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
+        spaceUxType = spaceView.spaceUxType
     )
 
     // Build bin widget (displayed separately at bottom)
@@ -494,13 +494,12 @@ private suspend fun buildTypeSection(
     params: WidgetUiParams,
     isObjectTypeSectionCollapsed: Boolean,
     storeOfObjectTypes: StoreOfObjectTypes,
-    isChatSpace: Boolean
+    spaceUxType: SpaceUxType?
 ): List<Widget> = buildList {
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
     if (!isObjectTypeSectionCollapsed) {
-        val spaceUxType = if (isChatSpace) SpaceUxType.CHAT else null
         val types = mapSpaceTypesToWidgets(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,

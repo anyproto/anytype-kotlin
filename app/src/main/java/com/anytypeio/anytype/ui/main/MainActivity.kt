@@ -12,6 +12,8 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
@@ -71,14 +73,12 @@ import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.sharing.SharingFragment
+import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import timber.log.Timber
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
-import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 
 class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Provider {
 
@@ -313,6 +313,19 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     )
                                 }.onFailure {
                                     Timber.w(it, "Error while navigation for deep link membership tier")
+                                }
+                            }
+                            is Command.Deeplink.InitiateOneToOneChat -> {
+                                // Navigate to vault where the deeplink will be processed
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    // The VaultViewModel will handle the 1-1 chat initiation
+                                }.onFailure {
+                                    Timber.w(
+                                        it,
+                                        "Error while navigation for 1-1 chat initiation deeplink"
+                                    )
                                 }
                             }
                         }

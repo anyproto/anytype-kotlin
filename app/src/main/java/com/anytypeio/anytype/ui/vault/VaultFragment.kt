@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui.vault
 
+import android.app.Activity
+import android.content.Intent
 import android.os.Build.VERSION.SDK_INT
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -38,12 +40,10 @@ import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.payments.MembershipFragment
+import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
 import com.anytypeio.anytype.ui.settings.typography
 import com.anytypeio.anytype.ui.spaces.DeleteSpaceWarning
-import com.anytypeio.anytype.ui.qrcode.QrScannerActivity
-import android.app.Activity
-import android.content.Intent
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -323,6 +323,12 @@ class VaultFragment : BaseComposeFragment() {
                 }.onFailure {
                     Timber.e(it, "Error while navigating to request join space")
                 }
+            }
+
+            is VaultCommand.Deeplink.InitiateOneToOneChat -> {
+                // This is handled internally by VaultViewModel - no UI action needed
+                // VaultViewModel.proceedWithOneToOneChatInitiation() will emit EnterSpaceLevelChat
+                Timber.d("InitiateOneToOneChat deeplink: ${command.identity}")
             }
         }
     }

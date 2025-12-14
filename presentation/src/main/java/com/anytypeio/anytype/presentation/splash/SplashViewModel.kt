@@ -10,6 +10,7 @@ import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.exceptions.AccountMigrationNeededException
 import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationException
@@ -24,6 +25,7 @@ import com.anytypeio.anytype.domain.auth.interactor.MigrateAccount
 import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
@@ -65,7 +67,8 @@ class SplashViewModel(
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val migration: MigrationHelperDelegate
+    private val migration: MigrationHelperDelegate,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModel(),
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate,
     MigrationHelperDelegate by migration {
@@ -254,7 +257,10 @@ class SplashViewModel(
                             val target = result.objectId
                             val view = awaitActiveSpaceView(space)
                             if (view != null) {
-                                val chatId = if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                val chatId = resolveChatID(
+                                    space = space,
+                                    spaceView = view
+                                )
                                 // Layout may not be known here; open as an object and let UI resolve.
                                 commands.emit(
                                     Command.NavigateToObject(
@@ -325,7 +331,7 @@ class SplashViewModel(
             .observe(space)
             .onEach { view ->
                 Timber.i(
-                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}"
+                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}, chat: ${view.chatId}"
                 )
             }
             .filter { view -> view.isActive }
@@ -408,13 +414,22 @@ class SplashViewModel(
 
                             val view = awaitActiveSpaceView(SpaceId(space))
                             if (view != null) {
-                                val chatId =
-                                    if (view.spaceUxType == SpaceUxType.CHAT) view.chatId else null
+                                val chat = when(view.spaceUxType) {
+                                    SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
+                                        resolveChatID(
+                                            space = SpaceId(space),
+                                            spaceView = view
+                                        )
+                                    }
+                                    else -> {
+                                        null
+                                    }
+                                }
                                 emitNavigationForObject(
                                     id = id,
                                     space = space,
                                     layout = obj.layout,
-                                    chatId = chatId
+                                    chatId = chat
                                 )
                             } else {
                                 Timber.w("Space view not ready or timeout while restoring last opened object. Navigating to vault.")
@@ -434,27 +449,48 @@ class SplashViewModel(
 
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
         Timber.d("proceedWithVaultNavigation deep link: $deeplink")
+
+        // For one-to-one chat deeplinks, always navigate to Vault
+        // where the proper handling logic exists in VaultViewModel
+        if (deeplink != null) {
+            val action = deepLinkResolver.resolve(deeplink)
+            if (action is DeepLinkResolver.Action.InitiateOneToOneChat) {
+                Timber.d("One-to-one chat deeplink detected, navigating to Vault")
+                commands.emit(Command.NavigateToVault(deeplink))
+                return
+            }
+        }
+
         val space = getLastOpenedSpace.async(Unit).getOrNull()
         if (space != null) {
             val view = awaitActiveSpaceView(SpaceId(space.id))
-
             if (view != null) {
                 Timber.i("Space view loaded: $view")
-                val chat = view.chatId
-                when {
-                    view.spaceUxType == SpaceUxType.CHAT && chat != null -> {
-                        Timber.i("Navigating to space level chat with id: $chat")
-                        commands.emit(
-                            Command.NavigateToChat(
-                                space = space.id,
-                                chat = chat,
-                                deeplink = deeplink
-                            )
+                when(view.spaceUxType) {
+                    SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
+                        val chat = resolveChatID(
+                            space = space,
+                            spaceView = view
                         )
+                        if (chat != null) {
+                            commands.emit(
+                                Command.NavigateToChat(
+                                    space = space.id,
+                                    chat = chat,
+                                    deeplink = deeplink
+                                )
+                            )
+                        } else {
+                            Timber.w("Could not resolve chat ID for chat spaces")
+                            commands.emit(
+                                Command.NavigateToWidgets(
+                                    space = space.id,
+                                    deeplink = deeplink
+                                )
+                            )
+                        }
                     }
-
                     else -> {
-                        Timber.i("Navigating to widgets (HomeScreen) for space with id: ${space.id}")
                         commands.emit(
                             Command.NavigateToWidgets(
                                 space = space.id,
@@ -472,6 +508,18 @@ class SplashViewModel(
             commands.emit(Command.NavigateToVault(deeplink))
         }
     }
+
+    /**
+     * Resolves chat ID for chat spaces.
+     * Using space manager as fallback, assuming that the space has been opened already via space manager.
+     */
+    fun resolveChatID(
+        space: SpaceId,
+        spaceView: ObjectWrapper.SpaceView
+    ) : Id? {
+        return spaceView.chatId ?: spaceManager.getConfig(space)?.spaceChatId
+    }
+
     //endregion
 
     sealed class Command {

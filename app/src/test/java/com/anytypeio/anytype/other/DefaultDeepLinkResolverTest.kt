@@ -7,6 +7,7 @@ import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertIs
 import kotlin.test.assertTrue
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertFalse
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
@@ -182,5 +183,96 @@ class DefaultDeepLinkResolverTest {
             deepLinkResolver.isDeepLink(invite)
         )
         assertIs<DeepLinkResolver.Action.Invite>(deepLinkResolver.resolve(invite))
+    }
+
+    @Test
+    fun `resolve returns InitiateOneToOneChat for valid hi any coop links`() {
+        // Given
+        val identity = "abc123identity"
+        val metadataKey = "xyz789metadatakey"
+        val deeplink = "https://hi.any.coop/$identity#$metadataKey"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `isDeepLink returns true for hi any coop links`() {
+        // Given
+        val deeplink = "https://hi.any.coop/someidentity#somemetadatakey"
+
+        // When & Then
+        assertTrue(deepLinkResolver.isDeepLink(deeplink))
+    }
+
+    @Test
+    fun `isDeepLink returns falsy for wrong hi any coop links`() {
+        // Given
+        val deeplink = "https://hii.any.coop/someidentity#somemetadatakey"
+
+        // When & Then
+        assertFalse(deepLinkResolver.isDeepLink(deeplink))
+    }
+
+    @Test
+    fun `resolve returns Unknown for hi any coop link without fragment`() {
+        // Given
+        val deeplink = "https://hi.any.coop/identity"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(DeepLinkResolver.Action.Unknown, result)
+    }
+
+    @Test
+    fun `resolve returns InitiateOneToOneChat for anytype hi deeplink`() {
+        // Given
+        val identity = "abc123identity"
+        val metadataKey = "xyz789metadatakey"
+        val deeplink = "anytype://hi/?id=$identity&key=$metadataKey"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `isDeepLink returns true for anytype hi deeplink`() {
+        // Given
+        val deeplink = "anytype://hi/?id=someidentity&key=somemetadatakey"
+
+        // When & Then
+        assertTrue(deepLinkResolver.isDeepLink(deeplink))
+    }
+
+    @Test
+    fun `resolve returns Unknown for anytype hi deeplink without key`() {
+        // Given
+        val deeplink = "anytype://hi/?id=identity"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(DeepLinkResolver.Action.Unknown, result)
     }
 }

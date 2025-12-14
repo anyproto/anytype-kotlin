@@ -172,6 +172,8 @@ class ChatViewModel @Inject constructor(
 
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val currentPermission = MutableStateFlow<SpaceMemberPermissions?>(null)
+    private val _currentSpaceUxType = MutableStateFlow<SpaceUxType?>(null)
+    val currentSpaceUxType = _currentSpaceUxType
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
 
@@ -224,6 +226,7 @@ class ChatViewModel @Inject constructor(
                 .observe(
                     vmParams.space
                 ).collect { view ->
+                    _currentSpaceUxType.value = view.spaceUxType
                     val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(view)
                     val notificationSetting = NotificationStateCalculator
                         .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
@@ -236,13 +239,14 @@ class ChatViewModel @Inject constructor(
                         )
                     ).onSuccess { objectView ->
                         // Chat space
-                        if (view.spaceUxType == SpaceUxType.CHAT) {
+                        if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) {
                             header.value = HeaderView.Default(
                                 title = view.name.orEmpty(),
                                 icon = view.spaceIcon(builder = urlBuilder),
                                 isMuted = isMuted,
                                 notificationSetting = notificationSetting,
-                                canEdit = canEdit
+                                canEdit = canEdit,
+                                showAddMembers = view.spaceUxType != SpaceUxType.ONE_TO_ONE
                             )
                         } else {
                             // Chat object
@@ -634,6 +638,13 @@ class ChatViewModel @Inject constructor(
         text: String
     ) {
         Timber.d("DROID-2966 onChatBoxInputChanged")
+        
+        // Disable mention functionality for ONE_TO_ONE spaces
+        if (_currentSpaceUxType.value == SpaceUxType.ONE_TO_ONE) {
+            mentionPanelState.value = MentionPanelState.Hidden
+            return
+        }
+        
         val query = resolveMentionQuery(
             text = text,
             selectionStart = selection.start

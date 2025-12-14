@@ -93,13 +93,14 @@ class PublishToWebViewModel(
                     params = GetPublishingDomain.Params(space = vmParams.space)
                 ).getOrNull()
 
+
                 if (state == null) {
                     _viewState.value = PublishToWebViewState.NotPublished(
                         domain = domain.orEmpty(),
                         uri = wrapper?.name?.toWebSlugAdaptive().orEmpty(),
                         objectName = wrapper?.name.orEmpty(),
                         spaceName = space?.name.orEmpty(),
-                        showJoinSpaceButton = true,
+                        showJoinSpaceButton = space?.isOneToOneSpace != true,
                         icon = icon
                     )
                 } else {

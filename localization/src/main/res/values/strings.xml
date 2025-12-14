@@ -2127,6 +2127,13 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
     <string name="space_settings_join_space_by_qr_title">Join</string>
+    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_share_button">Share</string>
+    <string name="profile_qr_copy_button">Copy link</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Link copied to clipboard</string>
 
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
@@ -2292,6 +2299,7 @@ Please provide specific details of your needs here.</string>
         Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_channel">Direct channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
 
     <string name="publish_to_web">Publish to Web</string>
@@ -2364,5 +2372,6 @@ Please provide specific details of your needs here.</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>
     <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
     <string name="toast_restored">Object restored.</string>
+    <string name="participant_btn_connect">Connect</string>
 
 </resources>

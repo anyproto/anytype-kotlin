@@ -39,7 +39,7 @@ private val DEFAULT_PLACEHOLDER_COLOR = SystemColor.SKY
 fun ObjectWrapper.SpaceView.spaceIcon(
     builder: UrlBuilder,
 ) : SpaceIconView {
-    val isChat = spaceUxType == SpaceUxType.CHAT
+    val isChat = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
 
     // Helpers to eliminate duplication between Chat and Data branches
     val makeImage: (SystemColor, Url) -> SpaceIconView = { color, url ->

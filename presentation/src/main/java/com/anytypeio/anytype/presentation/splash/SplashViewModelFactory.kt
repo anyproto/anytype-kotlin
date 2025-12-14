@@ -8,9 +8,9 @@ import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
 import com.anytypeio.anytype.domain.auth.interactor.LaunchWallet
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.page.CreateObjectByTypeAndTemplate
 import com.anytypeio.anytype.domain.spaces.GetLastOpenedSpace
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
@@ -38,7 +38,8 @@ class SplashViewModelFactory @Inject constructor(
     private val getLastOpenedSpace: GetLastOpenedSpace,
     private val createObjectByTypeAndTemplate: CreateObjectByTypeAndTemplate,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val migration: MigrationHelperDelegate
+    private val migration: MigrationHelperDelegate,
+    private val deepLinkResolver: DeepLinkResolver
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -57,6 +58,7 @@ class SplashViewModelFactory @Inject constructor(
             getLastOpenedSpace = getLastOpenedSpace,
             createObjectByTypeAndTemplate = createObjectByTypeAndTemplate,
             spaceViews = spaceViews,
-            migration = migration
+            migration = migration,
+            deepLinkResolver = deepLinkResolver
         ) as T
 }

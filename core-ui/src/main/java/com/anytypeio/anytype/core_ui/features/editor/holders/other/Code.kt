@@ -140,7 +140,11 @@ class Code(
         Timber.d("Processing $payload for new view:\n$item")
 
         if (payload.textChanged()) {
-            content.pauseTextWatchers { content.setText(item.text) }
+            content.pauseTextWatchers {
+                content.setText(item.text)
+                content.clearHighlights()  // Clear old highlights
+                content.highlight()        // Apply new highlights
+            }
         }
 
         if (payload.readWriteModeChanged()) {
@@ -178,6 +182,16 @@ class Code(
 
         if (payload.isIndentChanged) {
             indentize(item)
+        }
+
+        if (payload.langChanged()) {
+            if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
+                content.setupSyntax(Syntaxes.PLAIN)
+                menu.setText(R.string.block_code_plain_text)
+            } else {
+                content.setupSyntax(item.lang)
+                menu.text = item.lang!!.capitalize()
+            }
         }
     }
 

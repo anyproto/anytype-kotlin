@@ -281,6 +281,12 @@ class BlockViewDiffUtil(
             }
         }
 
+        // Add check in getChangePayload()
+        if (newBlock is BlockView.Code && oldBlock is BlockView.Code) {
+            if (newBlock.lang != oldBlock.lang)
+                changes.add(LANG_CHANGED)
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -366,6 +372,7 @@ class BlockViewDiffUtil(
         const val LATEX_CHANGED = 21
         const val RELATION_NAME_CHANGED = 22
         const val RELATION_VALUE_CHANGED = 23
+        const val LANG_CHANGED = 25  // Use next available number
 
         const val OBJECT_TITLE_CHANGED = 319
         const val OBJECT_ICON_CHANGED = 320

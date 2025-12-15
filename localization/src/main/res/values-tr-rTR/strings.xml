@@ -242,7 +242,7 @@
     <string name="paste">Yapıştır</string>
     <string name="select">Seç</string>
     <string name="search">Ara</string>
-    <string name="search_hint">Ara...</string>
+    <string name="search_hint">Ara</string>
     <string name="relations">Özellikler</string>
     <string name="fields">Alanlar</string>
     <string name="download">İndir</string>

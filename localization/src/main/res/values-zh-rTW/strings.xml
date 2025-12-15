@@ -242,7 +242,7 @@
     <string name="paste">貼上</string>
     <string name="select">選項</string>
     <string name="search">搜尋</string>
-    <string name="search_hint">搜尋...</string>
+    <string name="search_hint">搜尋</string>
     <string name="relations">屬性</string>
     <string name="fields">Fields</string>
     <string name="download">已下載</string>

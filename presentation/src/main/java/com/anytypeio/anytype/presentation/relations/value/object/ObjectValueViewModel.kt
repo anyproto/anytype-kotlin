@@ -9,7 +9,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation.Format.FILE
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_utils.ext.typeOf
@@ -31,7 +30,6 @@ import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.objects.toView
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -49,7 +47,6 @@ import timber.log.Timber
 
 class ObjectValueViewModel(
     private val viewModelParams: ViewModelParams,
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
@@ -79,7 +76,7 @@ class ObjectValueViewModel(
     init {
         Timber.d("ObjectValueViewModel init, params: $viewModelParams")
         viewModelScope.launch {
-            val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
+            val relation = storeOfRelations.getByKey(viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
             combine(
                 values.subscribe(

@@ -23,6 +23,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations1
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationsListItem
@@ -107,7 +108,7 @@ fun ItemTagOrStatusCreate(state: RelationsListItem.CreateItem, action: (TagStatu
                     .padding(start = 10.dp),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
-                style = Relations1
+                style = BodyCalloutRegular
             )
         }
     }

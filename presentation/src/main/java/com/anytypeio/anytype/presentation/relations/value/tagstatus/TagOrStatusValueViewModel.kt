@@ -9,85 +9,97 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.typeOf
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.library.StoreSearchParams
-import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationOptions
-import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.domain.relations.SetRelationOptionOrder
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class TagOrStatusValueViewModel(
     private val viewModelParams: ViewModelParams,
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
     private val analytics: Analytics,
-    private val spaceManager: SpaceManager,
-    private val subscription: StorelessSubscriptionContainer,
     private val deleteRelationOptions: DeleteRelationOptions,
+    private val setRelationOptionOrder: SetRelationOptionOrder,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
-    private val storeOfRelations: StoreOfRelations
+    private val storeOfRelations: StoreOfRelations,
+    private val storeOfRelationOptions: StoreOfRelationOptions
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
-    private val query = MutableSharedFlow<String>(replay = 0)
+
+    private val input = MutableStateFlow("")
+    val queryState: StateFlow<String> = input.asStateFlow()
+    @OptIn(FlowPreview::class)
+    private val query = input.take(1).onCompletion {
+        emitAll(
+            input.drop(1).debounce(300L).distinctUntilChanged()
+        )
+    }
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
 
-    private val initialIds = mutableListOf<Id>()
-    private var isInitialSortDone = false
+    private var isInitialExpandDone = false
+
+    // Lock mechanism to prevent race conditions during DnD operations
+    // When a drag operation completes, we optimistically update the UI and send to middleware
+    // We then lock event processing for a short period to prevent incoming events from
+    // overwriting our optimistic update before middleware confirms the change
+    private var optionEventLockTimestamp: Long? = null
 
     init {
         viewModelScope.launch {
-            val relation = relations.getOrNull(relation = viewModelParams.relationKey) ?: return@launch
+            val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
             setupIsRelationNotEditable(relation)
-            val searchParams = StoreSearchParams(
-                // TODO DROID-2916 Provide space id to vm params
-                space = SpaceId(spaceManager.get()),
-                subscription = SUB_MY_OPTIONS,
-                keys = ObjectSearchConstants.keysRelationOptions,
-                filters = ObjectSearchConstants.filterRelationOptions(
-                    relationKey = viewModelParams.relationKey
-                )
-            )
             combine(
                 values.subscribe(
                     ctx = viewModelParams.ctx,
                     target = viewModelParams.objectId
                 ),
-                query.onStart { emit("") },
-                subscription.subscribe(searchParams)
-            ) { record, query, options ->
+                query.distinctUntilChanged(),
+                storeOfRelationOptions.trackChanges()
+            ) { record, query, _ ->
+                // Skip state updates during active drag operations to prevent UI flickering
+                if (isOptionEventLockActive()) {
+                    Timber.d("DROID-3916, Skipping state update due to active option event lock")
+                    return@combine
+                }
+                val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
+                    .sortedBy { it.orderId }
                 val ids = getRecordValues(record)
-                if (!isInitialSortDone) {
-                    initialIds.clear()
-                    if (ids.isNotEmpty()) {
-                        initialIds.addAll(ids)
-                    } else {
-                        if (isEditableRelation) {
-                            emitCommand(Command.Expand)
-                        }
+                if (!isInitialExpandDone) {
+                    isInitialExpandDone = true
+                    if (ids.isEmpty() && isEditableRelation) {
+                        emitCommand(Command.Expand)
                     }
                 }
                 initViewState(
@@ -106,22 +118,18 @@ class TagOrStatusValueViewModel(
 
     private fun filterOptions(
         query: String,
-        options: List<ObjectWrapper.Basic>,
+        options: List<ObjectWrapper.Option>,
         ids: List<Id>
     ): List<ObjectWrapper.Option> {
         return if (isEditableRelation) {
-            options.map { ObjectWrapper.Option(map = it.map) }
-                .filter { it.name?.contains(query, true) == true }
+            options.filter { it.name?.contains(query, true) == true }
         } else {
-            options.map { ObjectWrapper.Option(map = it.map) }
-                .filter { ids.contains(it.id) }
+            options.filter { ids.contains(it.id) }
         }
     }
 
     fun onQueryChanged(input: String) {
-        viewModelScope.launch {
-            query.emit(input)
-        }
+        this.input.value = input
     }
 
     fun proceedWithDeleteOptions(optionId: Id) {
@@ -154,9 +162,9 @@ class TagOrStatusValueViewModel(
                 }
             }
 
-            TagStatusAction.Plus -> emitCommand(
+            TagStatusAction.Plus -> openOptionScreen(
                 Command.OpenOptionScreen(
-                    color = ThemeColor.values().drop(1).random().code,
+                    color = ThemeColor.entries.drop(1).random().code,
                     relationKey = viewModelParams.relationKey,
                     ctx = viewModelParams.ctx,
                     objectId = viewModelParams.objectId
@@ -167,7 +175,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.Duplicate -> {
                 val item = action.item
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         color = item.color.code,
                         text = item.name,
@@ -179,7 +187,7 @@ class TagOrStatusValueViewModel(
             }
             is TagStatusAction.Edit -> {
                 val item = action.item
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         optionId = item.optionId,
                         color = item.color.code,
@@ -191,7 +199,7 @@ class TagOrStatusValueViewModel(
                 )
             }
             TagStatusAction.Create -> {
-                emitCommand(
+                openOptionScreen(
                     Command.OpenOptionScreen(
                         text = "",
                         relationKey = viewModelParams.relationKey,
@@ -200,12 +208,46 @@ class TagOrStatusValueViewModel(
                     )
                 )
             }
+            is TagStatusAction.OnMove -> {
+                Timber.d("OnMove from ${action.from} to ${action.to}")
+                viewModelScope.launch {
+                    val currentState = viewState.value
+                    if (currentState !is TagStatusViewState.Content) return@launch
+                    val reorderedIds = currentState.items
+                        .toMutableList()
+                        .apply { add(action.to, removeAt(action.from)) }
+                        .map { it.optionId }
+                    // Activate lock before sending to middleware to prevent race conditions
+                    activateOptionEventLock()
+                    setRelationOptionOrder.async(
+                        SetRelationOptionOrder.Params(
+                            spaceId = viewModelParams.space,
+                            relationKey = RelationKey(viewModelParams.relationKey),
+                            orderedIds = reorderedIds
+                        )
+                    ).fold(
+                        onSuccess = {
+                            Timber.d("Option order saved successfully")
+                        },
+                        onFailure = { e ->
+                            Timber.e(e, "Failed to save option order")
+                            sendToast("Failed to save order")
+                        }
+                    )
+                }
+            }
         }
     }
 
     private fun emitCommand(command: Command, delay: Long = 0L) {
         viewModelScope.launch {
             delay(delay)
+            commands.emit(command)
+        }
+    }
+
+    private fun openOptionScreen(command: Command.OpenOptionScreen) {
+        viewModelScope.launch {
             commands.emit(command)
         }
     }
@@ -226,17 +268,8 @@ class TagOrStatusValueViewModel(
                     addTag(item.optionId)
                 }
             }
-            is RelationsListItem.CreateItem.Status -> {
-                emitCommand(
-                    Command.OpenOptionScreen(
-                        text = item.text,
-                        relationKey = viewModelParams.relationKey,
-                        ctx = viewModelParams.ctx,
-                        objectId = viewModelParams.objectId
-                    )
-                )
-            }
             is RelationsListItem.CreateItem.Tag -> {
+                input.value = ""  // Clear the query so user sees full list after creating option
                 emitCommand(
                     Command.OpenOptionScreen(
                         text = item.text,
@@ -255,7 +288,9 @@ class TagOrStatusValueViewModel(
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
-        val result = mutableListOf<RelationsListItem>()
+        val result = mutableListOf<RelationsListItem.Item>()
+        val isTagRelation = relation.format == Relation.Format.TAG
+
         when (relation.format) {
             Relation.Format.STATUS -> {
                 result.addAll(
@@ -264,9 +299,6 @@ class TagOrStatusValueViewModel(
                         options = options
                     )
                 )
-                if (query.isNotBlank()) {
-                    result.add(RelationsListItem.CreateItem.Status(query))
-                }
             }
             Relation.Format.TAG -> {
                 result.addAll(
@@ -275,16 +307,20 @@ class TagOrStatusValueViewModel(
                         options = options
                     )
                 )
-                if (query.isNotBlank()) {
-                    result.add(RelationsListItem.CreateItem.Tag(query))
-                }
             }
             else -> {
                 Timber.w("Relation format should be Tag or Status but was: ${relation.format}")
             }
         }
 
-        viewState.value = if (result.isEmpty()) {
+        // CreateItem is only shown for TAG relations when there's a search query
+        val createItem = if (isTagRelation && query.isNotBlank() && isEditableRelation) {
+            RelationsListItem.CreateItem.Tag(query)
+        } else {
+            null
+        }
+
+        viewState.value = if (result.isEmpty() && createItem == null) {
             TagStatusViewState.Empty(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
@@ -293,8 +329,11 @@ class TagOrStatusValueViewModel(
             TagStatusViewState.Content(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
-                items = result
+                items = result,
+                createItem = createItem
             )
+        }.also {
+            Timber.d("TagStatusViewModel initViewState, viewState: $it")
         }
     }
 
@@ -332,7 +371,7 @@ class TagOrStatusValueViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 }
             )
@@ -358,7 +397,7 @@ class TagOrStatusValueViewModel(
                         else EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 })
         }
@@ -380,7 +419,7 @@ class TagOrStatusValueViewModel(
                         eventName = EventsDictionary.relationChangeValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                     emitCommand(command = Command.Dismiss, delay = DELAY_UNTIL_CLOSE)
                 }
@@ -404,61 +443,48 @@ class TagOrStatusValueViewModel(
                         eventName = EventsDictionary.relationDeleteValue,
                         storeOfRelations = storeOfRelations,
                         relationKey = viewModelParams.relationKey,
-                        spaceParams = provideParams(spaceManager.get())
+                        spaceParams = provideParams(viewModelParams.space.id)
                     )
                 }
             )
         }
     }
 
+    /**
+     * Maps options to Tag items.
+     * Options from store are already sorted by relationOptionOrder.
+     */
     private fun mapTagOptions(
         ids: List<Id>,
         options: List<ObjectWrapper.Option>
     ) = options.map { option ->
-        val index = ids.indexOf(option.id)
-        val isSelected = index != -1
-        val number = if (isSelected) index + 1 else Int.MAX_VALUE
         RelationsListItem.Item.Tag(
             optionId = option.id,
             name = option.name.orEmpty(),
             color = getOrDefault(option.color),
-            isSelected = isSelected,
-            number = number
+            isSelected = ids.contains(option.id),
+            number = ids.indexOf(option.id).takeIf { it != -1 }?.plus(1) ?: Int.MAX_VALUE
         )
-    }.let { mappedOptions ->
-        if (!isInitialSortDone) {
-            isInitialSortDone = true
-            mappedOptions.sortedWith(
-                compareBy(
-                    { !initialIds.contains(it.optionId) },
-                    { it.number })
-            )
-        } else {
-            mappedOptions.sortedWith(
-                compareBy(
-                    { !initialIds.contains(it.optionId) },
-                    { initialIds.indexOf(it.optionId) })
-            )
-        }
     }
 
+    /**
+     * Maps options to Status items.
+     * Options from store are already sorted by relationOptionOrder, then by name.
+     */
     private fun mapStatusOptions(
         ids: List<Id>,
         options: List<ObjectWrapper.Option>
     ) = options.map { option ->
-        val index = ids.indexOf(option.id)
-        val isSelected = index != -1
-        isInitialSortDone = true
         RelationsListItem.Item.Status(
             optionId = option.id,
             name = option.name.orEmpty(),
             color = getOrDefault(option.color),
-            isSelected = isSelected
+            isSelected = ids.contains(option.id)
         )
     }
 
     private fun getOrDefault(code: String?): ThemeColor {
-        return ThemeColor.values().find { it.code == code } ?: ThemeColor.DEFAULT
+        return ThemeColor.entries.find { it.code == code } ?: ThemeColor.DEFAULT
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation) {
@@ -470,12 +496,34 @@ class TagOrStatusValueViewModel(
                 || !relation.isValid)
     }
 
-    override fun onCleared() {
-        super.onCleared()
-        viewModelScope.launch {
-            subscription.unsubscribe(listOf(SUB_MY_OPTIONS))
-        }
+    //region Option Event Lock
+    /**
+     * Activates the event lock for options to prevent race conditions.
+     * Should be called before sending a drag-and-drop order change to middleware.
+     */
+    private fun activateOptionEventLock() {
+        optionEventLockTimestamp = System.currentTimeMillis()
+        Timber.d("DROID-3916, Option event lock activated at $optionEventLockTimestamp")
     }
+
+    /**
+     * Checks if the option event lock is currently active.
+     * The lock is active if it was set within the last OPTION_EVENT_LOCK_DURATION_MS milliseconds.
+     */
+    private fun isOptionEventLockActive(): Boolean {
+        val lockTimestamp = optionEventLockTimestamp ?: return false
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - lockTimestamp
+        val isActive = elapsedTime < OPTION_EVENT_LOCK_DURATION_MS
+
+        if (!isActive) {
+            Timber.d("DROID-3916, Option event lock expired (elapsed: ${elapsedTime}ms)")
+            optionEventLockTimestamp = null
+        }
+
+        return isActive
+    }
+    //endregion
 
     data class ViewModelParams(
         val ctx: Id,
@@ -512,7 +560,8 @@ sealed class TagStatusViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationsListItem>,
+        val items: List<RelationsListItem.Item>,
+        val createItem: RelationsListItem.CreateItem.Tag? = null,
         val isRelationEditable: Boolean,
         val showItemMenu: RelationsListItem.Item? = null
     ) : TagStatusViewState()
@@ -527,6 +576,7 @@ sealed class TagStatusAction {
     data class Delete(val optionId: Id) : TagStatusAction()
     data class Duplicate(val item: RelationsListItem.Item) : TagStatusAction()
     object Create : TagStatusAction()
+    data class OnMove(val from: Int, val to: Int) : TagStatusAction()
 }
 
 enum class RelationContext { OBJECT, OBJECT_SET, DATA_VIEW }
@@ -561,9 +611,11 @@ sealed class RelationsListItem {
         val text: String
     ) : RelationsListItem() {
         class Tag(text: String) : CreateItem(text)
-        class Status(text: String) : CreateItem(text)
     }
 }
 
-const val SUB_MY_OPTIONS = "subscription.relation-options"
 const val DELAY_UNTIL_CLOSE = 300L
+
+// Duration in milliseconds to lock option event processing after a drag operation
+// This prevents incoming middleware events from overwriting optimistic UI updates
+private const val OPTION_EVENT_LOCK_DURATION_MS = 1500L

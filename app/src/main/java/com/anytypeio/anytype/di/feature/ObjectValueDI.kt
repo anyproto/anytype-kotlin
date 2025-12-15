@@ -60,7 +60,6 @@ object ObjectValueObjectModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
@@ -79,7 +78,6 @@ object ObjectValueObjectModule {
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
@@ -121,7 +119,6 @@ object ObjectValueSetModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.INTRINSIC_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
@@ -140,7 +137,6 @@ object ObjectValueSetModule {
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,
@@ -182,7 +178,6 @@ object ObjectValueDataViewModule {
     @Provides
     @PerModal
     fun provideFactory(
-        @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) relations: ObjectRelationProvider,
         @Named(ObjectRelationProvider.DATA_VIEW_PROVIDER_TYPE) values: ObjectValueProvider,
         setObjectDetails: UpdateDetail,
         dispatcher: Dispatcher<Payload>,
@@ -201,7 +196,6 @@ object ObjectValueDataViewModule {
     ): ObjectValueViewModelFactory = ObjectValueViewModelFactory(
         params = params,
         values = values,
-        relations = relations,
         setObjectDetails = setObjectDetails,
         dispatcher = dispatcher,
         analytics = analytics,

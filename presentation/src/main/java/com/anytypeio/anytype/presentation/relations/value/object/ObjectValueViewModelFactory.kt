@@ -15,14 +15,12 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import javax.inject.Inject
 
 class ObjectValueViewModelFactory @Inject constructor(
     private val params: ObjectValueViewModel.ViewModelParams,
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val dispatcher: Dispatcher<Payload>,
     private val setObjectDetails: UpdateDetail,
@@ -43,7 +41,6 @@ class ObjectValueViewModelFactory @Inject constructor(
         modelClass: Class<T>
     ) = ObjectValueViewModel(
         viewModelParams = params,
-        relations = relations,
         values = values,
         dispatcher = dispatcher,
         setObjectDetails = setObjectDetails,

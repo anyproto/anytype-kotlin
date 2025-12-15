@@ -242,7 +242,7 @@
     <string name="paste">Colar</string>
     <string name="select">Selecionar</string>
     <string name="search">Pesquisar</string>
-    <string name="search_hint">Pesquisar...</string>
+    <string name="search_hint">Pesquisar</string>
     <string name="relations">Propriedades</string>
     <string name="fields">Campos</string>
     <string name="download">Baixar</string>

@@ -242,7 +242,7 @@
     <string name="paste">Pegar</string>
     <string name="select">Seleccionar</string>
     <string name="search">Buscar</string>
-    <string name="search_hint">Buscar…</string>
+    <string name="search_hint">Buscar</string>
     <string name="relations">Propiedades</string>
     <string name="fields">Campos</string>
     <string name="download">Descargar</string>

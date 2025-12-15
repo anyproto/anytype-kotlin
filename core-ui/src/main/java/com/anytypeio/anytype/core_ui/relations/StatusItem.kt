@@ -22,10 +22,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.hapticfeedback.HapticFeedbackType
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalHapticFeedback
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -93,7 +94,10 @@ fun StatusItem(
                 .size(24.dp)
                 .align(Alignment.CenterEnd)
         )
-        if (showDivider) Divider(modifier = Modifier.align(Alignment.BottomCenter))
+        if (showDivider) Divider(
+            modifier = Modifier.align(Alignment.BottomCenter),
+            color = colorResource(R.color.shape_primary)
+        )
         if (isEditable) {
             ItemMenu(
                 action = {

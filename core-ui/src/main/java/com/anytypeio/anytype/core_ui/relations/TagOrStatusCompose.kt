@@ -37,11 +37,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
+import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -248,7 +249,6 @@ fun RelationsViewContent(
                 key = { index -> items[index].optionId }
             ) { index ->
                 val item = items[index]
-                val isLastItem = index == items.size - 1 && state.createItem == null
                 ReorderableItem(reorderableLazyListState, key = item.optionId) { isDragging ->
                     val currentItem = LocalView.current
                     if (isDragging) {
@@ -275,7 +275,7 @@ fun RelationsViewContent(
                             state = item,
                             action = action,
                             isEditable = state.isRelationEditable,
-                            showDivider = !isLastItem,
+                            showDivider = true,
                             isDragging = isDragging,
                             dragHandleModifier = dragHandleModifier
                         )
@@ -284,7 +284,7 @@ fun RelationsViewContent(
                             state = item,
                             action = action,
                             isEditable = state.isRelationEditable,
-                            showDivider = !isLastItem,
+                            showDivider = true,
                             isDragging = isDragging,
                             dragHandleModifier = dragHandleModifier
                         )
@@ -338,7 +338,6 @@ fun RelationsViewEmpty(
     state: TagStatusViewState.Empty,
     action: (TagStatusAction) -> Unit
 ) {
-    val icon = R.drawable.ic_popup_duck_56
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -377,7 +376,8 @@ fun RelationsViewEmpty(
             ) {
                 Text(
                     text = stringResource(id = R.string.options_empty_not_editable),
-                    style = BodyCalloutMedium
+                    style = BodyCalloutMedium,
+                    color = colorResource(id = R.color.text_primary)
                 )
             }
         }
@@ -413,7 +413,7 @@ private fun getTitle(state: TagStatusViewState): String {
     }
 }
 
-@Preview(name = "Empty Editable State", showBackground = true)
+@DefaultPreviews
 @Composable
 private fun TagOrStatusValueScreenEmptyEditablePreview() {
     MaterialTheme {
@@ -429,7 +429,7 @@ private fun TagOrStatusValueScreenEmptyEditablePreview() {
     }
 }
 
-@Preview(name = "Empty Read-Only State", showBackground = true)
+@DefaultPreviews
 @Composable
 private fun TagOrStatusValueScreenEmptyReadOnlyPreview() {
     MaterialTheme {
@@ -438,6 +438,92 @@ private fun TagOrStatusValueScreenEmptyReadOnlyPreview() {
                 title = "Platform",
                 isRelationEditable = false // Key change: user cannot add new options
             ),
+            query = "",
+            action = {},
+            onQueryChanged = {}
+        )
+    }
+}
+
+
+@DefaultPreviews
+@Composable
+private fun TagOrStatusValueScreenPreview() {
+    val items = listOf(
+        RelationsListItem.Item.Tag(
+            optionId = "1",
+            name = "Urgent",
+            isSelected = true,
+            color = ThemeColor.RED,
+            number = 10
+        ),
+        RelationsListItem.Item.Tag(
+            optionId = "2",
+            name = "In Progress",
+            isSelected = false,
+            color = ThemeColor.GREY,
+            number = 9
+        ),
+        RelationsListItem.Item.Tag(
+            optionId = "3",
+            name = "Low Priority",
+            isSelected = false,
+            color = ThemeColor.YELLOW,
+            number = 1
+        )
+    )
+
+    val contentState = TagStatusViewState.Content(
+        title = "Priority",
+        isRelationEditable = true,
+        items = items,
+        createItem = null
+    )
+
+    MaterialTheme {
+        TagOrStatusValueScreen(
+            state = contentState,
+            query = "",
+            action = {},
+            onQueryChanged = {}
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun StatusValueScreenPreview() {
+    val items = listOf(
+        RelationsListItem.Item.Status(
+            optionId = "1",
+            name = "Not Started",
+            isSelected = false,
+            color = ThemeColor.GREY
+        ),
+        RelationsListItem.Item.Status(
+            optionId = "2",
+            name = "In Progress",
+            isSelected = true,
+            color = ThemeColor.BLUE
+        ),
+        RelationsListItem.Item.Status(
+            optionId = "3",
+            name = "Completed",
+            isSelected = false,
+            color = ThemeColor.ORANGE
+        )
+    )
+
+    val contentState = TagStatusViewState.Content(
+        title = "Status",
+        isRelationEditable = true,
+        items = items,
+        createItem = null
+    )
+
+    MaterialTheme {
+        TagOrStatusValueScreen(
+            state = contentState,
             query = "",
             action = {},
             onQueryChanged = {}

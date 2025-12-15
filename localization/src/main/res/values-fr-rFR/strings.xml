@@ -242,7 +242,7 @@
     <string name="paste">Coller</string>
     <string name="select">Sélectionner</string>
     <string name="search">Rechercher</string>
-    <string name="search_hint">Recherche...</string>
+    <string name="search_hint">Rechercher</string>
     <string name="relations">Propriétés</string>
     <string name="fields">Champs</string>
     <string name="download">Télécharger</string>

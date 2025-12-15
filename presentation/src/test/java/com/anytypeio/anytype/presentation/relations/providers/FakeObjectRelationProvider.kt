@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.StubRelationObject
 import kotlinx.coroutines.flow.Flow
@@ -22,19 +21,9 @@ internal class FakeObjectRelationProvider : ObjectRelationProvider {
 
     constructor(relation: ObjectWrapper.Relation = StubRelationObject()) : this(listOf(relation))
 
-    override suspend fun getOrNull(relation: Key): ObjectWrapper.Relation? {
-        return relations.find { it.key == relation }
-    }
-
     override suspend fun observeAll(id: Id): Flow<List<ObjectWrapper.Relation>> {
         return flow {
             emit(relations)
-        }
-    }
-
-    override suspend fun observeRelation(relation: Key): Flow<ObjectWrapper.Relation> {
-        return flow {
-            emit(this@FakeObjectRelationProvider.relation)
         }
     }
 }

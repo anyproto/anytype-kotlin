@@ -214,8 +214,11 @@ fun RelationsViewContent(
         }
 
         val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-            val fromId = from.key as String
-            val toId = to.key as String
+            val fromId = from.key as? String
+            val toId = to.key as? String
+            if (fromId == null || toId == null) {
+                return@rememberReorderableLazyListState
+            }
 
             // Capture original dragged item on first move
             if (draggedItemId.value == null) {

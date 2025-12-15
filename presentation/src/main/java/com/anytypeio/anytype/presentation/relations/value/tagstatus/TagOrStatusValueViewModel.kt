@@ -70,6 +70,12 @@ class TagOrStatusValueViewModel(
 
     private var isInitialExpandDone = false
 
+    // Lock mechanism to prevent race conditions during DnD operations
+    // When a drag operation completes, we optimistically update the UI and send to middleware
+    // We then lock event processing for a short period to prevent incoming events from
+    // overwriting our optimistic update before middleware confirms the change
+    private var optionEventLockTimestamp: Long? = null
+
     init {
         viewModelScope.launch {
             val relation = storeOfRelations.getByKey(key = viewModelParams.relationKey) ?: return@launch
@@ -82,6 +88,11 @@ class TagOrStatusValueViewModel(
                 query.distinctUntilChanged(),
                 storeOfRelationOptions.trackChanges()
             ) { record, query, _ ->
+                // Skip state updates during active drag operations to prevent UI flickering
+                if (isOptionEventLockActive()) {
+                    Timber.d("DROID-3916, Skipping state update due to active option event lock")
+                    return@combine
+                }
                 val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
                     .sortedBy { it.orderId }
                 val ids = getRecordValues(record)
@@ -206,6 +217,8 @@ class TagOrStatusValueViewModel(
                         .toMutableList()
                         .apply { add(action.to, removeAt(action.from)) }
                         .map { it.optionId }
+                    // Activate lock before sending to middleware to prevent race conditions
+                    activateOptionEventLock()
                     setRelationOptionOrder.async(
                         SetRelationOptionOrder.Params(
                             spaceId = viewModelParams.space,
@@ -483,6 +496,35 @@ class TagOrStatusValueViewModel(
                 || !relation.isValid)
     }
 
+    //region Option Event Lock
+    /**
+     * Activates the event lock for options to prevent race conditions.
+     * Should be called before sending a drag-and-drop order change to middleware.
+     */
+    private fun activateOptionEventLock() {
+        optionEventLockTimestamp = System.currentTimeMillis()
+        Timber.d("DROID-3916, Option event lock activated at $optionEventLockTimestamp")
+    }
+
+    /**
+     * Checks if the option event lock is currently active.
+     * The lock is active if it was set within the last OPTION_EVENT_LOCK_DURATION_MS milliseconds.
+     */
+    private fun isOptionEventLockActive(): Boolean {
+        val lockTimestamp = optionEventLockTimestamp ?: return false
+        val currentTime = System.currentTimeMillis()
+        val elapsedTime = currentTime - lockTimestamp
+        val isActive = elapsedTime < OPTION_EVENT_LOCK_DURATION_MS
+
+        if (!isActive) {
+            Timber.d("DROID-3916, Option event lock expired (elapsed: ${elapsedTime}ms)")
+            optionEventLockTimestamp = null
+        }
+
+        return isActive
+    }
+    //endregion
+
     data class ViewModelParams(
         val ctx: Id,
         val space: SpaceId,
@@ -573,3 +615,7 @@ sealed class RelationsListItem {
 }
 
 const val DELAY_UNTIL_CLOSE = 300L
+
+// Duration in milliseconds to lock option event processing after a drag operation
+// This prevents incoming middleware events from overwriting optimistic UI updates
+private const val OPTION_EVENT_LOCK_DURATION_MS = 1500L

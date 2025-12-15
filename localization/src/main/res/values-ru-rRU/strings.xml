@@ -242,7 +242,7 @@
     <string name="paste">Вставить</string>
     <string name="select">Выбрать</string>
     <string name="search">Поиск</string>
-    <string name="search_hint">Поиск...</string>
+    <string name="search_hint">Поиск</string>
     <string name="relations">Свойства</string>
     <string name="fields">Поля</string>
     <string name="download">Скачать</string>

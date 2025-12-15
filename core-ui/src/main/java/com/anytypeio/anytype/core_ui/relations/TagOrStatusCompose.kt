@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.core_ui.relations
 
 import android.view.HapticFeedbackConstants
-import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -21,6 +20,7 @@ import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateListOf
@@ -37,19 +37,18 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.swapList
-import com.anytypeio.anytype.core_ui.foundation.AlertDescription
-import com.anytypeio.anytype.core_ui.foundation.AlertIcon
-import com.anytypeio.anytype.core_ui.foundation.AlertTitle
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
+import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Title1
@@ -64,6 +63,7 @@ import sh.calvin.reorderable.rememberReorderableLazyListState
 @Composable
 fun TagOrStatusValueScreen(
     state: TagStatusViewState,
+    query: String,
     action: (TagStatusAction) -> Unit,
     onQueryChanged: (String) -> Unit
 ) {
@@ -83,33 +83,15 @@ fun TagOrStatusValueScreen(
                 .padding(bottom = 20.dp)
         ) {
             Header(state = state, action = action)
-            Search(state = state, onQueryChanged = onQueryChanged)
+            SearchField(
+                query = query,
+                enabled = state !is TagStatusViewState.Loading,
+                onFocused = {},
+                onQueryChanged = onQueryChanged
+            )
+            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
             RelationsLazyList(state = state, action = action)
         }
-    }
-}
-
-@Composable
-private fun Search(
-    state: TagStatusViewState,
-    onQueryChanged: (String) -> Unit
-) {
-    when (state) {
-        is TagStatusViewState.Content -> {
-            SearchField(
-                onFocused = {},
-                onQueryChanged = onQueryChanged
-            )
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-        }
-        is TagStatusViewState.Empty -> {
-            SearchField(
-                onFocused = {},
-                onQueryChanged = onQueryChanged
-            )
-            Divider(paddingEnd = 0.dp, paddingStart = 0.dp)
-        }
-        else -> { /* Do nothing */}
     }
 }
 
@@ -134,11 +116,12 @@ private fun Header(state: TagStatusViewState, action: (TagStatusAction) -> Unit)
     ) {
         if (isClearButtonVisible(state = state)) {
             // Left-aligned CLEAR button
-            Box(modifier = Modifier
-                .wrapContentWidth()
-                .fillMaxHeight()
-                .align(Alignment.CenterStart)
-                .noRippleClickable { action(TagStatusAction.Clear) }
+            Box(
+                modifier = Modifier
+                    .wrapContentWidth()
+                    .fillMaxHeight()
+                    .align(Alignment.CenterStart)
+                    .noRippleClickable { action(TagStatusAction.Clear) }
             ) {
                 Text(
                     modifier = Modifier
@@ -209,46 +192,63 @@ fun RelationsViewContent(
     if (state.isRelationEditable) {
         // Use reorderable list for both Tags and Status
         val items = remember { mutableStateListOf<RelationsListItem.Item>() }
-        items.swapList(state.items.filterIsInstance<RelationsListItem.Item>())
+        items.swapList(state.items)
 
-        val lastFromIndex = remember { mutableStateOf<Int?>(null) }
-        val lastToIndex = remember { mutableStateOf<Int?>(null) }
+        // Track the original dragged item's ID (not index) to handle multiple callback invocations
+        val draggedItemId = remember { mutableStateOf<String?>(null) }
 
         val onDragStoppedHandler = {
-            val from = lastFromIndex.value
-            val to = lastToIndex.value
-            if (from != null && to != null && from != to) {
-                action(TagStatusAction.OnMove(from = from, to = to))
+            val originalItemId = draggedItemId.value
+            if (originalItemId != null) {
+                // Find original index from state.items (unchanged during drag)
+                val originalIndex = state.items.indexOfFirst { it.optionId == originalItemId }
+                // Find new index in reordered items list
+                val newIndex = items.indexOfFirst { it.optionId == originalItemId }
+
+                if (originalIndex != -1 && newIndex != -1 && originalIndex != newIndex) {
+                    action(TagStatusAction.OnMove(from = originalIndex, to = newIndex))
+                }
             }
-            lastFromIndex.value = null
-            lastToIndex.value = null
+            draggedItemId.value = null
         }
 
         val reorderableLazyListState = rememberReorderableLazyListState(lazyListState) { from, to ->
-            lastFromIndex.value = from.index
-            lastToIndex.value = to.index
+            val fromId = from.key as String
+            val toId = to.key as String
 
-            val newList = items.toMutableList().apply {
-                add(to.index, removeAt(from.index))
+            // Capture original dragged item on first move
+            if (draggedItemId.value == null) {
+                draggedItemId.value = fromId
             }
-            items.swapList(newList)
 
-            ViewCompat.performHapticFeedback(
-                view,
-                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
-            )
+            // Find current indices by key
+            val f = items.indexOfFirst { it.optionId == fromId }
+            val t = items.indexOfFirst { it.optionId == toId }
+
+            if (f != -1 && t != -1 && f != t) {
+                val newList = items.toMutableList().apply {
+                    add(t, removeAt(f))
+                }
+                items.swapList(newList)
+
+                ViewCompat.performHapticFeedback(
+                    view,
+                    HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+                )
+            }
         }
 
         LazyColumn(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
+            // Reorderable items
             items(
                 count = items.size,
                 key = { index -> items[index].optionId }
             ) { index ->
                 val item = items[index]
-                val isLastItem = index == items.size - 1
+                val isLastItem = index == items.size - 1 && state.createItem == null
                 ReorderableItem(reorderableLazyListState, key = item.optionId) { isDragging ->
                     val currentItem = LocalView.current
                     if (isDragging) {
@@ -279,6 +279,7 @@ fun RelationsViewContent(
                             isDragging = isDragging,
                             dragHandleModifier = dragHandleModifier
                         )
+
                         is RelationsListItem.Item.Status -> StatusItem(
                             state = item,
                             action = action,
@@ -288,6 +289,16 @@ fun RelationsViewContent(
                             dragHandleModifier = dragHandleModifier
                         )
                     }
+                }
+            }
+
+            // CreateItem at the bottom (non-reorderable, only for Tags)
+            state.createItem?.let { createItem ->
+                item(key = "create_item") {
+                    ItemTagOrStatusCreate(
+                        state = createItem,
+                        action = action
+                    )
                 }
             }
         }
@@ -328,44 +339,47 @@ fun RelationsViewEmpty(
     action: (TagStatusAction) -> Unit
 ) {
     val icon = R.drawable.ic_popup_duck_56
-    if (state.isRelationEditable) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Spacer(modifier = Modifier.height(154.dp))
-            AlertIcon(icon)
-            Spacer(modifier = Modifier.height(12.dp))
-            AlertTitle(
-                title = stringResource(id = R.string.options_empty_title),
-                style = BodyCalloutMedium
-            )
-            AlertDescription(
-                description = stringResource(id = R.string.options_empty_description),
-                style = BodyCalloutMedium
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            ButtonSecondary(
-                text = stringResource(id = R.string.create),
-                onClick = { action(TagStatusAction.Create) },
-                size = ButtonSize.Small,
-                modifier = Modifier.align(Alignment.CenterHorizontally)
-            )
-        }
-    } else {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .verticalScroll(rememberScrollState())
-        ) {
-            Spacer(modifier = Modifier.height(87.dp))
-            AlertIcon(icon)
-            Spacer(modifier = Modifier.height(12.dp))
-            AlertTitle(
-                title = stringResource(id = R.string.options_empty_not_editable),
-                style = BodyCalloutMedium
-            )
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState()),
+        contentAlignment = Alignment.Center
+    ) {
+        if (state.isRelationEditable) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(id = R.string.options_empty_title),
+                    style = BodyCalloutMedium,
+                    color = colorResource(id = R.color.text_primary)
+                )
+                Text(
+                    text = stringResource(id = R.string.options_empty_description),
+                    style = BodyCalloutRegular,
+                    color = colorResource(id = R.color.text_secondary)
+                )
+                Spacer(modifier = Modifier.height(13.dp))
+                ButtonSecondary(
+                    text = stringResource(id = R.string.create),
+                    onClick = { action(TagStatusAction.Create) },
+                    size = ButtonSize.Small,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+            }
+        } else {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth(),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = stringResource(id = R.string.options_empty_not_editable),
+                    style = BodyCalloutMedium
+                )
+            }
         }
     }
 }
@@ -396,5 +410,37 @@ private fun getTitle(state: TagStatusViewState): String {
         is TagStatusViewState.Content -> state.title
         is TagStatusViewState.Empty -> state.title
         is TagStatusViewState.Loading -> ""
+    }
+}
+
+@Preview(name = "Empty Editable State", showBackground = true)
+@Composable
+private fun TagOrStatusValueScreenEmptyEditablePreview() {
+    MaterialTheme {
+        TagOrStatusValueScreen(
+            state = TagStatusViewState.Empty(
+                title = "Assignee",
+                isRelationEditable = true // Key change: user can add new options
+            ),
+            query = "",
+            action = {},
+            onQueryChanged = {}
+        )
+    }
+}
+
+@Preview(name = "Empty Read-Only State", showBackground = true)
+@Composable
+private fun TagOrStatusValueScreenEmptyReadOnlyPreview() {
+    MaterialTheme {
+        TagOrStatusValueScreen(
+            state = TagStatusViewState.Empty(
+                title = "Platform",
+                isRelationEditable = false // Key change: user cannot add new options
+            ),
+            query = "",
+            action = {},
+            onQueryChanged = {}
+        )
     }
 }

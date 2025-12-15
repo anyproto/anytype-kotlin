@@ -24,13 +24,21 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.filterIdsById
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.debounce
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.drop
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.onCompletion
+import kotlinx.coroutines.flow.take
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -48,7 +56,15 @@ class TagOrStatusValueViewModel(
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val viewState = MutableStateFlow<TagStatusViewState>(TagStatusViewState.Loading)
-    private val query = MutableSharedFlow<String>(replay = 0)
+
+    private val input = MutableStateFlow("")
+    val queryState: StateFlow<String> = input.asStateFlow()
+    @OptIn(FlowPreview::class)
+    private val query = input.take(1).onCompletion {
+        emitAll(
+            input.drop(1).debounce(300L).distinctUntilChanged()
+        )
+    }
     private var isEditableRelation = false
     val commands = MutableSharedFlow<Command>(replay = 0)
 
@@ -63,7 +79,7 @@ class TagOrStatusValueViewModel(
                     ctx = viewModelParams.ctx,
                     target = viewModelParams.objectId
                 ),
-                query.onStart { emit("") },
+                query.distinctUntilChanged(),
                 storeOfRelationOptions.trackChanges()
             ) { record, query, _ ->
                 val options = storeOfRelationOptions.getByRelationKey(viewModelParams.relationKey)
@@ -102,9 +118,7 @@ class TagOrStatusValueViewModel(
     }
 
     fun onQueryChanged(input: String) {
-        viewModelScope.launch {
-            query.emit(input)
-        }
+        this.input.value = input
     }
 
     fun proceedWithDeleteOptions(optionId: Id) {
@@ -189,7 +203,6 @@ class TagOrStatusValueViewModel(
                     val currentState = viewState.value
                     if (currentState !is TagStatusViewState.Content) return@launch
                     val reorderedIds = currentState.items
-                        .filterIsInstance<RelationsListItem.Item>()
                         .toMutableList()
                         .apply { add(action.to, removeAt(action.from)) }
                         .map { it.optionId }
@@ -222,12 +235,11 @@ class TagOrStatusValueViewModel(
 
     private fun openOptionScreen(command: Command.OpenOptionScreen) {
         viewModelScope.launch {
-            query.emit("")
             commands.emit(command)
         }
     }
 
-    private fun onActionClick(item: RelationsListItem.Item) {
+    private fun onActionClick(item: RelationsListItem) {
         when (item) {
             is RelationsListItem.Item.Status -> {
                 if (item.isSelected) {
@@ -243,6 +255,17 @@ class TagOrStatusValueViewModel(
                     addTag(item.optionId)
                 }
             }
+            is RelationsListItem.CreateItem.Tag -> {
+                input.value = ""  // Clear the query so user sees full list after creating option
+                emitCommand(
+                    Command.OpenOptionScreen(
+                        text = item.text,
+                        relationKey = viewModelParams.relationKey,
+                        ctx = viewModelParams.ctx,
+                        objectId = viewModelParams.objectId
+                    )
+                )
+            }
         }
     }
 
@@ -252,7 +275,9 @@ class TagOrStatusValueViewModel(
         options: List<ObjectWrapper.Option>,
         query: String
     ) {
-        val result = mutableListOf<RelationsListItem>()
+        val result = mutableListOf<RelationsListItem.Item>()
+        val isTagRelation = relation.format == Relation.Format.TAG
+
         when (relation.format) {
             Relation.Format.STATUS -> {
                 result.addAll(
@@ -275,7 +300,14 @@ class TagOrStatusValueViewModel(
             }
         }
 
-        viewState.value = if (result.isEmpty()) {
+        // CreateItem is only shown for TAG relations when there's a search query
+        val createItem = if (isTagRelation && query.isNotBlank() && isEditableRelation) {
+            RelationsListItem.CreateItem.Tag(query)
+        } else {
+            null
+        }
+
+        viewState.value = if (result.isEmpty() && createItem == null) {
             TagStatusViewState.Empty(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
@@ -284,8 +316,11 @@ class TagOrStatusValueViewModel(
             TagStatusViewState.Content(
                 isRelationEditable = isEditableRelation,
                 title = relation.name.orEmpty(),
-                items = result
+                items = result,
+                createItem = createItem
             )
+        }.also {
+            Timber.d("TagStatusViewModel initViewState, viewState: $it")
         }
     }
 
@@ -483,14 +518,15 @@ sealed class TagStatusViewState {
 
     data class Content(
         val title: String,
-        val items: List<RelationsListItem>,
+        val items: List<RelationsListItem.Item>,
+        val createItem: RelationsListItem.CreateItem.Tag? = null,
         val isRelationEditable: Boolean,
         val showItemMenu: RelationsListItem.Item? = null
     ) : TagStatusViewState()
 }
 
 sealed class TagStatusAction {
-    data class Click(val item: RelationsListItem.Item) : TagStatusAction()
+    data class Click(val item: RelationsListItem) : TagStatusAction()
     data class LongClick(val item: RelationsListItem.Item) : TagStatusAction()
     object Clear : TagStatusAction()
     object Plus : TagStatusAction()
@@ -527,6 +563,12 @@ sealed class RelationsListItem {
             override val color: ThemeColor,
             override val isSelected: Boolean
         ) : Item()
+    }
+
+    sealed class CreateItem(
+        val text: String
+    ) : RelationsListItem() {
+        class Tag(text: String) : CreateItem(text)
     }
 }
 

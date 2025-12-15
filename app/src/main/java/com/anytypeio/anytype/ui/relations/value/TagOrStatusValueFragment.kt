@@ -62,6 +62,7 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
             ) {
                 TagOrStatusValueScreen(
                     state = vm.viewState.collectAsStateWithLifecycle().value,
+                    query = vm.queryState.collectAsStateWithLifecycle().value,
                     action = vm::onAction,
                     onQueryChanged = vm::onQueryChanged
                 )
@@ -71,7 +72,8 @@ class TagOrStatusValueFragment : BaseBottomSheetComposeFragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        setupCollapsedHeight()
+        skipCollapsed()
+        expand()
     }
 
     override fun onStart() {

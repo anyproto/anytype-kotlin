@@ -126,17 +126,12 @@ class Code(
 
         if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
             content.setupSyntax(Syntaxes.PLAIN)
-           menu.setText(R.string.block_code_plain_text)
+            menu.setText(R.string.block_code_plain_text)
 
         } else {
             content.setupSyntax(item.lang)
             menu.text = item.lang!!.capitalize()
         }
-    }
-
-    @Deprecated("Pre-nested-styling legacy.")
-    fun indentize(item: BlockView.Indentable) {
-        // Do nothing.
     }
 
     fun processChangePayload(
@@ -191,8 +186,16 @@ class Code(
             setBackgroundColor(item.background)
         }
 
-        if (payload.isIndentChanged) {
-            indentize(item)
+        if (payload.codeLanguageChanged()) {
+            if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
+                content.setupSyntax(Syntaxes.PLAIN)
+                menu.setText(R.string.block_code_plain_text)
+            } else {
+                content.setupSyntax(item.lang)
+                menu.text = item.lang!!.replaceFirstChar {
+                    if (it.isLowerCase()) it.titlecase() else it.toString()
+                }
+            }
         }
     }
 

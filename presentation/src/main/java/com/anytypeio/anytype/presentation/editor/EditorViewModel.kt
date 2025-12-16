@@ -449,6 +449,12 @@ class EditorViewModel(
      */
     val mentionDatePicker = MutableStateFlow<EditorDatePickerState>(EditorDatePickerState.Hidden)
 
+    /**
+     * Code block language selection state
+     */
+    data class SelectLanguageState(val target: Id, val currentLang: String?)
+    val selectLanguageState = MutableStateFlow<SelectLanguageState?>(null)
+
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
             permission = permission,
@@ -4161,7 +4167,13 @@ class EditorViewModel(
             }
             is ListenerType.Code.SelectLanguage -> {
                 when (mode) {
-                    EditorMode.Edit -> dispatch(Command.Dialog.SelectLanguage(clicked.target))
+                    EditorMode.Edit -> {
+                        val currentLang = views
+                            .filterIsInstance<BlockView.Code>()
+                            .find { it.id == clicked.target }
+                            ?.lang
+                        selectLanguageState.value = SelectLanguageState(clicked.target, currentLang)
+                    }
                     else -> Unit
                 }
             }
@@ -4880,6 +4892,10 @@ class EditorViewModel(
                 )
             )
         }
+    }
+
+    fun onDismissSelectLanguage() {
+        selectLanguageState.value = null
     }
 
     fun onRelationTextValueChanged(

@@ -65,6 +65,7 @@ class Code(
             DefaultTextWatcher { text ->
                 provide<BlockView.Code>()?.let { item ->
                     if (item.mode == BlockView.Mode.EDIT) {
+                        item.text = text.toString()
                         onTextChanged(item.id, text)
                     }
                 }
@@ -160,7 +161,12 @@ class Code(
                     content.apply {
                         clearTextWatchers()
                         addTextChangedListener(
-                            DefaultTextWatcher { text -> onTextChanged(item.id, text) }
+                            DefaultTextWatcher { text ->
+                                provide<BlockView.Code>()?.let { codeItem ->
+                                    codeItem.text = text.toString()
+                                }
+                                onTextChanged(item.id, text)
+                            }
                         )
                         selectionWatcher = { onSelectionChanged(item.id, it) }
                     }

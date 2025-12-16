@@ -126,9 +126,17 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     /**
      * Send selection event only for blocks in focus state
      */
+
+    private var isSelectionWatcherBlocked = false
+
+    fun pauseSelectionWatcher(block: () -> Unit) = synchronized(this) {
+        isSelectionWatcherBlocked = true
+        block()
+        isSelectionWatcherBlocked = false
+    }
+
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
-        if (isFocused) {
-            Timber.d("New selection: $selStart - $selEnd")
+        if (isFocused && !isSelectionWatcherBlocked) {
             selectionWatcher?.invoke(selStart..selEnd)
         }
         super.onSelectionChanged(selStart, selEnd)

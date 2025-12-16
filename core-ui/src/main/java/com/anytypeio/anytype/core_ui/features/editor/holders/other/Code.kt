@@ -140,7 +140,11 @@ class Code(
         Timber.d("Processing $payload for new view:\n$item")
 
         if (payload.textChanged()) {
-            content.pauseTextWatchers { content.setText(item.text) }
+            content.pauseSelectionWatcher {
+                content.pauseTextWatchers {
+                    content.setText(item.text)
+                }
+            }
         }
 
         if (payload.readWriteModeChanged()) {

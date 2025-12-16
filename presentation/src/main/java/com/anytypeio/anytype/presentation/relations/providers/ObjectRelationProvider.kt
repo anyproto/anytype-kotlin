@@ -1,13 +1,10 @@
 package com.anytypeio.anytype.presentation.relations.providers
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import kotlinx.coroutines.flow.Flow
 
 interface ObjectRelationProvider {
-    suspend fun getOrNull(relation: Key): ObjectWrapper.Relation?
-    suspend fun observeRelation(relation: Key): Flow<ObjectWrapper.Relation>
     suspend fun observeAll(id: Id): Flow<List<ObjectWrapper.Relation>>
 
     companion object {

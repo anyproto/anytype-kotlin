@@ -106,7 +106,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         watchers.clear()
     }
 
-    fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {
+    fun pauseTextWatchers(block: () -> Unit) {
         lockTextWatchers()
         block()
         unlockTextWatchers()
@@ -128,9 +128,10 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
      * Send selection event only for blocks in focus state
      */
 
+    @Volatile
     private var isSelectionWatcherBlocked = false
 
-    fun pauseSelectionWatcher(block: () -> Unit) = synchronized(this) {
+    fun pauseSelectionWatcher(block: () -> Unit) {
         isSelectionWatcherBlocked = true
         block()
         isSelectionWatcherBlocked = false

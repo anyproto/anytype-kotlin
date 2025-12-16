@@ -61,16 +61,8 @@ class Code(
         onSelectionChanged: (String, IntRange) -> Unit,
         onFocusChanged: (String, Boolean) -> Unit
     ) {
-        content.addTextChangedListener(
-            DefaultTextWatcher { text ->
-                provide<BlockView.Code>()?.let { item ->
-                    if (item.mode == BlockView.Mode.EDIT) {
-                        item.text = text.toString()
-                        onTextChanged(item.id, text)
-                    }
-                }
-            }
-        )
+        content.clearTextWatchers()
+        content.addTextChangedListener(createTextWatcher(onTextChanged))
 
         content.setOnFocusChangeListener { _, focused ->
             content.isCursorVisible = focused
@@ -126,14 +118,7 @@ class Code(
             clicked(ListenerType.Code.SelectLanguage(item.id))
         }
 
-        if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
-            content.setupSyntax(Syntaxes.PLAIN)
-            menu.setText(R.string.block_code_plain_text)
-
-        } else {
-            content.setupSyntax(item.lang)
-            menu.text = item.lang!!.capitalize()
-        }
+        handleCodeLanguageChange(item)
     }
 
     fun processChangePayload(
@@ -160,14 +145,7 @@ class Code(
                 if (item.mode == BlockView.Mode.EDIT) {
                     content.apply {
                         clearTextWatchers()
-                        addTextChangedListener(
-                            DefaultTextWatcher { text ->
-                                provide<BlockView.Code>()?.let { codeItem ->
-                                    codeItem.text = text.toString()
-                                }
-                                onTextChanged(item.id, text)
-                            }
-                        )
+                        addTextChangedListener(createTextWatcher(onTextChanged))
                         selectionWatcher = { onSelectionChanged(item.id, it) }
                     }
                     content.enableEditMode()
@@ -196,14 +174,21 @@ class Code(
         }
 
         if (payload.codeLanguageChanged()) {
-            if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
-                content.setupSyntax(Syntaxes.PLAIN)
-                menu.setText(R.string.block_code_plain_text)
-            } else {
-                content.setupSyntax(item.lang)
-                menu.text = item.lang!!.replaceFirstChar {
-                    if (it.isLowerCase()) it.titlecase() else it.toString()
-                }
+            handleCodeLanguageChange(item)
+        }
+    }
+
+    /**
+     * Handles setting up the syntax highlighting and menu text based on the code language.
+     */
+    private fun handleCodeLanguageChange(item: BlockView.Code) {
+        if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
+            content.setupSyntax(Syntaxes.PLAIN)
+            menu.setText(R.string.block_code_plain_text)
+        } else {
+            content.setupSyntax(item.lang)
+            menu.text = item.lang!!.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
             }
         }
     }
@@ -245,6 +230,17 @@ class Code(
                 if (it in 0..length) {
                     content.setSelection(it)
                 }
+            }
+        }
+    }
+
+    private fun createTextWatcher(
+        onTextChanged: (String, Editable) -> Unit
+    ): DefaultTextWatcher = DefaultTextWatcher { text ->
+        provide<BlockView.Code>()?.let { item ->
+            if (item.mode == BlockView.Mode.EDIT) {
+                item.text = text.toString()
+                onTextChanged(item.id, text)
             }
         }
     }

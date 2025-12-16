@@ -11,6 +11,7 @@ import android.util.AttributeSet
 import android.view.DragEvent
 import android.view.MotionEvent
 import android.view.ViewConfiguration
+import android.widget.HorizontalScrollView
 import androidx.appcompat.widget.AppCompatEditText
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
@@ -60,6 +61,11 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     private fun setup() {
         enableEditMode()
         super.addTextChangedListener(MonospaceTabTextWatcher(paint.measureText(MEASURING_CHAR)))
+        super.addTextChangedListener(newlineScrollResetWatcher)
+    }
+
+    private val newlineScrollResetWatcher = NewlineScrollResetWatcher {
+        (parent as? HorizontalScrollView)?.scrollTo(0, 0)
     }
 
     private fun setupSyntaxHighlighter() {

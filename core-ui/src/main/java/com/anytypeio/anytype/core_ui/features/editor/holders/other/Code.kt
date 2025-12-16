@@ -72,6 +72,7 @@ class Code(
         )
 
         content.setOnFocusChangeListener { _, focused ->
+            content.isCursorVisible = focused
             provide<BlockView.Code>()?.let { item ->
                 onFocusChanged(item.id, focused)
             }

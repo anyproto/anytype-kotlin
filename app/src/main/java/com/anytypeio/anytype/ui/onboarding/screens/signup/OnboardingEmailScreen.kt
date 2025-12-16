@@ -35,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.ImeAction
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -223,7 +224,10 @@ private fun OnboardingEmailScreen(
                         unfocusedIndicatorColor = Color.Transparent,
                         errorIndicatorColor = Color.Transparent
                     ),
-                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Done
+                    ),
                     keyboardActions = KeyboardActions {
                         keyboardController?.hide()
                         focusManager.clearFocus()
@@ -250,7 +254,7 @@ private fun OnboardingEmailScreen(
                 size = ButtonSize.Large,
                 modifierBox = Modifier.fillMaxWidth(),
                 loading = isLoading,
-                enabled = innerValue.text.isNotEmpty()
+                enabled = innerValue.text.isNotEmpty() && isValidEmail(innerValue.text)
             )
             if (!BuildConfig.MANDATORY_EMAIL_COLLECTION) {
                 Spacer(modifier = Modifier.height(8.dp))

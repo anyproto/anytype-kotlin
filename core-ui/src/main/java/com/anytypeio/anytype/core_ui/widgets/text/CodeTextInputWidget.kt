@@ -77,6 +77,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         setHorizontallyScrolling(false)
         maxLines = Integer.MAX_VALUE
         setTextIsSelectable(true)
+        isCursorVisible = hasFocus()
     }
 
     fun enableReadMode() {

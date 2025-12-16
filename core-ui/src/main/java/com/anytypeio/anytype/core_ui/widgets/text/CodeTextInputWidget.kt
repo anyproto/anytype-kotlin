@@ -77,6 +77,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         setHorizontallyScrolling(false)
         maxLines = Integer.MAX_VALUE
         setTextIsSelectable(true)
+        isCursorVisible = hasFocus()
     }
 
     fun enableReadMode() {
@@ -126,9 +127,21 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
     /**
      * Send selection event only for blocks in focus state
      */
+
+    @Volatile
+    private var isSelectionWatcherBlocked = false
+
+    fun pauseSelectionWatcher(block: () -> Unit) {
+        isSelectionWatcherBlocked = true
+        try {
+            block()
+        } finally {
+            isSelectionWatcherBlocked = false
+        }
+    }
+
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {
-        if (isFocused) {
-            Timber.d("New selection: $selStart - $selEnd")
+        if (isFocused && !isSelectionWatcherBlocked) {
             selectionWatcher?.invoke(selStart..selEnd)
         }
         super.onSelectionChanged(selStart, selEnd)

@@ -156,8 +156,9 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
-import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
-import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
+import androidx.compose.runtime.remember
+import com.anytypeio.anytype.core_ui.features.editor.modal.SelectLanguageBottomSheet
+import com.anytypeio.anytype.library_syntax_highlighter.obtainLanguages
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
@@ -200,7 +201,6 @@ import timber.log.Timber
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
-    SelectProgrammingLanguageReceiver,
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver,
     DocumentMenuActionReceiver,
@@ -808,6 +808,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
+        binding.selectLanguageSheet.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.selectLanguageState.collectAsStateWithLifecycle().value
+                if (state != null) {
+                    SelectLanguageBottomSheet(
+                        languages = remember { requireContext().obtainLanguages() },
+                        selectedLanguage = state.currentLang,
+                        onLanguageSelected = { key ->
+                            vm.onSelectProgrammingLanguageClicked(state.target, key)
+                            vm.onDismissSelectLanguage()
+                        },
+                        onDismiss = { vm.onDismissSelectLanguage() }
+                    )
+                }
+            }
+        }
+
         sideEffectHandler()
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
@@ -1169,10 +1187,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     } else {
                         Timber.w("Missing binding for command: $command")
                     }
-                }
-                is Command.Dialog.SelectLanguage -> {
-                    SelectProgrammingLanguageFragment.new(command.target)
-                        .showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
@@ -2211,11 +2225,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun getEditorSettings() {
-    }
-
-    override fun onLanguageSelected(target: Id, key: String) {
-        Timber.d("key: $key")
-        vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
     override fun onSearchOnPageClicked() {

@@ -85,10 +85,6 @@ sealed class Command {
         val url: Url
     ) : Command()
 
-    sealed class Dialog : Command() {
-        data class SelectLanguage(val target: String) : Dialog()
-    }
-
     sealed class OpenObjectRelationScreen : Command() {
         data class RelationList(
             val ctx: String,

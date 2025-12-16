@@ -53,7 +53,13 @@ class Code(
         get() = binding.decorationContainer
 
     init {
-        content.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        content.setOnTouchListener { v, e ->
+            if (content.hasFocus()) {
+                false // Let the widget handle it via onTouchEvent for proper text selection
+            } else {
+                editorTouchProcessor.process(v, e)
+            }
+        }
     }
 
     fun setupViewHolder(

@@ -175,10 +175,12 @@ class Code(
                     content.enableReadMode()
                 }
             }
+            setBackgroundColor(item.background)
         }
 
         if (payload.selectionChanged()) {
             select(item)
+            setBackgroundColor(item.background)
         }
 
         if (payload.focusChanged()) {

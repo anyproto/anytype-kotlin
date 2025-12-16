@@ -106,7 +106,7 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         watchers.clear()
     }
 
-    fun pauseTextWatchers(block: () -> Unit) {
+    fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {
         lockTextWatchers()
         block()
         unlockTextWatchers()
@@ -133,8 +133,11 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
 
     fun pauseSelectionWatcher(block: () -> Unit) {
         isSelectionWatcherBlocked = true
-        block()
-        isSelectionWatcherBlocked = false
+        try {
+            block()
+        } finally {
+            isSelectionWatcherBlocked = false
+        }
     }
 
     override fun onSelectionChanged(selStart: Int, selEnd: Int) {

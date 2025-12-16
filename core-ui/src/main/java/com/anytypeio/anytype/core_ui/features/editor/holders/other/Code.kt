@@ -182,12 +182,13 @@ class Code(
      * Handles setting up the syntax highlighting and menu text based on the code language.
      */
     private fun handleCodeLanguageChange(item: BlockView.Code) {
-        if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
+        val lang = item.lang
+        if (lang.isNullOrEmpty() || lang.equals("plain", ignoreCase = true)) {
             content.setupSyntax(Syntaxes.PLAIN)
             menu.setText(R.string.block_code_plain_text)
         } else {
-            content.setupSyntax(item.lang)
-            menu.text = item.lang!!.replaceFirstChar {
+            content.setupSyntax(lang)
+            menu.text = lang.replaceFirstChar {
                 if (it.isLowerCase()) it.titlecase() else it.toString()
             }
         }

@@ -64,24 +64,8 @@ class CodeTextInputWidget : AppCompatEditText, SyntaxHighlighter {
         super.addTextChangedListener(newlineScrollResetWatcher)
     }
 
-    private val newlineScrollResetWatcher = object : TextWatcher {
-        private var newlineInserted = false
-
-        override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-
-        override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-            if (count > 0 && s != null && start + count <= s.length) {
-                val inserted = s.subSequence(start, start + count)
-                newlineInserted = inserted.contains('\n')
-            }
-        }
-
-        override fun afterTextChanged(s: Editable?) {
-            if (newlineInserted) {
-                newlineInserted = false
-                (parent as? HorizontalScrollView)?.scrollTo(0, 0)
-            }
-        }
+    private val newlineScrollResetWatcher = NewlineScrollResetWatcher {
+        (parent as? HorizontalScrollView)?.scrollTo(0, 0)
     }
 
     private fun setupSyntaxHighlighter() {

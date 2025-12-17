@@ -111,6 +111,10 @@ class AuthRemoteDataStore(
         return authRemote.debugExportLogs(dir)
     }
 
+    override suspend fun debugRunProfiler(durationInSeconds: Int): String {
+        return authRemote.debugRunProfiler(durationInSeconds)
+    }
+
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         authRemote.registerDeviceToken(command)
     }

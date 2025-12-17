@@ -82,7 +82,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowDeleteSpaceWarning
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowLeaveSpaceWarning
-import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.EntrySpace
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.InviteLink
@@ -344,12 +344,30 @@ class SpaceSettingsViewModel(
                             icon = spaceIcon
                         )
                     )
-                    add(Spacer(height = 24))
-                    add(
-                        UiSpaceSettingsItem.Name(
-                            name = spaceView.name.orEmpty()
+
+                    // For ONE_TO_ONE spaces, show the other member's identity/globalName
+                    if (spaceView.isOneToOneSpace && spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        // Find the member whose name matches the space name (which is the other user in 1-on-1)
+                        val otherMember = spaceMembers.members.find { it.name == spaceView.name }
+                        otherMember?.let {
+                            add(Spacer(height = 16))
+                            add(
+                                UiSpaceSettingsItem.ParticipantIdentity(
+                                    name = it.name.orEmpty(),
+                                    globalName = it.globalName,
+                                    identity = it.identity
+                                )
+                            )
+                            add(UiSpaceSettingsItem.Section.Collaboration)
+                        }
+                    } else {
+                        add(Spacer(height = 24))
+                        add(
+                            UiSpaceSettingsItem.Name(
+                                name = spaceView.name.orEmpty()
+                            )
                         )
-                    )
+                    }
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(height = 4))
@@ -364,7 +382,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (spaceView.isPossibleToShare) {
+                    if (spaceView.isPossibleToShare && !spaceView.isOneToOneSpace) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
                         val requestsCount =
                             if (permission?.isOwner() == true && requests > 0) requests else null

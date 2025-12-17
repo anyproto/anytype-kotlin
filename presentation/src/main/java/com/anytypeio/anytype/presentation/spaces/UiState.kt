@@ -65,6 +65,11 @@ sealed class UiSpaceSettingsItem {
     data class Spacer(val height: Int) : UiSpaceSettingsItem()
     data class Icon(val icon: SpaceIconView) : UiSpaceSettingsItem()
     data class Name(val name: String) : UiSpaceSettingsItem()
+    data class ParticipantIdentity(
+        val name: String,
+        val globalName: String?,
+        val identity: String?
+    ) : UiSpaceSettingsItem()
     data class Description(val description: String) : UiSpaceSettingsItem()
     data class InviteLink(val link: String) : UiSpaceSettingsItem()
     data class Members(val count: Int?, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem()

@@ -334,17 +334,14 @@ interface TextBlockHolder : TextHolder {
         }
 
         if (payload.readWriteModeChanged()) {
-            content.pauseTextWatchers {
-                if (item.mode == BlockView.Mode.EDIT) {
-                    //content.selectionWatcher = { onSelectionChanged(item.id, it) }
-                    content.pauseTextWatchers {
+            content.pauseSelectionWatcher {
+                content.pauseTextWatchers {
+                    if (item.mode == BlockView.Mode.EDIT) {
                         enableEditMode()
-                    }
-                    content.pauseTextWatchers {
                         content.applyMovementMethod(item)
+                    } else {
+                        enableReadMode()
                     }
-                } else {
-                    enableReadMode()
                 }
             }
         }

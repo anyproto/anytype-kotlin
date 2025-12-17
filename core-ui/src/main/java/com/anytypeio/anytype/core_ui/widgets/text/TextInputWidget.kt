@@ -107,6 +107,7 @@ class TextInputWidget : AppCompatEditText {
         imeOptions = inputAction.toIMECode()
         setTextIsSelectable(true)
         inReadMode = false
+        isCursorVisible = hasFocus()
     }
 
     fun enableReadMode() {
@@ -114,6 +115,7 @@ class TextInputWidget : AppCompatEditText {
             inReadMode = true
             setHorizontallyScrolling(false)
             setTextIsSelectable(false)
+            isCursorVisible = false
         }
     }
 

@@ -873,7 +873,8 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.permissions to spaceParams?.permission,
-            EventsPropertiesKey.spaceType to spaceParams?.spaceType
+            EventsPropertiesKey.spaceType to spaceParams?.spaceType,
+            EventsPropertiesKey.uxType to spaceParams?.spaceUxType
         )
     )
     val event = if (containsFlagType) {
@@ -1692,6 +1693,10 @@ private fun buildProps(
             if (spaceParams.spaceType.isNotEmpty()) put(
                 EventsPropertiesKey.spaceType,
                 spaceParams.spaceType
+            )
+            if(spaceParams.spaceUxType.isNotEmpty()) put(
+                EventsPropertiesKey.uxType,
+                spaceParams.spaceUxType
             )
         }
     )

@@ -636,7 +636,8 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
             EventsPropertiesKey.count to count,
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -661,7 +662,8 @@ suspend fun Analytics.sendAnalyticsSplitBlockEvent(
                 EventsPropertiesKey.type to "text",
                 EventsPropertiesKey.style to style.getStyleName(),
                 EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                EventsPropertiesKey.spaceType to spaceParams.spaceType,
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType
             )
         ),
         duration = EventAnalytics.Duration(
@@ -978,7 +980,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -1005,7 +1008,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(

@@ -12,6 +12,8 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -60,7 +62,9 @@ class MainViewModelFactory @Inject constructor(
     private val appInfo: AppInfo,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
-    private val participantSubscriptionContainer: ParticipantSubscriptionContainer
+    private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val debugRunProfiler: DebugRunProfiler
     ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -93,6 +97,8 @@ class MainViewModelFactory @Inject constructor(
         appInfo = appInfo,
         chatPreviewContainer = chatPreviewContainer,
         chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
-        participantSubscriptionContainer = participantSubscriptionContainer
+        participantSubscriptionContainer = participantSubscriptionContainer,
+        userSettingsRepository = userSettingsRepository,
+        debugRunProfiler = debugRunProfiler
     ) as T
 }

@@ -30,10 +30,14 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onFailure
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -104,7 +108,9 @@ class MainViewModel(
     private val appInfo: AppInfo,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
-    private val participantSubscriptionContainer: ParticipantSubscriptionContainer
+    private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val debugRunProfiler: DebugRunProfiler
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -156,6 +162,18 @@ class MainViewModel(
                     analytics = analytics,
                     userProperty = UserProperty.Tier(result.value)
                 )
+            }
+        }
+        viewModelScope.launch {
+            if (userSettingsRepository.getRunProfilerOnStartup()) {
+                userSettingsRepository.setRunProfilerOnStartup(false)
+                debugRunProfiler.async(DebugRunProfiler.Params(durationInSeconds = 60))
+                    .onSuccess { resultPath ->
+                        Timber.i("Startup profiler completed: $resultPath")
+                    }
+                    .onFailure { error ->
+                        Timber.e(error, "Startup profiler failed")
+                    }
             }
         }
     }

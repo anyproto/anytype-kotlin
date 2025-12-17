@@ -68,6 +68,12 @@ interface UserSettingsRepository {
     suspend fun getHasSeenCreateSpaceBadge(): Boolean
     suspend fun setHasSeenCreateSpaceBadge(hasSeen: Boolean)
 
+    suspend fun getRunProfilerOnStartup(): Boolean
+    suspend fun setRunProfilerOnStartup(enabled: Boolean)
+
+    suspend fun getDebugMenuEnabled(): Boolean
+    suspend fun setDebugMenuEnabled(enabled: Boolean)
+
     suspend fun getInstalledAtDate(account: Account): Long?
     suspend fun setInstalledAtDate(account: Account, timestamp: Long)
     suspend fun getCurrentAppVersion(account: Account): String?

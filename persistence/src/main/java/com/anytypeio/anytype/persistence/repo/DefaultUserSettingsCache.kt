@@ -676,6 +676,26 @@ class DefaultUserSettingsCache(
             .apply()
     }
 
+    override suspend fun getRunProfilerOnStartup(): Boolean {
+        return prefs.getBoolean(RUN_PROFILER_ON_STARTUP_KEY, false)
+    }
+
+    override suspend fun setRunProfilerOnStartup(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(RUN_PROFILER_ON_STARTUP_KEY, enabled)
+            .apply()
+    }
+
+    override suspend fun getDebugMenuEnabled(): Boolean {
+        return prefs.getBoolean(DEBUG_MENU_ENABLED_KEY, false)
+    }
+
+    override suspend fun setDebugMenuEnabled(enabled: Boolean) {
+        prefs.edit()
+            .putBoolean(DEBUG_MENU_ENABLED_KEY, enabled)
+            .apply()
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return context.vaultPrefsStore
             .data
@@ -769,5 +789,7 @@ class DefaultUserSettingsCache(
 
         const val HAS_SHOWN_SPACES_INTRODUCTION_KEY = "prefs.device.has_shown_spaces_introduction"
         const val HAS_SEEN_CREATE_SPACE_BADGE_KEY = "prefs.device.has_seen_create_space_badge"
+        const val RUN_PROFILER_ON_STARTUP_KEY = "prefs.device.run_profiler_on_startup"
+        const val DEBUG_MENU_ENABLED_KEY = "prefs.device.debug_menu_enabled"
     }
 }

@@ -30,8 +30,6 @@ import com.anytypeio.anytype.domain.auth.model.AuthStatus
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.onFailure
-import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
@@ -166,14 +164,19 @@ class MainViewModel(
         }
         viewModelScope.launch {
             if (userSettingsRepository.getRunProfilerOnStartup()) {
+                Timber.d("Startup profiler enabled")
                 userSettingsRepository.setRunProfilerOnStartup(false)
-                debugRunProfiler.async(DebugRunProfiler.Params(durationInSeconds = 60))
-                    .onSuccess { resultPath ->
+                val params = DebugRunProfiler.Params(durationInSeconds = 60)
+                debugRunProfiler.async(params).fold(
+                    onSuccess = { resultPath ->
                         Timber.i("Startup profiler completed: $resultPath")
-                    }
-                    .onFailure { error ->
+                    },
+                    onFailure = { error ->
                         Timber.e(error, "Startup profiler failed")
                     }
+                )
+            } else {
+                Timber.i("Startup profiler skipped")
             }
         }
     }

@@ -957,6 +957,7 @@ class BlockAdapter(
 
         if (holder is TextHolder) {
             holder.content.onFocusChangeListener = LockableFocusChangeListener { hasFocus ->
+                holder.content.isCursorVisible = hasFocus
                 val pos = holder.bindingAdapterPosition
                 if (pos != RecyclerView.NO_POSITION) {
                     val item = views[pos]

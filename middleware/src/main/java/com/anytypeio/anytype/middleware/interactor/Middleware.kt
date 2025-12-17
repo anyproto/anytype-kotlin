@@ -1363,7 +1363,12 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchSubscribe(request) }
-        logResponseIfDebug(response, time)
+        if (BuildConfig.DEBUG) {
+            //This logs are too big to show on every request
+            if (subscription != "object-type-store-subscription" && subscription != "relation-store-subscription") {
+                logResponseIfDebug(response, time)
+            }
+        }
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())

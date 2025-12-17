@@ -3124,6 +3124,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun debugRunProfiler(durationInSeconds: Int): String {
+        val request = Rpc.Debug.RunProfiler.Request(
+            durationInSeconds = if (durationInSeconds > 600) 600 else durationInSeconds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugRunProfiler(request) }
+        logResponseIfDebug(response, time)
+        return response.path
+    }
+
+    @Throws(Exception::class)
     fun objectTypeListConflictingRelations(command: ObjectTypeConflictingFields): List<Id> {
         val request = Rpc.ObjectType.ListConflictingRelations.Request(
             spaceId = command.spaceId,

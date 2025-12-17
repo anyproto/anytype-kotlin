@@ -115,6 +115,7 @@ class TextInputWidget : AppCompatEditText {
             inReadMode = true
             setHorizontallyScrolling(false)
             setTextIsSelectable(false)
+            isCursorVisible = false
         }
     }
 

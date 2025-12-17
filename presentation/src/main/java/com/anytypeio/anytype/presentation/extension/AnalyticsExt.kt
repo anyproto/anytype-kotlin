@@ -91,6 +91,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.style, getStyleName())
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -104,6 +105,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.style, "Embed")
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -125,6 +127,7 @@ fun Block.Prototype.getAnalyticsEvent(
                         }
                         put(EventsPropertiesKey.permissions, spaceParams.permission)
                         put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                        put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                         if (route != null) {
                             put(EventsPropertiesKey.route, route)
                         }
@@ -137,6 +140,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.type, "relation")
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -149,6 +153,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.style, "line")
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -162,6 +167,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.style, "dots")
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                    put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -173,6 +179,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.type, "bookmark")
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -183,6 +190,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.type, "latex")
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -193,6 +201,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.type, "table_of_contents")
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -203,6 +212,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.type, "table")
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -341,7 +351,8 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
         mapOf(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -363,7 +374,8 @@ fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
         mapOf(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -380,7 +392,8 @@ fun CoroutineScope.sendAnalyticsReorderRelationEvent(
     val props = Props(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -399,7 +412,8 @@ fun CoroutineScope.sendAnalyticsResolveObjectConflict(
         mapOf(
             EventsPropertiesKey.route to EventsDictionary.Routes.objectRoute,
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -416,7 +430,8 @@ fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
     val props = Props(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -433,7 +448,8 @@ fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
     val props = Props(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
-            EventsPropertiesKey.spaceType to spaceParams.spaceType
+            EventsPropertiesKey.spaceType to spaceParams.spaceType,
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType
         )
     )
     sendEvent(
@@ -462,7 +478,8 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
                 EventsPropertiesKey.index to pos,
                 EventsPropertiesKey.length to length,
                 EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                EventsPropertiesKey.spaceType to spaceParams.spaceType,
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType
             )
         )
     )
@@ -478,7 +495,8 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                EventsPropertiesKey.spaceType to spaceParams.spaceType,
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType
             )
         )
     )
@@ -509,7 +527,8 @@ fun CoroutineScope.sendAnalyticsSearchBacklinksEvent(
         props = Props(
             mapOf(
                 EventsPropertiesKey.permissions to spaceParams.permission,
-                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                EventsPropertiesKey.spaceType to spaceParams.spaceType,
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType
             )
         )
     )
@@ -561,6 +580,7 @@ fun CoroutineScope.sendAnalyticsBackLinkAddEvent(
             put("linkType", "Object")
             put(EventsPropertiesKey.permissions, spaceParams.permission)
             put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+            put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
         }
     )
     sendEvent(
@@ -907,6 +927,7 @@ fun CoroutineScope.sendAnalyticsCreateRelationEvent(
                 put(EventsPropertiesKey.type, type)
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -937,6 +958,7 @@ suspend fun Analytics.sendAnalyticsRelationEvent(
                 }
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
             }
         )
     )
@@ -2293,6 +2315,7 @@ fun CoroutineScope.sendAnalyticsScreenTemplateSelectorEvent(
             buildMap {
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
             }
         )
     )
@@ -2318,6 +2341,7 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
                 put(EventsPropertiesKey.objectType, objType)
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
             }
         ),
         startTime = startTime,
@@ -2371,6 +2395,7 @@ fun CoroutineScope.sendAnalyticsCreateLink(
             buildMap {
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
+                put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }

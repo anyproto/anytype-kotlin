@@ -64,7 +64,6 @@ import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 import com.anytypeio.anytype.presentation.sets.isChangingDefaultTypeAvailable
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -281,20 +280,6 @@ fun Block.Content.Text.Mark.Type.getPropName() = when (this) {
     Block.Content.Text.Mark.Type.MENTION -> "Mention"
     Block.Content.Text.Mark.Type.EMOJI -> "emoji"
     Block.Content.Text.Mark.Type.OBJECT -> "linkObject"
-}
-
-fun Markup.Type.getPropName() = when (this) {
-    Markup.Type.ITALIC -> "Italic"
-    Markup.Type.BOLD -> "Bold"
-    Markup.Type.STRIKETHROUGH -> "Strike"
-    Markup.Type.TEXT_COLOR -> "Color"
-    Markup.Type.BACKGROUND_COLOR -> "BgColor"
-    Markup.Type.LINK -> "Link"
-    Markup.Type.KEYBOARD -> "Code"
-    Markup.Type.MENTION -> "Mention"
-    Markup.Type.OBJECT -> "Object"
-    Markup.Type.UNDERLINE -> "Underline"
-    Markup.Type.EMOJI -> "Emoji"
 }
 
 fun DVFilterCondition.getPropName() = when (this) {

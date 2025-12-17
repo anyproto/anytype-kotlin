@@ -193,9 +193,9 @@ class DebugViewModel @Inject constructor(
     }
 
     fun onShareProfilerResultClicked() {
-        val state = profilerState.value
-        if (state is ProfilerState.Completed) {
-            viewModelScope.launch {
+        viewModelScope.launch {
+            val state = profilerState.value
+            if (state is ProfilerState.Completed) {
                 commands.emit(Command.ShareProfilerResult(state.filePath, uriFileProvider))
             }
         }
@@ -259,8 +259,8 @@ class DebugViewModel @Inject constructor(
     }
 
     sealed class ProfilerState {
-        object Idle : ProfilerState()
-        object Running : ProfilerState()
+        data object Idle : ProfilerState()
+        data object Running : ProfilerState()
         data class Completed(val filePath: String) : ProfilerState()
         data class Error(val message: String) : ProfilerState()
     }

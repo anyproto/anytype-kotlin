@@ -2686,6 +2686,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun debugRunProfiler(request: Rpc.Debug.RunProfiler.Request): Rpc.Debug.RunProfiler.Response {
+        val encoded = Service.debugRunProfiler(
+            Rpc.Debug.RunProfiler.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.Debug.RunProfiler.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.Debug.RunProfiler.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun objectTypeListConflictingRelations(request: Rpc.ObjectType.ListConflictingRelations.Request): Rpc.ObjectType.ListConflictingRelations.Response {
         val encoded = Service.objectTypeListConflictingRelations(
             Rpc.ObjectType.ListConflictingRelations.Request.ADAPTER.encode(request)

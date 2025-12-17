@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
@@ -55,19 +56,20 @@ class ProfileSettingsViewModel(
     private val removeObjectIcon: RemoveObjectIcon,
     private val notificationPermissionManager: NotificationPermissionManager,
     private val userPermissionProvider: UserPermissionProvider,
-    private val generateOneToOneChatLink: GenerateOneToOneChatLink
+    private val generateOneToOneChatLink: GenerateOneToOneChatLink,
+    private val userSettingsRepository: UserSettingsRepository
 ) : BaseViewModel() {
 
     private val jobs = mutableListOf<Job>()
 
-    private var headerTitleClickCount = 0
+    private var miscSectionClickCount = 0
 
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
     val membershipStatusState = MutableStateFlow<MembershipStatus?>(null)
     val showMembershipState = MutableStateFlow<ShowMembership?>(null)
 
-    val isDebugEnabled = MutableStateFlow(BuildConfig.DEBUG)
+    val isDebugEnabled = MutableStateFlow(false)
 
     val profileQrCodeState = MutableStateFlow<UiProfileQrCodeState>(UiProfileQrCodeState.Hidden)
 
@@ -96,6 +98,13 @@ class ProfileSettingsViewModel(
         )
 
     init {
+        viewModelScope.launch {
+            isDebugEnabled.value = if (BuildConfig.DEBUG) {
+                true
+            } else {
+                userSettingsRepository.getDebugMenuEnabled()
+            }
+        }
         viewModelScope.launch {
             analytics.sendEvent(
                 eventName = EventsDictionary.screenSettingsAccount
@@ -197,10 +206,14 @@ class ProfileSettingsViewModel(
         }
     }
 
-    fun onHeaderTitleClicked() {
-        headerTitleClickCount = headerTitleClickCount + 1
-        if (headerTitleClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT && isDebugEnabled.value == false) {
+    fun onMiscSectionClicked() {
+        if (BuildConfig.DEBUG || isDebugEnabled.value) return
+        miscSectionClickCount++
+        if (miscSectionClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT) {
             isDebugEnabled.value = true
+            viewModelScope.launch {
+                userSettingsRepository.setDebugMenuEnabled(true)
+            }
         }
     }
 
@@ -281,7 +294,8 @@ class ProfileSettingsViewModel(
         private val removeObjectIcon: RemoveObjectIcon,
         private val notificationPermissionManager: NotificationPermissionManager,
         private val userPermissionProvider: UserPermissionProvider,
-        private val generateOneToOneChatLink: GenerateOneToOneChatLink
+        private val generateOneToOneChatLink: GenerateOneToOneChatLink,
+        private val userSettingsRepository: UserSettingsRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -298,7 +312,8 @@ class ProfileSettingsViewModel(
                 removeObjectIcon = removeObjectIcon,
                 notificationPermissionManager = notificationPermissionManager,
                 userPermissionProvider = userPermissionProvider,
-                generateOneToOneChatLink = generateOneToOneChatLink
+                generateOneToOneChatLink = generateOneToOneChatLink,
+                userSettingsRepository = userSettingsRepository
             ) as T
         }
     }

@@ -142,7 +142,7 @@ class ProfileSettingsFragment : BaseBottomSheetComposeFragment() {
                             }
                         },
                         isDebugEnabled = vm.isDebugEnabled.collectAsStateWithLifecycle().value,
-                        onHeaderTitleClicked = vm::onHeaderTitleClicked,
+                        onMiscSectionClicked = vm::onMiscSectionClicked,
                         notificationsDisabled = notificationsDisabled,
                         onOpenNotificationSettings = { showNotificationSettingsModal = true },
                         onMySitesClicked = {

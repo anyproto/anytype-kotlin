@@ -177,9 +177,10 @@ class DebugViewModel @Inject constructor(
     }
 
     fun onRunProfilerNowClicked() {
+        if (profilerState.value is ProfilerState.Running) return
         viewModelScope.launch {
             profilerState.value = ProfilerState.Running
-            debugRunProfiler.async(DebugRunProfiler.Params(durationInSeconds = 60))
+            debugRunProfiler.async(DebugRunProfiler.Params(durationInSeconds = PROFILER_DURATION_SECONDS))
                 .onSuccess { path ->
                     Timber.d("Debug profiler success: $path")
                     profilerState.value = ProfilerState.Completed(path)
@@ -266,5 +267,6 @@ class DebugViewModel @Inject constructor(
 
     companion object {
         const val EXPORT_WORK_DIRECTORY_TEMP_FOLDER = "anytype-work-directory.zip"
+        const val PROFILER_DURATION_SECONDS = 60
     }
 }

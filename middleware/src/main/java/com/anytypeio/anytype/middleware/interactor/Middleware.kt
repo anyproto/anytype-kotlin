@@ -3128,10 +3128,11 @@ class Middleware @Inject constructor(
         return response.path
     }
 
+    private val MAX_PROFILER_DURATION_SECONDS = 600
     @Throws(Exception::class)
     fun debugRunProfiler(durationInSeconds: Int): String {
         val request = Rpc.Debug.RunProfiler.Request(
-            durationInSeconds = if (durationInSeconds > 600) 600 else durationInSeconds
+            durationInSeconds = if (durationInSeconds > MAX_PROFILER_DURATION_SECONDS) MAX_PROFILER_DURATION_SECONDS else durationInSeconds
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.debugRunProfiler(request) }

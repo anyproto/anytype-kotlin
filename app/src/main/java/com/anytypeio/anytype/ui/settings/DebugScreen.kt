@@ -43,6 +43,7 @@ fun DebugScreen(
     isProfilerOnStartupEnabled: Boolean = false,
     onProfilerOnStartupToggled: (Boolean) -> Unit = { /* Default no-op */ },
     profilerState: ProfilerState = ProfilerState.Idle,
+    profilerDurationSeconds: Int = 60,
     onRunProfilerNowClicked: () -> Unit = { /* Default no-op */ },
     onShareProfilerResultClicked: () -> Unit = { /* Default no-op */ }
 ) {
@@ -122,7 +123,7 @@ fun DebugScreen(
         when (profilerState) {
             is ProfilerState.Idle -> {
                 ActionItem(
-                    title = "Run profiler now (60s)",
+                    title = "Run profiler now (${profilerDurationSeconds}s)",
                     onClick = onRunProfilerNowClicked
                 )
             }

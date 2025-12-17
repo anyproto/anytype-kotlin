@@ -62,7 +62,7 @@ class ProfileSettingsViewModel(
 
     private val jobs = mutableListOf<Job>()
 
-    private var miscClickCount = 0
+    private var miscSectionClickCount = 0
 
     val isLoggingOut = MutableStateFlow(false)
     val debugSyncReportUri = MutableStateFlow<Uri?>(null)
@@ -208,8 +208,8 @@ class ProfileSettingsViewModel(
 
     fun onMiscSectionClicked() {
         if (BuildConfig.DEBUG || isDebugEnabled.value) return
-        miscClickCount++
-        if (miscClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT) {
+        miscSectionClickCount++
+        if (miscSectionClickCount >= ENABLE_DEBUG_MENU_CLICK_COUNT) {
             isDebugEnabled.value = true
             viewModelScope.launch {
                 userSettingsRepository.setDebugMenuEnabled(true)

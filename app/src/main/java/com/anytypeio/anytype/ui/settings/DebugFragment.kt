@@ -60,6 +60,7 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
             isProfilerOnStartupEnabled = vm.isProfilerOnStartupEnabled.collectAsStateWithLifecycle().value,
             onProfilerOnStartupToggled = vm::onProfilerOnStartupToggled,
             profilerState = vm.profilerState.collectAsStateWithLifecycle().value,
+            profilerDurationSeconds = DebugViewModel.PROFILER_DURATION_SECONDS,
             onRunProfilerNowClicked = vm::onRunProfilerNowClicked,
             onShareProfilerResultClicked = vm::onShareProfilerResultClicked
         )

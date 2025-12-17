@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -22,9 +22,9 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationDateValueViewModel(
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
-    private val dateProvider: DateProvider
+    private val dateProvider: DateProvider,
+    private val storeOfRelations: StoreOfRelations
 ) : ViewModel() {
 
     val commands = MutableSharedFlow<DateValueCommand>(0)
@@ -43,11 +43,12 @@ class RelationDateValueViewModel(
         Timber.d("onStart: ctx:[$ctx], relationKey:[$relationKey], objectId:[$objectId]")
         jobs += viewModelScope.launch {
             val pipeline = combine(
-                relations.observeRelation(relationKey),
+                storeOfRelations.trackChanges(),
                 values.subscribe(ctx = ctx, target = objectId)
-            ) { relation, value ->
+            ) { _, value ->
+                val relation = storeOfRelations.getByKey(key = relationKey)
                 setupIsRelationNotEditable(isLocked, relation)
-                setName(relation.name)
+                setName(relation?.name)
                 setDate(timeInSeconds = DateParser.parse(value[relationKey]))
             }
             pipeline.collect()
@@ -144,7 +145,15 @@ class RelationDateValueViewModel(
         }
     }
 
-    private fun setupIsRelationNotEditable(isLocked: Boolean, relation: ObjectWrapper.Relation) {
+    private fun setupIsRelationNotEditable(isLocked: Boolean, relation: ObjectWrapper.Relation?) {
+        if (relation == null) {
+            _views.value = views.value.copy(
+                isEditable = false,
+                title = null,
+                timeInMillis = null
+            )
+            return
+        }
         if (isLocked
             || relation.isReadonlyValue
             || relation.isHidden == true
@@ -159,13 +168,13 @@ class RelationDateValueViewModel(
     }
 
     class Factory(
-        private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
-        private val dateProvider: DateProvider
+        private val dateProvider: DateProvider,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return RelationDateValueViewModel(relations, values, dateProvider) as T
+            return RelationDateValueViewModel(values, dateProvider, storeOfRelations) as T
         }
     }
 }

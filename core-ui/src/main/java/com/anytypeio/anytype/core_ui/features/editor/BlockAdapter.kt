@@ -924,6 +924,11 @@ class BlockAdapter(
                         holder.editorTouchProcessor.onDragAndDropTrigger = {
                             onDragAndDropTrigger(holder, it)
                         }
+                        holder.setupViewHolder(
+                            onTextChanged = onTextChanged,
+                            onSelectionChanged = onSelectionChanged,
+                            onFocusChanged = onFocusChanged
+                        )
                     }
                     is Title -> {}
                     else -> {
@@ -1444,9 +1449,6 @@ class BlockAdapter(
             is Code -> {
                 holder.bind(
                     item = blocks[position] as BlockView.Code,
-                    onTextChanged = onTextChanged,
-                    onSelectionChanged = onSelectionChanged,
-                    onFocusChanged = onFocusChanged,
                     clicked = onClickListener,
                     onTextInputClicked = onTextInputClicked
                 )

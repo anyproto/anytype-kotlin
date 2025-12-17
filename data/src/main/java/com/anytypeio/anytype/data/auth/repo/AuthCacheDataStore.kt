@@ -95,6 +95,10 @@ class AuthCacheDataStore(private val cache: AuthCache) : AuthDataStore {
         throw UnsupportedOperationException()
     }
 
+    override suspend fun debugRunProfiler(durationInSeconds: Int): String {
+        throw UnsupportedOperationException()
+    }
+
     override suspend fun migrateAccount(
         account: Id,
         path: String

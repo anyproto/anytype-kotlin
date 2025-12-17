@@ -103,7 +103,7 @@ fun ProfileSettingsScreen(
     showMembership: ShowMembership?,
     clearProfileImage: () -> Unit,
     onDebugClicked: () -> Unit,
-    onHeaderTitleClicked: () -> Unit,
+    onMiscSectionClicked: () -> Unit,
     notificationsDisabled: Boolean,
     onOpenNotificationSettings: () -> Unit,
     onIdentityClicked: () -> Unit = onMembershipClicked,
@@ -121,7 +121,6 @@ fun ProfileSettingsScreen(
                 onNameSet = onNameChange,
                 onProfileIconClick = onProfileIconClick,
                 clearProfileImage = clearProfileImage,
-                onTitleClicked = onHeaderTitleClicked,
                 onIdentityClicked = onIdentityClicked,
                 onShowQrCodeClicked = onShowQrCodeClicked
             )
@@ -222,7 +221,10 @@ fun ProfileSettingsScreen(
         }
 
         item {
-            Section(stringResource(R.string.vault_settings_section_misc))
+            Section(
+                name = stringResource(R.string.vault_settings_section_misc),
+                onClick = onMiscSectionClicked
+            )
         }
 
         item {
@@ -315,11 +317,21 @@ private fun LogoutButton(
 }
 
 @Composable
-fun Section(name: String) {
+fun Section(
+    name: String,
+    onClick: (() -> Unit)? = null
+) {
     Box(
         modifier = Modifier
             .height(52.dp)
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .then(
+                if (onClick != null) {
+                    Modifier.noRippleClickable { onClick() }
+                } else {
+                    Modifier
+                }
+            ),
         contentAlignment = Alignment.BottomStart
     ) {
         Text(
@@ -401,7 +413,6 @@ private fun Header(
     onProfileIconClick: () -> Unit,
     onNameSet: (String) -> Unit,
     clearProfileImage: () -> Unit,
-    onTitleClicked: () -> Unit,
     onIdentityClicked: () -> Unit,
     onShowQrCodeClicked: () -> Unit
 ) {
@@ -689,10 +700,10 @@ private fun ProfileSettingPreview() {
         clearProfileImage = {},
         onDebugClicked = {},
         isDebugEnabled = true,
-        onHeaderTitleClicked = {},
         notificationsDisabled = true,
         onOpenNotificationSettings = {},
-        onMySitesClicked = {}
+        onMySitesClicked = {},
+        onMiscSectionClicked = {}
     )
 }
 

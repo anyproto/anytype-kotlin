@@ -62,7 +62,8 @@ object ProfileModule {
         removeObjectIcon: RemoveObjectIcon,
         notificationPermissionManager: NotificationPermissionManager,
         userPermissionProvider: UserPermissionProvider,
-        generateOneToOneChatLink: GenerateOneToOneChatLink
+        generateOneToOneChatLink: GenerateOneToOneChatLink,
+        userSettingsRepository: UserSettingsRepository
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         analytics = analytics,
         container = storelessSubscriptionContainer,
@@ -76,7 +77,8 @@ object ProfileModule {
         removeObjectIcon = removeObjectIcon,
         notificationPermissionManager = notificationPermissionManager,
         userPermissionProvider = userPermissionProvider,
-        generateOneToOneChatLink = generateOneToOneChatLink
+        generateOneToOneChatLink = generateOneToOneChatLink,
+        userSettingsRepository = userSettingsRepository
     )
 
     @Provides

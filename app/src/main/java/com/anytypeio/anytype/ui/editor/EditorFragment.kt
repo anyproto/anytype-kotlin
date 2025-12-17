@@ -32,6 +32,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.unit.dp
@@ -58,7 +59,6 @@ import androidx.transition.ChangeBounds
 import androidx.transition.Slide
 import androidx.transition.TransitionManager
 import androidx.transition.TransitionSet
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -75,6 +75,7 @@ import com.anytypeio.anytype.core_ui.features.editor.AttachToChatToolbar
 import com.anytypeio.anytype.core_ui.features.editor.BlockAdapter
 import com.anytypeio.anytype.core_ui.features.editor.DragAndDropAdapterDelegate
 import com.anytypeio.anytype.core_ui.features.editor.EditorDatePicker
+import com.anytypeio.anytype.core_ui.features.editor.modal.SelectLanguageBottomSheet
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.DefaultScrollAndMoveTargetDescriptor
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveStateListener
 import com.anytypeio.anytype.core_ui.features.editor.scrollandmove.ScrollAndMoveTargetHighlighter
@@ -131,6 +132,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.ext.FragmentResultContract
 import com.anytypeio.anytype.ext.extractMarks
+import com.anytypeio.anytype.library_syntax_highlighter.obtainLanguages
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModelFactory
@@ -156,8 +158,6 @@ import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
 import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
-import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageFragment
-import com.anytypeio.anytype.ui.editor.modals.SelectProgrammingLanguageReceiver
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
 import com.anytypeio.anytype.ui.editor.modals.TextBlockIconPickerFragment
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment.DocumentMenuActionReceiver
@@ -200,7 +200,6 @@ import timber.log.Timber
 
 open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.fragment_editor),
     OnFragmentInteractionListener,
-    SelectProgrammingLanguageReceiver,
     RelationTextValueFragment.TextValueEditReceiver,
     RelationDateValueFragment.DateValueEditReceiver,
     DocumentMenuActionReceiver,
@@ -808,6 +807,24 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
             }
         }
 
+        binding.selectLanguageSheet.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.selectLanguageState.collectAsStateWithLifecycle().value
+                if (state != null) {
+                    SelectLanguageBottomSheet(
+                        languages = remember { requireContext().obtainLanguages() },
+                        selectedLanguage = state.currentLang,
+                        onLanguageSelected = { key ->
+                            vm.onSelectProgrammingLanguageClicked(state.target, key)
+                            vm.onDismissSelectLanguage()
+                        },
+                        onDismiss = { vm.onDismissSelectLanguage() }
+                    )
+                }
+            }
+        }
+
         sideEffectHandler()
 
         BottomSheetBehavior.from(binding.styleToolbarMain).state = BottomSheetBehavior.STATE_HIDDEN
@@ -1169,10 +1186,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     } else {
                         Timber.w("Missing binding for command: $command")
                     }
-                }
-                is Command.Dialog.SelectLanguage -> {
-                    SelectProgrammingLanguageFragment.new(command.target)
-                        .showChildFragment()
                 }
                 is Command.OpenObjectRelationScreen.RelationList -> {
                     hideKeyboard()
@@ -2211,11 +2224,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     }
 
     private fun getEditorSettings() {
-    }
-
-    override fun onLanguageSelected(target: Id, key: String) {
-        Timber.d("key: $key")
-        vm.onSelectProgrammingLanguageClicked(target, key)
     }
 
     override fun onSearchOnPageClicked() {

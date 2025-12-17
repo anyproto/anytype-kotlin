@@ -168,6 +168,22 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
         cache.setHasSeenCreateSpaceBadge(hasSeen)
     }
 
+    override suspend fun getRunProfilerOnStartup(): Boolean {
+        return cache.getRunProfilerOnStartup()
+    }
+
+    override suspend fun setRunProfilerOnStartup(enabled: Boolean) {
+        cache.setRunProfilerOnStartup(enabled)
+    }
+
+    override suspend fun getDebugMenuEnabled(): Boolean {
+        return cache.getDebugMenuEnabled()
+    }
+
+    override suspend fun setDebugMenuEnabled(enabled: Boolean) {
+        cache.setDebugMenuEnabled(enabled)
+    }
+
     override suspend fun getInstalledAtDate(account: Account): Long? {
         return cache.getInstalledAtDate(account)
     }

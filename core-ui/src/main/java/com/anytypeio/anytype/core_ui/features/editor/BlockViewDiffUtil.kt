@@ -281,6 +281,12 @@ class BlockViewDiffUtil(
             }
         }
 
+        if (newBlock is BlockView.Code && oldBlock is BlockView.Code) {
+            if (newBlock.lang != oldBlock.lang) {
+                changes.add(CODE_LANGUAGE_CHANGED)
+            }
+        }
+
         return if (changes.isNotEmpty())
             Payload(changes).also { Timber.d("Returning payload: $it") }
         else
@@ -341,6 +347,7 @@ class BlockViewDiffUtil(
 
         fun tableCellsSelectionChanged() = changes.contains(TABLE_CELLS_SELECTION_CHANGED)
         fun tableCellsChanged() = changes.contains(TABLE_CELLS_CHANGED)
+        fun codeLanguageChanged() = changes.contains(CODE_LANGUAGE_CHANGED)
     }
 
     companion object {
@@ -383,5 +390,7 @@ class BlockViewDiffUtil(
         const val DATA_VIEW_ICON_CHANGED = 351
         const val DATA_VIEW_BACKGROUND_CHANGED = 352
         const val DATA_VIEW_TYPE_CHANGED = 353
+
+        const val CODE_LANGUAGE_CHANGED = 360
     }
 }

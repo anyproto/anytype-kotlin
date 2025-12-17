@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.interactor
 
+import anytype.Event
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import javax.inject.Inject
 import kotlin.time.Duration
@@ -44,6 +45,8 @@ interface MiddlewareProtobufLogger {
 
         override fun logEvent(any: Any) {
             if (featureToggles.isLogMiddlewareInteraction) {
+                val event = any as? Event
+                if (event?.messages[0]?.p2pStatusUpdate != null || event?.messages[0]?.spaceSyncStatusUpdate != null) return
                 Timber.d("event -> ${any.toLogMessage(isConciseLogging)}")
             }
         }

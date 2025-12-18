@@ -440,7 +440,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (spaceView.isShared) {
+                    if (spaceView.isShared || spaceView.isOneToOneSpace) {
                         add(Spacer(height = 8))
                         add(Notifications)
                     }

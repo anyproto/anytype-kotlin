@@ -114,6 +114,25 @@ class ChatContainer @Inject constructor(
         }.onSuccess {
             logger.logInfo("DROID-2966 Successfully unsubscribed from chat")
         }
+
+        // Clean up local state for the chat
+        clearChatState(chat)
+    }
+
+    /**
+     * Clears local state for a specific chat, including cached messages and subscriptions.
+     * This should be called when a chat is archived or permanently deleted.
+     */
+    private fun clearChatState(chat: Id) {
+        // Clear all cached messages since ChatContainer is per-chat
+        val messageCount = lastMessages.size
+        lastMessages.clear()
+
+        // Reset attachment and reply tracking
+        attachments.value = emptySet()
+        replies.value = emptySet()
+
+        logger.logInfo("DROID-2966 Cleared local state for chat: $chat (removed $messageCount cached messages)")
     }
 
     fun watch(chat: Id): Flow<ChatStreamState> = flow {

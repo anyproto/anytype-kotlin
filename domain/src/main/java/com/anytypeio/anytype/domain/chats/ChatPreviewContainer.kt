@@ -3,6 +3,7 @@ package com.anytypeio.anytype.domain.chats
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -127,17 +128,20 @@ interface ChatPreviewContainer {
                     logger.logWarning("Error while getting initial previews: ${it.message}")
                 }.getOrDefault(emptyList())
 
-                // Initialize history from initial previews
-                initial.forEach { preview ->
+                // Filter out archived chats from initial previews
+                val filteredInitial = filterArchivedPreviews(initial)
+
+                // Initialize history from filtered previews
+                filteredInitial.forEach { preview ->
                     preview.message?.let { message ->
                         val history = messageHistory.getOrPut(preview.chat) { ConcurrentLinkedDeque() }
                         history.addLast(message)
                     }
                 }
 
-                previews.value = initial            // ← Ready (may be empty)
-                trackMissingAttachments(initial)
-                collectEvents(initial)
+                previews.value = filteredInitial     // ← Ready (may be empty, filtered)
+                trackMissingAttachments(filteredInitial)
+                collectEvents(filteredInitial)
             }
         }
 
@@ -180,6 +184,10 @@ interface ChatPreviewContainer {
                         applyEvent(state, event)
                     }
                 }
+                .map { eventProcessedPreviews ->
+                    // Filter out archived chats after processing events
+                    filterArchivedPreviews(eventProcessedPreviews)
+                }
                 .flowOn(dispatchers.io)
                 .catch { logger.logException(it, "Event stream error") }
                 .collect { previews.value = it }
@@ -220,6 +228,20 @@ interface ChatPreviewContainer {
                         val previousMessage = history?.lastOrNull()
                         preview.copy(message = previousMessage)
                     } else preview
+                }
+
+                is Event.Command.Chats.ArchiveChat -> {
+                    logger.logInfo("Chat archived: ${event.context} in space: ${event.spaceId.id}")
+                    // Remove archived chat from preview list and clean up
+                    messageHistory.remove(event.context)
+                    state.filter { it.chat != event.context }
+                }
+
+                is Event.Command.Chats.DeleteChat -> {
+                    logger.logInfo("Chat permanently deleted: ${event.context} in space: ${event.spaceId.id}")
+                    // Remove deleted chat from preview list and clean up
+                    messageHistory.remove(event.context)
+                    state.filter { it.chat != event.context }
                 }
 
                 else -> state.also {
@@ -380,6 +402,38 @@ interface ChatPreviewContainer {
             runCatching {
                 if (attachmentSubs.isNotEmpty()) repo.cancelObjectSearchSubscription(attachmentSubs)
             }.onFailure { logger.logException(it, "DROID‑3309 Error unsubscribing attachments") }
+        }
+
+        /**
+         * Checks if a chat object is archived by fetching its IS_ARCHIVED relation.
+         * @param chatId The chat object ID
+         * @param spaceId The space ID where the chat belongs
+         * @return true if the chat is archived, false otherwise
+         */
+        private suspend fun isChatArchived(chatId: Id, spaceId: SpaceId): Boolean {
+            return runCatching {
+                val chatObject = repo.getObject(chatId, spaceId)
+                chatObject.details[Relations.IS_ARCHIVED] as? Boolean ?: false
+            }.onFailure { e ->
+                logger.logWarning("Failed to check if chat $chatId is archived: ${e.message}")
+            }.getOrDefault(false)
+        }
+
+        /**
+         * Filters out archived chat previews and cleans up their message history.
+         * @param previews List of chat previews to filter
+         * @return List of non-archived chat previews
+         */
+        private suspend fun filterArchivedPreviews(previews: List<Chat.Preview>): List<Chat.Preview> {
+            return previews.filter { preview ->
+                val isArchived = isChatArchived(preview.chat, preview.space)
+                if (isArchived) {
+                    logger.logInfo("Filtering out archived chat: ${preview.chat} in space: ${preview.space.id}")
+                    // Clean up message history for archived chat
+                    messageHistory.remove(preview.chat)
+                }
+                !isArchived
+            }
         }
 
         companion object {

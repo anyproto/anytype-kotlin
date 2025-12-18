@@ -347,8 +347,9 @@ class SpaceSettingsViewModel(
 
                     // For ONE_TO_ONE spaces, show the other member's identity/globalName
                     if (spaceView.isOneToOneSpace && spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
-                        // Find the member whose name matches the space name (which is the other user in 1-on-1)
-                        val otherMember = spaceMembers.members.find { it.name == spaceView.name }
+                        // Find the member using oneToOneIdentity - the canonical way to identify the other user
+                        val otherMember =
+                            spaceMembers.members.find { it.identity == spaceView.oneToOneIdentity }
                         otherMember?.let {
                             add(Spacer(height = 16))
                             add(

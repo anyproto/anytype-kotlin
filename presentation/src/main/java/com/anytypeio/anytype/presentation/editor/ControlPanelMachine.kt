@@ -299,18 +299,19 @@ sealed class ControlPanelMachine {
                                         markupMainToolbar = Toolbar.MarkupMainToolbar.reset()
                                     )
                                 } else {
+                                    val supportedTypes = event.target.content.let { content ->
+                                        if (content is TextBlock) {
+                                            content.getSupportedMarkupTypes()
+                                        } else {
+                                            emptyList()
+                                        }
+                                    }
                                     state.copy(
                                         mainToolbar = Toolbar.Main.reset(),
                                         markupMainToolbar = state.markupMainToolbar.copy(
-                                            isVisible = true,
+                                            isVisible = supportedTypes.isNotEmpty(),
                                             style = event.target.style(event.selection),
-                                            supportedTypes = event.target.content.let { content ->
-                                                if (content is TextBlock) {
-                                                    content.getSupportedMarkupTypes()
-                                                } else {
-                                                    emptyList()
-                                                }
-                                            }
+                                            supportedTypes = supportedTypes
                                         )
                                     )
                                 }

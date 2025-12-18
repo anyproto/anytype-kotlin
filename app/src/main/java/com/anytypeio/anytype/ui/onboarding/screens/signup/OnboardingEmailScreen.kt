@@ -40,7 +40,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -52,7 +51,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineTitleSemibold
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
-import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.presentation.onboarding.signup.OnboardingEmailAndSelectionViewModel
 
 @Composable
@@ -252,20 +250,18 @@ private fun OnboardingEmailScreen(
                 loading = isLoading,
                 enabled = innerValue.text.isNotEmpty()
             )
-            if (!BuildConfig.MANDATORY_EMAIL_COLLECTION) {
-                Spacer(modifier = Modifier.height(8.dp))
-                ButtonOnboardingLinkLarge(
-                    text = stringResource(id = R.string.onboarding_button_skip),
-                    onClick = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                        onSkipClicked()
-                    },
-                    enabled = !isLoading,
-                    size = ButtonSize.Large,
-                    modifierBox = Modifier.fillMaxWidth(),
-                )
-            }
+            Spacer(modifier = Modifier.height(8.dp))
+            ButtonOnboardingLinkLarge(
+                text = stringResource(id = R.string.onboarding_button_skip),
+                onClick = {
+                    focusManager.clearFocus()
+                    keyboardController?.hide()
+                    onSkipClicked()
+                },
+                enabled = !isLoading,
+                size = ButtonSize.Large,
+                modifierBox = Modifier.fillMaxWidth(),
+            )
         }
     }
 }

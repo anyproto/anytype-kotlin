@@ -34,6 +34,8 @@ import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -104,7 +106,9 @@ class MainViewModel(
     private val appInfo: AppInfo,
     private val chatPreviewContainer: ChatPreviewContainer,
     private val chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
-    private val participantSubscriptionContainer: ParticipantSubscriptionContainer
+    private val participantSubscriptionContainer: ParticipantSubscriptionContainer,
+    private val userSettingsRepository: UserSettingsRepository,
+    private val debugRunProfiler: DebugRunProfiler
 ) : ViewModel(),
     NotificationActionDelegate by notificationActionDelegate,
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
@@ -156,6 +160,23 @@ class MainViewModel(
                     analytics = analytics,
                     userProperty = UserProperty.Tier(result.value)
                 )
+            }
+        }
+        viewModelScope.launch {
+            if (userSettingsRepository.getRunProfilerOnStartup()) {
+                Timber.d("Startup profiler enabled")
+                userSettingsRepository.setRunProfilerOnStartup(false)
+                val params = DebugRunProfiler.Params(durationInSeconds = 60)
+                debugRunProfiler.async(params).fold(
+                    onSuccess = { resultPath ->
+                        Timber.i("Startup profiler completed: $resultPath")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Startup profiler failed")
+                    }
+                )
+            } else {
+                Timber.i("Startup profiler skipped")
             }
         }
     }

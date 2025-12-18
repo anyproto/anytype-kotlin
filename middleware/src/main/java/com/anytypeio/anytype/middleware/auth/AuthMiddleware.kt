@@ -97,6 +97,10 @@ class AuthMiddleware(
         return middleware.debugExportLogs(dir)
     }
 
+    override suspend fun debugRunProfiler(durationInSeconds: Int): String {
+        return middleware.debugRunProfiler(durationInSeconds)
+    }
+
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         middleware.registerDeviceToken(command = command)
     }

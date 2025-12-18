@@ -4,7 +4,10 @@ import android.os.Build
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -14,6 +17,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
@@ -41,6 +45,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -53,7 +58,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.ChatNotificationItem
 import com.anytypeio.anytype.presentation.spaces.UiEvent
-import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.*
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToChat
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToSpace
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
@@ -143,16 +149,7 @@ fun NewSpaceSettingsScreen(
             }
         },
         content = { paddingValues ->
-            val contentModifier =
-                if (Build.VERSION.SDK_INT >= EDGE_TO_EDGE_MIN_SDK)
-                    Modifier
-                        .windowInsetsPadding(WindowInsets.navigationBars)
-                        .fillMaxSize()
-                        .padding(top = paddingValues.calculateTopPadding())
-                else
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues)
+
             val lazyListState = rememberLazyListState()
 
             LazyColumn(
@@ -196,6 +193,59 @@ fun NewSpaceSettingsScreen(
                                     color = colorResource(id = R.color.text_primary),
                                     textAlign = TextAlign.Center
                                 )
+                            }
+                        }
+
+                        is UiSpaceSettingsItem.ParticipantIdentity -> {
+                            item {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .animateItem(),
+                                    horizontalAlignment = Alignment.CenterHorizontally
+                                ) {
+                                    // Name row with membership badge
+                                    Row(
+                                        modifier = Modifier
+                                            .padding(horizontal = 32.dp),
+                                        horizontalArrangement = Arrangement.Center,
+                                        verticalAlignment = Alignment.CenterVertically
+                                    ) {
+                                        Text(
+                                            text = item.name,
+                                            style = HeadlineHeading,
+                                            color = colorResource(id = R.color.text_primary),
+                                            maxLines = 1,
+                                            overflow = TextOverflow.Ellipsis,
+                                            modifier = Modifier.weight(1f, fill = false)
+                                        )
+                                        if (!item.globalName.isNullOrBlank()) {
+                                            Spacer(modifier = Modifier.width(6.dp))
+                                            // Blue circle badge with white checkmark
+                                            Image(
+                                                modifier = Modifier.size(18.dp),
+                                                painter = painterResource(id = R.drawable.ic_membership_badge_18),
+                                                contentDescription = "membership badge"
+                                            )
+                                        }
+                                    }
+                                    Spacer(modifier = Modifier.height(4.dp))
+                                    // Global name or identity below
+                                    val displayIdentity =
+                                        item.globalName?.takeIf { it.isNotEmpty() }
+                                            ?: item.identity
+                                    if (!displayIdentity.isNullOrEmpty()) {
+                                        Text(
+                                            text = displayIdentity,
+                                            style = Caption1Regular,
+                                            color = colorResource(id = R.color.text_secondary),
+                                            textAlign = TextAlign.Center,
+                                            maxLines = 1,
+                                            overflow = TextOverflow.MiddleEllipsis,
+                                            modifier = Modifier.width(108.dp)
+                                        )
+                                    }
+                                }
                             }
                         }
                         is UiSpaceSettingsItem.MembersSmall -> {

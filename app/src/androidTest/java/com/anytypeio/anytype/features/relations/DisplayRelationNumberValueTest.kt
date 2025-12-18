@@ -21,7 +21,6 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
-import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationTextValueViewModel
@@ -79,14 +78,11 @@ class DisplayRelationNumberValueTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         TestRelationTextValueFragment.testVmFactory = RelationTextValueViewModel.Factory(
-            relations = DataViewObjectRelationProvider(
-                objectState = state,
-                storeOfRelations = storeOfRelations
-            ),
             values = DataViewObjectValueProvider(db = db, objectState = state),
             reloadObject = reloadObject,
             analytics = analytics,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            storeOfRelations = storeOfRelations
         )
     }
 

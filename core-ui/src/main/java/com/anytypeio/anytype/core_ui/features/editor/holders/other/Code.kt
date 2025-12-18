@@ -20,6 +20,7 @@ import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
+import com.anytypeio.anytype.core_ui.features.editor.provide
 import com.anytypeio.anytype.core_ui.tools.DefaultTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.CodeTextInputWidget
 import com.anytypeio.anytype.core_utils.ext.imm
@@ -52,56 +53,64 @@ class Code(
         get() = binding.decorationContainer
 
     init {
-        content.setOnTouchListener { v, e -> editorTouchProcessor.process(v, e) }
+        content.setOnTouchListener { v, e ->
+            if (content.hasFocus()) {
+                false // Let the widget handle it via onTouchEvent for proper text selection
+            } else {
+                editorTouchProcessor.process(v, e)
+            }
+        }
+    }
+
+    fun setupViewHolder(
+        onTextChanged: (String, Editable) -> Unit,
+        onSelectionChanged: (String, IntRange) -> Unit,
+        onFocusChanged: (String, Boolean) -> Unit
+    ) {
+        content.clearTextWatchers()
+        content.addTextChangedListener(createTextWatcher(onTextChanged))
+
+        content.setOnFocusChangeListener { _, focused ->
+            content.isCursorVisible = focused
+            provide<BlockView.Code>()?.let { item ->
+                onFocusChanged(item.id, focused)
+            }
+        }
+
+        content.selectionWatcher = { selection ->
+            provide<BlockView.Code>()?.let { item ->
+                onSelectionChanged(item.id, selection)
+            }
+        }
     }
 
     fun bind(
         item: BlockView.Code,
-        onTextChanged: (String, Editable) -> Unit,
-        onSelectionChanged: (String, IntRange) -> Unit,
-        onFocusChanged: (String, Boolean) -> Unit,
         clicked: (ListenerType) -> Unit,
         onTextInputClicked: (String) -> Unit
     ) {
-        indentize(item)
         if (item.mode == BlockView.Mode.READ) {
             content.setText(item.text)
             content.enableReadMode()
             select(item)
             setBackgroundColor(item.background)
         } else {
-            content.enableEditMode()
+            content.pauseTextWatchers {
+                content.enableEditMode()
+            }
 
             select(item)
 
-            content.clearTextWatchers()
-
-            content.setText(item.text)
+            content.pauseSelectionWatcher {
+                content.pauseTextWatchers {
+                    content.setText(item.text)
+                }
+            }
 
             setBackgroundColor(item.background)
 
             setCursor(item)
             setFocus(item)
-
-            content.addTextChangedListener(
-                DefaultTextWatcher { text ->
-                    onTextChanged(item.id, text)
-                }
-            )
-
-            content.setOnFocusChangeListener { _, focused ->
-                item.isFocused = focused
-                onFocusChanged(item.id, focused)
-                if (Build.VERSION.SDK_INT == N || Build.VERSION.SDK_INT == N_MR1) {
-                    if (focused) {
-                        imm().showSoftInput(content, InputMethodManager.SHOW_FORCED)
-                    }
-                }
-            }
-
-            // TODO add backspace detector
-
-            content.selectionWatcher = { onSelectionChanged(item.id, it) }
         }
 
         content.setOnClickListener {
@@ -115,19 +124,7 @@ class Code(
             clicked(ListenerType.Code.SelectLanguage(item.id))
         }
 
-        if (item.lang.isNullOrEmpty() || item.lang.equals("plain", ignoreCase = true)) {
-            content.setupSyntax(Syntaxes.PLAIN)
-           menu.setText(R.string.block_code_plain_text)
-
-        } else {
-            content.setupSyntax(item.lang)
-            menu.text = item.lang!!.capitalize()
-        }
-    }
-
-    @Deprecated("Pre-nested-styling legacy.")
-    fun indentize(item: BlockView.Indentable) {
-        // Do nothing.
+        handleCodeLanguageChange(item)
     }
 
     fun processChangePayload(
@@ -140,7 +137,13 @@ class Code(
         Timber.d("Processing $payload for new view:\n$item")
 
         if (payload.textChanged()) {
-            content.pauseTextWatchers { content.setText(item.text) }
+            content.pauseSelectionWatcher {
+                content.pauseTextWatchers {
+                    content.setText(item.text)
+                    content.clearHighlights()
+                    content.highlight()
+                }
+            }
         }
 
         if (payload.readWriteModeChanged()) {
@@ -148,9 +151,7 @@ class Code(
                 if (item.mode == BlockView.Mode.EDIT) {
                     content.apply {
                         clearTextWatchers()
-                        addTextChangedListener(
-                            DefaultTextWatcher { text -> onTextChanged(item.id, text) }
-                        )
+                        addTextChangedListener(createTextWatcher(onTextChanged))
                         selectionWatcher = { onSelectionChanged(item.id, it) }
                     }
                     content.enableEditMode()
@@ -158,10 +159,12 @@ class Code(
                     content.enableReadMode()
                 }
             }
+            setBackgroundColor(item.background)
         }
 
         if (payload.selectionChanged()) {
             select(item)
+            setBackgroundColor(item.background)
         }
 
         if (payload.focusChanged()) {
@@ -176,8 +179,24 @@ class Code(
             setBackgroundColor(item.background)
         }
 
-        if (payload.isIndentChanged) {
-            indentize(item)
+        if (payload.codeLanguageChanged()) {
+            handleCodeLanguageChange(item)
+        }
+    }
+
+    /**
+     * Handles setting up the syntax highlighting and menu text based on the code language.
+     */
+    private fun handleCodeLanguageChange(item: BlockView.Code) {
+        val lang = item.lang
+        if (lang.isNullOrEmpty() || lang.equals("plain", ignoreCase = true)) {
+            content.setupSyntax(Syntaxes.PLAIN)
+            menu.setText(R.string.block_code_plain_text)
+        } else {
+            content.setupSyntax(lang)
+            menu.text = lang.replaceFirstChar {
+                if (it.isLowerCase()) it.titlecase() else it.toString()
+            }
         }
     }
 
@@ -218,6 +237,17 @@ class Code(
                 if (it in 0..length) {
                     content.setSelection(it)
                 }
+            }
+        }
+    }
+
+    private fun createTextWatcher(
+        onTextChanged: (String, Editable) -> Unit
+    ): DefaultTextWatcher = DefaultTextWatcher { text ->
+        provide<BlockView.Code>()?.let { item ->
+            if (item.mode == BlockView.Mode.EDIT) {
+                item.text = text.toString()
+                onTextChanged(item.id, text)
             }
         }
     }

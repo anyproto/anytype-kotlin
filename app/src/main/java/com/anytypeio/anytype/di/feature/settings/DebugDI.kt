@@ -6,6 +6,7 @@ import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.settings.DebugViewModel
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -50,4 +51,5 @@ interface DebugDependencies : ComponentDependencies {
     fun repo(): BlockRepository
     fun dispatchers(): AppCoroutineDispatchers
     fun uriFileProvider(): UriFileProvider
+    fun userSettingsRepository(): UserSettingsRepository
 }

@@ -14,13 +14,13 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_utils.intents.SystemAction
 import com.anytypeio.anytype.domain.`object`.ReloadObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectReload
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlCopy
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlEdit
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationUrlOpen
 import com.anytypeio.anytype.presentation.number.NumberParser
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -28,11 +28,11 @@ import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class RelationTextValueViewModel(
-    private val relations: ObjectRelationProvider,
     private val values: ObjectValueProvider,
     private val reloadObject: ReloadObject,
     private val analytics: Analytics,
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val storeOfRelations: StoreOfRelations
 ) : BaseViewModel() {
 
     val views = MutableStateFlow<List<RelationTextValueView>>(emptyList())
@@ -65,7 +65,7 @@ class RelationTextValueViewModel(
         Timber.d("onStart, ctx:[$ctx], relationKey:[$relationKey], object:[$objectId], isLocked:[$isLocked]")
         viewModelScope.launch {
             val values = values.get(ctx = ctx, target = objectId)
-            val relation = relations.getOrNull(relationKey) ?: return@launch
+            val relation = storeOfRelations.getByKey(key = relationKey) ?: return@launch
             Timber.d("combine, relation:[$relation], values:[$values]")
             setupIsRelationNotEditable(relation, isLocked)
             val obj = ObjectWrapper.Basic(values)
@@ -268,20 +268,20 @@ class RelationTextValueViewModel(
     }
 
     class Factory(
-        private val relations: ObjectRelationProvider,
         private val values: ObjectValueProvider,
         private val reloadObject: ReloadObject,
         private val analytics: Analytics,
-        private val storeOfObjectTypes: StoreOfObjectTypes
+        private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val storeOfRelations: StoreOfRelations
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return RelationTextValueViewModel(
-                relations = relations,
                 values = values,
                 reloadObject = reloadObject,
                 analytics = analytics,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                storeOfRelations = storeOfRelations
             ) as T
         }
     }

@@ -254,9 +254,10 @@ private fun OneToOneSubtitleRow(
             color = textColor,
         )
 
+        // Never show mentions for ONE_TO_ONE spaces
         UnreadIndicatorsRow(
             unreadMessageCount = unreadMessageCount,
-            unreadMentionCount = unreadMentionCount,
+            unreadMentionCount = 0,
             notificationMode = notificationMode,
             isPinned = isPinned
         )

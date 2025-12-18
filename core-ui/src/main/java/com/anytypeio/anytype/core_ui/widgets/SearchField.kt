@@ -17,6 +17,7 @@ import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -40,25 +41,32 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchField(
+    query: String = "",
+    enabled: Boolean = true,
     onQueryChanged: (String) -> Unit,
     onFocused: () -> Unit
 ) {
     Box(
         modifier = Modifier
-            .height(48.dp)
+            .height(60.dp)
             .fillMaxWidth()
             .verticalScroll(rememberScrollState())
     ) {
         val focusManager = LocalFocusManager.current
         val focusRequester = FocusRequester()
-        val input = remember { mutableStateOf(String()) }
+        val input = remember { mutableStateOf(query) }
+
+        // Sync external query changes to internal state
+        LaunchedEffect(query) {
+            input.value = query
+        }
         Box(
             modifier = Modifier
                 .padding(horizontal = 16.dp)
                 .fillMaxWidth()
-                .height(36.dp)
-                .clip(RoundedCornerShape(10.dp))
-                .background(color = colorResource(id = R.color.shape_transparent))
+                .height(40.dp)
+                .clip(RoundedCornerShape(20.dp))
+                .background(color = colorResource(id = R.color.shape_transparent_secondary))
                 .align(Alignment.Center)
         ) {
             Image(
@@ -66,7 +74,7 @@ fun SearchField(
                 contentDescription = "Search icon",
                 modifier = Modifier
                     .align(Alignment.CenterStart)
-                    .padding(start = 8.dp)
+                    .padding(start = 12.dp)
             )
             if (input.value.isNotEmpty()) {
                 Image(
@@ -82,6 +90,7 @@ fun SearchField(
                 )
             }
             BasicTextField(
+                enabled = enabled,
                 value = input.value,
                 onValueChange = {
                     input.value = it
@@ -92,7 +101,7 @@ fun SearchField(
                 ),
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(start = 32.dp, end = 32.dp)
+                    .padding(start = 36.dp, end = 36.dp)
                     .align(Alignment.CenterStart)
                     .focusRequester(focusRequester)
                     .onFocusChanged { state ->

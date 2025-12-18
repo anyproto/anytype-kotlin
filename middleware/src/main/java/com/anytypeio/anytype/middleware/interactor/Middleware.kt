@@ -1363,7 +1363,12 @@ class Middleware @Inject constructor(
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectSearchSubscribe(request) }
-        logResponseIfDebug(response, time)
+        if (BuildConfig.DEBUG) {
+            //This logs are too big to show on every request
+            if (subscription != "object-type-store-subscription" && subscription != "relation-store-subscription") {
+                logResponseIfDebug(response, time)
+            }
+        }
         return SearchResult(
             results = response.records.mapNotNull { record ->
                 if (record != null && record.isNotEmpty())
@@ -2491,6 +2496,19 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
+    fun setRelationOptionsOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        val request = Rpc.Relation.Option.SetOrder.Request(
+            spaceId = command.space.id,
+            relationKey = command.relationKey.key,
+            relationOptionOrder = command.orderedIds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.setRelationOptionsOrder(request) }
+        logResponseIfDebug(response, time)
+        return response.relationOptionOrder
+    }
+
+    @Throws(Exception::class)
     fun debugStackGoroutines(path: String) {
         val request = Rpc.Debug.StackGoroutines.Request(
             path = path
@@ -3106,6 +3124,18 @@ class Middleware @Inject constructor(
         val request = Rpc.Debug.ExportLog.Request(dir = dir)
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.debugExportLogs(request) }
+        logResponseIfDebug(response, time)
+        return response.path
+    }
+
+    private val MAX_PROFILER_DURATION_SECONDS = 600
+    @Throws(Exception::class)
+    fun debugRunProfiler(durationInSeconds: Int): String {
+        val request = Rpc.Debug.RunProfiler.Request(
+            durationInSeconds = if (durationInSeconds > MAX_PROFILER_DURATION_SECONDS) MAX_PROFILER_DURATION_SECONDS else durationInSeconds
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.debugRunProfiler(request) }
         logResponseIfDebug(response, time)
         return response.path
     }

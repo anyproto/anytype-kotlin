@@ -126,6 +126,7 @@ class UnreadChatListWidgetContainer(
                     keys = buildList {
                         addAll(ObjectSearchConstants.defaultKeys)
                         add(Relations.CHAT_ID)
+                        add(Relations.LAST_MESSAGE_DATE)
                     },
                     filters = buildList {
                         add(
@@ -186,10 +187,12 @@ class UnreadChatListWidgetContainer(
 
                     Timber.d("UnreadChatList: Found ${unreadChatIds.size} chats with unread messages")
                     
-                    // Filter objects to only those with unread messages
-                    val unreadObjects = objects.filter { obj ->
-                        unreadChatIds.contains(obj.id)
-                    }
+                    // Filter objects to only those with unread messages and sort by lastMessageDate
+                    val unreadObjects = objects
+                        .filter { obj -> unreadChatIds.contains(obj.id) }
+                        .sortedByDescending { obj ->
+                            obj.getSingleValue<String>(Relations.LAST_MESSAGE_DATE) ?: ""
+                        }
 
                     // Map to widget elements with preview data
                     val elements = unreadObjects.map { obj ->

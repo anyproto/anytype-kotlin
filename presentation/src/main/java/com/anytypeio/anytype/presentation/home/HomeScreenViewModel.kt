@@ -298,7 +298,7 @@ class HomeScreenViewModel(
 
     // Exposed flows for UI - widget views (WidgetView models) separated by section
     @OptIn(ExperimentalCoroutinesApi::class)
-    val pinnedViews: StateFlow<List<WidgetView>> = pinnedContainers
+    private val pinnedViewsRaw: StateFlow<List<WidgetView>> = pinnedContainers
         .flatMapLatest { containers ->
             if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
@@ -315,7 +315,7 @@ class HomeScreenViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val typeViews: StateFlow<List<WidgetView>> = typeContainers
+    private val typeViewsRaw: StateFlow<List<WidgetView>> = typeContainers
         .flatMapLatest { containers ->
             if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
@@ -330,6 +330,41 @@ class HomeScreenViewModel(
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
         )
+
+    // Badge deduplication: hide all chat badges when unread section is expanded
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pinnedViews: StateFlow<List<WidgetView>> = combine(
+        pinnedViewsRaw,
+        observeCollapsedSectionIds()
+    ) { pinned, collapsedList ->
+        val hideAllChatBadges = !collapsedList.contains(Widget.Source.SECTION_UNREAD)
+        if (hideAllChatBadges) {
+            hideAllChatBadgesInWidgets(pinned)
+        } else {
+            pinned
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val typeViews: StateFlow<List<WidgetView>> = combine(
+        typeViewsRaw,
+        observeCollapsedSectionIds()
+    ) { types, collapsedList ->
+        val hideAllChatBadges = !collapsedList.contains(Widget.Source.SECTION_UNREAD)
+        if (hideAllChatBadges) {
+            hideAllChatBadgesInWidgets(types)
+        } else {
+            types
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
 
     // Exposed flow for unread widget
     @OptIn(ExperimentalCoroutinesApi::class)
@@ -3720,3 +3755,54 @@ data class HomeScreenVmParams(val spaceId: SpaceId)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3
+
+/**
+ * Hides all chat unread badges when the unread section is expanded.
+ * This prevents badge duplication across sections.
+ */
+private fun hideAllChatBadgesInWidgets(
+    widgets: List<WidgetView>
+): List<WidgetView> {
+    return widgets.map { widget ->
+        when (widget) {
+            is WidgetView.ChatList -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            is WidgetView.SetOfObjects -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            is WidgetView.ListOfObjects -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.ListOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            // Other widget types don't have chat elements
+            else -> widget
+        }
+    }
+}

@@ -30,6 +30,7 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
@@ -52,11 +53,17 @@ fun WidgetsScreen(
     val mode = viewModel.mode.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
+    val unreadWidget = viewModel.unreadView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
+    
+    // Unread section visibility - show only when widget has elements
+    val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
+    val shouldShowUnreadSection = unreadWidgetView != null && unreadWidgetView.elements.isNotEmpty()
+    val isUnreadSectionCollapsed = collapsedSections.contains(SECTION_UNREAD)
 
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
@@ -150,6 +157,49 @@ fun WidgetsScreen(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            // Unread section - shown at top when there are unread chats
+            if (shouldShowUnreadSection) {
+                item {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = SECTION_UNREAD,
+                    ) {
+                        UnreadSectionHeader(
+                            onSectionClicked = viewModel::onSectionUnreadClicked
+                        )
+                    }
+                }
+            }
+            
+            // Unread widgets - only render when section is expanded and widget exists
+            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
+                item {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = "unread_widget_${unreadWidgetView.id}",
+                    ) {
+                        ChatListWidgetCard(
+                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
+                            item = unreadWidgetView,
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
+                                viewModel.onWidgetElementClicked(unreadWidgetView.id, obj)
+                            },
+                            onSeeAllClicked = { _, _ -> /* No see all for unread */ },
+                            onDropDownMenuAction = { /* No menu for unread */ },
+                            onChangeWidgetView = { _, _ -> /* No view change for unread */ },
+                            onToggleExpandedWidgetState = { /* No toggle for unread */ },
+                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
+                            onCreateElement = { /* No create for unread */ },
+                            menuItems = emptyList(),
+                            isCardMenuExpanded = remember { mutableStateOf(false) }
+                        )
+                    }
+                }
+            }
 
             // Only show pinned section header if there are items or section is collapsed
             if (shouldShowPinnedHeader) {

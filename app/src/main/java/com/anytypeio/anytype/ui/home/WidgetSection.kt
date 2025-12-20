@@ -592,6 +592,27 @@ fun SpaceObjectTypesSectionHeader(
 }
 
 @Composable
+fun UnreadSectionHeader(
+    onSectionClicked: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_unread),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
+        )
+    }
+}
+
+@Composable
 fun PinnedSectionHeader(
     onSectionClicked: () -> Unit,
 ) {

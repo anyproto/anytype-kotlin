@@ -3009,12 +3009,28 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionUnreadClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_UNREAD)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_UNREAD)
+            } else {
+                currentCollapsedSections.plus(SECTION_UNREAD)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
     private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
         return when {
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
+            widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
         }
@@ -3025,12 +3041,17 @@ class HomeScreenViewModel(
      *
      * Product logic:
      * - Pinned section widgets: Expanded by default
+     * - Unread section widgets: Expanded by default
      * - Object Types section widgets: Collapsed by default
      *
      * IMPORTANT: expandedIds represents "widgets toggled from their default state", NOT "expanded widgets".
      * The semantics are INVERTED based on section type:
      *
      * Pinned Section (default: expanded):
+     *   - Widget ID NOT in set → EXPANDED (using default)
+     *   - Widget ID IN set → COLLAPSED (user toggled from default)
+     *
+     * Unread Section (default: expanded):
      *   - Widget ID NOT in set → EXPANDED (using default)
      *   - Widget ID IN set → COLLAPSED (user toggled from default)
      *
@@ -3058,6 +3079,11 @@ class HomeScreenViewModel(
         return when (widget.sectionType) {
             SectionType.PINNED -> {
                 // Pinned widgets are expanded by default
+                // Being in expandedIds means user explicitly collapsed it
+                expandedIds.contains(widget.id)
+            }
+            SectionType.UNREAD -> {
+                // Unread widgets are expanded by default
                 // Being in expandedIds means user explicitly collapsed it
                 expandedIds.contains(widget.id)
             }

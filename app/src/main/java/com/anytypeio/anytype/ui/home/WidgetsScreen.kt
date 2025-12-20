@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
@@ -34,9 +36,9 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
-import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -62,10 +64,35 @@ fun WidgetsScreen(
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
     
-    // Unread section visibility - show only when widget has elements
+    // Unread section visibility logic
     val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
-    val shouldShowUnreadSection = unreadWidgetView != null && unreadWidgetView.elements.isNotEmpty()
     val isUnreadSectionCollapsed = collapsedSections.contains(SECTION_UNREAD)
+    
+    // Track previous collapse state for unread section
+    val wasUnreadCollapsed = remember { mutableStateOf(isUnreadSectionCollapsed) }
+    val hadUnreadItems = remember { mutableStateOf(unreadWidgetView?.elements?.isNotEmpty() == true) }
+    
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isUnreadSectionCollapsed && wasUnreadCollapsed.value) {
+        hadUnreadItems.value = true
+    }
+    
+    // Update previous state
+    wasUnreadCollapsed.value = isUnreadSectionCollapsed
+    
+    // Set flag when items are present
+    if (unreadWidgetView?.elements?.isNotEmpty() == true) {
+        hadUnreadItems.value = true
+    }
+    
+    // Reset flag when section is collapsed and has no items
+    if (isUnreadSectionCollapsed && unreadWidgetView?.elements?.isEmpty() == true) {
+        hadUnreadItems.value = false
+    }
+    
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowUnreadSection = unreadWidgetView != null && 
+        (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
 
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
@@ -177,30 +204,20 @@ fun WidgetsScreen(
             
             // Unread widgets - only render when section is expanded and widget exists
             if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
-                unreadWidgetView.elements.forEachIndexed { idx, element ->
-                    item(key = "unread_chat_${element.obj.id}") {
-                        ReorderableItem(
-                            enabled = false,
-                            state = reorderableState,
-                            key = "unread_chat_${element.obj.id}",
-                        ) {
-                            if (element is WidgetView.SetOfObjects.Element.Chat) {
-                                val chatName = element.getPrettyName()
-                                ChatWidgetCard(
-                                    modifier = Modifier.padding(vertical = 4.dp),
-                                    chatIcon = element.objectIcon,
-                                    chatName = chatName,
-                                    creatorName = element.creatorName,
-                                    messageText = element.messageText,
-                                    messageTime = element.messageTime,
-                                    attachmentPreviews = element.attachmentPreviews,
-                                    unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
-                                    unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
-                                    chatNotificationState = element.chatNotificationState,
-                                    onClick = { viewModel.onWidgetElementClicked(unreadWidgetView.id, element.obj) }
-                                )
-                            }
-                        }
+                item(key = "unread_widget_content") {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = "unread_widget_content",
+                    ) {
+                        UnreadChatListWidget(
+                            item = unreadWidgetView,
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
+                                viewModel.onWidgetElementClicked(unreadWidgetView.id, obj)
+                            },
+                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                        )
                     }
                 }
             }

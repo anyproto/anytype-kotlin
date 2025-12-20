@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -129,9 +130,9 @@ class UnreadChatListWidgetContainer(
                     filters = buildList {
                         add(
                             DVFilter(
-                                relation = Relations.TYPE,
+                                relation = Relations.LAYOUT,
                                 condition = DVFilterCondition.EQUAL,
-                                value = ObjectTypeIds.CHAT_DERIVED
+                                value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
                             )
                         )
                         addAll(ObjectSearchConstants.defaultDataViewFilters())
@@ -167,16 +168,24 @@ class UnreadChatListWidgetContainer(
                     participantsFlow
                 ) { objects, previewList, spaces, participantsByIdentity ->
                     
+                    Timber.d("UnreadChatList: Processing ${objects.size} chat objects, ${previewList.size} previews")
+                    
                     // Filter to only chats with unread messages
                     val unreadChatIds = previewList
                         .filter { preview ->
                             val unreadCount = (preview.state?.unreadMessages?.counter ?: 0) +
                                     (preview.state?.unreadMentions?.counter ?: 0)
-                            unreadCount > 0
+                            val hasUnread = unreadCount > 0
+                            if (hasUnread) {
+                                Timber.d("UnreadChatList: Chat ${preview.chat} has $unreadCount unread messages")
+                            }
+                            hasUnread
                         }
                         .map { it.chat }
                         .toSet()
 
+                    Timber.d("UnreadChatList: Found ${unreadChatIds.size} chats with unread messages")
+                    
                     // Filter objects to only those with unread messages
                     val unreadObjects = objects.filter { obj ->
                         unreadChatIds.contains(obj.id)
@@ -248,6 +257,8 @@ class UnreadChatListWidgetContainer(
                         }
                     }
 
+                    Timber.d("UnreadChatList: Creating widget view with ${elements.size} elements")
+                    
                     WidgetView.UnreadChatList(
                         id = widget.id,
                         source = widget.source,

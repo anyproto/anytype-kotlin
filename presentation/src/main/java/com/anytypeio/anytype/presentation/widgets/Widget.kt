@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
@@ -440,10 +441,11 @@ suspend fun buildWidgetSections(
         spaceUxType = spaceView.spaceUxType
     )
 
-    // Build unread widget (displayed separately at top)
+    // Build unread widget (displayed separately at top) - only for data spaces
     val unreadWidget = buildUnreadWidget(
         state = state,
-        params = params
+        params = params,
+        spaceUxType = spaceView.spaceUxType
     )
 
     // Build bin widget (displayed separately at bottom)
@@ -535,15 +537,27 @@ private suspend fun buildTypeSection(
 
 private fun buildUnreadWidget(
     state: ObjectViewState.Success,
-    params: WidgetUiParams
+    params: WidgetUiParams,
+    spaceUxType: SpaceUxType?
 ): Widget.UnreadChatList? {
-    // Always create the unread widget - the container will handle filtering by unread count
-    return Widget.UnreadChatList(
-        id = "widget_unread_chat_list",
-        source = Widget.Source.Bundled.Chat,
-        config = state.config,
-        icon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary)
-    )
+    // Only show unread widget in data spaces (multi-chat)
+    // CHAT and ONE_TO_ONE spaces have only one chat, so unread section is not needed
+    val canCreateAdditionalChats = spaceUxType.canCreateAdditionalChats
+    
+    Timber.d("buildUnreadWidget: spaceUxType=$spaceUxType, canCreateAdditionalChats=$canCreateAdditionalChats")
+    
+    return if (canCreateAdditionalChats) {
+        Timber.d("buildUnreadWidget: Creating unread widget for data space")
+        Widget.UnreadChatList(
+            id = "widget_unread_chat_list",
+            source = Widget.Source.Bundled.Chat,
+            config = state.config,
+            icon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary)
+        )
+    } else {
+        Timber.d("buildUnreadWidget: Skipping unread widget for non-data space")
+        null
+    }
 }
 
 private fun buildBinWidget(

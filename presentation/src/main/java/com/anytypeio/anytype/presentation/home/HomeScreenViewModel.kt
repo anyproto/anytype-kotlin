@@ -140,6 +140,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
@@ -1563,6 +1564,7 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
+        is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 

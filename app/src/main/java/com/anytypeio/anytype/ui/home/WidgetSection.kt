@@ -81,6 +81,10 @@ fun LazyListScope.renderWidgetSection(
     ) { index, item ->
         val animateItemModifier = Modifier.animateItem()
         when (item) {
+            is WidgetView.UnreadChatList -> {
+                // Unread chat list widgets are rendered separately in WidgetsScreen
+                // They should not be part of the reorderable widget sections
+            }
             is WidgetView.Tree -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = remember(

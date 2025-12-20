@@ -34,8 +34,10 @@ import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTIO
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
+import com.anytypeio.anytype.ui.home.ChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -175,28 +177,30 @@ fun WidgetsScreen(
             
             // Unread widgets - only render when section is expanded and widget exists
             if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
-                item {
-                    ReorderableItem(
-                        enabled = false,
-                        state = reorderableState,
-                        key = "unread_widget_${unreadWidgetView.id}",
-                    ) {
-                        ChatListWidgetCard(
-                            modifier = Modifier.padding(horizontal = 20.dp, vertical = 6.dp),
-                            item = unreadWidgetView,
-                            mode = mode,
-                            onWidgetObjectClicked = { obj ->
-                                viewModel.onWidgetElementClicked(unreadWidgetView.id, obj)
-                            },
-                            onSeeAllClicked = { _, _ -> /* No see all for unread */ },
-                            onDropDownMenuAction = { /* No menu for unread */ },
-                            onChangeWidgetView = { _, _ -> /* No view change for unread */ },
-                            onToggleExpandedWidgetState = { /* No toggle for unread */ },
-                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                            onCreateElement = { /* No create for unread */ },
-                            menuItems = emptyList(),
-                            isCardMenuExpanded = remember { mutableStateOf(false) }
-                        )
+                unreadWidgetView.elements.forEachIndexed { idx, element ->
+                    item(key = "unread_chat_${element.obj.id}") {
+                        ReorderableItem(
+                            enabled = false,
+                            state = reorderableState,
+                            key = "unread_chat_${element.obj.id}",
+                        ) {
+                            if (element is WidgetView.SetOfObjects.Element.Chat) {
+                                val chatName = element.getPrettyName()
+                                ChatWidgetCard(
+                                    modifier = Modifier.padding(vertical = 4.dp),
+                                    chatIcon = element.objectIcon,
+                                    chatName = chatName,
+                                    creatorName = element.creatorName,
+                                    messageText = element.messageText,
+                                    messageTime = element.messageTime,
+                                    attachmentPreviews = element.attachmentPreviews,
+                                    unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
+                                    unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                    chatNotificationState = element.chatNotificationState,
+                                    onClick = { viewModel.onWidgetElementClicked(unreadWidgetView.id, element.obj) }
+                                )
+                            }
+                        }
                     }
                 }
             }

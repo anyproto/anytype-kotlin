@@ -274,11 +274,13 @@ class HomeScreenViewModel(
     // Separate StateFlows for different widget sections
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
+    private val unreadContainer = MutableStateFlow<WidgetContainer?>(null)
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
@@ -326,6 +328,18 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Exposed flow for unread widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val unreadView: StateFlow<WidgetView?> = unreadContainer
+        .flatMapLatest { container ->
+            container?.view ?: flowOf(null)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -598,6 +612,7 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetContainerPipeline() {
         buildPinnedContainerPipeline()
         buildTypeContainerPipeline()
+        buildUnreadContainerPipeline()
     }
 
     private fun buildPinnedContainerPipeline() {
@@ -629,6 +644,24 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of type containers: ${containersList.size}")
                 typeContainers.value = containersList
             }
+        }
+    }
+
+    private fun buildUnreadContainerPipeline() {
+        viewModelScope.launch {
+            unreadWidget
+                .map { widget ->
+                    if (widget != null) {
+                        Timber.d("Creating unread container for widget: ${widget.id}")
+                        widgetContainerDelegate.createContainer(widget, emptyList())
+                    } else {
+                        null
+                    }
+                }
+                .collect { container ->
+                    Timber.d("Emitting unread container: ${container != null}")
+                    unreadContainer.value = container
+                }
         }
     }
 
@@ -772,8 +805,8 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.unreadWidget != null) 1 else 0) + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, unread=${sections.unreadWidget != null}, bin=${sections.binWidget != null}, total=$totalWidgets")
 
                     pinnedWidgets.value = sections.pinnedWidgets
 
@@ -784,6 +817,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = sections.typeWidgets
                     }
 
+                    unreadWidget.value = sections.unreadWidget
                     binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
@@ -795,6 +829,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = emptyList()
                     }
 
+                    unreadWidget.value = null
                     binWidget.value = null
                 }
             }

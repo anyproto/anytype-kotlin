@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockDataViewEmptySourceBin
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
@@ -99,6 +100,7 @@ import com.anytypeio.anytype.core_ui.features.editor.holders.other.TableOfConten
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Unsupported
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.BookmarkPlaceholder
+import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.EmbedPlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.FilePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.PicturePlaceholder
 import com.anytypeio.anytype.core_ui.features.editor.holders.placeholders.VideoPlaceholder
@@ -162,6 +164,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HEADER_TWO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_HIGHLIGHT
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_LATEX
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_EMBED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_NUMBERED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_ARCHIVE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_OBJECT_LINK_CARD_MEDIUM_ICON
@@ -810,6 +813,9 @@ class BlockAdapter(
                     }
                 }
             }
+            HOLDER_EMBED -> EmbedPlaceholder(
+                ItemBlockEmbedBinding.inflate(inflater, parent, false)
+            )
             HOLDER_TOC -> {
                 TableOfContents(
                     binding = ItemBlockTocBinding.inflate(inflater, parent, false),
@@ -1281,6 +1287,13 @@ class BlockAdapter(
                             item = blocks[position] as BlockView.Latex
                         )
                     }
+                    is EmbedPlaceholder -> {
+                        holder.processChangePayload(
+                            payloads = payloads.typeOf(),
+                            item = blocks[position] as BlockView.Embed,
+                            clicked = onClickListener
+                        )
+                    }
                     is TableOfContents -> {
                         holder.processChangePayload(
                             payloads = payloads.typeOf(),
@@ -1667,6 +1680,12 @@ class BlockAdapter(
             }
             is Latex -> {
                 holder.bind(item = blocks[position] as BlockView.Latex)
+            }
+            is EmbedPlaceholder -> {
+                holder.bind(
+                    item = blocks[position] as BlockView.Embed,
+                    clicked = onClickListener
+                )
             }
             is TableOfContents -> {
                 holder.bind(

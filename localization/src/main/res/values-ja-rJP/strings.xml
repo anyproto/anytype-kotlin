@@ -832,6 +832,7 @@
     <string name="go_to_the_app">アプリに移動</string>
     <string name="exiting_please_wait">終了中です。少々お待ち下さい…</string>
     <string name="loading_please_wait">読み込み中です。少々お待ち下さい…</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
     <string name="create_chat">チャットを作成</string>

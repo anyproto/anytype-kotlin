@@ -2035,6 +2035,7 @@
     <string name="web_publishing_open_in_browser">Открыть в браузере</string>
     <string name="web_publishing_copy_web_link">Копировать ссылку</string>
     <string name="widgets_section_pinned">Закреплённые</string>
+    <string name="widgets_section_unread">Непрочитанные</string>
     <string name="widgets_section_object_types">Типы объектов</string>
     <string name="widgets_menu_new_object_type">Новый</string>
     <string name="widgets_menu_delete_object_type">Удалить тип объекта</string>

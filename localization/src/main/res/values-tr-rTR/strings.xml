@@ -2007,6 +2007,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_open_in_browser">Tarayıcıda Aç</string>
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
+    <string name="widgets_section_unread">Okunmamış</string>
     <string name="widgets_section_object_types">Nesne türleri</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>

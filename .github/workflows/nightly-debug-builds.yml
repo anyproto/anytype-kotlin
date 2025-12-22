@@ -22,9 +22,6 @@ jobs:
           sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
         run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
 
-      - name: Enable dated version for nightly debug builds
-        run: make enable_dated_version_name
-
       - name: Enable analytics for nightly debug builds
         run: make enable_analytics_for_debug
 

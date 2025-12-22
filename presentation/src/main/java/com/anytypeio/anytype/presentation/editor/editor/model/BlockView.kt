@@ -1436,6 +1436,20 @@ sealed class BlockView : ViewType {
         override fun getViewType(): Int = HOLDER_LATEX
     }
 
+    data class Embed(
+        override val id: String,
+        override val indent: Int,
+        override val isSelected: Boolean,
+        override val mode: Mode,
+        override val background: ThemeColor,
+        override val decorations: List<Decoration>,
+        val text: String,
+        val processor: String,
+        val isPreviousBlockMedia: Boolean
+    ) : BlockView(), Indentable, Selectable, Permission, Decoratable {
+        override fun getViewType(): Int = HOLDER_EMBED
+    }
+
     data class TableOfContents(
         override val id: String,
         override val isSelected: Boolean,

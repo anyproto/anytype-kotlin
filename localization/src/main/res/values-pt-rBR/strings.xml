@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Ir para o aplicativo</string>
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
     <string name="create_chat">Criar conversa</string>

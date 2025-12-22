@@ -2007,6 +2007,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="web_publishing_open_in_browser">Open in browser</string>
     <string name="web_publishing_copy_web_link">Kopieer webkoppeling</string>
     <string name="widgets_section_pinned">Vastgezet</string>
+    <string name="widgets_section_unread">Ongelezen</string>
     <string name="widgets_section_object_types">Objecttypes</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>

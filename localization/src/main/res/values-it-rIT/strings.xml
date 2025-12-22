@@ -2008,6 +2008,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_open_in_browser">Apri nel Browser</string>
     <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <string name="widgets_section_pinned">Fissato</string>
+    <string name="widgets_section_unread">Non letto</string>
     <string name="widgets_section_object_types">Tipi di oggetto</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
     <string name="widgets_menu_delete_object_type">Elimina Tipo Oggetto</string>

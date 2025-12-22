@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>

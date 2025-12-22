@@ -47,6 +47,7 @@ import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ChatListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.CompactListWidgetList
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
@@ -668,10 +669,9 @@ fun UnreadChatListWidget(
         ) {
             // No header - section header is rendered separately
             // No tabs - unread section doesn't have tabs
-            
             if (item.elements.isNotEmpty()) {
                 // Use compact list layout (same as ChatListWidgetCard in compact mode)
-                com.anytypeio.anytype.ui.widgets.types.CompactListWidgetList(
+                CompactListWidgetList(
                     mode = mode,
                     elements = item.elements,
                     onWidgetElementClicked = onWidgetObjectClicked,

@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Uygulamaya git</string>
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
+    <string name="embed_content_not_available">%1$s embed. Bu içerik mobil cihazlarda mevcut değil.</string>
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>

@@ -8,6 +8,8 @@ import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.AddChatMessage
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -16,6 +18,10 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.domain.page.CloseObject
+import com.anytypeio.anytype.domain.page.OpenPage
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -48,6 +54,17 @@ interface SharingComponent {
         fun create(dependency: SharingDependencies): SharingComponent
     }
 
+    /**
+     * Provides the ViewModel factory for creating SharingViewModel instances.
+     * Used by MainActivity's Compose overlay for the pure Compose modal sheet.
+     */
+    fun viewModelFactory(): ViewModelProvider.Factory
+
+    /**
+     * @deprecated Use viewModelFactory() and create ViewModel in Compose scope instead.
+     * This is kept for backward compatibility during migration.
+     */
+    @Deprecated("Use viewModelFactory() instead for pure Compose integration")
     fun inject(fragment: SharingFragment)
 }
 
@@ -95,6 +112,52 @@ object SharingModule {
         repo: BlockRepository
     ): SearchObjects = SearchObjects(repo)
 
+    @Provides
+    @PerModal
+    fun provideOpenPage(
+        repo: BlockRepository,
+        settings: UserSettingsRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): OpenPage = OpenPage(
+        repo = repo,
+        settings = settings,
+        dispatchers = dispatchers
+    )
+
+    @Provides
+    @PerModal
+    fun provideCloseObject(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CloseObject = CloseObject(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @Provides
+    @PerModal
+    fun provideCreateBlock(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateBlock = CreateBlock(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @Provides
+    @PerModal
+    fun provideAddBackLinkToObject(
+        openPage: OpenPage,
+        createBlock: CreateBlock,
+        closeObject: CloseObject,
+        dispatchers: AppCoroutineDispatchers
+    ): AddBackLinkToObject = AddBackLinkToObject(
+        openPage = openPage,
+        createBlock = createBlock,
+        closeObject = closeObject,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @PerModal
@@ -118,5 +181,6 @@ interface SharingDependencies : ComponentDependencies {
     fun permissions(): UserPermissionProvider
     fun analyticSpaceHelper(): AnalyticSpaceHelperDelegate
     fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
-    fun fieldParser() : FieldParser
+    fun fieldParser(): FieldParser
+    fun userSettingsRepository(): UserSettingsRepository
 }

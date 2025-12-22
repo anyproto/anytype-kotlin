@@ -1993,6 +1993,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_open_in_browser">Buka di Peramban</string>
     <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
     <string name="widgets_section_pinned">Tersemat</string>
+    <string name="widgets_section_unread">Belum dibaca</string>
     <string name="widgets_section_object_types">Tipe objek</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>

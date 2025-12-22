@@ -838,6 +838,7 @@
     <string name="go_to_the_app">Перайсці ў праграму</string>
     <string name="exiting_please_wait">Выхад... пачакайце</string>
     <string name="loading_please_wait">Загрузка... калі ласка пачакайце</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Прадвызначана</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>

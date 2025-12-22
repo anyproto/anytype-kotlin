@@ -878,6 +878,10 @@ class BlockMiddleware(
         return middleware.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return middleware.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return middleware.setQueryToSet(command)
     }
@@ -904,6 +908,10 @@ class BlockMiddleware(
 
     override suspend fun deleteRelationOption(command: Command.DeleteRelationOptions) {
         return middleware.deleteRelationOptions(command)
+    }
+
+    override suspend fun setRelationOptionOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        return middleware.setRelationOptionsOrder(command)
     }
 
     override suspend fun makeSpaceShareable(space: SpaceId) {

@@ -105,7 +105,8 @@ class CreateObjectTypeViewModel(
                         props = Props(
                             mapOf(
                                 EventsPropertiesKey.permissions to spaceParams.permission,
-                                EventsPropertiesKey.spaceType to spaceParams.spaceType
+                                EventsPropertiesKey.spaceType to spaceParams.spaceType,
+                                EventsPropertiesKey.uxType to spaceParams.spaceUxType
                             )
                         )
                     )

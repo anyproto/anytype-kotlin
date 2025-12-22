@@ -911,6 +911,10 @@ class BlockDataRepository(
         return remote.addObjectToCollection(command)
     }
 
+    override suspend fun removeObjectFromCollection(command: Command.RemoveObjectFromCollection): Payload {
+        return remote.removeObjectFromCollection(command)
+    }
+
     override suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload {
         return remote.setQueryToSet(command)
     }
@@ -941,6 +945,10 @@ class BlockDataRepository(
 
     override suspend fun deleteRelationOption(command: Command.DeleteRelationOptions) {
         return remote.deleteRelationOption(command)
+    }
+
+    override suspend fun setRelationOptionOrder(command: Command.SetRelationOptionsOrder): List<Id> {
+        return remote.setRelationOptionOrder(command)
     }
 
     override suspend fun makeSpaceShareable(space: SpaceId) {

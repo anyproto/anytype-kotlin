@@ -10,8 +10,10 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.chats.ReadAllChatMessages
+import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugExportLogs
 import com.anytypeio.anytype.domain.debugging.DebugGoroutines
+import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.util.downloader.DebugStats
@@ -31,14 +33,24 @@ class DebugViewModel @Inject constructor(
     private val debugStat: DebugStats,
     private val debugSpace: DebugSpace,
     private val debugExportLogs: DebugExportLogs,
+    private val debugRunProfiler: DebugRunProfiler,
     private val pathProvider: PathProvider,
-    private val uriFileProvider: UriFileProvider
+    private val uriFileProvider: UriFileProvider,
+    private val userSettingsRepository: UserSettingsRepository
 ) : BaseViewModel() {
 
     val commands = MutableSharedFlow<Command>(replay = 0)
     private val jobs = mutableListOf<Job>()
 
     val messages = MutableStateFlow<String?>(null)
+    val isProfilerOnStartupEnabled = MutableStateFlow(false)
+    val profilerState = MutableStateFlow<ProfilerState>(ProfilerState.Idle)
+
+    init {
+        viewModelScope.launch {
+            isProfilerOnStartupEnabled.value = userSettingsRepository.getRunProfilerOnStartup()
+        }
+    }
 
     fun onExportWorkingDirectory() {
         viewModelScope.launch {
@@ -157,6 +169,38 @@ class DebugViewModel @Inject constructor(
         messages.value = null
     }
 
+    fun onProfilerOnStartupToggled(enabled: Boolean) {
+        viewModelScope.launch {
+            userSettingsRepository.setRunProfilerOnStartup(enabled)
+            isProfilerOnStartupEnabled.value = enabled
+        }
+    }
+
+    fun onRunProfilerNowClicked() {
+        if (profilerState.value is ProfilerState.Running) return
+        viewModelScope.launch {
+            profilerState.value = ProfilerState.Running
+            debugRunProfiler.async(DebugRunProfiler.Params(durationInSeconds = PROFILER_DURATION_SECONDS))
+                .onSuccess { path ->
+                    Timber.d("Debug profiler success: $path")
+                    profilerState.value = ProfilerState.Completed(path)
+                }
+                .onFailure { error ->
+                    Timber.e(error, "Error while running profiler")
+                    profilerState.value = ProfilerState.Error(error.message ?: "Unknown error")
+                }
+        }
+    }
+
+    fun onShareProfilerResultClicked() {
+        viewModelScope.launch {
+            val state = profilerState.value
+            if (state is ProfilerState.Completed) {
+                commands.emit(Command.ShareProfilerResult(state.filePath, uriFileProvider))
+            }
+        }
+    }
+
     override fun onCleared() {
         super.onCleared()
         jobs.cancel()
@@ -169,8 +213,10 @@ class DebugViewModel @Inject constructor(
         private val debugStats: DebugStats,
         private val debugSpace: DebugSpace,
         private val debugExportLogs: DebugExportLogs,
+        private val debugRunProfiler: DebugRunProfiler,
         private val pathProvider: PathProvider,
-        private val uriFileProvider: UriFileProvider
+        private val uriFileProvider: UriFileProvider,
+        private val userSettingsRepository: UserSettingsRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -181,8 +227,10 @@ class DebugViewModel @Inject constructor(
                 debugStat = debugStats,
                 debugSpace = debugSpace,
                 debugExportLogs = debugExportLogs,
+                debugRunProfiler = debugRunProfiler,
                 pathProvider = pathProvider,
-                uriFileProvider = uriFileProvider
+                uriFileProvider = uriFileProvider,
+                userSettingsRepository = userSettingsRepository
             ) as T
         }
     }
@@ -205,9 +253,20 @@ class DebugViewModel @Inject constructor(
             
         data class ShareDebugSpaceSummary(val path: String, val uriFileProvider: UriFileProvider) :
             Command()
+
+        data class ShareProfilerResult(val path: String, val uriFileProvider: UriFileProvider) :
+            Command()
+    }
+
+    sealed class ProfilerState {
+        data object Idle : ProfilerState()
+        data object Running : ProfilerState()
+        data class Completed(val filePath: String) : ProfilerState()
+        data class Error(val message: String) : ProfilerState()
     }
 
     companion object {
         const val EXPORT_WORK_DIRECTORY_TEMP_FOLDER = "anytype-work-directory.zip"
+        const val PROFILER_DURATION_SECONDS = 60
     }
 }

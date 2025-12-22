@@ -22,7 +22,6 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
-import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.RelationDateValueViewModel
@@ -65,12 +64,9 @@ class ObjectRelationDateValueTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         TestRelationDateValueFragment.testVmFactory = RelationDateValueViewModel.Factory(
-            relations = DataViewObjectRelationProvider(
-                objectState = state,
-                storeOfRelations = storeOfRelations
-            ),
             values = DataViewObjectValueProvider(db = db, objectState = state),
-            dateProvider = dateProvider
+            dateProvider = dateProvider,
+            storeOfRelations = storeOfRelations
         )
     }
 

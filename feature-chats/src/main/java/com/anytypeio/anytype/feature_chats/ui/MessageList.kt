@@ -25,6 +25,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatView
@@ -56,8 +57,10 @@ fun Messages(
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     highlightedMessageId: Id?,
-    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled()
+    inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
+    spaceUxType: SpaceUxType? = null
 ) {
+    val isOneToOneSpace = spaceUxType == SpaceUxType.ONE_TO_ONE
     Timber.d("DROID-2966 Messages composition")
     val scope = rememberCoroutineScope()
 
@@ -104,7 +107,7 @@ fun Messages(
                     else
                         Arrangement.Start
                 ) {
-                    if (!msg.isUserAuthor) {
+                    if (!msg.isUserAuthor && !isOneToOneSpace) {
                         ChatUserAvatar(
                             msg = msg,
                             avatar = msg.avatar,
@@ -124,7 +127,7 @@ fun Messages(
                         timestamp = msg.timestamp,
                         attachments = msg.attachments,
                         isUserAuthor = msg.isUserAuthor,
-                        shouldHideUsername = msg.shouldHideUsername,
+                        shouldHideUsername = msg.shouldHideUsername || isOneToOneSpace,
                         isMaxReactionCountReached = msg.isMaxReactionCountReached,
                         isEdited = msg.isEdited,
                         isSynced = msg.isSynced,
@@ -218,7 +221,8 @@ fun Messages(
                         modifier = Modifier.fillParentMaxSize(),
                         onAddMembersClick = onAddMembersClick,
                         onShowQRCodeClick = onShowQRCodeClick,
-                        inviteLinkAccessLevel = inviteLinkAccessLevel
+                        inviteLinkAccessLevel = inviteLinkAccessLevel,
+                        spaceUxType = spaceUxType
                     )
                 }
             }

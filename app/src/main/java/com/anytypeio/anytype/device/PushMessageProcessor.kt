@@ -10,7 +10,7 @@ interface PushMessageProcessor {
      * Returns `true` if the message was handled (e.g. decrypted & showed a notification),
      * or `false` if it should be ignored (e.g. missing payload/key or decryption failed).
      */
-    fun process(messageData: Map<String, String>, isAppInForeground: Boolean = false): Boolean
+    suspend fun process(messageData: Map<String, String>, isAppInForeground: Boolean = false): Boolean
 }
 
 class DefaultPushMessageProcessor(
@@ -18,7 +18,7 @@ class DefaultPushMessageProcessor(
     private val notificationBuilder: NotificationBuilder
 ) : PushMessageProcessor {
 
-    override fun process(messageData: Map<String, String>, isAppInForeground: Boolean): Boolean {
+    override suspend fun process(messageData: Map<String, String>, isAppInForeground: Boolean): Boolean {
 
         val type = messageData[PUSH_TYPE_KEY] ?: return false
         val groupId = messageData[GROUP_ID_KEY] ?: return false

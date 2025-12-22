@@ -50,6 +50,11 @@ interface UserPermissionProvider  {
     fun observe(space: SpaceId) : Flow<SpaceMemberPermissions?>
 
     /**
+     * @return Flow of the current user's [ObjectWrapper.SpaceMember] or null if not available.
+     */
+    fun getCurrent() : Flow<ObjectWrapper.SpaceMember?>
+
+    /**
      * Provide permissions of the current user in all available spaces.
      * Maps space to permissions.
      */
@@ -78,6 +83,10 @@ class DefaultUserPermissionProvider @Inject constructor(
         return members.map { all ->
             all.firstOrNull { member -> member.spaceId == space.id }?.permissions
         }
+    }
+
+    override fun getCurrent(): Flow<ObjectWrapper.SpaceMember?> {
+        return members.map { all -> all.firstOrNull() }
     }
 
     override fun start() {
@@ -118,7 +127,8 @@ class DefaultUserPermissionProvider @Inject constructor(
                                     Relations.ID,
                                     Relations.SPACE_ID,
                                     Relations.IDENTITY,
-                                    Relations.PARTICIPANT_PERMISSIONS
+                                    Relations.PARTICIPANT_PERMISSIONS,
+                                    Relations.GLOBAL_NAME
                                 )
                             )
                         ).map { results ->

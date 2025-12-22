@@ -96,12 +96,14 @@ class EditorTouchProcessor(
                     val y = (event.y - v.totalPaddingTop + v.scrollY).toInt()
                     val layout: Layout = v.layout
                     val line = layout.getLineForVertical(y)
-                    val offset = layout.getOffsetForHorizontal(line, x.toFloat())
-                    val link = v.editableText.getSpans(offset, offset, ClickableSpan::class.java)
-                    if (link.isNotEmpty()) {
-                        v.disable()
-                        link[0].onClick(v)
-                        return true
+                    if (x <= layout.getLineMax(line)) {
+                        val offset = layout.getOffsetForHorizontal(line, x.toFloat())
+                        val link = v.editableText.getSpans(offset, offset, ClickableSpan::class.java)
+                        if (link.isNotEmpty()) {
+                            v.clearFocus()
+                            link[0].onClick(v)
+                            return true
+                        }
                     }
                 }
 

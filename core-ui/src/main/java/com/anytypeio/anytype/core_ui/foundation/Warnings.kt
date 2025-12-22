@@ -32,7 +32,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.ButtonWarningLoading
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.UxSmallTextRegular
 
 
@@ -129,13 +128,16 @@ private fun AlertWithLoadingSecondButton() {
 
 @Composable
 fun GenericAlert(
+    modifier: Modifier = Modifier,
     onFirstButtonClicked: () -> Unit = {},
     onSecondButtonClicked: () -> Unit = {},
     config: AlertConfig,
     addBottomSpacer: Boolean = true
 ) {
     val icon = config.icon
-    Column {
+    Column(
+        modifier = modifier
+    ) {
         Spacer(modifier = Modifier.height(24.dp))
         AlertIcon(icon)
         Spacer(modifier = Modifier.height(16.dp))
@@ -384,7 +386,9 @@ fun Prompt(
         )
         Spacer(modifier = Modifier.height(20.dp))
         ButtonPrimary(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             text = primaryButtonText,
             onClick = throttledClick(
                 onClick = {
@@ -395,7 +399,9 @@ fun Prompt(
         )
         Spacer(modifier = Modifier.height(8.dp))
         ButtonSecondary(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 20.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 20.dp),
             text = secondaryButtonText,
             onClick = throttledClick(
                 onClick = {

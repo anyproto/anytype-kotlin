@@ -268,18 +268,18 @@ suspend fun List<Block>.parseWidgets(
                 val sourceContent = child.content
                 if (sourceContent is Block.Content.Link) {
                     val target = sourceContent.target
-                    val raw = details[target] ?: mapOf(Relations.ID to sourceContent.target)
+                    val raw = details[target].orEmpty()
                     val targetObj = ObjectWrapper.Basic(raw)
-                    val icon = targetObj.objectIcon(
-                        builder = urlBuilder,
-                        objType = storeOfObjectTypes.getTypeOfObject(targetObj)
-                    )
                     val source = if (BundledWidgetSourceIds.ids.contains(target)) {
                         target.bundled()
                     } else {
                         Widget.Source.Default(obj = targetObj)
                     }
                     if (source.hasValidSource() && !WidgetConfig.excludedTypes.contains(source.type)) {
+                        val icon = targetObj.objectIcon(
+                            builder = urlBuilder,
+                            objType = storeOfObjectTypes.getTypeOfObject(targetObj)
+                        )
                         when (source) {
                             is Widget.Source.Bundled.AllObjects -> {
                                 add(
@@ -424,7 +424,7 @@ suspend fun buildWidgetSections(
         params = params,
         isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
         storeOfObjectTypes = storeOfObjectTypes,
-        isChatSpace = spaceView.spaceUxType == SpaceUxType.CHAT
+        spaceUxType = spaceView.spaceUxType
     )
 
     // Build bin widget (displayed separately at bottom)
@@ -494,13 +494,12 @@ private suspend fun buildTypeSection(
     params: WidgetUiParams,
     isObjectTypeSectionCollapsed: Boolean,
     storeOfObjectTypes: StoreOfObjectTypes,
-    isChatSpace: Boolean
+    spaceUxType: SpaceUxType?
 ): List<Widget> = buildList {
 
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
     if (!isObjectTypeSectionCollapsed) {
-        val spaceUxType = if (isChatSpace) SpaceUxType.CHAT else null
         val types = mapSpaceTypesToWidgets(
             isOwnerOrEditor = params.isOwnerOrEditor,
             config = state.config,

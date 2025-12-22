@@ -23,17 +23,22 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.DefaultUserPermissionProvider
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
 import com.anytypeio.anytype.domain.notifications.RegisterDeviceToken
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
+import com.anytypeio.anytype.domain.search.RelationOptionsSubscriptionContainer
+import com.anytypeio.anytype.domain.search.RelationOptionsSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionContainer
 import com.anytypeio.anytype.domain.search.RelationsSubscriptionManager
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -90,12 +95,34 @@ object SubscriptionsModule {
     @JvmStatic
     @Provides
     @Singleton
+    fun relationOptionsSubscriptionContainer(
+        repo: BlockRepository,
+        channel: SubscriptionEventChannel,
+        dispatchers: AppCoroutineDispatchers,
+        store: StoreOfRelationOptions,
+        logger: Logger
+    ): RelationOptionsSubscriptionContainer = RelationOptionsSubscriptionContainer(
+        repo = repo,
+        channel = channel,
+        store = store,
+        dispatchers = dispatchers,
+        logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
     fun relationsStore(): StoreOfRelations = DefaultStoreOfRelations()
 
     @JvmStatic
     @Provides
     @Singleton
     fun objectTypesStore(): StoreOfObjectTypes = DefaultStoreOfObjectTypes()
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun relationOptionsStore(): StoreOfRelationOptions = DefaultStoreOfRelationOptions()
 
     @JvmStatic
     @Provides
@@ -115,6 +142,17 @@ object SubscriptionsModule {
         subscription: ObjectTypesSubscriptionContainer,
         spaceManager: SpaceManager
     ): ObjectTypesSubscriptionManager = ObjectTypesSubscriptionManager(
+        container = subscription,
+        spaceManager = spaceManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun relationOptionsSubscriptionManager(
+        subscription: RelationOptionsSubscriptionContainer,
+        spaceManager: SpaceManager
+    ): RelationOptionsSubscriptionManager = RelationOptionsSubscriptionManager(
         container = subscription,
         spaceManager = spaceManager
     )
@@ -186,6 +224,23 @@ object SubscriptionsModule {
         awaitAccountStartManager: AwaitAccountStartManager,
         logger: Logger,
     ): ChatsDetailsSubscriptionContainer = ChatsDetailsSubscriptionContainer.Default(
+        dispatchers = dispatchers,
+        scope = scope,
+        container = container,
+        awaitAccountStart = awaitAccountStartManager,
+        logger = logger,
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun participantSubscriptionContainer(
+        dispatchers: AppCoroutineDispatchers,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope,
+        container: CrossSpaceSubscriptionContainer,
+        awaitAccountStartManager: AwaitAccountStartManager,
+        logger: Logger,
+    ): ParticipantSubscriptionContainer = ParticipantSubscriptionContainer.Default(
         dispatchers = dispatchers,
         scope = scope,
         container = container,
@@ -280,6 +335,7 @@ object SubscriptionsModule {
     fun globalSubscriptionManager(
         types: ObjectTypesSubscriptionManager,
         relations: RelationsSubscriptionManager,
+        relationOptions: RelationOptionsSubscriptionManager,
         permissions: UserPermissionProvider,
         isSpaceDeleted: SpaceDeletedStatusWatcher,
         profileSubscriptionManager: ProfileSubscriptionManager,
@@ -290,6 +346,7 @@ object SubscriptionsModule {
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
         relations = relations,
+        relationOptions = relationOptions,
         permissions = permissions,
         isSpaceDeleted = isSpaceDeleted,
         profile = profileSubscriptionManager,

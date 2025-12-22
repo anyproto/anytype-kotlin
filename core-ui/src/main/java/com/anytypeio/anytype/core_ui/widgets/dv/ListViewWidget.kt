@@ -2,6 +2,7 @@ package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.content.Context
 import android.util.AttributeSet
+import android.view.View
 import androidx.appcompat.content.res.AppCompatResources
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -16,11 +17,13 @@ class ListViewWidget @JvmOverloads constructor(
 ) : RecyclerView(context, attrs) {
 
     var onListItemClicked: (Id) -> Unit = {}
+    var onListItemLongClicked: (Id, View) -> Unit = { _, _ -> }
     var onTaskCheckboxClicked: (Id) -> Unit = {}
 
     private val listViewAdapter = ListViewAdapter(
         onListItemClicked = { onListItemClicked(it) },
-        onTaskCheckboxClicked =  { onTaskCheckboxClicked(it) }
+        onListItemLongClicked = { id, view -> onListItemLongClicked(id, view) },
+        onTaskCheckboxClicked = { onTaskCheckboxClicked(it) }
     )
 
     init {

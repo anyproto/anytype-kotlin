@@ -398,6 +398,7 @@ interface BlockRemote {
     suspend fun replaceDataViewViewRelation(command: Command.UpdateRelation): Payload
     suspend fun sortDataViewViewRelation(command: Command.SortRelations): Payload
     suspend fun addObjectToCollection(command: Command.AddObjectToCollection): Payload
+    suspend fun removeObjectFromCollection(command : Command.RemoveObjectFromCollection): Payload
     suspend fun setQueryToSet(command: Command.SetQueryToSet): Payload
     suspend fun nodeUsage(): NodeUsageInfo
     suspend fun dataViewSetActiveView(command: Command.DataViewSetActiveView): Payload
@@ -409,6 +410,7 @@ interface BlockRemote {
     suspend fun debugStackGoroutines(path: String)
 
     suspend fun deleteRelationOption(command: Command.DeleteRelationOptions)
+    suspend fun setRelationOptionOrder(command: Command.SetRelationOptionsOrder): List<Id>
 
     suspend fun makeSpaceShareable(space: SpaceId)
     suspend fun generateSpaceInviteLink(

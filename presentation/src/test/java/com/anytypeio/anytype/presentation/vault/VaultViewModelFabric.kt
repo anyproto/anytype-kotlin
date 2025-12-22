@@ -1,12 +1,15 @@
 package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -23,7 +26,6 @@ import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
 import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import kotlinx.coroutines.flow.flowOf
@@ -58,13 +60,15 @@ object VaultViewModelFabric {
         unpinSpace: UnpinSpace = mock(),
         setSpaceOrder: SetSpaceOrder = mock(),
         getSpaceWallpaper: GetSpaceWallpapers = mock(),
+        findOneToOneChatByIdentity: FindOneToOneChatByIdentity = mock(),
         shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock {
             on { runBlocking { async(any()) } }.thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(false))
         },
         setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen = mock(),
         appInfo: AppInfo = mock {
             on { versionName }.thenReturn("1.0.0-test")
-        }
+        },
+        participantSubscriptionContainer: ParticipantSubscriptionContainer = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -91,6 +95,10 @@ object VaultViewModelFabric {
         getSpaceWallpapers = getSpaceWallpaper,
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
-        appInfo = appInfo
+        appInfo = appInfo,
+        participantContainer = participantSubscriptionContainer,
+        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        createSpace = mock(),
+        deepLinkResolver = mock()
     )
 } 

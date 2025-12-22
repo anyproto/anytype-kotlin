@@ -5,10 +5,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.ComponentActivity
-import androidx.activity.SystemBarStyle
 import androidx.activity.compose.BackHandler
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -16,7 +13,6 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -35,6 +31,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -52,17 +49,16 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.gallery.GalleryInstallationFragment
 import com.anytypeio.anytype.ui.multiplayer.LeaveSpaceWarning
-import com.anytypeio.anytype.core_ui.features.multiplayer.QrCodeScreen
 import com.anytypeio.anytype.ui.multiplayer.RequestJoinSpaceFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.creation.WidgetSourceTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
-import com.anytypeio.anytype.ui.widgets.CreateChatObjectFragment
-import com.anytypeio.anytype.ui.widgets.CreateChatObjectListener
 import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectFragment
+import com.anytypeio.anytype.ui.widgets.CreateChatObjectListener
 import com.anytypeio.anytype.ui.widgets.SelectWidgetSourceFragment
 import com.anytypeio.anytype.ui.widgets.SelectWidgetTypeFragment
 import com.anytypeio.anytype.ui_settings.space.new_settings.ViewerSpaceSettings
@@ -86,11 +82,7 @@ class WidgetsScreenFragment : Fragment(),
         }
 
     @Inject
-    lateinit var featureToggles: FeatureToggles
-
-    @Inject
     lateinit var factory: HomeScreenViewModel.Factory
-
 
     private val vm by viewModels<HomeScreenViewModel> { factory }
 
@@ -135,21 +127,6 @@ class WidgetsScreenFragment : Fragment(),
             WidgetsScreen(
                 viewModel = vm,
                 paddingValues = paddingValues
-            )
-        }
-
-        // Force status bar to refresh and match the current background color
-        // Using LaunchedEffect(Unit) ensures this only runs once when the screen is displayed
-        LaunchedEffect(Unit) {
-            (requireActivity() as? ComponentActivity)?.enableEdgeToEdge(
-                statusBarStyle = SystemBarStyle.auto(
-                    lightScrim = android.graphics.Color.TRANSPARENT,
-                    darkScrim = android.graphics.Color.TRANSPARENT
-                ),
-                navigationBarStyle = SystemBarStyle.auto(
-                    lightScrim = android.graphics.Color.TRANSPARENT,
-                    darkScrim = android.graphics.Color.TRANSPARENT
-                )
             )
         }
 
@@ -427,8 +404,8 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     // Deterministic navigation based on space type, not back stack
                     val chatId = command.spaceChatId
-                    if (command.spaceUxType == SpaceUxType.CHAT && !chatId.isNullOrEmpty()) {
-                        // Chat space: navigate to chat object
+                    if ((command.spaceUxType == SpaceUxType.CHAT || command.spaceUxType == SpaceUxType.ONE_TO_ONE) && !chatId.isNullOrEmpty()) {
+                        // Chat and One-to-One spaces: navigate to chat object
                         navigation().openChat(
                             target = chatId,
                             space = space
@@ -534,7 +511,8 @@ class WidgetsScreenFragment : Fragment(),
                 runCatching {
                     navigation().openObjectType(
                         objectId = destination.target,
-                        space = destination.space
+                        space = destination.space,
+                        view = destination.view
                     )
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening participant from widgets")

@@ -272,6 +272,9 @@ object EventsDictionary {
 
     const val searchBacklink = "SearchBacklink"
 
+    // Deep link events
+    const val openObjectByLink = "OpenObjectByLink"
+
     object SharingSpacesTypes {
         const val shareTypeQR = "Qr"
         const val shareTypeMoreInfo = "MoreInfo"
@@ -385,6 +388,11 @@ object EventsDictionary {
     enum class UXType(val value: String) {
         CHAT("Chat"),
         SPACE("Space")
+    }
+
+    enum class OpenObjectByLinkType(val value: String) {
+        OBJECT("Object"),
+        INVITE("Invite")
     }
 
     //endregion

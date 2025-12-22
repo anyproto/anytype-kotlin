@@ -56,7 +56,13 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
             onDebugStackGoroutines = vm::onDiagnosticsGoroutinesClicked,
             onDebugStat = vm::onDiagnosticsStatClicked,
             onDebugSpaceSummary = { vm.onDiagnosticsSpaceSummaryClicked(spaceId) },
-            onDebugExportLog = vm::onDiagnosticsExportLogClicked
+            onDebugExportLog = vm::onDiagnosticsExportLogClicked,
+            isProfilerOnStartupEnabled = vm.isProfilerOnStartupEnabled.collectAsStateWithLifecycle().value,
+            onProfilerOnStartupToggled = vm::onProfilerOnStartupToggled,
+            profilerState = vm.profilerState.collectAsStateWithLifecycle().value,
+            profilerDurationSeconds = DebugViewModel.PROFILER_DURATION_SECONDS,
+            onRunProfilerNowClicked = vm::onRunProfilerNowClicked,
+            onShareProfilerResultClicked = vm::onShareProfilerResultClicked
         )
         val messages = vm.messages.collectAsStateWithLifecycle().value
         if (messages != null) {
@@ -125,6 +131,18 @@ class DebugFragment : BaseBottomSheetComposeFragment() {
                         }.onFailure { error ->
                             Timber.e(error, "Failed to share space summary")
                             vm.onShowMessage(msg = "Failed to share space summary: ${error.message}")
+                        }
+                    }
+
+                    is DebugViewModel.Command.ShareProfilerResult -> {
+                        runCatching {
+                            shareFileFromPath(
+                                path = cmd.path,
+                                uriFileProvider = cmd.uriFileProvider
+                            )
+                        }.onFailure { error ->
+                            Timber.e(error, "Failed to share profiler result")
+                            vm.onShowMessage(msg = "Failed to share profiler result: ${error.message}")
                         }
                     }
                 }

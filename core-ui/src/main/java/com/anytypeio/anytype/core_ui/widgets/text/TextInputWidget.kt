@@ -21,7 +21,6 @@ import com.anytypeio.anytype.core_ui.features.editor.EditorTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.holders.ext.toIMECode
 import com.anytypeio.anytype.core_ui.tools.ClipboardInterceptor
 import com.anytypeio.anytype.core_ui.tools.CustomBetterLinkMovementMethod
-import com.anytypeio.anytype.core_ui.tools.LockableFocusChangeListener
 import com.anytypeio.anytype.core_ui.tools.MentionTextWatcher
 import com.anytypeio.anytype.core_ui.tools.TextInputTextWatcher
 import com.anytypeio.anytype.core_ui.widgets.text.highlight.HighlightAttributeReader
@@ -108,6 +107,7 @@ class TextInputWidget : AppCompatEditText {
         imeOptions = inputAction.toIMECode()
         setTextIsSelectable(true)
         inReadMode = false
+        isCursorVisible = hasFocus()
     }
 
     fun enableReadMode() {
@@ -115,6 +115,7 @@ class TextInputWidget : AppCompatEditText {
             inReadMode = true
             setHorizontallyScrolling(false)
             setTextIsSelectable(false)
+            isCursorVisible = false
         }
     }
 
@@ -162,7 +163,7 @@ class TextInputWidget : AppCompatEditText {
     }
 
     fun dismissMentionWatchers() {
-        watchers.filterIsInstance(MentionTextWatcher::class.java).forEach { it.onDismiss() }
+        watchers.filterIsInstance<MentionTextWatcher>().forEach { it.onDismiss() }
     }
 
     fun pauseTextWatchers(block: () -> Unit) = synchronized(this) {
@@ -175,17 +176,6 @@ class TextInputWidget : AppCompatEditText {
         isSelectionWatcherBlocked = true
         block()
         isSelectionWatcherBlocked = false
-    }
-
-    fun pauseFocusChangeListener(block: () -> Unit) = synchronized(this) {
-        val listener = onFocusChangeListener
-        if (listener is LockableFocusChangeListener) {
-            listener.lock()
-        }
-        block()
-        if (listener is LockableFocusChangeListener) {
-            listener.unlock()
-        }
     }
 
     private fun lockTextWatchers() {

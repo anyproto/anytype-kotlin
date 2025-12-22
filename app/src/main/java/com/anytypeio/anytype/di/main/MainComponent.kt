@@ -30,8 +30,8 @@ import com.anytypeio.anytype.di.feature.SplashDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
-import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
 import com.anytypeio.anytype.di.feature.chats.SelectChatIconDependencies
+import com.anytypeio.anytype.di.feature.chats.SelectChatReactionDependencies
 import com.anytypeio.anytype.di.feature.gallery.GalleryInstallationComponentDependencies
 import com.anytypeio.anytype.di.feature.home.HomeScreenDependencies
 import com.anytypeio.anytype.di.feature.membership.MembershipComponentDependencies
@@ -67,6 +67,8 @@ import com.anytypeio.anytype.di.feature.vault.VaultComponentDependencies
 import com.anytypeio.anytype.di.feature.widgets.CreateChatObjectDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetSourceDependencies
 import com.anytypeio.anytype.di.feature.widgets.SelectWidgetTypeDependencies
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.ui.widgets.collection.CollectionDependencies
 import dagger.Binds
 import dagger.Component
@@ -173,6 +175,9 @@ interface MainComponent :
     fun logoutWarningComponent(): LogoutWarningSubComponent.Builder
 
     //endregion
+
+    fun chatPreviewContainer(): ChatPreviewContainer
+    fun chatsDetailsSubscriptionContainer(): ChatsDetailsSubscriptionContainer
 }
 
 @Module

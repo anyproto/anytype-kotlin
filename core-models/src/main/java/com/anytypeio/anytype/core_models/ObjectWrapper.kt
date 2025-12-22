@@ -308,6 +308,8 @@ sealed class ObjectWrapper {
         val name: String? get() = getSingleValue(Relations.NAME)
         val color: String = relationOptionColor.orEmpty()
         val isDeleted: Boolean? get() = getSingleValue(Relations.IS_DELETED)
+        val relationKey: Key? get() = getSingleValue(Relations.RELATION_KEY)
+        val orderId: String? get() = getSingleValue(Relations.ORDER_ID)
     }
 
     data class SpaceView(override val map: Struct) : ObjectWrapper() {
@@ -400,6 +402,12 @@ sealed class ObjectWrapper {
         val isShared: Boolean get() {
             return spaceAccessType == SpaceAccessType.SHARED
         }
+
+        val isOneToOneSpace: Boolean get() {
+            return spaceUxType == SpaceUxType.ONE_TO_ONE
+        }
+
+        val oneToOneIdentity: Id? get() = getSingleValue(Relations.ONE_TO_ONE_IDENTITY)
 
         val spacePushNotificationMode
             get() = getSingleValue<Double>(Relations.SPACE_PUSH_NOTIFICATION_MODE)

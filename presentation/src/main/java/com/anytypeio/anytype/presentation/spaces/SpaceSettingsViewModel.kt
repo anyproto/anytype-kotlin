@@ -25,6 +25,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.ParticipantStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
@@ -81,7 +82,7 @@ import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShareInviteLink
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowDeleteSpaceWarning
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ShowLeaveSpaceWarning
-import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.*
+import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.EntrySpace
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Icon
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.InviteLink
@@ -333,7 +334,8 @@ class SpaceSettingsViewModel(
                         ?.let { timeInSeconds -> (timeInSeconds * 1000L).toLong() },
                     networkId = spaceManager.getConfig(vmParams.space)?.network.orEmpty(),
                     isDebugVisible = BuildConfig.DEBUG || clickCount >= 5,
-                    deviceToken = deviceToken
+                    deviceToken = deviceToken,
+                    isOneToOne = spaceView.isOneToOneSpace
                 )
 
                 val items = buildList {
@@ -342,16 +344,37 @@ class SpaceSettingsViewModel(
                             icon = spaceIcon
                         )
                     )
-                    add(Spacer(height = 24))
-                    add(
-                        UiSpaceSettingsItem.Name(
-                            name = spaceView.name.orEmpty()
+
+                    // For ONE_TO_ONE spaces, show the other member's identity/globalName
+                    if (spaceView.isOneToOneSpace && spaceMembers is ActiveSpaceMemberSubscriptionContainer.Store.Data) {
+                        // Find the member using oneToOneIdentity - the canonical way to identify the other user
+                        val otherMember =
+                            spaceMembers.members.find { it.identity == spaceView.oneToOneIdentity }
+                        otherMember?.let {
+                            add(Spacer(height = 16))
+                            add(
+                                UiSpaceSettingsItem.ParticipantIdentity(
+                                    name = it.name.orEmpty(),
+                                    globalName = it.globalName,
+                                    identity = it.identity
+                                )
+                            )
+                            add(UiSpaceSettingsItem.Section.Collaboration)
+                        }
+                    } else {
+                        add(Spacer(height = 24))
+                        add(
+                            UiSpaceSettingsItem.Name(
+                                name = spaceView.name.orEmpty()
+                            )
                         )
-                    )
+                    }
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
                             add(Spacer(height = 4))
-                            add(MembersSmall(count = spaceMemberCount))
+                            if (spaceView.spaceUxType.shouldShowMemberCount) {
+                                add(MembersSmall(count = spaceMemberCount))
+                            }
                         }
 
                         SpaceAccessType.DEFAULT, null -> {
@@ -360,7 +383,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (spaceView.isPossibleToShare) {
+                    if (spaceView.isPossibleToShare && !spaceView.isOneToOneSpace) {
                         val isEditorLimitReached = spaceLimitsState is SpaceLimitsState.EditorsLimit
                         val requestsCount =
                             if (permission?.isOwner() == true && requests > 0) requests else null
@@ -417,7 +440,7 @@ class SpaceSettingsViewModel(
                         }
                     }
 
-                    if (spaceView.isShared) {
+                    if (spaceView.isShared || spaceView.isOneToOneSpace) {
                         add(Spacer(height = 8))
                         add(Notifications)
                     }
@@ -467,7 +490,7 @@ class SpaceSettingsViewModel(
                 UiSpaceSettingsState.SpaceSettings(
                     spaceTechInfo = spaceTechInfo,
                     items = items,
-                    isEditEnabled = permission?.isOwnerOrEditor() == true,
+                    isEditEnabled = permission?.isOwnerOrEditor() == true && !spaceView.isOneToOneSpace,
                     notificationState = spaceView.spacePushNotificationMode,
                     targetSpaceId = targetSpaceId
                 )
@@ -1087,13 +1110,18 @@ class SpaceSettingsViewModel(
                 spaceViewContainer.observe(vmParams.space)
             ) { chats, spaceView ->
 
-                // Filter chats that have custom notification states (different from space default)
+                // Show chats that are present in any of the notification override lists
                 chats.mapNotNull { chat ->
-                    val chatState = NotificationStateCalculator.calculateChatNotificationState(
-                        chatSpace = spaceView,
-                        chatId = chat.id
-                    )
-                    if (chatState != spaceView.spacePushNotificationMode) {
+                    // Check if chat is in any of the force notification lists
+                    val isInForceAllList = chat.id in spaceView.spacePushNotificationForceAllIds
+                    val isInForceMuteList = chat.id in spaceView.spacePushNotificationForceMuteIds
+                    val isInForceMentionList = chat.id in spaceView.spacePushNotificationForceMentionIds
+
+                    if (isInForceAllList || isInForceMuteList || isInForceMentionList) {
+                        val chatState = NotificationStateCalculator.calculateChatNotificationState(
+                            chatSpace = spaceView,
+                            chatId = chat.id
+                        )
                         val objectType = storeOfObjectTypes.getTypeOfObject(chat)
                         ChatNotificationItem(
                             id = chat.id,
@@ -1144,6 +1172,7 @@ class SpaceSettingsViewModel(
      * 2. The space has a defined UX type (Chat or Data)
      * 3. The space is shared (not private or default)
      * 4. The space has a valid chat ID (not null or empty)
+     * 5. The space is not a ONE_TO_ONE space (cannot change type for 1-1 chats)
      *
      * @param permission The current user's permissions in the space
      * @param spaceView The space view data containing space configuration
@@ -1160,6 +1189,7 @@ class SpaceSettingsViewModel(
 
         return permission?.isOwner() == true
                 && spaceView.spaceUxType != null
+                && spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE
                 && spaceView.spaceAccessType == SpaceAccessType.SHARED
                 && !spaceView.chatId.isNullOrEmpty()
     }

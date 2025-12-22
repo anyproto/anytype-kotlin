@@ -12,9 +12,13 @@ import com.anytypeio.anytype.domain.auth.interactor.Logout
 import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
+import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
@@ -93,7 +97,12 @@ object MainEntryModule {
         scope: CoroutineScope,
         observeShowSpacesIntroduction: ObserveShowSpacesIntroduction,
         setSpacesIntroductionShown: SetSpacesIntroductionShown,
-        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo
+        appInfo: com.anytypeio.anytype.core_utils.tools.AppInfo,
+        chatPreviewContainer: ChatPreviewContainer,
+        chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer,
+        participantSubscriptionContainer: ParticipantSubscriptionContainer,
+        userSettingsRepository: UserSettingsRepository,
+        debugRunProfiler: DebugRunProfiler
     ): MainViewModelFactory = MainViewModelFactory(
         resumeAccount = resumeAccount,
         analytics = analytics,
@@ -119,7 +128,12 @@ object MainEntryModule {
         scope = scope,
         observeShowSpacesIntroduction = observeShowSpacesIntroduction,
         setSpacesIntroductionShown = setSpacesIntroductionShown,
-        appInfo = appInfo
+        appInfo = appInfo,
+        chatPreviewContainer = chatPreviewContainer,
+        chatsDetailsSubscriptionContainer = chatsDetailsSubscriptionContainer,
+        participantSubscriptionContainer = participantSubscriptionContainer,
+        userSettingsRepository = userSettingsRepository,
+        debugRunProfiler = debugRunProfiler
     )
 
     @JvmStatic
@@ -211,4 +225,12 @@ object MainEntryModule {
     @PerScreen
     @Provides
     fun provideSpaceInviteResolver(): SpaceInviteResolver = DefaultSpaceInviteResolver
+
+    @JvmStatic
+    @PerScreen
+    @Provides
+    fun provideDebugRunProfiler(
+        repo: AuthRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): DebugRunProfiler = DebugRunProfiler(repo, dispatchers)
 }

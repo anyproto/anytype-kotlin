@@ -94,6 +94,9 @@ interface MiddlewareService {
     fun deleteRelationOptions(request: Rpc.Relation.ListRemoveOption.Request): Rpc.Relation.ListRemoveOption.Response
 
     @Throws(Exception::class)
+    fun setRelationOptionsOrder(request: Rpc.Relation.Option.SetOrder.Request): Rpc.Relation.Option.SetOrder.Response
+
+    @Throws(Exception::class)
     fun objectCreateSet(request: Rpc.Object.CreateSet.Request): Rpc.Object.CreateSet.Response
 
     @Throws(Exception::class)
@@ -158,6 +161,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun addObjectToCollection(request : Rpc.ObjectCollection.Add.Request): Rpc.ObjectCollection.Add.Response
+
+    @Throws(Exception::class)
+    fun removeObjectFromCollection(request : Rpc.ObjectCollection.Remove.Request): Rpc.ObjectCollection.Remove.Response
 
     @Throws(Exception::class)
     fun setObjectSource(request: Rpc.Object.SetSource.Request): Rpc.Object.SetSource.Response
@@ -476,6 +482,9 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun debugExportLogs(request: Rpc.Debug.ExportLog.Request): Rpc.Debug.ExportLog.Response
+
+    @Throws(Exception::class)
+    fun debugRunProfiler(request: Rpc.Debug.RunProfiler.Request): Rpc.Debug.RunProfiler.Response
     //endregion
 
     //region WIDGETS commands

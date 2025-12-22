@@ -19,6 +19,7 @@ import androidx.compose.ui.res.pluralStringResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -92,36 +93,48 @@ fun HomeScreenToolbar(
             overflow = TextOverflow.Ellipsis
         )
 
-        val context = LocalContext.current
-        val locale = context.resources.configuration.locales[0]
-        val text = if (locale != null && spaceViewState.membersCount > 0) {
-            pluralStringResource(
-                id = R.plurals.multiplayer_number_of_space_members,
-                spaceViewState.membersCount,
-                spaceViewState.membersCount,
-                spaceViewState.membersCount
-            )
-        } else {
-            if (locale == null) {
-                Timber.e("Error getting the locale")
+        // Show either member count or "Private channel" based on space type
+        val subtitleText: String? = when (spaceViewState.spaceUxType) {
+            SpaceUxType.ONE_TO_ONE -> stringResource(id = R.string.private_channel)
+            else -> {
+                if (spaceViewState.spaceUxType.shouldShowMemberCount) {
+                    val context = LocalContext.current
+                    val locale = context.resources.configuration.locales[0]
+                    if (locale != null && spaceViewState.membersCount > 0) {
+                        pluralStringResource(
+                            id = R.plurals.multiplayer_number_of_space_members,
+                            spaceViewState.membersCount,
+                            spaceViewState.membersCount,
+                            spaceViewState.membersCount
+                        )
+                    } else {
+                        if (locale == null) {
+                            Timber.e("Error getting the locale")
+                        }
+                        stringResource(id = R.string.three_dots_text_placeholder)
+                    }
+                } else {
+                    null
+                }
             }
-            stringResource(id = R.string.three_dots_text_placeholder)
         }
 
-        Text(
-            text = text,
-            style = Relations2,
-            color = colorResource(R.color.control_transparent_secondary),
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .padding(
-                    start = 104.dp,
-                    bottom = 8.dp
-                )
-                .noRippleClickable {
-                    onSettingsClicked()
-                }
-        )
+        subtitleText?.let { text ->
+            Text(
+                text = text,
+                style = Relations2,
+                color = colorResource(R.color.control_transparent_secondary),
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(
+                        start = 104.dp,
+                        bottom = 8.dp
+                    )
+                    .noRippleClickable {
+                        onSettingsClicked()
+                    }
+            )
+        }
 
         Box(
             modifier = Modifier

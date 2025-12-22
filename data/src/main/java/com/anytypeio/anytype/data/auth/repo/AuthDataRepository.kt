@@ -122,6 +122,10 @@ class AuthDataRepository(
         return factory.remote.debugExportLogs(dir)
     }
 
+    override suspend fun debugRunProfiler(durationInSeconds: Int): String {
+        return factory.remote.debugRunProfiler(durationInSeconds)
+    }
+
     override suspend fun registerDeviceToken(command: Command.RegisterDeviceToken) {
         factory.remote.registerDeviceToken(command)
     }

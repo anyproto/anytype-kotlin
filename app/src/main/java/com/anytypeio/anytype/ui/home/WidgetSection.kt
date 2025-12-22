@@ -68,7 +68,6 @@ fun LazyListScope.renderWidgetSection(
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
     onWidgetSourceClicked: (WidgetId) -> Unit,
     onSeeAllClicked: (WidgetId, ViewId?) -> Unit,
-    onWidgetMenuTriggered: (WidgetId) -> Unit,
     onToggleExpandedWidgetState: (WidgetId) -> Unit,
     onChangeWidgetView: (WidgetId, ViewId) -> Unit,
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
@@ -136,7 +135,6 @@ fun LazyListScope.renderWidgetSection(
                             onWidgetElementClicked(item.id, obj)
                         },
                         onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetMenuClicked = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
@@ -249,9 +247,7 @@ fun LazyListScope.renderWidgetSection(
                         onWidgetObjectClicked = { obj ->
                             onWidgetElementClicked(item.id, obj)
                         },
-                        onWidgetSourceClicked = onWidgetSourceClicked,
                         onSeeAllClicked = onSeeAllClicked,
-                        onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
@@ -312,15 +308,12 @@ fun LazyListScope.renderWidgetSection(
                         onWidgetObjectClicked = { obj ->
                             onWidgetElementClicked(item.id, obj)
                         },
-                        onWidgetSourceClicked = onWidgetSourceClicked,
                         onSeeAllClicked = onSeeAllClicked,
-                        onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
                         onChangeWidgetView = onChangeWidgetView,
                         onToggleExpandedWidgetState = onToggleExpandedWidgetState,
-                        onObjectCheckboxClicked = onObjectCheckboxClicked,
                         onCreateElement = onCreateElement,
                         menuItems = menuItems,
                         isCardMenuExpanded = isCardMenuExpanded
@@ -375,9 +368,7 @@ fun LazyListScope.renderWidgetSection(
                         onWidgetObjectClicked = { obj ->
                             onWidgetElementClicked(item.id, obj)
                         },
-                        onWidgetSourceClicked = onWidgetSourceClicked,
                         onSeeAllClicked = onSeeAllClicked,
-                        onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },
@@ -439,7 +430,6 @@ fun LazyListScope.renderWidgetSection(
                             onWidgetElementClicked(item.id, obj)
                         },
                         onWidgetSourceClicked = onWidgetSourceClicked,
-                        onWidgetMenuTriggered = onWidgetMenuTriggered,
                         onDropDownMenuAction = { action ->
                             onWidgetMenuAction(item.id, action)
                         },

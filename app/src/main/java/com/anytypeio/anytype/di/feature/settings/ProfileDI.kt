@@ -15,6 +15,8 @@ import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GenerateOneToOneChatLink
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -58,7 +60,10 @@ object ProfileModule {
         getNetworkMode: GetNetworkMode,
         profileSubscriptionManager: ProfileSubscriptionManager,
         removeObjectIcon: RemoveObjectIcon,
-        notificationPermissionManager: NotificationPermissionManager
+        notificationPermissionManager: NotificationPermissionManager,
+        userPermissionProvider: UserPermissionProvider,
+        generateOneToOneChatLink: GenerateOneToOneChatLink,
+        userSettingsRepository: UserSettingsRepository
     ): ProfileSettingsViewModel.Factory = ProfileSettingsViewModel.Factory(
         analytics = analytics,
         container = storelessSubscriptionContainer,
@@ -70,7 +75,10 @@ object ProfileModule {
         getNetworkMode = getNetworkMode,
         profileSubscriptionManager = profileSubscriptionManager,
         removeObjectIcon = removeObjectIcon,
-        notificationPermissionManager = notificationPermissionManager
+        notificationPermissionManager = notificationPermissionManager,
+        userPermissionProvider = userPermissionProvider,
+        generateOneToOneChatLink = generateOneToOneChatLink,
+        userSettingsRepository = userSettingsRepository
     )
 
     @Provides
@@ -137,6 +145,15 @@ object ProfileModule {
     fun provideSetDocumentImageIcon(
         repo: BlockRepository
     ): SetDocumentImageIcon = SetDocumentImageIcon(repo)
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideGenerateOneToOneChatLink(
+        dispatchers: AppCoroutineDispatchers
+    ): GenerateOneToOneChatLink = GenerateOneToOneChatLink(
+        dispatchers = dispatchers
+    )
 
     @Module
     interface Bindings {

@@ -140,6 +140,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
 import com.anytypeio.anytype.presentation.widgets.WidgetContainer
@@ -274,11 +275,13 @@ class HomeScreenViewModel(
     // Separate StateFlows for different widget sections
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
+    private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
     private val pinnedContainers = MutableStateFlow<Containers>(null)
     private val typeContainers = MutableStateFlow<Containers>(null)
+    private val unreadContainer = MutableStateFlow<WidgetContainer?>(null)
 
     // Drag-and-drop state tracking for type widgets
     private var pendingTypeWidgetOrder: List<Id>? = null
@@ -295,7 +298,7 @@ class HomeScreenViewModel(
 
     // Exposed flows for UI - widget views (WidgetView models) separated by section
     @OptIn(ExperimentalCoroutinesApi::class)
-    val pinnedViews: StateFlow<List<WidgetView>> = pinnedContainers
+    private val pinnedViewsRaw: StateFlow<List<WidgetView>> = pinnedContainers
         .flatMapLatest { containers ->
             if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
@@ -312,7 +315,7 @@ class HomeScreenViewModel(
         )
 
     @OptIn(ExperimentalCoroutinesApi::class)
-    val typeViews: StateFlow<List<WidgetView>> = typeContainers
+    private val typeViewsRaw: StateFlow<List<WidgetView>> = typeContainers
         .flatMapLatest { containers ->
             if (containers.isNullOrEmpty()) {
                 flowOf(emptyList())
@@ -326,6 +329,53 @@ class HomeScreenViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = emptyList()
+        )
+
+    // Badge deduplication: hide all chat badges when unread section is expanded
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val pinnedViews: StateFlow<List<WidgetView>> = combine(
+        pinnedViewsRaw,
+        observeCollapsedSectionIds()
+    ) { pinned, collapsedList ->
+        val hideAllChatBadges = !collapsedList.contains(Widget.Source.SECTION_UNREAD)
+        if (hideAllChatBadges) {
+            hideAllChatBadgesInWidgets(pinned)
+        } else {
+            pinned
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val typeViews: StateFlow<List<WidgetView>> = combine(
+        typeViewsRaw,
+        observeCollapsedSectionIds()
+    ) { types, collapsedList ->
+        val hideAllChatBadges = !collapsedList.contains(Widget.Source.SECTION_UNREAD)
+        if (hideAllChatBadges) {
+            hideAllChatBadgesInWidgets(types)
+        } else {
+            types
+        }
+    }.stateIn(
+        scope = viewModelScope,
+        started = SharingStarted.Eagerly,
+        initialValue = emptyList()
+    )
+
+    // Exposed flow for unread widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val unreadView: StateFlow<WidgetView?> = unreadContainer
+        .flatMapLatest { container ->
+            container?.view ?: flowOf(null)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
         )
 
     // Exposed flow for bin widget
@@ -598,6 +648,7 @@ class HomeScreenViewModel(
     private fun proceedWithWidgetContainerPipeline() {
         buildPinnedContainerPipeline()
         buildTypeContainerPipeline()
+        buildUnreadContainerPipeline()
     }
 
     private fun buildPinnedContainerPipeline() {
@@ -629,6 +680,24 @@ class HomeScreenViewModel(
                 Timber.d("Emitting list of type containers: ${containersList.size}")
                 typeContainers.value = containersList
             }
+        }
+    }
+
+    private fun buildUnreadContainerPipeline() {
+        viewModelScope.launch {
+            unreadWidget
+                .map { widget ->
+                    if (widget != null) {
+                        Timber.d("Creating unread container for widget: ${widget.id}")
+                        widgetContainerDelegate.createContainer(widget, emptyList())
+                    } else {
+                        null
+                    }
+                }
+                .collect { container ->
+                    Timber.d("Emitting unread container: ${container != null}")
+                    unreadContainer.value = container
+                }
         }
     }
 
@@ -772,8 +841,8 @@ class HomeScreenViewModel(
                 }
             }.collect { sections ->
                 if (sections != null) {
-                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.binWidget != null) 1 else 0)
-                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, bin=${sections.binWidget != null}, total=$totalWidgets")
+                     val totalWidgets = sections.pinnedWidgets.size + sections.typeWidgets.size + (if (sections.unreadWidget != null) 1 else 0) + (if (sections.binWidget != null) 1 else 0)
+                    Timber.d("Emitting widget sections: pinned=${sections.pinnedWidgets.size}, types=${sections.typeWidgets.size}, unread=${sections.unreadWidget != null}, bin=${sections.binWidget != null}, total=$totalWidgets")
 
                     pinnedWidgets.value = sections.pinnedWidgets
 
@@ -784,6 +853,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = sections.typeWidgets
                     }
 
+                    unreadWidget.value = sections.unreadWidget
                     binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
@@ -795,6 +865,7 @@ class HomeScreenViewModel(
                         typeWidgets.value = emptyList()
                     }
 
+                    unreadWidget.value = null
                     binWidget.value = null
                 }
             }
@@ -1528,6 +1599,7 @@ class HomeScreenViewModel(
         // All-objects widget has link appearance.
         is Widget.AllObjects -> ChangeWidgetType.TYPE_LINK
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
+        is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
@@ -2974,12 +3046,28 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionUnreadClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_UNREAD)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_UNREAD)
+            } else {
+                currentCollapsedSections.plus(SECTION_UNREAD)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
     private fun isWidgetInCollapsedSection(widget: Widget, collapsedSections: Set<Id>): Boolean {
         return when {
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
+            widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
             else -> false
         }
@@ -2990,12 +3078,17 @@ class HomeScreenViewModel(
      *
      * Product logic:
      * - Pinned section widgets: Expanded by default
+     * - Unread section widgets: Expanded by default
      * - Object Types section widgets: Collapsed by default
      *
      * IMPORTANT: expandedIds represents "widgets toggled from their default state", NOT "expanded widgets".
      * The semantics are INVERTED based on section type:
      *
      * Pinned Section (default: expanded):
+     *   - Widget ID NOT in set → EXPANDED (using default)
+     *   - Widget ID IN set → COLLAPSED (user toggled from default)
+     *
+     * Unread Section (default: expanded):
      *   - Widget ID NOT in set → EXPANDED (using default)
      *   - Widget ID IN set → COLLAPSED (user toggled from default)
      *
@@ -3023,6 +3116,11 @@ class HomeScreenViewModel(
         return when (widget.sectionType) {
             SectionType.PINNED -> {
                 // Pinned widgets are expanded by default
+                // Being in expandedIds means user explicitly collapsed it
+                expandedIds.contains(widget.id)
+            }
+            SectionType.UNREAD -> {
+                // Unread widgets are expanded by default
                 // Being in expandedIds means user explicitly collapsed it
                 expandedIds.contains(widget.id)
             }
@@ -3657,3 +3755,54 @@ data class HomeScreenVmParams(val spaceId: SpaceId)
 
 const val MAX_TYPE_COUNT_FOR_APP_ACTIONS = 4
 const val MAX_PINNED_TYPE_COUNT_FOR_APP_ACTIONS = 3
+
+/**
+ * Hides all chat unread badges when the unread section is expanded.
+ * This prevents badge duplication across sections.
+ */
+private fun hideAllChatBadgesInWidgets(
+    widgets: List<WidgetView>
+): List<WidgetView> {
+    return widgets.map { widget ->
+        when (widget) {
+            is WidgetView.ChatList -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            is WidgetView.SetOfObjects -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.SetOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            is WidgetView.ListOfObjects -> {
+                widget.copy(
+                    elements = widget.elements.map { element ->
+                        if (element is WidgetView.ListOfObjects.Element.Chat) {
+                            // Hide badges by setting counters to null
+                            element.copy(counter = null)
+                        } else {
+                            element
+                        }
+                    }
+                )
+            }
+            // Other widget types don't have chat elements
+            else -> widget
+        }
+    }
+}

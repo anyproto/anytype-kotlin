@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Ga naar de app</string>
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Standaard</string>
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>

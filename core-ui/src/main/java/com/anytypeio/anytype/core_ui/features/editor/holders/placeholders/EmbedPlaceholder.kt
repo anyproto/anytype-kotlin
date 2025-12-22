@@ -45,14 +45,16 @@ class EmbedPlaceholder(
     }
 
     fun bind(item: BlockView.Embed, clicked: (ListenerType) -> Unit) {
+        timber.log.Timber.d("EmbedPlaceholder: bind called with isSelected=${item.isSelected} for id=${item.id}")
         select(item.isSelected)
         binding.embedMessage.text = binding.root.context.getString(
             R.string.embed_content_not_available,
             item.processor
         )
-        if (item.text.isNotEmpty()) {
+        val trimmedText = item.text.trim()
+        if (trimmedText.isNotEmpty()) {
             binding.embedUrl.visible()
-            binding.embedUrl.text = item.text
+            binding.embedUrl.text = trimmedText
         } else {
             binding.embedUrl.gone()
         }
@@ -66,8 +68,10 @@ class EmbedPlaceholder(
         item: BlockView.Embed,
         clicked: (ListenerType) -> Unit
     ) {
+        timber.log.Timber.d("EmbedPlaceholder: processChangePayload called for id=${item.id}, payloads=${payloads.map { it.javaClass.simpleName }}")
         payloads.forEach { payload ->
             if (payload.isSelectionChanged) {
+                timber.log.Timber.d("EmbedPlaceholder: Selection changed detected, setting isSelected=${item.isSelected}")
                 select(item.isSelected)
             }
         }
@@ -75,7 +79,9 @@ class EmbedPlaceholder(
 
     private fun select(isSelected: Boolean) {
         timber.log.Timber.d("EmbedPlaceholder: select called with isSelected=$isSelected")
-        binding.selected.isSelected = isSelected
+        card.isSelected = isSelected
+        // Force refresh the selectors
+        card.refreshDrawableState()
     }
 
     @Deprecated("Pre-nested-styling legacy.")
@@ -85,12 +91,8 @@ class EmbedPlaceholder(
 
     override fun applyDecorations(decorations: List<BlockView.Decoration>) {
         super.applyDecorations(decorations)
-        binding.selected.applySelectorOffset<FrameLayout.LayoutParams>(
-            content = binding.card,
-            res = itemView.resources
-        )
-        card.setCardBackgroundColor(
-            card.resources.veryLight(decorations.last().background, 0)
+        binding.containerWithBackground.setBackgroundColor(
+            binding.containerWithBackground.resources.veryLight(decorations.last().background, 0)
         )
     }
 }

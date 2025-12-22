@@ -77,11 +77,4 @@
 
     </com.google.android.material.card.MaterialCardView>
 
-    <View
-        android:id="@+id/selected"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/item_block_multi_select_mode_selector"
-        tools:background="@drawable/item_block_multi_select_selected" />
-
 </FrameLayout>

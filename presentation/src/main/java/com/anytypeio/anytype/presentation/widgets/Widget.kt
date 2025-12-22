@@ -444,7 +444,6 @@ suspend fun buildWidgetSections(
     // Build unread widget (displayed separately at top) - only for data spaces
     val unreadWidget = buildUnreadWidget(
         state = state,
-        params = params,
         spaceUxType = spaceView.spaceUxType
     )
 
@@ -537,16 +536,9 @@ private suspend fun buildTypeSection(
 
 private fun buildUnreadWidget(
     state: ObjectViewState.Success,
-    params: WidgetUiParams,
     spaceUxType: SpaceUxType?
 ): Widget.UnreadChatList? {
-    // Only show unread widget in data spaces (multi-chat)
-    // CHAT and ONE_TO_ONE spaces have only one chat, so unread section is not needed
-    val canCreateAdditionalChats = spaceUxType.canCreateAdditionalChats
-    
-    Timber.d("buildUnreadWidget: spaceUxType=$spaceUxType, canCreateAdditionalChats=$canCreateAdditionalChats")
-    
-    return if (canCreateAdditionalChats) {
+    return if (spaceUxType == SpaceUxType.DATA) {
         Timber.d("buildUnreadWidget: Creating unread widget for data space")
         Widget.UnreadChatList(
             id = "widget_unread_chat_list",

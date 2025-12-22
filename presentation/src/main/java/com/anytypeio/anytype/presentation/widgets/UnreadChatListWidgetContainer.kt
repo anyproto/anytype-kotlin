@@ -2,9 +2,12 @@ package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
@@ -140,7 +143,15 @@ class UnreadChatListWidgetContainer(
                     },
                     limit = 0, // No limit - get all chats
                     source = emptyList(),
-                    collection = null
+                    collection = null,
+                    sorts = listOf(
+                        DVSort(
+                            relationKey = Relations.LAST_MESSAGE_DATE,
+                            type = DVSortType.DESC,
+                            relationFormat = Relation.Format.DATE,
+                            includeTime = true
+                        )
+                    )
                 )
 
                 val chatObjects = storage.subscribe(params)
@@ -190,9 +201,6 @@ class UnreadChatListWidgetContainer(
                     // Filter objects to only those with unread messages and sort by lastMessageDate
                     val unreadObjects = objects
                         .filter { obj -> unreadChatIds.contains(obj.id) }
-                        .sortedByDescending { obj ->
-                            obj.getSingleValue<String>(Relations.LAST_MESSAGE_DATE) ?: ""
-                        }
 
                     // Map to widget elements with preview data
                     val elements = unreadObjects.map { obj ->

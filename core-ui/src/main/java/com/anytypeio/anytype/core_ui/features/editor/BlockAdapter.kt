@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockDataViewEmptySourceBin
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDescriptionBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerDotsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockDividerLineBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFeaturedRelationsBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockFileBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockHeaderOneBinding
@@ -813,7 +814,7 @@ class BlockAdapter(
                 }
             }
             HOLDER_EMBED -> EmbedPlaceholder(
-                ItemBlockMediaPlaceholderBinding.inflate(inflater, parent, false)
+                ItemBlockEmbedBinding.inflate(inflater, parent, false)
             )
             HOLDER_TOC -> {
                 TableOfContents(

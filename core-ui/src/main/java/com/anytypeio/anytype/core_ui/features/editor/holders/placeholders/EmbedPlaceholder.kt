@@ -4,7 +4,7 @@ import android.view.View
 import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.databinding.ItemBlockMediaPlaceholderBinding
+import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -13,13 +13,14 @@ import com.anytypeio.anytype.core_ui.features.editor.SupportCustomTouchProcessor
 import com.anytypeio.anytype.core_ui.features.editor.decoration.DecoratableCardViewHolder
 import com.anytypeio.anytype.core_ui.features.editor.decoration.EditorDecorationContainer
 import com.anytypeio.anytype.core_ui.features.editor.decoration.applySelectorOffset
-import com.anytypeio.anytype.core_utils.ext.invisible
+import com.anytypeio.anytype.core_utils.ext.gone
+import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.google.android.material.card.MaterialCardView
 
 class EmbedPlaceholder(
-    val binding: ItemBlockMediaPlaceholderBinding
+    val binding: ItemBlockEmbedBinding
 ) : BlockViewHolder(binding.root),
     BlockViewHolder.DragAndDropHolder,
     BlockViewHolder.IndentableHolder,
@@ -44,16 +45,20 @@ class EmbedPlaceholder(
     }
 
     fun bind(item: BlockView.Embed, clicked: (ListenerType) -> Unit) {
-        setup()
         select(item.isSelected)
-        binding.fileName.text = binding.root.context.getString(
+        binding.embedMessage.text = binding.root.context.getString(
             R.string.embed_content_not_available,
             item.processor
         )
+        if (item.text.isNotEmpty()) {
+            binding.embedUrl.visible()
+            binding.embedUrl.text = item.text
+        } else {
+            binding.embedUrl.gone()
+        }
         binding.root.setOnClickListener {
             clicked(ListenerType.Embed.Click(item))
         }
-        binding.progressBar.invisible()
     }
 
     fun processChangePayload(
@@ -68,11 +73,8 @@ class EmbedPlaceholder(
         }
     }
 
-    private fun setup() {
-        binding.fileIcon.setImageResource(R.drawable.ic_bookmark_placeholder)
-    }
-
     private fun select(isSelected: Boolean) {
+        timber.log.Timber.d("EmbedPlaceholder: select called with isSelected=$isSelected")
         binding.selected.isSelected = isSelected
     }
 

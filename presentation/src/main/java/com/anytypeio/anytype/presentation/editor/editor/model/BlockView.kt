@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_EMBED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
@@ -1441,7 +1442,7 @@ sealed class BlockView : ViewType {
         override val indent: Int,
         override val isSelected: Boolean,
         override val mode: Mode,
-        override val background: ThemeColor,
+        val background: ThemeColor,
         override val decorations: List<Decoration>,
         val text: String,
         val processor: String,

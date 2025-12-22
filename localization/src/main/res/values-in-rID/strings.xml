@@ -832,6 +832,7 @@
     <string name="go_to_the_app">Ke aplikasi</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Bawaan</string>
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>

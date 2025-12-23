@@ -33,6 +33,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -41,6 +42,7 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun SearchField(
+    horizontalPadding: Dp = 16.dp,
     query: String = "",
     enabled: Boolean = true,
     onQueryChanged: (String) -> Unit,
@@ -62,7 +64,7 @@ fun SearchField(
         }
         Box(
             modifier = Modifier
-                .padding(horizontal = 16.dp)
+                .padding(horizontal = horizontalPadding)
                 .fillMaxWidth()
                 .height(40.dp)
                 .clip(RoundedCornerShape(20.dp))

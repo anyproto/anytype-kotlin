@@ -5,29 +5,25 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.material.Divider
-import androidx.compose.material.Icon
-import androidx.compose.material.IconButton
-import androidx.compose.material.Text
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -36,15 +32,17 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
-import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.foundation.Divider
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 /**
@@ -78,7 +76,7 @@ data class DestinationObjectItem(
  * @param onBackPressed Callback when back button is pressed
  */
 @Composable
-fun SelectDestinationObjectScreen(
+fun BoxScope.SelectDestinationObjectScreen(
     spaceName: String,
     objects: List<DestinationObjectItem>,
     chatObjects: List<DestinationObjectItem> = emptyList(),
@@ -99,24 +97,21 @@ fun SelectDestinationObjectScreen(
             .background(color = colorResource(id = R.color.background_primary))
     ) {
         // Header with back button
-        HeaderSection(
+        HeaderSectionWithBack(
             spaceName = spaceName,
             onBackPressed = onBackPressed
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
         // Search bar
-        DefaultSearchBar(
-            value = searchQuery,
+        SearchField(
+            horizontalPadding = 20.dp,
+            query = searchQuery,
             onQueryChanged = onSearchQueryChanged,
-            hint = R.string.search,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            enabled = true,
+            onFocused = {}
         )
 
-        Spacer(modifier = Modifier.height(26.dp))
+        Spacer(modifier = Modifier.height(22.dp))
 
         // Object list
         LazyColumn(
@@ -129,8 +124,11 @@ fun SelectDestinationObjectScreen(
                     text = stringResource(R.string.sharing_select_dest),
                     style = Caption1Medium,
                     color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
+                    modifier = Modifier.padding(start = 20.dp, bottom = 8.dp)
                 )
+            }
+            item {
+                Divider()
             }
             // Chat objects section (if any chats exist in the space)
             if (chatObjects.isNotEmpty()) {
@@ -145,11 +143,7 @@ fun SelectDestinationObjectScreen(
                     )
                 }
                 item(key = "chats_divider") {
-                    Divider(
-                        color = colorResource(id = R.color.shape_primary),
-                        thickness = 1.dp,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                    )
+                    Divider()
                 }
             }
 
@@ -174,31 +168,54 @@ fun SelectDestinationObjectScreen(
                     isSelected = obj.id in selectedObjectIds,
                     onClick = { onObjectSelected(obj) }
                 )
-                Divider(
-                    color = colorResource(id = R.color.shape_primary),
-                    thickness = 1.dp,
-                    modifier = Modifier.padding(horizontal = 16.dp)
-                )
+                Divider()
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(200.dp))
             }
         }
+    }
 
-        // Bottom section
-        BottomSection(
-            showCommentInput = showCommentInput,
-            commentText = commentText,
-            onCommentChanged = onCommentChanged,
-            onSendClicked = onSendClicked,
-            buttonText = if (showCommentInput) {
+    Column(
+        modifier = Modifier
+            .padding(horizontal = 16.dp)
+            .fillMaxWidth()
+            .background(
+                color = colorResource(R.color.background_primary),
+                shape = RoundedCornerShape(20.dp)
+                )
+            .navigationBarsPadding()
+            .align(Alignment.BottomCenter)
+    ) {
+        // Comment input field (shown above the list when chat is selected)
+        if (showCommentInput) {
+            CommentInputField(
+                commentText = commentText,
+                onCommentChanged = onCommentChanged,
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+
+        // Bottom button
+        ButtonOnboardingPrimaryLarge(
+            text = if (showCommentInput) {
                 stringResource(R.string.send)
             } else {
                 stringResource(R.string.save)
-            }
+            },
+            onClick = onSendClicked,
+            size = ButtonSize.Large,
+            modifierBox = Modifier
+                .fillMaxWidth()
         )
     }
 }
 
 @Composable
-private fun HeaderSection(
+private fun HeaderSectionWithBack(
     spaceName: String,
     onBackPressed: () -> Unit,
     modifier: Modifier = Modifier
@@ -206,36 +223,31 @@ private fun HeaderSection(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 12.dp),
+            .padding(horizontal = 8.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        IconButton(onClick = onBackPressed) {
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = colorResource(id = R.color.glyph_active)
-            )
-        }
+        Image(
+            modifier = Modifier
+                .size(48.dp)
+                .noRippleThrottledClickable {
+                    onBackPressed()
+                },
+            contentScale = ContentScale.Inside,
+            painter = painterResource(R.drawable.ic_back_24),
+            contentDescription = "Back",
+        )
 
-        Column(
-            modifier = Modifier.weight(1f),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = stringResource(R.string.sharing_select_destination),
-                style = BodyBold,
-                color = colorResource(id = R.color.text_primary),
-                textAlign = TextAlign.Center
-            )
-            Text(
-                text = spaceName,
-                style = Caption1Regular,
-                color = colorResource(id = R.color.text_secondary),
-                textAlign = TextAlign.Center,
-                maxLines = 1,
-                overflow = TextOverflow.Ellipsis
-            )
-        }
+        Text(
+            modifier = Modifier
+                .weight(1f)
+                .align(Alignment.CenterVertically),
+            text = spaceName.ifEmpty { stringResource(R.string.untitled) },
+            style = Title1,
+            color = colorResource(id = R.color.text_primary),
+            textAlign = TextAlign.Center,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis
+        )
 
         // Spacer to balance the back button
         Spacer(modifier = Modifier.size(48.dp))
@@ -253,7 +265,7 @@ private fun ObjectListItem(
         modifier = modifier
             .fillMaxWidth()
             .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         // Object icon
@@ -270,7 +282,7 @@ private fun ObjectListItem(
         ) {
             Text(
                 text = item.name.ifEmpty { stringResource(R.string.untitled) },
-                style = PreviewTitle2Regular,
+                style = Title2,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
@@ -297,7 +309,7 @@ private fun ObjectListItem(
             Image(
                 modifier = Modifier.size(24.dp),
                 painter = painterResource(id = R.drawable.ic_checkbox_unchecked),
-                contentDescription = "Selected",
+                contentDescription = "Not selected",
             )
         }
     }
@@ -323,65 +335,6 @@ private fun EmptySearchState(
             style = BodyRegular,
             color = colorResource(id = R.color.text_secondary),
             textAlign = TextAlign.Center
-        )
-    }
-}
-
-@Composable
-private fun BottomSection(
-    showCommentInput: Boolean,
-    commentText: String,
-    onCommentChanged: (String) -> Unit,
-    onSendClicked: () -> Unit,
-    buttonText: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .background(color = colorResource(id = R.color.background_primary))
-            .padding(horizontal = 16.dp, vertical = 12.dp)
-    ) {
-        // Comment input (only shown when "Send to chat" is selected)
-        if (showCommentInput) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = colorResource(id = R.color.shape_primary),
-                        shape = RoundedCornerShape(8.dp)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
-            ) {
-                BasicTextField(
-                    value = commentText,
-                    onValueChange = onCommentChanged,
-                    textStyle = BodyRegular.copy(
-                        color = colorResource(id = R.color.text_primary)
-                    ),
-                    cursorBrush = SolidColor(colorResource(id = R.color.glyph_active)),
-                    modifier = Modifier.fillMaxWidth(),
-                    decorationBox = { innerTextField ->
-                        if (commentText.isEmpty()) {
-                            Text(
-                                text = stringResource(R.string.add_a_comment),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_secondary)
-                            )
-                        }
-                        innerTextField()
-                    }
-                )
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-        }
-
-        // Send/Save button
-        ButtonPrimary(
-            text = buttonText,
-            onClick = onSendClicked,
-            size = ButtonSize.Large,
-            modifier = Modifier.fillMaxWidth()
         )
     }
 }
@@ -424,20 +377,22 @@ private fun SelectDestinationObjectScreenPreview() {
         )
     )
 
-    SelectDestinationObjectScreen(
-        spaceName = "Work Space",
-        objects = sampleObjects,
-        chatObjects = sampleChatObjects,
-        searchQuery = "",
-        selectedObjectIds = emptySet(),
-        commentText = "",
-        showCommentInput = false,
-        onSearchQueryChanged = {},
-        onObjectSelected = {},
-        onCommentChanged = {},
-        onSendClicked = {},
-        onBackPressed = {}
-    )
+    Box {
+        SelectDestinationObjectScreen(
+            spaceName = "Work Space",
+            objects = sampleObjects,
+            chatObjects = sampleChatObjects,
+            searchQuery = "",
+            selectedObjectIds = emptySet(),
+            commentText = "",
+            showCommentInput = false,
+            onSearchQueryChanged = {},
+            onObjectSelected = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onBackPressed = {}
+        )
+    }
 }
 
 @DefaultPreviews
@@ -451,18 +406,20 @@ private fun SelectDestinationObjectScreenWithChatSelectedPreview() {
         isChatOption = true
     )
 
-    SelectDestinationObjectScreen(
-        spaceName = "Work Space",
-        objects = emptyList(),
-        chatObjects = listOf(chatObject),
-        searchQuery = "",
-        selectedObjectIds = setOf(chatObject.id),
-        commentText = "Check this out!",
-        showCommentInput = true,
-        onSearchQueryChanged = {},
-        onObjectSelected = {},
-        onCommentChanged = {},
-        onSendClicked = {},
-        onBackPressed = {}
-    )
+    Box {
+        SelectDestinationObjectScreen(
+            spaceName = "Work Space",
+            objects = emptyList(),
+            chatObjects = listOf(chatObject),
+            searchQuery = "",
+            selectedObjectIds = setOf(chatObject.id),
+            commentText = "Check this out!",
+            showCommentInput = true,
+            onSearchQueryChanged = {},
+            onObjectSelected = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onBackPressed = {}
+        )
+    }
 }

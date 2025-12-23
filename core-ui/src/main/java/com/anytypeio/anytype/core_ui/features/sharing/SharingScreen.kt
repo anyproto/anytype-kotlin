@@ -1,23 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.sharing
 
-import androidx.compose.animation.AnimatedContent
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.animation.togetherWith
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
@@ -35,12 +29,13 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.views.BodyBold
+import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sharing.SelectableObjectView
 import com.anytypeio.anytype.presentation.sharing.SelectableSpaceView
 import com.anytypeio.anytype.presentation.sharing.SharedContent
@@ -53,7 +48,8 @@ import com.anytypeio.anytype.presentation.spaces.SpaceIconView
  * Acts as a state machine, rendering the appropriate screen based on [SharingScreenState].
  */
 @Composable
-fun SharingScreen(
+fun ColumnScope.SharingScreen(
+    modifier: Modifier,
     state: SharingScreenState,
     onSpaceSelected: (SelectableSpaceView) -> Unit,
     onSearchQueryChanged: (String) -> Unit,
@@ -63,274 +59,145 @@ fun SharingScreen(
     onBackPressed: () -> Unit,
     onCancelClicked: () -> Unit,
     onRetryClicked: () -> Unit,
-    modifier: Modifier = Modifier
 ) {
 
-    Box(
+    Dragger(
         modifier = Modifier
-            .systemBarsPadding()
-            .fillMaxSize()
-            .background(
-                color = colorResource(R.color.background_primary),
-                shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-            ),
-    ) {
-        SelectSpaceScreenHeader(
-            modifier = Modifier.fillMaxWidth().height(64.dp)
-        )
-        when (state) {
-            SharingScreenState.Loading -> {
-                LoadingScreen()
-            }
+            .padding(vertical = 6.dp)
+            .align(Alignment.CenterHorizontally)
+    )
 
-            is SharingScreenState.SpaceSelection -> {
-                // Check if any chat space is selected to enable comment input and send
-                val hasChatSpaceSelected = state.spaces.any {
-                    it.isSelected && it.flowType == SharingFlowType.CHAT
-                }
+    when (state) {
 
-                val sendAction: () -> Unit = if (hasChatSpaceSelected) onSendClicked else {
-                    {}
-                }
-                val commentAction: (String) -> Unit =
-                    if (hasChatSpaceSelected) onCommentChanged else {
-                        { _: String -> }
-                    }
-
-                SelectSpaceScreen(
-                    spaces = state.spaces.map { it.toSelectableSpaceItem() },
-                    searchQuery = state.searchQuery,
-                    commentText = if (hasChatSpaceSelected) state.commentText else "",
-                    onSearchQueryChanged = onSearchQueryChanged,
-                    onCommentChanged = commentAction,
-                    onSpaceSelected = { item ->
-                        state.spaces.find { it.id == item.id }?.let { spaceView ->
-                            onSpaceSelected(spaceView)
-                        }
-                    },
-                    onSendClicked = sendAction
+        SharingScreenState.Loading -> {
+            SelectSpaceScreenHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.glyph_active),
+                    modifier = Modifier.size(48.dp)
                 )
+            }
+        }
 
+        SharingScreenState.NoSpaces -> {
+            SelectSpaceScreenHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+            SharingNoSpacesScreen()
+        }
+
+        is SharingScreenState.SpaceSelection -> {
+            // Check if any chat space is selected to enable comment input and send
+            val hasChatSpaceSelected = state.spaces.any {
+                it.isSelected && it.flowType == SharingFlowType.CHAT
             }
 
-            is SharingScreenState.ChatInput -> TODO()
-            is SharingScreenState.Error -> TODO()
-            is SharingScreenState.ObjectSelection -> TODO()
-            is SharingScreenState.Sending -> TODO()
-            is SharingScreenState.Success -> TODO()
-        }
-//        when (state) {
-//            is SharingScreenState.Loading -> {
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    SelectSpaceScreenHeader()
-//                    LoadingScreen()
-//                }
-//            }
-//
-//            is SharingScreenState.SpaceSelection -> {
-//                // Check if any chat space is selected to enable comment input and send
-//                val hasChatSpaceSelected = state.spaces.any {
-//                    it.isSelected && it.flowType == SharingFlowType.CHAT
-//                }
-//
-//                val sendAction: () -> Unit = if (hasChatSpaceSelected) onSendClicked else {{}}
-//                val commentAction: (String) -> Unit = if (hasChatSpaceSelected) onCommentChanged else {{ _: String -> }}
-//
-//                Column(
-//                    modifier = Modifier
-//                        .fillMaxWidth(),
-//                    horizontalAlignment = Alignment.CenterHorizontally
-//                ) {
-//                    SelectSpaceScreenHeader()
-//                    SelectSpaceScreen(
-//                        spaces = state.spaces.map { it.toSelectableSpaceItem() },
-//                        searchQuery = state.searchQuery,
-//                        commentText = if (hasChatSpaceSelected) state.commentText else "",
-//                        onSearchQueryChanged = onSearchQueryChanged,
-//                        onCommentChanged = commentAction,
-//                        onSpaceSelected = { item ->
-//                            state.spaces.find { it.id == item.id }?.let { spaceView ->
-//                                onSpaceSelected(spaceView)
-//                            }
-//                        },
-//                        onSendClicked = sendAction
-//                    )
-//                }
-//            }
-//
-//            is SharingScreenState.ChatInput -> {
-//                ChatInputScreen(
-//                    selectedSpaces = state.selectedSpaces,
-//                    commentText = state.commentText,
-//                    onCommentChanged = onCommentChanged,
-//                    onSendClicked = onSendClicked,
-//                    onBackPressed = onBackPressed
-//                )
-//            }
-//
-//            is SharingScreenState.ObjectSelection -> {
-//                SelectDestinationObjectScreen(
-//                    spaceName = state.space.name,
-//                    objects = state.objects.map { it.toDestinationObjectItem() },
-//                    chatObjects = state.chatObjects.map { it.toDestinationObjectItem() },
-//                    searchQuery = state.searchQuery,
-//                    selectedObjectIds = state.selectedObjectIds,
-//                    commentText = state.commentText,
-//                    showCommentInput = state.hasAnyChatSelected,
-//                    onSearchQueryChanged = onSearchQueryChanged,
-//                    onObjectSelected = { item ->
-//                        if (item.isChatOption) {
-//                            // Find the chat object from the dynamically discovered chatObjects
-//                            state.chatObjects.find { it.id == item.id }?.let { chatObj ->
-//                                onObjectSelected(chatObj)
-//                            }
-//                        } else {
-//                            state.objects.find { it.id == item.id }?.let { objView ->
-//                                onObjectSelected(objView)
-//                            }
-//                        }
-//                    },
-//                    onCommentChanged = onCommentChanged,
-//                    onSendClicked = onSendClicked,
-//                    onBackPressed = onBackPressed
-//                )
-//            }
-//
-//            is SharingScreenState.Sending -> {
-//                SendingScreen(
-//                    progress = state.progress,
-//                    message = state.message
-//                )
-//            }
-//
-//            is SharingScreenState.Success -> {
-//                SuccessScreen(
-//                    spaceName = state.spaceName,
-//                    canOpenObject = state.canOpenObject,
-//                    onDoneClicked = onCancelClicked
-//                )
-//            }
-//
-//            is SharingScreenState.Error -> {
-//                ErrorScreen(
-//                    message = state.message,
-//                    canRetry = state.canRetry,
-//                    onRetryClicked = onRetryClicked,
-//                    onCancelClicked = onCancelClicked
-//                )
-//            }
-//        }
-    }
-}
+            val sendAction: () -> Unit = if (hasChatSpaceSelected) onSendClicked else {
+                {}
+            }
+            val commentAction: (String) -> Unit =
+                if (hasChatSpaceSelected) onCommentChanged else {
+                    { _: String -> }
+                }
 
-@Composable
-private fun LoadingScreen(
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator(
-            color = colorResource(id = R.color.glyph_active),
-            modifier = Modifier.size(48.dp)
-        )
-    }
-}
+            SelectSpaceScreenHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
 
-/**
- * Screen for chat input when chat space(s) are selected.
- * Shows selected spaces and comment input.
- */
-@Composable
-private fun ChatInputScreen(
-    selectedSpaces: List<SelectableSpaceView>,
-    commentText: String,
-    onCommentChanged: (String) -> Unit,
-    onSendClicked: () -> Unit,
-    onBackPressed: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    // For now, use SelectSpaceScreen with all spaces selected
-    // In a full implementation, this would be a dedicated screen showing selected chats
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.background_primary))
-    ) {
-        // Header
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(20.dp),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = if (selectedSpaces.size == 1) {
-                    stringResource(R.string.sharing_send_to, selectedSpaces.first().name)
-                } else {
-                    stringResource(R.string.sharing_send_to_multiple, selectedSpaces.size)
+            SelectSpaceScreen(
+                spaces = state.spaces.map { it.toSelectableSpaceItem() },
+                searchQuery = state.searchQuery,
+                commentText = if (hasChatSpaceSelected) state.commentText else "",
+                onSearchQueryChanged = onSearchQueryChanged,
+                onCommentChanged = commentAction,
+                onSpaceSelected = { item ->
+                    state.spaces.find { it.id == item.id }?.let { spaceView ->
+                        onSpaceSelected(spaceView)
+                    }
                 },
-                style = BodyBold,
-                color = colorResource(id = R.color.text_primary),
-                textAlign = TextAlign.Center
+                onSendClicked = sendAction
             )
         }
 
-        Spacer(modifier = Modifier.weight(1f))
-
-        // Comment section (reuse from SelectSpaceScreen pattern)
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(colorResource(id = R.color.background_primary))
-                .padding(horizontal = 16.dp, vertical = 12.dp)
-        ) {
-            // Comment field
-            Box(
+        is SharingScreenState.Error -> {
+            SelectSpaceScreenHeader(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(
-                        color = colorResource(id = R.color.shape_primary),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(8.dp)
-                    )
-                    .padding(horizontal = 16.dp, vertical = 12.dp)
+                    .height(48.dp)
+            )
+            ErrorScreen(
+                message = state.message,
+                canRetry = state.canRetry,
+                onRetryClicked = onRetryClicked,
+                onCancelClicked = onCancelClicked
+            )
+        }
+
+        is SharingScreenState.ObjectSelection -> {
+            Box(
+                modifier = Modifier.fillMaxSize()
             ) {
-                androidx.compose.foundation.text.BasicTextField(
-                    value = commentText,
-                    onValueChange = onCommentChanged,
-                    textStyle = BodyRegular.copy(
-                        color = colorResource(id = R.color.text_primary)
-                    ),
-                    cursorBrush = androidx.compose.ui.graphics.SolidColor(
-                        colorResource(id = R.color.glyph_active)
-                    ),
-                    modifier = Modifier.fillMaxWidth(),
-                    decorationBox = { innerTextField ->
-                        if (commentText.isEmpty()) {
-                            Text(
-                                text = stringResource(R.string.add_a_comment),
-                                style = BodyRegular,
-                                color = colorResource(id = R.color.text_secondary)
-                            )
+                SelectDestinationObjectScreen(
+                    spaceName = state.space.name,
+                    objects = state.objects.map { it.toDestinationObjectItem() },
+                    chatObjects = state.chatObjects.map { it.toDestinationObjectItem() },
+                    searchQuery = state.searchQuery,
+                    selectedObjectIds = state.selectedObjectIds,
+                    commentText = state.commentText,
+                    showCommentInput = state.hasAnyChatSelected,
+                    onSearchQueryChanged = onSearchQueryChanged,
+                    onObjectSelected = { item ->
+                        if (item.isChatOption) {
+                            // Find the chat object from the dynamically discovered chatObjects
+                            state.chatObjects.find { it.id == item.id }?.let { chatObj ->
+                                onObjectSelected(chatObj)
+                            }
+                        } else {
+                            state.objects.find { it.id == item.id }?.let { objView ->
+                                onObjectSelected(objView)
+                            }
                         }
-                        innerTextField()
-                    }
+                    },
+                    onCommentChanged = onCommentChanged,
+                    onSendClicked = onSendClicked,
+                    onBackPressed = onBackPressed
                 )
             }
+        }
 
-            Spacer(modifier = Modifier.height(12.dp))
+        is SharingScreenState.Sending -> {
+            SelectSpaceScreenHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+            SendingScreen(
+                progress = state.progress,
+                message = state.message
+            )
+        }
 
-            // Send button
-            ButtonPrimary(
-                text = stringResource(R.string.send),
-                onClick = onSendClicked,
-                size = ButtonSize.Large,
-                modifier = Modifier.fillMaxWidth()
+        is SharingScreenState.Success -> {
+            SelectSpaceScreenHeader(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(48.dp)
+            )
+            SuccessScreen(
+                spaceName = state.spaceName,
+                canOpenObject = state.canOpenObject,
+                onDoneClicked = onCancelClicked
             )
         }
     }
@@ -515,24 +382,6 @@ private fun SelectableObjectView.toDestinationObjectItem(): DestinationObjectIte
 }
 
 // --- PREVIEWS ---
-//@Preview(name = "Loading State", showBackground = true)
-//@Composable
-//private fun SharingScreenPreview_Loading() {
-//    MaterialTheme { // Wrap with your app's theme for consistent styling
-//        SharingScreen(
-//            state = SharingScreenState.Loading,
-//            onSpaceSelected = {},
-//            onSearchQueryChanged = {},
-//            onCommentChanged = {},
-//            onSendClicked = {},
-//            onObjectSelected = {},
-//            onBackPressed = {},
-//            onCancelClicked = {},
-//            onRetryClicked = {}
-//        )
-//    }
-//}
-
 @Preview(name = "Space Selection State", showBackground = true)
 @Composable
 private fun SharingScreenPreview_SpaceSelection() {
@@ -542,10 +391,16 @@ private fun SharingScreenPreview_SpaceSelection() {
         StubSelectableSpaceView(id = "3", name = "", isSelected = false)
     )
 
-    MaterialTheme {
+    Column {
         SharingScreen(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = colorResource(com.anytypeio.anytype.core_ui.R.color.background_primary),
+                    shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+                ),
             state = SharingScreenState.SpaceSelection(
-                spaces = listOf(),
+                spaces = mockSpaces,
                 searchQuery = "",
                 sharedContent = SharedContent.Url("fdsfsd")
             ),
@@ -560,102 +415,110 @@ private fun SharingScreenPreview_SpaceSelection() {
         )
     }
 }
-//
-//@Preview(name = "Object Selection State", showBackground = true)
-//@Composable
-//private fun SharingScreenPreview_ObjectSelection() {
-//    val mockSpace = StubSelectableSpaceView(id = "2", name = "Team Projects", isSelected = true)
-//    val mockObjects = listOf(
-//        SelectableObjectView(id = "obj1", name = "Q1 Roadmap", typeName = "Page"),
-//        SelectableObjectView(id = "obj2", name = "Sprint Planning", typeName = "Board"),
-//        SelectableObjectView(id = "obj3", name = "Design Mockups", typeName = "Collection")
-//    )
-//
-//    MaterialTheme {
-//        SharingScreen(
-//            screenState = SharingScreenState.ObjectSelection(
-//                space = mockSpace,
-//                objects = mockObjects,
-//                searchQuery = "",
-//                selectedObject = mockObjects[1],
-//                showChatOption = true,
-//                sharedContent = SharedContent.Url("www.google.com")
-//            ),
-//            onSpaceSelected = {},
-//            onSearchQueryChanged = {},
-//            onCommentChanged = {},
-//            onSendClicked = {},
-//            onObjectSelected = {},
-//            onBackPressed = {},
-//            onCancelClicked = {},
-//            onRetryClicked = {}
-//        )
-//    }
-//}
-//
-//@Preview(name = "Sending State", showBackground = true)
-//@Composable
-//private fun SharingScreenPreview_Sending() {
-//    MaterialTheme {
-//        SharingScreen(
-//            screenState = SharingScreenState.Sending(
-//                progress = 0.6f,
-//                message = "Encrypting and sending..."
-//            ),
-//            onSpaceSelected = {},
-//            onSearchQueryChanged = {},
-//            onCommentChanged = {},
-//            onSendClicked = {},
-//            onObjectSelected = {},
-//            onBackPressed = {},
-//            onCancelClicked = {},
-//            onRetryClicked = {}
-//        )
-//    }
-//}
-//
-//@Preview(name = "Success State", showBackground = true)
-//@Composable
-//private fun SharingScreenPreview_Success() {
-//    MaterialTheme {
-//        SharingScreen(
-//            screenState = SharingScreenState.Success(
-//                spaceName = "Team Projects",
-//                canOpenObject = true
-//            ),
-//            onSpaceSelected = {},
-//            onSearchQueryChanged = {},
-//            onCommentChanged = {},
-//            onSendClicked = {},
-//            onObjectSelected = {},
-//            onBackPressed = {},
-//            onCancelClicked = {},
-//            onRetryClicked = {}
-//        )
-//    }
-//}
-//
-//@Preview(name = "Error State", showBackground = true)
-//@Composable
-//private fun SharingScreenPreview_Error() {
-//    MaterialTheme {
-//        SharingScreen(
-//            screenState = SharingScreenState.Error(
-//                message = "Failed to connect. Please check your network and try again.",
-//                canRetry = true
-//            ),
-//            onSpaceSelected = {},
-//            onSearchQueryChanged = {},
-//            onCommentChanged = {},
-//            onSendClicked = {},
-//            onObjectSelected = {},
-//            onBackPressed = {},
-//            onCancelClicked = {},
-//            onRetryClicked = {}
-//        )
-//    }
-//}
-//
+
+@Preview(name = "Object Selection State", showBackground = true)
+@Composable
+private fun SharingScreenPreview_ObjectSelection() {
+    val mockSpace = StubSelectableSpaceView(id = "2", name = "Team Projects", isSelected = true)
+    val mockObjects = listOf(
+        SelectableObjectView(
+            id = "obj1",
+            name = "Q1 Roadmap",
+            typeName = "Page",
+            icon = ObjectIcon.TypeIcon.Default.DEFAULT
+        ),
+        SelectableObjectView(id = "obj2", name = "Sprint Planning", typeName = "Board"),
+        SelectableObjectView(id = "obj3", name = "Design Mockups", typeName = "Collection")
+    )
+
+    Column {
+        SharingScreen(
+            modifier = Modifier.fillMaxWidth(),
+            state = SharingScreenState.ObjectSelection(
+                space = mockSpace,
+                objects = mockObjects,
+                searchQuery = "",
+                selectedObjectIds = setOf<Id>(mockObjects[1].id),
+                sharedContent = SharedContent.Url("www.google.com")
+            ),
+            onSpaceSelected = {},
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onObjectSelected = {},
+            onBackPressed = {},
+            onCancelClicked = {},
+            onRetryClicked = {}
+        )
+    }
+}
+
+@Preview(name = "Sending State", showBackground = true)
+@Composable
+private fun SharingScreenPreview_Sending() {
+    Column {
+        SharingScreen(
+            modifier = Modifier.fillMaxWidth(),
+            state = SharingScreenState.Sending(
+                progress = 0.6f,
+                message = "Encrypting and sending..."
+            ),
+            onSpaceSelected = {},
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onObjectSelected = {},
+            onBackPressed = {},
+            onCancelClicked = {},
+            onRetryClicked = {}
+        )
+    }
+}
+
+@Preview(name = "Success State", showBackground = true)
+@Composable
+private fun SharingScreenPreview_Success() {
+    Column {
+        SharingScreen(
+            modifier = Modifier.fillMaxWidth(),
+            state = SharingScreenState.Success(
+                spaceName = "Team Projects",
+                canOpenObject = true
+            ),
+            onSpaceSelected = {},
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onObjectSelected = {},
+            onBackPressed = {},
+            onCancelClicked = {},
+            onRetryClicked = {}
+        )
+    }
+}
+
+@Preview(name = "Error State", showBackground = true)
+@Composable
+private fun SharingScreenPreview_Error() {
+    Column {
+        SharingScreen(
+            modifier = Modifier.fillMaxWidth(),
+            state = SharingScreenState.Error(
+                message = "Failed to connect. Please check your network and try again.",
+                canRetry = true
+            ),
+            onSpaceSelected = {},
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSendClicked = {},
+            onObjectSelected = {},
+            onBackPressed = {},
+            onCancelClicked = {},
+            onRetryClicked = {}
+        )
+    }
+}
+
 /**
  * Creates a stub instance of SelectableSpaceView for testing.
  */

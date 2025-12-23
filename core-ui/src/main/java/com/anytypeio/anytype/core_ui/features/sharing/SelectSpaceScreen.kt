@@ -1,23 +1,17 @@
 package com.anytypeio.anytype.core_ui.features.sharing
 
-import android.graphics.Color
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -25,7 +19,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.Text
@@ -42,8 +35,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
@@ -58,14 +49,12 @@ import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
-import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
-import com.anytypeio.anytype.core_ui.views.ButtonPrimary
+import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
@@ -94,7 +83,7 @@ data class SelectableSpaceItem(
  * @param modifier Modifier for the screen
  */
 @Composable
-fun BoxScope.SelectSpaceScreen(
+fun SelectSpaceScreen(
     spaces: List<SelectableSpaceItem>,
     searchQuery: String,
     commentText: String,
@@ -104,58 +93,53 @@ fun BoxScope.SelectSpaceScreen(
     onSendClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val hasSelectedSpace = spaces.any { it.isSelected }
+    // Check if any chat space is selected
+    val hasSelectedChatSpace = spaces.any { it.isSelected && it.isChatSpace }
 
-    if (spaces.isEmpty()) {
-        EmptySpaceState(
-            modifier = Modifier.fillMaxSize()
+    Column(
+        modifier = modifier
+            .fillMaxSize()
+    ) {
+        // Search bar - always visible
+        DefaultSearchBar(
+            value = searchQuery,
+            onQueryChanged = onSearchQueryChanged,
+            hint = R.string.search,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
         )
-    } else {
-        Column(
-            modifier = modifier
-                .padding(top = 64.dp)
-                .fillMaxSize()
+
+        // Space Grid - shows ALL spaces, scrollable
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(3),
+            contentPadding = PaddingValues(horizontal = 16.dp, vertical = 22.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-
-            // Search Bar
-            DefaultSearchBar(
-                value = searchQuery,
-                onQueryChanged = onSearchQueryChanged,
-                hint = R.string.search,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-            )
-
-            // Space Grid
-            LazyVerticalGrid(
-                columns = GridCells.Fixed(3),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 22.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                modifier = Modifier.fillMaxSize()
-            ) {
-                items(
-                    items = spaces,
-                    key = { it.id }
-                ) { space ->
-                    SpaceGridItem(
-                        icon = space.icon,
-                        name = space.name,
-                        isSelected = space.isSelected,
-                        onClick = { onSpaceSelected(space) }
-                    )
-                }
-            }
-
-            // Bottom section (Comment + Send button) - only shown when space is selected
-            if (hasSelectedSpace) {
-                CommentSection(
-                    commentText = commentText,
-                    onCommentChanged = onCommentChanged,
-                    onSendClicked = onSendClicked,
-                    modifier = Modifier.fillMaxWidth()
+            items(
+                items = spaces,
+                key = { it.id }
+            ) { space ->
+                SpaceGridItem(
+                    icon = space.icon,
+                    name = space.name,
+                    isSelected = space.isSelected,
+                    onClick = { onSpaceSelected(space) }
                 )
             }
+        }
+
+        // Comment section - appears at bottom when chat space is selected
+        if (hasSelectedChatSpace) {
+            CommentSection(
+                commentText = commentText,
+                onCommentChanged = onCommentChanged,
+                onSendClicked = onSendClicked,
+                modifier = Modifier.fillMaxWidth()
+            )
         }
     }
 }
@@ -166,10 +150,6 @@ fun SelectSpaceScreenHeader(modifier: Modifier) {
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Dragger(
-            modifier = Modifier
-                .padding(vertical = 6.dp)
-        )
         Text(
             text = stringResource(R.string.select_space),
             style = BodyBold,
@@ -236,7 +216,7 @@ private fun SpaceGridItem(
 
         // Space Name
         Text(
-            text = name,
+            text = name.ifEmpty { stringResource(R.string.untitled) },
             style = Relations3,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
@@ -275,7 +255,6 @@ private fun CommentSection(
 
     Column(
         modifier = modifier
-            .background(color = colorResource(id = R.color.background_primary))
             .padding(horizontal = 16.dp, vertical = 12.dp)
     ) {
         // Comment Text Field
@@ -283,6 +262,7 @@ private fun CommentSection(
             value = innerValue,
             onValueChange = {
                 innerValue = it
+                onCommentChanged(it.text)
             },
             textStyle = BodySemiBold.copy(
                 color = colorResource(id = R.color.text_primary)
@@ -319,48 +299,81 @@ private fun CommentSection(
                 )
             }
         )
-//        Box(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .border(
-//                    width = 0.5.dp,
-//                    color = colorResource(R.color.shape_primary),
-//                    shape = RoundedCornerShape(12.dp)
-//                )
-//                .padding(horizontal = 16.dp, vertical = 12.dp)
-//        ) {
-//            BasicTextField(
-//                value = commentText,
-//                onValueChange = onCommentChanged,
-//                textStyle = BodyRegular.copy(
-//                    color = colorResource(id = R.color.text_primary)
-//                ),
-//                cursorBrush = SolidColor(colorResource(id = R.color.glyph_active)),
-//                modifier = Modifier.fillMaxWidth(),
-//                decorationBox = { innerTextField ->
-//                    if (commentText.isEmpty()) {
-//                        Text(
-//                            modifier = Modifier.padding(start = 1.dp),
-//                            text = stringResource(R.string.add_a_comment),
-//                            style = BodyRegular,
-//                            color = colorResource(id = R.color.text_tertiary)
-//                        )
-//                    }
-//                    innerTextField()
-//                }
-//            )
-//        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
         // Send Button
-        ButtonPrimary(
+        ButtonOnboardingPrimaryLarge(
             text = stringResource(R.string.send),
             onClick = onSendClicked,
             size = ButtonSize.Large,
-            modifier = Modifier.fillMaxWidth()
+            modifierBox = Modifier.fillMaxWidth()
         )
     }
+}
+
+/**
+ * Standalone comment input field that can be reused across screens.
+ * Uses Material3 OutlinedTextField with proper keyboard handling.
+ *
+ * @param commentText Current comment text (for display, state managed via innerValue)
+ * @param onCommentChanged Callback when comment text changes
+ * @param modifier Modifier for the text field
+ */
+@Composable
+internal fun CommentInputField(
+    commentText: String,
+    onCommentChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
+        mutableStateOf(TextFieldValue(commentText))
+    }
+
+    val focusRequester = remember { FocusRequester() }
+    val focusManager = LocalFocusManager.current
+    val keyboardController = LocalSoftwareKeyboardController.current
+
+    OutlinedTextField(
+        value = innerValue,
+        onValueChange = {
+            innerValue = it
+            onCommentChanged(it.text)
+        },
+        textStyle = BodySemiBold.copy(
+            color = colorResource(id = R.color.text_primary)
+        ),
+        singleLine = true,
+        enabled = true,
+        colors = TextFieldDefaults.colors(
+            disabledTextColor = colorResource(id = R.color.text_primary),
+            cursorColor = colorResource(id = R.color.color_accent),
+            focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+            unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+            errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+            errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+        ),
+        modifier = modifier
+            .fillMaxWidth()
+            .wrapContentHeight()
+            .focusRequester(focusRequester),
+        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+        keyboardActions = KeyboardActions {
+            keyboardController?.hide()
+            focusManager.clearFocus()
+        },
+        shape = RoundedCornerShape(size = 26.dp),
+        placeholder = {
+            Text(
+                modifier = Modifier.padding(start = 1.dp),
+                text = stringResource(id = R.string.add_a_comment),
+                style = BodyRegular,
+                color = colorResource(id = R.color.text_tertiary)
+            )
+        }
+    )
 }
 
 /**
@@ -372,28 +385,7 @@ private fun CommentSection(
 private fun EmptySpaceState(
     modifier: Modifier = Modifier
 ) {
-    Column(
-        modifier = modifier,
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        // Coffee icon
-        Image(
-            painter = painterResource(id = R.drawable.ic_popup_coffee_56),
-            contentDescription = null,
-            modifier = Modifier.size(56.dp)
-        )
 
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Empty state message
-        Text(
-            text = stringResource(R.string.you_dont_have_any_spaces_yet),
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            textAlign = TextAlign.Center
-        )
-    }
 }
 
 // ============================================
@@ -411,7 +403,8 @@ private fun SelectSpaceScreenPreview() {
                 color = SystemColor.PINK
             ),
             name = "B&O Museum",
-            isSelected = true
+            isSelected = true,
+            isChatSpace = true
         ),
         SelectableSpaceItem(
             id = "2",

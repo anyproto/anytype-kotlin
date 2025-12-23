@@ -18,7 +18,6 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.OpenPage
@@ -27,7 +26,6 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.sharing.SharingViewModel
-import com.anytypeio.anytype.ui.sharing.SharingFragment
 import dagger.Binds
 import dagger.Component
 import dagger.Module
@@ -59,13 +57,6 @@ interface SharingComponent {
      * Used by MainActivity's Compose overlay for the pure Compose modal sheet.
      */
     fun viewModelFactory(): ViewModelProvider.Factory
-
-    /**
-     * @deprecated Use viewModelFactory() and create ViewModel in Compose scope instead.
-     * This is kept for backward compatibility during migration.
-     */
-    @Deprecated("Use viewModelFactory() instead for pure Compose integration")
-    fun inject(fragment: SharingFragment)
 }
 
 @Module

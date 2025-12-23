@@ -54,21 +54,7 @@ data class SelectableObjectView(
     val typeName: String,
     val isSelected: Boolean = false,
     val isChatOption: Boolean = false
-) {
-    companion object {
-        /**
-         * Creates a special "Send to chat" option for Flow 3 spaces.
-         */
-        fun createChatOption(chatId: Id): SelectableObjectView = SelectableObjectView(
-            id = chatId,
-            name = "", // Will be replaced with localized string in UI
-            icon = ObjectIcon.None,
-            typeName = "",
-            isSelected = false,
-            isChatOption = true
-        )
-    }
-}
+)
 
 /**
  * Defines the two sharing flows based on space type.

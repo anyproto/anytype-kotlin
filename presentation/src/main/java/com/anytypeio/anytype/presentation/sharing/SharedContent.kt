@@ -62,37 +62,6 @@ sealed class SharedContent {
         AUDIO
     }
 
-    /**
-     * Checks if the text content needs to be truncated for chat messages.
-     * @return true if text content exceeds the maximum chat message length
-     */
-    fun requiresTruncation(): Boolean = when (this) {
-        is Text -> text.length > MAX_CHAT_MESSAGE_LENGTH
-        is Mixed -> (text?.length ?: 0) > MAX_CHAT_MESSAGE_LENGTH
-        else -> false
-    }
-
-    /**
-     * Returns the total number of media attachments in this content.
-     */
-    fun mediaCount(): Int = when (this) {
-        is SingleMedia -> 1
-        is MultipleMedia -> uris.size
-        is Mixed -> mediaUris.size
-        else -> 0
-    }
-
-    /**
-     * Checks if this content has any media attachments.
-     */
-    fun hasMedia(): Boolean = mediaCount() > 0
-
-    /**
-     * Checks if this content requires batching due to attachment limits.
-     * @return true if media count exceeds max attachments per message
-     */
-    fun requiresBatching(): Boolean = mediaCount() > MAX_ATTACHMENTS_PER_MESSAGE
-
     companion object {
         /**
          * Maximum character limit for chat messages.

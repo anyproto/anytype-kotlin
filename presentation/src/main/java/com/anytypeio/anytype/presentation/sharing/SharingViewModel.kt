@@ -708,7 +708,7 @@ class SharingViewModel(
             space = spaceId,
             filters = filters,
             sorts = emptyList(),
-            keys = listOf(Relations.ID, Relations.UNIQUE_KEY),
+            keys = listOf(Relations.ID, Relations.UNIQUE_KEY, Relations.IS_DELETED, Relations.IS_ARCHIVED),
             limit = 1
         )
 

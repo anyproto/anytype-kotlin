@@ -46,6 +46,7 @@ data class SelectableSpaceView(
  * @property typeName Human-readable type name (e.g., "Page", "Note", "Chat")
  * @property isSelected Whether this object is currently selected
  * @property isChatOption True if this represents a chat object (CHAT_DERIVED layout)
+ * @property isCollection True if this represents a collection object
  */
 data class SelectableObjectView(
     val id: Id,
@@ -53,7 +54,8 @@ data class SelectableObjectView(
     val icon: ObjectIcon = ObjectIcon.None,
     val typeName: String,
     val isSelected: Boolean = false,
-    val isChatOption: Boolean = false
+    val isChatOption: Boolean = false,
+    val isCollection: Boolean = false
 )
 
 /**

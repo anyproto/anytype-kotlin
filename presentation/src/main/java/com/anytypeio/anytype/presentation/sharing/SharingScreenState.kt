@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.sharing
 
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.presentation.sharing.SharingScreenState.ObjectSelection.Companion.MAX_SELECTION_COUNT
 
 /**
  * Represents the different screen states in the sharing extension flow.
@@ -132,6 +133,7 @@ sealed class SharingCommand {
      * @property objectId The ID of the object/chat to navigate to when "Open" is clicked
      * @property spaceId The space ID containing the target
      * @property isChat Whether the target is a chat (determines navigation destination)
+     * @property isCollection Whether the target is a collection (uses "added to" message format)
      */
     data class ShowSnackbarWithOpenAction(
         val contentType: SharedContent,
@@ -139,6 +141,7 @@ sealed class SharingCommand {
         val spaceName: String? = null,
         val objectId: Id,
         val spaceId: Id,
-        val isChat: Boolean
+        val isChat: Boolean,
+        val isCollection: Boolean = false
     ) : SharingCommand()
 }

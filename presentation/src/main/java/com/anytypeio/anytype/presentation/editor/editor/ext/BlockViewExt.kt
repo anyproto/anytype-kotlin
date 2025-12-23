@@ -986,7 +986,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                     when (field.key) {
                         currentField.key -> field.copy(target = IntRange.EMPTY)
                         previousFieldTargetCandidate.key -> {
-                            field.copy(target = previousFieldTargetCandidate.highlights.last())
+                            field.copy(target = previousFieldTargetCandidate.highlights.lastOrNull() ?: IntRange.EMPTY)
                         }
                         else -> field
                     }

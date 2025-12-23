@@ -6,9 +6,10 @@ import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.AddChatMessage
-import com.anytypeio.anytype.domain.block.interactor.CreateBlock
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.media.UploadFile
@@ -148,6 +149,13 @@ object SharingModule {
         closeObject = closeObject,
         dispatchers = dispatchers
     )
+
+    @Provides
+    @PerModal
+    fun provideAddObjectToCollection(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): AddObjectToCollection = AddObjectToCollection(repo, dispatchers)
 
     @Module
     interface Declarations {

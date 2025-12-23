@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.AddChatMessage
+import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.device.FileSharer
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -84,7 +85,8 @@ class SharingViewModel(
     private val uploadFile: UploadFile,
     private val searchObjects: SearchObjects,
     private val fieldParser: FieldParser,
-    private val addBackLinkToObject: AddBackLinkToObject
+    private val addBackLinkToObject: AddBackLinkToObject,
+    private val addObjectToCollection: AddObjectToCollection
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val _screenState = MutableStateFlow<SharingScreenState>(SharingScreenState.Loading)
@@ -313,9 +315,11 @@ class SharingViewModel(
         val content = sharedContent ?: return
         val spaceId = SpaceId(state.space.targetSpaceId)
 
-        // Partition selected items into chats and objects
+        // Partition selected items into chats, collections, and regular objects
         val selectedChats = state.chatObjects.filter { it.id in state.selectedObjectIds }
         val selectedObjects = state.objects.filter { it.id in state.selectedObjectIds }
+        val selectedCollections = selectedObjects.filter { it.isCollection }
+        val selectedRegularObjects = selectedObjects.filter { !it.isCollection }
 
         _screenState.value = SharingScreenState.Sending(progress = 0f, message = "Sending...")
 
@@ -325,12 +329,23 @@ class SharingViewModel(
                 sendContentToChatObject(chat.id, state.space, content)
             }
 
-            // Link to objects - create new objects and add links to destination
+            // Handle objects and collections - create new objects first
             if (selectedObjects.isNotEmpty()) {
                 val newObjectIds = createObjectFromContent(content, state.space.targetSpaceId)
-                // Link each created object to each destination object
-                newObjectIds.forEach { newObjectId ->
-                    selectedObjects.forEach { destObject ->
+
+                // Add to collections
+                selectedCollections.forEach { collection ->
+                    newObjectIds.forEach { newObjectId ->
+                        addToCollection(
+                            collectionId = collection.id,
+                            objectId = newObjectId
+                        )
+                    }
+                }
+
+                // Link to regular objects
+                selectedRegularObjects.forEach { destObject ->
+                    newObjectIds.forEach { newObjectId ->
                         linkObjectToDestination(
                             objectToLink = newObjectId,
                             destinationObjectId = destObject.id,
@@ -348,7 +363,8 @@ class SharingViewModel(
 
             // Show Snackbar with option to open the destination
             val firstSelectedChat = selectedChats.firstOrNull()
-            val firstSelectedObject = selectedObjects.firstOrNull()
+            val firstSelectedCollection = selectedCollections.firstOrNull()
+            val firstSelectedRegularObject = selectedRegularObjects.firstOrNull()
 
             when {
                 // Chat selected - show Snackbar to open chat
@@ -364,14 +380,28 @@ class SharingViewModel(
                         )
                     )
                 }
-                // Object selected - show Snackbar to open linked object
-                firstSelectedObject != null -> {
+                // Collection selected - show Snackbar with "added to" format
+                firstSelectedCollection != null -> {
                     _commands.emit(
                         SharingCommand.ShowSnackbarWithOpenAction(
                             contentType = content,
-                            destinationName = firstSelectedObject.name,
+                            destinationName = firstSelectedCollection.name,
+                            spaceName = null,  // null triggers "added to" format
+                            objectId = firstSelectedCollection.id,
+                            spaceId = state.space.targetSpaceId,
+                            isChat = false,
+                            isCollection = true
+                        )
+                    )
+                }
+                // Regular object selected - show Snackbar with "linked to" format
+                firstSelectedRegularObject != null -> {
+                    _commands.emit(
+                        SharingCommand.ShowSnackbarWithOpenAction(
+                            contentType = content,
+                            destinationName = firstSelectedRegularObject.name,
                             spaceName = state.space.name,
-                            objectId = firstSelectedObject.id,
+                            objectId = firstSelectedRegularObject.id,
                             spaceId = state.space.targetSpaceId,
                             isChat = false
                         )
@@ -532,6 +562,30 @@ class SharingViewModel(
         } catch (e: Exception) {
             Timber.e(e, "Error linking object to destination")
             // Don't throw - the object was created successfully, link is optional
+        }
+    }
+
+    /**
+     * Adds an object to a collection.
+     */
+    private suspend fun addToCollection(collectionId: Id, objectId: Id) {
+        try {
+            addObjectToCollection.async(
+                AddObjectToCollection.Params(
+                    ctx = collectionId,
+                    targets = listOf(objectId)
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully added object $objectId to collection $collectionId")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error adding object to collection")
+                }
+            )
+        } catch (e: Exception) {
+            Timber.e(e, "Error adding object to collection")
+            // Don't throw - the object was created successfully, adding to collection is optional
         }
     }
 
@@ -762,7 +816,8 @@ class SharingViewModel(
                         objType = objType
                     ),
                     typeName = objType?.name.orEmpty(),
-                    isSelected = obj.id in selectedDestinationObjectIds
+                    isSelected = obj.id in selectedDestinationObjectIds,
+                    isCollection = obj.layout == ObjectType.Layout.COLLECTION
                 )
             }
         } catch (e: Exception) {
@@ -882,7 +937,8 @@ class SharingViewModel(
                     ObjectType.Layout.BASIC,
                     ObjectType.Layout.NOTE,
                     ObjectType.Layout.PROFILE,
-                    ObjectType.Layout.TODO
+                    ObjectType.Layout.TODO,
+                    ObjectType.Layout.COLLECTION
                 )
             )
         )
@@ -1274,7 +1330,8 @@ class SharingViewModel(
         private val uploadFile: UploadFile,
         private val searchObjects: SearchObjects,
         private val fieldParser: FieldParser,
-        private val addBackLinkToObject: AddBackLinkToObject
+        private val addBackLinkToObject: AddBackLinkToObject,
+        private val addObjectToCollection: AddObjectToCollection
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -1294,7 +1351,8 @@ class SharingViewModel(
                 uploadFile = uploadFile,
                 searchObjects = searchObjects,
                 fieldParser = fieldParser,
-                addBackLinkToObject = addBackLinkToObject
+                addBackLinkToObject = addBackLinkToObject,
+                addObjectToCollection = addObjectToCollection
             ) as T
         }
     }

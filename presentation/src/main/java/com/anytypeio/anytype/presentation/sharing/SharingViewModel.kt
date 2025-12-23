@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.sharing
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -19,7 +18,6 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
@@ -33,17 +31,22 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
+import com.anytypeio.anytype.domain.page.AddBackLinkToObject
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
+import com.anytypeio.anytype.presentation.search.buildDeletedFilter
+import com.anytypeio.anytype.presentation.search.buildLayoutFilter
+import com.anytypeio.anytype.presentation.search.buildTemplateFilter
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import javax.inject.Inject
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -54,7 +57,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import timber.log.Timber
 
 /**
@@ -79,7 +81,8 @@ class SharingViewModel(
     private val addChatMessage: AddChatMessage,
     private val uploadFile: UploadFile,
     private val searchObjects: SearchObjects,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val addBackLinkToObject: AddBackLinkToObject
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val _screenState = MutableStateFlow<SharingScreenState>(SharingScreenState.Loading)
@@ -97,6 +100,7 @@ class SharingViewModel(
     private var spaceSearchQuery: String = ""
     private var objectSearchQuery: String = ""
     private var commentText: String = ""
+    private var cachedTypesMap: Map<Id, ObjectWrapper.Type> = emptyMap()
 
     init {
         loadSpaces()
@@ -142,7 +146,6 @@ class SharingViewModel(
                 }
                 .collect { spaces ->
                     allSpaces.clear()
-                    Log.d("Test1983", "All spaces: $spaces")
                     allSpaces.addAll(spaces)
                     updateSpaceSelectionState()
                 }
@@ -218,9 +221,6 @@ class SharingViewModel(
                 // Support comment in SpaceSelection when chat spaces are selected
                 _screenState.value = state.copy(commentText = limitedText)
             }
-            is SharingScreenState.ChatInput -> {
-                _screenState.value = state.copy(commentText = limitedText)
-            }
             is SharingScreenState.ObjectSelection -> {
                 _screenState.value = state.copy(commentText = limitedText)
             }
@@ -229,28 +229,36 @@ class SharingViewModel(
     }
 
     /**
+     * Called when retry button is clicked on error screen.
+     * Attempts to reload spaces and retry the last operation.
+     */
+    fun onRetryClicked() {
+        val content = sharedContent
+        if (content != null) {
+            // Reset to loading state and reload spaces
+            _screenState.value = SharingScreenState.Loading
+            loadSpaces()
+        }
+    }
+
+    /**
      * Called when an object is selected in the destination list.
-     * Supports multi-selection up to [SharingScreenState.ObjectSelection.MAX_SELECTION_COUNT] items.
+     * Single selection mode - selecting a new item deselects the previous one.
      */
     fun onObjectSelected(obj: SelectableObjectView) {
         val currentState = _screenState.value
         if (currentState !is SharingScreenState.ObjectSelection) return
 
-        // Toggle selection
-        if (obj.id in selectedDestinationObjectIds) {
-            selectedDestinationObjectIds.remove(obj.id)
-        } else {
-            // Check limit before adding
-            if (selectedDestinationObjectIds.size >= SharingScreenState.ObjectSelection.MAX_SELECTION_COUNT) {
-                viewModelScope.launch {
-                    _commands.emit(
-                        SharingCommand.ShowToast("You can select up to ${SharingScreenState.ObjectSelection.MAX_SELECTION_COUNT} destinations")
-                    )
-                }
-                return
-            }
+        val wasSelected = obj.id in selectedDestinationObjectIds
+
+        // Clear all selections first (single selection mode)
+        selectedDestinationObjectIds.clear()
+
+        // If it wasn't selected before, select it now
+        if (!wasSelected) {
             selectedDestinationObjectIds.add(obj.id)
         }
+        // If it was selected, clicking again deselects (nothing to add)
 
         // Update state with new selection
         val updatedObjects = currentState.objects.map {
@@ -280,9 +288,6 @@ class SharingViewModel(
                         sendToChat()
                     }
                 }
-                is SharingScreenState.ChatInput -> {
-                    sendToChat()
-                }
                 is SharingScreenState.ObjectSelection -> {
                     if (state.selectedObjectIds.isEmpty()) {
                         // No selection - create new object (existing behavior)
@@ -300,10 +305,11 @@ class SharingViewModel(
     /**
      * Sends content to multiple selected destinations (chats and/or objects).
      * Chat destinations receive the shared content with comment.
-     * Object destinations get the content linked/saved.
+     * Object destinations get the shared content linked to the destination object.
      */
     private suspend fun sendToMultipleDestinations(state: SharingScreenState.ObjectSelection) {
         val content = sharedContent ?: return
+        val spaceId = SpaceId(state.space.targetSpaceId)
 
         // Partition selected items into chats and objects
         val selectedChats = state.chatObjects.filter { it.id in state.selectedObjectIds }
@@ -317,16 +323,19 @@ class SharingViewModel(
                 sendContentToChatObject(chat.id, state.space, content)
             }
 
-            // Save to objects
-            selectedObjects.forEach { obj ->
-                // For now, create object in space (linking to existing objects can be added later)
-                // This maintains compatibility with the current behavior
-            }
-
-            // If only objects selected (no chats), create the object
-            if (selectedChats.isEmpty() && selectedObjects.isNotEmpty()) {
-                createObjectInSpace()
-                return
+            // Link to objects - create new objects and add links to destination
+            if (selectedObjects.isNotEmpty()) {
+                val newObjectIds = createObjectFromContent(content, state.space.targetSpaceId)
+                // Link each created object to each destination object
+                newObjectIds.forEach { newObjectId ->
+                    selectedObjects.forEach { destObject ->
+                        linkObjectToDestination(
+                            objectToLink = newObjectId,
+                            destinationObjectId = destObject.id,
+                            spaceId = spaceId
+                        )
+                    }
+                }
             }
 
             _screenState.value = SharingScreenState.Success(
@@ -335,6 +344,38 @@ class SharingViewModel(
                 canOpenObject = false
             )
 
+            // Show Snackbar with option to open the destination
+            val firstSelectedChat = selectedChats.firstOrNull()
+            val firstSelectedObject = selectedObjects.firstOrNull()
+
+            when {
+                // Chat selected - show Snackbar to open chat
+                firstSelectedChat != null -> {
+                    _commands.emit(
+                        SharingCommand.ShowSnackbarWithOpenAction(
+                            contentType = content,
+                            destinationName = firstSelectedChat.name,
+                            spaceName = null,
+                            objectId = firstSelectedChat.id,
+                            spaceId = state.space.targetSpaceId,
+                            isChat = true
+                        )
+                    )
+                }
+                // Object selected - show Snackbar to open linked object
+                firstSelectedObject != null -> {
+                    _commands.emit(
+                        SharingCommand.ShowSnackbarWithOpenAction(
+                            contentType = content,
+                            destinationName = firstSelectedObject.name,
+                            spaceName = state.space.name,
+                            objectId = firstSelectedObject.id,
+                            spaceId = state.space.targetSpaceId,
+                            isChat = false
+                        )
+                    )
+                }
+            }
             _commands.emit(SharingCommand.Dismiss)
 
         } catch (e: Exception) {
@@ -343,6 +384,143 @@ class SharingViewModel(
                 message = e.msg(),
                 canRetry = true
             )
+        }
+    }
+
+    /**
+     * Creates new objects from shared content.
+     * Returns the list of created object IDs.
+     * For media content, uploads files directly (files are first-class objects in Anytype).
+     */
+    private suspend fun createObjectFromContent(content: SharedContent, targetSpaceId: Id): List<Id> {
+        return when (content) {
+            is SharedContent.Text -> {
+                listOfNotNull(createNoteAndGetId(content.text, targetSpaceId))
+            }
+            is SharedContent.Url -> {
+                listOfNotNull(createBookmarkAndGetId(content.url, targetSpaceId))
+            }
+            is SharedContent.SingleMedia -> {
+                // Upload file directly - files are objects in Anytype
+                listOfNotNull(uploadMediaAndGetId(content.uri, content.type, targetSpaceId))
+            }
+            is SharedContent.MultipleMedia -> {
+                // Upload ALL files
+                content.uris.mapNotNull { uri ->
+                    uploadMediaAndGetId(uri, content.type, targetSpaceId)
+                }
+            }
+            is SharedContent.Mixed -> {
+                val noteText = content.text ?: content.url ?: ""
+                listOfNotNull(createNoteAndGetId(noteText, targetSpaceId))
+            }
+        }
+    }
+
+    /**
+     * Creates a note and returns its ID, or null on failure.
+     */
+    private suspend fun createNoteAndGetId(text: String, targetSpaceId: Id): Id? {
+        var result: Id? = null
+        createPrefilledNote.async(
+            CreatePrefilledNote.Params(
+                text = text,
+                space = targetSpaceId,
+                details = mapOf(
+                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                )
+            )
+        ).fold(
+            onSuccess = { objectId ->
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = MarketplaceObjectTypeIds.NOTE,
+                    route = EventsDictionary.Routes.sharingExtension,
+                    startTime = System.currentTimeMillis(),
+                    spaceParams = provideParams(targetSpaceId)
+                )
+                result = objectId
+            },
+            onFailure = { e ->
+                Timber.e(e, "Error creating note")
+            }
+        )
+        return result
+    }
+
+    /**
+     * Creates a bookmark and returns its ID, or null on failure.
+     */
+    private suspend fun createBookmarkAndGetId(url: String, targetSpaceId: Id): Id? {
+        var result: Id? = null
+        createBookmarkObject(
+            CreateBookmarkObject.Params(
+                space = targetSpaceId,
+                url = url,
+                details = mapOf(
+                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
+                )
+            )
+        ).process(
+            success = { objectId ->
+                viewModelScope.sendAnalyticsObjectCreateEvent(
+                    analytics = analytics,
+                    objType = MarketplaceObjectTypeIds.BOOKMARK,
+                    route = EventsDictionary.Routes.sharingExtension,
+                    startTime = System.currentTimeMillis(),
+                    spaceParams = provideParams(targetSpaceId)
+                )
+                result = objectId
+            },
+            failure = { e ->
+                Timber.e(e, "Error creating bookmark")
+            }
+        )
+        return result
+    }
+
+    /**
+     * Uploads a media file and returns its ID, or null on failure.
+     * Files in Anytype are first-class objects with their own IDs.
+     */
+    private suspend fun uploadMediaAndGetId(
+        uri: String,
+        type: SharedContent.MediaType,
+        targetSpaceId: Id
+    ): Id? {
+        var result: Id? = null
+        uploadMediaFile(
+            uri = uri,
+            type = type,
+            spaceId = SpaceId(targetSpaceId)
+        ) { fileId ->
+            result = fileId
+        }
+        return result
+    }
+
+    /**
+     * Links a newly created object to a destination object.
+     * Opens the destination, adds a link block to the new object, then closes.
+     */
+    private suspend fun linkObjectToDestination(
+        objectToLink: Id,
+        destinationObjectId: Id,
+        spaceId: SpaceId
+    ) {
+        try {
+            addBackLinkToObject.async(
+                AddBackLinkToObject.Params(
+                    objectToLink = objectToLink,
+                    objectToPlaceLink = destinationObjectId,
+                    saveAsLastOpened = false,
+                    spaceId = spaceId
+                )
+            )
+            Timber.d("Successfully linked object $objectToLink to destination $destinationObjectId")
+        } catch (e: Exception) {
+            Timber.e(e, "Error linking object to destination")
+            // Don't throw - the object was created successfully, link is optional
         }
     }
 
@@ -360,19 +538,13 @@ class SharingViewModel(
      */
     fun onBackPressed(): Boolean {
         return when (_screenState.value) {
-            is SharingScreenState.ChatInput -> {
-                // Clear chat selection and go back to space selection
-                selectedChatSpace = null
-                commentText = ""
-                updateSpaceSelectionState()
-                true
-            }
             is SharingScreenState.ObjectSelection -> {
                 // Go back to space selection
                 selectedDataSpace = null
                 selectedDestinationObjectIds.clear()
                 objectSearchQuery = ""
                 commentText = ""
+                cachedTypesMap = emptyMap()
                 updateSpaceSelectionState()
                 true
             }
@@ -398,20 +570,10 @@ class SharingViewModel(
         }
 
         _screenState.value = SharingScreenState.SpaceSelection(
-            spaces = filteredSpaces,
+            spaces = spacesWithSelection,
             searchQuery = spaceSearchQuery,
             sharedContent = content,
             commentText = commentText
-        )
-    }
-
-    private fun showChatInputScreen() {
-        val space = selectedChatSpace ?: return
-        val content = sharedContent ?: return
-        _screenState.value = SharingScreenState.ChatInput(
-            selectedSpaces = listOf(space),  // Single item list for compatibility
-            commentText = commentText,
-            sharedContent = content
         )
     }
 
@@ -430,24 +592,26 @@ class SharingViewModel(
             sharedContent = content
         )
 
-        // Load objects and chats in parallel
-        searchObjectsAndChatsInSpace(space)
+        // Fetch types once when entering the space, then search
+        viewModelScope.launch {
+            val spaceId = SpaceId(space.targetSpaceId)
+            cachedTypesMap = fetchObjectTypesForSpace(spaceId)
+            searchObjectsAndChatsInSpace(space)
+        }
     }
 
     /**
      * Searches for both regular objects and chat objects in the given space.
-     * Results are loaded in parallel for better performance.
+     * Uses cached types map (fetched once in navigateToObjectSelection).
      * Preserves selection state across search queries.
      */
     private fun searchObjectsAndChatsInSpace(space: SelectableSpaceView) {
         viewModelScope.launch {
             val spaceId = SpaceId(space.targetSpaceId)
 
-            // Search regular objects
-            val objects = searchRegularObjects(spaceId, space.uxType)
-
-            // Search chat objects (CHAT_DERIVED layout)
-            val chats = searchChatObjects(spaceId)
+            // Search regular objects and chats using cached types map
+            val objects = searchRegularObjects(spaceId, cachedTypesMap)
+            val chats = searchChatObjects(spaceId, cachedTypesMap)
 
             val currentState = _screenState.value
             if (currentState is SharingScreenState.ObjectSelection) {
@@ -462,18 +626,161 @@ class SharingViewModel(
     }
 
     /**
+     * Fetches all object types from the given space.
+     * Returns a map of type ID -> ObjectWrapper.Type for quick lookup.
+     */
+    private suspend fun fetchObjectTypesForSpace(spaceId: SpaceId): Map<Id, ObjectWrapper.Type> {
+        val filters = buildList {
+            addAll(buildDeletedFilter())
+            add(buildTemplateFilter())
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.EQUAL,
+                    value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                )
+            )
+            add(
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
+                    condition = DVFilterCondition.NOT_EMPTY
+                )
+            )
+        }
+
+        val keys = ObjectSearchConstants.defaultKeysObjectType
+
+        val params = SearchObjects.Params(
+            space = spaceId,
+            filters = filters,
+            sorts = emptyList(),
+            keys = keys,
+            limit = 0
+        )
+
+        return try {
+            val results = searchObjects(params).getOrNull() ?: emptyList()
+            results.mapNotNull { obj ->
+                obj.map.mapToObjectWrapperType()?.let { type ->
+                    type.id to type
+                }
+            }.toMap()
+        } catch (e: Exception) {
+            Timber.e(e, "Error fetching object types for space")
+            emptyMap()
+        }
+    }
+
+    /**
      * Searches for regular objects (non-chat) in the space.
      */
     private suspend fun searchRegularObjects(
         spaceId: SpaceId,
-        spaceUxType: SpaceUxType?
+        typesMap: Map<Id, ObjectWrapper.Type>
     ): List<SelectableObjectView> {
-        val filters = buildObjectSearchFilters(spaceUxType)
+        val filters = buildObjectSearchFilters()
+        val sorts = listOf(
+            DVSort(
+                relationKey = Relations.LAST_OPENED_DATE,
+                type = DVSortType.DESC,
+                relationFormat = RelationFormat.DATE,
+                includeTime = true
+            )
+        )
+
+        val params = SearchObjects.Params(
+            space = spaceId,
+            filters = filters,
+            sorts = sorts,
+            fulltext = objectSearchQuery,
+            keys = ObjectSearchConstants.defaultKeys,
+            limit = 200
+        )
+
+        return try {
+            val objects = searchObjects(params).getOrNull() ?: emptyList()
+            objects.map { obj ->
+                // Get type from the map using object's type relation
+                val typeId = obj.type.firstOrNull()
+                val objType = typeId?.let { typesMap[it] }
+                SelectableObjectView(
+                    id = obj.id,
+                    name = fieldParser.getObjectPluralName(obj),
+                    icon = obj.objectIcon(
+                        builder = urlBuilder,
+                        objType = objType
+                    ),
+                    typeName = objType?.name.orEmpty(),
+                    isSelected = obj.id in selectedDestinationObjectIds
+                )
+            }
+        } catch (e: Exception) {
+            Timber.e(e, "Error searching objects in space")
+            emptyList()
+        }
+    }
+
+    /**
+     * Finds the chat object ID in a space by searching for CHAT_DERIVED layout objects.
+     * Used as fallback when SpaceView.chatId is not available (e.g., for 1-1 spaces).
+     *
+     * @param spaceId The space to search in
+     * @return The chat ID if found, null otherwise
+     */
+    private suspend fun findChatIdInSpace(spaceId: SpaceId): Id? {
+        val filters = buildList {
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.EQUAL,
+                    value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                )
+            )
+            addAll(buildDeletedFilter())
+            add(buildTemplateFilter())
+        }
+
+        val params = SearchObjects.Params(
+            space = spaceId,
+            filters = filters,
+            sorts = emptyList(),
+            keys = listOf(Relations.ID),
+            limit = 1
+        )
+
+        return try {
+            searchObjects(params).getOrNull()?.firstOrNull()?.id
+        } catch (e: Exception) {
+            Timber.e(e, "Error searching for chat in space")
+            null
+        }
+    }
+
+    /**
+     * Searches for chat objects (CHAT_DERIVED layout) in the space.
+     */
+    private suspend fun searchChatObjects(
+        spaceId: SpaceId,
+        typesMap: Map<Id, ObjectWrapper.Type>
+    ): List<SelectableObjectView> {
+        val filters = buildList {
+            addAll(buildDeletedFilter())
+            add(buildTemplateFilter())
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.EQUAL,
+                    value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                )
+            )
+        }
+
         val sorts = listOf(
             DVSort(
                 relationKey = Relations.LAST_MODIFIED_DATE,
                 type = DVSortType.DESC,
-                relationFormat = RelationFormat.DATE
+                relationFormat = RelationFormat.DATE,
+                includeTime = true
             )
         )
 
@@ -485,76 +792,7 @@ class SharingViewModel(
             keys = listOf(
                 Relations.ID,
                 Relations.NAME,
-                Relations.ICON_EMOJI,
-                Relations.ICON_IMAGE,
-                Relations.ICON_OPTION,
                 Relations.TYPE,
-                Relations.TYPE_UNIQUE_KEY,
-                Relations.LAYOUT
-            )
-        )
-
-        return try {
-            val objects = searchObjects(params).getOrNull() ?: emptyList()
-            objects.map { obj ->
-                SelectableObjectView(
-                    id = obj.id,
-                    name = fieldParser.getObjectPluralName(obj),
-                    icon = obj.objectIcon(urlBuilder),
-                    typeName = "", // TODO: resolve type name
-                    isSelected = obj.id in selectedDestinationObjectIds
-                )
-            }
-        } catch (e: Exception) {
-            Timber.e(e, "Error searching objects in space")
-            emptyList()
-        }
-    }
-
-    /**
-     * Searches for chat objects (CHAT_DERIVED layout) in the space.
-     */
-    private suspend fun searchChatObjects(spaceId: SpaceId): List<SelectableObjectView> {
-        val filters = buildList {
-            add(
-                DVFilter(
-                    relation = Relations.LAYOUT,
-                    condition = DVFilterCondition.EQUAL,
-                    value = ObjectType.Layout.CHAT_DERIVED.code.toDouble()
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.IS_ARCHIVED,
-                    condition = DVFilterCondition.NOT_EQUAL,
-                    value = true
-                )
-            )
-            add(
-                DVFilter(
-                    relation = Relations.IS_DELETED,
-                    condition = DVFilterCondition.NOT_EQUAL,
-                    value = true
-                )
-            )
-        }
-
-        val sorts = listOf(
-            DVSort(
-                relationKey = Relations.LAST_MODIFIED_DATE,
-                type = DVSortType.DESC,
-                relationFormat = RelationFormat.DATE
-            )
-        )
-
-        val params = SearchObjects.Params(
-            space = spaceId,
-            filters = filters,
-            sorts = sorts,
-            fulltext = "",
-            keys = listOf(
-                Relations.ID,
-                Relations.NAME,
                 Relations.ICON_EMOJI,
                 Relations.ICON_IMAGE,
                 Relations.ICON_OPTION
@@ -564,11 +802,16 @@ class SharingViewModel(
         return try {
             val objects = searchObjects(params).getOrNull() ?: emptyList()
             objects.map { obj ->
+                val typeId = obj.type.firstOrNull()
+                val objType = typeId?.let { typesMap[it] }
                 SelectableObjectView(
                     id = obj.id,
                     name = fieldParser.getObjectPluralName(obj),
-                    icon = obj.objectIcon(urlBuilder),
-                    typeName = "Chat",
+                    icon = obj.objectIcon(
+                        builder = urlBuilder,
+                        objType = objType
+                    ),
+                    typeName = objType?.name ?: "Chat",
                     isSelected = obj.id in selectedDestinationObjectIds,
                     isChatOption = true
                 )
@@ -579,19 +822,16 @@ class SharingViewModel(
         }
     }
 
-    private fun buildObjectSearchFilters(spaceUxType: SpaceUxType?): List<DVFilter> = buildList {
-        // Base filters from ObjectSearchConstants
-        addAll(ObjectSearchConstants.filterSearchObjects(excludeTypes = true, spaceUxType = spaceUxType))
-
-        // Exclude Sets, Collections, and Chat objects (chats are searched separately)
+    private fun buildObjectSearchFilters(): List<DVFilter> = buildList {
+        addAll(buildDeletedFilter())
+        add(buildTemplateFilter())
         add(
-            DVFilter(
-                relation = Relations.LAYOUT,
-                condition = DVFilterCondition.NOT_IN,
-                value = listOf(
-                    ObjectType.Layout.SET.code.toDouble(),
-                    ObjectType.Layout.COLLECTION.code.toDouble(),
-                    ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+            buildLayoutFilter(
+                layouts = listOf(
+                    ObjectType.Layout.BASIC,
+                    ObjectType.Layout.NOTE,
+                    ObjectType.Layout.PROFILE,
+                    ObjectType.Layout.TODO
                 )
             )
         )
@@ -613,11 +853,22 @@ class SharingViewModel(
     /**
      * Sends content to a specific chat space.
      * Used both from space selection and object selection flows.
+     * Falls back to searching for chat objects if chatId is not directly available.
      */
     private suspend fun sendToChat(space: SelectableSpaceView) {
         val content = sharedContent ?: return
-        val chatId = space.chatId ?: return
         val spaceId = SpaceId(space.targetSpaceId)
+
+        // Try to get chatId from SpaceView, fallback to search for 1-1 spaces
+        val chatId = space.chatId ?: findChatIdInSpace(spaceId)
+        if (chatId == null) {
+            Timber.e("No chat found in space ${space.name}")
+            _screenState.value = SharingScreenState.Error(
+                message = "No chat found in this space",
+                canRetry = false
+            )
+            return
+        }
 
         _screenState.value = SharingScreenState.Sending(progress = 0f, message = "Sending...")
 
@@ -630,7 +881,9 @@ class SharingViewModel(
                 canOpenObject = false
             )
 
-            _commands.emit(SharingCommand.Dismiss)
+            _commands.emit(
+                SharingCommand.Dismiss
+            )
 
         } catch (e: Exception) {
             Timber.e(e, "Error sending to chat")
@@ -641,17 +894,18 @@ class SharingViewModel(
         }
     }
 
+    @Throws
     private suspend fun sendContentToChat(chatId: Id, spaceId: SpaceId, content: SharedContent) {
         when (content) {
             is SharedContent.Text -> {
-                // Truncate text if > 2000 chars
-                val truncatedText = content.text.take(SharedContent.MAX_CHAT_MESSAGE_LENGTH)
-                sendChatMessage(chatId, truncatedText, emptyList())
-
-                // Send comment as separate message if provided
+                // Send comment FIRST as separate message if provided
                 if (commentText.isNotBlank()) {
                     sendChatMessage(chatId, commentText, emptyList())
                 }
+
+                // Then send the shared text (truncated if > 2000 chars)
+                val truncatedText = content.text.take(SharedContent.MAX_CHAT_MESSAGE_LENGTH)
+                sendChatMessage(chatId, truncatedText, emptyList())
             }
 
             is SharedContent.Url -> {
@@ -661,7 +915,11 @@ class SharingViewModel(
 
             is SharedContent.SingleMedia -> {
                 // Upload and send with caption
-                uploadMediaFile(content.uri, content.type, spaceId) { fileId ->
+                uploadMediaFile(
+                    uri = content.uri,
+                    type = content.type,
+                    spaceId = spaceId
+                ) { fileId ->
                     val attachment = createMediaAttachment(fileId, content.type)
                     sendChatMessage(chatId, commentText, listOf(attachment))
                 }
@@ -724,6 +982,7 @@ class SharingViewModel(
         }
     }
 
+    @Throws
     private suspend fun sendChatMessage(
         chatId: Id,
         text: String,
@@ -756,19 +1015,18 @@ class SharingViewModel(
         )
         return createObjectFromUrl.async(params).fold(
             onSuccess = { obj ->
-                val bookmarkId = obj.id
-                if (bookmarkId != null) {
-                    val attachment = Chat.Message.Attachment(
-                        target = bookmarkId,
-                        type = Chat.Message.Attachment.Type.Link
-                    )
-                    sendChatMessage(chatId, "", listOf(attachment))
-                }
-
-                // Send comment as separate message
+                // Send comment FIRST as separate message if provided (per spec)
                 if (commentText.isNotBlank()) {
                     sendChatMessage(chatId, commentText, emptyList())
                 }
+
+                // Then send the bookmark as attachment
+                val bookmarkId = obj.id
+                val attachment = Chat.Message.Attachment(
+                    target = bookmarkId,
+                    type = Chat.Message.Attachment.Type.Link
+                )
+                sendChatMessage(chatId, "", listOf(attachment))
             },
             onFailure = { e ->
                 Timber.e(e, "Error creating bookmark from URL")
@@ -782,17 +1040,17 @@ class SharingViewModel(
         type: SharedContent.MediaType,
         spaceId: SpaceId,
         onSuccess: suspend (Id) -> Unit
-    ) = withContext(Dispatchers.IO) {
+    ) {
         val path = try {
             fileSharer.getPath(uri)
         } catch (e: Exception) {
             Timber.e(e, "Error getting path for URI: $uri")
-            return@withContext
+            return
         }
 
         if (path == null) {
             Timber.e("Path is null for URI: $uri")
-            return@withContext
+            return
         }
 
         val fileType = when (type) {
@@ -815,6 +1073,7 @@ class SharingViewModel(
                 Timber.e(e, "Error uploading file")
             }
         )
+
     }
 
     private fun createMediaAttachment(
@@ -951,6 +1210,7 @@ class SharingViewModel(
         space: SelectableSpaceView,
         targetSpaceId: Id
     ) {
+        val content = sharedContent ?: return
         val currentSpaceId = spaceManager.get()
 
         _screenState.value = SharingScreenState.Success(
@@ -959,12 +1219,18 @@ class SharingViewModel(
             canOpenObject = targetSpaceId == currentSpaceId
         )
 
-        if (targetSpaceId == currentSpaceId) {
-            _commands.emit(SharingCommand.NavigateToObject(objectId, targetSpaceId))
-        } else {
-            _commands.emit(SharingCommand.ObjectAddedToSpaceToast(space.name))
-            _commands.emit(SharingCommand.Dismiss)
-        }
+        // Show Snackbar with "Open" action to navigate to the created object
+        _commands.emit(
+            SharingCommand.ShowSnackbarWithOpenAction(
+                contentType = content,
+                destinationName = space.name,
+                spaceName = null,  // No extra space context needed for "added to space"
+                objectId = objectId,
+                spaceId = targetSpaceId,
+                isChat = false
+            )
+        )
+        _commands.emit(SharingCommand.Dismiss)
     }
 
     // endregion
@@ -986,7 +1252,8 @@ class SharingViewModel(
         private val addChatMessage: AddChatMessage,
         private val uploadFile: UploadFile,
         private val searchObjects: SearchObjects,
-        private val fieldParser: FieldParser
+        private val fieldParser: FieldParser,
+        private val addBackLinkToObject: AddBackLinkToObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -1005,30 +1272,11 @@ class SharingViewModel(
                 addChatMessage = addChatMessage,
                 uploadFile = uploadFile,
                 searchObjects = searchObjects,
-                fieldParser = fieldParser
+                fieldParser = fieldParser,
+                addBackLinkToObject = addBackLinkToObject
             ) as T
         }
     }
 
     // endregion
-
-    companion object {
-        private const val TAG = "SharingViewModel"
-    }
-}
-
-/**
- * Extension function to get object icon from ObjectWrapper.Basic
- */
-private fun com.anytypeio.anytype.core_models.ObjectWrapper.Basic.objectIcon(
-    urlBuilder: UrlBuilder
-): ObjectIcon {
-    val iconEmoji = iconEmoji
-    val iconImage = iconImage
-
-    return when {
-        !iconEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(iconEmoji)
-        !iconImage.isNullOrBlank() -> ObjectIcon.Basic.Image(urlBuilder.thumbnail(iconImage))
-        else -> ObjectIcon.None
-    }
 }

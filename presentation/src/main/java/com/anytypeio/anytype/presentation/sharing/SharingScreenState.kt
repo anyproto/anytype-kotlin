@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.Id
  * Represents the different screen states in the sharing extension flow.
  * This sealed class implements a state machine pattern for navigating between:
  * - Space selection (initial screen)
- * - Chat input (for chat spaces - Flow 1)
  * - Object selection (for data spaces - Flow 2 & 3)
  * - Progress and result states
  */
@@ -16,6 +15,11 @@ sealed class SharingScreenState {
      * Initial loading state while spaces are being fetched.
      */
     data object Loading : SharingScreenState()
+
+    /**
+     * Empty state when no spaces are available.
+     */
+    data object NoSpaces : SharingScreenState()
 
     /**
      * Initial screen showing the grid of available spaces.
@@ -31,20 +35,6 @@ sealed class SharingScreenState {
         val searchQuery: String = "",
         val sharedContent: SharedContent,
         val commentText: String = ""
-    ) : SharingScreenState()
-
-    /**
-     * Chat input screen shown after selecting chat space(s).
-     * Used for Flow 1 (Chat Space).
-     *
-     * @property selectedSpaces List of selected chat spaces (multi-select supported)
-     * @property commentText Current comment/caption text (max 2000 chars)
-     * @property sharedContent The content being shared
-     */
-    data class ChatInput(
-        val selectedSpaces: List<SelectableSpaceView>,
-        val commentText: String = "",
-        val sharedContent: SharedContent
     ) : SharingScreenState()
 
     /**
@@ -69,11 +59,6 @@ sealed class SharingScreenState {
         val commentText: String = "",
         val sharedContent: SharedContent
     ) : SharingScreenState() {
-        /**
-         * Returns true if there are chat objects available in this space.
-         */
-        val hasChatOptions: Boolean
-            get() = chatObjects.isNotEmpty()
 
         /**
          * Returns true if any selected item is a chat.
@@ -81,18 +66,6 @@ sealed class SharingScreenState {
          */
         val hasAnyChatSelected: Boolean
             get() = chatObjects.any { it.id in selectedObjectIds }
-
-        /**
-         * Number of currently selected destinations.
-         */
-        val selectedCount: Int
-            get() = selectedObjectIds.size
-
-        /**
-         * Returns true if more items can be selected (under the limit).
-         */
-        val canSelectMore: Boolean
-            get() = selectedObjectIds.size < MAX_SELECTION_COUNT
 
         companion object {
             const val MAX_SELECTION_COUNT = 5
@@ -150,15 +123,22 @@ sealed class SharingCommand {
     data class ShowToast(val message: String) : SharingCommand()
 
     /**
-     * Navigate to the created object.
+     * Show Snackbar with message and "Open" action.
+     * Used after successfully adding content to a chat, space, or linking to an object.
+     *
+     * @property contentType The type of content that was shared (for message formatting)
+     * @property destinationName The name of the destination (chat/object/space name)
+     * @property spaceName Optional space name for context (used when linking to an object)
+     * @property objectId The ID of the object/chat to navigate to when "Open" is clicked
+     * @property spaceId The space ID containing the target
+     * @property isChat Whether the target is a chat (determines navigation destination)
      */
-    data class NavigateToObject(
+    data class ShowSnackbarWithOpenAction(
+        val contentType: SharedContent,
+        val destinationName: String,
+        val spaceName: String? = null,
         val objectId: Id,
-        val spaceId: Id
+        val spaceId: Id,
+        val isChat: Boolean
     ) : SharingCommand()
-
-    /**
-     * Show toast indicating object was added to a different space.
-     */
-    data class ObjectAddedToSpaceToast(val spaceName: String) : SharingCommand()
 }

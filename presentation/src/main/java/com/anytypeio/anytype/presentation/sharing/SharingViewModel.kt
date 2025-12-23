@@ -15,10 +15,14 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectOrigin
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.fold
@@ -32,8 +36,6 @@ import com.anytypeio.anytype.domain.objects.CreateBookmarkObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.CreatePrefilledNote
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -419,13 +421,22 @@ class SharingViewModel(
 
     /**
      * Creates a note and returns its ID, or null on failure.
+     * Falls back to PAGE type if NOTE type is deleted or archived.
      */
     private suspend fun createNoteAndGetId(text: String, targetSpaceId: Id): Id? {
+        // Check if NOTE type is available (not deleted/archived)
+        val usePageFallback = !isNoteTypeAvailable(SpaceId(targetSpaceId))
+
+        val customType = if (usePageFallback) TypeKey(ObjectTypeUniqueKeys.PAGE) else null
+        val analyticsType =
+            if (usePageFallback) MarketplaceObjectTypeIds.PAGE else MarketplaceObjectTypeIds.NOTE
+
         var result: Id? = null
         createPrefilledNote.async(
             CreatePrefilledNote.Params(
                 text = text,
                 space = targetSpaceId,
+                customType = customType,
                 details = mapOf(
                     Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
                 )
@@ -434,7 +445,7 @@ class SharingViewModel(
             onSuccess = { objectId ->
                 viewModelScope.sendAnalyticsObjectCreateEvent(
                     analytics = analytics,
-                    objType = MarketplaceObjectTypeIds.NOTE,
+                    objType = analyticsType,
                     route = EventsDictionary.Routes.sharingExtension,
                     startTime = System.currentTimeMillis(),
                     spaceParams = provideParams(targetSpaceId)
@@ -668,6 +679,46 @@ class SharingViewModel(
         } catch (e: Exception) {
             Timber.e(e, "Error fetching object types for space")
             emptyMap()
+        }
+    }
+
+    /**
+     * Checks if the Note object type exists and is valid (not deleted/archived) in the given space.
+     * Returns true if NOTE type is available, false if it should fall back to PAGE.
+     */
+    private suspend fun isNoteTypeAvailable(spaceId: SpaceId): Boolean {
+        val filters = buildList {
+            add(
+                DVFilter(
+                    relation = Relations.UNIQUE_KEY,
+                    condition = DVFilterCondition.EQUAL,
+                    value = ObjectTypeUniqueKeys.NOTE
+                )
+            )
+            add(
+                DVFilter(
+                    relation = Relations.LAYOUT,
+                    condition = DVFilterCondition.EQUAL,
+                    value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+                )
+            )
+        }
+
+        val params = SearchObjects.Params(
+            space = spaceId,
+            filters = filters,
+            sorts = emptyList(),
+            keys = listOf(Relations.ID, Relations.UNIQUE_KEY),
+            limit = 1
+        )
+
+        return try {
+            val results = searchObjects(params).getOrNull() ?: emptyList()
+            val noteObj = results.firstOrNull()
+            noteObj != null && noteObj.isArchived != true && noteObj.isDeleted != true
+        } catch (e: Exception) {
+            Timber.e(e, "Error checking NOTE type availability")
+            false // Fallback to PAGE on error
         }
     }
 
@@ -1130,33 +1181,15 @@ class SharingViewModel(
         targetSpaceId: Id,
         onSuccess: suspend (Id) -> Unit
     ) {
-        createPrefilledNote.async(
-            CreatePrefilledNote.Params(
-                text = text,
-                space = targetSpaceId,
-                details = mapOf(
-                    Relations.ORIGIN to ObjectOrigin.SHARING_EXTENSION.code.toDouble()
-                )
+        val objectId = createNoteAndGetId(text, targetSpaceId)
+        if (objectId != null) {
+            onSuccess(objectId)
+        } else {
+            _screenState.value = SharingScreenState.Error(
+                message = "Failed to create object",
+                canRetry = true
             )
-        ).fold(
-            onSuccess = { objectId ->
-                viewModelScope.sendAnalyticsObjectCreateEvent(
-                    analytics = analytics,
-                    objType = MarketplaceObjectTypeIds.NOTE,
-                    route = EventsDictionary.Routes.sharingExtension,
-                    startTime = System.currentTimeMillis(),
-                    spaceParams = provideParams(spaceManager.get())
-                )
-                onSuccess(objectId)
-            },
-            onFailure = { e ->
-                Timber.e(e, "Error creating note")
-                _screenState.value = SharingScreenState.Error(
-                    message = e.msg(),
-                    canRetry = true
-                )
-            }
-        )
+        }
     }
 
     private suspend fun proceedWithBookmarkCreation(

@@ -174,12 +174,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                         )
                                     )
                             }
-                            // Sharing is now handled via state-driven approach
-                            // See setupFeatureIntroductions() -> SharingModalHost
-                            is Command.Sharing -> {
-                                // Legacy Command.Sharing handlers - no longer used
-                                // Sharing now uses vm.sharingIntent state
-                            }
                             is Command.Error -> {
                                 toast(command.msg)
                             }

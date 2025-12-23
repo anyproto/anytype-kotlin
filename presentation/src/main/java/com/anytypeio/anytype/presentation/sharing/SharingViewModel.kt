@@ -910,7 +910,7 @@ class SharingViewModel(
 
             is SharedContent.Url -> {
                 // Create bookmark object and send as attachment
-                createBookmarkForChat(content.url, spaceId, chatId)
+                createBookmarkForChat(url = content.url, spaceId = spaceId, chatId = chatId)
             }
 
             is SharedContent.SingleMedia -> {
@@ -950,17 +950,6 @@ class SharingViewModel(
 
                 // Build and batch attachments
                 val attachments = mutableListOf<Chat.Message.Attachment>()
-
-                // Add bookmark if URL present
-                content.url?.let { url ->
-//                    val bookmarkId = createBookmarkForChat(url, spaceId, chatId)
-//                    if (bookmarkId != null) {
-//                        attachments.add(Chat.Message.Attachment(
-//                            target = bookmarkId,
-//                            type = Chat.Message.Attachment.Type.Link
-//                        ))
-//                    }
-                }
 
                 // Add media attachments
                 content.mediaUris.forEach { uri ->
@@ -1030,7 +1019,6 @@ class SharingViewModel(
             },
             onFailure = { e ->
                 Timber.e(e, "Error creating bookmark from URL")
-                null
             }
         )
     }

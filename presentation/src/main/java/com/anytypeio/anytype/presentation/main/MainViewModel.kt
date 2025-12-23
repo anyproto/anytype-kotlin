@@ -768,13 +768,6 @@ class MainViewModel(
         data object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
-        sealed class Sharing : Command() {
-            /**
-             * Single entry point for all share intents.
-             * SharingFragment handles MIME type detection internally.
-             */
-            data class Show(val intent: android.content.Intent) : Sharing()
-        }
 
         data object Notifications : Command()
         data object RequestNotificationPermission : Command()

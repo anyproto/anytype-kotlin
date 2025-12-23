@@ -785,16 +785,6 @@ class MainViewModel(
             val triggeredByPush: Boolean = false
         ) : Command()
 
-        /**
-         * Navigate to an object/chat in a different space after sharing.
-         * Clears the back stack to vault before switching spaces.
-         */
-        data class SharingNavigateCrossSpace(
-            val objectId: Id,
-            val spaceId: Id,
-            val isChat: Boolean
-        ) : Command()
-
         data class Navigate(val destination: OpenObjectNavigation) : Command()
 
         sealed class Deeplink : Command() {

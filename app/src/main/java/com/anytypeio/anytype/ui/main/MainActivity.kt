@@ -791,7 +791,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         toast(command.message)
                     }
                     is SharingCommand.ShowSnackbarWithOpenAction -> {
-                        // Dismiss modal and show Snackbar with action
+                        // Dismiss modal and show Snackbar
                         onDismiss()
                         val message = getSnackbarMessage(
                             contentType = command.contentType,

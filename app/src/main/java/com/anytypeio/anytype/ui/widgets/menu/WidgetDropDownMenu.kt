@@ -226,6 +226,10 @@ private fun WidgetView.canChangeWidgetType(): Boolean {
  */
 fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
     val menuItems = when (sectionType) {
+        SectionType.UNREAD -> {
+            // Unread section widgets have no menu
+            emptyList<WidgetMenuItem>()
+        }
         SectionType.PINNED -> {
             buildList {
                 when (this@getWidgetMenuItems) {
@@ -282,6 +286,9 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         add(WidgetMenuItem.RemoveWidget)
                     }
                     is WidgetView.SpaceChat -> {}
+                    is WidgetView.UnreadChatList -> {
+                        // No menu for unread chat list
+                    }
                     is WidgetView.Tree -> {
                         if (canCreateObjectOfType) {
                             add(CreateObjectOfType(id))

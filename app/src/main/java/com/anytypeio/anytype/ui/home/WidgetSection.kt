@@ -5,6 +5,8 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -19,6 +21,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -44,6 +47,7 @@ import com.anytypeio.anytype.ui.widgets.menu.getWidgetMenuItems
 import com.anytypeio.anytype.ui.widgets.types.AllContentWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ChatListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.CompactListWidgetList
 import com.anytypeio.anytype.ui.widgets.types.DataViewListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
@@ -51,6 +55,7 @@ import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState
@@ -81,6 +86,10 @@ fun LazyListScope.renderWidgetSection(
     ) { index, item ->
         val animateItemModifier = Modifier.animateItem()
         when (item) {
+            is WidgetView.UnreadChatList -> {
+                // Unread chat list widgets are rendered separately in WidgetsScreen
+                // They should not be part of the reorderable widget sections
+            }
             is WidgetView.Tree -> {
                 val isCardMenuExpanded = remember { mutableStateOf(false) }
                 val menuItems = remember(
@@ -592,6 +601,27 @@ fun SpaceObjectTypesSectionHeader(
 }
 
 @Composable
+fun UnreadSectionHeader(
+    onSectionClicked: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_unread),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
+        )
+    }
+}
+
+@Composable
 fun PinnedSectionHeader(
     onSectionClicked: () -> Unit,
 ) {
@@ -609,5 +639,45 @@ fun PinnedSectionHeader(
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
+    }
+}
+
+/**
+ * Displays the unread chat list widget content without tabs.
+ * Based on ChatListWidgetCard but simplified for the unread section.
+ */
+@Composable
+fun UnreadChatListWidget(
+    item: WidgetView.UnreadChatList,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    // Wrap in card with rounded background (same as other widgets)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .background(
+                shape = RoundedCornerShape(16.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .clip(RoundedCornerShape(16.dp))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            // No header - section header is rendered separately
+            // No tabs - unread section doesn't have tabs
+            if (item.elements.isNotEmpty()) {
+                // Use compact list layout (same as ChatListWidgetCard in compact mode)
+                CompactListWidgetList(
+                    mode = mode,
+                    elements = item.elements,
+                    onWidgetElementClicked = onWidgetObjectClicked,
+                    onObjectCheckboxClicked = onObjectCheckboxClicked
+                )
+            }
+        }
     }
 }

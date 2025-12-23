@@ -242,7 +242,7 @@
     <string name="paste">Вставить</string>
     <string name="select">Выбрать</string>
     <string name="search">Поиск</string>
-    <string name="search_hint">Поиск...</string>
+    <string name="search_hint">Поиск</string>
     <string name="relations">Свойства</string>
     <string name="fields">Поля</string>
     <string name="download">Скачать</string>
@@ -1251,6 +1251,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Любой, у кого есть ссылка, сможет просматривать только содержимое места.</string>
     <string name="multiplayer_change_to_request_confirmation">Любой, у кого есть ссылка, должен будет запросить доступ для входа в пространство.</string>
     <string name="multiplayer_invite_link_copied">Ссылка скопирована в буфер обмена.</string>
+    <string name="link_copied">Ссылка скопирована</string>
+    <string name="remove_from_collection">Отвязать от коллекции</string>
     <string name="multiplayer_copy_link">Скопировать ссылку</string>
     <string name="multiplayer_make_private">Сделать приватным</string>
     <string name="multiplayer_join_a_space">Присоединиться к пространству</string>
@@ -1658,7 +1660,7 @@
     <string name="version_history_error_get_version">Ошибка получения истории версий</string>
     <string name="version_history_error_get_members">Ошибка при получении участников</string>
     <string name="new_object">Новый объект</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">Мои каналы</string>
     <string name="vault_unread_section_title">Непрочитанные</string>
     <string name="vault_all_section_title">Все</string>
     <string name="vault_pinned_section_title">Закреплённые</string>
@@ -1868,6 +1870,13 @@
     <string name="space_settings_icon_title">Редактировать фотографию</string>
     <string name="space_settings_save_button">Сохранить</string>
     <string name="space_settings_join_space_by_qr_title">Присоединись</string>
+    <string name="profile_qr_code_title">Связаться со мной</string>
+    <string name="profile_qr_code_title_with_name">Связать с %1$s</string>
+    <string name="profile_qr_code_button">Мой QR-код</string>
+    <string name="profile_qr_share_button">Поделиться</string>
+    <string name="profile_qr_copy_button">Скопировать ссылку</string>
+    <string name="profile_qr_circular_text">СВЯЗАТЬСЯ СО МНОЙ В АНИТИПЕ </string>
+    <string name="profile_qr_link_copied">Ссылка скопирована</string>
     <string name="object_type_add_property_screen_title">Добавить свойство</string>
     <string name="object_type_add_property_screen_create">Создать свойство \"%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Формат свойств</string>
@@ -2010,6 +2019,7 @@
     <string name="share_space_error_make_private_failed">        Не удалось сделать пространство приватным. Пожалуйста, попробуйте позже.
     </string>
     <string name="private_local_yours_forever">зашифрованный, локальный, ваш навсегда</string>
+    <string name="private_channel">Прямой канал</string>
     <string name="wallpaper_item_space_icon_color">Цвет по умолчанию</string>
     <string name="publish_to_web">Опубликовать в веб</string>
     <string name="preferences">Настройки</string>
@@ -2025,6 +2035,7 @@
     <string name="web_publishing_open_in_browser">Открыть в браузере</string>
     <string name="web_publishing_copy_web_link">Копировать ссылку</string>
     <string name="widgets_section_pinned">Закреплённые</string>
+    <string name="widgets_section_unread">Непрочитанные</string>
     <string name="widgets_section_object_types">Типы объектов</string>
     <string name="widgets_menu_new_object_type">Новый</string>
     <string name="widgets_menu_delete_object_type">Удалить тип объекта</string>
@@ -2053,6 +2064,9 @@
         <item quantity="many">%d новых сообщений</item>
         <item quantity="other">%d новые сообщения</item>
     </plurals>
+    <string name="any_id_info_title">Это Ваш ANY ID</string>
+    <string name="any_id_info_description">Станьте участником, чтобы сделать свой ID читаемым для людей — так другие участники смогут легко найти вас и связаться.</string>
+    <string name="any_id_info_button">Изучить планы</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Подтвердить</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Вы можете загрузить только 10 файлов за раз</string>
@@ -2068,4 +2082,7 @@
     <string name="notify_me_about">Уведомить меня о</string>
     <string name="error_while_downloading_object">Ошибка при загрузке объекта: %1$s</string>
     <string name="toast_moved_to_bin">Объект перемещен в корзину.</string>
+    <string name="media_object_in_bin">Этот объект в корзине. Восстановить его?</string>
+    <string name="toast_restored">Объект восстановлен.</string>
+    <string name="participant_btn_connect">Подключиться</string>
 </resources>

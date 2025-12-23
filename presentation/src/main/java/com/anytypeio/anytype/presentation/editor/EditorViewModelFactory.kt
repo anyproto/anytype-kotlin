@@ -53,6 +53,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.UrlHelper
 import javax.inject.Inject
 
 open class EditorViewModelFactory @Inject constructor(
@@ -103,7 +104,8 @@ open class EditorViewModelFactory @Inject constructor(
     private val syncStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val urlHelper: UrlHelper
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -156,7 +158,8 @@ open class EditorViewModelFactory @Inject constructor(
             clearLastOpenedObject = clearLastOpenedObject,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            urlHelper = urlHelper
         ) as T
     }
 }

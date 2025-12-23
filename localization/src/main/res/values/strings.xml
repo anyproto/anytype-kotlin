@@ -929,6 +929,7 @@
 
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Default</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
@@ -2341,6 +2342,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
 
     <string name="widgets_section_pinned">Pinned</string>
+    <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_object_types">Object types</string>
     <string name="widgets_menu_new_object_type">New</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>

@@ -70,6 +70,10 @@ sealed interface ListenerType {
 
     data class Latex(val id: Id) : ListenerType
 
+    sealed class Embed : ListenerType {
+        data class Click(val item: BlockView.Embed) : Embed()
+    }
+
     sealed class Relation : ListenerType {
         data class Placeholder(val target: Id) : Relation()
         data class Related(val value: BlockView.Relation) : Relation()

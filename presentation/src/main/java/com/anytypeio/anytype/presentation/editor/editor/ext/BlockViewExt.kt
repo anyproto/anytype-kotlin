@@ -1014,7 +1014,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                                         previousCandidate.id -> block.copy(
                                             searchFields = previousCandidate.searchFields.mapIndexed { index, field ->
                                                 if (index == previousCandidate.searchFields.size.dec()) {
-                                                    field.copy(target = field.highlights.last())
+                                                    field.copy(target = field.highlights.lastOrNull() ?: IntRange.EMPTY)
                                                 } else {
                                                     field
                                                 }
@@ -1037,7 +1037,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                                 previousCandidate.id -> view.setHighlight(
                                     previousCandidate.searchFields.mapIndexed { index, field ->
                                         if (index == previousCandidate.searchFields.size.dec()) {
-                                            field.copy(target = field.highlights.last())
+                                            field.copy(target = field.highlights.lastOrNull() ?: IntRange.EMPTY)
                                         } else {
                                             field
                                         }

@@ -70,6 +70,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TODO_TITLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_TOGGLE
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_UNSUPPORTED
+import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_EMBED
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_ERROR
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types.HOLDER_VIDEO_PLACEHOLDER
@@ -1434,6 +1435,20 @@ sealed class BlockView : ViewType {
         val background: ThemeColor = ThemeColor.DEFAULT
     ) : BlockView(), Indentable, Selectable {
         override fun getViewType(): Int = HOLDER_LATEX
+    }
+
+    data class Embed(
+        override val id: String,
+        override val indent: Int,
+        override val isSelected: Boolean,
+        override val mode: Mode,
+        val background: ThemeColor,
+        override val decorations: List<Decoration>,
+        val text: String,
+        val processor: String,
+        val isPreviousBlockMedia: Boolean
+    ) : BlockView(), Indentable, Selectable, Permission, Decoratable {
+        override fun getViewType(): Int = HOLDER_EMBED
     }
 
     data class TableOfContents(

@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
+import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
@@ -35,6 +36,7 @@ import timber.log.Timber
 
 enum class SectionType {
     PINNED,
+    UNREAD,
     TYPES,
     NONE
 }
@@ -120,6 +122,15 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
+    data class UnreadChatList(
+        override val id: Id,
+        override val source: Source.Bundled.Chat,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary),
+        override val sectionType: SectionType = SectionType.UNREAD
+    ) : Widget()
+
     data class Bin(
         override val id: Id ,
         override val source: Source.Bundled.Bin,
@@ -180,6 +191,7 @@ sealed class Widget {
         companion object {
             const val WIDGET_BIN_ID = "widget_bin_id"
             const val SECTION_PINNED = "pinned_section"
+            const val SECTION_UNREAD = "unread_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
             const val SOURCE_OTHER = "source_other"
 
@@ -393,11 +405,13 @@ data class WidgetUiParams(
  *
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
+ * @property unreadWidget The unread chat list widget, displayed separately at the top
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
+    val unreadWidget: Widget.UnreadChatList? = null,
     val binWidget: Widget.Bin? = null
 )
 
@@ -427,6 +441,12 @@ suspend fun buildWidgetSections(
         spaceUxType = spaceView.spaceUxType
     )
 
+    // Build unread widget (displayed separately at top) - only for data spaces
+    val unreadWidget = buildUnreadWidget(
+        state = state,
+        spaceUxType = spaceView.spaceUxType
+    )
+
     // Build bin widget (displayed separately at bottom)
     val binWidget = buildBinWidget(
         state = state,
@@ -436,6 +456,7 @@ suspend fun buildWidgetSections(
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
+        unreadWidget = unreadWidget,
         binWidget = binWidget
     )
 }
@@ -510,6 +531,24 @@ private suspend fun buildTypeSection(
         Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
     } else {
         Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+    }
+}
+
+private fun buildUnreadWidget(
+    state: ObjectViewState.Success,
+    spaceUxType: SpaceUxType?
+): Widget.UnreadChatList? {
+    return if (spaceUxType == SpaceUxType.DATA) {
+        Timber.d("buildUnreadWidget: Creating unread widget for data space")
+        Widget.UnreadChatList(
+            id = "widget_unread_chat_list",
+            source = Widget.Source.Bundled.Chat,
+            config = state.config,
+            icon = ObjectIcon.SimpleIcon("chatbubble", R.color.control_primary)
+        )
+    } else {
+        Timber.d("buildUnreadWidget: Skipping unread widget for non-data space")
+        null
     }
 }
 

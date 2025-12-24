@@ -126,6 +126,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.UrlHelper
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
@@ -290,7 +291,8 @@ object EditorSessionModule {
         clearLastOpenedObject: ClearLastOpenedObject,
         fieldParser: FieldParser,
         dateProvider: DateProvider,
-        spaceViews: SpaceViewSubscriptionContainer
+        spaceViews: SpaceViewSubscriptionContainer,
+        urlHelper: UrlHelper
     ): EditorViewModelFactory = EditorViewModelFactory(
         params = params,
         permissions = permissions,
@@ -339,7 +341,8 @@ object EditorSessionModule {
         syncStatusProvider = syncStatusProvider,
         fieldParser = fieldParser,
         dateProvider = dateProvider,
-        spaceViews = spaceViews
+        spaceViews = spaceViews,
+        urlHelper = urlHelper
     )
 
     @JvmStatic

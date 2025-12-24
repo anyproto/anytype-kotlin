@@ -193,6 +193,18 @@ sealed class WidgetView {
         }
     }
 
+    data class UnreadChatList(
+        override val id: Id,
+        val icon: ObjectIcon = ObjectIcon.None,
+        val source: Widget.Source,
+        val elements: List<SetOfObjects.Element>,
+        val isExpanded: Boolean,
+        val name: Name,
+        override val sectionType: SectionType? = null
+    ) : WidgetView() {
+        override val canCreateObjectOfType: Boolean = false
+    }
+
     data class ListOfObjects(
         override val id: Id,
         val icon: ObjectIcon,

@@ -292,6 +292,7 @@ import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheStatus
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.UrlHelper
 import java.util.LinkedList
 import java.util.Queue
 import java.util.regex.Pattern
@@ -364,7 +365,8 @@ class EditorViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser : FieldParser,
     private val dateProvider: DateProvider,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val urlHelper: UrlHelper
 ) : ViewStateViewModel<ViewState>(),
     PickerListener,
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
@@ -4162,6 +4164,18 @@ class EditorViewModel(
                 when (mode) {
 //                    EditorMode.Edit -> proceedWithEnteringActionMode(clicked.id)
                     EditorMode.Select -> onBlockMultiSelectClicked(clicked.id)
+                    else -> Unit
+                }
+            }
+            is ListenerType.Embed.Click -> {
+                when (mode) {
+                    EditorMode.Edit, EditorMode.Locked, EditorMode.Read -> {
+                        val url = clicked.item.text
+                        if (urlHelper.isValidUrl(url)) {
+                            dispatch(Command.Browse(url))
+                        }
+                    }
+                    EditorMode.Select -> onBlockMultiSelectClicked(clicked.item.id)
                     else -> Unit
                 }
             }

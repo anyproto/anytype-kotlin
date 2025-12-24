@@ -547,7 +547,8 @@ open class EditorPresentationTestSetup {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            urlHelper = mock()
         )
     }
 

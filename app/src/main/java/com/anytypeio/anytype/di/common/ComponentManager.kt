@@ -96,7 +96,7 @@ import com.anytypeio.anytype.di.feature.settings.DaggerFilesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.DaggerSpacesStorageComponent
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
-import com.anytypeio.anytype.di.feature.sharing.DaggerAddToAnytypeComponent
+import com.anytypeio.anytype.di.feature.sharing.DaggerSharingComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
@@ -129,7 +129,6 @@ import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
-import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
@@ -885,8 +884,8 @@ class ComponentManager(
             .create(findComponentDependencies())
     }
 
-    val addToAnytypeComponent = Component {
-        DaggerAddToAnytypeComponent
+    val sharingComponent = Component {
+        DaggerSharingComponent
             .factory()
             .create(findComponentDependencies())
     }

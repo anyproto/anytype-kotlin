@@ -367,6 +367,10 @@ fun List<BlockView>.enterSAM(
         is BlockView.Latex -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
         is BlockView.TableOfContents -> view.copy(
             isSelected = isSelected
         )
@@ -986,7 +990,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                     when (field.key) {
                         currentField.key -> field.copy(target = IntRange.EMPTY)
                         previousFieldTargetCandidate.key -> {
-                            field.copy(target = previousFieldTargetCandidate.highlights.last())
+                            field.copy(target = previousFieldTargetCandidate.highlights.lastOrNull() ?: IntRange.EMPTY)
                         }
                         else -> field
                     }
@@ -1014,7 +1018,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                                         previousCandidate.id -> block.copy(
                                             searchFields = previousCandidate.searchFields.mapIndexed { index, field ->
                                                 if (index == previousCandidate.searchFields.size.dec()) {
-                                                    field.copy(target = field.highlights.last())
+                                                    field.copy(target = field.highlights.lastOrNull() ?: IntRange.EMPTY)
                                                 } else {
                                                     field
                                                 }
@@ -1037,7 +1041,7 @@ fun List<BlockView>.previousSearchTarget(): List<BlockView> {
                                 previousCandidate.id -> view.setHighlight(
                                     previousCandidate.searchFields.mapIndexed { index, field ->
                                         if (index == previousCandidate.searchFields.size.dec()) {
-                                            field.copy(target = field.highlights.last())
+                                            field.copy(target = field.highlights.lastOrNull() ?: IntRange.EMPTY)
                                         } else {
                                             field
                                         }
@@ -1100,6 +1104,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
     is BlockView.Relation.Deleted -> copy(isSelected = newSelection)
     is BlockView.Latex -> copy(isSelected = newSelection)
+    is BlockView.Embed -> copy(isSelected = newSelection)
     is BlockView.TableOfContents -> copy(isSelected = newSelection)
     is BlockView.Table -> copy(isSelected = newSelection)
     is BlockView.DataView.EmptyData -> copy(isSelected = newSelection)

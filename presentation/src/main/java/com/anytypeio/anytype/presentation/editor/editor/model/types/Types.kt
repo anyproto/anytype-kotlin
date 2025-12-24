@@ -74,6 +74,7 @@ object Types {
 
     const val HOLDER_UNSUPPORTED = 49
     const val HOLDER_LATEX = 51
+    const val HOLDER_EMBED = 52
     const val HOLDER_TOC = 54
     const val HOLDER_CALLOUT = 55
     const val HOLDER_TABLE = 56

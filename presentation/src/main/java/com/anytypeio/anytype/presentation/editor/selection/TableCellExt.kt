@@ -335,6 +335,10 @@ fun List<BlockView>.toggleTableMode(
             is BlockView.Latex -> view.copy(
                 isSelected = false
             )
+            is BlockView.Embed -> view.copy(
+                mode = cellsMode,
+                isSelected = false
+            )
             is BlockView.TableOfContents -> view.copy(
                 isSelected = false
             )

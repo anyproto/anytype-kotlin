@@ -242,7 +242,7 @@
     <string name="paste">Lim inn</string>
     <string name="select">Velg</string>
     <string name="search">Søk</string>
-    <string name="search_hint">Søk...</string>
+    <string name="search_hint">Søk</string>
     <string name="relations">Egenskaper</string>
     <string name="fields">Fields</string>
     <string name="download">Last ned</string>
@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Kopier lenke</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bli med i et rom</string>
@@ -1839,6 +1841,13 @@ Please provide specific details of your needs here.</string>
     <string name="space_settings_icon_title">Edit picture</string>
     <string name="space_settings_save_button">Save</string>
     <string name="space_settings_join_space_by_qr_title">Bli med</string>
+    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_share_button">Del</string>
+    <string name="profile_qr_copy_button">Kopier lenke</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Link copied to clipboard</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -1982,6 +1991,7 @@ Please provide specific details of your needs here.</string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_channel">Direct channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferences</string>
@@ -1997,6 +2007,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">Festet</string>
+    <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_object_types">Object types</string>
     <string name="widgets_menu_new_object_type">Ny</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
@@ -2023,6 +2034,9 @@ Please provide specific details of your needs here.</string>
         <item quantity="one">%d new message</item>
         <item quantity="other">%d new messages</item>
     </plurals>
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
@@ -2038,4 +2052,7 @@ Please provide specific details of your needs here.</string>
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
+    <string name="participant_btn_connect">Connect</string>
 </resources>

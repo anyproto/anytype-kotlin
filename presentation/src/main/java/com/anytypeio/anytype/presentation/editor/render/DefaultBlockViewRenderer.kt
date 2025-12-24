@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
+import com.anytypeio.anytype.presentation.editor.editor.ext.toDisplayName
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView.Appearance.InEditor
@@ -732,6 +733,28 @@ class DefaultBlockViewRenderer @Inject constructor(
                             mode = mode
                         )
                     )
+                }
+                is Content.Embed -> {
+                    mCounter = 0
+                    val blockDecorationScheme = buildNestedDecorationData(
+                        block = block,
+                        parentScheme = parentScheme,
+                        currentDecoration = DecorationData(
+                            style = DecorationData.Style.Card,
+                            background = block.parseThemeBackgroundColor()
+                        )
+                    )
+                    val embedBlock = embed(
+                        block = block,
+                        content = content,
+                        indent = indent,
+                        selection = selection,
+                        mode = mode,
+                        isPreviousBlockMedia = isPreviousBlockMedia,
+                        schema = blockDecorationScheme
+                    )
+                    result.add(embedBlock)
+                    isPreviousBlockMedia = true
                 }
                 is Content.TableOfContents -> {
                     isPreviousBlockMedia = false
@@ -1907,6 +1930,30 @@ class DefaultBlockViewRenderer @Inject constructor(
             block = block,
             selection = selection
         )
+    )
+
+    private fun embed(
+        block: Block,
+        content: Content.Embed,
+        indent: Int,
+        mode: EditorMode,
+        selection: Set<Id>,
+        isPreviousBlockMedia: Boolean,
+        schema: NestedDecorationData
+    ) = BlockView.Embed(
+        id = block.id,
+        indent = indent,
+        text = content.text,
+        processor = content.processor.toDisplayName(),
+        background = block.parseThemeBackgroundColor(),
+        isSelected = checkIfSelected(
+            mode = mode,
+            block = block,
+            selection = selection
+        ),
+        mode = if (mode == EditorMode.Edit) BlockView.Mode.EDIT else BlockView.Mode.READ,
+        isPreviousBlockMedia = isPreviousBlockMedia,
+        decorations = schema.toBlockViewDecoration(block)
     )
 
     private fun toc(

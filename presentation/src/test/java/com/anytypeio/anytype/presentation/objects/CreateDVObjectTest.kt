@@ -159,7 +159,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
             objSetByRelation = prefilledRelation,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedStruct = mapOf(
@@ -221,7 +220,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
             objSetByRelation = prefilledRelation,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedStruct = mapOf(
@@ -325,7 +323,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
         val struct = dvViewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedStruct = mapOf(
@@ -430,7 +427,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
         val struct = dvViewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedStruct = mapOf(
@@ -476,7 +472,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
         val prefilled = dvViewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedPrefilled = mapOf(
@@ -586,12 +581,12 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
 
     @OptIn(ExperimentalCoroutinesApi::class)
     @Test
-    fun `should take relation format from relation link`() = runTest {
+    fun `should take relation format from store of relations`() = runTest {
 
         val filter1Relation = StubRelationObject(
             id = "filter1RelationId-${MockDataFactory.randomString()}",
             key = "filter1RelationKey-${MockDataFactory.randomString()}",
-            format = RelationFormat.DATE,
+            format = RelationFormat.CHECKBOX,
             isReadOnlyValue = false,
             spaceId = spaceId
         )
@@ -604,10 +599,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
                 condition = Block.Content.DataView.Filter.Condition.EQUAL,
                 value = true
             )
-        )
-
-        val dvRelationLinks = listOf(
-            RelationLink(filter1Relation.key, RelationFormat.CHECKBOX),
         )
 
         val dvViewer =
@@ -623,7 +614,6 @@ class CreateDVObjectTest : ObjectSetViewModelTestSetup() {
         val struct = dvViewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
-            dataViewRelationLinks = dvRelationLinks,
         )
 
         val expectedStruct = mapOf(filter1Relation.key to true)

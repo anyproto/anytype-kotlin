@@ -84,6 +84,7 @@ class WidgetContainerDelegateImpl(
     ): WidgetContainer? {
         return when (widget) {
             is Widget.Chat -> createChatContainer(widget)
+            is Widget.UnreadChatList -> createUnreadChatListContainer(widget, currentlyDisplayedViews)
             is Widget.Link -> createLinkContainer(widget)
             is Widget.Tree -> createTreeContainer(widget, currentlyDisplayedViews)
             is Widget.List -> createListContainer(widget, currentlyDisplayedViews)
@@ -99,6 +100,39 @@ class WidgetContainerDelegateImpl(
             container = chatPreviews,
             spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
             notificationPermissionManager = notificationPermissionManager
+        )
+    }
+
+    private fun createUnreadChatListContainer(
+        widget: Widget.UnreadChatList,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return UnreadChatListWidgetContainer(
+            space = spaceId,
+            widget = widget,
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            isWidgetCollapsed = combine(
+                expandedWidgetIds,
+                userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+            ) { expanded, collapsedSecs ->
+                isWidgetCollapsed(widget, expanded, collapsedSecs)
+            },
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            chatPreviewContainer = chatPreviews,
+            dateProvider = dateProvider,
+            stringResourceProvider = stringResourceProvider,
+            spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+            participantContainer = participantContainer,
+            isSessionActiveFlow = isSessionActive,
+            onRequestCache = {
+                currentlyDisplayedViews.find { view ->
+                    view.id == widget.id
+                            && view is WidgetView.UnreadChatList
+                            && view.source == widget.source
+                } as? WidgetView.UnreadChatList
+            }
         )
     }
 

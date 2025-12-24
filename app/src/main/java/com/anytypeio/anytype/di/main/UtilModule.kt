@@ -34,8 +34,10 @@ import com.anytypeio.anytype.other.BasicLogger
 import com.anytypeio.anytype.other.DefaultDateTypeNameProvider
 import com.anytypeio.anytype.other.DefaultDebugConfig
 import com.anytypeio.anytype.presentation.util.StringResourceProviderImpl
+import com.anytypeio.anytype.presentation.util.UrlHelper
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProviderImpl
+import com.anytypeio.anytype.util.UrlHelperImpl
 import com.google.gson.Gson
 import dagger.Binds
 import dagger.Module
@@ -120,6 +122,11 @@ object UtilModule {
     fun provideJson(): Json = Json {
         ignoreUnknownKeys = true
     }
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUrlHelper(): UrlHelper = UrlHelperImpl()
 
     @Module
     interface Bindings {

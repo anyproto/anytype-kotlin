@@ -42,6 +42,7 @@ class RelationTextValueViewModel(
     val isDismissed = MutableStateFlow<Boolean>(false)
 
     private var isEditableRelation = false
+    private var isBookmarkSourceRelation = false
 
     fun onDateStart(
         name: String,
@@ -69,6 +70,9 @@ class RelationTextValueViewModel(
             Timber.d("combine, relation:[$relation], values:[$values]")
             setupIsRelationNotEditable(relation, isLocked)
             val obj = ObjectWrapper.Basic(values)
+
+            // Initialize bookmark source relation flag
+            isBookmarkSourceRelation = false
             val value = values[relationKey]?.toString()
             title.value = relation.name.orEmpty()
             when (relation.format) {
@@ -116,6 +120,7 @@ class RelationTextValueViewModel(
                             if (type != null) {
                                 val wrapper = storeOfObjectTypes.get(type)
                                 if (wrapper?.uniqueKey == ObjectTypeUniqueKeys.BOOKMARK) {
+                                    isBookmarkSourceRelation = true
                                     add(RelationValueAction.Url.Reload(value.orEmpty()))
                                 }
                             }
@@ -256,6 +261,14 @@ class RelationTextValueViewModel(
         if (hasFocus) {
             viewModelScope.sendAnalyticsRelationUrlEdit(analytics)
         }
+    }
+
+    /**
+     * Check if the current relation is SOURCE for a BOOKMARK object.
+     * Used to determine if reload should be triggered on URL edit completion.
+     */
+    fun shouldReloadOnUrlEdit(): Boolean {
+        return isBookmarkSourceRelation
     }
 
     private fun setupIsRelationNotEditable(relation: ObjectWrapper.Relation, isLocked: Boolean) {

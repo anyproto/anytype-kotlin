@@ -157,7 +157,16 @@ open class RelationTextValueFragment :
                 ctx = ctx, relationKey = relationKey, objectId = objectId, text = txt
             )
         }
-        dismiss()
+
+        // Check if this is SOURCE relation for BOOKMARK - trigger reload after updating
+        if (vm.shouldReloadOnUrlEdit()) {
+            vm.onAction(
+                target = objectId,
+                action = RelationValueAction.Url.Reload(txt)
+            )
+        } else {
+            dismiss()
+        }
     }
 
     private fun dispatchNumberResultAndExit(number: Double?) {

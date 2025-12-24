@@ -189,7 +189,8 @@ class DataViewListWidgetContainer(
                                 val ctx = computeViewerContext(
                                     widgetSourceObjId = widgetSourceObj.id,
                                     activeView = activeView,
-                                    isCompact = isCompact
+                                    isCompact = isCompact,
+                                    storeOfRelations = storeOfRelations
                                 )
 
                                 // Cache the viewer type for use in loading/collapsed states
@@ -346,7 +347,8 @@ class DataViewListWidgetContainer(
     private suspend fun buildViewerContextCommon(
         obj: ObjectView,
         activeViewerId: Id?,
-        isCompact: Boolean
+        isCompact: Boolean,
+        storeOfRelations: StoreOfRelations
     ): ViewerContext {
 
         val dv = obj.blocks.find { it.content is DV }?.content as? DV
@@ -368,7 +370,7 @@ class DataViewListWidgetContainer(
         val struct = obj.details[obj.root] ?: emptyMap()
         val params = if (struct.isValidObject()) {
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
-            val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
+            val sorts = targetView?.sorts?.updateWithRelationFormat(storeOfRelations).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
 
             // Collections and Sets require different subscription parameters
@@ -477,7 +479,8 @@ class DataViewListWidgetContainer(
     private suspend fun computeViewerContext(
         widgetSourceObjId: Id,
         activeView: Id?,
-        isCompact: Boolean
+        isCompact: Boolean,
+        storeOfRelations: StoreOfRelations
     ): ViewerContext {
         return ctxMutex.withLock {
             // Fetch ObjectView (command getObject) to compute fingerprint and create cache key
@@ -499,7 +502,8 @@ class DataViewListWidgetContainer(
             val result = buildViewerContextCommon(
                 obj = obj,
                 activeViewerId = activeView,
-                isCompact = isCompact
+                isCompact = isCompact,
+                storeOfRelations = storeOfRelations
             )
             cachedContext = result
             cachedContextKey = key

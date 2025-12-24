@@ -36,7 +36,7 @@
     <string name="have_you_back_up_your_recovery_phrase">Anahtarınızı yedeklediniz mi?</string>
     <string name="you_will_need_to_sign_in">Kasana erişmek için bu bilgilere ihtiyacın olacak. Güvenli bir yerde tut. Eğer kaybedersen hesabına erişemezsin.</string>
     <string name="about_help_and_community">Yardım &amp; Topluluk</string>
-    <string name="about_what_is_new">Neler yeni?</string>
+    <string name="about_what_is_new">Yenilikler</string>
     <string name="about_anytype_community">Anytype Topluluğu</string>
     <string name="about_help_and_tutorials">Yardım &amp; Öğreticiler</string>
     <string name="about_legal">Yasal</string>
@@ -56,8 +56,8 @@
     <string name="profile_settings_apply_upload_image">Resim yükle</string>
     <string name="remove_image">Görseli kaldır</string>
     <string name="delete_space">Alanı sil</string>
-    <string name="you_can_store">Dosyalarınızın %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsiniz. Sınıra ulaşırsanız dosyalar yalnızca yerel olarak depolanacaktır.</string>
-    <string name="in_order_to_save">Yerel cihazınızda yer kazanmak için tüm dosyalarınızı şifrelenmiş yedekleme düğümümüze aktarabilirsiniz.  Dosyaları açtığınızda geri yüklenecektir.</string>
+    <string name="you_can_store">Dosyalarının %1$s kadarını şifrelenmiş yedekleme düğümümüzde ücretsiz olarak saklayabilirsin. Sınıra ulaşırsan dosyalar yalnızca yerel olarak depolanacaktır.</string>
+    <string name="in_order_to_save">Yerel cihazından yer kazanmak için tüm dosyalarını şifrelenmiş yedekleme düğümümüze aktarabilirsin. Dosyaları açtığında geri yüklenecektir.</string>
     <string name="manage_files">Dosyaları yönet</string>
     <string name="local_storage">Yerel depolama</string>
     <string name="offload_files">Dosyaları kaldır</string>
@@ -73,7 +73,7 @@
     <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="data_management">Veri yönetimi</string>
-    <string name="deleted_account_danger_zone_msg">Kasanızın silinmesini talep ederseniz bu talebi iptal etmek için 30 gününüz olacaktır. 30 gün sonra şifrelenmiş kasa verileriniz yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsınız.</string>
+    <string name="deleted_account_danger_zone_msg">Kasanın silinmesini talep edersen bu talebi iptal etmek için 30 günün olacaktır. 30 gün sonra şifrelenmiş kasa verilerin yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsın.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
     <string name="snackbar_template_add">Bu türe yeni bir şablon eklendi</string>
     <string name="settings_membership">Üyelik</string>
@@ -137,8 +137,8 @@
     <string name="kanban_view">Kanban görünüm</string>
     <string name="properties">Özellikler</string>
     <string name="sort">Sırala</string>
-    <string name="sort_empty_state">Burada sıralama yok. Kendiniz ekleyebilirsiniz.</string>
-    <string name="filter_empty_state">Burada filtre yok. Kendiniz ekleyebilirsiniz.</string>
+    <string name="sort_empty_state">Burada sıralama yok. Kendin biraz ekleyebilirsin.</string>
+    <string name="filter_empty_state">Burada filtre yok. Kendin biraz ekleyebilirsin.</string>
     <string name="relation_status_value_empty_state">Burada ilgili seçenek yok. Kendin ekleyebilirsin</string>
     <string name="filter_by">Şuna göre filtrele</string>
     <string name="filter">Filtre</string>
@@ -242,7 +242,7 @@
     <string name="paste">Yapıştır</string>
     <string name="select">Seç</string>
     <string name="search">Ara</string>
-    <string name="search_hint">Ara...</string>
+    <string name="search_hint">Ara</string>
     <string name="relations">Özellikler</string>
     <string name="fields">Alanlar</string>
     <string name="download">İndir</string>
@@ -540,8 +540,8 @@
     <string name="random">Rastgele</string>
     <string name="choose">Seçin</string>
     <string name="attributes">Özellikler</string>
-    <string name="file_delete_alert_title">Dosyaları kalıcı olarak silmek istediğinizden emin misiniz?</string>
-    <string name="file_delete_alert_subtitle">Bu eylemi geri alamazsınız.</string>
+    <string name="file_delete_alert_title">Dosyaları kalıcı olarak silmek istediğinden emin misin?</string>
+    <string name="file_delete_alert_subtitle">Bu eylemi geri alamazsın.</string>
     <string name="file_delete_cancel">İptal</string>
     <string name="file_delete_delete">Sil</string>
     <string name="menu_type_change">Türü değiştir</string>
@@ -577,12 +577,12 @@
     <string name="code_empty">Davet kodu boş olmamalıdır</string>
     <string name="enter_invitation_hint">Davet kodu</string>
     <string name="enter_invitation_text">Eğer sahip değilseniz anytype.io adresine gidin ve bekleme listesine kaydolun. İnsanları sürekli olarak davet ediyoruz.</string>
-    <string name="start_login_text">Anytype ile notlar ve belgeler yazabilir, görevleri yönetebilir, dosyaları paylaşabilir ve web\'den önemli içerikleri kaydedebilirsiniz.</string>
+    <string name="start_login_text">Anytype ile notlar ve belgeler yazabilir, görevleri yönetebilir, dosyaları paylaşabilir ve web\'den önemli içerikleri kaydedebilirsin.</string>
     <string name="login">Giriş yap</string>
     <string name="sign_up">Kaydol</string>
     <string name="type_your_recovery_phrase">veya anahtarınızı yazın</string>
     <string name="login_with_recovery_phrase">Anahtarınızla giriş yapın</string>
-    <string name="or_scan_qr_code">Karekod tarayın</string>
+    <string name="or_scan_qr_code">Karekodu tara</string>
     <string name="choose_pin_code">Pin kodunu belirleyin</string>
     <string name="congratulations">Tebrikler!</string>
     <string name="time_to_update_title">Güncelleme zamanı</string>
@@ -609,7 +609,7 @@
     <string name="other_settings">Diğer ayarlar</string>
     <string name="your_page">Herkese açık sayfanız</string>
     <string name="updates">Güncellemeler</string>
-    <string name="recovery_phrase_text">Daha sonra oturum açmak için anahtarınıza ihtiyacınız olacak. Anahtarınızı güvenli bir yerde saklayın. Eğer kaybederseniz kasanıza erişemezsiniz.</string>
+    <string name="recovery_phrase_text">Daha sonra oturum açmak için anahtarına ihtiyacın olacak. Anahtarını güvenli bir yerde sakla. Eğer kaybedersen kasana erişemezsin.</string>
     <string name="back_up_your_recovery_phrase">Anahtarınızı yedekleyin</string>
     <string name="i_ve_written_it_down">Bir kenara yazdım</string>
     <string name="keychain_mock">witch collapse practice feed shame open despair creek road again ice least lake tree young address brain envelope</string>
@@ -721,7 +721,7 @@
     <string name="btn_upload_gallery">Galeriden yükle</string>
     <string name="btn_upload_storage">Harici depolamadan yükle</string>
     <string name="btn_upload">Yükle</string>
-    <string name="alert_qr_camera">Giriş yapma karekodunu bulmak için masaüstünde Ayarlar - Anahtar kısmına gidin.</string>
+    <string name="alert_qr_camera">Karekod ile giriş yapmak için masaüstünde Ayarlar - Giriş Anahtarı kısmına git.</string>
     <string name="alert_qr_camera_ok">Tamam</string>
     <string name="choose_option">Seçeneği seçin</string>
     <string name="find_a_relation">Bir özellik bul</string>
@@ -745,10 +745,10 @@
     <string name="object_diagnostics">Teşhis etme</string>
     <string name="provide_name">Yeni nesne için isim girin</string>
     <string name="soon">Yakında</string>
-    <string name="are_you_sure_delete_one_object">1 nesneyi silmek istediğinizden emin misiniz?</string>
-    <string name="are_you_sure_delete_n_objects">%1$d nesneyi silmek istediğinizden emin misiniz?</string>
-    <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsınız.</string>
-    <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsınız.</string>
+    <string name="are_you_sure_delete_one_object">1 nesneyi silmek istediğinden emin misin?</string>
+    <string name="are_you_sure_delete_n_objects">%1$d nesneyi silmek istediğinden emin misin?</string>
+    <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
+    <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
     <string name="shared">Paylaşılan</string>
     <string name="object_not_exist">Bu nesne mevcut değil</string>
     <string name="back_to_dashboard">Kontrol paneline geri dön</string>
@@ -759,11 +759,11 @@
     <string name="close">Kapat</string>
     <string name="go_to_settings">Ayarlara git</string>
     <string name="do_not_forget_mnemonic_phrase">Anahtarınızı kopyalamayı ve kaydetmeyi unutmayın.</string>
-    <string name="you_can_always_find_mnemonic_in_settings">Bu ifadeyi her zaman kontrol paneli ekranındaki ayarlarda bulabilirsiniz.</string>
-    <string name="if_you_lose_recovery_phrase_warning">Anahtarı kaybederseniz ve oturumu kapatırsanız verilerinize bir daha asla erişemezsiniz. Verilerinizi kurtarmak için anahtarı Anytype dışında bir yere not edin.</string>
+    <string name="you_can_always_find_mnemonic_in_settings">Bu ifadeyi her zaman kontrol paneli ekranındaki ayarlarda bulabilirsin.</string>
+    <string name="if_you_lose_recovery_phrase_warning">Anahtarı kaybedersen ve oturumu kapatırsan verilerine bir daha asla erişemezsin. Verilerini kurtarmak için anahtarı Anytype dışında bir yere not etmelisin.</string>
     <string name="card_size">Kart boyutu</string>
     <string name="clear_cache">Önbelleği temizle</string>
-    <string name="clear_cache_title">Emin misiniz?</string>
+    <string name="clear_cache_title">Emin misin?</string>
     <string name="download_from_node">Anytype\'da depolanan tüm medya dosyaları mevcut cihazınızdan silinecektir. Bir yedekleme düğümünden veya başka bir cihazdan tekrar indirilebilirler.</string>
     <string name="new_profile">Yeni profil</string>
     <string name="back_up_your_phrase">Yedekleme ifadesi</string>
@@ -778,7 +778,7 @@
     <string name="planned_for_deletion_tomorrow">Bu kasanın yarın silinmesi planlanıyor.</string>
     <string name="planned_for_deletion_today">Bu kasanın bugün içinde silinmesi planlanıyor.</string>
     <string name="planned_for_deletion_unknown">Bu kasanın ? gün içinde silinmesi planlanmaktadır.</string>
-    <string name="are_you_sure_to_delete_account">Kasanızı silmek istediğinizden emin misiniz?</string>
+    <string name="are_you_sure_to_delete_account">Kasanı silmek istediğinden emin misin?</string>
     <string name="deleted_account_warning_msg">Diğer tüm cihazlarda oturumunuz kapatılacaktır. Kurtarmak için 30 gününüz olacak. Daha sonra kalıcı olarak silinecektir.</string>
     <string name="use_template">Şablon seç</string>
     <string name="swipe_to_choose">Seçmek için kaydırın</string>
@@ -850,7 +850,7 @@
     <string name="network_id">Ağ Kimliği</string>
     <string name="delete_space_subtitle">Alan silme işlemi kalıcıdır ve geri alınamaz. Bu alana bağlı tüm verilerin kalıcı olarak kaldırılacağını ve bunlara erişiminizi sonsuza kadar kaybedeceğinizi lütfen unutmayın.</string>
     <string name="delete_space_title_with_param">\'%1$s\' alanını sil</string>
-    <string name="delete_space_title">Bu alanı silmek istediğinizden emin misiniz?</string>
+    <string name="delete_space_title">Bu alanı silmek istediğinden emin misin?</string>
     <string name="space_id_copied_toast_msg">Alan kimliği kopyalandı</string>
     <string name="network_id_copied_toast_msg">Ağ kimliği kopyalandı</string>
     <string name="created_by_id_copied_toast_msg">Oluşturanın kimliği kopyalandı</string>
@@ -876,8 +876,8 @@
     <string name="synced_files">Dosyaları temizle</string>
     <string name="log_in">Giriş yap</string>
     <string name="create_object_section_library">Anytype Kitaplığı</string>
-    <string name="bin_empty_title">Çöp kutunuz boş.</string>
-    <string name="bin_empty_subtitle">Düzenli ve tertipli görünüyorsunuz!</string>
+    <string name="bin_empty_title">Çöp kutun boş.</string>
+    <string name="bin_empty_subtitle">Görünüşe göre her şey düzenli ve organize!</string>
     <!--region SLASH WIDGET -->
     <string name="slash_widget_main_style">Stil</string>
     <string name="slash_widget_main_media">Medya</string>
@@ -1051,7 +1051,7 @@
     <string name="onboarding_void_title">Bu senin boşluğun</string>
     <string name="onboarding_void_description">Oluşturduğunuz her şey için şifrelenmiş bir konumdur. Her şey cihazınızda saklanır ve dağıtılmış ağda yedeklenir.</string>
     <string name="onboarding_this_is_your_key_title">Bu senin anahtarın</string>
-    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde saklayın. Verilerinizden yalnızca siz sorumlusunuz. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsiniz.</string>
+    <string name="onboarding_key_description">Kullanıcı adı ve şifrenin yerini alır. Güvenli bir yerde sakla. Verilerinden yalnızca sen sorumlusun. Bu Anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
     <string name="onboarding_show_my_key">Anahtarımı Göster</string>
     <string name="onboarding_tap_to_reveal">Göster ve Kopyala</string>
     <string name="onboarding_key_skip">Atla</string>
@@ -1066,14 +1066,14 @@
     <string name="onboarding_your_key_can_t_be_empty">Anahtar alanı boş olamaz</string>
     <string name="onboarding_your_name">Adınızı yazın</string>
     <string name="onboarding_mnemonic_read_more">Daha fazla bilgi edinin</string>
-    <string name="onboarding_key_additional_info">Bu anahtarı daha sonra uygulama ayarlarında bulabilirsiniz.</string>
+    <string name="onboarding_key_additional_info">Bu anahtarı daha sonra uygulama ayarlarında bulabilirsin.</string>
     <string name="onboarding_what_is_the_key">Anahtar nasıl çalışır?</string>
     <string name="onboarding_recovery_phrase_description_title">Bu sizin kullanıcı adınız ve şifrenizdir</string>
     <string name="onboarding_recovery_phrase_description">Anahtarınız, bu cihazda kasayı oluşturan 12 rastgele kelimeden oluşan bir kurtarma cümlesi ile temsil edilir.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Anahtara kim sahip olursa erişim hakkı elde eder</string>
-    <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasanıza erişebilir. Şu anda bunları bilen tek kişi sizsiniz.</string>
+    <string name="onboarding_recovery_phrase_description_2">Bu kelimelere sahip olan herkes kasana erişebilir. Şu anda bunları bilen tek kişi sensin.</string>
     <string name="onboarding_recovery_phrase_description_3_title">Bundan sadece siz sorumlusunuz</string>
-    <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarınızı kaybederseniz verilerinize erişemezsiniz. Anahtarınızı güvenli bir yerde saklayın. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsiniz.</string>
+    <string name="onboarding_recovery_phrase_description_3">Dünyadaki tüm hesaplama kaynakları bile bu anahtarı kırmaya yetmez. Anahtarını kaybedersen verilerine erişemezsin. Anahtarını güvenli bir yerde sakla. Bir şifre yöneticisinde veya kağıda yazarak saklayabilirsin.</string>
     <string name="onboarding_recovery_phrase_description_4">Dünya üzerindeki tüm hesaplama kaynakları içeri girmek için yeterli değildir. Kaybederseniz, kurtarılamaz. Bu yüzden güvenli bir yerde saklayın!</string>
     <string name="onboarding_how_to_save_my_phrase">Anahtarımı nasıl kaydedebilirim?</string>
     <string name="onboarding_how_to_save_my_phrase_2">Anahtarınızı saklamanın en kolay yolu onu şifre yöneticinize kaydetmektir.</string>
@@ -1191,12 +1191,12 @@
     <string name="options_empty_description">Hiçbir şey bulunamadı. Başlamak için ilk seçeneği oluşturun.</string>
     <string name="options_empty_title">Seçenek yok</string>
     <string name="options_empty_not_editable">Bu özellik boş</string>
-    <string name="options_delete_title">Emin misiniz?</string>
+    <string name="options_delete_title">Emin misin?</string>
     <string name="options_delete_description">Seçenek alanınızdan kalıcı olarak kaldırılacaktır.</string>
     <string name="object_values_empty_description">Nesneler bulunamadı.</string>
     <string name="object_values_empty_title">Değer yok</string>
     <string name="object_values_empty_not_editable">Bu özellik boş</string>
-    <string name="object_values_delete_title">Emin misiniz?</string>
+    <string name="object_values_delete_title">Emin misin?</string>
     <string name="object_values_delete_description">Nesne çöp kutusuna taşınacaktır.</string>
     <string name="hint_enter_name">İsim girin...</string>
     <string name="create_object">Nesne oluştur</string>
@@ -1222,7 +1222,7 @@
     <string name="multiplayer_share_invite_link">Davet bağlantısını paylaş</string>
     <string name="multiplayer_share_invite_link_menu">Bağlantıyı paylaş</string>
     <string name="multiplayer_qr_invite_link_menu">Kare kodu göster</string>
-    <string name="multiplayer_share_invite_link_description">Başkalarının alanınıza katılabilmesi için bu davet bağlantısını paylaşın. Bağlantınıza tıklayıp erişim talep ettiklerinde, erişim haklarını ayarlayabilirsiniz.</string>
+    <string name="multiplayer_share_invite_link_description">Başkalarının alanına katılabilmesi için bu davet bağlantısını paylaş. Bağlantına tıklayıp erişim talep ettiklerinde erişim haklarını ayarlayabilirsin.</string>
     <string name="multiplayer_invite_link">Davet bağlantısı</string>
     <string name="multiplayer_invite_link_access">Davet bağlantısı erişimi</string>
     <string name="multiplayer_link_disabled">Bağlantı devre dışı</string>
@@ -1243,16 +1243,18 @@
     <string name="multiplayer_change_to_viewer_confirmation">Bağlantıya sahip olan herkes alan içeriğini yalnızca görüntüleyebilir.</string>
     <string name="multiplayer_change_to_request_confirmation">Bağlantıya sahip olan herkesin alana katılmak için erişim istemesi gerekecektir.</string>
     <string name="multiplayer_invite_link_copied">Davet bağlantısı panoya kopyalandı</string>
+    <string name="link_copied">Bağlantı panoya kopyalandı</string>
+    <string name="remove_from_collection">Koleksiyondan bağlantıyı kaldır</string>
     <string name="multiplayer_copy_link">Bağlantıyı kopyala</string>
     <string name="multiplayer_make_private">Özel Yap</string>
     <string name="multiplayer_join_a_space">Bir alana katıl</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Alan sahibi için özel bir yorum bırakın</string>
-    <string name="multiplayer_request_to_join_explanation">Alan sahibi talebinizi onayladığında, alana erişim hakları sahibinin belirlediği şekilde katılırsınız.</string>
+    <string name="multiplayer_request_to_join_explanation">Alan sahibi talebini onayladığında,alana erişim hakları sahibinin belirlediği şekilde katılırsın.</string>
     <string name="multiplayer_request_to_join_without_approve_title">%1$s alanına katıl</string>
     <string name="multiplayer_request_to_join_without_approve_desc">%2$s tarafından oluşturulan %1$s alanına katılmaya davet edildiniz</string>
     <string name="multiplayer_request_to_join_without_approve_button">Alana Katıl</string>
     <string name="multiplayer_request_to_join_sent_title">İstek gönderildi</string>
-    <string name="multiplayer_request_to_join_sent_description">Alan sahibi talebinizi onayladığında bir bildirim alacaksınız.</string>
+    <string name="multiplayer_request_to_join_sent_description">Alan sahibi talebini onayladığında bir bildirim alacaksın.</string>
     <string name="multiplayer_request_to_join_btn_manage_spaces">Alanları yönet</string>
     <string name="multiplayer_request_to_join_loading_text">  Sıkı durun! Sizin için bir şeyler ayarlıyoruz. Bu sadece bir dakika sürecektir.</string>
     <string name="multiplayer_space_request_to_join">Katılma isteği gönder</string>
@@ -1261,8 +1263,8 @@
     <string name="multiplayer_share_space">Alan paylaş</string>
     <string name="multiplayer_members_and_requests">Üyeler</string>
     <string name="multiplayer_members_invite_links_section">Davet bağlantısı</string>
-    <string name="multiplayer_cant_add_members">Daha fazla üye ekleyemezsiniz</string>
-    <string name="multiplayer_cant_add_editors">Daha fazla düzenleyici ekleyemezsiniz</string>
+    <string name="multiplayer_cant_add_members">Daha fazla üye ekleyemezsin</string>
+    <string name="multiplayer_cant_add_editors">Daha fazla düzenleyici ekleyemezsin</string>
     <string name="multiplayer_upgrade_button">✦ Yükselt</string>
     <string name="multiplayer_manage_spaces">Alanları yönetin</string>
     <string name="multiplayer_upgrade_button_request">✦ Daha fazla üye eklemek için yükseltin</string>
@@ -1301,16 +1303,16 @@
     <string name="multiplayer_show_qr_code">Kare kodu göster</string>
     <string name="multiplayer_how_to_share_space">Bir alan nasıl paylaşılır?</string>
     <string name="multiplayer_how_to_share_space_step_1">Lütfen işbirliği yapmak istediğiniz kişinin bağlantısını sağlayın.</string>
-    <string name="multiplayer_how_to_share_space_qr_code">Bu karekodu işbirliği yapmak istediğiniz kişiye gösterin.</string>
+    <string name="multiplayer_how_to_share_space_qr_code">Bu karekodu işbirliği yapmak istediğin kişiye göster.</string>
     <string name="multiplayer_how_to_share_space_step_2">Bir kişi bağlantıya tıklayarak alana katılmayı talep eder.</string>
-    <string name="multiplayer_how_to_share_space_step_3">Talebi onayladıktan sonra söz konusu kişi için erişim haklarını seçebilirsiniz.</string>
+    <string name="multiplayer_how_to_share_space_step_3">Talebi onayladıktan sonra söz konusu kişi için erişim haklarını seçebilirsin.</string>
     <string name="multiplayer_how_share_one">1.</string>
     <string name="multiplayer_how_share_two">2.</string>
     <string name="multiplayer_how_share_three">3.</string>
     <string name="multiplayer_delete_space_sharing_link">Paylaşım bağlantısını sil</string>
     <string name="multiplayer_delete_link">Bağlantıyı sil</string>
-    <string name="multiplayer_delete_link_description">Yeni üyeler alana katılamayacaktır. İstediğiniz zaman yeni bir bağlantı oluşturabilirsiniz.</string>
-    <string name="multiplayer_already_space_member">Zaten bu alanın bir üyesisiniz.</string>
+    <string name="multiplayer_delete_link_description">Yeni üyeler alana katılamayacaktır. İstediğin zaman yeni bir bağlantı oluşturabilirsin.</string>
+    <string name="multiplayer_already_space_member">Zaten bu alanın bir üyesisin.</string>
     <string name="multiplayer_open_space">Alan açın</string>
     <string name="multiplayer_error_space_deleted">Alan silindi</string>
     <string name="multiplayer_error_space_not_found">Alan bulunamadı</string>
@@ -1376,7 +1378,7 @@
     <string name="payments_header">Üyelik</string>
     <string name="payments_subheader">Anytype ağına katılmak, hikayesine katkıda bulunmak anlamına gelir</string>
     <string name="payments_card_text_1">Vizyonu Birlikte Yaratın</string>
-    <string name="payments_card_description_1">Değerli bir üye olarak sesiniz önemli! Özel etkinliklere katılın, stratejik seçimleri şekillendirin ve yol haritamızı etkileyin.</string>
+    <string name="payments_card_description_1">Değerli bir üye olarak sesin önemli! Özel etkinliklere katıl, stratejik seçimleri şekillendir ve yol haritamızı şekillendir.</string>
     <string name="payments_card_text_2">Üye Avantajlarının Kilidini Açın</string>
     <string name="payments_card_description_2">Üyeler daha yüksek yedekleme depolama &amp; eşitleme limitlerine, birden fazla misafirin paylaşılan alanlarda işbirliği yapması için davetlere ve Anytype Ağı\'nda benzersiz bir kimliğe sahiptir.</string>
     <string name="payments_card_text_3">Dijital Bağımsızlığı Destekleyin</string>
@@ -1401,7 +1403,7 @@
     <string name="payments_member_link">Üyelik plan detayları</string>
     <string name="payments_privacy_link">Gizlilik politikası</string>
     <string name="payments_terms_link">Şartlar ve koşullar</string>
-    <string name="payments_let_us_link_start">Anytype\'ı iş, eğitim vb. için kullanmak ister misiniz?</string>
+    <string name="payments_let_us_link_start">Anytype\'ı iş, eğitim vb. için kullanmak ister misin?</string>
     <string name="payments_let_us_link_end">Lütfen bize buradan bildirin.</string>
     <string name="payments_current_label">Şu anki</string>
     <!-- Tier details -->
@@ -1450,14 +1452,14 @@
     <string name="payments_tier_current_paid_by_apple">Apple aboneliği</string>
     <string name="payments_tier_current_paid_by_google">Google aboneliği</string>
     <string name="payments_tier_current_button">Ödemeyi yönet</string>
-    <string name="membership_manage_tier_desktop">Masaüstü platformunda katmanı yönetebilirsiniz</string>
-    <string name="membership_manage_tier_ios">iOS platformunda katmanı yönetebilirsiniz</string>
-    <string name="membership_manage_tier_another_account">Katmanı başka bir Google hesabından yönetebilirsiniz</string>
+    <string name="membership_manage_tier_desktop">Katmanı Masaüstü platformunda yönetebilirsin</string>
+    <string name="membership_manage_tier_ios">Katmanı iOS platformunda yönetebilirsin</string>
+    <string name="membership_manage_tier_another_account">Katmanı başka bir Google hesabından yönetebilirsin</string>
     <string name="payments_tier_current_change_email_button">E-postayı değiştir</string>
     <!-- Payments Code -->
-    <string name="payments_code_title">E-posta adresinize gönderilen kodu girin</string>
+    <string name="payments_code_title">E-posta adresine gönderilen kodu gir</string>
     <string name="payments_code_resend">Tekrar Gönder</string>
-    <string name="payments_code_resend_in">%1$d saniye içinde yeniden gönderebilirsiniz</string>
+    <string name="payments_code_resend_in">%1$d saniye içinde yeniden gönderebilirsin</string>
     <!-- Membership Welcome -->
     <string name="payments_welcome_title">%1$s\nAğa hoş geldiniz</string>
     <string name="payments_welcome_subtitle">Merakınız için kocaman bir alkış!</string>
@@ -1522,13 +1524,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notifications_alert_error_import_canceled">İçe aktarma işlemi kullanıcı tarafından iptal edildi.</string>
     <string name="notifications_alert_error_limit_exceeded">Satırlar veya özellikler için içe aktarma sınırı aşıldı. Lütfen miktarı azaltın ve tekrar deneyin.</string>
     <string name="notifications_alert_error_file_load">Dosya yüklenirken bir hata oluştu. Lütfen dosyayı kontrol edin ve tekrar deneyin.</string>
-    <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsiniz. Lütfen izinlerinizi kontrol edin ve tekrar deneyin.</string>
+    <string name="notifications_alert_error_insufficient_permissions">Bu eylemi gerçekleştirmek için gerekli izinlere sahip değilsin. Lütfen izinlerini kontrol et ve tekrar dene.</string>
     <!-- Gallery Experience -->
     <string name="gallery_experience_made">Yaratan</string>
     <string name="gallery_experience_install">Kur</string>
     <string name="gallery_experience_install_new">Yeni alana kurun</string>
     <string name="gallery_experience_alert_title_success">Deneyim yüklendi</string>
-    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" yeni bir alana yüklendi. Artık açabilir ve kullanmaya başlayabilirsiniz.</string>
+    <string name="gallery_experience_alert_subtitle_success">\"%1$s\" yeni bir alana yüklendi. Artık açabilir ve kullanmaya başlayabilirsin.</string>
     <string name="gallery_experience_alert_title_error">Hay aksi!</string>
     <string name="gallery_experience_alert_button_space">Alan açın</string>
     <string name="gallery_experience_alert_button_error">Kapat</string>
@@ -1612,7 +1614,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="sync_status_p2p_restricted">Kısıtlanmış. Cihaz ayarlarını kontrol edin.</string>
     <string name="sync_status_p2p_not_connected">Bağlı değil</string>
     <string name="sync_status_anytype_network">Anytype Ağı</string>
-    <string name="sync_status_anytype_end_to_end">Uçtan uca şifrelenmiş</string>
+    <string name="sync_status_anytype_end_to_end">Uçtan uca şifrelendi</string>
     <plurals name="sync_status_network_items">
         <item quantity="one">%1$d öğe eşitleniyor...</item>
         <item quantity="other">%1$d öğe eşitleniyor...</item>
@@ -1663,8 +1665,8 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="allContent_group_prev_7">Son 7 gün</string>
     <string name="allContent_group_prev_14">Önceki 14 gün</string>
     <string name="introduce_vault_text_1">Kasa tüm alanlarınız için yeni evinizdir.\nAlanlar oluşturun, katılın veya paylaşın - her şey burada güvenli bir şekilde saklanır.</string>
-    <string name="introduce_vault_text_2">Artık sürükle ve bırak özelliğini kullanarak Alanlarınızı kolayca yeniden sıralayabilir ve daha kolay gezinebilirsiniz.</string>
-    <string name="introduce_vault_text_3">Alanınızın simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsiniz.</string>
+    <string name="introduce_vault_text_2">Artık sürükle ve bırak özelliğini kullanarak Alanlarını kolayca yeniden sıralayabilir ve daha kolay gezinebilirsin.</string>
+    <string name="introduce_vault_text_3">Alanının simgesini arka plan şeklinde varsayılan olarak bulanıklaştırırız. Gerekirse bunu alan ayarlarından değiştirebilirsin.</string>
     <string name="introduce_vault_welcome_to_the_vault">Kasaya Hoşgeldiniz</string>
     <string name="introduce_vault_simple_flexible"><![CDATA[Basit & Esnek]]></string>
     <string name="allContent_empty_state_title">Burası boş.</string>
@@ -1839,6 +1841,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="space_settings_icon_title">Resmi düzenle</string>
     <string name="space_settings_save_button">Kaydet</string>
     <string name="space_settings_join_space_by_qr_title">Katıl</string>
+    <string name="profile_qr_code_title">Benimle bağlantı kur</string>
+    <string name="profile_qr_code_title_with_name">%1$s ile bağlantı kur</string>
+    <string name="profile_qr_code_button">Karekodum</string>
+    <string name="profile_qr_share_button">Paylaş</string>
+    <string name="profile_qr_copy_button">Bağlantıyı kopyala</string>
+    <string name="profile_qr_circular_text">BNEİMLE ANYTYPE ÜZERİNDEN BAĞLANTI KUR </string>
+    <string name="profile_qr_link_copied">Bağlantı panoya kopyalandı</string>
     <string name="object_type_add_property_screen_title">Özellik ekle</string>
     <string name="object_type_add_property_screen_create">\'%1$s\' özelliğini oluştur</string>
     <string name="object_type_add_property_screen_section_types">Özellik formatları</string>
@@ -1862,11 +1871,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="migration_screen_description_2">Biraz zaman alabilir ancak endişelenmeyin, verileriniz güvende.</string>
     <string name="migration_screen_start_update">Güncellemeyi Başlat</string>
     <string name="migration_screen_read_more">Daha Fazla Oku</string>
-    <string name="migration_screen_what_to_expect">Ne Beklemelisiniz</string>
+    <string name="migration_screen_what_to_expect">Ne Beklemelisin</string>
     <string name="migration_screen_your_data_remains_safe">Verileriniz Güvende Kalır</string>
     <string name="migration_screen_your_data_description">Bu güncelleme sırasında verileriniz tamamen güvende kalır. Güncelleme doğrudan cihazınızda gerçekleştirilir ve senkronize edilmiş verileriniz etkilenmez. Sadece yeni bir formata kopyalayacağız ve cihazınızda önceki formattaki tüm verilerinizi içeren yerel bir yedek oluşturulacak.</string>
     <string name="migration_screen_your_data_description_2">Bu yedeği saklamamızın nedeni öngörülemeyen durumlarda hata ayıklamak ve size yardımcı olmaktır.</string>
-    <string name="migration_screen_what_to_expect_description">Güncelleme sırasında bir yükleme ekranı göreceksiniz. Tamamlandığında uygulamayı normal şekilde kullanmaya devam edebilirsiniz.</string>
+    <string name="migration_screen_what_to_expect_description">Güncelleme sırasında bir yükleme ekranı göreceksin. Tamamlandığında uygulamayı normal şekilde kullanmaya devam edebilirsin.</string>
     <string name="object_type_icon_change_title">Simgeyi değiştir</string>
     <string name="object_type_icon_remove">Kaldır</string>
     <string name="object_type_icon_change_title_search_hint">Ara...</string>
@@ -1895,7 +1904,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="onboarding_error_network_error">Ağ hatası nedeniyle hesap oluşturulamadı. Lütfen bağlantınızı kontrol edin.</string>
     <string name="onboarding_error_offline_device">Cihazınız çevrimdışı görünüyor. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="onboarding_error_account_created_but_failed_to_start_node">Hesap oluşturuldu ancak düğüm başlatılamadı. Lütfen tekrar giriş yapmayı deneyin.</string>
-    <string name="onboarding_error_account_created_but_failed_to_set_name">Hesap oluşturuldu ancak isim ayarlanamadı. Ayarlarından daha sonra güncelleyebilirsiniz.</string>
+    <string name="onboarding_error_account_created_but_failed_to_set_name">Hesap oluşturuldu ancak isim ayarlanamadı. Ayarlardan daha sonra güncelleyebilirsin.</string>
     <string name="onboarding_error_failed_to_stop_running_node">Çalışan düğüm durdurulamadı. Lütfen uygulamayı yeniden başlatın ve tekrar deneyin.</string>
     <string name="onboarding_error_failed_to_write_config">Yapılandırma kaydedilemedi. Lütfen depolama izinlerini kontrol edin.</string>
     <string name="onboarding_error_failed_to_create_local_repo">Yerel depo oluşturulamadı. Lütfen kullanılabilir depolama alanını kontrol edin.</string>
@@ -1962,11 +1971,11 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="vault_qr_scan_error_title">Karekod taranamadı</string>
     <string name="vault_qr_scan_error_description">Görünür olduğundan emin olun ve tekrar deneyin.</string>
     <string name="vault_qr_invalid_title">Geçersiz karekod</string>
-    <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar deneyin.</string>
+    <string name="vault_qr_invalid_description">Taranan karekod geçerli bir davetiyeyle eşleşmiyor. Lütfen kontrol edin ve tekrar dene.</string>
     <string name="vault_qr_try_again">Tekrar deneyin</string>
     <string name="camera_permission_required_title">Kamera izni gerekli</string>
-    <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kameranıza erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
-    <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarınızda kamera erişimine izin vermeniz gerekir.</string>
+    <string name="camera_permission_rationale_message">Karekodları taramak için Anytype\'ın kamerana erişmesi gerekir. Bu izin yalnızca karekodları taramak için kullanılır.</string>
+    <string name="camera_permission_settings_message">Karekodları taramak için cihaz ayarlarında kamera erişimine izin vermen gerekiyor.</string>
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
@@ -1976,12 +1985,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="share_space_error_request_failed">Hay aksi! İstek başarısız oldu. Lütfen internet bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="share_space_error_space_deleted">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
     <string name="share_space_error_generic">Beklenmeyen bir hata oluştu: %1$s. Lütfen daha sonra tekrar deneyin.</string>
-    <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsiniz. Yardım için lütfen alan sahibiyle iletişime geçin.</string>
+    <string name="share_space_error_incorrect_permissions">Gerekli izinlere sahip değilsin. Yardım için lütfen alan sahibiyle iletişime geç.</string>
     <string name="share_space_error_no_such_space">        Paylaşmaya çalıştığınız alan mevcut değil. Lütfen alan kimliğini kontrol edin ve tekrar deneyin.
     </string>
     <string name="share_space_error_make_private_failed">        Alan özel hale getirilemedi. Lütfen daha sonra tekrar dene.
     </string>
     <string name="private_local_yours_forever">şifreli, yerel, sonsuza kadar sizin</string>
+    <string name="private_channel">Doğrudan kanal</string>
     <string name="wallpaper_item_space_icon_color">Varsayılan Renk</string>
     <string name="publish_to_web">Web\'de Yayınla</string>
     <string name="preferences">Tercihler</string>
@@ -1997,6 +2007,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_open_in_browser">Tarayıcıda Aç</string>
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
+    <string name="widgets_section_unread">Okunmamış</string>
     <string name="widgets_section_object_types">Nesne türleri</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
@@ -2023,6 +2034,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
         <item quantity="one">%d yeni mesaj</item>
         <item quantity="other">%d yeni mesaj</item>
     </plurals>
+    <string name="any_id_info_title">Bu senin ANY ID\'ndir</string>
+    <string name="any_id_info_description">Üye olup kimliğini insanlar tarafından okunabilir hale getirebilirsin. Böylece diğer üyeler seni kolayca bulup seninle bağlantı kurabilir.</string>
+    <string name="any_id_info_button">Planları keşfet</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Onayla</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Bir seferde yalnızca 10 dosya yükleyebilirsin</string>
@@ -2038,4 +2052,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notify_me_about">Beni bilgilendir</string>
     <string name="error_while_downloading_object">Nesne indirilirken hata oluştu: %1$s</string>
     <string name="toast_moved_to_bin">Nesne çöp kutusuna taşındı.</string>
+    <string name="media_object_in_bin">Bu nesne çöp kutusunda. Geri yüklemek ister misin?</string>
+    <string name="toast_restored">Nesne geri yüklendi.</string>
+    <string name="participant_btn_connect">Bağlan</string>
 </resources>

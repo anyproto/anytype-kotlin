@@ -63,6 +63,7 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.presentation.util.UrlHelper
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -311,10 +312,12 @@ open class EditorTestSetup {
     val root: String = "rootId123"
     val defaultSpace = MockDataFactory.randomString()
 
+
+    @Mock
+    lateinit var urlHelper: UrlHelper
+
     private val urlBuilder by lazy {
-        UrlBuilder(
-            gateway = gateway
-        )
+        UrlBuilder(gateway = gateway)
     }
 
     private val intents = Proxy.Intents()
@@ -516,7 +519,8 @@ open class EditorTestSetup {
             getNetworkMode = getNetworkMode,
             fieldParser = fieldParser,
             dateProvider = dateProvider,
-            spaceViews = spacedViews
+            spaceViews = spacedViews,
+            urlHelper = urlHelper
         )
     }
 

@@ -242,7 +242,7 @@
     <string name="paste">Pegar</string>
     <string name="select">Seleccionar</string>
     <string name="search">Buscar</string>
-    <string name="search_hint">Buscar…</string>
+    <string name="search_hint">Buscar</string>
     <string name="relations">Propiedades</string>
     <string name="fields">Campos</string>
     <string name="download">Descargar</string>
@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Quien tenga el enlace solo podra ver el contenido del espacio.</string>
     <string name="multiplayer_change_to_request_confirmation">Quien tenga el enlace tendrá que solicitar acceso para acceder al espacio.</string>
     <string name="multiplayer_invite_link_copied">Enlace de invitación copiado al portapapeles</string>
+    <string name="link_copied">Enlace copiado al portapapeles</string>
+    <string name="remove_from_collection">Desconectar de la colección</string>
     <string name="multiplayer_copy_link">Copiar enlace</string>
     <string name="multiplayer_make_private">Hacer privado</string>
     <string name="multiplayer_join_a_space">Acceder a un espacio</string>
@@ -1629,7 +1631,7 @@ En concreto,
     <string name="version_history_error_get_version">Error al obtener el historial de versiones</string>
     <string name="version_history_error_get_members">Error al obtener los miembros</string>
     <string name="new_object">Nuevo objeto</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">Mis canales</string>
     <string name="vault_unread_section_title">No leído</string>
     <string name="vault_all_section_title">Todo</string>
     <string name="vault_pinned_section_title">Anclado</string>
@@ -1839,6 +1841,13 @@ En concreto,
     <string name="space_settings_icon_title">Editar imagen</string>
     <string name="space_settings_save_button">Guardar</string>
     <string name="space_settings_join_space_by_qr_title">Unirte</string>
+    <string name="profile_qr_code_title">Conéctate conmigo</string>
+    <string name="profile_qr_code_title_with_name">Conéctate con %1$s</string>
+    <string name="profile_qr_code_button">Mi código QR</string>
+    <string name="profile_qr_share_button">Compartir</string>
+    <string name="profile_qr_copy_button">Copiar enlace</string>
+    <string name="profile_qr_circular_text">CONÉCTATE CONMIGO EN ANYTYPE</string>
+    <string name="profile_qr_link_copied">Enlace copiado al portapapeles</string>
     <string name="object_type_add_property_screen_title">Añadir propiedad</string>
     <string name="object_type_add_property_screen_create">Crear propiedad «%1$s»</string>
     <string name="object_type_add_property_screen_section_types">Formatos de propiedades</string>
@@ -1981,6 +1990,7 @@ En concreto,
     </string>
     <string name="share_space_error_make_private_failed">No se ha podido hacer privado el espacio. Inténtalo de nuevo más tarde.</string>
     <string name="private_local_yours_forever">cifrado, local, tuyo para siempre</string>
+    <string name="private_channel">Canal directo</string>
     <string name="wallpaper_item_space_icon_color">Color por defecto</string>
     <string name="publish_to_web">Publicar en la web</string>
     <string name="preferences">Preferencias</string>
@@ -1996,6 +2006,7 @@ En concreto,
     <string name="web_publishing_open_in_browser">Abrir en el explorador</string>
     <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
+    <string name="widgets_section_unread">No leído</string>
     <string name="widgets_section_object_types">Tipos de objeto</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>
@@ -2022,6 +2033,9 @@ En concreto,
         <item quantity="one">%d mensaje nuevo</item>
         <item quantity="other">%d mensajes nuevos</item>
     </plurals>
+    <string name="any_id_info_title">Este es tu ID ANY</string>
+    <string name="any_id_info_description">Suscríbete para que tu ID sea legible y otras personas puedan encontrarte y ponerse en contacto contigo fácilmente.</string>
+    <string name="any_id_info_button">Explorar planes</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Aprobar</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">No puedes subir más de 10 archivos al mismo tiempo</string>
@@ -2037,4 +2051,7 @@ En concreto,
     <string name="notify_me_about">Notifícame sobre</string>
     <string name="error_while_downloading_object">Error al descargar el objeto %1$s</string>
     <string name="toast_moved_to_bin">Objeto movido a la papelera.</string>
+    <string name="media_object_in_bin">Este objeto está en la papelera. ¿Restaurarlo?</string>
+    <string name="toast_restored">Objeto restaurado.</string>
+    <string name="participant_btn_connect">Conectar</string>
 </resources>

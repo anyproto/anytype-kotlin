@@ -180,6 +180,13 @@ class BlockViewDiffUtil(
                 changes.add(BACKGROUND_COLOR_CHANGED)
         }
 
+        if (newBlock is BlockView.Embed && oldBlock is BlockView.Embed) {
+            if (newBlock.text != oldBlock.text || newBlock.processor != oldBlock.processor)
+                changes.add(TEXT_CHANGED)
+            if (newBlock.background != oldBlock.background)
+                changes.add(BACKGROUND_COLOR_CHANGED)
+        }
+
         if (newBlock is BlockView.TableOfContents && oldBlock is BlockView.TableOfContents) {
             if (newBlock.background != oldBlock.background)
                 changes.add(BACKGROUND_COLOR_CHANGED)

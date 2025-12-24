@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material.Divider
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -18,6 +19,7 @@ import androidx.compose.runtime.toMutableStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.BuildConfig
@@ -30,11 +32,14 @@ import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
+import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
 
@@ -52,11 +57,42 @@ fun WidgetsScreen(
     val mode = viewModel.mode.collectAsState().value
     val pinnedWidgets = viewModel.pinnedViews.collectAsState().value
     val typeWidgets = viewModel.typeViews.collectAsState().value
+    val unreadWidget = viewModel.unreadView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
+    
+    // Unread section visibility logic
+    val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
+    val isUnreadSectionCollapsed = collapsedSections.contains(SECTION_UNREAD)
+    
+    // Track previous collapse state for unread section
+    val wasUnreadCollapsed = remember { mutableStateOf(isUnreadSectionCollapsed) }
+    val hadUnreadItems = remember { mutableStateOf(unreadWidgetView?.elements?.isNotEmpty() == true) }
+    
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isUnreadSectionCollapsed && wasUnreadCollapsed.value) {
+        hadUnreadItems.value = true
+    }
+    
+    // Update previous state
+    wasUnreadCollapsed.value = isUnreadSectionCollapsed
+    
+    // Set flag when items are present
+    if (unreadWidgetView?.elements?.isNotEmpty() == true) {
+        hadUnreadItems.value = true
+    }
+    
+    // Reset flag when section is collapsed and has no items
+    if (isUnreadSectionCollapsed && unreadWidgetView?.elements?.isEmpty() == true) {
+        hadUnreadItems.value = false
+    }
+    
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowUnreadSection = unreadWidgetView != null && 
+        (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
 
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
@@ -150,6 +186,41 @@ fun WidgetsScreen(
             state = lazyListState,
             modifier = Modifier.fillMaxSize()
         ) {
+
+            // Unread section - shown at top when there are unread chats
+            if (shouldShowUnreadSection) {
+                item {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = SECTION_UNREAD,
+                    ) {
+                        UnreadSectionHeader(
+                            onSectionClicked = viewModel::onSectionUnreadClicked
+                        )
+                    }
+                }
+            }
+            
+            // Unread widgets - only render when section is expanded and widget exists
+            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
+                item(key = "unread_widget_content") {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = "unread_widget_content",
+                    ) {
+                        UnreadChatListWidget(
+                            item = unreadWidgetView,
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
+                                viewModel.onWidgetElementClicked(unreadWidgetView.id, obj)
+                            },
+                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                        )
+                    }
+                }
+            }
 
             // Only show pinned section header if there are items or section is collapsed
             if (shouldShowPinnedHeader) {

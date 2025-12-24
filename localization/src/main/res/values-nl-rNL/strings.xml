@@ -242,7 +242,7 @@
     <string name="paste">Plakken</string>
     <string name="select">Selecteer</string>
     <string name="search">Zoeken</string>
-    <string name="search_hint">Zoek...</string>
+    <string name="search_hint">Zoeken</string>
     <string name="relations">Eigenschappen</string>
     <string name="fields">Velden</string>
     <string name="download">Downloaden</string>
@@ -1243,6 +1243,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Iedereen met de link kan alleen de inhoud van de ruimte bekijken.</string>
     <string name="multiplayer_change_to_request_confirmation">Iedereen met de link moet toegang vragen om deel te nemen aan de ruimte.</string>
     <string name="multiplayer_invite_link_copied">Uitnodigingslink gekopieerd naar klembord</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Kopieer link</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Deelnemen aan een ruimte</string>
@@ -1839,6 +1841,13 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="space_settings_icon_title">Bewerk afbeelding</string>
     <string name="space_settings_save_button">Sla op</string>
     <string name="space_settings_join_space_by_qr_title">Deelnemen</string>
+    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_share_button">Deel</string>
+    <string name="profile_qr_copy_button">Kopieer link</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Link copied to clipboard</string>
     <string name="object_type_add_property_screen_title">Voeg eigenschap toe</string>
     <string name="object_type_add_property_screen_create">Maak eigenschap \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Eigenschappen formaten</string>
@@ -1982,6 +1991,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">versleuteld, lokaal, voor altijd van jou</string>
+    <string name="private_channel">Direct channel</string>
     <string name="wallpaper_item_space_icon_color">Standaardkleur</string>
     <string name="publish_to_web">Publiceer op het internet</string>
     <string name="preferences">Voorkeuren</string>
@@ -1997,6 +2007,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="web_publishing_open_in_browser">Open in browser</string>
     <string name="web_publishing_copy_web_link">Kopieer webkoppeling</string>
     <string name="widgets_section_pinned">Vastgezet</string>
+    <string name="widgets_section_unread">Ongelezen</string>
     <string name="widgets_section_object_types">Objecttypes</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>
@@ -2023,6 +2034,9 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
         <item quantity="one">%d nieuw bericht</item>
         <item quantity="other">%d nieuwe berichten</item>
     </plurals>
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Keur goed</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
@@ -2038,4 +2052,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
+    <string name="participant_btn_connect">Connect</string>
 </resources>

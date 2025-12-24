@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.PermittedConditions
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH

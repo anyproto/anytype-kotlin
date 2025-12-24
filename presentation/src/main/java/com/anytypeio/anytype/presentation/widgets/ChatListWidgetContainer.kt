@@ -158,7 +158,8 @@ class ChatListWidgetContainer(
                                 val ctx = computeViewerContext(
                                     widgetSourceObjId = widgetSourceObj.id,
                                     activeView = activeView,
-                                    isCompact = isCompact
+                                    isCompact = isCompact,
+                                    storeOfRelations = storeOfRelations
                                 )
 
                                 if (ctx.params != null) {
@@ -333,23 +334,26 @@ class ChatListWidgetContainer(
     private suspend fun computeViewerContext(
         widgetSourceObjId: Id,
         activeView: Id?,
-        isCompact: Boolean
+        isCompact: Boolean,
+        storeOfRelations: StoreOfRelations
     ): ViewerContext {
         val obj = getObjectViewOrEmpty(objectId = widgetSourceObjId, spaceId = space)
         return buildViewerContextCommon(
             obj = obj,
             activeViewerId = activeView,
-            isCompact = isCompact
+            isCompact = isCompact,
+            storeOfRelations = storeOfRelations
         )
     }
 
     /**
      * Builds a ViewerContext containing object data, data view configuration, and search parameters.
      */
-    private fun buildViewerContextCommon(
+    private suspend fun buildViewerContextCommon(
         obj: ObjectView,
         activeViewerId: Id?,
-        isCompact: Boolean
+        isCompact: Boolean,
+        storeOfRelations: StoreOfRelations
     ): ViewerContext {
 
         val dv = obj.blocks.find { it.content is DV }?.content as? DV
@@ -371,7 +375,7 @@ class ChatListWidgetContainer(
         val struct = obj.details[obj.root] ?: emptyMap()
         val params = if (struct.isValidObject()) {
             val dataViewKeys = dv?.relationLinks?.map { it.key }.orEmpty()
-            val sorts = targetView?.sorts?.updateWithRelationFormat(dv?.relationLinks.orEmpty()).orEmpty()
+            val sorts = targetView?.sorts?.updateWithRelationFormat(storeOfRelations).orEmpty()
             val defaultKeys = ObjectSearchConstants.defaultDataViewKeys
 
             // Use collection or set subscription logic

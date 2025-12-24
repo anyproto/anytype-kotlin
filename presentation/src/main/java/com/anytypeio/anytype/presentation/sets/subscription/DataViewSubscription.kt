@@ -4,7 +4,6 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -224,13 +223,6 @@ class DefaultDataViewSubscription(
     companion object {
         private const val DATA_VIEW_SUBSCRIPTION_POSTFIX = "-dataview"
         fun getDataViewSubscriptionId(context: Id) = "$context$DATA_VIEW_SUBSCRIPTION_POSTFIX"
-    }
-}
-
-fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLink>): List<DVSort> {
-    return map { sort ->
-        val relationLink = relationLinks.find { it.key == sort.relationKey }
-        sort.copy(relationFormat = relationLink?.format ?: RelationFormat.LONG_TEXT)
     }
 }
 

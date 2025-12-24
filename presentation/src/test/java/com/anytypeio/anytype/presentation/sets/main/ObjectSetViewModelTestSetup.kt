@@ -88,6 +88,7 @@ import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
+import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -445,8 +446,8 @@ open class ObjectSetViewModelTestSetup {
             space = SpaceId(spaceId),
             subscription = subscription,
             collection = collection,
-            filters = dvFilters.updateFormatForSubscription(dvRelationLinks) + ObjectSearchConstants.defaultDataViewFilters(),
-            sorts = dvSorts,
+            filters = dvFilters.updateFormatForSubscription(storeOfRelations) + ObjectSearchConstants.defaultDataViewFilters(),
+            sorts = dvSorts.updateWithRelationFormat(storeOfRelations),
             keys = dvKeys,
             source = sources,
             limit = ObjectSetConfig.DEFAULT_LIMIT,

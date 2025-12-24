@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.RelationFormat
+import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.presentation.templates.TemplateView.Companion.DEFAU
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.assertTrue
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.runBlocking
 import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.runTest
 import net.bytebuddy.utility.RandomString
@@ -87,6 +89,18 @@ class SetByRelationViewerTypeAndTemplateTest : ObjectSetViewModelTestSetup() {
     fun setup() {
         closable = MockitoAnnotations.openMocks(this)
         proceedWithDefaultBeforeTestStubbing()
+        runBlocking {
+            storeOfRelations.merge(
+                listOf(
+                    StubRelationObject(id = Relations.CREATED_DATE, key = Relations.CREATED_DATE, format = RelationFormat.DATE),
+                    StubRelationObject(
+                        id = setByRelationId,
+                        key = setByRelationKey,
+                        format = RelationFormat.OBJECT
+                    )
+                )
+            )
+        }
         viewModel = givenViewModel()
     }
 

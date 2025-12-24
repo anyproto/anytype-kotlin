@@ -4,9 +4,9 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
@@ -29,7 +29,7 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState>
 
     suspend fun startObjectCollectionSubscription(
@@ -39,7 +39,7 @@ interface DataViewSubscription {
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState>
 
     suspend fun startObjectTypeSetSubscription(
@@ -48,7 +48,7 @@ interface DataViewSubscription {
         state: ObjectState.DataView.TypeSet,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState>
 
     suspend fun unsubscribe(ids: List<Id>)
@@ -65,7 +65,7 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Collection,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState> {
         if (context.isEmpty() || collection.isEmpty()) {
             Timber.w("Data view collection subscription: context or collection is empty")
@@ -77,7 +77,7 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -85,7 +85,7 @@ class DefaultDataViewSubscription(
 
         val sorts = getSortsWithDefaultCreatedDate(
             viewerSorts = activeViewer.sorts,
-            relationLinks = dataViewRelationLinks
+            storeOfRelations = storeOfRelations
         )
 
         val params = DataViewSubscriptionContainer.Params(
@@ -108,7 +108,7 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.Set,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view set subscription: context is empty")
@@ -136,14 +136,14 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
         val sorts = getSortsWithDefaultCreatedDate(
             viewerSorts = activeViewer.sorts,
-            relationLinks = dataViewRelationLinks
+            storeOfRelations = storeOfRelations
         )
 
         val params = DataViewSubscriptionContainer.Params(
@@ -165,7 +165,7 @@ class DefaultDataViewSubscription(
         state: ObjectState.DataView.TypeSet,
         currentViewerId: Id?,
         offset: Long,
-        dataViewRelationLinks: List<RelationLink>
+        storeOfRelations: StoreOfRelations
     ): Flow<DataViewState> {
         if (context.isEmpty()) {
             Timber.w("Data view TypeSet subscription: context is empty")
@@ -193,14 +193,14 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(relationLinks = dataViewRelationLinks))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
         val keys = ObjectSearchConstants.defaultDataViewKeys + dataViewLinksKeys
         val sorts = getSortsWithDefaultCreatedDate(
             viewerSorts = activeViewer.sorts,
-            relationLinks = dataViewRelationLinks
+            storeOfRelations = storeOfRelations
         )
 
         val params = DataViewSubscriptionContainer.Params(
@@ -226,16 +226,17 @@ class DefaultDataViewSubscription(
     }
 }
 
-fun List<DVSort>.updateWithRelationFormat(relationLinks: List<RelationLink>): List<DVSort> {
+suspend fun List<DVSort>.updateWithRelationFormat(storeOfRelations: StoreOfRelations): List<DVSort> {
     return map { sort ->
-        val relationLink = relationLinks.find { it.key == sort.relationKey }
-        sort.copy(relationFormat = relationLink?.format ?: RelationFormat.LONG_TEXT)
+        val relation = storeOfRelations.getByKey(sort.relationKey)
+        sort.copy(relationFormat = relation?.format ?: RelationFormat.LONG_TEXT)
     }
 }
 
-private fun getSortsWithDefaultCreatedDate(
+
+private suspend fun getSortsWithDefaultCreatedDate(
     viewerSorts: List<DVSort>,
-    relationLinks: List<RelationLink>
+    storeOfRelations: StoreOfRelations
 ): List<DVSort> {
     return viewerSorts.ifEmpty {
         listOf(
@@ -246,5 +247,5 @@ private fun getSortsWithDefaultCreatedDate(
                 relationFormat = RelationFormat.DATE
             )
         )
-    }.updateWithRelationFormat(relationLinks)
+    }.updateWithRelationFormat(storeOfRelations)
 }

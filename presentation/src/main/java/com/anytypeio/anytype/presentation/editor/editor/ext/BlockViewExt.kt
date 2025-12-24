@@ -367,6 +367,10 @@ fun List<BlockView>.enterSAM(
         is BlockView.Latex -> view.copy(
             isSelected = isSelected
         )
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
         is BlockView.TableOfContents -> view.copy(
             isSelected = isSelected
         )
@@ -1100,6 +1104,7 @@ fun BlockView.updateSelection(newSelection: Boolean) = when (this) {
     is BlockView.Relation.Placeholder -> copy(isSelected = newSelection)
     is BlockView.Relation.Deleted -> copy(isSelected = newSelection)
     is BlockView.Latex -> copy(isSelected = newSelection)
+    is BlockView.Embed -> copy(isSelected = newSelection)
     is BlockView.TableOfContents -> copy(isSelected = newSelection)
     is BlockView.Table -> copy(isSelected = newSelection)
     is BlockView.DataView.EmptyData -> copy(isSelected = newSelection)

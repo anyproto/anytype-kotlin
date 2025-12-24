@@ -369,6 +369,34 @@ data class Block(
         }
 
         data class Latex(val latex: String) : Content()
+        data class Embed(val text: String, val processor: Processor) : Content() {
+            enum class Processor(val value: Int) {
+                MERMAID(1),
+                CHART(2),
+                YOUTUBE(3),
+                VIMEO(4),
+                SOUNDCLOUD(5),
+                GOOGLE_MAPS(6),
+                MIRO(7),
+                FIGMA(8),
+                TWITTER(9),
+                OPEN_STREET_MAP(10),
+                REDDIT(11),
+                FACEBOOK(12),
+                INSTAGRAM(13),
+                TELEGRAM(14),
+                GITHUB_GIST(15),
+                CODEPEN(16),
+                BILIBILI(17),
+                EXCALIDRAW(18),
+                KROKI(19),
+                GRAPHVIZ(20),
+                SKETCHFAB(21),
+                IMAGE(22),
+                DRAWIO(23),
+                SPOTIFY(24)
+            }
+        }
         data object TableOfContents : Content()
         data object Unsupported : Content()
 

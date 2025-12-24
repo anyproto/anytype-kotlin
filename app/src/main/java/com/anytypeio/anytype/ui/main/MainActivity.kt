@@ -10,15 +10,25 @@ import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
+import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
+import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
+import com.anytypeio.anytype.presentation.sharing.SharingCommand
+import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentContainerView
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.navigation.NavOptions
@@ -39,7 +49,10 @@ import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
 import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
+import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.toast
+import com.anytypeio.anytype.presentation.sharing.SharedContent
+import com.google.android.material.snackbar.Snackbar
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
@@ -72,7 +85,6 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.sharing.SharingFragment
 import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import javax.inject.Inject
@@ -161,42 +173,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             CreateObjectFragment.TYPE_KEY to command.type
                                         )
                                     )
-                            }
-                            is Command.Sharing.Text -> {
-                                SharingFragment.text(command.data).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
-                            }
-                            is Command.Sharing.Image -> {
-                                SharingFragment.image(command.uri).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
-                            }
-                            is Command.Sharing.Images -> {
-                                SharingFragment.images(command.uris).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
-                            }
-                            is Command.Sharing.Videos -> {
-                                SharingFragment.videos(command.uris).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
-                            }
-                            is Command.Sharing.Files -> {
-                                SharingFragment.files(command.uris).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
-                            }
-                            is Command.Sharing.File -> {
-                                SharingFragment.file(command.uri).show(
-                                    supportFragmentManager,
-                                    SHARE_DIALOG_LABEL
-                                )
                             }
                             is Command.Error -> {
                                 toast(command.msg)
@@ -568,87 +544,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
-     * Main activity is responsible only for checking new deep links.
-     * Launch deep links are handled by SplashFragment.
+     * Single entry point for all share intents.
+     * Deep links are checked here, all other content is routed to SharingFragment.
+     * SharingFragment handles MIME type detection internally.
      */
     private fun proceedWithShareIntent(intent: Intent, checkDeepLink: Boolean = false) {
-        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: $intent")
-        when {
-            intent.type == Mimetype.MIME_TEXT_PLAIN.value -> {
-                handleTextShare(
-                    intent = intent,
-                    checkDeepLink = checkDeepLink
-                )
-            }
-            intent.type?.startsWith(SHARE_IMAGE_INTENT_PATTERN) == true -> {
-                proceedWithImageShareIntent(intent)
-            }
-            intent.type?.startsWith(SHARE_VIDEO_INTENT_PATTERN) == true -> {
-                proceedWithVideoShareIntent(intent)
-            }
-            intent.type?.startsWith(SHARE_FILE_INTENT_PATTERN) == true -> {
-                proceedWithFileShareIntent(intent)
-            }
-            intent.type == Mimetype.MIME_FILE_ALL.value -> {
-                proceedWithFileShareIntent(intent)
-            }
-            else -> Timber.e("Unexpected scenario: ${intent.type}")
-        }
-    }
+        if (BuildConfig.DEBUG) Timber.d("Proceeding with share intent: type=${intent.type}, action=${intent.action}")
 
-    private fun handleTextShare(intent: Intent, checkDeepLink: Boolean) {
-        val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString ?: return
-
-        when {
-            checkDeepLink && DefaultDeepLinkResolver.isDeepLink(raw) -> {
+        // Check for deep links in text content first
+        if (checkDeepLink && intent.type == Mimetype.MIME_TEXT_PLAIN.value) {
+            val raw = intent.getStringExtra(Intent.EXTRA_TEXT) ?: intent.dataString
+            if (raw != null && DefaultDeepLinkResolver.isDeepLink(raw)) {
                 vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(raw))
-            }
-            raw.isNotEmpty() && !DefaultDeepLinkResolver.isDeepLink(raw) -> {
-                vm.onIntentTextShare(raw)
-            }
-            else -> {
-                Timber.d("handleTextShare, skip handle intent :$raw")
+                return
             }
         }
-    }
 
-    private fun proceedWithFileShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleFilesShare(intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleFilesShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
-    }
-
-    private fun proceedWithImageShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleImageShare(uris = intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleImageShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
-    }
-
-    private fun proceedWithVideoShareIntent(intent: Intent) {
-        if (intent.action == Intent.ACTION_SEND_MULTIPLE) {
-            vm.onIntentMultipleVideoShare(uris = intent.parseActionSendMultipleUris())
-        } else {
-            val uri = intent.parseActionSendUri()
-            if (uri != null) {
-                vm.onIntentMultipleVideoShare(listOf(uri))
-            } else {
-                toast("Could not parse URI")
-            }
-        }
+        // Single entry point: pass intent to SharingFragment via ViewModel
+        vm.onShareIntent(intent)
     }
 
     private fun proceedWithNotificationIntent(intent: Intent) {
@@ -797,14 +710,20 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     override fun nav(): AppNavigation = navigator
 
     /**
-     * Sets up feature introductions using Compose.
-     * Shows SpacesIntroductionScreen only after account starts and only to existing users.
+     * Sets up Compose overlays for modals and introductions.
+     * Handles:
+     * - SpacesIntroductionScreen for existing users
+     * - SharingModalSheet for share intents
      */
+    @OptIn(ExperimentalMaterial3Api::class)
     private fun setupFeatureIntroductions() {
         findViewById<ComposeView>(R.id.composeOverlay).apply {
             setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
             setContent {
                 val showSpacesIntroduction by vm.showSpacesIntroduction.collectAsState()
+                val sharingIntent by vm.sharingIntent.collectAsState()
+
+                // Spaces Introduction Screen
                 if (showSpacesIntroduction != null) {
                     SpacesIntroductionScreen(
                         onDismiss = {
@@ -818,7 +737,148 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         }
                     )
                 }
+
+                // Sharing Modal Sheet
+                sharingIntent?.let { intent ->
+                    SharingModalHost(
+                        intent = intent,
+                        onDismiss = {
+                            vm.onSharingDismissed()
+                        }
+                    )
+                }
             }
+        }
+    }
+
+    /**
+     * Composable host for the sharing modal that manages SharingViewModel lifecycle.
+     */
+    @OptIn(ExperimentalMaterial3Api::class)
+    @Composable
+    private fun SharingModalHost(
+        intent: Intent,
+        onDismiss: () -> Unit
+    ) {
+        // Get or create SharingComponent and ViewModel
+        val sharingComponent = remember {
+            componentManager().sharingComponent.get()
+        }
+
+        // Create ViewModel using the factory from the component
+        val viewModel = remember {
+            val factory = sharingComponent.viewModelFactory()
+            factory.create(SharingViewModel::class.java)
+        }
+
+        // Convert intent to SharedContent and pass to ViewModel
+        LaunchedEffect(intent) {
+            val sharedContent = IntentToSharedContentConverter.convert(intent)
+            viewModel.onSharedDataReceived(sharedContent)
+        }
+
+        // Collect screen state
+        val screenState by viewModel.screenState.collectAsStateWithLifecycle()
+
+        // Handle commands from ViewModel
+        LaunchedEffect(Unit) {
+            viewModel.commands.collect { command ->
+                when (command) {
+                    is SharingCommand.Dismiss -> {
+                        onDismiss()
+                    }
+                    is SharingCommand.ShowToast -> {
+                        toast(command.message)
+                    }
+                    is SharingCommand.ShowSnackbarWithOpenAction -> {
+                        // Dismiss modal and show Snackbar
+                        onDismiss()
+                        val message = getSnackbarMessage(
+                            contentType = command.contentType,
+                            destinationName = command.destinationName,
+                            spaceName = command.spaceName
+                        )
+                        findViewById<android.view.View>(android.R.id.content)?.showSnackbar(
+                            msg = message,
+                            length = Snackbar.LENGTH_INDEFINITE,
+                            actionMessage = getString(R.string.button_ok),
+                            action = {
+                                onDismiss()
+                            }
+                        )
+                    }
+                }
+            }
+        }
+
+        // Clean up when the composable leaves composition
+        DisposableEffect(Unit) {
+            onDispose {
+                componentManager().sharingComponent.release()
+            }
+        }
+
+        // Render the modal sheet
+        SharingModalSheet(
+            state = screenState,
+            onSpaceSelected = viewModel::onSpaceSelected,
+            onSearchQueryChanged = viewModel::onSearchQueryChanged,
+            onCommentChanged = viewModel::onCommentChanged,
+            onSendClicked = viewModel::onSendClicked,
+            onObjectSelected = viewModel::onObjectSelected,
+            onBackPressed = viewModel::onBackPressed,
+            onDismiss = onDismiss,
+            onRetryClicked = viewModel::onRetryClicked
+        )
+    }
+
+    /**
+     * Returns content-specific Snackbar message based on the shared content type.
+     * If spaceName is provided, uses "linked to" format; otherwise uses "added to" format.
+     */
+    private fun getSnackbarMessage(
+        contentType: SharedContent,
+        destinationName: String,
+        spaceName: String?
+    ): String {
+        return if (spaceName != null) {
+            // Linked to object format: "Content linked to 'ObjectName' in 'SpaceName'"
+            val stringResId = when (contentType) {
+                is SharedContent.Text -> R.string.sharing_snackbar_text_linked
+                is SharedContent.Url -> R.string.sharing_snackbar_link_linked
+                is SharedContent.SingleMedia -> when (contentType.type) {
+                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_linked
+                    SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_linked
+                    SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_linked
+                    SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_linked
+                    SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_linked
+                }
+                is SharedContent.MultipleMedia -> when (contentType.type) {
+                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
+                    else -> R.string.sharing_snackbar_files_linked
+                }
+                is SharedContent.Mixed -> R.string.sharing_snackbar_content_linked
+            }
+            getString(stringResId, destinationName, spaceName)
+        } else {
+            // Added to space/chat format: "Content added to 'Name'"
+            val stringResId = when (contentType) {
+                is SharedContent.Text -> R.string.sharing_snackbar_text_added
+                is SharedContent.Url -> R.string.sharing_snackbar_link_added
+                is SharedContent.SingleMedia -> when (contentType.type) {
+                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
+                    SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
+                    SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
+                    SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
+                    SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
+                }
+                is SharedContent.MultipleMedia -> when (contentType.type) {
+                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
+                    else -> R.string.sharing_snackbar_files_added
+                }
+                is SharedContent.Mixed -> R.string.sharing_snackbar_content_added
+            }
+            getString(stringResId, destinationName)
         }
     }
 
@@ -828,12 +888,5 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     fun release() {
         componentManager().mainEntryComponent.release()
-    }
-
-    companion object {
-        const val SHARE_DIALOG_LABEL = "anytype.dialog.share.label"
-        const val SHARE_IMAGE_INTENT_PATTERN = "image/"
-        const val SHARE_VIDEO_INTENT_PATTERN = "video/"
-        const val SHARE_FILE_INTENT_PATTERN = "application/"
     }
 }

@@ -124,6 +124,13 @@ class MainViewModel(
     val wallpaperState: MutableStateFlow<WallpaperResult> = MutableStateFlow(WallpaperResult.None)
     val showSpacesIntroduction: MutableStateFlow<Account?> = MutableStateFlow(null)
 
+    /**
+     * State for the sharing modal sheet.
+     * When non-null, MainActivity should show the SharingModalSheet with this Intent.
+     * When null, the modal should be hidden.
+     */
+    val sharingIntent: MutableStateFlow<android.content.Intent?> = MutableStateFlow(null)
+
     init {
         subscribeToActiveSpaceWallpaper()
         viewModelScope.launch {
@@ -350,67 +357,33 @@ class MainViewModel(
         }
     }
 
-    fun onIntentTextShare(data: String) {
+    /**
+     * Single entry point for all share intents.
+     * Shows the sharing modal sheet with the given intent.
+     *
+     * @param intent The share intent from Android system
+     */
+    fun onShareIntent(intent: android.content.Intent) {
+        Timber.d("onShareIntent: type=${intent.type}, action=${intent.action}")
         viewModelScope.launch {
             checkAuthorizationStatus.async(Unit).fold(
                 onFailure = { e -> Timber.e(e, "Error while checking auth status") },
-                onSuccess = { (status, account) ->
+                onSuccess = { (status, _) ->
                     if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.Sharing.Text(data))
+                        // Set intent to show the sharing modal sheet
+                        sharingIntent.value = intent
                     }
                 }
             )
         }
     }
 
-    fun onIntentMultipleFilesShare(uris: List<String>) {
-        Timber.d("onIntentFileShare: $uris")
-        viewModelScope.launch {
-            checkAuthorizationStatus.async(Unit).fold(
-                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
-                onSuccess = { (status, account) ->
-                    if (status == AuthStatus.AUTHORIZED) {
-                        if (uris.size == 1) {
-                            commands.emit(Command.Sharing.File(uris.first()))
-                        } else {
-                            commands.emit(Command.Sharing.Files(uris))
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    fun onIntentMultipleImageShare(uris: List<String>) {
-        Timber.d("onIntentImageShare: $uris")
-        viewModelScope.launch {
-            checkAuthorizationStatus.async(Unit).fold(
-                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
-                onSuccess = { (status, account) ->
-                    if (status == AuthStatus.AUTHORIZED) {
-                        if (uris.size == 1) {
-                            commands.emit(Command.Sharing.Image(uris.first()))
-                        } else {
-                            commands.emit(Command.Sharing.Images(uris))
-                        }
-                    }
-                }
-            )
-        }
-    }
-
-    fun onIntentMultipleVideoShare(uris: List<String>) {
-        Timber.d("onIntentVideoShare: $uris")
-        viewModelScope.launch {
-            checkAuthorizationStatus.async(Unit).fold(
-                onFailure = { e -> Timber.e(e, "Error while checking auth status") },
-                onSuccess = { (status, account) ->
-                    if (status == AuthStatus.AUTHORIZED) {
-                        commands.emit(Command.Sharing.Videos(uris))
-                    }
-                }
-            )
-        }
+    /**
+     * Called when the sharing modal is dismissed.
+     */
+    fun onSharingDismissed() {
+        Timber.d("onSharingDismissed")
+        sharingIntent.value = null
     }
 
     fun onInterceptNotificationAction(action: NotificationAction) {
@@ -795,14 +768,6 @@ class MainViewModel(
         data object LogoutDueToAccountDeletion : Command()
         class OpenCreateNewType(val type: Id) : Command()
         data class Error(val msg: String) : Command()
-        sealed class Sharing : Command() {
-            data class Text(val data: String) : Sharing()
-            data class Image(val uri: String) : Sharing()
-            data class Images(val uris: List<String>) : Sharing()
-            data class Videos(val uris: List<String>) : Sharing()
-            data class File(val uri: String) : Sharing()
-            data class Files(val uris: List<String>) : Sharing()
-        }
 
         data object Notifications : Command()
         data object RequestNotificationPermission : Command()

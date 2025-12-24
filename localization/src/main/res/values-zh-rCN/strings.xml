@@ -568,8 +568,8 @@
     <string name="view_gallery">相册</string>
     <string name="view_kanban">看板</string>
     <string name="page_cover">页面封面</string>
-    <string name="object_action_pin">钉住</string>
-    <string name="object_action_unpin">取消固定</string>
+    <string name="object_action_pin">置顶</string>
+    <string name="object_action_unpin">取消置顶</string>
     <string name="editor_toolbar">按钮</string>
     <string name="wait_a_bit_message">请给我们一点时间，马上就好…</string>
     <string name="confirm">确认</string>
@@ -1002,7 +1002,7 @@
     <string name="widget_type_compact_list">紧凑列表</string>
     <string name="widget_change_source">更改来源</string>
     <string name="widget_change_type">更改小部件类型</string>
-    <string name="widget_unpin">取消固定</string>
+    <string name="widget_unpin">取消置顶</string>
     <string name="widget_remove_widget">删除小部件</string>
     <string name="widget_empty_bin">清空回收站</string>
     <string name="widget_edit_widgets">编辑小部件</string>
@@ -1079,7 +1079,7 @@
     <!--endregion-->
     <!--region OBJECT ACTIONS -->
     <string name="object_action_duplicate">生成副本</string>
-    <string name="object_action_to_widgets">钉住</string>
+    <string name="object_action_to_widgets">置顶</string>
     <string name="object_action_download">下载</string>
     <!--endregion-->
     <!--region SEARCH -->
@@ -1173,9 +1173,9 @@
     <string name="error_calendar_view_not_supported">日历视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
     <string name="error_graph_view_not_supported">图表视图暂时不能在手机上使用。\n更改视图类型（设置 -&gt; 视图）或创建新视图以访问您的数据。</string>
     <string name="error_generic_view_not_supported">此视图暂时在手机上不可用。\n更改类型（设置 -&gt; 视图）或创建新视图访问您的数据。</string>
-    <string name="create_object_section_pinned">固定</string>
+    <string name="create_object_section_pinned">置顶</string>
     <string name="any_object_creation_menu_pin_on_top">置顶</string>
-    <string name="any_object_creation_menu_unpin">取消固定</string>
+    <string name="any_object_creation_menu_unpin">取消置顶</string>
     <string name="any_object_creation_menu_set_as_default">设为默认</string>
     <string name="any_object_creation_menu_move_left">向左移动</string>
     <string name="any_object_creation_menu_move_right">向右移动</string>
@@ -1239,6 +1239,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
     <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
+    <string name="link_copied">Link copied to clipboard</string>
+    <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">拷贝链接</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">加入空间</string>
@@ -1615,9 +1617,9 @@
     <string name="vault_my_spaces">My Channels</string>
     <string name="vault_unread_section_title">Unread</string>
     <string name="vault_all_section_title">所有</string>
-    <string name="vault_pinned_section_title">固定</string>
-    <string name="vault_pin_space">钉住</string>
-    <string name="vault_unpin_space">取消固定</string>
+    <string name="vault_pinned_section_title">置顶</string>
+    <string name="vault_pin_space">置顶</string>
+    <string name="vault_unpin_space">取消置顶</string>
     <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
     <string name="all_content_title_all_content">所有对象</string>
     <string name="all_content_title_only_unlinked">仅未链接</string>
@@ -1681,10 +1683,10 @@
     <string name="chat_empty_state_message">还没有任何消息。\n成为第一个开始讨论的人。</string>
     <string name="chat_empty_state_title">尚无消息</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_yours_forever">永远属于您</string>
     <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
-    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
-    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_feature_encrypted">完全隐私，信息加密</string>
+    <string name="chat_empty_state_add_members_button">添加成员</string>
     <string name="chat_empty_state_show_qr_button">显示二维码</string>
     <string name="chat_empty_state_share_invite_button">邀请成员</string>
     <string name="write_a_message">写点什么...</string>
@@ -1822,6 +1824,13 @@
     <string name="space_settings_icon_title">编辑图片</string>
     <string name="space_settings_save_button">保存</string>
     <string name="space_settings_join_space_by_qr_title">加入</string>
+    <string name="profile_qr_code_title">Connect with me</string>
+    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_share_button">分享</string>
+    <string name="profile_qr_copy_button">拷贝链接</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Link copied to clipboard</string>
     <string name="object_type_add_property_screen_title">添加属性</string>
     <string name="object_type_add_property_screen_create">创建属性“%1$s”</string>
     <string name="object_type_add_property_screen_section_types">属性格式</string>
@@ -1905,14 +1914,14 @@
     <string name="vault_create_space_description">For organized content and data</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ideas need conversations</string>
-    <string name="spaces_introduction_page1_description">Anytype now supports real-time chat in Shared Channels — so your thoughts and dialogues can grow together.</string>
+    <string name="spaces_introduction_page1_description">Anytype 现已支持共享空间的实时聊天——让每一次所思所言，共同生长。</string>
     <string name="spaces_introduction_page2_title">Your Vault just leveled up</string>
     <string name="spaces_introduction_page2_description">Spaces and Chats now show live previews and updates — one place to follow everything that matters.</string>
     <string name="spaces_introduction_page3_title">Chats that do more</string>
     <string name="spaces_introduction_page3_description">Share ideas, drop docs, edit together — everything flows in real time.</string>
     <string name="spaces_introduction_page4_title">Everything in Its Right Place</string>
     <string name="spaces_introduction_page4_description">Your pages, lists, and files — structured, surfaced, and always within reach.</string>
-    <string name="spaces_introduction_try_it">Let\'s try it</string>
+    <string name="spaces_introduction_try_it">让我们试试吧</string>
     <string name="vault_empty_state_text">还没有空间</string>
     <string name="vault_empty_search_state_text">No matches found</string>
     <string name="chat_new_messages_section_text">New messages</string>
@@ -1965,28 +1974,30 @@
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">encrypted, local, yours forever</string>
+    <string name="private_channel">Direct channel</string>
     <string name="wallpaper_item_space_icon_color">Default Color</string>
-    <string name="publish_to_web">Publish to Web</string>
+    <string name="publish_to_web">发布至网络</string>
     <string name="preferences">首选项</string>
-    <string name="web_publishing_customize_url">Customize URL</string>
+    <string name="web_publishing_customize_url">自定义链接</string>
     <string name="web_publishing_join_space_button">Join Space Button</string>
     <string name="web_publishing_unpublish">Unpublish</string>
     <string name="web_publishing_update">更新</string>
     <string name="web_publishing_publish">Publish</string>
-    <string name="web_publishing_failed_to_update">Failed to update: %1$s</string>
+    <string name="web_publishing_failed_to_update">无法更新：%1$s</string>
     <string name="web_publishing_join">加入</string>
     <string name="settings_my_sites">My sites</string>
     <string name="web_publishing_view_object">View Object</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
-    <string name="widgets_section_pinned">固定</string>
+    <string name="widgets_section_pinned">置顶</string>
+    <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_object_types">对象类型</string>
     <string name="widgets_menu_new_object_type">新建</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>
     <string name="widget_unpin_alert_title">This Widget Cannot Be Restored</string>
-    <string name="widget_unpin_alert_button_unpin">取消固定</string>
-    <string name="widgets_see_all">See all</string>
+    <string name="widget_unpin_alert_button_unpin">取消置顶</string>
+    <string name="widgets_see_all">查看全部</string>
     <string name="my_sites">My Sites</string>
     <string name="my_sites_empty_state_text">There are no published objects yet</string>
     <string name="my_sites_it_s_empty_here">It\'s empty here</string>
@@ -2005,6 +2016,9 @@
     <plurals name="notification_messages_count">
         <item quantity="other">%d new messages</item>
     </plurals>
+    <string name="any_id_info_title">This is your ANY ID</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Approve</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">You can upload only 10 files at a time</string>
@@ -2020,4 +2034,7 @@
     <string name="notify_me_about">Notify me about</string>
     <string name="error_while_downloading_object">Error while downloading object: %1$s</string>
     <string name="toast_moved_to_bin">Object moved to bin.</string>
+    <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
+    <string name="toast_restored">Object restored.</string>
+    <string name="participant_btn_connect">连接</string>
 </resources>

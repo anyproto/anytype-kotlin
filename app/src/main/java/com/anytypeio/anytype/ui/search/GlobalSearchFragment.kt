@@ -113,7 +113,8 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                                 R.id.chatScreen,
                                 ChatFragment.args(
                                     ctx = nav.target,
-                                    space = nav.space
+                                    space = nav.space,
+                                    popUpToVault = false
                                 )
                             )
                         }

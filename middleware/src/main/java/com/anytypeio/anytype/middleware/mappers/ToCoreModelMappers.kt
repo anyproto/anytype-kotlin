@@ -225,7 +225,10 @@ fun List<MBlock>.toCoreModels(): List<Block> = mapNotNull { block ->
                     id = block.id,
                     fields = block.toCoreModelsFields(),
                     children = block.childrenIds,
-                    content = Block.Content.Unsupported,
+                    content = Block.Content.Embed(
+                        text = latex.text.orEmpty(),
+                        processor = latex.processor.toCoreModel()
+                    ),
                     backgroundColor = block.backgroundColor.ifEmpty { null }
                 )
             }
@@ -404,6 +407,37 @@ fun MBookmarkState.toCoreModelsBookmarkState(): Block.Content.Bookmark.State {
         MBookmarkState.Fetching -> Block.Content.Bookmark.State.FETCHING
         MBookmarkState.Done -> Block.Content.Bookmark.State.DONE
         MBookmarkState.Error -> Block.Content.Bookmark.State.ERROR
+    }
+}
+
+fun MBLatexProcessor.toCoreModel(): Block.Content.Embed.Processor {
+    return when (this) {
+        MBLatexProcessor.Mermaid -> Block.Content.Embed.Processor.MERMAID
+        MBLatexProcessor.Chart -> Block.Content.Embed.Processor.CHART
+        MBLatexProcessor.Youtube -> Block.Content.Embed.Processor.YOUTUBE
+        MBLatexProcessor.Vimeo -> Block.Content.Embed.Processor.VIMEO
+        MBLatexProcessor.Soundcloud -> Block.Content.Embed.Processor.SOUNDCLOUD
+        MBLatexProcessor.GoogleMaps -> Block.Content.Embed.Processor.GOOGLE_MAPS
+        MBLatexProcessor.Miro -> Block.Content.Embed.Processor.MIRO
+        MBLatexProcessor.Figma -> Block.Content.Embed.Processor.FIGMA
+        MBLatexProcessor.Twitter -> Block.Content.Embed.Processor.TWITTER
+        MBLatexProcessor.OpenStreetMap -> Block.Content.Embed.Processor.OPEN_STREET_MAP
+        MBLatexProcessor.Reddit -> Block.Content.Embed.Processor.REDDIT
+        MBLatexProcessor.Facebook -> Block.Content.Embed.Processor.FACEBOOK
+        MBLatexProcessor.Instagram -> Block.Content.Embed.Processor.INSTAGRAM
+        MBLatexProcessor.Telegram -> Block.Content.Embed.Processor.TELEGRAM
+        MBLatexProcessor.GithubGist -> Block.Content.Embed.Processor.GITHUB_GIST
+        MBLatexProcessor.Codepen -> Block.Content.Embed.Processor.CODEPEN
+        MBLatexProcessor.Bilibili -> Block.Content.Embed.Processor.BILIBILI
+        MBLatexProcessor.Excalidraw -> Block.Content.Embed.Processor.EXCALIDRAW
+        MBLatexProcessor.Kroki -> Block.Content.Embed.Processor.KROKI
+        MBLatexProcessor.Graphviz -> Block.Content.Embed.Processor.GRAPHVIZ
+        MBLatexProcessor.Sketchfab -> Block.Content.Embed.Processor.SKETCHFAB
+        MBLatexProcessor.Image -> Block.Content.Embed.Processor.IMAGE
+        MBLatexProcessor.Drawio -> Block.Content.Embed.Processor.DRAWIO
+        MBLatexProcessor.Spotify -> Block.Content.Embed.Processor.SPOTIFY
+        // Latex processor should not be mapped to Embed, but handle it safely
+        else -> Block.Content.Embed.Processor.MERMAID // Default fallback
     }
 }
 

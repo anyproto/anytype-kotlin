@@ -242,7 +242,7 @@
     <string name="paste">Tempel</string>
     <string name="select">Pilih</string>
     <string name="search">Telusuri</string>
-    <string name="search_hint">Telusuri ...</string>
+    <string name="search_hint">Telusuri</string>
     <string name="relations">Properti</string>
     <string name="fields">Kolom</string>
     <string name="download">Unduh</string>
@@ -1239,6 +1239,8 @@
     <string name="multiplayer_change_to_viewer_confirmation">Siapa pun dengan tautan ini hanya akan dapat melihat konten ruang.</string>
     <string name="multiplayer_change_to_request_confirmation">Siapa pun dengan tautan ini akan perlu meminta akses bergabung ke ruang.</string>
     <string name="multiplayer_invite_link_copied">Tautan undangan disalin ke papan kerani</string>
+    <string name="link_copied">Tautan disalin ke papan kerani</string>
+    <string name="remove_from_collection">Lepas taut dari Koleksi</string>
     <string name="multiplayer_copy_link">Salin tautan</string>
     <string name="multiplayer_make_private">Make Private</string>
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>
@@ -1616,7 +1618,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="version_history_error_get_version">Galat mengambil riwayat versi</string>
     <string name="version_history_error_get_members">Galat mengambil anggota</string>
     <string name="new_object">Objek baru</string>
-    <string name="vault_my_spaces">My Channels</string>
+    <string name="vault_my_spaces">Kanalku</string>
     <string name="vault_unread_section_title">Belum dibaca</string>
     <string name="vault_all_section_title">Semua</string>
     <string name="vault_pinned_section_title">Tersemat</string>
@@ -1826,6 +1828,13 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_icon_title">Sunting gambar</string>
     <string name="space_settings_save_button">Simpan</string>
     <string name="space_settings_join_space_by_qr_title">Gabung</string>
+    <string name="profile_qr_code_title">Hubungi aku</string>
+    <string name="profile_qr_code_title_with_name">Hubungi %1$s</string>
+    <string name="profile_qr_code_button">Kode QR-ku</string>
+    <string name="profile_qr_share_button">Bagikan</string>
+    <string name="profile_qr_copy_button">Salin tautan</string>
+    <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
+    <string name="profile_qr_link_copied">Tautan disalin ke papan kerani</string>
     <string name="object_type_add_property_screen_title">Tambahkan properti</string>
     <string name="object_type_add_property_screen_create">Buat properti \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Format atribut</string>
@@ -1968,6 +1977,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
     </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
+    <string name="private_channel">Kanal langsung</string>
     <string name="wallpaper_item_space_icon_color">Warna Bawaan</string>
     <string name="publish_to_web">Publish to Web</string>
     <string name="preferences">Preferensi</string>
@@ -1983,6 +1993,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="web_publishing_open_in_browser">Buka di Peramban</string>
     <string name="web_publishing_copy_web_link">Salin Tautan Web</string>
     <string name="widgets_section_pinned">Tersemat</string>
+    <string name="widgets_section_unread">Belum dibaca</string>
     <string name="widgets_section_object_types">Tipe objek</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>
@@ -2008,6 +2019,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <plurals name="notification_messages_count">
         <item quantity="other">%d pesan baru</item>
     </plurals>
+    <string name="any_id_info_title">Ini ANY ID-mu</string>
+    <string name="any_id_info_description">Become a member to make your ID human-readable, so other members can easily find and connect with you.</string>
+    <string name="any_id_info_button">Explore plans</string>
     <!-- Multiplayer actions -->
     <string name="multiplayer_approve">Setujui</string>
     <string name="chats_warning_you_can_upload_only_10_files_at_a_time">Kamu hanya bisa mengunggah 10 berkas dalam satu waktu</string>
@@ -2023,4 +2037,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notify_me_about">Beri notifikasi tentang</string>
     <string name="error_while_downloading_object">Galat saat mengunduh objek: %1$s</string>
     <string name="toast_moved_to_bin">Objek dipindahkan ke Bak Sampah.</string>
+    <string name="media_object_in_bin">Objek ini di bak sampah. Pulihkan?</string>
+    <string name="toast_restored">Objek dipulihkan.</string>
+    <string name="participant_btn_connect">Hubungkan</string>
 </resources>

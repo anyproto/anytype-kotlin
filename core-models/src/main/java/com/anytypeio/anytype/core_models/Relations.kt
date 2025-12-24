@@ -29,6 +29,7 @@ object Relations {
     const val LAST_OPENED_DATE = "lastOpenedDate"
     const val LAST_MODIFIED_DATE = "lastModifiedDate"
     const val LAST_USED_DATE = "lastUsedDate"
+    const val LAST_MESSAGE_DATE = "lastMessageDate"
     const val TYPE = "type"
     const val LINKS = "links"
     const val TARGET_OBJECT_TYPE = "targetObjectType"

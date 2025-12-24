@@ -383,6 +383,7 @@ class ChatListWidgetContainer(
                     keys = buildList {
                         addAll(defaultKeys)
                         addAll(dataViewKeys)
+                        add(Relations.LAST_MESSAGE_DATE)
                     }.distinct(),
                     filters = buildList {
                         addAll(targetView?.filters.orEmpty())
@@ -405,6 +406,7 @@ class ChatListWidgetContainer(
                         keys = buildList {
                             addAll(defaultKeys)
                             addAll(dataViewKeys)
+                            add(Relations.LAST_MESSAGE_DATE)
                         }.distinct(),
                         filters = buildList {
                             addAll(targetView?.filters.orEmpty())

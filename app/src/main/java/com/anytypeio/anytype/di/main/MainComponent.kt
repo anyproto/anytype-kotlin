@@ -57,7 +57,7 @@ import com.anytypeio.anytype.di.feature.settings.FilesStorageDependencies
 import com.anytypeio.anytype.di.feature.settings.LogoutWarningSubComponent
 import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
-import com.anytypeio.anytype.di.feature.sharing.AddToAnytypeDependencies
+import com.anytypeio.anytype.di.feature.sharing.SharingDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
@@ -123,7 +123,6 @@ interface MainComponent :
     SelectObjectTypeDependencies,
     SpacesStorageDependencies,
     AppPreferencesDependencies,
-    AddToAnytypeDependencies,
     ShareSpaceDependencies,
     SpaceJoinRequestDependencies,
     RequestJoinSpaceDependencies,
@@ -154,7 +153,8 @@ interface MainComponent :
     PublishToWebDependencies,
     MySitesDependencies,
     MediaDependencies,
-    CreateChatObjectDependencies
+    CreateChatObjectDependencies,
+    SharingDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -292,11 +292,6 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(AppPreferencesDependencies::class)
     abstract fun providePreferencesDependencies(component: MainComponent): ComponentDependencies
-
-    @Binds
-    @IntoMap
-    @ComponentDependenciesKey(AddToAnytypeDependencies::class)
-    abstract fun provideAddToAnytypeDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -452,4 +447,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(CreateChatObjectDependencies::class)
     abstract fun createChatObjectDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(SharingDependencies::class)
+    abstract fun sharingDependencies(component: MainComponent): ComponentDependencies
 }

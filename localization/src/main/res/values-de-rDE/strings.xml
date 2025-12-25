@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Zur App gehen</string>
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>
@@ -1128,6 +1129,28 @@
     <string name="sharing_menu_toast_object_added">Neues Objekt wird dem Space ‚%1$s‘ hinzugefügt</string>
     <string name="sharing_menu_btn_add">Hinzufügen</string>
     <string name="sharing_menu_btn_open">Öffnen</string>
+    <!-- Snackbar messages for content added to chat -->
+    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <!-- Snackbar messages for content linked to an object in a space -->
+    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Keine</string>
@@ -2046,6 +2069,9 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="move_chat_to_bin_warning_title">Chat in den Papierkorb verschieben?</string>
     <string name="chat_move_to_bin_warning_description">Dieser Chat und alle Anhänge werden in den Papierkorb verschoben. Niemand wird in der Lage sein, neue Nachrichten zu senden. Du kannst ihn aus dem Papierkorb wiederherstellen, bevor er endgültig gelöscht wird.</string>
     <string name="chat_edit_info_upload_image">Bild hochladen</string>
+    <string name="select_space">Select Channel</string>
+    <string name="add_a_comment">Kommentar hinzufügen...</string>
+    <string name="send">Senden</string>
     <string name="chat_notifications_receive_all">Alle empfangen</string>
     <string name="chat_notifications_mute_all">Alle stummschalten</string>
     <string name="chat_specific_notifications">Chat-spezifische Benachrichtigungen</string>
@@ -2055,4 +2081,19 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="media_object_in_bin">Dieses Objekt befindet sich im Papierkorb. Wiederherstellen?</string>
     <string name="toast_restored">Objekt wiederhergestellt.</string>
     <string name="participant_btn_connect">Verbinden</string>
+    <!-- Sharing Extension Redesign -->
+    <string name="sharing_select_destination">Ziel auswählen</string>
+    <string name="sharing_send_to_chat">An Chat senden</string>
+    <string name="sharing_select_dest">Ziel auswählen</string>
+    <string name="sharing_no_objects_found">No objects found</string>
+    <string name="sharing_success">Success!</string>
+    <string name="sharing_added_to_space">Content added to %1$s</string>
+    <string name="sharing_error">Something went wrong</string>
+    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
+    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
+    <string name="sharing_sending_to">Sending to</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="save">Speichern</string>
+    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
 </resources>

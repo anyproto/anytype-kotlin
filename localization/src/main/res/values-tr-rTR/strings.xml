@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Uygulamaya git</string>
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
+    <string name="embed_content_not_available">%1$s embed. Bu içerik mobil cihazlarda mevcut değil.</string>
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
@@ -1128,6 +1129,28 @@
     <string name="sharing_menu_toast_object_added">\'%1$s\' alanına yeni nesne eklendi.</string>
     <string name="sharing_menu_btn_add">Ekle</string>
     <string name="sharing_menu_btn_open">Aç</string>
+    <!-- Snackbar messages for content added to chat -->
+    <string name="sharing_snackbar_image_added">Görüntü \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_images_added">Görüntüler \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_video_added">Video \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_audio_added">Ses \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_pdf_added">PDF \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_file_added">Dosya \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_files_added">Dosyalar \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_text_added">Metin \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_link_added">Bağlantı \'%1$s\' içine eklendi</string>
+    <string name="sharing_snackbar_content_added">İçerik \'%1$s\' içine eklendi</string>
+    <!-- Snackbar messages for content linked to an object in a space -->
+    <string name="sharing_snackbar_image_linked">Görüntü, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_images_linked">Görüntüler, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_video_linked">Video, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_audio_linked">Ses, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_pdf_linked">PDF, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_file_linked">Dosya, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_files_linked">Dosyalar, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_text_linked">Metin, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_link_linked">Bağlantı, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
+    <string name="sharing_snackbar_content_linked">İçerik, \'%2$s\' içindeki \'%1$s\' ile bağlandı</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Hiçbiri</string>
@@ -2046,6 +2069,9 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="move_chat_to_bin_warning_title">Sohbet çöp kutusuna taşınsın mı?</string>
     <string name="chat_move_to_bin_warning_description">Bu sohbet ve tüm ekleri Çöp Kutusu\'na taşınacak. Kimse yeni mesaj gönderemeyecek. Kalıcı olarak silinene kadar Çöp Kutusu\'ndan geri yükleyebilirsin.</string>
     <string name="chat_edit_info_upload_image">Görüntü Yükle</string>
+    <string name="select_space">Kanal Seç</string>
+    <string name="add_a_comment">Yorum ekle...</string>
+    <string name="send">Gönder</string>
     <string name="chat_notifications_receive_all">Tümünü al</string>
     <string name="chat_notifications_mute_all">Tümünü sustur</string>
     <string name="chat_specific_notifications">Sohbete özel bildirimler</string>
@@ -2055,4 +2081,19 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="media_object_in_bin">Bu nesne çöp kutusunda. Geri yüklemek ister misin?</string>
     <string name="toast_restored">Nesne geri yüklendi.</string>
     <string name="participant_btn_connect">Bağlan</string>
+    <!-- Sharing Extension Redesign -->
+    <string name="sharing_select_destination">Hedef seçin</string>
+    <string name="sharing_send_to_chat">Sohbete gönder</string>
+    <string name="sharing_select_dest">Hedef seçin</string>
+    <string name="sharing_no_objects_found">Nesne bulunamadı</string>
+    <string name="sharing_success">Başarılı!</string>
+    <string name="sharing_added_to_space">İçerik %1$s içine eklendi</string>
+    <string name="sharing_error">Bir şeyler ters gitti</string>
+    <string name="sharing_send_to">Şuraya gönder: %1$s</string>
+    <string name="sharing_send_to_multiple">%1$d sohbete gönder</string>
+    <string name="sharing_selection_limit_reached">En fazla %1$d hedef seçebilirsin</string>
+    <string name="sharing_sending_to">Gönderiliyor</string>
+    <string name="clear_selection">Seçimi temizle</string>
+    <string name="save">Kaydet</string>
+    <string name="you_dont_have_any_spaces_yet">Henüz hiçbir alana sahip değilsin</string>
 </resources>

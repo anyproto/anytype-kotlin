@@ -832,6 +832,7 @@
     <string name="go_to_the_app">Ke aplikasi</string>
     <string name="exiting_please_wait">Exiting... please wait</string>
     <string name="loading_please_wait">Loading... please wait</string>
+    <string name="embed_content_not_available">Sematan %1$s. Konten ini belum tersedia di versi ponsel</string>
     <string name="personal">Bawaan</string>
     <string name="create_space">Buat ruang</string>
     <string name="create_chat">Buat obrolan</string>
@@ -1126,6 +1127,28 @@
     <string name="sharing_menu_toast_object_added">Objek baru ditambahkan ke ruang \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Tambah</string>
     <string name="sharing_menu_btn_open">Buka</string>
+    <!-- Snackbar messages for content added to chat -->
+    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <!-- Snackbar messages for content linked to an object in a space -->
+    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Tidak ada</string>
@@ -2031,6 +2054,9 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="move_chat_to_bin_warning_title">Buang obrolan ke bak sampah?</string>
     <string name="chat_move_to_bin_warning_description">Obrolan ini dan seluruh lampirannya akan dipindah ke bak sampah. Tidak ada yang akan dapat mengirimkan pesan baru. Kamu bisa mengembalikannya dari bak sampah hingga obrolan dihapus permanen.</string>
     <string name="chat_edit_info_upload_image">Unggah Gambar</string>
+    <string name="select_space">Select Channel</string>
+    <string name="add_a_comment">Tambahkan komentar …</string>
+    <string name="send">Kirim</string>
     <string name="chat_notifications_receive_all">Terima semua</string>
     <string name="chat_notifications_mute_all">Senyapkan semua</string>
     <string name="chat_specific_notifications">Pemberitahuan spesifik obrolan</string>
@@ -2040,4 +2066,19 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="media_object_in_bin">Objek ini di bak sampah. Pulihkan?</string>
     <string name="toast_restored">Objek dipulihkan.</string>
     <string name="participant_btn_connect">Hubungkan</string>
+    <!-- Sharing Extension Redesign -->
+    <string name="sharing_select_destination">Pilih tujuan</string>
+    <string name="sharing_send_to_chat">Kirim ke obrolan</string>
+    <string name="sharing_select_dest">Pilih tujuan</string>
+    <string name="sharing_no_objects_found">No objects found</string>
+    <string name="sharing_success">Success!</string>
+    <string name="sharing_added_to_space">Content added to %1$s</string>
+    <string name="sharing_error">Something went wrong</string>
+    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
+    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
+    <string name="sharing_sending_to">Sending to</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="save">Simpan</string>
+    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
 </resources>

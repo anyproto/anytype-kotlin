@@ -1128,27 +1128,27 @@
     <string name="sharing_menu_btn_add">Tambah</string>
     <string name="sharing_menu_btn_open">Buka</string>
     <!-- Snackbar messages for content added to chat -->
-    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
-    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
-    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
-    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
-    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
-    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
-    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
-    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
-    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
-    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <string name="sharing_snackbar_image_added">Gambar ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Gambar ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Video ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Audio ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">Berkas ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Berkas ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Teks ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Tautan ditambahkan ke \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Konten ditambahkan ke \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Gambar ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Gambar ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">Berkas ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Berkas ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Teks ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Tautan ditautkan ke \'%1$s\' di \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Konten ditautkan ke \'%1$s\' di \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Tidak ada</string>
@@ -2073,12 +2073,12 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="sharing_no_objects_found">No objects found</string>
     <string name="sharing_success">Success!</string>
     <string name="sharing_added_to_space">Content added to %1$s</string>
-    <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
-    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
-    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
-    <string name="sharing_sending_to">Sending to</string>
+    <string name="sharing_error">Ada yang salah</string>
+    <string name="sharing_send_to">Kirim ke %1$s</string>
+    <string name="sharing_send_to_multiple">Kirim ke %1$d obrolan</string>
+    <string name="sharing_selection_limit_reached">Kamu bisa memilih hingga %1$d tujuan</string>
+    <string name="sharing_sending_to">Mengirim ke</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Simpan</string>
-    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="you_dont_have_any_spaces_yet">Kamu belum punya ruang</string>
 </resources>

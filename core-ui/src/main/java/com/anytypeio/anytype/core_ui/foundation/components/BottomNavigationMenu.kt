@@ -6,7 +6,10 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
@@ -73,7 +76,7 @@ fun BottomNavigationMenu(
     }
 
     // Assemble all menu items
-    val items = listOf(
+    val items = listOfNotNull(
         leftNavItem,
         NavItem(
             res = BottomNavigationItem.ADD_DOC.res,
@@ -90,12 +93,17 @@ fun BottomNavigationMenu(
         )
     )
 
+    // Use wrapped width for 2 items (one-to-one spaces), fixed width for 3 items
+    val widthModifier = if (items.size == 2) {
+        Modifier.wrapContentWidth()
+    } else {
+        Modifier.width(BottomNavigationDefaults.Width)
+    }
+
     Row(
         modifier = modifier
-            .size(
-                width = BottomNavigationDefaults.Width,
-                height = BottomNavigationDefaults.Height
-            )
+            .then(widthModifier)
+            .height(BottomNavigationDefaults.Height)
             .background(
                 shape = RoundedCornerShape(16.dp),
                 color = colorResource(id = R.color.home_screen_toolbar_button)
@@ -104,11 +112,21 @@ fun BottomNavigationMenu(
         verticalAlignment = Alignment.CenterVertically
     ) {
         items.forEach { item ->
-            MenuItem(
-                modifier = Modifier
+            val itemModifier = if (items.size == 2) {
+                // Fixed size for 2 items to allow proper wrapping
+                Modifier
+                    .width(BottomNavigationDefaults.ButtonWidth)
+                    .fillMaxHeight()
+                    .alpha(item.alpha)
+            } else {
+                // Weight for 3 items to fill the fixed container width
+                Modifier
                     .weight(1f)
                     .fillMaxHeight()
-                    .alpha(item.alpha),
+                    .alpha(item.alpha)
+            }
+            MenuItem(
+                modifier = itemModifier,
                 contentDescription = stringResource(id = item.contentDescRes),
                 res = item.res,
                 onClick = item.onClick,
@@ -124,7 +142,7 @@ private fun NavPanelState.LeftButtonState.toNavItem(
     onShare: () -> Unit,
     onHome: () -> Unit = {},
     onChat: () -> Unit = {}
-): NavItem = when (this) {
+): NavItem? = when (this) {
     is NavPanelState.LeftButtonState.AddMembers -> NavItem(
         res = BottomNavigationItem.ADD_MEMBERS.res,
         contentDescRes = R.string.main_navigation_content_desc_members_button,
@@ -150,6 +168,8 @@ private fun NavPanelState.LeftButtonState.toNavItem(
         contentDescRes = R.string.main_navigation_content_desc_chat_button,
         onClick = onChat
     )
+
+    NavPanelState.LeftButtonState.Hidden -> null
 }
 
 // Data holder for menu items
@@ -209,6 +229,7 @@ private enum class BottomNavigationItem(@DrawableRes val res: Int) {
 object BottomNavigationDefaults {
     val Height = 52.dp
     val Width = 288.dp
+    val ButtonWidth = 96.dp
 }
 
 @DefaultPreviews

@@ -507,7 +507,7 @@ class ObjectSetViewModel(
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
+                                storeOfRelations = storeOfRelations
                             )
                         } else {
                             emptyFlow()
@@ -523,7 +523,7 @@ class ObjectSetViewModel(
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
+                                storeOfRelations = storeOfRelations
                             )
                         } else {
                             emptyFlow()
@@ -539,7 +539,7 @@ class ObjectSetViewModel(
                                 state = query.state,
                                 currentViewerId = query.currentViewerId,
                                 offset = query.offset,
-                                dataViewRelationLinks = query.state.dataViewContent.relationLinks
+                                storeOfRelations = storeOfRelations
                             )
                         } else {
                             emptyFlow()
@@ -1343,11 +1343,9 @@ class ObjectSetViewModel(
                                 )
                             } else {
                                 val validTemplateId = templateChosenBy ?: defaultTemplate
-                                val dvRelationLinks = currentState.dataViewContent.relationLinks
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
-                                    dateProvider = dateProvider,
-                                    dataViewRelationLinks = dvRelationLinks
+                                    dateProvider = dateProvider
                                 )
                                 proceedWithCreatingDataViewObject(
                                     CreateDataViewObject.Params.SetByType(
@@ -1372,7 +1370,6 @@ class ObjectSetViewModel(
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
-                                    dataViewRelationLinks = currentState.dataViewContent.relationLinks,
                                     objSetByRelation = ObjectWrapper.Relation(wrapper.map)
                                 )
                                 proceedWithCreatingDataViewObject(
@@ -1411,12 +1408,10 @@ class ObjectSetViewModel(
                     )
             )
         } else {
-            val dvRelationLinks = currentState.dataViewContent.relationLinks
             val viewer = currentState.viewerByIdOrFirst(session.currentViewerId.value) ?: return
             val prefilled = viewer.prefillNewObjectDetails(
                 storeOfRelations = storeOfRelations,
-                dateProvider = dateProvider,
-                dataViewRelationLinks = dvRelationLinks
+                dateProvider = dateProvider
             )
             proceedWithCreatingDataViewObject(
                 CreateDataViewObject.Params.SetByType(
@@ -1458,8 +1453,7 @@ class ObjectSetViewModel(
         val validTemplateId = templateChosenBy ?: defaultTemplate
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
-            dateProvider = dateProvider,
-            dataViewRelationLinks = state.dataViewContent.relationLinks
+            dateProvider = dateProvider
         )
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(

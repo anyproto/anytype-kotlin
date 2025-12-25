@@ -54,6 +54,7 @@ class ObjectSetConvertToCollectionTest : ObjectSetViewModelTestSetup() {
                 doc = listOf(mockObjectSet.header, mockObjectSet.title, mockObjectSet.dataView),
                 details = mockObjectSet.details
             )
+            stubStoreOfRelations(mockObjectSet)
             stubSubscriptionResults(
                 subscription = mockObjectSet.subscriptionId,
                 spaceId = mockObjectSet.spaceId,

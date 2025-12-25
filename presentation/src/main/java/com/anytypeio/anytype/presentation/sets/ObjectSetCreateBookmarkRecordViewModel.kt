@@ -52,8 +52,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
-                        storeOfRelations = storeOfRelations,
-                        dataViewRelationLinks = state.dataViewContent.relationLinks
+                        storeOfRelations = storeOfRelations
                     )
                     createBookmark(
                         input = input,
@@ -70,7 +69,6 @@ class ObjectSetCreateBookmarkRecordViewModel(
                             val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                             val details = viewer.resolveSetByRelationPrefilledObjectData(
                                 objSetByRelation = sourceObject,
-                                dataViewRelationLinks = state.dataViewContent.relationLinks,
                                 dateProvider = dateProvider,
                                 storeOfRelations = storeOfRelations
                             )
@@ -83,8 +81,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                         val prefilled = viewer.prefillNewObjectDetails(
                             dateProvider = dateProvider,
-                            storeOfRelations = storeOfRelations,
-                            dataViewRelationLinks = state.dataViewContent.relationLinks
+                            storeOfRelations = storeOfRelations
                         )
                         createBookmark(
                             input = input,
@@ -97,8 +94,7 @@ class ObjectSetCreateBookmarkRecordViewModel(
                     val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
                     val prefilled = viewer.prefillNewObjectDetails(
                         dateProvider = dateProvider,
-                        storeOfRelations = storeOfRelations,
-                        dataViewRelationLinks = state.dataViewContent.relationLinks
+                        storeOfRelations = storeOfRelations
                     )
                     createBookmark(
                         input = input,

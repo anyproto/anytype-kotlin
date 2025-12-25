@@ -88,6 +88,10 @@ class MainBottomToolbar @JvmOverloads constructor(
                 NavPanelState.LeftButtonState.Chat -> {
                     btnChat.visible()
                 }
+
+                NavPanelState.LeftButtonState.Hidden -> {
+                    // All buttons remain hidden (already set to gone at the beginning)
+                }
             }
         }
     }

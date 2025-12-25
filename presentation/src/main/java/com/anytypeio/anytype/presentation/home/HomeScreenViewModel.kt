@@ -2572,7 +2572,6 @@ class HomeScreenViewModel(
         Timber.d("proceedWithCreatingDataViewObject, dataViewSourceObj: $dataViewSourceObj")
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
-            dataViewRelationLinks = dv.relationLinks,
             dateProvider = dateProvider
         )
         val type = TypeKey(dataViewSourceObj.uniqueKey ?: VIEW_DEFAULT_OBJECT_TYPE)
@@ -2662,8 +2661,7 @@ class HomeScreenViewModel(
         val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider,
-            objSetByRelation = relationObj,
-            dataViewRelationLinks = dv.relationLinks
+            objSetByRelation = relationObj
         )
 
         val space = vmParams.spaceId.id
@@ -2709,8 +2707,7 @@ class HomeScreenViewModel(
     ) {
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
-            dateProvider = dateProvider,
-            dataViewRelationLinks = dv.relationLinks
+            dateProvider = dateProvider
         )
 
         val (defaultObjectType, defaultTemplate) = resolveTypeAndActiveViewTemplate(

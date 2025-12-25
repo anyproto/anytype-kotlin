@@ -28,6 +28,7 @@ sealed class NavPanelState {
         data object Chat : LeftButtonState()
         data object ViewMembers : LeftButtonState()
         data class AddMembers(val isActive: Boolean) : LeftButtonState()
+        data object Hidden : LeftButtonState()
 
         suspend fun sendAnalytics(analytics: Analytics) {
             when (this) {
@@ -43,7 +44,7 @@ sealed class NavPanelState {
                         EventsPropertiesKey.route to EventsDictionary.Routes.navigation
                     ))
                 )
-                Home, Chat -> Unit
+                Home, Chat, Hidden -> Unit
             }
         }
     }
@@ -56,6 +57,7 @@ sealed class NavPanelState {
             spaceUxType: SpaceUxType
         ): NavPanelState {
             val isChat = (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE)
+            val isOneToOne = spaceUxType == SpaceUxType.ONE_TO_ONE
             val createEnabled = when (permission) {
                 SpaceMemberPermissions.WRITER,
                 SpaceMemberPermissions.OWNER -> true
@@ -63,11 +65,11 @@ sealed class NavPanelState {
             }
             val leftButton = when (permission) {
                 SpaceMemberPermissions.OWNER ->
-                    defaultLeft(forceHome, isChat = isChat, isActive = spaceAccess != SpaceAccessType.DEFAULT)
+                    defaultLeft(forceHome, isChat = isChat, isOneToOne = isOneToOne, isActive = spaceAccess != SpaceAccessType.DEFAULT)
                 SpaceMemberPermissions.WRITER,
                 SpaceMemberPermissions.READER,
                 SpaceMemberPermissions.NO_PERMISSIONS ->
-                    defaultLeft(forceHome, isChat = isChat, isActive = false)
+                    defaultLeft(forceHome, isChat = isChat, isOneToOne = isOneToOne, isActive = false)
                 else -> null
             }
             return when {
@@ -80,8 +82,10 @@ sealed class NavPanelState {
         private fun defaultLeft(
             forceHome: Boolean,
             isChat: Boolean,
+            isOneToOne: Boolean,
             isActive: Boolean
         ): LeftButtonState = when {
+            isOneToOne -> LeftButtonState.Hidden
             forceHome && isChat -> LeftButtonState.Chat
             forceHome -> LeftButtonState.Home
             !forceHome && isActive -> LeftButtonState.AddMembers(true)

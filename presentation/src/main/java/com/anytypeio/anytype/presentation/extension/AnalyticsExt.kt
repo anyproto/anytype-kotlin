@@ -2474,6 +2474,7 @@ suspend fun Analytics.sendAnalyticsApproveInvite(
     val uxType = when(spaceUxType) {
         SpaceUxType.CHAT -> "Chat"
         SpaceUxType.DATA -> "Space"
+        SpaceUxType.ONE_TO_ONE -> "OneToOne"
         else -> null
     }
     sendEvent(

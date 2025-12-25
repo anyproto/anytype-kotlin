@@ -62,7 +62,7 @@ class EditorBlockActionsTest : EditorPresentationTestSetup() {
             )
             assertContains(vm.actions.value, ActionItemType.Preview)
             assertTrue {
-                vm.actions.value.indexOf(ActionItemType.Preview) == 1
+                vm.actions.value.indexOf(ActionItemType.Preview) == 2
             }
         }
     }

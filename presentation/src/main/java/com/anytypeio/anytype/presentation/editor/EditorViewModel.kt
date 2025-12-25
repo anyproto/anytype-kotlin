@@ -3325,7 +3325,7 @@ class EditorViewModel(
         }
     }
 
-    private fun proceedWithOpeningObjectByLayout(target: String) {
+    private fun proceedWithOpeningObjectByLayout(target: String, forceOpenAsObject: Boolean = false) {
         proceedWithClearingFocus()
         val wrapper = orchestrator.stores.details.current().getObject(target)
         if (wrapper?.spaceId != vmParams.space.id) {
@@ -3339,7 +3339,36 @@ class EditorViewModel(
                     proceedWithOpeningObject(target = target)
                 }
 
-                in SupportedLayouts.fileLayouts -> {
+                ObjectType.Layout.AUDIO -> {
+                    if (forceOpenAsObject) {
+                        proceedWithOpeningObject(target = target)
+                    } else {
+                        dispatch(
+                            Command.PlayAudio(
+                                url = urlBuilder.original(target),
+                                name = wrapper.name,
+                                obj = target
+                            )
+                        )
+                    }
+                }
+
+                ObjectType.Layout.VIDEO -> {
+                    if (forceOpenAsObject) {
+                        proceedWithOpeningObject(target = target)
+                    } else {
+                        dispatch(
+                            Command.PlayVideo(
+                                url = urlBuilder.original(target),
+                                obj = target
+                            )
+                        )
+                    }
+                }
+
+                ObjectType.Layout.FILE,
+                ObjectType.Layout.IMAGE,
+                ObjectType.Layout.PDF -> {
                     proceedWithOpeningObject(target = target)
                 }
 
@@ -6202,6 +6231,12 @@ class EditorViewModel(
                     } else {
                         sendToast("This object doesn't have a target id")
                     }
+                }
+                is Content.Link -> {
+                    proceedWithOpeningObjectByLayout(
+                        target = content.target,
+                        forceOpenAsObject = true
+                    )
                 }
                 else -> sendToast("Unexpected object")
             }

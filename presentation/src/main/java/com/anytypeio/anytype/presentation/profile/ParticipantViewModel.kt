@@ -124,6 +124,9 @@ class ParticipantViewModel(
             }
 
             ParticipantEvent.OnConnectClicked -> {
+                viewModelScope.launch {
+                    analytics.sendEvent(eventName = EventsDictionary.clickConnectOneToOne)
+                }
                 proceedWithCreatingOneToOneSpace()
             }
         }

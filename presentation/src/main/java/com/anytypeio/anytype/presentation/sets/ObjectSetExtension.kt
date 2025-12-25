@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.PermittedConditions
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.RelationFormat
-import com.anytypeio.anytype.core_models.RelationLink
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.ext.DAYS_IN_MONTH
@@ -161,13 +160,6 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
             )
         }
         else -> filter
-    }
-}
-
-fun List<DVFilter>.updateFormatForSubscription(relationLinks: List<RelationLink>): List<DVFilter> {
-    return map { filter ->
-        val relation = relationLinks.firstOrNull { it.key == filter.relation }
-        transformFilterWithFormat(filter, relation?.format)
     }
 }
 
@@ -535,8 +527,7 @@ fun ObjectState.DataView.isChangingDefaultTypeAvailable(): Boolean {
 
 suspend fun DVViewer.prefillNewObjectDetails(
     storeOfRelations: StoreOfRelations,
-    dateProvider: DateProvider,
-    dataViewRelationLinks: List<RelationLink>
+    dateProvider: DateProvider
 ): Struct =
     buildMap {
         filters.forEach { filter ->
@@ -545,9 +536,8 @@ suspend fun DVViewer.prefillNewObjectDetails(
                     filter.condition
                 )
             ) {
-                //Relation format should be taken from DataView relation links
-                val filterRelationFormat =
-                    dataViewRelationLinks.firstOrNull { it.key == filter.relation }?.format
+                //Relation format should be taken from StoreOfRelations
+                val filterRelationFormat = relationObject.format
                 when (filterRelationFormat) {
                     Relation.Format.DATE -> {
                         val value = DateParser.parse(filter.value)
@@ -570,8 +560,7 @@ suspend fun DVViewer.prefillNewObjectDetails(
 suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
     storeOfRelations: StoreOfRelations,
     dateProvider: DateProvider,
-    objSetByRelation: ObjectWrapper.Relation,
-    dataViewRelationLinks: List<RelationLink>
+    objSetByRelation: ObjectWrapper.Relation
 ): Struct {
     val prefillWithSetOf = buildMap {
         val relationFormat = objSetByRelation.relationFormat
@@ -580,8 +569,7 @@ suspend fun DVViewer.resolveSetByRelationPrefilledObjectData(
     }
     val prefillNewObjectDetails = prefillNewObjectDetails(
         storeOfRelations = storeOfRelations,
-        dateProvider = dateProvider,
-        dataViewRelationLinks = dataViewRelationLinks
+        dateProvider = dateProvider
     )
     return prefillWithSetOf + prefillNewObjectDetails
 }

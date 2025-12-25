@@ -186,6 +186,8 @@ message ChangeNoSnapshot {
     int64 timestamp = 7;
     // version of business logic
     uint32 version = 8;
+    // business-level type of change applied to object
+    uint32 changeType = 9;
 }
 
 message StoreChange {

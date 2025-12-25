@@ -31,6 +31,7 @@ object EventsDictionary {
     const val pinSpace = "PinSpace"
     const val unpinSpace = "UnpinSpace"
     const val screenSettingsSpaceCreate = "ScreenSettingsSpaceCreate"
+    const val clickConnectOneToOne = "ClickConnectOneToOne"
 
 
     const val wallpaperSet = "SettingsWallpaperSet"

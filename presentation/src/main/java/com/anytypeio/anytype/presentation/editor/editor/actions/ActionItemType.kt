@@ -33,6 +33,7 @@ sealed class ActionItemType {
         )
 
         val objectSorting = listOf(
+            OpenObject,
             Delete,
             Preview,
             Paste,

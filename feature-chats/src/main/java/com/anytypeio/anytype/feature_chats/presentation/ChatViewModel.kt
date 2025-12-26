@@ -616,21 +616,55 @@ class ChatViewModel @Inject constructor(
                 target = vmParams.ctx,
                 space = vmParams.space
             ).map { objectView ->
-                objectView.syncStatus(vmParams.ctx)
+                val chatDetails = objectView.details[vmParams.ctx].orEmpty()
+                val chatWrapper = ObjectWrapper.Basic(chatDetails)
+                Triple(
+                    objectView.syncStatus(vmParams.ctx),
+                    chatWrapper.isDeleted,
+                    chatWrapper.isArchived
+                )
             }
             .distinctUntilChanged()
-            .onEach {
-                Timber.d("DROID-2966 Sync status updated: $it")
+            .onEach { (status, isDeleted, isArchived) ->
+                Timber.d("DROID-4200 Object state - sync: $status, deleted: $isDeleted, archived: $isArchived")
             }
             .catch { e ->
-                Timber.e(e, "DROID-2966 Error observing sync status for object: ${vmParams.ctx}")
+                Timber.e(e, "DROID-4200 Error observing object state for: ${vmParams.ctx}")
             }
-            .flowOn(
-                dispatchers.io
-            )
-            .collect { status ->
+            .flowOn(dispatchers.io)
+            .collect { (status, isDeleted, isArchived) ->
                 syncStatus.value = status
+
+                // Handle chat deletion or archival
+                when {
+                    isDeleted == true -> {
+                        Timber.w("DROID-4200 Chat was deleted, exiting to vault")
+                        handleChatUnavailable()
+                    }
+                    isArchived == true -> {
+                        Timber.w("DROID-4200 Chat was archived, exiting to vault")
+                        handleChatUnavailable()
+                    }
+                }
             }
+    }
+
+    private fun handleChatUnavailable() {
+        viewModelScope.launch {
+            // Clean up chat container
+            withContext(dispatchers.io) {
+                chatContainer.stop(chat = vmParams.ctx)
+            }
+            // Unwatch the object
+            withContext(dispatchers.io) {
+                runCatching {
+                    objectWatcher.unwatch(target = vmParams.ctx, space = vmParams.space)
+                }
+            }
+            // Show toast and exit
+            sendToast("Chat is no longer available")
+            commands.emit(ViewModelCommand.Exit)
+        }
     }
 
     fun onChatBoxInputChanged(

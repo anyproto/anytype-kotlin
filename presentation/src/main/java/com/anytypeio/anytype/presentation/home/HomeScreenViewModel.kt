@@ -1218,36 +1218,6 @@ class HomeScreenViewModel(
         }
     }
 
-    fun onWidgetChatClicked() {
-        Timber.d("onWidgetChatClicked:")
-        viewModelScope.launch {
-            val space = vmParams.spaceId.id
-            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
-            val chat = view?.chatId
-            if (chat != null) {
-                // Check if chat is archived before opening
-                val isChatArchived = runCatching {
-                    val chatObject = getObject.async(GetObject.Params(chat, SpaceId(space)))
-                    chatObject.details[Relations.IS_ARCHIVED] as? Boolean ?: false
-                }.getOrDefault(false)
-
-                if (isChatArchived) {
-                    Timber.w("Cannot open archived chat from widget: $chat")
-                    sendToast("Chat is no longer available")
-                } else {
-                    navigation(
-                        OpenChat(
-                            ctx = chat,
-                            space = space
-                        )
-                    )
-                }
-            } else {
-                Timber.w("Failed to open chat from widget: chat not found")
-            }
-        }
-    }
-
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return
@@ -1510,23 +1480,12 @@ class HomeScreenViewModel(
         val spaceView = (spaceViewState.value as? SpaceViewState.Success) ?: return
         val chat = spaceView.spaceChatId
         if (chat != null) {
-            // Check if chat is archived before opening
-            val isChatArchived = runCatching {
-                val chatObject = getObject.async(GetObject.Params(chat, vmParams.spaceId))
-                chatObject.details[Relations.IS_ARCHIVED] as? Boolean ?: false
-            }.getOrDefault(false)
-
-            if (isChatArchived) {
-                Timber.w("Cannot open archived space chat: $chat")
-                sendToast("Chat is no longer available")
-            } else {
-                navigation(
-                    Navigation.OpenChat(
-                        space = vmParams.spaceId.id,
-                        ctx = chat
-                    )
+            navigation(
+                Navigation.OpenChat(
+                    space = vmParams.spaceId.id,
+                    ctx = chat
                 )
-            }
+            )
         } else {
             Timber.w("Chat or space not found - not able to open space chat")
         }

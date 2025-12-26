@@ -378,24 +378,6 @@ sealed class Event {
                 val isSynced: Boolean,
                 val subscriptions: List<Id>
             ) : Chats()
-
-            /**
-             * Event for when a chat object is archived.
-             * This should be sent when a chat is moved to bin or archived.
-             */
-            data class ArchiveChat(
-                override val context: Id,
-                val spaceId: SpaceId
-            ) : Chats()
-
-            /**
-             * Event for when a chat object is permanently deleted.
-             * This should be sent when a chat is permanently removed.
-             */
-            data class DeleteChat(
-                override val context: Id,
-                val spaceId: SpaceId
-            ) : Chats()
         }
     }
 }

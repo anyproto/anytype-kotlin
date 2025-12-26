@@ -230,20 +230,6 @@ interface ChatPreviewContainer {
                     } else preview
                 }
 
-                is Event.Command.Chats.ArchiveChat -> {
-                    logger.logInfo("Chat archived: ${event.context} in space: ${event.spaceId.id}")
-                    // Remove archived chat from preview list and clean up
-                    messageHistory.remove(event.context)
-                    state.filter { it.chat != event.context }
-                }
-
-                is Event.Command.Chats.DeleteChat -> {
-                    logger.logInfo("Chat permanently deleted: ${event.context} in space: ${event.spaceId.id}")
-                    // Remove deleted chat from preview list and clean up
-                    messageHistory.remove(event.context)
-                    state.filter { it.chat != event.context }
-                }
-
                 else -> state.also {
                     logger.logInfo("Ignoring event: $event")
                 }

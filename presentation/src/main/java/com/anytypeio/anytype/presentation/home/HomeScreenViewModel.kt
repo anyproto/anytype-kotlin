@@ -1218,6 +1218,25 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onWidgetChatClicked() {
+        Timber.d("onWidgetChatClicked:")
+        viewModelScope.launch {
+            val space = vmParams.spaceId.id
+            val view = spaceViewSubscriptionContainer.get(SpaceId(space))
+            val chat = view?.chatId
+            if (chat != null) {
+                navigation(
+                    OpenChat(
+                        ctx = chat,
+                        space = space
+                    )
+                )
+            } else {
+                Timber.w("Failed to open chat from widget: chat not found")
+            }
+        }
+    }
+
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return

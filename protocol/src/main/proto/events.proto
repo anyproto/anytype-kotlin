@@ -716,6 +716,7 @@ message Event {
           string defaultObjectTypeId =
               15; // Default object type that is chosen for new object created
                   // within the view
+          bool wrapContent = 17; // Wrap content in view
         }
 
         message Filter {

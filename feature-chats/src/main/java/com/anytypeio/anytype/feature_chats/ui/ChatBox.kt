@@ -629,7 +629,7 @@ fun ChatBox(
                         },
                         onUploadMediaClicked = {
                             uploadMediaLauncher.launch(
-                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageOnly)
+                                PickVisualMediaRequest(mediaType = ActivityResultContracts.PickVisualMedia.ImageAndVideo)
                             )
                         },
                         onTakePhotoClicked = {

@@ -364,6 +364,7 @@ message Block {
                 string defaultTemplateId = 14; // Default template that is chosen for new object created within the view
                 string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
                 string endRelationKey = 16; // Group view by this relationKey
+                bool wrapContent = 17; // Wrap content in view
 
                 enum Type {
                     Table = 0;

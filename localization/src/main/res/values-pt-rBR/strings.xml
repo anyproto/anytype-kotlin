@@ -32,7 +32,7 @@
     <string name="vault_settings_section_misc">Misc</string>
     <string name="app_preferences">Preferências</string>
     <string name="settings_application">Aplicação</string>
-    <string name="vault_key">Vault &amp; Key</string>
+    <string name="vault_key">Cofre &amp; Chave</string>
     <string name="have_you_back_up_your_recovery_phrase">Você salvou a sua chave?</string>
     <string name="you_will_need_to_sign_in">Você precisará dela para entrar. Guarde-a em um local seguro. Se você perdê-la, você não poderá mais acessar sua conta.</string>
     <string name="about_help_and_community">Ajuda &amp; Comunidade</string>
@@ -834,6 +834,7 @@
     <string name="go_to_the_app">Ir para o aplicativo</string>
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
+    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
     <string name="create_chat">Criar conversa</string>
@@ -873,7 +874,7 @@
     <string name="recent">Editado recentemente</string>
     <string name="recently_opened">Aberto recentemente</string>
     <string name="bin">Lixeira</string>
-    <string name="synced_files">Clean up files</string>
+    <string name="synced_files">Limpar arquivos</string>
     <string name="log_in">Entrar</string>
     <string name="create_object_section_library">Biblioteca Anytype</string>
     <string name="bin_empty_title">Sua lixeira está vazia.</string>
@@ -958,30 +959,30 @@
     <string name="slash_widget_lime_color_title">Verde</string>
     <string name="slash_widget_background_item">Fundo %1$s </string>
     <!-- Onboarding: persona selection & use cases (iOS parity) -->
-    <string name="onboarding_selection_title">Tell Us About Yourself</string>
-    <string name="onboarding_selection_description">Select one role or background that best fits you</string>
+    <string name="onboarding_selection_title">Conte-nos sobre você</string>
+    <string name="onboarding_selection_description">Selecione um papel ou área que melhor descreva você</string>
     <!-- Persona options -->
-    <string name="onboarding_selection_artist">Artist / Content Creator</string>
-    <string name="onboarding_selection_consultant">Consultant</string>
+    <string name="onboarding_selection_artist">Artista / Criador de Conteúdo</string>
+    <string name="onboarding_selection_consultant">Consultor</string>
     <string name="onboarding_selection_designer">Designer</string>
-    <string name="onboarding_selection_developer">Software Developer</string>
-    <string name="onboarding_selection_entrepreneur">Founder / Entrepreneur</string>
-    <string name="onboarding_selection_manager">Manager / IT Professional</string>
-    <string name="onboarding_selection_marketer">Marketer</string>
-    <string name="onboarding_selection_researcher">Researcher / Academic</string>
-    <string name="onboarding_selection_student">Student</string>
-    <string name="onboarding_selection_writer">Writer / Journalist</string>
+    <string name="onboarding_selection_developer">Desenvolvedor de Software</string>
+    <string name="onboarding_selection_entrepreneur">Fundador / Empreendedor</string>
+    <string name="onboarding_selection_manager">Gestor / Profissional de TI</string>
+    <string name="onboarding_selection_marketer">Profissional de Marketing</string>
+    <string name="onboarding_selection_researcher">Pesquisador / Acadêmico</string>
+    <string name="onboarding_selection_student">Estudante</string>
+    <string name="onboarding_selection_writer">Escritor / Jornalista</string>
     <string name="onboarding_selection_other">Outro</string>
     <!-- Use case options -->
-    <string name="onboarding_usecase_title">What do you want to use Anytype for?</string>
-    <string name="onboarding_usecase_description">Pick one use case that fits you best</string>
-    <string name="onboarding_usecase_habit_tracking">Habit tracking</string>
-    <string name="onboarding_usecase_knowledge">Personal knowledge base / PKM</string>
-    <string name="onboarding_usecase_life_planning">Life planning</string>
-    <string name="onboarding_usecase_messaging">Messaging &amp; group chats</string>
-    <string name="onboarding_usecase_notes">Personal note-taking</string>
-    <string name="onboarding_usecase_projects">Projects &amp; tasks management</string>
-    <string name="onboarding_usecase_team_work">Team work &amp; shared docs</string>
+    <string name="onboarding_usecase_title">Para que você quer usar o Anytype?</string>
+    <string name="onboarding_usecase_description">Escolha um caso de uso que melhor se encaixa a você</string>
+    <string name="onboarding_usecase_habit_tracking">Rastreamento de hábitos</string>
+    <string name="onboarding_usecase_knowledge">Base de conhecimento pessoal / PKM</string>
+    <string name="onboarding_usecase_life_planning">Planejamento de vida</string>
+    <string name="onboarding_usecase_messaging">Mensagens &amp; conversas em grupo</string>
+    <string name="onboarding_usecase_notes">Notas pessoais</string>
+    <string name="onboarding_usecase_projects">Gerenciamento de projetos &amp; tarefas</string>
+    <string name="onboarding_usecase_team_work">Trabalho em equipe &amp; documentos compartilhados</string>
     <string name="onboarding_usecase_other">Outro</string>
     <!--endregion-->
     <!--region WIDGETS -->
@@ -1035,9 +1036,9 @@
     <string name="type_creation_placeholder">Nome do Tipo</string>
     <!--endregion-->
     <!--region ONBOARDING -->
-    <string name="onboarding_auth_title">Encrypted, local,</string>
-    <string name="onboarding_auth_subtitle">yours forever</string>
-    <string name="onboarding_auth_description">Encrypted, local,</string>
+    <string name="onboarding_auth_title">Criptografado, local,</string>
+    <string name="onboarding_auth_subtitle">seu para sempre</string>
+    <string name="onboarding_auth_description">Criptografado, local,</string>
     <string name="onboarding_terms_and_policy_prefix">"Ao continuar, você concorda com"</string>
     <string name="onboarding_terms_and_policy_terms">Termos\u00A0de\u00A0Uso</string>
     <string name="onboarding_terms_and_policy_infix">" e "</string>
@@ -1051,29 +1052,29 @@
     <string name="onboarding_void_title">Este é o seu Void</string>
     <string name="onboarding_void_description">É um local criptografado para tudo que você criar. Tudo é armazenado no seu dispositivo e salvo na rede distribuída.</string>
     <string name="onboarding_this_is_your_key_title">Esta é a sua chave</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Ela substitui login e senha. Guarde-a em segurança — apenas você é responsável pelos seus dados. Você pode encontrar essa Chave depois nas configurações do aplicativo.</string>
     <string name="onboarding_show_my_key">Exibir minha chave</string>
-    <string name="onboarding_tap_to_reveal">Reveal and Copy</string>
+    <string name="onboarding_tap_to_reveal">Revelar e Copiar</string>
     <string name="onboarding_key_skip">Pular</string>
-    <string name="onboarding_key_not_now">I’ll save it later</string>
+    <string name="onboarding_key_not_now">Vou salvá-la depois</string>
     <string name="onboarding_key_copy">Copiar para área de transferência</string>
     <string name="onboarding_soul_creation_placeholder">Identidade Anytype</string>
     <string name="onboarding_soul_creation">Criando a sua Identidade…</string>
     <string name="onboarding_type_your_key">Digite sua chave</string>
-    <string name="onboarding_login_or">or enter with</string>
+    <string name="onboarding_login_or">ou acesse com</string>
     <string name="onboarding_login_qr">QR Code</string>
     <string name="onboarding_entering_void_title">Entrando no vazio</string>
     <string name="onboarding_your_key_can_t_be_empty">Sua chave não pode estar vazia</string>
     <string name="onboarding_your_name">Informe seu nome</string>
     <string name="onboarding_mnemonic_read_more">Saiba mais</string>
     <string name="onboarding_key_additional_info">Você pode encontrar essa chave depois nas configurações do aplicativo</string>
-    <string name="onboarding_what_is_the_key">How the Key works?</string>
-    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
-    <string name="onboarding_recovery_phrase_description">Your key is represented by a recovery phrase — 12 random words that generate your vault on this device.</string>
-    <string name="onboarding_recovery_phrase_description_2_title">Whoever has the key, has access</string>
-    <string name="onboarding_recovery_phrase_description_2">Anyone who knows these words can access your vault. Right now, you are the only person in the world who knows them.</string>
-    <string name="onboarding_recovery_phrase_description_3_title">Only you responsible for it</string>
-    <string name="onboarding_recovery_phrase_description_3">All computational resources on Earth are not enough to break in. If you lose your key, it cannot be recovered. Store it somewhere safe — in a password manager or written down on paper.</string>
+    <string name="onboarding_what_is_the_key">Como a Chave funciona?</string>
+    <string name="onboarding_recovery_phrase_description_title">É seu login e senha</string>
+    <string name="onboarding_recovery_phrase_description">Sua chave é representada por uma frase de recuperação — 12 palavras aleatórias que geram o seu cofre neste dispositivo.</string>
+    <string name="onboarding_recovery_phrase_description_2_title">Quem tiver a chave, tem acesso</string>
+    <string name="onboarding_recovery_phrase_description_2">Qualquer pessoa que souber essas palavras pode acessar seu cofre. No momento, você é a única pessoa no mundo que as conhece.</string>
+    <string name="onboarding_recovery_phrase_description_3_title">Somente você é responsável por elas.</string>
+    <string name="onboarding_recovery_phrase_description_3">Todos os recursos computacionais na Terra não são suficientes para invadir. Se você perder sua chave, não poderá recuperá-la. Guarde-a em um lugar seguro — um gerenciador de senhas ou escrita em um papel.</string>
     <string name="onboarding_recovery_phrase_description_4">Todos os recursos computacionais na Terra não são suficientes para invadir. Se você os perde, ele não pode ser recuperado. Então, armazene-o em algum lugar seguro!</string>
     <string name="onboarding_how_to_save_my_phrase">Como salvar minha chave?</string>
     <string name="onboarding_how_to_save_my_phrase_2">A melhor maneira de armazenar a sua frase de segurança é salvá-la em um gerenciador de senhas.</string>
@@ -1128,6 +1129,28 @@
     <string name="sharing_menu_toast_object_added">Novo objeto adicionado ao espaço \'%1$s\'</string>
     <string name="sharing_menu_btn_add">Adicionar</string>
     <string name="sharing_menu_btn_open">Abrir</string>
+    <!-- Snackbar messages for content added to chat -->
+    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <!-- Snackbar messages for content linked to an object in a space -->
+    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Nenhum</string>
@@ -1167,11 +1190,11 @@
     <string name="dates_filter_last_month">Mês passado</string>
     <string name="dates_filter_current_month">Mês atual</string>
     <string name="dates_filter_next_month">Mês seguinte</string>
-    <string name="dates_filter_last_year">Last year</string>
-    <string name="dates_filter_current_year">Current year</string>
-    <string name="dates_filter_next_year">Next year</string>
-    <string name="settings_use_yamux">Use QUIC</string>
-    <string name="settings_share_local_logs">Share local logs</string>
+    <string name="dates_filter_last_year">Ano passado</string>
+    <string name="dates_filter_current_year">Este ano</string>
+    <string name="dates_filter_next_year">Ano seguinte</string>
+    <string name="settings_use_yamux">Utilizar QUIC</string>
+    <string name="settings_share_local_logs">Compartilhar logs locais</string>
     <!--endregion-->
     <string name="error_kanban_view_not_supported">O modo de exibição Kanban ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
     <string name="error_calendar_view_not_supported">O modo de exibição Calendário ainda não está disponível em aparelhos móveis. Mude o modo de exibição (Ajustes -&gt; Visualizar) ou crie um modo novo para acessar os seus dados.</string>
@@ -1220,13 +1243,13 @@
     <!--endregion-->
     <!--region MULTIPLAYER -->
     <string name="multiplayer_share_invite_link">Compartilhar link de convite</string>
-    <string name="multiplayer_share_invite_link_menu">Share link</string>
+    <string name="multiplayer_share_invite_link_menu">Compartilhar link</string>
     <string name="multiplayer_qr_invite_link_menu">Mostrar código QR</string>
     <string name="multiplayer_share_invite_link_description">Compartilhe este link de convite para que outros possam se juntar ao seu Espaço. Dado que eles clicarem no link e solicitarem acesso, você pode definir os direitos de acesso.</string>
     <string name="multiplayer_invite_link">Link de convite</string>
     <string name="multiplayer_invite_link_access">Invite link access</string>
-    <string name="multiplayer_link_disabled">Link disabled</string>
-    <string name="multiplayer_link_disabled_desc">Only already invited members have access</string>
+    <string name="multiplayer_link_disabled">Link desativado</string>
+    <string name="multiplayer_link_disabled_desc">Apenas membros convidados possuem acesso</string>
     <string name="multiplayer_editor_access">Editor access</string>
     <string name="multiplayer_editor">Editor</string>
     <string name="multiplayer_editor_access_desc">People with link can edit and write in chat</string>
@@ -1697,10 +1720,10 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="chat_empty_state_message">There is no messages yet.\nBe the first to start a discussion.</string>
     <string name="chat_empty_state_title">No messages yet</string>
     <string name="chat_empty_state_subtitle">Invite people and start the conversation!</string>
-    <string name="chat_empty_state_feature_yours_forever">Yours forever</string>
+    <string name="chat_empty_state_feature_yours_forever">Seu para sempre</string>
     <string name="chat_empty_state_feature_offline">Messages, docs &amp; files available offline</string>
-    <string name="chat_empty_state_feature_encrypted">Fully private and encrypted</string>
-    <string name="chat_empty_state_add_members_button">Add members</string>
+    <string name="chat_empty_state_feature_encrypted">Totalmente privado e criptografado</string>
+    <string name="chat_empty_state_add_members_button">Adicionar membros</string>
     <string name="chat_empty_state_show_qr_button">Mostrar código QR</string>
     <string name="chat_empty_state_share_invite_button">Invite members</string>
     <string name="write_a_message">Write a message...</string>
@@ -1823,7 +1846,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="space_settings_section_data_management">Data Management</string>
     <string name="space_settings_section_misc">Misc</string>
     <string name="space_settings_invite">Invite</string>
-    <string name="space_settings_share_link">Share link</string>
+    <string name="space_settings_share_link">Compartilhar link</string>
     <string name="space_settings_copy_link">Copiar link</string>
     <string name="space_settings_invite_members">Invite members</string>
     <string name="space_settings_qrcode">QR Code</string>
@@ -2043,6 +2066,9 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="move_chat_to_bin_warning_title">Move chat to Bin?</string>
     <string name="chat_move_to_bin_warning_description">This chat and all its attachments will be moved to Bin. No one will be able to send new messages. You can restore it from Bin until it\'s permanently cleared.</string>
     <string name="chat_edit_info_upload_image">Upload Image</string>
+    <string name="select_space">Select Channel</string>
+    <string name="add_a_comment">Add a comment...</string>
+    <string name="send">Send</string>
     <string name="chat_notifications_receive_all">Receive all</string>
     <string name="chat_notifications_mute_all">Mute all</string>
     <string name="chat_specific_notifications">Chat specific notifications</string>
@@ -2052,4 +2078,19 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="media_object_in_bin">This object is in the bin. Restore it?</string>
     <string name="toast_restored">Object restored.</string>
     <string name="participant_btn_connect">Connect</string>
+    <!-- Sharing Extension Redesign -->
+    <string name="sharing_select_destination">Select destination</string>
+    <string name="sharing_send_to_chat">Send to chat</string>
+    <string name="sharing_select_dest">Select destination</string>
+    <string name="sharing_no_objects_found">No objects found</string>
+    <string name="sharing_success">Success!</string>
+    <string name="sharing_added_to_space">Content added to %1$s</string>
+    <string name="sharing_error">Something went wrong</string>
+    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
+    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
+    <string name="sharing_sending_to">Sending to</string>
+    <string name="clear_selection">Clear selection</string>
+    <string name="save">Salvar</string>
+    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
 </resources>

@@ -61,6 +61,9 @@ fun BubbleAttachments(
     var isVideoPreviewLoaded by remember { mutableStateOf(false) }
     val context = LocalContext.current
     attachments.forEachIndexed { idx, attachment ->
+        if (idx > 0) {
+            Spacer(modifier = Modifier.height(4.dp))
+        }
         when (attachment) {
             is ChatView.Message.Attachment.Gallery -> {
                 val rowConfig = attachment.rowConfig

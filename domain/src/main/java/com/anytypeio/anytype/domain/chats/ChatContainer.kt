@@ -63,6 +63,28 @@ class ChatContainer @Inject constructor(
             }
     }
 
+    /**
+     * Subscribes to the chat object to receive updates about its state (isArchived, isDeleted, etc.)
+     * Uses StorelessSubscriptionContainer instead of ObjectWatcher because archive/delete events
+     * are sent via subscription channel (with spaceId as context), not via object open channel.
+     */
+    fun subscribeToChatObject(chat: Id, space: Space): Flow<ObjectWrapper.Basic?> {
+        return subscription.subscribe(
+            searchParams = StoreSearchByIdsParams(
+                subscription = "$chat/$CHAT_OBJECT_SUBSCRIPTION_POSTFIX",
+                space = space,
+                targets = listOf(chat),
+                keys = CHAT_OBJECT_KEYS
+            )
+        ).map { wrappers ->
+            wrappers.firstOrNull()
+        }.catch { e ->
+            emit(null).also {
+                logger.logException(e, "DROID-4200 Error in chat object subscription")
+            }
+        }
+    }
+
     fun fetchReplies(chat: Id) : Flow<Map<Id, Chat.Message>> {
         return replies
             .map { ids ->
@@ -107,7 +129,10 @@ class ChatContainer @Inject constructor(
         runCatching {
             repo.unsubscribeChat(chat)
             repo.cancelObjectSearchSubscription(
-                listOf("$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX")
+                listOf(
+                    "$chat/$ATTACHMENT_SUBSCRIPTION_POSTFIX",
+                    "$chat/$CHAT_OBJECT_SUBSCRIPTION_POSTFIX"
+                )
             )
         }.onFailure {
             logger.logWarning("DROID-2966 Error while unsubscribing from chat:\n${it.message}")
@@ -784,7 +809,22 @@ class ChatContainer @Inject constructor(
         private const val MAX_CHAT_CACHE_SIZE = 1000
         private const val LAST_MESSAGES_MAX_SIZE = 10
         private const val ATTACHMENT_SUBSCRIPTION_POSTFIX = "attachments"
+        private const val CHAT_OBJECT_SUBSCRIPTION_POSTFIX = "chat-object-details-subscription"
 
+        val CHAT_OBJECT_KEYS = listOf(
+            Relations.ID,
+            Relations.SPACE_ID,
+            Relations.NAME,
+            Relations.ICON_IMAGE,
+            Relations.ICON_EMOJI,
+            Relations.ICON_NAME,
+            Relations.ICON_OPTION,
+            Relations.TYPE,
+            Relations.LAYOUT,
+            Relations.IS_ARCHIVED,
+            Relations.IS_DELETED,
+            Relations.SYNC_STATUS
+        )
 
         val ATTACHMENT_KEYS = listOf(
             Relations.ID,

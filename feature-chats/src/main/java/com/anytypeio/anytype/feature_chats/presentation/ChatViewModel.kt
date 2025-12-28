@@ -17,7 +17,6 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
-import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -27,7 +26,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.syncStatus
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
 import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
@@ -57,7 +55,6 @@ import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
-import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -130,7 +127,6 @@ class ChatViewModel @Inject constructor(
     private val spacePermissionProvider: UserPermissionProvider,
     private val notificationBuilder: NotificationBuilder,
     private val clearChatsTempFolder: ClearChatsTempFolder,
-    private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject,
     private val analytics: Analytics,
@@ -173,6 +169,7 @@ class ChatViewModel @Inject constructor(
     private val syncStatus = MutableStateFlow<SyncStatus?>(null)
     private val currentPermission = MutableStateFlow<SpaceMemberPermissions?>(null)
     private val _currentSpaceUxType = MutableStateFlow<SpaceUxType?>(null)
+    private val _chatObjectWrapper = MutableStateFlow<ObjectWrapper.Basic?>(null)
     val currentSpaceUxType = _currentSpaceUxType
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
     private val messageRateLimiter = MessageRateLimiter()
@@ -222,64 +219,50 @@ class ChatViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            spaceViews
-                .observe(
-                    vmParams.space
-                ).collect { view ->
-                    _currentSpaceUxType.value = view.spaceUxType
-                    val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(view)
-                    val notificationSetting = NotificationStateCalculator
-                        .calculateChatNotificationState(chatSpace = view, chatId = vmParams.ctx)
-                        .toNotificationSetting()
-                    val canEdit = currentPermission.value?.isOwnerOrEditor() == true
-                    getObject.async(
-                        GetObject.Params(
-                            target = vmParams.ctx,
-                            space = vmParams.space
-                        )
-                    ).onSuccess { objectView ->
-                        // Chat space
-                        if (view.spaceUxType == SpaceUxType.CHAT || view.spaceUxType == SpaceUxType.ONE_TO_ONE) {
-                            header.value = HeaderView.Default(
-                                title = view.name.orEmpty(),
-                                icon = view.spaceIcon(builder = urlBuilder),
-                                isMuted = isMuted,
-                                notificationSetting = notificationSetting,
-                                canEdit = canEdit,
-                                showAddMembers = view.spaceUxType != SpaceUxType.ONE_TO_ONE
-                            )
-                        } else {
-                            // Chat object
-                            val wrapper = ObjectWrapper.Basic(
-                                objectView.details[vmParams.ctx].orEmpty()
-                            )
-                            val type = storeOfObjectTypes.getTypeOfObject(wrapper)
-                            // Check if chat is pinned
-                            val isPinned = isChatPinned(vmParams.space, vmParams.ctx)
-                            header.value = HeaderView.ChatObject(
-                                title = wrapper.name.orEmpty(),
-                                icon = wrapper.objectIcon(
-                                    builder = urlBuilder,
-                                    objType = type
-                                ),
-                                isMuted = isMuted,
-                                notificationSetting = notificationSetting,
-                                isPinned = isPinned,
-                                canEdit = canEdit
-                            )
-                        }
-                    }.onFailure {
-                        Timber.e(it, "Failed to fetch object for chat header")
-                        // Fallback to space name
-                        header.value = HeaderView.Default(
-                            title = view.name.orEmpty(),
-                            icon = view.spaceIcon(builder = urlBuilder),
-                            isMuted = isMuted,
-                            notificationSetting = notificationSetting,
-                            canEdit = canEdit
-                        )
-                    }
+            combine(
+                spaceViews.observe(vmParams.space).distinctUntilChanged(),
+                _chatObjectWrapper
+            ) { view, wrapper ->
+                Pair(view, wrapper)
+            }.collect { (spaceView, chatObject) ->
+                Timber.d("Space view updated: $spaceView or chatObject: $chatObject")
+                _currentSpaceUxType.value = spaceView.spaceUxType
+                val notificationSetting = NotificationStateCalculator
+                    .calculateChatNotificationState(chatSpace = spaceView, chatId = vmParams.ctx)
+                    .toNotificationSetting()
+                val isMuted = notificationSetting == NotificationSetting.MUTE
+                    || notificationSetting == NotificationSetting.MENTIONS
+                val canEdit = currentPermission.value?.isOwnerOrEditor() == true
+
+                // Chat space
+                if (spaceView.spaceUxType == SpaceUxType.CHAT || spaceView.spaceUxType == SpaceUxType.ONE_TO_ONE) {
+                    header.value = HeaderView.Default(
+                        title = spaceView.name.orEmpty(),
+                        icon = spaceView.spaceIcon(builder = urlBuilder),
+                        isMuted = isMuted,
+                        notificationSetting = notificationSetting,
+                        canEdit = canEdit,
+                        showAddMembers = spaceView.spaceUxType != SpaceUxType.ONE_TO_ONE
+                    )
+                } else if (chatObject != null) {
+                    // Chat object - use wrapper from ObjectWatcher
+                    val type = storeOfObjectTypes.getTypeOfObject(chatObject)
+                    // Check if chat is pinned
+                    val isPinned = isChatPinned(vmParams.space, vmParams.ctx)
+                    header.value = HeaderView.ChatObject(
+                        title = chatObject.name.orEmpty(),
+                        icon = chatObject.objectIcon(
+                            builder = urlBuilder,
+                            objType = type
+                        ),
+                        isMuted = isMuted,
+                        notificationSetting = notificationSetting,
+                        isPinned = isPinned,
+                        canEdit = canEdit
+                    )
                 }
+                // Note: if wrapper is null for chat object, header remains Init until wrapper is available
+            }
         }
 
         viewModelScope.launch {
@@ -611,26 +594,54 @@ class ChatViewModel @Inject constructor(
     }
 
     private suspend fun proceedWithObservingSyncStatus() {
-        objectWatcher
-            .watch(
-                target = vmParams.ctx,
-                space = vmParams.space
-            ).map { objectView ->
-                objectView.syncStatus(vmParams.ctx)
-            }
+        chatContainer.subscribeToChatObject(
+            chat = vmParams.ctx,
+            space = vmParams.space
+        ).map { wrapper ->
+            // Emit wrapper for header use
+            _chatObjectWrapper.value = wrapper
+            // Parse syncStatus from wrapper
+            val syncStatusCode = wrapper?.getSingleValue<Double>(Relations.SYNC_STATUS)
+            val status = syncStatusCode?.toInt()?.let(SyncStatus::fromCode)
+            Triple(
+                status,
+                wrapper?.isDeleted,
+                wrapper?.isArchived
+            )
+        }
             .distinctUntilChanged()
-            .onEach {
-                Timber.d("DROID-2966 Sync status updated: $it")
+            .onEach { (status, isDeleted, isArchived) ->
+                Timber.d("DROID-4200 Object state - sync: $status, deleted: $isDeleted, archived: $isArchived")
             }
             .catch { e ->
-                Timber.e(e, "DROID-2966 Error observing sync status for object: ${vmParams.ctx}")
+                Timber.w(e, "DROID-4200 Error observing object state for: ${vmParams.ctx}")
             }
-            .flowOn(
-                dispatchers.io
-            )
-            .collect { status ->
+            .flowOn(dispatchers.io)
+            .collect { (status, isDeleted, isArchived) ->
                 syncStatus.value = status
+
+                // Handle chat deletion or archival
+                when {
+                    isDeleted == true -> {
+                        Timber.w("DROID-4200 Chat was deleted, exiting to vault")
+                        handleChatUnavailable()
+                    }
+                    isArchived == true -> {
+                        Timber.w("DROID-4200 Chat was archived, exiting to vault")
+                        handleChatUnavailable()
+                    }
+                }
             }
+    }
+
+    private suspend fun handleChatUnavailable() {
+        // Clean up chat container (also unsubscribes chat object subscription)
+        withContext(dispatchers.io) {
+            chatContainer.stop(chat = vmParams.ctx)
+        }
+        // Show toast and exit
+        sendToast("Chat is no longer available")
+        commands.emit(ViewModelCommand.Exit)
     }
 
     fun onChatBoxInputChanged(
@@ -1597,18 +1608,9 @@ class ChatViewModel @Inject constructor(
     fun onBackButtonPressed(isExitingVault: Boolean) {
         Timber.d("onBackButtonPressed")
         viewModelScope.launch {
+            // Clean up chat container (also unsubscribes chat object subscription)
             withContext(dispatchers.io) {
                 chatContainer.stop(chat = vmParams.ctx)
-            }
-            withContext(dispatchers.io) {
-                runCatching {
-                    // TODO DROID-4115 check whether we need to close object
-                    objectWatcher.unwatch(target = vmParams.ctx, space = vmParams.space)
-                }.onFailure {
-                    Timber.e(it, "DROID-2966 Failed to unsubscribe object watcher")
-                }.onSuccess {
-                    Timber.d("DROID-2966 ObjectWatcher unwatched")
-                }
             }
             if (isExitingVault) {
                 proceedWithClearingSpaceBeforeExitingToVault()
@@ -1691,28 +1693,6 @@ class ChatViewModel @Inject constructor(
 
     fun onCopyChatLink() {
         // TODO: Implement copy link functionality
-    }
-
-    fun onChatInfoSaved(newName: String) {
-        viewModelScope.launch {
-            setObjectDetails.async(
-                SetObjectDetails.Params(
-                    ctx = vmParams.ctx,
-                    details = mapOf(Relations.NAME to newName)
-                )
-            ).onSuccess {
-                Timber.d("Successfully updated chat name to: $newName")
-                // Update local state
-                val currentHeader = header.value
-                if (currentHeader is HeaderView.Default) {
-                    header.value = currentHeader.copy(title = newName)
-                }
-                sendToast("Chat name updated")
-            }.onFailure { e ->
-                Timber.e(e, "Error while updating chat name")
-                sendToast("Failed to update chat name")
-            }
-        }
     }
 
     fun onUpdateChatObjectInfoRequested(
@@ -1837,148 +1817,6 @@ class ChatViewModel @Inject constructor(
                 }
                 ChatObjectIcon.None -> {
                     // No change to icon requested
-                }
-            }
-        }
-    }
-
-    fun onChatIconImageSelected(url: Url) {
-        Timber.d("onChatIconImageSelected: $url")
-        viewModelScope.launch {
-            val spaceView = spaceViews.get(vmParams.space)
-            if (spaceView == null) {
-                Timber.e("Space view not available")
-                sendToast("Failed to upload image")
-                return@launch
-            }
-
-            // Upload the file
-            uploadFile.async(
-                UploadFile.Params(
-                    path = url,
-                    space = vmParams.space,
-                    type = Block.Content.File.Type.IMAGE
-                )
-            ).onSuccess { file ->
-                // Update icon based on space type
-                if (spaceView.spaceUxType == SpaceUxType.CHAT) {
-                    // For chat spaces, update space details
-                    setSpaceDetails.async(
-                        SetSpaceDetails.Params(
-                            space = vmParams.space,
-                            details = mapOf(Relations.ICON_IMAGE to file.id)
-                        )
-                    ).onSuccess {
-                        Timber.d("Successfully updated chat space icon")
-                        // Update local header state
-                        val currentHeader = header.value
-                        if (currentHeader is HeaderView.Default) {
-                            header.value = currentHeader.copy(
-                                icon = SpaceIconView.ChatSpace.Image(
-                                    url = urlBuilder.thumbnail(file.id)
-                                )
-                            )
-                        }
-                        sendToast("Chat icon updated")
-                    }.onFailure { e ->
-                        Timber.e(e, "Error while updating chat space icon")
-                        sendToast("Failed to update chat icon")
-                    }
-                } else {
-                    // For non-chat spaces, update chat object details
-                    setObjectDetails.async(
-                        SetObjectDetails.Params(
-                            ctx = vmParams.ctx,
-                            details = mapOf(Relations.ICON_IMAGE to file.id)
-                        )
-                    ).onSuccess {
-                        Timber.d("Successfully updated chat object icon")
-                        // Update local header state
-                        val currentHeader = header.value
-                        if (currentHeader is HeaderView.Default) {
-                            header.value = currentHeader.copy(
-                                icon = SpaceIconView.ChatSpace.Image(
-                                    url = urlBuilder.thumbnail(file.id)
-                                )
-                            )
-                        }
-                        sendToast("Chat icon updated")
-                    }.onFailure { e ->
-                        Timber.e(e, "Error while updating chat object icon")
-                        sendToast("Failed to update chat icon")
-                    }
-                }
-            }.onFailure { e ->
-                Timber.e(e, "Error while uploading chat icon")
-                sendToast("Failed to upload image")
-            }
-        }
-    }
-
-    fun onChatIconRemove() {
-        Timber.d("onChatIconRemove")
-        viewModelScope.launch {
-            val spaceView = spaceViews.get(vmParams.space)
-            if (spaceView == null) {
-                Timber.e("Space view not available")
-                sendToast("Failed to remove icon")
-                return@launch
-            }
-
-            // Reset to random color placeholder
-            val randomColor = SystemColor.entries.random()
-            val details = mapOf(
-                Relations.ICON_IMAGE to "",
-                Relations.ICON_OPTION to randomColor.index.toDouble()
-            )
-
-            if (spaceView.spaceUxType == SpaceUxType.CHAT) {
-                // For chat spaces, update space details
-                setSpaceDetails.async(
-                    SetSpaceDetails.Params(
-                        space = vmParams.space,
-                        details = details
-                    )
-                ).onSuccess {
-                    Timber.d("Successfully removed chat space icon")
-                    // Update local header state
-                    val currentHeader = header.value
-                    if (currentHeader is HeaderView.Default) {
-                        header.value = currentHeader.copy(
-                            icon = SpaceIconView.ChatSpace.Placeholder(
-                                name = currentHeader.title,
-                                color = randomColor
-                            )
-                        )
-                    }
-                    sendToast("Chat icon removed")
-                }.onFailure { e ->
-                    Timber.e(e, "Error while removing chat space icon")
-                    sendToast("Failed to remove chat icon")
-                }
-            } else {
-                // For non-chat spaces, update chat object details
-                setObjectDetails.async(
-                    SetObjectDetails.Params(
-                        ctx = vmParams.ctx,
-                        details = details
-                    )
-                ).onSuccess {
-                    Timber.d("Successfully removed chat object icon")
-                    // Update local header state
-                    val currentHeader = header.value
-                    if (currentHeader is HeaderView.Default) {
-                        header.value = currentHeader.copy(
-                            icon = SpaceIconView.ChatSpace.Placeholder(
-                                name = currentHeader.title,
-                                color = randomColor
-                            )
-                        )
-                    }
-                    sendToast("Chat icon removed")
-                }.onFailure { e ->
-                    Timber.e(e, "Error while removing chat object icon")
-                    sendToast("Failed to remove chat icon")
                 }
             }
         }
@@ -2125,7 +1963,7 @@ class ChatViewModel @Inject constructor(
                     mode = mode
                 )
             ).onSuccess { payload ->
-                Timber.d("Notification setting changed successfully to: $setting")
+                Timber.d("Notification setting changed successfully to: $setting, for chat: ${vmParams.ctx}")
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")
                 // Revert header to previous state on error

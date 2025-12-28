@@ -838,7 +838,7 @@
     <string name="go_to_the_app">Перейти в приложение</string>
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
-    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_content_not_available">%1$s встраиваемый контент не доступен на мобильном устройстве</string>
     <string name="personal">По умолчанию</string>
     <string name="create_space">Создать пространство</string>
     <string name="create_chat">Создать чат</string>
@@ -1134,15 +1134,15 @@
     <string name="sharing_menu_btn_add">Добавить</string>
     <string name="sharing_menu_btn_open">Открыть</string>
     <!-- Snackbar messages for content added to chat -->
-    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
-    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
-    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
-    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
-    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
-    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
-    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
-    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
-    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
+    <string name="sharing_snackbar_image_added">Изображение добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Изображения добавлены в \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Видео добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Аудио добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">Файл добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Файлы добавлены в \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Текст добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Ссылка добавлена в \'%1$s\'</string>
     <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
     <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>

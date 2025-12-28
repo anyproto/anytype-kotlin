@@ -1143,18 +1143,18 @@
     <string name="sharing_snackbar_files_added">Файлы добавлены в \'%1$s\'</string>
     <string name="sharing_snackbar_text_added">Текст добавлен в \'%1$s\'</string>
     <string name="sharing_snackbar_link_added">Ссылка добавлена в \'%1$s\'</string>
-    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Контент добавлен в \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Изображение связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Изображения, связанные с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Видео связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Аудио привязано к \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">Файл связан с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Файлы, связанные с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Текст, связанный с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Ссылка связана с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Контент связан с \'%1$s\' в \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Нет</string>
@@ -2099,7 +2099,7 @@
     <string name="move_chat_to_bin_warning_title">Переместить чат в корзину?</string>
     <string name="chat_move_to_bin_warning_description">Этот чат и все его вложения будут перемещены в Корзину. Никто не сможет отправлять новые сообщения. Вы можете восстановить его от Бин, пока он не будет полностью очищен.</string>
     <string name="chat_edit_info_upload_image">Загрузить изображение</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Выбрать канал</string>
     <string name="add_a_comment">Добавить комментарий...</string>
     <string name="send">Отправить</string>
     <string name="chat_notifications_receive_all">Получить все</string>
@@ -2115,11 +2115,11 @@
     <string name="sharing_select_destination">Выберите пункт назначения</string>
     <string name="sharing_send_to_chat">Отправить в чат</string>
     <string name="sharing_select_dest">Выберите пункт назначения</string>
-    <string name="sharing_no_objects_found">No objects found</string>
-    <string name="sharing_success">Success!</string>
-    <string name="sharing_added_to_space">Content added to %1$s</string>
-    <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_no_objects_found">Объекты не найдены</string>
+    <string name="sharing_success">Успешно!</string>
+    <string name="sharing_added_to_space">Контент добавлен в %1$s</string>
+    <string name="sharing_error">Что-то пошло не так</string>
+    <string name="sharing_send_to">Отправить в %1$s</string>
     <string name="sharing_send_to_multiple">Send to %1$d chats</string>
     <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
     <string name="sharing_sending_to">Sending to</string>

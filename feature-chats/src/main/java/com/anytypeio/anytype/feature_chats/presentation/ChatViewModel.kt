@@ -634,16 +634,14 @@ class ChatViewModel @Inject constructor(
             }
     }
 
-    private fun handleChatUnavailable() {
-        viewModelScope.launch {
-            // Clean up chat container (also unsubscribes chat object subscription)
-            withContext(dispatchers.io) {
-                chatContainer.stop(chat = vmParams.ctx)
-            }
-            // Show toast and exit
-            sendToast("Chat is no longer available")
-            commands.emit(ViewModelCommand.Exit)
+    private suspend fun handleChatUnavailable() {
+        // Clean up chat container (also unsubscribes chat object subscription)
+        withContext(dispatchers.io) {
+            chatContainer.stop(chat = vmParams.ctx)
         }
+        // Show toast and exit
+        sendToast("Chat is no longer available")
+        commands.emit(ViewModelCommand.Exit)
     }
 
     fun onChatBoxInputChanged(

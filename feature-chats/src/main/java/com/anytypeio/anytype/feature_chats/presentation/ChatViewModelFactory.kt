@@ -25,7 +25,6 @@ import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
-import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
@@ -61,7 +60,6 @@ class ChatViewModelFactory @Inject constructor(
     private val spacePermissionProvider: UserPermissionProvider,
     private val notificationBuilder: NotificationBuilder,
     private val clearChatsTempFolder: ClearChatsTempFolder,
-    private val objectWatcher: ObjectWatcher,
     private val createObject: CreateObject,
     private val getObject: GetObject,
     private val analytics: Analytics,
@@ -96,7 +94,6 @@ class ChatViewModelFactory @Inject constructor(
         spacePermissionProvider = spacePermissionProvider,
         notificationBuilder = notificationBuilder,
         clearChatsTempFolder = clearChatsTempFolder,
-        objectWatcher = objectWatcher,
         createObject = createObject,
         getObject = getObject,
         analytics = analytics,

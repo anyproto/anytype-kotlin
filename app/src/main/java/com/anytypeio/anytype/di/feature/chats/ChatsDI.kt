@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
@@ -37,7 +36,6 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
-import com.anytypeio.anytype.presentation.widgets.DefaultObjectViewReducer
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import dagger.Binds
@@ -110,12 +108,6 @@ object ChatModule {
         fun bindViewModelFactory(
             factory: ChatViewModelFactory
         ): ViewModelProvider.Factory
-
-        @PerScreen
-        @Binds
-        fun objectWatcherReducer(
-            default: DefaultObjectViewReducer
-        ): ObjectWatcher.Reducer
     }
 }
 

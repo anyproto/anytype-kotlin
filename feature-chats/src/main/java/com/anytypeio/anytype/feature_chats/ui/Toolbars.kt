@@ -149,7 +149,11 @@ fun ChatTopToolbar(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            val isMuted = header is ChatViewModel.HeaderView.Default && header.isMuted
+            val isMuted = when (header) {
+                is ChatViewModel.HeaderView.Default -> header.isMuted
+                is ChatViewModel.HeaderView.ChatObject -> header.isMuted
+                else -> false
+            }
 
             Text(
                 text = when (header) {

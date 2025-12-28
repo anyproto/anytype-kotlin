@@ -2120,10 +2120,10 @@
     <string name="sharing_added_to_space">Контент добавлен в %1$s</string>
     <string name="sharing_error">Что-то пошло не так</string>
     <string name="sharing_send_to">Отправить в %1$s</string>
-    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
-    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
-    <string name="sharing_sending_to">Sending to</string>
-    <string name="clear_selection">Clear selection</string>
+    <string name="sharing_send_to_multiple">Отправить в %1$d чатов</string>
+    <string name="sharing_selection_limit_reached">Вы можете выбрать до %1$d направлений</string>
+    <string name="sharing_sending_to">Отправка в</string>
+    <string name="clear_selection">Очистить выбор</string>
     <string name="save">Сохранить</string>
-    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="you_dont_have_any_spaces_yet">У вас пока нет мест</string>
 </resources>

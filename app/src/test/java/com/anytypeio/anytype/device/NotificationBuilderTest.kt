@@ -511,4 +511,41 @@ class NotificationBuilderTest {
             title == chatNameTrimmed
         })
     }
+
+    @Test
+    fun `buildAndNotify should use Space name when chat name is blank`() = runBlocking {
+        // Given: A Data space with a chat that has a name with extra whitespace
+        val chatName = "   "
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId,
+                "name" to chatName
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use space name when chat name is blank
+
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
+    }
 }

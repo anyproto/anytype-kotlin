@@ -185,6 +185,13 @@ class VaultViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
 
+    // Flow for account identity (used to determine outgoing messages)
+    // The profile ID is the account identity used as message creator
+    private val accountIdentityFlow: StateFlow<Id?> = profileContainer.observe()
+        .map { profile -> profile.id }
+        .distinctUntilChanged()
+        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
@@ -199,10 +206,11 @@ class VaultViewModel(
             combine(
                 notificationsFlow,
                 chatDetailsFlow,
-                participantsFlow
-            ) { _, chatDetails, participants -> Pair(chatDetails, participants) }
-        ) { (previews, spaces, perms), (chatDetails, participants) ->
-            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants)
+                participantsFlow,
+                accountIdentityFlow
+            ) { _, chatDetails, participants, accountIdentity -> Triple(chatDetails, participants, accountIdentity) }
+        ) { (previews, spaces, perms), (chatDetails, participants, accountIdentity) ->
+            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants, accountIdentity)
         }.onEach { sections ->
             val previousState = _uiState.value
 
@@ -282,7 +290,8 @@ class VaultViewModel(
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>,
         chatDetails: List<ObjectWrapper.Basic>,
-        participants: List<ObjectWrapper.SpaceMember>
+        participants: List<ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultUiState.Sections {
         // Index participants by identity for O(1) lookup when resolving creator names
         val participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember> = participants.associateBy { it.identity }
@@ -324,7 +333,7 @@ class VaultViewModel(
                 unreadCountsPerSpace[spaceId]
             }
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -383,20 +392,21 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView {
         return when {
             // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
             space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
-                createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
             space.spaceUxType == SpaceUxType.CHAT -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // any other space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -501,16 +511,23 @@ class VaultViewModel(
         val creatorName: String?,
         val messageText: String?,
         val messageTime: String?,
-        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
+        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+        val isOutgoing: Boolean,
+        val isSynced: Boolean
     )
 
     /**
      * Extracts message preview data from a chat preview.
      * Returns null values when message is deleted (null).
+     *
+     * @param chatPreview The chat preview containing the last message
+     * @param participantsByIdentity Map of participants indexed by identity
+     * @param accountIdentity The current user's account identity (for determining outgoing messages)
      */
     private suspend fun extractMessagePreviewData(
         chatPreview: Chat.Preview?,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): MessagePreviewData {
         val message = chatPreview?.message
 
@@ -540,7 +557,17 @@ class VaultViewModel(
             emptyList()
         }
 
-        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews)
+        // Determine if message is outgoing (from current user)
+        val isOutgoing = if (message != null && accountIdentity != null) {
+            message.creator == accountIdentity
+        } else {
+            false
+        }
+
+        // Get sync status (default to true if no message to avoid showing pending indicator)
+        val isSynced = message?.synced ?: true
+
+        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews, isOutgoing, isSynced)
     }
 
     /**
@@ -553,9 +580,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.ChatSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -581,7 +609,9 @@ class VaultViewModel(
             attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult
+            wallpaper = wallpaperResult,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 
@@ -595,9 +625,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.OneToOneSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -622,7 +653,9 @@ class VaultViewModel(
             attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult
+            wallpaper = wallpaperResult,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 
@@ -636,9 +669,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.DataSpaceWithChat {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -672,7 +706,9 @@ class VaultViewModel(
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
-            chatName = chatName
+            chatName = chatName,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 

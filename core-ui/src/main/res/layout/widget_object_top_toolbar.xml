@@ -52,7 +52,6 @@
                 app:emojiSize="18dp"
                 app:checkboxSize="18dp"
                 app:initialTextSize="11sp"
-                android:visibility="gone"
                 tools:visibility="visible" />
 
             <TextView
@@ -86,16 +85,15 @@
 
     <FrameLayout
         android:id="@+id/threeDotsButton"
-        android:layout_width="28dp"
-        android:layout_height="28dp"
-        android:layout_gravity="end|center_vertical"
-        android:layout_marginEnd="14dp">
+        android:layout_width="38dp"
+        android:layout_height="match_parent"
+        android:layout_gravity="end|center_vertical">
 
         <ImageView
             android:id="@+id/ivThreeDots"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="start|center_vertical"
             android:src="@drawable/ic_action_more" />
 
     </FrameLayout>

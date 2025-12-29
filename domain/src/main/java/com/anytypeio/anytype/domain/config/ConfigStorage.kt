@@ -5,15 +5,15 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 @Deprecated("Refactoring needed")
 interface ConfigStorage : TechSpaceProvider {
-    @Deprecated("Unsafe method. Use getOrNull() instead")
-    @Throws(IllegalStateException::class)
-    fun get(): Config
     fun getAccountId(): String?
     fun getOrNull(): Config?
     fun set(config: Config, accountId: String)
     fun clear()
     class CacheStorage : ConfigStorage {
+        @Volatile
         private var instance: Config? = null
+
+        @Volatile
         private var accountId: String? = null
 
         override fun getOrNull(): Config? = instance
@@ -22,17 +22,16 @@ interface ConfigStorage : TechSpaceProvider {
             return accountId
         }
 
-        override fun get(): Config {
-            return instance ?: throw IllegalStateException("Config is not initialized")
-        }
-
+        @Synchronized
         override fun set(config: Config, accountId: String) {
-            instance = config
+            this.instance = config
             this.accountId = accountId
         }
 
+        @Synchronized
         override fun clear() {
             instance = null
+            accountId = null
         }
 
         override fun provide(): SpaceId? {

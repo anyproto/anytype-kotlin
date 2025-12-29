@@ -68,10 +68,10 @@
     <string name="get_more_space">Dapatkan ruang tambahan</string>
     <string name="account_name">Nama</string>
     <string name="space_settings">Setelan ruang</string>
-    <string name="space_settings_error_change_type">Failed to change space type. Please try again.</string>
-    <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
-    <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
-    <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="space_settings_error_change_type">Gagal mengubah tipe ruang. Silakan coba lagi.</string>
+    <string name="space_settings_error_wallpaper">Gagal memperbarui gambar latar. Silakan coba lagi.</string>
+    <string name="space_settings_error_name">Gagal memperbarui nama ruang. Silakan coba lagi.</string>
+    <string name="space_settings_error_icon">Gagal memperbarui ikon ruang. Silakan coba lagi.</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -1050,7 +1050,7 @@
     <string name="onboarding_void_title">This is your Void</string>
     <string name="onboarding_void_description">It is an encrypted location for everything you create. Everything is stored on your device, and backed up to the distributed network.</string>
     <string name="onboarding_this_is_your_key_title">Ini Kuncimu</string>
-    <string name="onboarding_key_description">It replaces login and password. Keep it safe — only you responsible for your data. You can find this Key later in app settings.</string>
+    <string name="onboarding_key_description">Ini pengganti nama pengguna dan kata sandi. Jaga keamanannya — Anda bertanggung jawab penuh atas data Anda. Anda dapat menemukan Kunci ini di pengaturan aplikasi.</string>
     <string name="onboarding_show_my_key">Tampilkan Kunciku</string>
     <string name="onboarding_tap_to_reveal">Tunjukkan dan Salin</string>
     <string name="onboarding_key_skip">Lewati</string>
@@ -1067,7 +1067,7 @@
     <string name="onboarding_mnemonic_read_more">Pelajari lebih lanjut</string>
     <string name="onboarding_key_additional_info">Kamu bisa menemukan kunci ini di setelan aplikasi</string>
     <string name="onboarding_what_is_the_key">Bagaimana cara kerja Kunci?</string>
-    <string name="onboarding_recovery_phrase_description_title">It’s your login and password</string>
+    <string name="onboarding_recovery_phrase_description_title">Ini adalah nama pengguna dan kata sandi anda</string>
     <string name="onboarding_recovery_phrase_description">Kuncimu berupa frasa pemulihan yang terdiri dari 12 kata acak yang menghasilkan brankasmu dalam perangkat ini.</string>
     <string name="onboarding_recovery_phrase_description_2_title">Siapa punya kunci, dia punya akses</string>
     <string name="onboarding_recovery_phrase_description_2">Siapa pun yang mengetahui kata-kata ini dapat mengakses brankasmu. Saat ini, kamulah satu-satunya orang di dunia yang mengetahuinya.</string>
@@ -1265,7 +1265,7 @@
     <string name="link_copied">Tautan disalin ke papan kerani</string>
     <string name="remove_from_collection">Lepas taut dari Koleksi</string>
     <string name="multiplayer_copy_link">Salin tautan</string>
-    <string name="multiplayer_make_private">Make Private</string>
+    <string name="multiplayer_make_private">Jadikan Rahasia</string>
     <string name="multiplayer_join_a_space">Bergabung dengan ruang</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Tinggalkan komentar untuk pemilik ruang</string>
     <string name="multiplayer_request_to_join_explanation">Ketika pemilik ruang menyetujui permintaanmu, kamu akan bergabung ke ruang ini dengan hak akses yang telah ditentukan.</string>
@@ -1581,7 +1581,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="membership_upgrade_description">Hubungi kami untuk penyimpanan ekstra, tambahan editor, atau lebih banyak ruang bersama. Tim Anytype akan memberikan detail dan ketentuan yang disesuaikan dengan kebutuhan Anda.</string>
     <string name="membership_upgrade_button">Hubungi Tim Anytype</string>
     <string name="membership_space_settings_share_limit">Kamu telah mencapai batas %1$d ruang terbagi</string>
-    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
+    <string name="membership_space_settings_share_limit_2">Tingkatkan akun untuk menambah atau menghapus ruang.</string>
     <plurals name="period_years">
         <item quantity="other">%d tahun</item>
     </plurals>
@@ -1600,7 +1600,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="error_login_select_vault_error">Memilih akun salah.</string>
     <string name="error_login_account_deleted_error">Akun ini sudah dihapus. Coba gunakan akun lain atau buat yang baru.</string>
     <string name="error_login_account_need_update_error">Tidak dapat mengambil data akun. Silakan perbarui Anytype ke versi terbaru.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
+    <string name="error_wallet_setup">Tidak dapat menyiapkan dompet. Silakan periksa penyimpanan perangkat Anda dan coba lagi.</string>
     <string name="error_network_error">Galat jaringan. Silakan cek sambungan internetmu lalu coba lagi.</string>
     <string name="error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan sambung ulang kembali ke internet lalu coba lagi.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
@@ -1647,7 +1647,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_pinned_section_title">Tersemat</string>
     <string name="vault_pin_space">Pin</string>
     <string name="vault_unpin_space">Lepas sematan</string>
-    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
+    <string name="vault_max_pinned_limit_reached">Anda telah mencapai batas %1$d ruang yang disematkan.</string>
     <string name="all_content_title_all_content">Semua Objek</string>
     <string name="all_content_title_only_unlinked">Hanya objek yang tidak tertaut</string>
     <string name="all_content_title_only_unlinked_description">Objek yang tidak memiliki tautan langsung atau tautan balik ke objek lain di grafik</string>
@@ -1842,7 +1842,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="space_settings_qrcode">Kode QR</string>
     <string name="space_settings_members_button_members">Anggota</string>
     <string name="space_settings_types_button">Tipe Objek</string>
-    <string name="space_settings_space_types_button">Channel Type</string>
+    <string name="space_settings_space_types_button">Tipe Kanal</string>
     <string name="space_settings_default_type_button">Tipe Objek Bawaan</string>
     <string name="space_settings_wallpaper_button">Latar belakang</string>
     <string name="space_settings_storage_button">Penyimpanan Jarak Jauh</string>
@@ -1941,7 +1941,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="vault_create_space_description">Untuk konten dan data tertata</string>
     <!-- Spaces Introduction Popup -->
     <string name="spaces_introduction_page1_title">Ide perlu konversasi</string>
-    <string name="spaces_introduction_page1_description">Anytype sekarang mendukung obrolan langsung di Ruang Terbagi—sehingga pikiran dan dialog kalian dapat berkembang bersama.</string>
+    <string name="spaces_introduction_page1_description">Anytype kini mendukung obrolan langsung di Saluran Bersama — sehingga pemikiran dan percakapan Anda dapat berkembang bersama.</string>
     <string name="spaces_introduction_page2_title">Brankasmu naik tingkat</string>
     <string name="spaces_introduction_page2_description">Ruang dan Obrolan sekarang menampilkan pratinjau dan pembaruan langsung—satu tempat untuk mengikuti semua hal yang penting.</string>
     <string name="spaces_introduction_page3_title">Lebih dari sekadar obrolan</string>
@@ -1950,7 +1950,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="spaces_introduction_page4_description">Halaman, daftar, dan berkasmu—terstruktur, dan selalu mudah dicari.</string>
     <string name="spaces_introduction_try_it">Ayo kita coba!</string>
     <string name="vault_empty_state_text">Belum ada ruang</string>
-    <string name="vault_empty_search_state_text">No matches found</string>
+    <string name="vault_empty_search_state_text">Tidak ditemukan hasil yang sesuai</string>
     <string name="chat_new_messages_section_text">Pesan baru</string>
     <string name="chat_box_camera">Kamera</string>
     <string name="chat_box_take_photo">Ambil Gambar</string>
@@ -1965,8 +1965,8 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="notifications_disable_short">Nonaktifkan</string>
     <string name="space_notify_unmute">Lepas senyap</string>
     <string name="space_notify_mute">Senyapkan</string>
-    <string name="vault_pinned_limit_message">%1$d pinned spaces are your current limit. Unpin one to add a new favorite.</string>
-    <string name="vault_space_settings">Space Settings</string>
+    <string name="vault_pinned_limit_message">%1$d ruang yang disematkan adalah batas saat ini. Lepaskan salah satunya untuk menambahkan yang baru.</string>
+    <string name="vault_space_settings">Pengaturan Ruang</string>
     <string name="notification_settings_title">Pemberitahuan</string>
     <string name="notification_settings_disabled">Pemberitahuan dinonaktifkan</string>
     <string name="notification_settings_disabled_subtitle">Terima pemberitahuan pesan baru dengan mengaktifkannya di setelan perangkatmu.</string>
@@ -1997,7 +1997,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="share_space_error_generic">Terjadi galat tak terduga: %1$s. Silakan coba lagi nanti.</string>
     <string name="share_space_error_incorrect_permissions">Kamu tidak punya izin yang sesuai. Silakan hubungi pemilik ruang untuk bantuan lebih lanjut.</string>
     <string name="share_space_error_no_such_space">Ruang yang ingin kamu akses tidak ada. Silakan cek ID ruang lalu coba lagi.</string>
-    <string name="share_space_error_make_private_failed">        Failed to make the space private. Please try again later.
+    <string name="share_space_error_make_private_failed">        Gagal menjadikan ruang ini privat. Silakan coba lagi nanti.
     </string>
     <string name="private_local_yours_forever">terenkripsi, lokal, milikmu selamanya</string>
     <string name="private_channel">Kanal langsung</string>
@@ -2031,12 +2031,12 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="members_limits_incentive_editors">Kamu telah mencapai batas %1$d penyunting</string>
     <string name="members_limits_incentive_editors_sub">Upgrade your membership to invite more members.</string>
     <string name="members_limits_incentive_viewers">Kamu telah mencapai batas %1$d pemirsa</string>
-    <string name="space_settings_space_type_chat_title">Channel Type</string>
+    <string name="space_settings_space_type_chat_title">Tipe Kanal</string>
     <string name="space_settings_space_type_chat_item_title">Obrolan</string>
     <string name="space_settings_space_type_chat_descr">Group chat with shared data. Best for small groups or a single ongoing conversation.</string>
     <string name="space_settings_space_type_space_item_title">Ruang</string>
     <string name="space_settings_space_type_space_descr">Hub for advanced data management. Multi-chats by topic coming soon. Ideal for larger teams.</string>
-    <string name="alert_change_space_type_title">Convert Channel Type?</string>
+    <string name="alert_change_space_type_title">Ubah Tipe Saluran?</string>
     <string name="alert_change_space_type_subtitle">Switching between Space and Chat will significantly change the experience.</string>
     <string name="alert_change_space_type_button">Yes, convert</string>
     <plurals name="notification_messages_count">
@@ -2054,7 +2054,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="move_chat_to_bin_warning_title">Buang obrolan ke bak sampah?</string>
     <string name="chat_move_to_bin_warning_description">Obrolan ini dan seluruh lampirannya akan dipindah ke bak sampah. Tidak ada yang akan dapat mengirimkan pesan baru. Kamu bisa mengembalikannya dari bak sampah hingga obrolan dihapus permanen.</string>
     <string name="chat_edit_info_upload_image">Unggah Gambar</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Pilih Saluran</string>
     <string name="add_a_comment">Tambahkan komentar …</string>
     <string name="send">Kirim</string>
     <string name="chat_notifications_receive_all">Terima semua</string>

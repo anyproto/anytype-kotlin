@@ -510,7 +510,7 @@ fun TitleRow(
             ).sum() +
             (if (mutedIconPlaceable != null) iconTextGap else 0) +
             (if (pendingPlaceable != null && timePlaceable != null) pendingTimeGap else 0) +
-            (if (timePlaceable != null) textTimeGap else 0)
+            (if (timePlaceable != null || pendingPlaceable != null) textTimeGap else 0)
 
             // 5) Measure text with remaining width
             val maxTextWidth = (constraints.maxWidth - reserved).coerceAtLeast(0)

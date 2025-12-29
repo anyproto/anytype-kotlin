@@ -1989,6 +1989,7 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
     <string name="content_desc_muted">Silenziato</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Impossibile caricare l\'immagine</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unisciti tramite QR Code</string>

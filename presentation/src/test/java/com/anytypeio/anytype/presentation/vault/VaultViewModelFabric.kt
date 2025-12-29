@@ -4,6 +4,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -71,7 +72,10 @@ object VaultViewModelFabric {
         appInfo: AppInfo = mock {
             on { versionName }.thenReturn("1.0.0-test")
         },
-        participantSubscriptionContainer: ParticipantSubscriptionContainer = mock()
+        participantSubscriptionContainer: ParticipantSubscriptionContainer = mock(),
+        configStorage: ConfigStorage = mock {
+            on { getOrNull() }.thenReturn(null)
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -102,6 +106,7 @@ object VaultViewModelFabric {
         participantContainer = participantSubscriptionContainer,
         findOneToOneChatByIdentity = findOneToOneChatByIdentity,
         createSpace = mock(),
-        deepLinkResolver = mock()
+        deepLinkResolver = mock(),
+        configStorage = configStorage
     )
 } 

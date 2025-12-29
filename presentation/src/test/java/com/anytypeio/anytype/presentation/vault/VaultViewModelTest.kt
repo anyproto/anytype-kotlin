@@ -5,7 +5,9 @@ import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -1611,11 +1613,9 @@ class VaultViewModelTest {
 
             val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
 
-            // Mock profile container to return the account identity
-            val profileContainer: ProfileSubscriptionManager = mock {
-                on { observe() }.thenReturn(
-                    flowOf(ObjectWrapper.Basic(mapOf(Relations.ID to accountId)))
-                )
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
             }
 
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
@@ -1637,7 +1637,7 @@ class VaultViewModelTest {
                 getSpaceWallpaper = getSpaceWallpapers,
                 chatsDetailsContainer = chatsDetailsSubscriptionContainer,
                 participantSubscriptionContainer = participantSubscriptionContainer,
-                profileContainer = profileContainer
+                configStorage = configStorage
             )
 
             // When & Then
@@ -1689,11 +1689,9 @@ class VaultViewModelTest {
 
             val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
 
-            // Mock profile container to return the account identity
-            val profileContainer: ProfileSubscriptionManager = mock {
-                on { observe() }.thenReturn(
-                    flowOf(ObjectWrapper.Basic(mapOf(Relations.ID to accountId)))
-                )
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
             }
 
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
@@ -1715,7 +1713,7 @@ class VaultViewModelTest {
                 getSpaceWallpaper = getSpaceWallpapers,
                 chatsDetailsContainer = chatsDetailsSubscriptionContainer,
                 participantSubscriptionContainer = participantSubscriptionContainer,
-                profileContainer = profileContainer
+                configStorage = configStorage
             )
 
             // When & Then
@@ -1766,10 +1764,9 @@ class VaultViewModelTest {
 
             val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
 
-            val profileContainer: ProfileSubscriptionManager = mock {
-                on { observe() }.thenReturn(
-                    flowOf(ObjectWrapper.Basic(mapOf(Relations.ID to accountId)))
-                )
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
             }
 
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
@@ -1791,7 +1788,7 @@ class VaultViewModelTest {
                 getSpaceWallpaper = getSpaceWallpapers,
                 chatsDetailsContainer = chatsDetailsSubscriptionContainer,
                 participantSubscriptionContainer = participantSubscriptionContainer,
-                profileContainer = profileContainer
+                configStorage = configStorage
             )
 
             // When & Then
@@ -1841,10 +1838,9 @@ class VaultViewModelTest {
 
             val permissions = mapOf(spaceId to SpaceMemberPermissions.OWNER)
 
-            val profileContainer: ProfileSubscriptionManager = mock {
-                on { observe() }.thenReturn(
-                    flowOf(ObjectWrapper.Basic(mapOf(Relations.ID to accountId)))
-                )
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
             }
 
             whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(dataSpaceWithChat)))
@@ -1866,7 +1862,7 @@ class VaultViewModelTest {
                 getSpaceWallpaper = getSpaceWallpapers,
                 chatsDetailsContainer = chatsDetailsSubscriptionContainer,
                 participantSubscriptionContainer = participantSubscriptionContainer,
-                profileContainer = profileContainer
+                configStorage = configStorage
             )
 
             // When & Then

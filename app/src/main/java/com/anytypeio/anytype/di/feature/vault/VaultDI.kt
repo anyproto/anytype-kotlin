@@ -13,6 +13,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.chats.ChatEventChannel
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
@@ -149,4 +150,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun chatSubscriptionContainer(): ChatsDetailsSubscriptionContainer
     fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
     fun deepLinkResolver(): DeepLinkResolver
+    fun configStorage(): ConfigStorage
 }

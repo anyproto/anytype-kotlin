@@ -7,7 +7,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -24,6 +23,8 @@ import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -128,7 +129,8 @@ class VaultViewModel(
     private val appInfo: AppInfo,
     private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val configStorage: ConfigStorage
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -186,11 +188,8 @@ class VaultViewModel(
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
 
     // Flow for account identity (used to determine outgoing messages)
-    // The profile ID is the account identity used as message creator
-    private val accountIdentityFlow: StateFlow<Id?> = profileContainer.observe()
-        .map { profile -> profile.id }
-        .distinctUntilChanged()
-        .stateIn(viewModelScope, SharingStarted.Eagerly, null)
+    // The Config.id is the account identity used as message creator
+    private val accountIdentityFlow: StateFlow<Id?> = MutableStateFlow(configStorage.getAccountId())
 
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()

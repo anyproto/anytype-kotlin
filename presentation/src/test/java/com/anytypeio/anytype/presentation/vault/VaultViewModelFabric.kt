@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
@@ -43,7 +44,9 @@ object VaultViewModelFabric {
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate = mock(),
         appActionManager: AppActionManager = mock(),
         spaceInviteResolver: SpaceInviteResolver = mock(),
-        profileContainer: ProfileSubscriptionManager = mock(),
+        profileContainer: ProfileSubscriptionManager = mock {
+            on { observe() }.thenReturn(flowOf(ObjectWrapper.Basic(emptyMap())))
+        },
         chatPreviewContainer: ChatPreviewContainer = mock(),
         chatsDetailsContainer: ChatsDetailsSubscriptionContainer = mock {
             on { observe() }.thenReturn(flowOf(emptyList()))

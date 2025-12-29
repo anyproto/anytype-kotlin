@@ -1988,6 +1988,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notification_settings_state_disabled">Uitgeschakeld</string>
     <string name="notification_settings_state_enabled">Ingeschakeld</string>
     <string name="content_desc_muted">Gedempt</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Laden afbeelding mislukt</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Neem deel via QR-code</string>

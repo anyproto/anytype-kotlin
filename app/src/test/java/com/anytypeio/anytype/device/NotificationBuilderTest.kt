@@ -7,6 +7,9 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -324,5 +327,225 @@ class NotificationBuilderTest {
         // Verify getMessagesCountText was called for summary
         verify(stringResourceProvider).getMessagesCountText(2)
         Unit
+    }
+
+    @Test
+    fun `buildAndNotify should use chat name for Data space notifications`() = runBlocking {
+        // Given: A Data space with a chat that has a specific name
+        val chatName = "Team Discussion"
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId,
+                "name" to chatName
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use chat name, not space name
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            // Extract title from notification extras
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == chatName
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should use space name for Chat space notifications`() = runBlocking {
+        // Given: A Chat space (1-to-1 chat) where space and chat are the same
+        val spaceName = "Alice"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.CHAT.code.toDouble()
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use space name
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should fallback to space name when chat name is unavailable in Data space`() = runBlocking {
+        // Given: A Data space but chat object has no name
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId
+                // name is null
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should fallback to space name
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should fallback to space name when chat object is not found in Data space`() = runBlocking {
+        // Given: A Data space but chat object doesn't exist
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(null) // Chat not found
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should fallback to space name
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should use space name when space view is not found`() = runBlocking {
+        // Given: Space view is not found (container returns null)
+        val spaceName = "My Workspace"
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(null)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use space name from message
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should trim whitespace from chat name in Data space`() = runBlocking {
+        // Given: A Data space with a chat that has a name with extra whitespace
+        val chatNameWithWhitespace = "  Team Discussion  "
+        val chatNameTrimmed = "Team Discussion"
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId,
+                "name" to chatNameWithWhitespace
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use trimmed chat name
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == chatNameTrimmed
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should use Space name when chat name is blank`() = runBlocking {
+        // Given: A Data space with a chat that has a name with extra whitespace
+        val chatName = "   "
+        val spaceName = "My Workspace"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId,
+                "name" to chatName
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use space name when chat name is blank
+
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == spaceName
+        })
     }
 }

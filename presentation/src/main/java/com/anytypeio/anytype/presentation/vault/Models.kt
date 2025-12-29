@@ -48,7 +48,9 @@ sealed class VaultSpaceView {
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
         val chatNotificationState: NotificationState,
-        val spaceNotificationState: NotificationState = NotificationState.ALL
+        val spaceNotificationState: NotificationState = NotificationState.ALL,
+        val isLastMessageOutgoing: Boolean = false,
+        val isLastMessageSynced: Boolean = true
     ) : VaultSpaceView()
 
     data class ChatSpace(
@@ -64,7 +66,9 @@ sealed class VaultSpaceView {
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-        val spaceNotificationState: NotificationState = NotificationState.ALL
+        val spaceNotificationState: NotificationState = NotificationState.ALL,
+        val isLastMessageOutgoing: Boolean = false,
+        val isLastMessageSynced: Boolean = true
     ) : VaultSpaceView()
 
     data class OneToOneSpace(
@@ -78,7 +82,9 @@ sealed class VaultSpaceView {
         val messageText: String? = null,
         val messageTime: String? = null,
         val attachmentPreviews: List<AttachmentPreview> = emptyList(),
-        val spaceNotificationState: NotificationState = NotificationState.ALL
+        val spaceNotificationState: NotificationState = NotificationState.ALL,
+        val isLastMessageOutgoing: Boolean = false,
+        val isLastMessageSynced: Boolean = true
     ) : VaultSpaceView()
 
     data class AttachmentPreview(

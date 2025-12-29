@@ -37,7 +37,7 @@ class SelectAccount @Inject constructor(
             saveAccount(setup.account)
             setCurrentAccount(setup.account.id)
         }
-        configStorage.set(config = setup.config)
+        configStorage.set(config = setup.config, accountId = setup.account.id)
         awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
         StartAccountResult(setup.config.analytics, setup.status)
     }

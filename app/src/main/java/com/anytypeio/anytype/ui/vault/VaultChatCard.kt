@@ -124,6 +124,8 @@ fun VaultChatSpaceCard(
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
+    isLastMessageOutgoing: Boolean = false,
+    isLastMessageSynced: Boolean = true,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
@@ -192,7 +194,8 @@ fun VaultChatSpaceCard(
             attachmentPreviews = attachmentPreviews,
             isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
             spaceNotificationState = spaceView.spaceNotificationState,
-            isPinned = isPinned
+            isPinned = isPinned,
+            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
         )
 
         // Include dropdown menu inside the card
@@ -236,7 +239,8 @@ private fun RowScope.ContentChat(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
-    isPinned: Boolean = false
+    isPinned: Boolean = false,
+    showPendingIndicator: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         val hasContent = !creatorName.isNullOrEmpty() ||
@@ -254,7 +258,8 @@ private fun RowScope.ContentChat(
                 modifier = Modifier.weight(1f),
                 message = title,
                 messageTime = messageTime,
-                isMuted = isMuted
+                isMuted = isMuted,
+                showPendingIndicator = showPendingIndicator
             )
 
             // Show pin icon when no content but is pinned
@@ -408,7 +413,8 @@ fun TitleRow(
     modifier: Modifier,
     message: String,
     messageTime: String?,
-    isMuted: Boolean?
+    isMuted: Boolean?,
+    showPendingIndicator: Boolean = false
 ) {
     val density = LocalDensity.current
 
@@ -435,7 +441,16 @@ fun TitleRow(
                         colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                     )
                 }
-                // 2: optional time (only if messageTime != null)
+                // 2: optional pending indicator (only if showPendingIndicator == true)
+                if (showPendingIndicator) {
+                    Image(
+                        painter = painterResource(com.anytypeio.anytype.feature_chats.R.drawable.ic_chat_msg_not_synced),
+                        contentDescription = stringResource(R.string.content_desc_pending_sync),
+                        modifier = Modifier.size(12.dp),
+                        colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
+                    )
+                }
+                // 3: optional time (only if messageTime != null)
                 messageTime?.let {
                     Text(
                         text = it,
@@ -448,13 +463,18 @@ fun TitleRow(
             // spacing constants in px
             val iconTextGap = with(density) { 4.dp.roundToPx() }
             val textTimeGap = with(density) { 8.dp.roundToPx() }
+            val pendingTimeGap = with(density) { 4.dp.roundToPx() }
 
             // measurables indices depend on what's present:
             // 0 = text (always)
             // 1 = muted icon (if isMuted == true)
+            // next = pending indicator (if showPendingIndicator == true)
             // last = time (if messageTime != null)
 
-            // 1) Measure time first (if any)
+            // Track current index for optional elements
+            var currentIndex = 1
+
+            // 1) Measure time first (if any) - always at the end
             val timePlaceable = if (messageTime != null) {
                 measurables.last().measure(
                     constraints.copy(minWidth = 0, minHeight = 0)
@@ -463,22 +483,36 @@ fun TitleRow(
 
             // 2) Measure muted icon (if present)
             val mutedIconPlaceable = if (isMuted == true) {
-                measurables[1].measure(
+                val placeable = measurables[currentIndex].measure(
                     constraints.copy(minWidth = 0, minHeight = 0)
                 )
+                currentIndex++
+                placeable
             } else null
 
-            // 3) Compute reserved width:
+            // 3) Measure pending indicator (if present)
+            val pendingPlaceable = if (showPendingIndicator) {
+                val placeable = measurables[currentIndex].measure(
+                    constraints.copy(minWidth = 0, minHeight = 0)
+                )
+                currentIndex++
+                placeable
+            } else null
+
+            // 4) Compute reserved width:
             //    time width + gap before time (if time exists)
-            //  + icon width + gap before icon (if icon exists)
+            //  + pending width + gap before pending (if pending exists)
+            //  + muted icon width + gap before icon (if icon exists)
             val reserved = listOfNotNull(
                 mutedIconPlaceable?.width,
+                pendingPlaceable?.width,
                 timePlaceable?.width
             ).sum() +
             (if (mutedIconPlaceable != null) iconTextGap else 0) +
-            (if (timePlaceable != null) textTimeGap else 0)
+            (if (pendingPlaceable != null && timePlaceable != null) pendingTimeGap else 0) +
+            (if (timePlaceable != null || pendingPlaceable != null) textTimeGap else 0)
 
-            // 4) Measure text with remaining width
+            // 5) Measure text with remaining width
             val maxTextWidth = (constraints.maxWidth - reserved).coerceAtLeast(0)
             val textPlaceable = measurables.getOrNull(0)?.measure(
                 constraints.copy(
@@ -487,14 +521,15 @@ fun TitleRow(
                 )
             )
 
-            // 5) Determine row height
+            // 6) Determine row height
             val rowHeight = listOfNotNull(
                 textPlaceable?.height,
                 mutedIconPlaceable?.height,
+                pendingPlaceable?.height,
                 timePlaceable?.height
             ).maxOrNull() ?: 0
 
-            // 6) Layout & place children
+            // 7) Layout & place children
             layout(constraints.maxWidth, rowHeight) {
                 var xOffset = 0
 
@@ -511,11 +546,24 @@ fun TitleRow(
                     xOffset += icon.width
                 }
 
-                // Place time at the end (if present)
+                // Place pending indicator and time at the end (right-aligned)
+                var endX = constraints.maxWidth
+
+                // Place time at the far end
                 timePlaceable?.let { time ->
+                    endX -= time.width
                     val timeY = (rowHeight - time.height) / 2
-                    val timeX = constraints.maxWidth - time.width
-                    time.placeRelative(x = timeX, y = timeY)
+                    time.placeRelative(x = endX, y = timeY)
+                }
+
+                // Place pending indicator left of time
+                pendingPlaceable?.let { pending ->
+                    if (timePlaceable != null) {
+                        endX -= pendingTimeGap
+                    }
+                    endX -= pending.width
+                    val pendingY = (rowHeight - pending.height) / 2
+                    pending.placeRelative(x = endX, y = pendingY)
                 }
             }
         }
@@ -724,6 +772,8 @@ fun ChatWithMentionAndMessage() {
             messageTime = "18:32",
             unreadMessageCount = 1,
             unreadMentionCount = 1,
+            isLastMessageSynced = false,
+            isLastMessageOutgoing = true,
             chatPreview =
                 Chat.Preview(
                 space = SpaceId("space-id"),

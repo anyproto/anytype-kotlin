@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
@@ -64,7 +65,8 @@ class VaultViewModelFactory @Inject constructor(
     private val appInfo: AppInfo,
     private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val configStorage: ConfigStorage
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -99,6 +101,7 @@ class VaultViewModelFactory @Inject constructor(
         appInfo = appInfo,
         findOneToOneChatByIdentity = findOneToOneChatByIdentity,
         createSpace = createSpace,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        configStorage = configStorage
     ) as T
 }

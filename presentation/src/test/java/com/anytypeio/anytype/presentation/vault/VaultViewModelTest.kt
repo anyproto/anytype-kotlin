@@ -3,7 +3,11 @@ package com.anytypeio.anytype.presentation.vault
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.StubSpaceView
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -17,6 +21,7 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.vault.SetCreateSpaceBadgeSeen
 import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
@@ -1569,6 +1574,368 @@ class VaultViewModelTest {
                 }
             }
         }
+
+    //endregion
+
+    //region Message Sync Status Tests
+
+    /**
+     * Test that isLastMessageOutgoing is true when the message creator matches the account identity
+     */
+    @Test
+    fun `isLastMessageOutgoing should be true when message creator matches account identity`() = runTest {
+        turbineScope {
+            // Given
+            val accountId = "my-account-id"
+            val chatSpaceId = "chat-space"
+            val chatId = "chat-id"
+            val now = System.currentTimeMillis()
+
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceAccessType = SpaceAccessType.SHARED,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = chatId,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = now.toDouble()
+            )
+
+            // Message created by current user (outgoing)
+            val chatPreview = stubChatPreview(
+                spaceId = chatSpaceId,
+                chatId = chatId,
+                lastMessageDate = now,
+                creator = accountId,
+                synced = false
+            )
+
+            val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
+
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
+            }
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(listOf(chatPreview)))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer,
+                configStorage = configStorage
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+
+                // Message should be marked as outgoing since creator == account id
+                assertEquals(true, chatSpaceView.isLastMessageOutgoing)
+                // Message should be marked as not synced
+                assertEquals(false, chatSpaceView.isLastMessageSynced)
+            }
+        }
+    }
+
+    /**
+     * Test that isLastMessageOutgoing is false when the message creator doesn't match the account identity
+     */
+    @Test
+    fun `isLastMessageOutgoing should be false when message creator does not match account identity`() = runTest {
+        turbineScope {
+            // Given
+            val accountId = "my-account-id"
+            val otherUserId = "other-user-id"
+            val chatSpaceId = "chat-space"
+            val chatId = "chat-id"
+            val now = System.currentTimeMillis()
+
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceAccessType = SpaceAccessType.SHARED,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = chatId,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = now.toDouble()
+            )
+
+            // Message created by another user (incoming)
+            val chatPreview = stubChatPreview(
+                spaceId = chatSpaceId,
+                chatId = chatId,
+                lastMessageDate = now,
+                creator = otherUserId,
+                synced = true
+            )
+
+            val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
+
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
+            }
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(listOf(chatPreview)))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer,
+                configStorage = configStorage
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+
+                // Message should be marked as incoming since creator != account id
+                assertEquals(false, chatSpaceView.isLastMessageOutgoing)
+                // Message should be synced
+                assertEquals(true, chatSpaceView.isLastMessageSynced)
+            }
+        }
+    }
+
+    /**
+     * Test that isLastMessageSynced correctly reflects the message's synced field
+     */
+    @Test
+    fun `isLastMessageSynced should reflect message synced status`() = runTest {
+        turbineScope {
+            // Given
+            val accountId = "my-account-id"
+            val chatSpaceId = "chat-space"
+            val chatId = "chat-id"
+            val now = System.currentTimeMillis()
+
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceAccessType = SpaceAccessType.SHARED,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = chatId,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = now.toDouble()
+            )
+
+            // Outgoing message that hasn't synced yet
+            val chatPreview = stubChatPreview(
+                spaceId = chatSpaceId,
+                chatId = chatId,
+                lastMessageDate = now,
+                creator = accountId,
+                synced = false // Not synced!
+            )
+
+            val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
+
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
+            }
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(listOf(chatPreview)))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer,
+                configStorage = configStorage
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+
+                // This is an outgoing, unsynced message - should show pending indicator
+                assertEquals(true, chatSpaceView.isLastMessageOutgoing)
+                assertEquals(false, chatSpaceView.isLastMessageSynced)
+            }
+        }
+    }
+
+    /**
+     * Test that DataSpaceWithChat also gets sync status correctly
+     */
+    @Test
+    fun `DataSpaceWithChat should correctly report sync status for outgoing messages`() = runTest {
+        turbineScope {
+            // Given
+            val accountId = "my-account-id"
+            val spaceId = "data-space"
+            val chatId = "space-chat-id"
+            val now = System.currentTimeMillis()
+
+            val dataSpaceWithChat = StubSpaceView(
+                id = spaceId,
+                targetSpaceId = spaceId,
+                spaceAccessType = SpaceAccessType.DEFAULT,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = chatId,
+                spaceUxType = SpaceUxType.DATA,
+                createdDate = now.toDouble()
+            )
+
+            // Outgoing unsynced message
+            val chatPreview = stubChatPreview(
+                spaceId = spaceId,
+                chatId = chatId,
+                lastMessageDate = now,
+                creator = accountId,
+                synced = false
+            )
+
+            val permissions = mapOf(spaceId to SpaceMemberPermissions.OWNER)
+
+            // Mock config storage to return the account identity
+            val configStorage: ConfigStorage = mock {
+                on { getAccountId() }.thenReturn(accountId)
+            }
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(dataSpaceWithChat)))
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(listOf(chatPreview)))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Private")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer,
+                configStorage = configStorage
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val dataSpaceView = sections.mainSpaces.first() as VaultSpaceView.DataSpaceWithChat
+
+                // Outgoing unsynced message
+                assertEquals(true, dataSpaceView.isLastMessageOutgoing)
+                assertEquals(false, dataSpaceView.isLastMessageSynced)
+            }
+        }
+    }
+
+    /**
+     * Test default values when no chat preview exists
+     */
+    @Test
+    fun `sync status should have safe defaults when no chat preview exists`() = runTest {
+        turbineScope {
+            // Given - A chat space without any preview
+            val chatSpaceId = "chat-space"
+            val chatId = "chat-id"
+            val now = System.currentTimeMillis()
+
+            val chatSpace = StubSpaceView(
+                id = chatSpaceId,
+                targetSpaceId = chatSpaceId,
+                spaceAccessType = SpaceAccessType.SHARED,
+                spaceAccountStatus = SpaceStatus.OK,
+                spaceLocalStatus = SpaceStatus.OK,
+                chatId = chatId,
+                spaceUxType = SpaceUxType.CHAT,
+                createdDate = now.toDouble()
+            )
+
+            val permissions = mapOf(chatSpaceId to SpaceMemberPermissions.OWNER)
+
+            whenever(spaceViewSubscriptionContainer.observe()).thenReturn(flowOf(listOf(chatSpace)))
+            // No chat preview!
+            whenever(chatPreviewContainer.observePreviewsWithAttachments()).thenReturn(
+                flowOf(ChatPreviewContainer.PreviewState.Ready(emptyList()))
+            )
+            whenever(userPermissionProvider.all()).thenReturn(flowOf(permissions))
+            whenever(notificationPermissionManager.permissionState()).thenReturn(
+                MutableStateFlow(NotificationPermissionManagerImpl.PermissionState.Granted)
+            )
+            whenever(stringResourceProvider.getSpaceAccessTypeName(any())).thenReturn("Shared")
+
+            val viewModel = VaultViewModelFabric.create(
+                spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+                chatPreviewContainer = chatPreviewContainer,
+                userPermissionProvider = userPermissionProvider,
+                notificationPermissionManager = notificationPermissionManager,
+                stringResourceProvider = stringResourceProvider,
+                getSpaceWallpaper = getSpaceWallpapers,
+                chatsDetailsContainer = chatsDetailsSubscriptionContainer,
+                participantSubscriptionContainer = participantSubscriptionContainer
+            )
+
+            // When & Then
+            viewModel.uiState.test {
+                skipItems(1) // Skip loading state
+                val sections = awaitItem() as VaultUiState.Sections
+                val chatSpaceView = sections.mainSpaces.first() as VaultSpaceView.ChatSpace
+
+                // Without a message, defaults should be safe (not outgoing, synced)
+                assertEquals(false, chatSpaceView.isLastMessageOutgoing)
+                assertEquals(true, chatSpaceView.isLastMessageSynced)
+            }
+        }
+    }
 
     //endregion
 } 

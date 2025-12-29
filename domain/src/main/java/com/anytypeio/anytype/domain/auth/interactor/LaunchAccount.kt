@@ -32,8 +32,10 @@ class LaunchAccount @Inject constructor(
 
         val networkMode = repository.getNetworkMode()
 
+        val currentAccountId = repository.getCurrentAccountId()
+
         val command = Command.AccountSelect(
-            id = repository.getCurrentAccountId(),
+            id = currentAccountId,
             path = pathProvider.providePath(),
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath
@@ -41,7 +43,7 @@ class LaunchAccount @Inject constructor(
 
         repository.selectAccount(command).let { setup ->
             repository.updateAccount(setup.account)
-            configStorage.set(config = setup.config)
+            configStorage.set(config = setup.config, accountId = currentAccountId)
             val lastSessionSpace = settings.getCurrentSpace()
             if (lastSessionSpace != null) {
                 spaceManager.set(lastSessionSpace.id)

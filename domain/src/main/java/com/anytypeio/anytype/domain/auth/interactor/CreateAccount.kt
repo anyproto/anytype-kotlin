@@ -42,7 +42,7 @@ open class CreateAccount @Inject constructor(
             saveAccount(setup.account)
             setCurrentAccount(setup.account.id)
         }
-        configStorage.set(setup.config)
+        configStorage.set(config = setup.config, accountId = setup.account.id)
         spaceManager.set(setup.config.space)
         awaitAccountStartManager.setState(AwaitAccountStartManager.State.Started)
         return Result(account = setup.account, config = setup.config)

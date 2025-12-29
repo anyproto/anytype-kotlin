@@ -99,13 +99,17 @@ class NotificationBuilderImpl(
         }
 
         // Determine notification title:
-        // - For Data spaces: use the chat's name (each chat has its own name)
+        // - For Data spaces: use "Space name - Chat name" format
         // - For Chat spaces: use the space name (space and chat are the same)
         val notificationTitle = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
-            chatsDetailsSubscriptionContainer.get(message.chatId)?.name
+            val chatName = chatsDetailsSubscriptionContainer.get(message.chatId)?.name
                 ?.trim()
                 ?.takeIf { it.isNotBlank() }
-                ?: message.spaceName.trim()  // Fallback to space name if chat name unavailable
+            if (chatName != null) {
+                "${message.spaceName.trim()} - $chatName"
+            } else {
+                message.spaceName.trim()  // Fallback to space name only if chat name unavailable
+            }
         } else {
             message.spaceName.trim()
         }

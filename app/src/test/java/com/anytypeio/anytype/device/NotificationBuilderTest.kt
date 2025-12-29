@@ -330,10 +330,11 @@ class NotificationBuilderTest {
     }
 
     @Test
-    fun `buildAndNotify should use chat name for Data space notifications`() = runBlocking {
+    fun `buildAndNotify should use space name and chat name for Data space notifications`() = runBlocking {
         // Given: A Data space with a chat that has a specific name
         val chatName = "Team Discussion"
         val spaceName = "My Workspace"
+        val expectedTitle = "$spaceName - $chatName"
 
         val spaceView = ObjectWrapper.SpaceView(
             map = mapOf(
@@ -358,11 +359,11 @@ class NotificationBuilderTest {
         // When
         builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
 
-        // Then: Notification should use chat name, not space name
+        // Then: Notification should use "Space name - Chat name" format
         verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
             // Extract title from notification extras
             val title = notification.extras?.getCharSequence("android.title")?.toString()
-            title == chatName
+            title == expectedTitle
         })
     }
 
@@ -481,6 +482,7 @@ class NotificationBuilderTest {
         val chatNameWithWhitespace = "  Team Discussion  "
         val chatNameTrimmed = "Team Discussion"
         val spaceName = "My Workspace"
+        val expectedTitle = "$spaceName - $chatNameTrimmed"
 
         val spaceView = ObjectWrapper.SpaceView(
             map = mapOf(
@@ -505,10 +507,10 @@ class NotificationBuilderTest {
         // When
         builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
 
-        // Then: Notification should use trimmed chat name
+        // Then: Notification should use "Space name - trimmed chat name" format
         verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
             val title = notification.extras?.getCharSequence("android.title")?.toString()
-            title == chatNameTrimmed
+            title == expectedTitle
         })
     }
 

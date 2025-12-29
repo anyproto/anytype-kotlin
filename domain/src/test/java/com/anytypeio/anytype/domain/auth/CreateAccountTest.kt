@@ -117,7 +117,7 @@ class CreateAccountTest {
             verify(repo, times(1)).createAccount(command)
             verify(repo, times(1)).saveAccount(setup.account)
             verify(repo, times(1)).setCurrentAccount(setup.account.id)
-            verify(configStorage, times(1)).set(setup.config)
+            verify(configStorage, times(1)).set(setup.config, setup.account.id)
             verify(spaceManager, times(1)).set(setup.config.space)
             verify(awaitAccountStartManager, times(1)).setState(AwaitAccountStartManager.State.Started)
         }

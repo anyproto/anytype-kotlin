@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.config
 
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import javax.inject.Inject
 
 @Deprecated("Refactoring needed")
 interface ConfigStorage : TechSpaceProvider {
@@ -9,38 +10,37 @@ interface ConfigStorage : TechSpaceProvider {
     fun getOrNull(): Config?
     fun set(config: Config, accountId: String)
     fun clear()
-    class CacheStorage : ConfigStorage {
-        @Volatile
-        private var instance: Config? = null
+}
 
-        @Volatile
-        private var accountId: String? = null
+class CacheStorage @Inject constructor() : ConfigStorage {
 
-        override fun getOrNull(): Config? = instance
+    private data class State(
+        val config: Config,
+        val accountId: String
+    )
 
-        override fun getAccountId(): String? {
-            return accountId
-        }
+    @Volatile
+    private var state: State? = null
 
-        @Synchronized
-        override fun set(config: Config, accountId: String) {
-            this.instance = config
-            this.accountId = accountId
-        }
+    override fun getOrNull(): Config? = state?.config
 
-        @Synchronized
-        override fun clear() {
-            instance = null
-            accountId = null
-        }
+    override fun getAccountId(): String? = state?.accountId
 
-        override fun provide(): SpaceId? {
-            return instance?.let {
-                SpaceId(it.techSpace)
-            }
+    override fun set(config: Config, accountId: String) {
+        this.state = State(config = config, accountId = accountId)
+    }
+
+    override fun clear() {
+        state = null
+    }
+
+    override fun provide(): SpaceId? {
+        return state?.config?.let { cfg ->
+            SpaceId(cfg.techSpace)
         }
     }
 }
+
 
 interface TechSpaceProvider {
     fun provide(): SpaceId?

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.di.main
 import com.anytypeio.anytype.data.auth.repo.config.GatewayProvider
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.config.CacheStorage
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
@@ -32,7 +33,7 @@ object ConfigModule {
     @JvmStatic
     @Provides
     @Singleton
-    fun provideConfigProvider(): ConfigStorage = ConfigStorage.CacheStorage()
+    fun provideConfigProvider(): ConfigStorage = CacheStorage()
 
     @JvmStatic
     @Provides

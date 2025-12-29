@@ -2017,6 +2017,7 @@
     <string name="notification_settings_state_disabled">Отключено</string>
     <string name="notification_settings_state_enabled">Включено</string>
     <string name="content_desc_muted">Заглушен</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Не удалось загрузить изображение</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Присоединиться через QR-код</string>

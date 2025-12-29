@@ -222,6 +222,15 @@ interface ChatPreviewContainer {
                     } else preview
                 }
 
+                is Event.Command.Chats.UpdateMessageSyncStatus -> state.map { preview ->
+                    val message = preview.message
+                    if (preview.chat == event.context &&
+                        message != null &&
+                        event.messages.contains(message.id)) {
+                        preview.copy(message = message.copy(synced = event.isSynced))
+                    } else preview
+                }
+
                 else -> state.also {
                     logger.logInfo("Ignoring event: $event")
                 }

@@ -1228,14 +1228,7 @@ class SharingViewModel(
                 val uploadedIds = content.uris.mapNotNull { uri ->
                     uploadMediaAndGetId(uri, content.type, targetSpaceId)
                 }
-                if (uploadedIds.isNotEmpty()) {
-                    handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
-                } else {
-                    _screenState.value = SharingScreenState.Error(
-                        message = "Failed to upload files",
-                        canRetry = true
-                    )
-                }
+                handleUploadResults(uploadedIds, content.uris.size, space, targetSpaceId)
             }
             is SharedContent.Mixed -> {
                 if (content.mediaUris.isNotEmpty()) {
@@ -1243,14 +1236,7 @@ class SharingViewModel(
                     val uploadedIds = content.mediaUris.mapNotNull { uri ->
                         uploadMediaAndGetId(uri, SharedContent.MediaType.FILE, targetSpaceId)
                     }
-                    if (uploadedIds.isNotEmpty()) {
-                        handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
-                    } else {
-                        _screenState.value = SharingScreenState.Error(
-                            message = "Failed to upload files",
-                            canRetry = true
-                        )
-                    }
+                    handleUploadResults(uploadedIds, content.mediaUris.size, space, targetSpaceId)
                 } else {
                     // No media files - create Note with text/url
                     val noteText = content.text ?: content.url ?: ""
@@ -1310,6 +1296,34 @@ class SharingViewModel(
                 )
             }
         )
+    }
+
+    private suspend fun handleUploadResults(
+        uploadedIds: List<Id>,
+        total: Int,
+        space: SelectableSpaceView,
+        targetSpaceId: Id
+    ) {
+        val successCount = uploadedIds.size
+        val failCount = total - successCount
+
+        when {
+            successCount == total -> {
+                handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+            }
+            successCount > 0 -> {
+                _commands.emit(
+                    SharingCommand.ShowToast("$failCount of $total files failed to upload")
+                )
+                handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+            }
+            else -> {
+                _screenState.value = SharingScreenState.Error(
+                    message = "Failed to upload all $total files",
+                    canRetry = true
+                )
+            }
+        }
     }
 
     private suspend fun handleObjectCreationSuccess(

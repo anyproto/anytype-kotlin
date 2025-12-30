@@ -177,6 +177,14 @@ class SharingViewModelTest {
         }
     }
 
+    private fun stubUploadFilePartialFailure(fileId: String = "test-file-id") {
+        uploadFile.stub {
+            onBlocking { async(any()) }
+                .thenReturn(Resultat.Success(ObjectWrapper.File(mapOf(Relations.ID to fileId))))
+                .thenReturn(Resultat.Failure(Exception("Upload failed")))
+        }
+    }
+
     private fun stubFileSharerPath(path: String = "/test/path/file.jpg") {
         fileSharer.stub {
             onBlocking { getPath(any()) }.thenReturn(path)
@@ -389,6 +397,50 @@ class SharingViewModelTest {
         // Then - should upload files, NOT create Note
         verify(uploadFile, atLeast(1)).async(any())
         verify(createPrefilledNote, never()).async(any())
+    }
+
+    @Test
+    fun `onSendClicked with MultipleMedia partial failure should show warning toast`() = runTest {
+        // Given - first upload succeeds, second fails
+        stubAwaitAccountStart()
+        stubSpaceViewSubscription(listOf(testDataSpace))
+        stubPermissions(mapOf(testDataSpace.id to SpaceMemberPermissions.OWNER))
+        stubUploadFilePartialFailure()
+        stubFileSharerPath()
+        stubSpaceManager()
+
+        val vm = buildViewModel()
+        vm.onSharedDataReceived(
+            SharedContent.MultipleMedia(
+                uris = listOf("content://test/image1.jpg", "content://test/image2.jpg"),
+                type = SharedContent.MediaType.IMAGE
+            )
+        )
+        advanceUntilIdle()
+
+        // Navigate to ObjectSelection
+        vm.onSpaceSelected(selectableDataSpace)
+        advanceUntilIdle()
+
+        // Then - collect commands before triggering send
+        vm.commands.test {
+            // When
+            vm.onSendClicked()
+            advanceUntilIdle()
+
+            // Then - should show warning toast for partial failure
+            val toastCommand = awaitItem()
+            assertIs<SharingCommand.ShowToast>(toastCommand)
+            assertEquals("1 of 2 files failed to upload", toastCommand.message)
+
+            // Also expect success snackbar command
+            val snackbarCommand = awaitItem()
+            assertIs<SharingCommand.ShowSnackbarWithOpenAction>(snackbarCommand)
+
+            // And dismiss command
+            val dismissCommand = awaitItem()
+            assertIs<SharingCommand.Dismiss>(dismissCommand)
+        }
     }
 
     @Test

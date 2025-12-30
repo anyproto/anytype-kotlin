@@ -1988,7 +1988,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notification_settings_state_disabled">Devre dışı</string>
     <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
     <string name="content_desc_muted">Sessiz</string>
-    <string name="content_desc_pending_sync">Pending sync</string>
+    <string name="content_desc_pending_sync">Senkro. bekleniyor</string>
     <string name="failed_to_load_image">Görüntü yüklenemedi</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Karekod ile katıl</string>
@@ -2097,5 +2097,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="clear_selection">Seçimi temizle</string>
     <string name="save">Kaydet</string>
     <string name="you_dont_have_any_spaces_yet">Henüz hiçbir alana sahip değilsin</string>
-    <string name="loading_channels">Loading channels</string>
+    <string name="loading_channels">Kanallar yükleniyor</string>
 </resources>

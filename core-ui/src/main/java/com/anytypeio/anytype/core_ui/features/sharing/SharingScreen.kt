@@ -16,7 +16,6 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.LinearProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -70,19 +69,28 @@ fun ColumnScope.SharingScreen(
     when (state) {
 
         SharingScreenState.Loading -> {
-            SelectSpaceScreenHeader(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            )
-            Box(
-                modifier = Modifier.fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(
-                    color = colorResource(id = R.color.glyph_active),
-                    modifier = Modifier.size(48.dp)
-                )
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.glyph_active),
+                        modifier = Modifier.size(48.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = stringResource(R.string.loading_channels),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_secondary)
+                    )
+
+                }
             }
         }
 
@@ -177,15 +185,37 @@ fun ColumnScope.SharingScreen(
         }
 
         is SharingScreenState.Sending -> {
-            SelectSpaceScreenHeader(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp)
-            )
-            SendingScreen(
-                progress = state.progress,
-                message = state.message
-            )
+            Box(modifier = Modifier.fillMaxSize()) {
+                Column(
+                    modifier = Modifier.align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.glyph_active),
+                        modifier = Modifier.size(48.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+
+                    Text(
+                        text = state.message,
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_secondary)
+                    )
+
+                    Spacer(modifier = Modifier.height(16.dp))
+
+                    LinearProgressIndicator(
+                        progress = state.progress,
+                        color = colorResource(id = R.color.glyph_active),
+                        backgroundColor = colorResource(id = R.color.shape_primary),
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 48.dp)
+                    )
+                }
+            }
         }
 
         is SharingScreenState.Success -> {
@@ -200,45 +230,6 @@ fun ColumnScope.SharingScreen(
                 onDoneClicked = onCancelClicked
             )
         }
-    }
-}
-
-@Composable
-private fun SendingScreen(
-    progress: Float,
-    message: String,
-    modifier: Modifier = Modifier
-) {
-    Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.background_primary)),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        CircularProgressIndicator(
-            color = colorResource(id = R.color.glyph_active),
-            modifier = Modifier.size(48.dp)
-        )
-
-        Spacer(modifier = Modifier.height(24.dp))
-
-        Text(
-            text = message,
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_secondary)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        LinearProgressIndicator(
-            progress = progress,
-            color = colorResource(id = R.color.glyph_active),
-            backgroundColor = colorResource(id = R.color.shape_primary),
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 48.dp)
-        )
     }
 }
 

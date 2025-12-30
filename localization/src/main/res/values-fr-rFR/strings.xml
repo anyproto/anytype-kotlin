@@ -2094,4 +2094,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Sauvegarder</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

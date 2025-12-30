@@ -622,6 +622,11 @@ class SharingViewModel(
     private fun updateSpaceSelectionState() {
         val content = sharedContent ?: return
 
+        // Don't transition from Loading until spaces are loaded
+        if (allSpaces.isEmpty() && _screenState.value is SharingScreenState.Loading) {
+            return
+        }
+
         val filteredSpaces = if (spaceSearchQuery.isBlank()) {
             allSpaces
         } else {

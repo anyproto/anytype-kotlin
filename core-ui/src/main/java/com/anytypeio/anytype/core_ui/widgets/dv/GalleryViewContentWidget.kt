@@ -208,38 +208,65 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         id = generateViewId()
                         orientation = HORIZONTAL
                     }
-                    relation.objects.forEachIndexed { idx, obj ->
-                        if (obj is ObjectView.Default) {
-                            val noIcon = obj.icon is ObjectIcon.None
-                            if (!noIcon) {
-                                val iconWidget = ObjectIconWidget(context).apply {
-                                    setIcon(obj.icon)
-                                }
-                                group.addView(iconWidget)
-                                iconWidget.updateLayoutParams<LayoutParams> {
-                                    width = resources.getDimension(R.dimen.dp_16).toInt()
-                                    height = resources.getDimension(R.dimen.dp_16).toInt()
-                                    gravity = Gravity.CENTER_VERTICAL
-                                    marginStart = if (idx == 0) firstItemMargin else intervalItemMargin
-                                    marginEnd = marginAfterIcon
-                                }
+                    // Only show the first object
+                    val firstObj = relation.objects.firstOrNull()
+                    if (firstObj is ObjectView.Default) {
+                        val noIcon = firstObj.icon is ObjectIcon.None
+                        if (!noIcon) {
+                            val iconWidget = ObjectIconWidget(context).apply {
+                                setIcon(firstObj.icon)
                             }
-
-                            val view = TextView(themeWrapper).apply {
-                                id = generateViewId()
-                                isSingleLine = true
-                                maxLines = 1
-                                ellipsize = TextUtils.TruncateAt.END
-                                setHint(R.string.untitled)
-                                text = obj.name
-                            }
-                            group.addView(view)
-                            view.updateLayoutParams<LayoutParams> {
-                                marginStart = if (idx == 0 && noIcon) firstItemMargin else 0
-                                marginEnd = marginAfterText
+                            group.addView(iconWidget)
+                            iconWidget.updateLayoutParams<LayoutParams> {
+                                width = resources.getDimension(R.dimen.dp_16).toInt()
+                                height = resources.getDimension(R.dimen.dp_16).toInt()
+                                gravity = Gravity.CENTER_VERTICAL
+                                marginStart = firstItemMargin
+                                marginEnd = marginAfterIcon
                             }
                         }
+
+                        val hasMoreObjects = relation.objects.size > 1
+                        val view = TextView(themeWrapper).apply {
+                            id = generateViewId()
+                            isSingleLine = true
+                            maxLines = 1
+                            ellipsize = TextUtils.TruncateAt.END
+                            setHint(R.string.untitled)
+                            text = firstObj.name
+                        }
+                        group.addView(view)
+                        view.updateLayoutParams<LayoutParams> {
+                            if (hasMoreObjects) {
+                                // Use weight to ensure text shrinks for badge
+                                width = 0
+                                weight = 1f
+                            }
+                            marginStart = if (noIcon) firstItemMargin else 0
+                        }
                     }
+
+                    // Add "+n" badge if there are more objects
+                    val remainingCount = relation.objects.size - 1
+                    if (remainingCount > 0) {
+                        val countBadgePadding = resources.getDimension(R.dimen.dp_4).toInt()
+                        val countBadgeMargin = resources.getDimension(R.dimen.dp_4).toInt()
+                        val countView = TextView(themeWrapper).apply {
+                            id = generateViewId()
+                            isSingleLine = true
+                            maxLines = 1
+                            text = "+$remainingCount"
+                            setBackgroundResource(R.drawable.bg_dv_list_item_object_count)
+                            setTextColor(resources.getColor(R.color.text_secondary, null))
+                            setPadding(countBadgePadding, 0, countBadgePadding, 0)
+                        }
+                        group.addView(countView)
+                        countView.updateLayoutParams<LayoutParams> {
+                            gravity = Gravity.CENTER_VERTICAL
+                            marginStart = countBadgeMargin
+                        }
+                    }
+
                     addView(group)
                     group.updateLayoutParams<LayoutParams> {
                         bottomMargin = if (index == size - 1) 0 else defaultBottomMargin

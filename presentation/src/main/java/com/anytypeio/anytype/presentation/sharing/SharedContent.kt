@@ -39,19 +39,6 @@ sealed class SharedContent {
     ) : SharedContent()
 
     /**
-     * Mixed content containing any combination of text, URL, and media.
-     * Used when user shares multiple different types of content at once.
-     * @property text Optional text content
-     * @property url Optional URL content
-     * @property mediaUris List of media file URIs
-     */
-    data class Mixed(
-        val text: String? = null,
-        val url: String? = null,
-        val mediaUris: List<String> = emptyList()
-    ) : SharedContent()
-
-    /**
      * Media type classification for shared files.
      */
     enum class MediaType {

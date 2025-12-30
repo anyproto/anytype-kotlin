@@ -442,10 +442,6 @@ class SharingViewModel(
                     uploadMediaAndGetId(uri, content.type, targetSpaceId)
                 }
             }
-            is SharedContent.Mixed -> {
-                val noteText = content.text ?: content.url ?: ""
-                listOfNotNull(createNoteAndGetId(noteText, targetSpaceId))
-            }
         }
     }
 
@@ -1053,33 +1049,6 @@ class SharingViewModel(
                     sendChatMessage(chatId, caption, attachments)
                 }
             }
-
-            is SharedContent.Mixed -> {
-                // Send comment as separate preceding message
-                if (commentText.isNotBlank()) {
-                    sendChatMessage(chatId, commentText, emptyList())
-                }
-
-                // Build and batch attachments
-                val attachments = mutableListOf<Chat.Message.Attachment>()
-
-                // Add media attachments
-                content.mediaUris.forEach { uri ->
-                    uploadMediaFile(uri, SharedContent.MediaType.FILE, spaceId) { fileId ->
-                        attachments.add(createMediaAttachment(fileId, SharedContent.MediaType.FILE))
-                    }
-                }
-
-                // Batch and send
-                attachments.chunked(SharedContent.MAX_ATTACHMENTS_PER_MESSAGE).forEach { batch ->
-                    sendChatMessage(chatId, "", batch)
-                }
-
-                // Send text as separate message if present
-                content.text?.let { text ->
-                    sendChatMessage(chatId, text.take(SharedContent.MAX_CHAT_MESSAGE_LENGTH), emptyList())
-                }
-            }
         }
     }
 
@@ -1229,21 +1198,6 @@ class SharingViewModel(
                     uploadMediaAndGetId(uri, content.type, targetSpaceId)
                 }
                 handleUploadResults(uploadedIds, content.uris.size, space, targetSpaceId)
-            }
-            is SharedContent.Mixed -> {
-                if (content.mediaUris.isNotEmpty()) {
-                    // Upload files only, ignore text
-                    val uploadedIds = content.mediaUris.mapNotNull { uri ->
-                        uploadMediaAndGetId(uri, SharedContent.MediaType.FILE, targetSpaceId)
-                    }
-                    handleUploadResults(uploadedIds, content.mediaUris.size, space, targetSpaceId)
-                } else {
-                    // No media files - create Note with text/url
-                    val noteText = content.text ?: content.url ?: ""
-                    proceedWithNoteCreation(noteText, targetSpaceId) { objectId ->
-                        handleObjectCreationSuccess(objectId, space, targetSpaceId)
-                    }
-                }
             }
         }
     }

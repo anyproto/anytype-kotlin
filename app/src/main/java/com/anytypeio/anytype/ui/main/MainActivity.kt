@@ -857,7 +857,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
                     else -> R.string.sharing_snackbar_files_linked
                 }
-                is SharedContent.Mixed -> R.string.sharing_snackbar_content_linked
             }
             getString(stringResId, destinationName, spaceName)
         } else {
@@ -876,7 +875,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
                     else -> R.string.sharing_snackbar_files_added
                 }
-                is SharedContent.Mixed -> R.string.sharing_snackbar_content_added
             }
             getString(stringResId, destinationName)
         }

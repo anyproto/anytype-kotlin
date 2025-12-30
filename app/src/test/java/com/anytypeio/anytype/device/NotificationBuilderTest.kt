@@ -550,4 +550,173 @@ class NotificationBuilderTest {
             title == spaceName
         })
     }
+
+    // ==================== Truncation Tests ====================
+
+    @Test
+    fun `buildAndNotify should not truncate when both names fit within limit`() = runBlocking {
+        // Given: A Data space with short space and chat names that fit within 45 chars
+        val spaceName = "Work"  // 4 chars
+        val chatName = "Team Chat"  // 9 chars
+        // Total: 4 + 3 (separator) + 9 = 16 chars, well under 45
+        val expectedTitle = "$spaceName - $chatName"
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use full names without truncation
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == expectedTitle
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should truncate long chat name when space name is short`() = runBlocking {
+        // Given: A Data space with short space name and long chat name
+        val spaceName = "Work"  // 4 chars
+        val chatName = "This Is A Very Long Chat Name That Exceeds The Limit"  // 52 chars
+        // Available for chat: 45 - 3 (separator) - 4 (space) = 38 chars
+        // Chat should be truncated to 37 chars + ellipsis
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should truncate chat name with ellipsis
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title != null &&
+                title.startsWith("$spaceName - ") &&
+                title.endsWith("…") &&
+                title.length <= 45
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should truncate long space name when chat name is short`() = runBlocking {
+        // Given: A Data space with long space name and short chat name
+        val spaceName = "This Is A Very Long Space Name That Exceeds The Limit"  // 53 chars
+        val chatName = "Chat"  // 4 chars
+        // Available for space: 45 - 3 (separator) - 4 (chat) = 38 chars
+        // Space should be truncated to 37 chars + ellipsis
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should truncate space name with ellipsis
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title != null &&
+                title.contains(" - $chatName") &&
+                title.contains("…") &&
+                title.length <= 45
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should truncate both names evenly when both are long`() = runBlocking {
+        // Given: A Data space with both long space name and long chat name
+        val spaceName = "This Is A Very Long Space Name Example"  // 38 chars
+        val chatName = "This Is A Very Long Chat Name Example"  // 37 chars
+        // Both exceed half of available space (21 chars each)
+        // Both should be truncated to ~20 chars + ellipsis
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should truncate both names with ellipsis
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title != null &&
+                title.contains(" - ") &&
+                title.count { it == '…' } == 2 &&  // Both names truncated
+                title.length <= 45
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should handle exact boundary length without truncation`() = runBlocking {
+        // Given: Names that together equal exactly 42 chars (45 - 3 for separator)
+        val spaceName = "Workspace Name"  // 14 chars
+        val chatName = "Very Long Chat Name Here1234"  // 28 chars
+        // Total: 14 + 28 = 42 chars, exactly at limit
+        val expectedTitle = "$spaceName - $chatName"
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should use full names without truncation
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == expectedTitle
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should truncate one char over limit correctly`() = runBlocking {
+        // Given: Names that together equal 43 chars (1 over the 42 char content limit)
+        val spaceName = "Workspace Name"  // 14 chars
+        val chatName = "Very Long Chat Name Here12345"  // 29 chars
+        // Total: 14 + 29 = 43 chars, 1 over limit
+        // Chat name should be truncated since space name fits in half
+
+        setupDataSpaceWithChat(spaceName, chatName)
+
+        val testMessage = message.copy(spaceName = spaceName)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Chat name should be truncated
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title != null &&
+                title.startsWith("$spaceName - ") &&
+                title.endsWith("…") &&
+                title.length <= 45
+        })
+    }
+
+    /**
+     * Helper method to set up a Data space with a chat for truncation tests.
+     */
+    private fun setupDataSpaceWithChat(spaceName: String, chatName: String) {
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+
+        val chatObject = ObjectWrapper.Basic(
+            map = mapOf(
+                "id" to testChatId,
+                "name" to chatName
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatObject)
+    }
 }

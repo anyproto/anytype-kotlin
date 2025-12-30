@@ -2097,4 +2097,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="clear_selection">Seçimi temizle</string>
     <string name="save">Kaydet</string>
     <string name="you_dont_have_any_spaces_yet">Henüz hiçbir alana sahip değilsin</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

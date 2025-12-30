@@ -1209,24 +1209,49 @@ class SharingViewModel(
                 }
             }
             is SharedContent.SingleMedia -> {
-                val title = fileSharer.getDisplayName(content.uri) ?: ""
-                proceedWithNoteCreation(title, targetSpaceId) { objectId ->
-                    // TODO: Drop files into the object using FileDrop
+                val objectId = uploadMediaAndGetId(content.uri, content.type, targetSpaceId)
+                if (objectId != null) {
                     handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                } else {
+                    _screenState.value = SharingScreenState.Error(
+                        message = "Failed to upload file",
+                        canRetry = true
+                    )
                 }
             }
             is SharedContent.MultipleMedia -> {
-                val title = content.uris.mapNotNull { fileSharer.getDisplayName(it) }.joinToString(", ")
-                proceedWithNoteCreation(title, targetSpaceId) { objectId ->
-                    // TODO: Drop files into the object using FileDrop
-                    handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                val uploadedIds = content.uris.mapNotNull { uri ->
+                    uploadMediaAndGetId(uri, content.type, targetSpaceId)
+                }
+                if (uploadedIds.isNotEmpty()) {
+                    handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+                } else {
+                    _screenState.value = SharingScreenState.Error(
+                        message = "Failed to upload files",
+                        canRetry = true
+                    )
                 }
             }
             is SharedContent.Mixed -> {
-                val noteText = content.text ?: content.url ?: ""
-                proceedWithNoteCreation(noteText, targetSpaceId) { objectId ->
-                    // TODO: Drop media files into the object
-                    handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                if (content.mediaUris.isNotEmpty()) {
+                    // Upload files only, ignore text
+                    val uploadedIds = content.mediaUris.mapNotNull { uri ->
+                        uploadMediaAndGetId(uri, SharedContent.MediaType.FILE, targetSpaceId)
+                    }
+                    if (uploadedIds.isNotEmpty()) {
+                        handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+                    } else {
+                        _screenState.value = SharingScreenState.Error(
+                            message = "Failed to upload files",
+                            canRetry = true
+                        )
+                    }
+                } else {
+                    // No media files - create Note with text/url
+                    val noteText = content.text ?: content.url ?: ""
+                    proceedWithNoteCreation(noteText, targetSpaceId) { objectId ->
+                        handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                    }
                 }
             }
         }

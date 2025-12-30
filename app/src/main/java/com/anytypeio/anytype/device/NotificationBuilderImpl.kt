@@ -586,6 +586,7 @@ class NotificationBuilderImpl(
     }
 
     private fun String.truncateWithEllipsis(maxLength: Int): String {
+        if (maxLength <= 0) return ""
         return if (length <= maxLength) this
         else take((maxLength - 1).coerceAtLeast(0)) + "…"
     }

@@ -442,10 +442,6 @@ class SharingViewModel(
                     uploadMediaAndGetId(uri, content.type, targetSpaceId)
                 }
             }
-            is SharedContent.Mixed -> {
-                val noteText = content.text ?: content.url ?: ""
-                listOfNotNull(createNoteAndGetId(noteText, targetSpaceId))
-            }
         }
     }
 
@@ -621,6 +617,11 @@ class SharingViewModel(
 
     private fun updateSpaceSelectionState() {
         val content = sharedContent ?: return
+
+        // Don't transition from Loading until spaces are loaded
+        if (allSpaces.isEmpty() && _screenState.value is SharingScreenState.Loading) {
+            return
+        }
 
         val filteredSpaces = if (spaceSearchQuery.isBlank()) {
             allSpaces
@@ -1048,33 +1049,6 @@ class SharingViewModel(
                     sendChatMessage(chatId, caption, attachments)
                 }
             }
-
-            is SharedContent.Mixed -> {
-                // Send comment as separate preceding message
-                if (commentText.isNotBlank()) {
-                    sendChatMessage(chatId, commentText, emptyList())
-                }
-
-                // Build and batch attachments
-                val attachments = mutableListOf<Chat.Message.Attachment>()
-
-                // Add media attachments
-                content.mediaUris.forEach { uri ->
-                    uploadMediaFile(uri, SharedContent.MediaType.FILE, spaceId) { fileId ->
-                        attachments.add(createMediaAttachment(fileId, SharedContent.MediaType.FILE))
-                    }
-                }
-
-                // Batch and send
-                attachments.chunked(SharedContent.MAX_ATTACHMENTS_PER_MESSAGE).forEach { batch ->
-                    sendChatMessage(chatId, "", batch)
-                }
-
-                // Send text as separate message if present
-                content.text?.let { text ->
-                    sendChatMessage(chatId, text.take(SharedContent.MAX_CHAT_MESSAGE_LENGTH), emptyList())
-                }
-            }
         }
     }
 
@@ -1209,25 +1183,21 @@ class SharingViewModel(
                 }
             }
             is SharedContent.SingleMedia -> {
-                val title = fileSharer.getDisplayName(content.uri) ?: ""
-                proceedWithNoteCreation(title, targetSpaceId) { objectId ->
-                    // TODO: Drop files into the object using FileDrop
+                val objectId = uploadMediaAndGetId(content.uri, content.type, targetSpaceId)
+                if (objectId != null) {
                     handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                } else {
+                    _screenState.value = SharingScreenState.Error(
+                        message = "Failed to upload file",
+                        canRetry = true
+                    )
                 }
             }
             is SharedContent.MultipleMedia -> {
-                val title = content.uris.mapNotNull { fileSharer.getDisplayName(it) }.joinToString(", ")
-                proceedWithNoteCreation(title, targetSpaceId) { objectId ->
-                    // TODO: Drop files into the object using FileDrop
-                    handleObjectCreationSuccess(objectId, space, targetSpaceId)
+                val uploadedIds = content.uris.mapNotNull { uri ->
+                    uploadMediaAndGetId(uri, content.type, targetSpaceId)
                 }
-            }
-            is SharedContent.Mixed -> {
-                val noteText = content.text ?: content.url ?: ""
-                proceedWithNoteCreation(noteText, targetSpaceId) { objectId ->
-                    // TODO: Drop media files into the object
-                    handleObjectCreationSuccess(objectId, space, targetSpaceId)
-                }
+                handleUploadResults(uploadedIds, content.uris.size, space, targetSpaceId)
             }
         }
     }
@@ -1280,6 +1250,34 @@ class SharingViewModel(
                 )
             }
         )
+    }
+
+    private suspend fun handleUploadResults(
+        uploadedIds: List<Id>,
+        total: Int,
+        space: SelectableSpaceView,
+        targetSpaceId: Id
+    ) {
+        val successCount = uploadedIds.size
+        val failCount = total - successCount
+
+        when {
+            successCount == total -> {
+                handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+            }
+            successCount > 0 -> {
+                _commands.emit(
+                    SharingCommand.ShowToast("$failCount of $total files failed to upload")
+                )
+                handleObjectCreationSuccess(uploadedIds.first(), space, targetSpaceId)
+            }
+            else -> {
+                _screenState.value = SharingScreenState.Error(
+                    message = "Failed to upload all $total files",
+                    canRetry = true
+                )
+            }
+        }
     }
 
     private suspend fun handleObjectCreationSuccess(

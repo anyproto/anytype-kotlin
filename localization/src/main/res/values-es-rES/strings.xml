@@ -1988,6 +1988,7 @@ En concreto,
     <string name="notification_settings_state_disabled">Deshabilitado</string>
     <string name="notification_settings_state_enabled">Activado</string>
     <string name="content_desc_muted">Silenciado</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Error al cargar la imagen</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unirse con código QR</string>
@@ -2095,4 +2096,5 @@ En concreto,
     <string name="clear_selection">Clear selection</string>
     <string name="save">Guardar</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

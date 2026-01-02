@@ -1976,6 +1976,7 @@
     <string name="notification_settings_state_disabled">無効</string>
     <string name="notification_settings_state_enabled">有効</string>
     <string name="content_desc_muted">ミュート</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">画像を読み込めませんでした</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">QRコードで参加</string>
@@ -2083,4 +2084,5 @@
     <string name="clear_selection">Clear selection</string>
     <string name="save">保存</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

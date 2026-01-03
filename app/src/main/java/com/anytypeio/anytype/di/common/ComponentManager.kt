@@ -55,6 +55,7 @@ import com.anytypeio.anytype.di.feature.SelectSortRelationModule
 import com.anytypeio.anytype.di.feature.TextBlockIconPickerModule
 import com.anytypeio.anytype.di.feature.ViewerFilterModule
 import com.anytypeio.anytype.di.feature.ViewerSortModule
+import com.anytypeio.anytype.di.feature.appwidget.DaggerAppWidgetComponent
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
@@ -1170,6 +1171,10 @@ class ComponentManager(
         DaggerCreateChatObjectComponent
             .factory()
             .create(vmParams, findComponentDependencies())
+    }
+
+    val appWidgetComponent = Component {
+        DaggerAppWidgetComponent.factory().create(findComponentDependencies())
     }
 
     class Component<T>(private val builder: () -> T) {

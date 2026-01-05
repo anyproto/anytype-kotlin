@@ -157,8 +157,9 @@ class DragAndDropDelegate {
         } else {
             val pos = vh.bindingAdapterPosition
             if (pos != RecyclerView.NO_POSITION) {
+                val blockView = vm.views.getOrNull(pos) ?: return true
                 vm.onClickListener(
-                    ListenerType.LongClick(vm.views[pos].id, BlockDimensions())
+                    ListenerType.LongClick(blockView.id, BlockDimensions())
                 )
             }
         }
@@ -272,8 +273,8 @@ class DragAndDropDelegate {
             val (prevRatio, prevPosition) = prev
             if (vh.bindingAdapterPosition.inc() == prevPosition && prevRatio in DragAndDropConfig.topRange) {
                 Timber.d("dnd skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-                val previousTarget = blockAdapter.views[prevPosition]
-                val currentTarget = blockAdapter.views[currPos]
+                val previousTarget = blockAdapter.views.getOrNull(prevPosition) ?: return true
+                val currentTarget = blockAdapter.views.getOrNull(currPos) ?: return true
                 if (previousTarget is BlockView.Indentable && currentTarget is BlockView.Indentable) {
                     if (previousTarget.indent == currentTarget.indent)
                         return true
@@ -289,7 +290,7 @@ class DragAndDropDelegate {
 
         var indent = 0
 
-        val block = blockAdapter.views[vh.bindingAdapterPosition]
+        val block = blockAdapter.views.getOrNull(vh.bindingAdapterPosition) ?: return false
 
         if (block is BlockView.Indentable) {
             indent = block.indent * fragment.dimen(R.dimen.indent)
@@ -328,8 +329,8 @@ class DragAndDropDelegate {
             val (prevRatio, prevPosition) = prev
             if (currPos == prevPosition.inc() && prevRatio in DragAndDropConfig.bottomRange) {
                 Timber.d("dnd skipped: prev - $prev, curr: pos ${vh.bindingAdapterPosition}, $ratio")
-                val previousTarget = blockAdapter.views[prevPosition]
-                val currentTarget = blockAdapter.views[currPos]
+                val previousTarget = blockAdapter.views.getOrNull(prevPosition) ?: return true
+                val currentTarget = blockAdapter.views.getOrNull(currPos) ?: return true
                 if (previousTarget is BlockView.Indentable && currentTarget is BlockView.Indentable) {
                     if (previousTarget.indent == currentTarget.indent)
                         return true
@@ -345,7 +346,7 @@ class DragAndDropDelegate {
 
         var indent = 0
 
-        val block = blockAdapter.views[vh.bindingAdapterPosition]
+        val block = blockAdapter.views.getOrNull(vh.bindingAdapterPosition) ?: return false
 
         if (block is BlockView.Indentable) {
             indent = block.indent * fragment.dimen(R.dimen.indent)
@@ -546,28 +547,30 @@ class DragAndDropDelegate {
 
         if (vh != null) {
             if (vh.bindingAdapterPosition != dndTargetPos && dndTargetPos != NO_POSITION) {
+                val draggedBlock = blockAdapter.views.getOrNull(dndTargetPos) ?: return
+                val targetBlock = blockAdapter.views.getOrNull(vh.bindingAdapterPosition) ?: return
                 target.isSelected = false
                 if (vh is SupportNesting) {
                     when (ratio) {
                         in DragAndDropConfig.topRange -> {
                             vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                dragged = draggedBlock.id,
+                                target = targetBlock.id,
                                 position = Position.TOP
                             )
                         }
                         in DragAndDropConfig.middleRange -> {
                             vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                dragged = draggedBlock.id,
+                                target = targetBlock.id,
                                 position = Position.INNER
                             )
                         }
                         in DragAndDropConfig.bottomRange -> {
                             try {
                                 vm.onDragAndDrop(
-                                    dragged = blockAdapter.views[dndTargetPos].id,
-                                    target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                    dragged = draggedBlock.id,
+                                    target = targetBlock.id,
                                     position = Position.BOTTOM
                                 )
                             } catch (e: Exception) {
@@ -580,15 +583,15 @@ class DragAndDropDelegate {
                     when (ratio) {
                         in DragAndDropConfig.topHalfRange -> {
                             vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                dragged = draggedBlock.id,
+                                target = targetBlock.id,
                                 position = Position.TOP
                             )
                         }
                         in DragAndDropConfig.bottomHalfRange -> {
                             vm.onDragAndDrop(
-                                dragged = blockAdapter.views[dndTargetPos].id,
-                                target = blockAdapter.views[vh.bindingAdapterPosition].id,
+                                dragged = draggedBlock.id,
+                                target = targetBlock.id,
                                 position = Position.BOTTOM
                             )
                         }

@@ -22,7 +22,6 @@ import com.anytypeio.anytype.core_ui.features.editor.DragAndDropConfig
 import com.anytypeio.anytype.core_ui.features.editor.EditorDragAndDropListener
 import com.anytypeio.anytype.core_ui.features.editor.SupportNesting
 import com.anytypeio.anytype.core_ui.features.editor.TextInputDragShadow
-import com.anytypeio.anytype.core_ui.features.editor.holders.media.Video
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Code
 import com.anytypeio.anytype.core_ui.features.editor.holders.other.Title
 import com.anytypeio.anytype.core_ui.features.editor.holders.relations.FeaturedRelationListViewHolder
@@ -95,11 +94,12 @@ class DragAndDropDelegate {
                 blockAdapter.unSelectDraggedViewHolder()
                 blockAdapter.notifyItemChanged(dndTargetPos)
                 if (!operationProcessed && !isMoved && dndTargetPos != NO_POSITION) {
-                    val block = blockAdapter.views[dndTargetPos]
-                    if (block is BlockView.Selectable)
+                    val block = blockAdapter.views.getOrNull(dndTargetPos)
+                    if (block is BlockView.Selectable) {
+                        operationProcessed = true
                         vm.onClickListener(ListenerType.LongClick(block.id))
+                    }
                     dndTargetPos = NO_POSITION
-                    operationProcessed = true
                 }
                 stopScrollDownJob()
                 stopScrollUpJob()

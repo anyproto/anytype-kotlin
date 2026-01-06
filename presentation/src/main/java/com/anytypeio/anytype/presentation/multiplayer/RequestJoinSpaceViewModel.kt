@@ -350,7 +350,6 @@ class RequestJoinSpaceViewModel(
         data object InvalidLink : ErrorView()
         data object InviteNotFound : ErrorView()
         data object SpaceDeleted : ErrorView()
-        data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
         data object RequestAlreadySent: ErrorView()
      }
 }

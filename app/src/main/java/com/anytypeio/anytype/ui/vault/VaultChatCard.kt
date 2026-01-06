@@ -224,7 +224,7 @@ fun VaultChatSpaceCard(
                 spaceView.space.id.let { onSpaceSettings(it) }
             },
             onDeleteOrLeaveSpace = {
-                spaceView.space.id.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
+                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
             }
         )
     }

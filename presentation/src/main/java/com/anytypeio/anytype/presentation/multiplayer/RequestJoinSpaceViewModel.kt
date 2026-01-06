@@ -88,9 +88,8 @@ class RequestJoinSpaceViewModel(
                             .async(view.space)
                             .getOrDefault(false)
                         if (isAlreadyMember) {
-                            state.value = TypedViewState.Error(
-                                ErrorView.AlreadySpaceMember(view.space)
-                            )
+                            proceedWithAutoOpenSpace(view.space)
+                            return@fold
                         } else {
                             val spaceView = spaceViewContainer.get(view.space)
                             if (spaceView != null && spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
@@ -170,6 +169,19 @@ class RequestJoinSpaceViewModel(
     fun onCancelLoadingInviteClicked() {
         getSpaceInviteViewJob?.cancel()
         showLoadingInviteProgress.value = false
+    }
+
+    private fun proceedWithAutoOpenSpace(space: SpaceId) {
+        viewModelScope.launch {
+            val curr = spaceManager.get()
+            if (curr == space.id) {
+                commands.emit(Command.Dismiss)
+            } else {
+                spaceManager.set(space.id)
+                saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
+                commands.emit(Command.SwitchToSpace(space))
+            }
+        }
     }
 
     fun onRequestToJoinClicked() {

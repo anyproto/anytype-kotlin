@@ -92,7 +92,7 @@ abstract class SearchRelationViewModel(
 
     private fun notAllowedRelations(relation: SimpleRelationView): Boolean =
         notAllowedRelationFormats.contains(relation.format)
-                || (relation.key != Relations.NAME && relation.key != Relations.DONE && relation.isHidden)
+                || (relation.isHidden)
 
     fun onSearchQueryChanged(txt: String) {
         viewModelScope.launch { query.send(txt) }

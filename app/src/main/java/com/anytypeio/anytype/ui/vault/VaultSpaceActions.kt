@@ -131,7 +131,7 @@ fun SpaceActionsDropdownMenu(
                 }
             }
         )
-        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
         // Delete/Leave Space (always shown)
         DropdownMenuItem(
             onClick = {
@@ -148,11 +148,11 @@ fun SpaceActionsDropdownMenu(
                     Text(
                         modifier = Modifier.weight(1f),
                         style = BodyRegular,
-                        color = colorResource(id = R.color.palette_system_red),
+                        color = colorResource(id = R.color.text_primary),
                         text = stringResource(id = stringRes)
                     )
                     Image(
-                        painter = painterResource(id = R.drawable.ic_delete_24),
+                        painter = painterResource(id = R.drawable.ic_leave_space_24),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 4.dp)

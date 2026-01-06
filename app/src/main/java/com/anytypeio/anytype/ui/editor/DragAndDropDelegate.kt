@@ -95,9 +95,11 @@ class DragAndDropDelegate {
                 blockAdapter.notifyItemChanged(dndTargetPos)
                 if (!operationProcessed && !isMoved && dndTargetPos != NO_POSITION) {
                     val block = blockAdapter.views.getOrNull(dndTargetPos)
-                    if (block is BlockView.Selectable) {
+                    if (block != null) {
                         operationProcessed = true
-                        vm.onClickListener(ListenerType.LongClick(block.id))
+                        if (block is BlockView.Selectable) {
+                            vm.onClickListener(ListenerType.LongClick(block.id))
+                        }
                     }
                     dndTargetPos = NO_POSITION
                 }

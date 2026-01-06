@@ -102,7 +102,8 @@ class VaultFragment : BaseComposeFragment() {
                 onUnpinSpace = vm::onUnpinSpaceClicked,
                 onOrderChanged = vm::onOrderChanged,
                 onDragEnd = vm::onDragEnd,
-                onSpaceSettings = vm::onSpaceSettingsClicked
+                onSpaceSettings = vm::onSpaceSettingsClicked,
+                onDeleteOrLeaveSpace = vm::onDeleteSpaceClicked
             )
 
             val notificationError = vm.notificationError.collectAsStateWithLifecycle().value

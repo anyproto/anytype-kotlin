@@ -1230,6 +1230,16 @@ class VaultViewModel(
         }
     }
 
+    fun onDeleteSpaceClicked(spaceId: Id, isOwner: Boolean) {
+        viewModelScope.launch {
+            if (isOwner) {
+                commands.emit(VaultCommand.ShowDeleteSpaceWarning(spaceId))
+            } else {
+                commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
+            }
+        }
+    }
+
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
             analytics.sendEvent(

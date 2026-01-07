@@ -52,7 +52,8 @@ fun VaultScreen(
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
-    onSpaceSettings: (Id) -> Unit
+    onSpaceSettings: (Id) -> Unit,
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
 ) {
 
     var searchQuery by remember { mutableStateOf("") }
@@ -96,7 +97,8 @@ fun VaultScreen(
                     onUnpinSpace = onUnpinSpace,
                     onOrderChanged = onOrderChanged,
                     onDragEnd = onDragEnd,
-                    onSpaceSettings = onSpaceSettings
+                    onSpaceSettings = onSpaceSettings,
+                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                 )
             }
         }
@@ -117,7 +119,8 @@ fun VaultScreenContent(
     onUnpinSpace: (Id) -> Unit,
     onOrderChanged: (String, String) -> Unit,
     onDragEnd: () -> Unit = { /* No-op */ },
-    onSpaceSettings: (Id) -> Unit
+    onSpaceSettings: (Id) -> Unit,
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit
 ) {
     var expandedSpaceId by remember { mutableStateOf<String?>(null) }
 
@@ -263,7 +266,8 @@ fun VaultScreenContent(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    onSpaceSettings = onSpaceSettings
+                                    onSpaceSettings = onSpaceSettings,
+                                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                                 )
                             }
 
@@ -301,7 +305,8 @@ fun VaultScreenContent(
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
                                     onSpaceSettings = onSpaceSettings,
-                                    spaceBackground = spaceBackgroundValue.value
+                                    spaceBackground = spaceBackgroundValue.value,
+                                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                                 )
                             }
 
@@ -351,7 +356,8 @@ fun VaultScreenContent(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    onSpaceSettings = onSpaceSettings
+                                    onSpaceSettings = onSpaceSettings,
+                                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                                 )
                             }
 
@@ -399,7 +405,8 @@ fun VaultScreenContent(
                                     onUnmuteSpace = onUnmuteSpace,
                                     onPinSpace = onPinSpace,
                                     onUnpinSpace = onUnpinSpace,
-                                    onSpaceSettings = onSpaceSettings
+                                    onSpaceSettings = onSpaceSettings,
+                                    onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                                 )
                             }
                         }
@@ -456,7 +463,8 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings
+                                onSpaceSettings = onSpaceSettings,
+                                onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                             )
                         }
 
@@ -492,7 +500,8 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings
+                                onSpaceSettings = onSpaceSettings,
+                                onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                             )
                         }
 
@@ -516,7 +525,8 @@ fun VaultScreenContent(
                                 onDismissMenu = { expandedSpaceId = null },
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings
+                                onSpaceSettings = onSpaceSettings,
+                                onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                             )
                         }
 
@@ -550,7 +560,8 @@ fun VaultScreenContent(
                                 onUnmuteSpace = onUnmuteSpace,
                                 onPinSpace = onPinSpace,
                                 onUnpinSpace = onUnpinSpace,
-                                onSpaceSettings = onSpaceSettings
+                                onSpaceSettings = onSpaceSettings,
+                                onDeleteOrLeaveSpace = onDeleteOrLeaveSpace
                             )
                         }
                     }

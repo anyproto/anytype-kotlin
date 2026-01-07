@@ -131,7 +131,8 @@ fun VaultChatSpaceCard(
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {}
+    onSpaceSettings: (Id) -> Unit = {},
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
 
     val updatedModifier = when (spaceBackground) {
@@ -204,6 +205,7 @@ fun VaultChatSpaceCard(
             onDismiss = onDismissMenu,
             isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
+            isOwner = spaceView.isOwner,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
                     if (shouldShowAsMuted) {
@@ -220,6 +222,9 @@ fun VaultChatSpaceCard(
             },
             onSpaceSettings = {
                 spaceView.space.id.let { onSpaceSettings(it) }
+            },
+            onDeleteOrLeaveSpace = {
+                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
             }
         )
     }

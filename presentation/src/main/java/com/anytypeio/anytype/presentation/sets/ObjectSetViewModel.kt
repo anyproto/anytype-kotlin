@@ -404,7 +404,7 @@ class ObjectSetViewModel(
     /**
      * Syncs type's recommended relations to DataView's relationLinks.
      * This matches desktop's behavior of calling BlockDataviewRelationSet
-     * when opening a Set/TypeSet to ensure type relations (like "Done") are available as filter options.
+     * when opening a TypeSet to ensure type relations (like "Done") are available as filter options.
      */
     private fun subscribeToSyncTypeRelations() {
         viewModelScope.launch {

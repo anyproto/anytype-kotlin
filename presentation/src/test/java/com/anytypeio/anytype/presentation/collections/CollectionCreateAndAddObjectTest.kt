@@ -107,7 +107,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             fieldParser = fieldParser,
             spaceViews = spacedViews,
             deepLinkResolver = deepLinkResolver,
-            removeObjectFromCollection = removeObjectFromCollection
+            removeObjectFromCollection = removeObjectFromCollection,
+            setDataViewProperties = setDataViewProperties
         )
     }
 

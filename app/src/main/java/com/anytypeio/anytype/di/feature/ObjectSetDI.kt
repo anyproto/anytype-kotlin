@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
@@ -180,6 +181,17 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideSetDataViewProperties(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewProperties = SetDataViewProperties(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideDuplicateObjectsListUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -233,7 +245,8 @@ object ObjectSetModule {
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         fieldParser: FieldParser,
         spaceViews: SpaceViewSubscriptionContainer,
-        deepLinkResolver: DeepLinkResolver
+        deepLinkResolver: DeepLinkResolver,
+        setDataViewProperties: SetDataViewProperties
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -276,7 +289,8 @@ object ObjectSetModule {
         fieldParser = fieldParser,
         spaceViews = spaceViews,
         deepLinkResolver = deepLinkResolver,
-        removeObjectFromCollection = removeObjectFromCollection
+        removeObjectFromCollection = removeObjectFromCollection,
+        setDataViewProperties = setDataViewProperties
     )
 
     @JvmStatic

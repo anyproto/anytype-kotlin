@@ -5,12 +5,12 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.cancel
-import com.anytypeio.anytype.core_utils.ext.withLatestFrom
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.relations.simpleRelations
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -31,22 +31,14 @@ abstract class SearchRelationViewModel(
     val isDismissed = MutableSharedFlow<Boolean>(replay = 0)
 
     private val query = Channel<String>()
-    private val notAllowedRelationFormats = listOf(
-        RelationFormat.RELATIONS,
-        RelationFormat.EMOJI,
-        RelationFormat.UNDEFINED
-    )
     private val jobs = mutableListOf<Job>()
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     fun onStart(viewerId: Id) {
         Timber.d("SearchRelationViewModel, onStart, viewerId: [$viewerId]")
         // Initializing views before any query.
         jobs += viewModelScope.launch {
-            val initViews = filterRelationsFromAlreadyInUse(
-                objectState = objectState.value,
-                viewerId = viewerId,
-                storeOfRelations = storeOfRelations
-            ).filterNot { notAllowedRelations(it) }
+            val initViews = getPropertiesForDataView()
             Timber.d("SearchRelationViewModel, initRelationViews: [$initViews]")
             _views.value = initViews
         }
@@ -54,25 +46,39 @@ abstract class SearchRelationViewModel(
         jobs += viewModelScope.launch {
             query
                 .consumeAsFlow()
-                .withLatestFrom(objectState) { query, state ->
-                    val relations = filterRelationsFromAlreadyInUse(
-                        objectState = state,
-                        viewerId = viewerId,
-                        storeOfRelations = storeOfRelations
-                    )
-                    if (query.isEmpty()) {
+                .mapLatest { queryText ->
+                    val relations = getPropertiesForDataView()
+                    if (queryText.isEmpty()) {
                         relations
                     } else {
-                        relations.filter { relation ->
-                            relation.title.contains(query, ignoreCase = true)
-                        }
+                        relations.filter { it.title.contains(queryText, ignoreCase = true) }
                     }
-                }
-                .mapLatest { relations ->
-                    relations.filterNot { notAllowedRelations(it) }
                 }
                 .collect { _views.value = it }
         }
+    }
+
+    /**
+     * Fetches properties from the DataView's relationLinks and maps them to [SimpleRelationView].
+     * After mapping, filters out relations that are:
+     * - Hidden (isHidden = true)
+     * - Of disallowed formats (RELATIONS, EMOJI, UNDEFINED)
+     *
+     * @see notAllowedRelations for filtering logic
+     */
+    private suspend fun getPropertiesForDataView(): List<SimpleRelationView> {
+        val dv = objectState.value.dataViewState()?.dataViewContent ?: return emptyList()
+        val dvRelations = dv.relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
+        return dvRelations.map { property ->
+            SimpleRelationView(
+                key = property.key,
+                title = property.name.orEmpty(),
+                format = property.format,
+                isHidden = property.isHidden ?: false,
+                isReadonly = property.isReadonlyValue,
+                isDefault = Relations.systemRelationKeys.contains(property.key)
+            )
+        }.filterNot { notAllowedRelations(it) }
     }
 
     fun onStop() {
@@ -92,9 +98,17 @@ abstract class SearchRelationViewModel(
 
     private fun notAllowedRelations(relation: SimpleRelationView): Boolean =
         notAllowedRelationFormats.contains(relation.format)
-                || (relation.key != Relations.NAME && relation.key != Relations.DONE && relation.isHidden)
+                || (relation.isHidden)
 
     fun onSearchQueryChanged(txt: String) {
         viewModelScope.launch { query.send(txt) }
+    }
+
+    companion object {
+        val notAllowedRelationFormats = listOf(
+            RelationFormat.RELATIONS,
+            RelationFormat.EMOJI,
+            RelationFormat.UNDEFINED
+        )
     }
 }

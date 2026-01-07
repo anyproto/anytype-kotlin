@@ -41,6 +41,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
@@ -187,7 +188,8 @@ class ObjectSetViewModel(
     private val spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val setDataViewProperties: SetDataViewProperties
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -396,6 +398,80 @@ class ObjectSetViewModel(
         }
 
         subscribeToSelectedType()
+        subscribeToSyncTypeRelations()
+    }
+
+    /**
+     * Syncs type's recommended relations to DataView's relationLinks.
+     * This matches desktop's behavior of calling BlockDataviewRelationSet
+     * when opening a TypeSet to ensure type relations (like "Done") are available as filter options.
+     */
+    private fun subscribeToSyncTypeRelations() {
+        viewModelScope.launch {
+            stateReducer.state
+                .filterIsInstance<ObjectState.DataView>()
+                .distinctUntilChanged { old, new ->
+                    // Skip emissions where isInitialized remains the same.
+                    // Combined with the `if (state.isInitialized)` check below,
+                    // this ensures we only sync when transitioning to initialized state.
+                    // So the emission only passes when isInitialized changes (either direction):
+                    // - false → true ✅ passes through
+                    // - true → false ✅ passes through
+                    // - true → true ❌ filtered out
+                    // - false → false ❌ filtered out
+
+                    old.isInitialized == new.isInitialized
+                }
+                .collect { state ->
+                    if (state.isInitialized) {
+                        proceedWithSyncingTypeRelations(state)
+                    }
+                }
+        }
+    }
+
+    private suspend fun proceedWithSyncingTypeRelations(state: ObjectState.DataView) {
+        val typeId = when (state) {
+            is ObjectState.DataView.TypeSet -> {
+                // For TypeSet, the context is the type itself
+                vmParams.ctx
+            }
+            is ObjectState.DataView.Set,
+            is ObjectState.DataView.Collection -> {
+                // Sets and Collections don't need type relation syncing
+                return
+            }
+        }
+
+        val type = storeOfObjectTypes.get(typeId) ?: return
+
+        // Build relation keys list: ['name', 'description'] + type's recommended relations
+        val typeRelationKeys = type.allRecommendedRelations.mapNotNull { relationId ->
+            storeOfRelations.getById(relationId)?.key
+        }
+
+        val relationKeys = buildList {
+            add(Relations.NAME)
+            add(Relations.DESCRIPTION)
+            addAll(typeRelationKeys)
+        }.distinct()
+
+        Timber.d("Syncing type relations to DataView: $relationKeys")
+
+        setDataViewProperties.async(
+            SetDataViewProperties.Params(
+                objectId = vmParams.ctx,
+                properties = relationKeys
+            )
+        ).fold(
+            onSuccess = { payload ->
+                Timber.d("Successfully synced type relations to DataView")
+                dispatcher.send(payload)
+            },
+            onFailure = { error ->
+                Timber.e(error, "Failed to sync type relations to DataView")
+            }
+        )
     }
 
     private fun proceedWIthObservingPermissions() {

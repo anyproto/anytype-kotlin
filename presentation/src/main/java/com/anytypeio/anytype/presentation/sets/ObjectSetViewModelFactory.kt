@@ -9,6 +9,7 @@ import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -85,7 +86,8 @@ class ObjectSetViewModelFactory(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val setDataViewProperties: SetDataViewProperties
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -131,7 +133,8 @@ class ObjectSetViewModelFactory(
             fieldParser = fieldParser,
             spaceViews = spaceViews,
             deepLinkResolver = deepLinkResolver,
-            removeObjectFromCollection = removeObjectFromCollection
+            removeObjectFromCollection = removeObjectFromCollection,
+            setDataViewProperties = setDataViewProperties
         ) as T
     }
 }

@@ -38,7 +38,7 @@ abstract class SearchRelationViewModel(
         Timber.d("SearchRelationViewModel, onStart, viewerId: [$viewerId]")
         // Initializing views before any query.
         jobs += viewModelScope.launch {
-            val initViews = getRelationsForViewer(viewerId)
+            val initViews = getPropertiesForDataView()
             Timber.d("SearchRelationViewModel, initRelationViews: [$initViews]")
             _views.value = initViews
         }
@@ -47,7 +47,7 @@ abstract class SearchRelationViewModel(
             query
                 .consumeAsFlow()
                 .mapLatest { queryText ->
-                    val relations = getRelationsForViewer(viewerId)
+                    val relations = getPropertiesForDataView()
                     if (queryText.isEmpty()) {
                         relations
                     } else {
@@ -65,7 +65,7 @@ abstract class SearchRelationViewModel(
      * - Not hidden (isHidden = false)
      * - Not of disallowed formats (RELATIONS, EMOJI, UNDEFINED)
      */
-    private suspend fun getRelationsForViewer(viewerId: Id): List<SimpleRelationView> {
+    private suspend fun getPropertiesForDataView(): List<SimpleRelationView> {
         val dv = objectState.value.dataViewState()?.dataViewContent ?: return emptyList()
         val dvRelations = dv.relationLinks.mapNotNull { storeOfRelations.getByKey(it.key) }
         return dvRelations.map { property ->

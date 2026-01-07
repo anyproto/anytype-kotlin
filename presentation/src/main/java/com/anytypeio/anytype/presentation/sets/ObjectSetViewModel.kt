@@ -411,7 +411,15 @@ class ObjectSetViewModel(
             stateReducer.state
                 .filterIsInstance<ObjectState.DataView>()
                 .distinctUntilChanged { old, new ->
-                    // Only trigger when state becomes initialized for the first time
+                    // Skip emissions where isInitialized remains the same.
+                    // Combined with the `if (state.isInitialized)` check below,
+                    // this ensures we only sync when transitioning to initialized state.
+                    // So the emission only passes when isInitialized changes (either direction):
+                    // - false → true ✅ passes through
+                    // - true → false ✅ passes through
+                    // - true → true ❌ filtered out
+                    // - false → false ❌ filtered out
+
                     old.isInitialized == new.isInitialized
                 }
                 .collect { state ->

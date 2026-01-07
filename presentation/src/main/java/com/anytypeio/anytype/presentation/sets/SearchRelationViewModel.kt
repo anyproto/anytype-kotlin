@@ -59,11 +59,12 @@ abstract class SearchRelationViewModel(
     }
 
     /**
-     * Fetches and filters properties for dataView block.
-     * Returns relations that are:
-     * - Present in the DataView's relationLinks
-     * - Not hidden (isHidden = false)
-     * - Not of disallowed formats (RELATIONS, EMOJI, UNDEFINED)
+     * Fetches properties from the DataView's relationLinks and maps them to [SimpleRelationView].
+     * After mapping, filters out relations that are:
+     * - Hidden (isHidden = true)
+     * - Of disallowed formats (RELATIONS, EMOJI, UNDEFINED)
+     *
+     * @see notAllowedRelations for filtering logic
      */
     private suspend fun getPropertiesForDataView(): List<SimpleRelationView> {
         val dv = objectState.value.dataViewState()?.dataViewContent ?: return emptyList()

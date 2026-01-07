@@ -25,12 +25,15 @@ class FilterHelper {
                 DVFilterQuickOption.DAYS_AHEAD -> fragment.getString(R.string.number_days_from)
                 else -> ""
             }
-            RelationTextValueFragment.new(
-                ctx = ctx,
-                space = space,
-                name = name,
-                value = command.value
-            ).show(fragment.childFragmentManager, null)
+            val fm = fragment.childFragmentManager
+            if (fm.findFragmentByTag(RELATION_TEXT_VALUE_TAG) == null) {
+                RelationTextValueFragment.new(
+                    ctx = ctx,
+                    space = space,
+                    name = name,
+                    value = command.value
+                ).show(fm, RELATION_TEXT_VALUE_TAG)
+            }
         }.onFailure {
             Timber.e(it, "Error while navigation")
         }
@@ -52,3 +55,4 @@ class FilterHelper {
 }
 
 private const val KEY_OPTION = "arg.filter-helper.option"
+private const val RELATION_TEXT_VALUE_TAG = "tag.relation_text_value"

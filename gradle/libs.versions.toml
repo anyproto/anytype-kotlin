@@ -60,7 +60,7 @@ roomVersion = '2.7.0'
 dataStoreVersion = '1.1.4'
 amplitudeVersion = '3.35.1'
 coilComposeVersion = '3.2.0'
-telephotoZoomableVersion = '0.16.0'
+telephotoZoomableVersion = '0.18.0'
 sentryVersion = '7.13.0'
 firebaseBomVersion = "33.13.0"
 

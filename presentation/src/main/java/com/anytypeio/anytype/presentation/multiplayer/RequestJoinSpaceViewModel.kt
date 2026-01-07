@@ -34,7 +34,7 @@ import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.common.TypedViewState
-import com.anytypeio.anytype.presentation.common.TypedViewState.*
+import com.anytypeio.anytype.presentation.common.TypedViewState.Error
 import javax.inject.Inject
 import kotlin.random.Random
 import kotlinx.coroutines.Job
@@ -88,9 +88,8 @@ class RequestJoinSpaceViewModel(
                             .async(view.space)
                             .getOrDefault(false)
                         if (isAlreadyMember) {
-                            state.value = TypedViewState.Error(
-                                ErrorView.AlreadySpaceMember(view.space)
-                            )
+                            onOpenSpaceClicked(view.space)
+                            return@fold
                         } else {
                             val spaceView = spaceViewContainer.get(view.space)
                             if (spaceView != null && spaceView.spaceAccountStatus == SpaceStatus.SPACE_JOINING) {
@@ -286,7 +285,14 @@ class RequestJoinSpaceViewModel(
                 commands.emit(Command.Dismiss)
             } else {
                 spaceManager.set(space.id)
-                saveCurrentSpace.async(params = SaveCurrentSpace.Params(space))
+                saveCurrentSpace.async(params = SaveCurrentSpace.Params(space)).fold(
+                    onSuccess = {
+                        Timber.i("Current space saved successfully after joining space")
+                    },
+                    onFailure = { error ->
+                        Timber.e(error, "Error while saving current space after joining")
+                    }
+                )
                 commands.emit(Command.SwitchToSpace(space))
             }
         }
@@ -344,7 +350,6 @@ class RequestJoinSpaceViewModel(
         data object InvalidLink : ErrorView()
         data object InviteNotFound : ErrorView()
         data object SpaceDeleted : ErrorView()
-        data class AlreadySpaceMember(val space: SpaceId) : ErrorView()
         data object RequestAlreadySent: ErrorView()
      }
 }

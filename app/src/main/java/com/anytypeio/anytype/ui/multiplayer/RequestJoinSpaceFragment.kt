@@ -35,7 +35,6 @@ import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoinSpaceWithoutApproveScreen
 import com.anytypeio.anytype.core_ui.features.multiplayer.JoiningLoadingState
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
-import com.anytypeio.anytype.core_ui.foundation.Announcement
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.GenericAlert
 import com.anytypeio.anytype.core_ui.foundation.Prompt
@@ -189,20 +188,6 @@ class RequestJoinSpaceFragment : BaseBottomSheetComposeFragment() {
 
                         is TypedViewState.Error -> {
                             when (val err = state.error) {
-                                is ErrorView.AlreadySpaceMember -> {
-                                    Announcement(
-                                        title = stringResource(id = R.string.multiplayer_already_space_member),
-                                        subtitle = EMPTY_STRING_VALUE,
-                                        actionButtonText = stringResource(id = R.string.multiplayer_open_space),
-                                        cancelButtonText = stringResource(id = R.string.cancel),
-                                        onLeftClicked = {
-                                            safeDismiss()
-                                        },
-                                        onRightClicked = {
-                                            vm.onOpenSpaceClicked(err.space)
-                                        }
-                                    )
-                                }
                                 is ErrorView.InviteNotFound -> {
                                     GenericAlert(
                                         config = AlertConfig.WithOneButton(

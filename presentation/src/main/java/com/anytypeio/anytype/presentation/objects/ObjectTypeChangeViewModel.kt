@@ -2,11 +2,13 @@ package com.anytypeio.anytype.presentation.objects
 
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
@@ -43,7 +45,7 @@ class ObjectTypeChangeViewModel(
     private val excludeTypes = MutableStateFlow(vmParams.excludeTypes)
     private val _objTypes = MutableStateFlow<List<ObjectWrapper.Type>>(emptyList())
 
-    val views = MutableStateFlow<List<ObjectTypeItemView>>(emptyList())
+    val viewState = MutableStateFlow<ObjectTypeChangeViewState>(ObjectTypeChangeViewState.Loading)
     val commands = MutableSharedFlow<Command>()
 
     private val pipeline = combine(
@@ -70,11 +72,12 @@ class ObjectTypeChangeViewModel(
         )
         _objTypes.value = filteredTypes
 
-        proceedWithBuildingViews(
+        proceedWithBuildingViewState(
             types = filteredTypes,
-            excludeTypes = currentExcludeTypes
+            excludeTypes = currentExcludeTypes,
+            query = query
         ).also {
-            Timber.d("Built views: ${it.size}")
+            Timber.d("Built view state: $it")
         }
     }.catch {
         Timber.e(it, "Error in pipeline")
@@ -139,8 +142,8 @@ class ObjectTypeChangeViewModel(
         viewModelScope.launch {
             // Processing on the io thread, collecting on the main thread.
             pipeline.flowOn(dispatchers.io).collect {
-                Timber.d("Got views: ${it.size}")
-                views.value = it
+                Timber.d("Got view state: $it")
+                viewState.value = it
             }
         }
     }
@@ -149,7 +152,7 @@ class ObjectTypeChangeViewModel(
         userInput.value = input
     }
 
-    fun onItemClicked(item: ObjectTypeView) {
+    fun onItemClicked(item: ObjectTypeChangeItem.Type) {
         viewModelScope.launch {
             val objType = _objTypes.value.firstOrNull { it.id == item.id }
             if (objType == null) {
@@ -161,10 +164,11 @@ class ObjectTypeChangeViewModel(
         }
     }
 
-    private fun proceedWithBuildingViews(
+    private fun proceedWithBuildingViewState(
         types: List<ObjectWrapper.Type>,
-        excludeTypes: List<Id>
-    ) = buildList {
+        excludeTypes: List<Id>,
+        query: String
+    ): ObjectTypeChangeViewState {
         Timber.d("Types count: ${types.size}")
 
         val isWithCollection = when (vmParams.screen) {
@@ -180,21 +184,31 @@ class ObjectTypeChangeViewModel(
             Screen.DEFAULT_OBJECT_TYPE -> false
         }
 
-        if (types.isNotEmpty()) {
-            val views = types.getObjectTypeViewsForSBPage(
-                isWithCollection = isWithCollection,
-                isWithBookmark = isWithBookmark,
-                excludeTypes = excludeTypes,
-                selectedTypes = vmParams.selectedTypes,
-                useCustomComparator = false
-            ).map {
-                ObjectTypeItemView.Type(it)
-            }
-            addAll(views)
+        if (types.isEmpty() && query.isNotEmpty()) {
+            return ObjectTypeChangeViewState.Empty
         }
-        if (isEmpty() && userInput.value.isNotEmpty()) {
-            add(ObjectTypeItemView.EmptyState(userInput.value))
+
+        if (types.isEmpty()) {
+            return ObjectTypeChangeViewState.Loading
         }
+
+        val items = types.getObjectTypeViewsForSBPage(
+            isWithCollection = isWithCollection,
+            isWithBookmark = isWithBookmark,
+            excludeTypes = excludeTypes,
+            selectedTypes = vmParams.selectedTypes,
+            useCustomComparator = false
+        ).map { typeView ->
+            ObjectTypeChangeItem.Type(
+                id = typeView.id,
+                key = typeView.key,
+                name = typeView.name,
+                icon = typeView.icon,
+                isSelected = typeView.isSelected
+            )
+        }
+
+        return ObjectTypeChangeViewState.Content(items)
     }
 
     companion object {
@@ -221,4 +235,20 @@ class ObjectTypeChangeViewModel(
             val item: ObjectWrapper.Type
         ) : Command()
     }
+}
+
+sealed class ObjectTypeChangeViewState {
+    data object Loading : ObjectTypeChangeViewState()
+    data object Empty : ObjectTypeChangeViewState()
+    data class Content(val items: List<ObjectTypeChangeItem>) : ObjectTypeChangeViewState()
+}
+
+sealed class ObjectTypeChangeItem {
+    data class Type(
+        val id: Id,
+        val key: Key,
+        val name: String,
+        val icon: ObjectIcon,
+        val isSelected: Boolean = false
+    ) : ObjectTypeChangeItem()
 }

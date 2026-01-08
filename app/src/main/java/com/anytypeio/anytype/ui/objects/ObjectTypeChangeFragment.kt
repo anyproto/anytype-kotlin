@@ -4,30 +4,31 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.EditText
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.MaterialTheme
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.ViewCompositionStrategy
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
-import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
-import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
-import com.anytypeio.anytype.databinding.FragmentObjectTypeChangeBinding
+import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel.Command
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
+import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
 
-abstract class BaseObjectTypeChangeFragment :
-    BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
+abstract class BaseObjectTypeChangeFragment : BaseBottomSheetComposeFragment() {
 
-    abstract fun setTitle()
+    abstract fun resolveTitle(): String
     abstract fun onItemClicked(item: ObjectWrapper.Type)
 
     @Inject
@@ -41,51 +42,48 @@ abstract class BaseObjectTypeChangeFragment :
     protected val selectedTypes: List<Id>
         get() = argOrNull<List<Id>>(ARG_SELECTED_TYPES) ?: emptyList()
 
-    private val objectTypeAdapter by lazy {
-        ObjectTypeVerticalAdapter(
-            onItemClick = vm::onItemClicked,
-            data = arrayListOf()
-        )
-    }
-
-    override val textInput: EditText get() = binding.searchObjectTypeInput
-
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        super.onViewCreated(view, savedInstanceState)
-        setTitle()
-        binding.recycler.apply {
-            adapter = objectTypeAdapter
-            layoutManager = LinearLayoutManager(context)
-        }
-        skipCollapsed()
-        setFullHeightSheet()
-    }
-
-    override fun onStart() {
-        super.onStart()
-        expand()
-        with(lifecycleScope) {
-            jobs += subscribe(vm.views) { objectTypeAdapter.update(it) }
-            jobs += subscribe(binding.searchObjectTypeInput.textChanges()) {
-                vm.onQueryChanged(it.toString())
-            }
-            jobs += subscribe(vm.toasts) { toast -> toast(toast) }
-            jobs += subscribe(vm.commands) { command ->
-                when (command) {
-                    is Command.DispatchType -> {
-                        onItemClicked(command.item)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View = ComposeView(requireContext()).apply {
+        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+        setContent {
+            MaterialTheme(
+                typography = typography,
+                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+                colors = MaterialTheme.colors.copy(
+                    surface = colorResource(id = R.color.context_menu_background)
+                )
+            ) {
+                ObjectTypeChangeScreen(
+                    title = resolveTitle(),
+                    state = vm.viewState.collectAsStateWithLifecycle().value,
+                    onTypeClicked = vm::onItemClicked,
+                    onQueryChanged = vm::onQueryChanged,
+                    onFocused = {
+                        skipCollapsed()
+                        expand()
                     }
+                )
+            }
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command ->
+                    when (command) {
+                        is Command.DispatchType -> {
+                            onItemClicked(command.item)
+                            dismiss()
+                        }
+                    }
+                }
+            }
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { toast ->
+                    toast(toast)
                 }
             }
         }
     }
-
-    override fun inflateBinding(
-        inflater: LayoutInflater,
-        container: ViewGroup?
-    ): FragmentObjectTypeChangeBinding = FragmentObjectTypeChangeBinding.inflate(
-        inflater, container, false
-    )
 
     companion object {
         const val ARG_SPACE = "arg.object-type-change.space"

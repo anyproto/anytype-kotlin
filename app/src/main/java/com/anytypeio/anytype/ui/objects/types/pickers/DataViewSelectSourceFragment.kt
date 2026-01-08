@@ -13,13 +13,6 @@ import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
 
-    override fun startWithParams() {
-        vm.onStart(
-            screen = ObjectTypeChangeViewModel.Screen.DATA_VIEW_SOURCE,
-            selectedTypes = selectedTypes
-        )
-    }
-
     override fun onItemClicked(item: ObjectWrapper.Type) {
         withParent<OnDataViewSelectSourceAction> {
             onProceedWithSelectSource(id = item.id)
@@ -33,7 +26,11 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get().inject(this)
+        val params = ObjectTypeChangeViewModel.VmParams(
+            screen = ObjectTypeChangeViewModel.Screen.DATA_VIEW_SOURCE,
+            selectedTypes = selectedTypes
+        )
+        componentManager().objectTypeChangeComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {

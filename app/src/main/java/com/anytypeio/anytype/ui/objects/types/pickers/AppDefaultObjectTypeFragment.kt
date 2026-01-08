@@ -16,12 +16,6 @@ import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
  */
 class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
-    override fun startWithParams() {
-        vm.onStart(
-            screen = ObjectTypeChangeViewModel.Screen.DEFAULT_OBJECT_TYPE
-        )
-    }
-
     override fun onItemClicked(item: ObjectWrapper.Type) {
         withParent<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = item)
@@ -35,7 +29,10 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get().inject(this)
+        val params = ObjectTypeChangeViewModel.VmParams(
+            screen = ObjectTypeChangeViewModel.Screen.DEFAULT_OBJECT_TYPE
+        )
+        componentManager().objectTypeChangeComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {

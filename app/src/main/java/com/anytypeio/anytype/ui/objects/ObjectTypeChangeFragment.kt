@@ -27,7 +27,6 @@ abstract class BaseObjectTypeChangeFragment :
     BaseBottomSheetTextInputFragment<FragmentObjectTypeChangeBinding>() {
 
     abstract fun setTitle()
-    abstract fun startWithParams()
     abstract fun onItemClicked(item: ObjectWrapper.Type)
 
     @Inject
@@ -73,13 +72,9 @@ abstract class BaseObjectTypeChangeFragment :
                     is Command.DispatchType -> {
                         onItemClicked(command.item)
                     }
-                    is Command.TypeAdded -> {
-                        toast(getString(R.string.type_added, command.type))
-                    }
                 }
             }
         }
-        startWithParams()
     }
 
     override fun inflateBinding(

@@ -15,13 +15,6 @@ import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
  */
 class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
 
-    override fun startWithParams() {
-        vm.onStart(
-            screen = ObjectTypeChangeViewModel.Screen.OBJECT_TYPE_CHANGE,
-            excludeTypes = excludeTypes
-        )
-    }
-
     override fun onItemClicked(item: ObjectWrapper.Type) {
         withParentSafe<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = item)
@@ -35,7 +28,11 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get().inject(this)
+        val params = ObjectTypeChangeViewModel.VmParams(
+            screen = ObjectTypeChangeViewModel.Screen.OBJECT_TYPE_CHANGE,
+            excludeTypes = excludeTypes
+        )
+        componentManager().objectTypeChangeComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {

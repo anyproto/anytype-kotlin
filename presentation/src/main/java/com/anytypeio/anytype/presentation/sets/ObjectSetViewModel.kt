@@ -243,6 +243,9 @@ class ObjectSetViewModel(
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
+
+    private val pendingScrollToObject = MutableStateFlow<Id?>(null)
+
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
             permission = permission,
@@ -702,6 +705,10 @@ class ObjectSetViewModel(
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
+                pendingScrollToObject.value?.let { objectId ->
+                    pendingScrollToObject.value = null
+                    dispatch(ObjectSetCommand.ScrollToObject(objectId))
+                }
             }
         }
     }
@@ -1571,6 +1578,7 @@ class ObjectSetViewModel(
             onFailure = { Timber.e(it, "Error while creating new record") },
             onSuccess = { result ->
                 action?.invoke(result)
+                pendingScrollToObject.value = result.objectId
                 proceedWithNewDataViewObject(result)
                 sendAnalyticsObjectCreateEvent(
                     startTime = startTime,

@@ -26,12 +26,10 @@ import android.util.TypedValue
 import android.util.TypedValue.COMPLEX_UNIT_DIP
 import android.view.TouchDelegate
 import android.view.View
-import android.view.ViewGroup
 import android.view.ViewTreeObserver
 import android.view.WindowManager
 import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
-import android.widget.TextView
 import androidx.activity.result.contract.ActivityResultContract
 import androidx.annotation.DimenRes
 import androidx.annotation.IdRes
@@ -41,7 +39,6 @@ import androidx.core.graphics.BlendModeCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
-import androidx.navigation.NavDirections
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_FILE_SAF_CODE
 import com.anytypeio.anytype.core_utils.const.FileConstants.REQUEST_MEDIA_CODE
@@ -79,6 +76,22 @@ fun RecyclerView.ViewHolder.dimen(@DimenRes res: Int): Int {
 
 fun RecyclerView.ViewHolder.res(@StringRes res: Int): String {
     return itemView.context.resources.getString(res)
+}
+
+/**
+ * Scrolls to the first item matching the predicate.
+ * Uses [View.post] to ensure adapter updates complete before scrolling.
+ */
+fun <T> RecyclerView.smoothScrollToFirst(
+    items: List<T>,
+    predicate: (T) -> Boolean
+) {
+    val position = items.indexOfFirst(predicate)
+    if (position >= 0) {
+        post {
+            smoothScrollToPosition(position)
+        }
+    }
 }
 
 @Deprecated("Fix getColumnIndex() issue!")

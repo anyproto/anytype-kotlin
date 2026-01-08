@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.features.objects.ObjectTypeVerticalAdapter
 import com.anytypeio.anytype.core_ui.reactive.textChanges
 import com.anytypeio.anytype.core_utils.ext.argOrNull
+import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetTextInputFragment
@@ -33,6 +34,8 @@ abstract class BaseObjectTypeChangeFragment :
     lateinit var factory: ObjectTypeChangeViewModelFactory
     protected val vm by viewModels<ObjectTypeChangeViewModel> { factory }
 
+    protected val space: Id
+        get() = argString(ARG_SPACE)
     protected val excludeTypes: List<Id>
         get() = argOrNull<List<Id>>(ARG_EXCLUDE_TYPES) ?: emptyList()
     protected val selectedTypes: List<Id>
@@ -85,6 +88,7 @@ abstract class BaseObjectTypeChangeFragment :
     )
 
     companion object {
+        const val ARG_SPACE = "arg.object-type-change.space"
         const val ARG_EXCLUDE_TYPES = "arg.object-type-change.exclude-types"
         const val ARG_SELECTED_TYPES = "arg.object-type-change.selected-types"
         const val OBJECT_TYPE_URL_KEY = "object-type-url.key"

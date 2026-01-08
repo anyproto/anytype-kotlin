@@ -303,6 +303,7 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
                 is Command.SelectDefaultObjectType -> {
                    runCatching {
                        val fragment = AppDefaultObjectTypeFragment.newInstance(
+                           space = space,
                            excludeTypes = command.excludedTypeIds
                        )
                        fragment.show(childFragmentManager, AppDefaultObjectTypeFragment::class.simpleName)

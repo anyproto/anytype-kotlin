@@ -5,6 +5,7 @@ import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
@@ -30,6 +31,7 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
+            spaceId = SpaceId(space),
             screen = ObjectTypeChangeViewModel.Screen.DEFAULT_OBJECT_TYPE
         )
         componentManager().objectTypeChangeComponent.get(params).inject(this)
@@ -40,9 +42,15 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
-            arguments = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
+        fun newInstance(space: Id, excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
+            arguments = bundleOf(
+                ARG_SPACE to space,
+                ARG_EXCLUDE_TYPES to excludeTypes
+            )
         }
-        fun args(excludeTypes: List<Id>) : Bundle = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
+        fun args(space: Id, excludeTypes: List<Id>) : Bundle = bundleOf(
+            ARG_SPACE to space,
+            ARG_EXCLUDE_TYPES to excludeTypes
+        )
     }
 }

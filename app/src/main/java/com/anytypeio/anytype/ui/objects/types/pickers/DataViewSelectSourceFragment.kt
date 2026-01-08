@@ -4,6 +4,7 @@ import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
@@ -27,6 +28,7 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
 
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
+            spaceId = SpaceId(space),
             screen = ObjectTypeChangeViewModel.Screen.DATA_VIEW_SOURCE,
             selectedTypes = selectedTypes
         )
@@ -38,8 +40,11 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(selectedTypes: List<Id>) = DataViewSelectSourceFragment().apply {
-            arguments = bundleOf(ARG_SELECTED_TYPES to selectedTypes)
+        fun newInstance(space: Id, selectedTypes: List<Id>) = DataViewSelectSourceFragment().apply {
+            arguments = bundleOf(
+                ARG_SPACE to space,
+                ARG_SELECTED_TYPES to selectedTypes
+            )
         }
     }
 }

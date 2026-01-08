@@ -12,7 +12,6 @@ import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -32,7 +31,6 @@ class ObjectTypeChangeViewModel(
     private val vmParams: VmParams,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
-    private val spaceManager: SpaceManager,
     private val getDefaultObjectType: GetDefaultObjectType,
     private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
@@ -54,7 +52,7 @@ class ObjectTypeChangeViewModel(
         storeOfObjectTypes.trackChanges()
     ) { query, currentExcludeTypes, _ ->
         // Determine space UX type to decide whether CHAT types should be shown
-        val spaceView = spaceViews.get(SpaceId(spaceManager.get()))
+        val spaceView = spaceViews.get(vmParams.spaceId)
         val spaceUxType = spaceView?.spaceUxType
         val createLayouts = getCreateObjectLayouts(spaceUxType)
 
@@ -126,7 +124,7 @@ class ObjectTypeChangeViewModel(
         if (vmParams.screen == Screen.DEFAULT_OBJECT_TYPE) {
             viewModelScope.launch {
                 getDefaultObjectType.execute(
-                    SpaceId(spaceManager.get())
+                    vmParams.spaceId
                 ).fold(
                     onFailure = { e ->
                         Timber.e(e, "Error while getting user settings")
@@ -212,6 +210,7 @@ class ObjectTypeChangeViewModel(
     }
 
     data class VmParams(
+        val spaceId: SpaceId,
         val screen: Screen,
         val excludeTypes: List<Id> = emptyList(),
         val selectedTypes: List<Id> = emptyList()

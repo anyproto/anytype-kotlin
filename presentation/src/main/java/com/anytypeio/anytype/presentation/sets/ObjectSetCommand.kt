@@ -130,4 +130,6 @@ sealed class ObjectSetCommand {
     data class Browse(val url: String) : ObjectSetCommand()
 
     data class CopyLinkToClipboard(val link: String) : ObjectSetCommand()
+
+    data class ScrollToObject(val objectId: Id) : ObjectSetCommand()
 }

@@ -12,8 +12,10 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationCustomNumber
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationCustomText
+import com.anytypeio.anytype.presentation.MockRelationFactory.relationDone
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationIconEmoji
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationLastModifiedDate
+import com.anytypeio.anytype.presentation.MockRelationFactory.relationLayout
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationName
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationStatus
 import com.anytypeio.anytype.presentation.MockRelationFactory.relationTag
@@ -441,10 +443,13 @@ class SearchRelationViewModelTest {
 
     @ExperimentalTime
     @Test
-    fun `hidden relations are filtered out from results`() = runTest {
+    fun `hidden relations are filtered out from results except Name and Done`() = runTest {
         // SETUP - include both hidden and non-hidden relations
-        // relationName has isHidden=true, relationStatus has isHidden=false
-        val relations = listOf(relationName, relationStatus)
+        // relationName has isHidden=true but should appear (special case)
+        // relationDone has isHidden=true but should appear (special case)
+        // relationStatus has isHidden=false and should appear
+        // relationLayout has isHidden=true and should be filtered out
+        val relations = listOf(relationName, relationDone, relationStatus, relationLayout)
 
         val state = MutableStateFlow(
             MockObjectSetFactory.makeDefaultSetObjectState(
@@ -461,14 +466,18 @@ class SearchRelationViewModelTest {
 
         vm.onStart(viewerId = viewerId)
 
-        // TESTING - only non-hidden relations should appear
+        // TESTING - Name and Done should appear despite being hidden, but relationLayout should be filtered
         vm.views.test {
             delay(100)
             val result = awaitItem()
-            // Only relationStatus should appear (isHidden=false)
-            // relationName should be filtered out (isHidden=true)
-            assertEquals(1, result.size)
-            assertEquals("Status", result.first().title)
+            // Should have relationName, relationDone, and relationStatus
+            // relationLayout should be filtered out
+            assertEquals(3, result.size)
+            val titles = result.map { it.title }
+            assert(titles.contains("Name")) { "Name should be visible despite isHidden=true" }
+            assert(titles.contains("Done")) { "Done should be visible despite isHidden=true" }
+            assert(titles.contains("Status")) { "Status should be visible" }
+            assert(!titles.contains("Layout")) { "Layout should be filtered out (hidden, not special case)" }
             cancelAndConsumeRemainingEvents()
         }
     }

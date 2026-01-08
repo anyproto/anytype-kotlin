@@ -8,13 +8,13 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
@@ -61,8 +61,14 @@ class ObjectTypeChangeViewModel(
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> createLayouts + SupportedLayouts.fileLayouts
-            Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> createLayouts
+            Screen.OBJECT_TYPE_CHANGE -> createLayouts
+            Screen.DEFAULT_OBJECT_TYPE -> listOf(
+                ObjectType.Layout.BASIC,
+                ObjectType.Layout.PROFILE,
+                ObjectType.Layout.TODO,
+                ObjectType.Layout.NOTE,
+                ObjectType.Layout.BOOKMARK
+            )
         }
 
         val filteredTypes = filterTypes(

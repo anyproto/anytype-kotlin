@@ -2,16 +2,14 @@ package com.anytypeio.anytype.ui.objects
 
 import android.os.Bundle
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.MaterialTheme
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.platform.ComposeView
-import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.fragment.app.viewModels
+import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
@@ -46,41 +44,38 @@ abstract class BaseObjectTypeChangeFragment : BaseBottomSheetComposeFragment() {
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View = ComposeView(requireContext()).apply {
-        setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
-        setContent {
-            MaterialTheme(
-                typography = typography,
-                shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
-                colors = MaterialTheme.colors.copy(
-                    surface = colorResource(id = R.color.context_menu_background)
-                )
-            ) {
-                ObjectTypeChangeScreen(
-                    title = resolveTitle(),
-                    state = vm.viewState.collectAsStateWithLifecycle().value,
-                    onTypeClicked = vm::onItemClicked,
-                    onQueryChanged = vm::onQueryChanged,
-                    onFocused = {
-                        skipCollapsed()
-                        expand()
-                    }
-                )
-            }
-            LaunchedEffect(Unit) {
-                vm.commands.collect { command ->
-                    when (command) {
-                        is Command.DispatchType -> {
-                            onItemClicked(command.item)
-                            dismiss()
-                        }
+    ) = content {
+        MaterialTheme(
+            typography = typography,
+            shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.context_menu_background)
+            )
+        ) {
+            ObjectTypeChangeScreen(
+                title = resolveTitle(),
+                state = vm.viewState.collectAsStateWithLifecycle().value,
+                onTypeClicked = vm::onItemClicked,
+                onQueryChanged = vm::onQueryChanged,
+                onFocused = {
+                    skipCollapsed()
+                    expand()
+                }
+            )
+        }
+        LaunchedEffect(Unit) {
+            vm.commands.collect { command ->
+                when (command) {
+                    is Command.DispatchType -> {
+                        onItemClicked(command.item)
+                        dismiss()
                     }
                 }
             }
-            LaunchedEffect(Unit) {
-                vm.toasts.collect { toast ->
-                    toast(toast)
-                }
+        }
+        LaunchedEffect(Unit) {
+            vm.toasts.collect { toast ->
+                toast(toast)
             }
         }
     }

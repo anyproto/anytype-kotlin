@@ -78,13 +78,19 @@ fun RecyclerView.ViewHolder.res(@StringRes res: Int): String {
     return itemView.context.resources.getString(res)
 }
 
+/**
+ * Scrolls to the first item matching the predicate.
+ * Uses [View.post] to ensure adapter updates complete before scrolling.
+ */
 fun <T> RecyclerView.smoothScrollToFirst(
     items: List<T>,
     predicate: (T) -> Boolean
 ) {
     val position = items.indexOfFirst(predicate)
     if (position >= 0) {
-        smoothScrollToPosition(position)
+        post {
+            smoothScrollToPosition(position)
+        }
     }
 }
 

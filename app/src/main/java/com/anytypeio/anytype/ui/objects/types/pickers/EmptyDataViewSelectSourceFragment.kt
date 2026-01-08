@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -14,12 +15,7 @@ class EmptyDataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithCollection = false,
-            isWithBookmark = true,
-            excludeTypes = emptyList(),
-            selectedTypes = emptyList(),
-            isSetSource = true,
-            isWithFiles = true
+            screen = ObjectTypeChangeViewModel.Screen.EMPTY_DATA_VIEW_SOURCE
         )
     }
 

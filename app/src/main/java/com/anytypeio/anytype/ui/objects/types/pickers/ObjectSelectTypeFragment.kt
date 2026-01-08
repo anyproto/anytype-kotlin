@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParentSafe
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -16,12 +17,8 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun startWithParams() {
         vm.onStart(
-            isWithCollection = false,
-            isWithBookmark = false,
-            excludeTypes = excludeTypes,
-            selectedTypes = emptyList(),
-            isSetSource = false,
-            isWithFiles = false
+            screen = ObjectTypeChangeViewModel.Screen.OBJECT_TYPE_CHANGE,
+            excludeTypes = excludeTypes
         )
     }
 

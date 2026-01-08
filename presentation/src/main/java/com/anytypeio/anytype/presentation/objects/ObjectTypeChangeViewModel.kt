@@ -66,10 +66,11 @@ class ObjectTypeChangeViewModel(
         val spaceUxType = spaceView?.spaceUxType
         val createLayouts = getCreateObjectLayouts(spaceUxType)
 
-        val recommendedLayouts = if (setup.isWithFiles) {
-            createLayouts + SupportedLayouts.fileLayouts
-        } else {
-            createLayouts
+        val recommendedLayouts = when (setup.screen) {
+            Screen.DATA_VIEW_SOURCE,
+            Screen.EMPTY_DATA_VIEW_SOURCE -> createLayouts + SupportedLayouts.fileLayouts
+            Screen.OBJECT_TYPE_CHANGE,
+            Screen.DEFAULT_OBJECT_TYPE -> createLayouts
         }
         val myTypes = proceedWithGettingMyTypes(
             query = query,
@@ -116,54 +117,41 @@ class ObjectTypeChangeViewModel(
     }
 
     fun onStart(
-        isWithCollection: Boolean,
-        isWithBookmark: Boolean,
-        excludeTypes: List<Id>,
-        selectedTypes: List<Id>,
-        isSetSource: Boolean,
-        isWithFiles: Boolean
+        screen: Screen,
+        excludeTypes: List<Id> = emptyList(),
+        selectedTypes: List<Id> = emptyList()
     ) {
-        Timber.d("Starting with params: isWithCollection=$isWithCollection, isWithBookmark=$isWithBookmark, excludeTypes=$excludeTypes, selectedTypes=$selectedTypes, isSetSource=$isSetSource")
+        Timber.d("Starting with params: screen=$screen, excludeTypes=$excludeTypes, selectedTypes=$selectedTypes")
         viewModelScope.launch {
-            setup.emit(
-                Setup(
-                    isWithCollection = isWithCollection,
-                    isWithBookmark = isWithBookmark,
-                    excludeTypes = excludeTypes,
-                    selectedTypes = selectedTypes,
-                    isSetSource = isSetSource,
-                    isWithFiles = isWithFiles
-                )
-            )
-        }
-    }
-
-    fun onStart(
-        isWithCollection: Boolean,
-        isWithBookmark: Boolean,
-        isSetSource: Boolean,
-        isWithFiles: Boolean
-    ) {
-        viewModelScope.launch {
-            getDefaultObjectType.execute(
-                SpaceId(spaceManager.get())
-            ).fold(
-                onFailure = { e ->
-                    Timber.e(e, "Error while getting user settings")
-                },
-                onSuccess = {
+            when (screen) {
+                Screen.DEFAULT_OBJECT_TYPE -> {
+                    getDefaultObjectType.execute(
+                        SpaceId(spaceManager.get())
+                    ).fold(
+                        onFailure = { e ->
+                            Timber.e(e, "Error while getting user settings")
+                        },
+                        onSuccess = {
+                            setup.emit(
+                                Setup(
+                                    screen = screen,
+                                    excludeTypes = excludeTypes + it.type.key,
+                                    selectedTypes = selectedTypes
+                                )
+                            )
+                        }
+                    )
+                }
+                else -> {
                     setup.emit(
                         Setup(
-                            isWithCollection = isWithCollection,
-                            isWithBookmark = isWithBookmark,
-                            excludeTypes = listOf(it.type.key),
-                            selectedTypes = emptyList(),
-                            isSetSource = isSetSource,
-                            isWithFiles = isWithFiles
+                            screen = screen,
+                            excludeTypes = excludeTypes,
+                            selectedTypes = selectedTypes
                         )
                     )
                 }
-            )
+            }
         }
     }
 
@@ -224,10 +212,24 @@ class ObjectTypeChangeViewModel(
     ) = buildList {
         Timber.d("My types: ${myTypes.size}")
         Timber.d("Marketplace types: ${marketplaceTypes.size}")
+
+        val isWithCollection = when (setup.screen) {
+            Screen.DATA_VIEW_SOURCE -> true
+            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EMPTY_DATA_VIEW_SOURCE,
+            Screen.DEFAULT_OBJECT_TYPE -> false
+        }
+        val isWithBookmark = when (setup.screen) {
+            Screen.DATA_VIEW_SOURCE,
+            Screen.EMPTY_DATA_VIEW_SOURCE -> true
+            Screen.OBJECT_TYPE_CHANGE,
+            Screen.DEFAULT_OBJECT_TYPE -> false
+        }
+
         if (myTypes.isNotEmpty()) {
             val views = myTypes.getObjectTypeViewsForSBPage(
-                isWithCollection = setup.isWithCollection,
-                isWithBookmark = setup.isWithBookmark,
+                isWithCollection = isWithCollection,
+                isWithBookmark = isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
                 useCustomComparator = false
@@ -241,8 +243,8 @@ class ObjectTypeChangeViewModel(
         }
         if (marketplaceTypes.isNotEmpty()) {
             val views = marketplaceTypes.getObjectTypeViewsForSBPage(
-                isWithCollection = setup.isWithCollection,
-                isWithBookmark = setup.isWithBookmark,
+                isWithCollection = isWithCollection,
+                isWithBookmark = isWithBookmark,
                 excludeTypes = setup.excludeTypes,
                 selectedTypes = setup.selectedTypes,
                 useCustomComparator = false
@@ -267,8 +269,11 @@ class ObjectTypeChangeViewModel(
     ): List<ObjectWrapper.Type> {
         val excludedMarketplaceTypes = buildList {
             addAll(myTypes.map { it.uniqueKey })
-            if (!setup.isWithBookmark) {
-                add(MarketplaceObjectTypeIds.BOOKMARK)
+            when (setup.screen) {
+                Screen.OBJECT_TYPE_CHANGE,
+                Screen.DEFAULT_OBJECT_TYPE -> add(MarketplaceObjectTypeIds.BOOKMARK)
+                Screen.DATA_VIEW_SOURCE,
+                Screen.EMPTY_DATA_VIEW_SOURCE -> { /* include bookmark */ }
             }
         }
         // For marketplace, still respect the same create layouts logic so UI is consistent
@@ -303,33 +308,45 @@ class ObjectTypeChangeViewModel(
         query: String,
         setup: Setup,
         recommendedLayouts: List<ObjectType.Layout>
-    ) = getObjectTypes.run(
-        GetObjectTypes.Params(
-            // TODO DROID-2916 Provide space id to vm params
-            space = SpaceId(spaceManager.get()),
-            filters = ObjectSearchConstants.filterTypes(
-                recommendedLayouts = recommendedLayouts,
-                excludeParticipant = !setup.isSetSource,
-                excludeTemplates = !setup.isSetSource
-            ),
-            sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
-            query = query,
-            keys = ObjectSearchConstants.defaultKeysObjectType
+    ): List<ObjectWrapper.Type> {
+        val excludeParticipantAndTemplates = when (setup.screen) {
+            Screen.DATA_VIEW_SOURCE,
+            Screen.EMPTY_DATA_VIEW_SOURCE -> false
+            Screen.OBJECT_TYPE_CHANGE,
+            Screen.DEFAULT_OBJECT_TYPE -> true
+        }
+        return getObjectTypes.run(
+            GetObjectTypes.Params(
+                // TODO DROID-2916 Provide space id to vm params
+                space = SpaceId(spaceManager.get()),
+                filters = ObjectSearchConstants.filterTypes(
+                    recommendedLayouts = recommendedLayouts,
+                    excludeParticipant = excludeParticipantAndTemplates,
+                    excludeTemplates = excludeParticipantAndTemplates
+                ),
+                sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts(),
+                query = query,
+                keys = ObjectSearchConstants.defaultKeysObjectType
+            )
         )
-    )
+    }
 
     companion object {
         const val DEBOUNCE_DURATION = 300L
         const val DEFAULT_INPUT = ""
     }
 
+    enum class Screen {
+        OBJECT_TYPE_CHANGE,        // ObjectSelectTypeFragment
+        DATA_VIEW_SOURCE,          // DataViewSelectSourceFragment
+        EMPTY_DATA_VIEW_SOURCE,    // EmptyDataViewSelectSourceFragment
+        DEFAULT_OBJECT_TYPE        // AppDefaultObjectTypeFragment
+    }
+
     data class Setup(
-        val isWithCollection: Boolean,
-        val isWithBookmark: Boolean,
-        val excludeTypes: List<Id>,
-        val selectedTypes: List<Id>,
-        val isSetSource: Boolean,
-        val isWithFiles: Boolean
+        val screen: Screen,
+        val excludeTypes: List<Id> = emptyList(),
+        val selectedTypes: List<Id> = emptyList()
     )
 
     sealed class Command {

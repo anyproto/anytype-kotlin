@@ -43,7 +43,6 @@ import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
 import com.anytypeio.anytype.di.feature.ObjectSetModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
-import com.anytypeio.anytype.di.feature.PersonalizationSettingsModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
@@ -314,11 +313,6 @@ class ComponentManager(
             .build()
     }
 
-    val personalizationSettingsComponent = Component {
-        main.personalizationSettingsComponentBuilder()
-            .module(PersonalizationSettingsModule)
-            .build()
-    }
 
     val linkToObjectComponent = ComponentWithParams { param: ObjectSearchViewModel.VmParams ->
         DaggerLinkToObjectComponent

@@ -163,7 +163,7 @@ interface MainComponent :
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
-    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
+    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Factory
     fun createObjectComponent(): CreateObjectSubComponent.Builder
 
     //region Settings

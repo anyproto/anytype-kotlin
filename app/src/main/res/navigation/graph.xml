@@ -606,11 +606,6 @@
         android:name="com.anytypeio.anytype.ui.editor.gallery.FullScreenPictureFragment"
         android:label="FullScreenImageFragment" />
     <dialog
-        android:id="@+id/personalizationScreen"
-        android:name="com.anytypeio.anytype.ui.settings.PersonalizationSettingsFragment"
-        android:label="fragment_user_settings"
-        tools:layout="@layout/fragment_user_settings" />
-    <dialog
         android:id="@+id/appearanceScreen"
         android:name="com.anytypeio.anytype.ui.settings.AppearanceFragment"
         android:label="fragment_wallpaper_set" />

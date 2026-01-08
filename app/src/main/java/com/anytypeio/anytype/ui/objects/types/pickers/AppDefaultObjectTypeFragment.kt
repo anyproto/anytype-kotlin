@@ -6,7 +6,6 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
@@ -21,13 +20,9 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         withParent<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = item)
         }
-        hideSoftInput()
-        dismiss()
     }
 
-    override fun setTitle() {
-        binding.tvTitle.text = getString(R.string.change_type)
-    }
+    override fun resolveTitle(): String = getString(R.string.change_type)
 
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(

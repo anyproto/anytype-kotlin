@@ -38,12 +38,12 @@ class ObjectTypeChangeViewModel(
 ) : BaseViewModel() {
 
     private val userInput = MutableStateFlow(DEFAULT_INPUT)
+    @OptIn(FlowPreview::class)
     private val searchQuery = userInput.take(1).onCompletion {
         emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
     }
 
     private val excludeTypes = MutableStateFlow(vmParams.excludeTypes)
-    private val _objTypes = MutableStateFlow<List<ObjectWrapper.Type>>(emptyList())
 
     val viewState = MutableStateFlow<ObjectTypeChangeViewState>(ObjectTypeChangeViewState.Loading)
     val commands = MutableSharedFlow<Command>()
@@ -70,7 +70,6 @@ class ObjectTypeChangeViewModel(
             excludeTypes = currentExcludeTypes,
             recommendedLayouts = recommendedLayouts
         )
-        _objTypes.value = filteredTypes
 
         proceedWithBuildingViewState(
             types = filteredTypes,
@@ -154,7 +153,7 @@ class ObjectTypeChangeViewModel(
 
     fun onItemClicked(item: ObjectTypeChangeItem.Type) {
         viewModelScope.launch {
-            val objType = _objTypes.value.firstOrNull { it.id == item.id }
+            val objType = storeOfObjectTypes.get(item.id)
             if (objType == null) {
                 Timber.e("Object Type Change Screen, type is not found in types list")
                 sendToast("Error while choosing object type by key:${item.key}")

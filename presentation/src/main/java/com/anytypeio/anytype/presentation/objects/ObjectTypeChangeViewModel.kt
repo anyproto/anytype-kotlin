@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
@@ -120,7 +121,7 @@ class ObjectTypeChangeViewModel(
             val isNotParticipant = !excludeParticipantAndTemplates ||
                     type.recommendedLayout != ObjectType.Layout.PARTICIPANT
             val isNotTemplate = !excludeParticipantAndTemplates ||
-                    type.recommendedLayout != ObjectType.Layout.OBJECT_TYPE
+                    type.uniqueKey != ObjectTypeIds.TEMPLATE
 
             isLayoutMatch && isQueryMatch && isNotExcluded && isNotParticipant && isNotTemplate
         }

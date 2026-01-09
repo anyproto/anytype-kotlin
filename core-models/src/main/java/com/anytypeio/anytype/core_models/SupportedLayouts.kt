@@ -72,7 +72,6 @@ object SupportedLayouts {
     private val baseCreateObjectLayouts = listOf(
         ObjectType.Layout.BASIC,
         ObjectType.Layout.PROFILE,
-        ObjectType.Layout.PARTICIPANT,
         ObjectType.Layout.SET,
         ObjectType.Layout.COLLECTION,
         ObjectType.Layout.TODO,

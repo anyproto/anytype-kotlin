@@ -160,9 +160,9 @@ class ObjectTypeChangeViewModel(
         Timber.d("Types count: ${types.size}")
 
         val isWithCollection = when (vmParams.screen) {
-            Screen.DATA_VIEW_SOURCE -> true
+            Screen.DATA_VIEW_SOURCE,
+            Screen.EMPTY_DATA_VIEW_SOURCE-> true
             Screen.OBJECT_TYPE_CHANGE,
-            Screen.EMPTY_DATA_VIEW_SOURCE,
             Screen.DEFAULT_OBJECT_TYPE -> false
         }
         val isWithBookmark = when (vmParams.screen) {

@@ -149,7 +149,7 @@ class CreateChatObjectViewModel(
         analytics.sendEvent(
             eventName = EventsDictionary.objectCreate,
             props = Props(
-                mapOf(EventsPropertiesKey.objectType to ObjectTypeIds.CHAT_DERIVED)
+                mapOf(EventsPropertiesKey.objectType to "_otchatDerived")
             )
         )
         isLoading.value = false

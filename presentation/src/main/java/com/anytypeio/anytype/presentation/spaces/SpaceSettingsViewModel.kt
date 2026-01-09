@@ -157,6 +157,8 @@ class SpaceSettingsViewModel(
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
 
+    private val selectedDefaultObjectType = MutableStateFlow<ObjectWrapper.Type?>(null)
+
     val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
 
     /**
@@ -219,37 +221,39 @@ class SpaceSettingsViewModel(
 
         viewModelScope.launch {
 
+            // Get initial default type from backend (used as fallback)
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
                 .getOrNull()
-
-            val defaultObjectTypeSettingItem: UiSpaceSettingsItem.DefaultObjectType
-
-            if (defaultObjectTypeResponse != null) {
-                val defaultType = storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
-                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
-                    id = defaultType?.id,
-                    name = defaultType?.name.orEmpty(),
-                    icon = defaultType?.objectIcon()
-                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
-                )
+            val initialDefaultType = if (defaultObjectTypeResponse != null) {
+                storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
             } else {
-                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
-                    id = null,
-                    name = EMPTY_STRING_VALUE,
-                    icon = ObjectIcon.None
-                )
+                null
             }
-
-            // Get account for toView function
-            val account = getAccount.async(Unit).getOrNull()?.id
 
             combine(
                 restrictions,
                 otherFlows,
                 spaceInfoTitleClickCount,
-                inviteLinkAccessLevel
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink ->
+                inviteLinkAccessLevel,
+                selectedDefaultObjectType
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink, selectedType ->
+
+                // Use selected type if available, otherwise fall back to initial default type
+                val effectiveDefaultType = selectedType ?: initialDefaultType
+                val defaultObjectTypeSettingItem = if (effectiveDefaultType != null) {
+                    UiSpaceSettingsItem.DefaultObjectType(
+                        id = effectiveDefaultType.id,
+                        name = effectiveDefaultType.name.orEmpty(),
+                        icon = effectiveDefaultType.objectIcon()
+                    )
+                } else {
+                    UiSpaceSettingsItem.DefaultObjectType(
+                        id = null,
+                        name = EMPTY_STRING_VALUE,
+                        icon = ObjectIcon.None
+                    )
+                }
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -912,7 +916,10 @@ class SpaceSettingsViewModel(
 
     fun onSelectObjectType(type: ObjectWrapper.Type) {
         Timber.d("onSelectObjectType: $type")
-        // Setting space default object type
+        // Update local state FIRST for immediate UI feedback
+        selectedDefaultObjectType.value = type
+
+        // Then save to backend
         viewModelScope.launch {
             val params = SetDefaultObjectType.Params(
                 space = vmParams.space,
@@ -921,11 +928,10 @@ class SpaceSettingsViewModel(
             setDefaultObjectType.async(params).fold(
                 onFailure = {
                     Timber.e(it, "Error while setting default object type")
+                    // Revert local state on failure
+                    selectedDefaultObjectType.value = null
                 },
                 onSuccess = {
-                    updateDefaultObjectTypeOptimized(
-                        type = type
-                    )
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
@@ -968,32 +974,6 @@ class SpaceSettingsViewModel(
         }
     }
 
-    private fun updateDefaultObjectTypeOptimized(type: ObjectWrapper.Type) {
-        val currentState = _uiState.value
-        if (currentState !is UiSpaceSettingsState.SpaceSettings) {
-            Timber.w("Unexpected UI state when updating object type: $currentState")
-            return
-        }
-
-        // Find the index of the item to be updated.
-        val itemIndex = currentState.items.indexOfFirst { it is UiSpaceSettingsItem.DefaultObjectType }
-
-        // Only proceed if the item exists in the list.
-        if (itemIndex != -1) {
-            // Create a new mutable list from the old one.
-            val newItems = currentState.items.toMutableList()
-
-            // Update the item at the specific index.
-            newItems[itemIndex] = UiSpaceSettingsItem.DefaultObjectType(
-                id = type.id,
-                name = type.name.orEmpty(),
-                icon = type.objectIcon()
-            )
-
-            // Assign the new immutable list back to the state.
-            _uiState.value = currentState.copy(items = newItems.toList())
-        }
-    }
 
 
     fun updateNotificationState() {

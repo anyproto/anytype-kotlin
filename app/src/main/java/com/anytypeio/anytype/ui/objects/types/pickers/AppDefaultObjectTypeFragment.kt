@@ -22,7 +22,7 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
         }
     }
 
-    override fun resolveTitle(): String = getString(R.string.change_type)
+    override fun resolveTitle(): String = getString(R.string.default_type_screen_title)
 
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
@@ -37,15 +37,8 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(space: Id, excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
-            arguments = bundleOf(
-                ARG_SPACE to space,
-                ARG_EXCLUDE_TYPES to excludeTypes
-            )
-        }
-        fun args(space: Id, excludeTypes: List<Id>) : Bundle = bundleOf(
-            ARG_SPACE to space,
-            ARG_EXCLUDE_TYPES to excludeTypes
+        fun args(space: Id) : Bundle = bundleOf(
+            ARG_SPACE to space
         )
     }
 }

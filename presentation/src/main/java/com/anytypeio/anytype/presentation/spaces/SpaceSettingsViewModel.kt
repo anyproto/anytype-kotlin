@@ -65,6 +65,7 @@ import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
@@ -1019,6 +1020,14 @@ class SpaceSettingsViewModel(
                 onSuccess = {
                     _notificationState.value = newState
                     Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
+                    // Fire analytics event for space-level notification change
+                    val spaceView = spaceViewContainer.get(vmParams.space)
+                    if (spaceView != null) {
+                        analytics.sendAnalyticsChangeMessageNotificationState(
+                            spaceUxType = spaceView.spaceUxType,
+                            notificationState = newState
+                        )
+                    }
                 },
                 onFailure = { error ->
                     Timber.e("Failed to set notification state: $error")

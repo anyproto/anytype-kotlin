@@ -99,6 +99,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -140,7 +142,8 @@ class SpaceSettingsViewModel(
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
 
-    val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
+    private val _uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
+    val uiState: StateFlow<UiSpaceSettingsState> = _uiState.asStateFlow()
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
@@ -496,7 +499,7 @@ class SpaceSettingsViewModel(
                 )
 
             }.collect { update ->
-                uiState.value = update
+                _uiState.value = update
             }
         }
     }
@@ -920,27 +923,9 @@ class SpaceSettingsViewModel(
                     Timber.e(it, "Error while setting default object type")
                 },
                 onSuccess = {
-                    when (val state = uiState.value) {
-                        is UiSpaceSettingsState.SpaceSettings -> {
-                            uiState.value = state.copy(
-                                items = state.items.map { item ->
-                                    if (item is UiSpaceSettingsItem.DefaultObjectType) {
-                                        UiSpaceSettingsItem.DefaultObjectType(
-                                            id = type.id,
-                                            name = type.name.orEmpty(),
-                                            icon = type.objectIcon()
-                                        )
-                                    } else {
-                                        item
-                                    }
-                                }
-                            )
-                        }
-
-                        else -> {
-                            Timber.w("Unexpected ui state when updating object type: $state")
-                        }
-                    }
+                    updateDefaultObjectTypeOptimized(
+                        type = type
+                    )
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
@@ -982,6 +967,34 @@ class SpaceSettingsViewModel(
             appActionManager.setup(actions = actions)
         }
     }
+
+    private fun updateDefaultObjectTypeOptimized(type: ObjectWrapper.Type) {
+        val currentState = _uiState.value
+        if (currentState !is UiSpaceSettingsState.SpaceSettings) {
+            Timber.w("Unexpected UI state when updating object type: $currentState")
+            return
+        }
+
+        // Find the index of the item to be updated.
+        val itemIndex = currentState.items.indexOfFirst { it is UiSpaceSettingsItem.DefaultObjectType }
+
+        // Only proceed if the item exists in the list.
+        if (itemIndex != -1) {
+            // Create a new mutable list from the old one.
+            val newItems = currentState.items.toMutableList()
+
+            // Update the item at the specific index.
+            newItems[itemIndex] = UiSpaceSettingsItem.DefaultObjectType(
+                id = type.id,
+                name = type.name.orEmpty(),
+                icon = type.objectIcon()
+            )
+
+            // Assign the new immutable list back to the state.
+            _uiState.value = currentState.copy(items = newItems.toList())
+        }
+    }
+
 
     fun updateNotificationState() {
         viewModelScope.launch {

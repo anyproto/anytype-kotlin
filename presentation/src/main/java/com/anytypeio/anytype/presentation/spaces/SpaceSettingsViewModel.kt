@@ -928,7 +928,7 @@ class SpaceSettingsViewModel(
                                         UiSpaceSettingsItem.DefaultObjectType(
                                             id = type.id,
                                             name = type.name.orEmpty(),
-                                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
+                                            icon = type.objectIcon()
                                         )
                                     } else {
                                         item

@@ -623,13 +623,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        SelectDefaultObjectType(
-                            space = vmParams.space,
-                            excludedTypeIds = buildList {
-                                val curr = uiEvent.currentDefaultObjectTypeId
-                                if (!curr.isNullOrEmpty()) add(curr)
-                            }
-                        )
+                        SelectDefaultObjectType(space = vmParams.space)
                     )
                 }
             }
@@ -1199,7 +1193,7 @@ class SpaceSettingsViewModel(
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
-        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) :
+        data class SelectDefaultObjectType(val space: SpaceId) :
             Command()
 
         data object ExitToVault : Command()

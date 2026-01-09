@@ -194,6 +194,7 @@ object EventsDictionary {
     // Vault events
 
     const val screenVault = "ScreenVault"
+    const val screenChatInfo = "ScreenChatInfo"
 
     // About-app screen
 
@@ -361,6 +362,9 @@ object EventsDictionary {
     const val chatClickScrollToBottom = "ClickScrollToBottom"
     const val chatClickScrollToMention = "ClickScrollToMention"
     const val chatClickScrollToReply = "ClickScrollToReply"
+
+    // Notification changes
+    const val changeMessageNotificationState = "ChangeMessageNotificationState"
 
     // --- Vault menu ---
     const val chatScreenVaultCreateMenu = "ScreenVaultCreateMenu"

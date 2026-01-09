@@ -7,6 +7,10 @@ import android.os.Build
 import android.service.notification.StatusBarNotification
 import androidx.test.core.app.ApplicationProvider
 import com.anytypeio.anytype.core_models.DecryptedPushContent
+import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -325,4 +329,173 @@ class NotificationBuilderTest {
         verify(stringResourceProvider).getMessagesCountText(2)
         Unit
     }
+
+    @Test
+    fun `buildAndNotify for Data space should include chat name in notification`() = runBlocking {
+        // Given a Data space with a chat that has a name
+        val chatName = "Family Chat"
+        val dataSpaceView = ObjectWrapper.SpaceView(
+            mapOf(
+                Relations.ID to testSpaceId,
+                Relations.NAME to "Family Space",
+                Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble()
+            )
+        )
+        val chatDetails = ObjectWrapper.Basic(
+            mapOf(
+                Relations.ID to testChatId,
+                Relations.NAME to chatName
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(dataSpaceView)
+        whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(chatDetails)
+
+        // When
+        builder.buildAndNotify(message, testSpaceId, testGroupId)
+
+        // Then: notification should be posted with chat name in content
+        verify(notificationManager).notify(
+            eq(testGroupId),
+            any(),
+            argThat<Notification> { notification ->
+                // The notification content should include the chat name
+                val contentText =
+                    notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
+                contentText?.contains(chatName) == true &&
+                        contentText.contains(message.senderName)
+            }
+        )
+    }
+
+    @Test
+    fun `buildAndNotify for Chat space should NOT include chat name in notification`() =
+        runBlocking {
+            // Given a Chat space (single chat, so no need to show chat name)
+            val chatSpaceView = ObjectWrapper.SpaceView(
+                mapOf(
+                    Relations.ID to testSpaceId,
+                    Relations.NAME to "Work Chat",
+                    Relations.SPACE_UX_TYPE to SpaceUxType.CHAT.code.toDouble()
+                )
+            )
+
+            whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(
+                chatSpaceView
+            )
+
+            // When
+            builder.buildAndNotify(message, testSpaceId, testGroupId)
+
+            // Then: notification should be posted without querying chat details
+            verify(chatsDetailsSubscriptionContainer, never()).get(any())
+
+            // And notification content should just be sender: message
+            verify(notificationManager).notify(
+                eq(testGroupId),
+                any(),
+                argThat<Notification> { notification ->
+                    val contentText =
+                        notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
+                    contentText == "${message.senderName}: ${message.text}"
+                }
+            )
+        }
+
+    @Test
+    fun `buildAndNotify for Data space with blank chat name should fall back to sender only`() =
+        runBlocking {
+            // Given a Data space with a chat that has an empty/blank name
+            val dataSpaceView = ObjectWrapper.SpaceView(
+                mapOf(
+                    Relations.ID to testSpaceId,
+                    Relations.NAME to "My Data Space",
+                    Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble()
+                )
+            )
+            val chatDetailsBlankName = ObjectWrapper.Basic(
+                mapOf(
+                    Relations.ID to testChatId,
+                    Relations.NAME to "   " // Blank name
+                )
+            )
+
+            whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(
+                dataSpaceView
+            )
+            whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(
+                chatDetailsBlankName
+            )
+
+            // When
+            builder.buildAndNotify(message, testSpaceId, testGroupId)
+
+            // Then: notification should be posted without chat name (blank names are excluded)
+            verify(notificationManager).notify(
+                eq(testGroupId),
+                any(),
+                argThat<Notification> { notification ->
+                    val contentText =
+                        notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
+                    // Should be sender: message without chat name prefix
+                    contentText == "${message.senderName}: ${message.text}"
+                }
+            )
+        }
+
+    @Test
+    fun `buildAndNotify for Data space when chat details not found should fall back to sender only`() =
+        runBlocking {
+            // Given a Data space but chat details are not in the container
+            val dataSpaceView = ObjectWrapper.SpaceView(
+                mapOf(
+                    Relations.ID to testSpaceId,
+                    Relations.NAME to "My Data Space",
+                    Relations.SPACE_UX_TYPE to SpaceUxType.DATA.code.toDouble()
+                )
+            )
+
+            whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(
+                dataSpaceView
+            )
+            whenever(chatsDetailsSubscriptionContainer.get(testChatId)).thenReturn(null)
+
+            // When
+            builder.buildAndNotify(message, testSpaceId, testGroupId)
+
+            // Then: notification should be posted without chat name
+            verify(notificationManager).notify(
+                eq(testGroupId),
+                any(),
+                argThat<Notification> { notification ->
+                    val contentText =
+                        notification.extras.getCharSequence(Notification.EXTRA_TEXT)?.toString()
+                    contentText == "${message.senderName}: ${message.text}"
+                }
+            )
+        }
+
+    @Test
+    fun `buildAndNotify for OneToOne space should NOT include chat name in notification`() =
+        runBlocking {
+            // Given a OneToOne space (direct message, no need to show chat name)
+            val oneToOneSpaceView = ObjectWrapper.SpaceView(
+                mapOf(
+                    Relations.ID to testSpaceId,
+                    Relations.NAME to "John Doe",
+                    Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble()
+                )
+            )
+
+            whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(
+                oneToOneSpaceView
+            )
+
+            // When
+            builder.buildAndNotify(message, testSpaceId, testGroupId)
+
+            // Then: notification should be posted without querying chat details
+            verify(chatsDetailsSubscriptionContainer, never()).get(any())
+            Unit
+        }
 }

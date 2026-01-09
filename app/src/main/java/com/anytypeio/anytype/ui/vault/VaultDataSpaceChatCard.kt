@@ -53,7 +53,7 @@ fun VaultDataSpaceChatCard(
     spaceView: VaultSpaceView.DataSpaceWithChat,
     expandedSpaceId: String? = null,
     onDismissMenu: () -> Unit = {},
-    onMuteSpace: (Id) -> Unit = {},
+    onMuteSpace: (Id, Boolean) -> Unit = { _, _ -> },
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
@@ -108,7 +108,7 @@ fun VaultDataSpaceChatCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title,
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             chatName = chatName,
             creatorName = creatorName,
             messageText = messageText,
@@ -136,7 +136,8 @@ fun VaultDataSpaceChatCard(
                     if (shouldShowAsMuted) {
                         onUnmuteSpace(it)
                     } else {
-                        onMuteSpace(it)
+                        // DataSpaceWithChat is never OneToOne, so pass false
+                        onMuteSpace(it, false)
                     }
                 }
             },
@@ -198,7 +199,7 @@ private fun ContentDataSpaceChat(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = chatName,
+                text = chatName.ifEmpty { stringResource(id = R.string.untitled) },
                 style = CodeChatPreviewMedium,
                 color = getChatTextColor(
                     notificationMode = spaceNotificationState,

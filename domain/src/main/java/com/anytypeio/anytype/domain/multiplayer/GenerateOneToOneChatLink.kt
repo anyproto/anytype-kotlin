@@ -3,6 +3,8 @@ package com.anytypeio.anytype.domain.multiplayer
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import javax.inject.Inject
 
 /**
@@ -27,8 +29,10 @@ class GenerateOneToOneChatLink @Inject constructor(
             throw IllegalStateException("Identity not available")
         }
 
+        val encodedMetaDataKey = URLEncoder.encode(params.metaDataKey, StandardCharsets.UTF_8.toString())
+        
         return OneToOneLinkData(
-            link = "$BASE_URL${params.identity}#${params.metaDataKey}",
+            link = "$BASE_URL${params.identity}#$encodedMetaDataKey",
             name = params.name,
             identity = params.identity
         )

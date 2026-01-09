@@ -53,7 +53,8 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.spaces.ChatNotificationItem
 import com.anytypeio.anytype.presentation.spaces.UiEvent
-import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.*
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToChat
+import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToSpace
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
@@ -593,6 +594,7 @@ fun NewSpaceSettingsScreen(
             targetSpaceId = uiState.targetSpaceId,
             currentState = uiState.notificationState,
             chatsWithCustomNotifications = chatsWithCustomNotifications,
+            isOneToOne = uiState.spaceTechInfo.isOneToOne,
             uiEvent = uiEvent,
             onDismiss = {
                 showNotificationsSettings = false

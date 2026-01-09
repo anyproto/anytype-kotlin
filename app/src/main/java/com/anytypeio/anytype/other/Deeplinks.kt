@@ -7,6 +7,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import timber.log.Timber
+import java.net.URLDecoder
+import java.nio.charset.StandardCharsets
 
 const val DEEP_LINK_PATTERN = "anytype://"
 
@@ -19,7 +21,8 @@ const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
 const val DEEP_LINK_TO_OBJECT_REG_EXP = """object\.any\.coop/([a-zA-Z0-9?=&._-]+)"""
-const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9_-]+)#([a-zA-Z0-9_+/=-]+)"""
+// Simplified regex to just match the domain and path, we'll extract the fragment via Uri
+const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9_-]+)"""
 const val DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP =
     "anytype://hi/\\?id=([a-zA-Z0-9_-]+)&key=([a-zA-Z0-9_+/=-]+)"
 
@@ -66,28 +69,34 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     private fun resolveOneToOneChatLink(deeplink: String): DeepLinkResolver.Action {
-        val result = oneToOneChatRegex.find(deeplink)
-        val identity = result?.groupValues?.getOrNull(1)
-        val metadataKey = result?.groupValues?.getOrNull(2)
-        return if (identity != null && metadataKey != null) {
+        // Use Uri.parse to properly extract the fragment (after #) which may contain URL-encoded data
+        val uri = Uri.parse(deeplink)
+        val identity = uri.pathSegments?.getOrNull(0)
+        val metadataKeyRaw = uri.fragment // Fragment is automatically URL-decoded by Uri.parse()
+        
+        return if (identity != null && metadataKeyRaw != null) {
+            Timber.d("Resolved one-to-one chat link - identity: $identity, metadataKey length: ${metadataKeyRaw.length}")
             DeepLinkResolver.Action.InitiateOneToOneChat(
                 identity = identity,
-                metadataKey = metadataKey
+                metadataKey = metadataKeyRaw
             )
         } else {
+            Timber.e("Failed to parse one-to-one chat link: $deeplink")
             DeepLinkResolver.Action.Unknown
         }
     }
 
     private fun resolveOneToOneChatCustomLink(uri: Uri): DeepLinkResolver.Action {
         val identity = uri.getQueryParameter("id")
-        val metadataKey = uri.getQueryParameter("key")
+        val metadataKey = uri.getQueryParameter("key") // Uri.getQueryParameter already URL-decodes
         return if (identity != null && metadataKey != null) {
+            Timber.d("Resolved one-to-one chat custom link - identity: $identity, metadataKey length: ${metadataKey.length}")
             DeepLinkResolver.Action.InitiateOneToOneChat(
                 identity = identity,
                 metadataKey = metadataKey
             )
         } else {
+            Timber.e("Failed to parse one-to-one chat custom link")
             DeepLinkResolver.Action.Unknown
         }
     }

@@ -4,6 +4,7 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
@@ -197,7 +198,47 @@ class ObjectTypeChangeViewModel(
             return ObjectTypeChangeViewState.Loading
         }
 
-        val items = types.getObjectTypeViewsForSBPage(
+        // Partition types: Lists (Set/Collection) vs Objects (everything else)
+        val (listTypes, objectTypes) = types.partition { type ->
+            type.uniqueKey == ObjectTypeUniqueKeys.SET ||
+                    type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
+        }
+
+        val items = buildList {
+            // Add "Lists" section if there are any list types
+            if (listTypes.isNotEmpty()) {
+                add(ObjectTypeChangeItem.Section.Lists)
+                addAll(
+                    listTypes.toTypeItems(
+                        isWithCollection = isWithCollection,
+                        isWithBookmark = isWithBookmark,
+                        excludeTypes = excludeTypes
+                    )
+                )
+            }
+
+            // Add "Objects" section if there are any object types
+            if (objectTypes.isNotEmpty()) {
+                add(ObjectTypeChangeItem.Section.Objects)
+                addAll(
+                    objectTypes.toTypeItems(
+                        isWithCollection = isWithCollection,
+                        isWithBookmark = isWithBookmark,
+                        excludeTypes = excludeTypes
+                    )
+                )
+            }
+        }
+
+        return ObjectTypeChangeViewState.Content(items)
+    }
+
+    private fun List<ObjectWrapper.Type>.toTypeItems(
+        isWithCollection: Boolean,
+        isWithBookmark: Boolean,
+        excludeTypes: List<Id>
+    ): List<ObjectTypeChangeItem.Type> {
+        return this.getObjectTypeViewsForSBPage(
             isWithCollection = isWithCollection,
             isWithBookmark = isWithBookmark,
             excludeTypes = excludeTypes,
@@ -212,8 +253,6 @@ class ObjectTypeChangeViewModel(
                 isSelected = typeView.isSelected
             )
         }
-
-        return ObjectTypeChangeViewState.Content(items)
     }
 
     companion object {
@@ -249,6 +288,11 @@ sealed class ObjectTypeChangeViewState {
 }
 
 sealed class ObjectTypeChangeItem {
+    sealed class Section : ObjectTypeChangeItem() {
+        data object Lists : Section()
+        data object Objects : Section()
+    }
+
     data class Type(
         val id: Id,
         val key: Key,

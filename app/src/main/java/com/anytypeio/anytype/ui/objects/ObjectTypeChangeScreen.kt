@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
@@ -37,6 +38,7 @@ import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.EmptyState
 import com.anytypeio.anytype.core_ui.foundation.Toolbar
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SearchField
@@ -140,6 +142,12 @@ private fun FlowRowContent(
     ) {
         items.forEach { item ->
             when (item) {
+                is ObjectTypeChangeItem.Section.Lists -> {
+                    SectionHeader(title = stringResource(id = R.string.create_object_section_lists))
+                }
+                is ObjectTypeChangeItem.Section.Objects -> {
+                    SectionHeader(title = stringResource(id = R.string.create_object_section_objects))
+                }
                 is ObjectTypeChangeItem.Type -> {
                     TypeItem(
                         name = item.name,
@@ -152,6 +160,22 @@ private fun FlowRowContent(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun SectionHeader(title: String) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(44.dp)
+    ) {
+        Text(
+            modifier = Modifier.align(Alignment.BottomStart),
+            text = title,
+            color = colorResource(id = R.color.text_secondary),
+            style = Caption1Medium
+        )
     }
 }
 

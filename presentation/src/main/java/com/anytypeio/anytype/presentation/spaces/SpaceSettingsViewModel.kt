@@ -351,7 +351,7 @@ class SpaceSettingsViewModel(
                         val otherMember =
                             spaceMembers.members.find { it.identity == spaceView.oneToOneIdentity }
                         otherMember?.let {
-                            add(Spacer(height = 16))
+                            add(Spacer(id = "after-icon", height = 16))
                             add(
                                 UiSpaceSettingsItem.ParticipantIdentity(
                                     name = it.name.orEmpty(),
@@ -362,7 +362,7 @@ class SpaceSettingsViewModel(
                             add(UiSpaceSettingsItem.Section.Collaboration)
                         }
                     } else {
-                        add(Spacer(height = 24))
+                        add(Spacer(id = "after-icon", height = 24))
                         add(
                             UiSpaceSettingsItem.Name(
                                 name = spaceView.name.orEmpty()
@@ -371,14 +371,14 @@ class SpaceSettingsViewModel(
                     }
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
-                            add(Spacer(height = 4))
+                            add(Spacer(id = "after-name", height = 4))
                             if (spaceView.spaceUxType.shouldShowMemberCount) {
                                 add(MembersSmall(count = spaceMemberCount))
                             }
                         }
 
                         SpaceAccessType.DEFAULT, null -> {
-                            add(Spacer(height = 4))
+                            add(Spacer(id = "after-name-entry", height = 4))
                             add(EntrySpace)
                         }
                     }
@@ -389,7 +389,7 @@ class SpaceSettingsViewModel(
                             if (permission?.isOwner() == true && requests > 0) requests else null
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -402,7 +402,7 @@ class SpaceSettingsViewModel(
                             }
 
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -415,7 +415,7 @@ class SpaceSettingsViewModel(
                             }
 
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -441,13 +441,13 @@ class SpaceSettingsViewModel(
                     }
 
                     if (spaceView.isShared || spaceView.isOneToOneSpace) {
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "before-notifications", height = 8))
                         add(Notifications)
                     }
 
 
                     if (shouldShowChangeTypeOption(permission, spaceView)) {
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "before-change-type", height = 8))
                         when (spaceView.spaceUxType) {
                             SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
                             else -> add(UiSpaceSettingsItem.ChangeType.Data(isEnabled = true))
@@ -456,12 +456,12 @@ class SpaceSettingsViewModel(
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-object-types", height = 8))
                     add(UiSpaceSettingsItem.Fields)
 
                     add(UiSpaceSettingsItem.Section.Preferences)
                     add(defaultObjectTypeSettingItem)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-default-type", height = 8))
                     add(
                         UiSpaceSettingsItem.Wallpapers(
                             wallpaper = wallpaperResult,
@@ -472,19 +472,19 @@ class SpaceSettingsViewModel(
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
                         add(UiSpaceSettingsItem.RemoteStorage)
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "after-remote-storage", height = 8))
                         add(UiSpaceSettingsItem.Bin)
                     }
 
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-space-info", height = 8))
                     if (permission?.isOwner() == true) {
                         add(UiSpaceSettingsItem.DeleteSpace)
                     } else {
                         add(UiSpaceSettingsItem.LeaveSpace)
                     }
-                    add(Spacer(height = 32))
+                    add(Spacer(id = "bottom", height = 32))
                 }
 
                 UiSpaceSettingsState.SpaceSettings(

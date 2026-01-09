@@ -908,6 +908,7 @@ class SpaceSettingsViewModel(
     }
 
     fun onSelectObjectType(type: ObjectWrapper.Type) {
+        Timber.d("onSelectObjectType: $type")
         // Setting space default object type
         viewModelScope.launch {
             val params = SetDefaultObjectType.Params(

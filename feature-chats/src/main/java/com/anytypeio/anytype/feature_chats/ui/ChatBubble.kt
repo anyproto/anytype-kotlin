@@ -310,12 +310,7 @@ fun Bubble(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                     ) {
-                        if (isSynced) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_chat_msg_synced),
-                                contentDescription = "Message synced icon"
-                            )
-                        } else {
+                        if (!isSynced) {
                             Image(
                                 painter = painterResource(R.drawable.ic_chat_msg_not_synced),
                                 contentDescription = "Message not synced icon"

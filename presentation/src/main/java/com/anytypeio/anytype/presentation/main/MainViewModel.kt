@@ -763,6 +763,20 @@ class MainViewModel(
         super.onCleared()
     }
 
+    fun onTaskWidgetActionOpen(target: Id, spaceId: Id) {
+        Timber.d("onTaskWidgetActionOpen")
+        viewModelScope.launch {
+            commands.emit(
+                Command.Navigate(
+                    OpenObjectNavigation.OpenEditor(
+                        target = target,
+                        space = spaceId
+                    )
+                )
+            )
+        }
+    }
+
     sealed class Command {
         data class ShowDeletedAccountScreen(val deadline: Long) : Command()
         data object LogoutDueToAccountDeletion : Command()

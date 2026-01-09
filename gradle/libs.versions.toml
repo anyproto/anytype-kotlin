@@ -66,6 +66,7 @@ firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
+glance = "1.1.0"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -162,6 +163,8 @@ firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "fire
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
 anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2" }
+glanceAppWidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
+glanceMaterial3 = { group = "androidx.glance", name = "glance-material3", version.ref = "glance" }
 
 [bundles]
 

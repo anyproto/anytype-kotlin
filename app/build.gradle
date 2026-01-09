@@ -255,6 +255,9 @@ dependencies {
 
     implementation libs.wireRuntime
 
+    implementation libs.glanceAppWidget
+    implementation libs.glanceMaterial3
+
     //Unit/Integration tests dependencies
     testImplementation libs.androidXTestCore
     testImplementation libs.junit

@@ -6,9 +6,11 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.graphics.Color
 import android.os.Bundle
+import android.view.View
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.viewModels
+import androidx.annotation.DrawableRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.runtime.Composable
@@ -41,6 +43,7 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.app.AnytypeNotificationService
 import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATION_TYPE
 import com.anytypeio.anytype.app.DefaultAppActionManager
+import com.anytypeio.anytype.appwidget.SingleObjectTypeWidget
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -285,7 +288,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     findNavController(R.id.fragment).navigate(
                                         R.id.paymentsScreen,
                                         MembershipFragment.args(tierId = command.tierId),
-                                        NavOptions.Builder().setLaunchSingleTop(true).build()
+                                        Builder().setLaunchSingleTop(true).build()
                                     )
                                 }.onFailure {
                                     Timber.w(it, "Error while navigation for deep link membership tier")
@@ -344,7 +347,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     /**
      * Gets the default fallback drawable resource
      */
-    @androidx.annotation.DrawableRes
+    @DrawableRes
     private fun getDefaultDrawableResource(): Int = 0
 
     private fun setFragmentLifecycleCallbacks() {
@@ -512,6 +515,17 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
             AnytypePushService.ACTION_OPEN_CHAT -> {
                 proceedWithOpenChatIntent(intent)
+            }
+            SingleObjectTypeWidget.WIDGET_ACTION_OPEN_TASK -> {
+                val target = intent.getStringExtra(SingleObjectTypeWidget.WIDGET_ACTION_TASK_ID)
+                val spaceId = intent.getStringExtra(Relations.SPACE_ID)
+                if (target.isNullOrEmpty() || spaceId.isNullOrEmpty()) {
+                    return
+                }
+                vm.onTaskWidgetActionOpen(
+                    target = target,
+                    spaceId = spaceId
+                )
             }
         }
     }
@@ -798,7 +812,7 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             destinationName = command.destinationName,
                             spaceName = command.spaceName
                         )
-                        findViewById<android.view.View>(android.R.id.content)?.showSnackbar(
+                        findViewById<View>(android.R.id.content)?.showSnackbar(
                             msg = message,
                             length = Snackbar.LENGTH_INDEFINITE,
                             actionMessage = getString(R.string.button_ok),

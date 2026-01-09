@@ -11,8 +11,6 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -35,7 +33,6 @@ class ObjectTypeChangeViewModel(
     private val vmParams: VmParams,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
-    private val getDefaultObjectType: GetDefaultObjectType,
     private val spaceViews: SpaceViewSubscriptionContainer
 ) : BaseViewModel() {
 
@@ -130,22 +127,6 @@ class ObjectTypeChangeViewModel(
     init {
         Timber.i("ObjectTypeChangeViewModel, init, vmParams: $vmParams")
 
-        // For DEFAULT_OBJECT_TYPE screen, fetch and exclude the current default type
-        if (vmParams.screen == Screen.DEFAULT_OBJECT_TYPE) {
-            viewModelScope.launch {
-                getDefaultObjectType.execute(
-                    vmParams.spaceId
-                ).fold(
-                    onFailure = { e ->
-                        Timber.e(e, "Error while getting user settings")
-                    },
-                    onSuccess = { result ->
-                        excludeTypes.value = vmParams.excludeTypes + result.type.key
-                    }
-                )
-            }
-        }
-
         viewModelScope.launch {
             // Processing on the io thread, collecting on the main thread.
             pipeline.flowOn(dispatchers.io).collect {
@@ -186,9 +167,9 @@ class ObjectTypeChangeViewModel(
         }
         val isWithBookmark = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
-            Screen.EMPTY_DATA_VIEW_SOURCE -> true
+            Screen.EMPTY_DATA_VIEW_SOURCE,
             Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> false
+            Screen.DEFAULT_OBJECT_TYPE -> true
         }
 
         if (types.isEmpty() && query.isNotEmpty()) {
@@ -244,7 +225,7 @@ class ObjectTypeChangeViewModel(
             isWithBookmark = isWithBookmark,
             excludeTypes = excludeTypes,
             selectedTypes = vmParams.selectedTypes,
-            useCustomComparator = false
+            useCustomComparator = vmParams.screen == Screen.DEFAULT_OBJECT_TYPE
         ).map { typeView ->
             ObjectTypeChangeItem.Type(
                 id = typeView.id,

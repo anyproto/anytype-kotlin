@@ -70,6 +70,7 @@ import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
 import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -2129,22 +2130,9 @@ class ChatViewModel @Inject constructor(
             ).onSuccess { payload ->
                 Timber.d("Notification setting changed successfully to: $setting")
                 // Fire analytics event for chat-level notification change
-                analytics.sendEvent(
-                    eventName = EventsDictionary.changeMessageNotificationState,
-                    props = Props(
-                        mapOf(
-                            EventsPropertiesKey.uxType to when (_currentSpaceUxType.value) {
-                                SpaceUxType.ONE_TO_ONE -> "OneToOne"
-                                SpaceUxType.CHAT -> "Chat"
-                                else -> "Data"
-                            },
-                            EventsPropertiesKey.type to when (setting) {
-                                NotificationSetting.ALL -> "All"
-                                NotificationSetting.MENTIONS -> "Mentions"
-                                NotificationSetting.MUTE -> "Nothing"
-                            }
-                        )
-                    )
+                analytics.sendAnalyticsChangeMessageNotificationState(
+                    spaceUxType = _currentSpaceUxType.value,
+                    notificationState = setting.toNotificationState()
                 )
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")

@@ -65,6 +65,7 @@ import com.anytypeio.anytype.domain.wallpaper.SetWallpaper
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
@@ -1012,15 +1013,12 @@ class SpaceSettingsViewModel(
                 onSuccess = {
                     _notificationState.value = newState
                     Timber.d("Successfully set notification state to: $newState for space: $targetSpaceId")
-                    // Fire analytics event for space-level notification change if it's a chat/one-to-one space
+                    // Fire analytics event for space-level notification change
                     val spaceView = spaceViewContainer.get(vmParams.space)
-                    if (spaceView != null && 
-                        (spaceView.spaceUxType == SpaceUxType.CHAT || spaceView.spaceUxType == SpaceUxType.ONE_TO_ONE)) {
-                        analytics.sendEvent(
-                            eventName = EventsDictionary.changeMessageNotificationState,
-                            props = Props(
-                                mapOf(EventsPropertiesKey.uxType to "Chat")
-                            )
+                    if (spaceView != null) {
+                        analytics.sendAnalyticsChangeMessageNotificationState(
+                            spaceUxType = spaceView.spaceUxType,
+                            notificationState = newState
                         )
                     }
                 },

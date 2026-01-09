@@ -670,10 +670,10 @@ fun ChatScreen(
                         bottom = if (jumpToBottomButtonEnabled) 60.dp else 0.dp
                     ),
                 onClick = onGoToMentionClicked,
-                enabled = counter.mentions > 0 && spaceUxType != SpaceUxType.ONE_TO_ONE
+                enabled = counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE
             )
 
-            if (counter.mentions > 0 && spaceUxType != SpaceUxType.ONE_TO_ONE) {
+            if (counter.mentions > 0 && spaceUxType != null && spaceUxType != SpaceUxType.ONE_TO_ONE) {
                 Box(
                     modifier = Modifier
                         .align(Alignment.BottomEnd)

@@ -783,6 +783,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Gallery</string>
     <string name="change_type">Change type</string>
+    <string name="default_type_screen_title">Choose default object type</string>
     <string name="change_cover">Change cover</string>
 
     <string name="remove">Remove</string>

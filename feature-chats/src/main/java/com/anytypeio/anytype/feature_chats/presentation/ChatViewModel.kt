@@ -2130,7 +2130,21 @@ class ChatViewModel @Inject constructor(
                 Timber.d("Notification setting changed successfully to: $setting")
                 // Fire analytics event for chat-level notification change
                 analytics.sendEvent(
-                    eventName = EventsDictionary.changeMessageNotificationState
+                    eventName = EventsDictionary.changeMessageNotificationState,
+                    props = Props(
+                        mapOf(
+                            EventsPropertiesKey.uxType to when (_currentSpaceUxType.value) {
+                                SpaceUxType.ONE_TO_ONE -> "OneToOne"
+                                SpaceUxType.CHAT -> "Chat"
+                                else -> "Data"
+                            },
+                            EventsPropertiesKey.type to when (setting) {
+                                NotificationSetting.ALL -> "All"
+                                NotificationSetting.MENTIONS -> "Mentions"
+                                NotificationSetting.MUTE -> "Nothing"
+                            }
+                        )
+                    )
                 )
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")

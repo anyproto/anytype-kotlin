@@ -709,6 +709,7 @@
     <string name="tab_upload_image">上传图像</string>
     <string name="tab_gallery">相册</string>
     <string name="change_type">更改类型</string>
+    <string name="default_type_screen_title">选择默认对象类型</string>
     <string name="change_cover">更换封面</string>
     <string name="remove">移除</string>
     <string name="choose_options">选择选项</string>

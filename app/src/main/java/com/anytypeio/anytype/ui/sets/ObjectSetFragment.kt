@@ -931,7 +931,7 @@ open class ObjectSetFragment :
         binding.topToolbar.root.findViewById<TextView>(R.id.tvTopToolbarTitle).text = header.title.text
 
         binding.objectHeader.root.findViewById<ViewGroup>(R.id.docEmojiIconContainer).apply {
-            if (header.title.emoji != null) visible() else gone()
+            //if (header.title.emoji != null) visible() else gone()
             jobs += this.clicks()
                 .throttleFirst()
                 .onEach { vm.onObjectIconClicked() }
@@ -953,8 +953,8 @@ open class ObjectSetFragment :
             }
         }
 
-        binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
-            .setEmojiOrNull(header.title.emoji)
+//        binding.objectHeader.root.findViewById<ImageView>(R.id.emojiIcon)
+//            .setEmojiOrNull(header.title.emoji)
 
         setCover(
             coverColor = header.title.coverColor,
@@ -980,15 +980,15 @@ open class ObjectSetFragment :
 
     private fun setupHeaderMargins(header: SetOrCollectionHeaderState.Default) {
         when {
-            header.title.emoji != null -> {
-                title.updateLayoutParams<LinearLayout.LayoutParams> {
-                    topMargin = dimen(R.dimen.dp_12)
-                }
-                binding.objectHeader.docEmojiIconContainer.updateLayoutParams<FrameLayout.LayoutParams> {
-                    topMargin =
-                        if (!header.title.hasCover) dimen(R.dimen.dp_12) else dimen(R.dimen.dp_72)
-                }
-            }
+//            header.title.emoji != null -> {
+//                title.updateLayoutParams<LinearLayout.LayoutParams> {
+//                    topMargin = dimen(R.dimen.dp_12)
+//                }
+//                binding.objectHeader.docEmojiIconContainer.updateLayoutParams<FrameLayout.LayoutParams> {
+//                    topMargin =
+//                        if (!header.title.hasCover) dimen(R.dimen.dp_12) else dimen(R.dimen.dp_72)
+//                }
+//            }
             header.title.image != null -> {
                 title.updateLayoutParams<LinearLayout.LayoutParams> {
                     topMargin = dimen(R.dimen.dp_10)

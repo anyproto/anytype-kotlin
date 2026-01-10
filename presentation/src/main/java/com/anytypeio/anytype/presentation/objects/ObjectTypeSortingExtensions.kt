@@ -21,7 +21,8 @@ object ObjectTypePriority {
             ObjectTypeIds.IMAGE,
             ObjectTypeIds.FILE,
             ObjectTypeIds.VIDEO,
-            ObjectTypeIds.AUDIO
+            ObjectTypeIds.AUDIO,
+            ObjectTypeIds.TEMPLATE
         )
     } else {
         listOf(
@@ -35,7 +36,8 @@ object ObjectTypePriority {
             ObjectTypeIds.SET,
             ObjectTypeIds.PROJECT,
             ObjectTypeIds.VIDEO,
-            ObjectTypeIds.AUDIO
+            ObjectTypeIds.AUDIO,
+            ObjectTypeIds.TEMPLATE
         )
     }
 }

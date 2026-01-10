@@ -710,6 +710,7 @@
     <string name="tab_upload_image">Upload afbeelding</string>
     <string name="tab_gallery">Galerij</string>
     <string name="change_type">Verander type</string>
+    <string name="default_type_screen_title">Kies het standaard objecttype</string>
     <string name="change_cover">Wijzig omslag</string>
     <string name="remove">Verwijder</string>
     <string name="choose_options">Kies opties</string>

@@ -710,6 +710,7 @@
     <string name="tab_upload_image">Bild hochladen</string>
     <string name="tab_gallery">Galerie</string>
     <string name="change_type">Typ ändern</string>
+    <string name="default_type_screen_title">Standard Objekttyp auswählen</string>
     <string name="change_cover">Titelbild ändern</string>
     <string name="remove">Entfernen</string>
     <string name="choose_options">Optionen auswählen</string>

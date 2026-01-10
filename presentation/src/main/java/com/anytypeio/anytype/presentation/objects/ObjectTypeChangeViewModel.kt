@@ -225,11 +225,11 @@ class ObjectTypeChangeViewModel(
         isWithBookmark: Boolean,
         excludeTypes: List<Id>
     ): List<ObjectTypeChangeItem.Type> {
-        return this.getObjectTypeViewsForSBPage(
-            isWithListTypes = isWithListTypes,
-            isWithBookmark = isWithBookmark,
-            excludeTypes = excludeTypes,
-            selectedTypes = vmParams.selectedTypes
+        return this.toObjectTypeViews(
+            includeListTypes = isWithListTypes,
+            includeBookmarkType = isWithBookmark,
+            excludedTypeIds = excludeTypes,
+            selectedTypeIds = vmParams.selectedTypes
         ).map { typeView ->
             ObjectTypeChangeItem.Type(
                 id = typeView.id,

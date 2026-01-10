@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -2724,6 +2725,33 @@ fun CoroutineScope.sendAnalyticsScreenObjectType(
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.screenObjectType
+    )
+}
+//endregion
+
+//region Notifications
+suspend fun Analytics.sendAnalyticsChangeMessageNotificationState(
+    spaceUxType: SpaceUxType?,
+    notificationState: NotificationState
+) {
+    val uxType = when (spaceUxType) {
+        SpaceUxType.ONE_TO_ONE -> "OneToOne"
+        SpaceUxType.CHAT -> "Chat"
+        else -> "Data"
+    }
+    val type = when (notificationState) {
+        NotificationState.ALL -> "All"
+        NotificationState.MENTIONS -> "Mentions"
+        NotificationState.DISABLE -> "Nothing"
+    }
+    sendEvent(
+        eventName = EventsDictionary.changeMessageNotificationState,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.uxType to uxType,
+                EventsPropertiesKey.type to type
+            )
+        )
     )
 }
 //endregion

@@ -67,6 +67,7 @@ import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
 import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -1638,6 +1639,8 @@ class ChatViewModel @Inject constructor(
             val headerView = header.value
             if (headerView is HeaderView.ChatObject) {
                 val name = headerView.title
+                // Fire analytics event for opening chat info screen
+                analytics.sendEvent(eventName = EventsDictionary.screenChatInfo)
                 commands.emit(
                     ViewModelCommand.OpenChatInfo(
                         name = name,
@@ -1963,7 +1966,12 @@ class ChatViewModel @Inject constructor(
                     mode = mode
                 )
             ).onSuccess { payload ->
-                Timber.d("Notification setting changed successfully to: $setting, for chat: ${vmParams.ctx}")
+                Timber.d("Notification setting changed successfully to: $setting")
+                // Fire analytics event for chat-level notification change
+                analytics.sendAnalyticsChangeMessageNotificationState(
+                    spaceUxType = _currentSpaceUxType.value,
+                    notificationState = setting.toNotificationState()
+                )
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")
                 // Revert header to previous state on error

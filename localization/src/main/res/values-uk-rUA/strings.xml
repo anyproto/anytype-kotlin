@@ -712,6 +712,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Галерея</string>
     <string name="change_type">Змінити тип</string>
+    <string name="default_type_screen_title">Оберіть тип об\'єкту за замовчуванням</string>
     <string name="change_cover">Змінити обкладинку</string>
     <string name="remove">Вилучити</string>
     <string name="choose_options">Choose options</string>

@@ -709,6 +709,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Galeri</string>
     <string name="change_type">Ubah tipe</string>
+    <string name="default_type_screen_title">Pilih tipe objek bawaan</string>
     <string name="change_cover">Ubah sampul</string>
     <string name="remove">Hapus</string>
     <string name="choose_options">Choose options</string>

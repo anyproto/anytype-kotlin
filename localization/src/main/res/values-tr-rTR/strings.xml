@@ -710,6 +710,7 @@
     <string name="tab_upload_image">Resim yükle</string>
     <string name="tab_gallery">Galeri</string>
     <string name="change_type">Türü değiştir</string>
+    <string name="default_type_screen_title">Varsayılan nesne türünü seç</string>
     <string name="change_cover">Kapağı değiştir</string>
     <string name="remove">Kaldır</string>
     <string name="choose_options">Seçenekleri belirleyin</string>

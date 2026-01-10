@@ -709,6 +709,7 @@
     <string name="tab_upload_image">画像をアップロード</string>
     <string name="tab_gallery">ギャラリー</string>
     <string name="change_type">タイプを変更</string>
+    <string name="default_type_screen_title">デフォルトのタイプを選択</string>
     <string name="change_cover">カバー画像を変更</string>
     <string name="remove">削除</string>
     <string name="choose_options">オプションを選択</string>

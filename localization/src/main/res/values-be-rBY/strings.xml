@@ -712,6 +712,7 @@
     <string name="tab_upload_image">Загрузіць відарыс</string>
     <string name="tab_gallery">Галерэя </string>
     <string name="change_type">Змяніць тып</string>
+    <string name="default_type_screen_title">Выберыце прадвызначаны тып аб\'екта</string>
     <string name="change_cover">Змяніць вокладку</string>
     <string name="remove">Выдаліць</string>
     <string name="choose_options">Выберыце параметры</string>

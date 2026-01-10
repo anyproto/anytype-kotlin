@@ -3,42 +3,37 @@ package com.anytypeio.anytype.presentation.objects
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.Key
-import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeIds.BOOKMARK
 import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.SET
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.presentation.mapper.toObjectTypeView
-import com.anytypeio.anytype.core_models.SupportedLayouts.editorLayouts
-import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
-import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
-import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
-import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
-import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**
  * The method allows you to get object type views for using in the editor and set
  * The main filtering goes by SmartBlockType.PAGE
- * Resulting list of object types, sorted by [ObjectTypeViewComparator]
- * @param isWithCollection This parameter determines whether to add ObjectType COLLECTION to the resulting list of object types
+ * Resulting list of object types
+ * @param isWithListTypes This parameter determines whether to add list types (SET and COLLECTION) to the resulting list of object types
  * @param isWithBookmark This parameter determines whether to add ObjectType BOOKMARK to the resulting list of object types
  * @param excludeTypes List of object type id's that should not be included in the resulting list
  * @param selectedTypes List of object type id's that have selected status true, see[ObjectTypeView.isSelected]
  *
  */
 fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
-    isWithCollection: Boolean = false,
+    isWithListTypes: Boolean = false,
     isWithBookmark: Boolean = false,
     excludeTypes: List<String> = emptyList(),
-    selectedTypes: List<String> = emptyList(),
-    useCustomComparator: Boolean = true,
+    selectedTypes: List<String> = emptyList()
 ): List<ObjectTypeView> {
     val result = mutableListOf<ObjectTypeView>()
     forEach { obj ->
@@ -46,7 +41,7 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
             return@forEach
         }
         if (obj.uniqueKey == COLLECTION || obj.uniqueKey == SET) {
-            if (isWithCollection) {
+            if (isWithListTypes) {
                 val objTypeView = obj.toObjectTypeView(selectedTypes)
                 result.add(objTypeView)
             }
@@ -66,10 +61,7 @@ fun List<ObjectWrapper.Type>.getObjectTypeViewsForSBPage(
         result.add(objTypeView)
         return@forEach
     }
-    return if (useCustomComparator)
-        result.sortedWith(ObjectTypeViewComparator())
-    else
-        result
+    return result
 }
 
 /**

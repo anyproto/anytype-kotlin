@@ -712,6 +712,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Галерея</string>
     <string name="change_type">Змінити тип</string>
+    <string name="default_type_screen_title">Оберіть тип об\'єкту за замовчуванням</string>
     <string name="change_cover">Змінити обкладинку</string>
     <string name="remove">Вилучити</string>
     <string name="choose_options">Choose options</string>
@@ -2014,6 +2015,7 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
@@ -2124,4 +2126,5 @@ Please provide specific details of your needs here.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Save</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

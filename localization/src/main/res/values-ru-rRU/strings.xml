@@ -712,6 +712,7 @@
     <string name="tab_upload_image">Загрузить изображение</string>
     <string name="tab_gallery">Галерея</string>
     <string name="change_type">Изменить тип</string>
+    <string name="default_type_screen_title">Выберите тип объекта по умолчанию</string>
     <string name="change_cover">Изменить обложку</string>
     <string name="remove">Удалить</string>
     <string name="choose_options">Выберите параметры</string>

@@ -1,32 +1,24 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.UserSettingsRepository
-import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.spaces.AddObjectTypeToSpace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModelFactory
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.types.pickers.AppDefaultObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
+import dagger.BindsInstance
 import dagger.Module
-import dagger.Provides
 import dagger.Subcomponent
 
 @Subcomponent(modules = [ObjectTypeChangeModule::class])
 @PerScreen
 interface ObjectTypeChangeSubComponent {
 
-    @Subcomponent.Builder
-    interface Builder {
-        fun module(module: ObjectTypeChangeModule): Builder
-        fun build(): ObjectTypeChangeSubComponent
+    @Subcomponent.Factory
+    interface Factory {
+        fun create(
+            @BindsInstance vmParams: ObjectTypeChangeViewModel.VmParams
+        ): ObjectTypeChangeSubComponent
     }
 
     fun inject(fragment: ObjectSelectTypeFragment)
@@ -37,52 +29,5 @@ interface ObjectTypeChangeSubComponent {
 
 @Module
 object ObjectTypeChangeModule {
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideObjectTypeViewModelFactory(
-        getObjectTypes: GetObjectTypes,
-        addObjectTypeToSpace: AddObjectTypeToSpace,
-        dispatchers: AppCoroutineDispatchers,
-        spaceManager: SpaceManager,
-        getDefaultObjectType: GetDefaultObjectType,
-        urlBuilder: UrlBuilder,
-        spaceViews: SpaceViewSubscriptionContainer
-    ): ObjectTypeChangeViewModelFactory {
-        return ObjectTypeChangeViewModelFactory(
-            getObjectTypes = getObjectTypes,
-            addObjectTypeToSpace = addObjectTypeToSpace,
-            dispatchers = dispatchers,
-            spaceManager = spaceManager,
-            getDefaultObjectType = getDefaultObjectType,
-            urlBuilder = urlBuilder,
-            spaceViews = spaceViews
-        )
-    }
-
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideAddObjectTypeToSpace(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ) : AddObjectTypeToSpace = AddObjectTypeToSpace(
-        repo = repo,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @PerScreen
-    @Provides
-    fun provideGetDefaultPageType(
-        userSettingsRepository: UserSettingsRepository,
-        blockRepository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): GetDefaultObjectType = GetDefaultObjectType(
-        userSettingsRepository = userSettingsRepository,
-        blockRepository = blockRepository,
-        dispatchers = dispatchers
-    )
 
 }

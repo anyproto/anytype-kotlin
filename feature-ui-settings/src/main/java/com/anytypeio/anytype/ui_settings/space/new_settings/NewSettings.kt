@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -161,164 +162,155 @@ fun NewSpaceSettingsScreen(
                 state = lazyListState,
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                uiState.items.forEach { item ->
+                itemsIndexed(
+                    items = uiState.items,
+                    key = { _, item -> item.key },
+                ) { _, item ->
                     when (item) {
                         is UiSpaceSettingsItem.Icon -> {
-                            item {
-                                NewSpaceIcon(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    icon = item.icon,
-                                    isEditEnabled = uiState.isEditEnabled,
-                                    uiEvent = uiEvent
-                                )
-                            }
+                            NewSpaceIcon(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                                icon = item.icon,
+                                isEditEnabled = uiState.isEditEnabled,
+                                uiEvent = uiEvent
+                            )
                         }
 
                         is UiSpaceSettingsItem.Name -> {
-                            item {
-                                Text(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .padding(horizontal = 16.dp)
-                                        .animateItem()
-                                        .noRippleClickable {
-                                            if (uiState.isEditEnabled) {
-                                                showEditTitle = true
-                                            }
-                                        },
-                                    text = item.name,
-                                    style = HeadlineHeading,
-                                    color = colorResource(id = R.color.text_primary),
-                                    textAlign = TextAlign.Center
-                                )
-                            }
+                            Text(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 16.dp)
+                                    .animateItem()
+                                    .noRippleClickable {
+                                        if (uiState.isEditEnabled) {
+                                            showEditTitle = true
+                                        }
+                                    },
+                                text = item.name,
+                                style = HeadlineHeading,
+                                color = colorResource(id = R.color.text_primary),
+                                textAlign = TextAlign.Center
+                            )
                         }
 
                         is UiSpaceSettingsItem.ParticipantIdentity -> {
-                            item {
-                                Column(
+                            Column(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                                horizontalAlignment = Alignment.CenterHorizontally
+                            ) {
+                                // Name row with membership badge
+                                Row(
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    horizontalAlignment = Alignment.CenterHorizontally
+                                        .padding(horizontal = 32.dp),
+                                    horizontalArrangement = Arrangement.Center,
+                                    verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // Name row with membership badge
-                                    Row(
-                                        modifier = Modifier
-                                            .padding(horizontal = 32.dp),
-                                        horizontalArrangement = Arrangement.Center,
-                                        verticalAlignment = Alignment.CenterVertically
-                                    ) {
-                                        Text(
-                                            text = item.name,
-                                            style = HeadlineHeading,
-                                            color = colorResource(id = R.color.text_primary),
-                                            maxLines = 1,
-                                            overflow = TextOverflow.Ellipsis,
-                                            modifier = Modifier.weight(1f, fill = false)
-                                        )
-                                        if (!item.globalName.isNullOrBlank()) {
-                                            Spacer(modifier = Modifier.width(6.dp))
-                                            // Blue circle badge with white checkmark
-                                            Image(
-                                                modifier = Modifier.size(18.dp),
-                                                painter = painterResource(id = R.drawable.ic_membership_badge_18),
-                                                contentDescription = "membership badge"
-                                            )
-                                        }
-                                    }
-                                    Spacer(modifier = Modifier.height(4.dp))
-                                    // Global name or identity below
-                                    val displayIdentity =
-                                        item.globalName?.takeIf { it.isNotEmpty() }
-                                            ?: item.identity
-                                    if (!displayIdentity.isNullOrEmpty()) {
-                                        Text(
-                                            text = displayIdentity,
-                                            style = Caption1Regular,
-                                            color = colorResource(id = R.color.text_secondary),
-                                            textAlign = TextAlign.Center,
-                                            maxLines = 1,
-                                            overflow = TextOverflow.MiddleEllipsis,
-                                            modifier = Modifier.width(108.dp)
-                                        )
-                                    }
-                                }
-                            }
-                        }
-                        is UiSpaceSettingsItem.MembersSmall -> {
-                            item {
-                                val text = if (locale != null && item.count > 0) {
-                                    pluralStringResource(
-                                        id = R.plurals.multiplayer_number_of_space_members,
-                                        item.count,
-                                        item.count
+                                    Text(
+                                        text = item.name,
+                                        style = HeadlineHeading,
+                                        color = colorResource(id = R.color.text_primary),
+                                        maxLines = 1,
+                                        overflow = TextOverflow.Ellipsis,
+                                        modifier = Modifier.weight(1f, fill = false)
                                     )
-                                } else {
-                                    if (locale == null) {
-                                        Timber.e("Error getting the locale")
+                                    if (!item.globalName.isNullOrBlank()) {
+                                        Spacer(modifier = Modifier.width(6.dp))
+                                        // Blue circle badge with white checkmark
+                                        Image(
+                                            modifier = Modifier.size(18.dp),
+                                            painter = painterResource(id = R.drawable.ic_membership_badge_18),
+                                            contentDescription = "membership badge"
+                                        )
                                     }
-                                    stringResource(id = R.string.three_dots_text_placeholder)
                                 }
-                                Text(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    text = text,
-                                    style = Caption1Regular,
-                                    color = colorResource(id = R.color.text_secondary),
-                                    textAlign = TextAlign.Center
-                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                // Global name or identity below
+                                val displayIdentity =
+                                    item.globalName?.takeIf { it.isNotEmpty() }
+                                        ?: item.identity
+                                if (!displayIdentity.isNullOrEmpty()) {
+                                    Text(
+                                        text = displayIdentity,
+                                        style = Caption1Regular,
+                                        color = colorResource(id = R.color.text_secondary),
+                                        textAlign = TextAlign.Center,
+                                        maxLines = 1,
+                                        overflow = TextOverflow.MiddleEllipsis,
+                                        modifier = Modifier.width(108.dp)
+                                    )
+                                }
                             }
                         }
-                        is UiSpaceSettingsItem.EntrySpace -> {
-                            item {
-                                Text(
-                                    modifier = Modifier
-                                        .padding(horizontal = 32.dp)
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    text = stringResource(id = R.string.default_space),
-                                    style = Caption1Regular,
-                                    color = colorResource(id = R.color.text_secondary),
-                                    textAlign = TextAlign.Center
+
+                        is UiSpaceSettingsItem.MembersSmall -> {
+                            val text = if (locale != null && item.count > 0) {
+                                pluralStringResource(
+                                    id = R.plurals.multiplayer_number_of_space_members,
+                                    item.count,
+                                    item.count
                                 )
+                            } else {
+                                if (locale == null) {
+                                    Timber.e("Error getting the locale")
+                                }
+                                stringResource(id = R.string.three_dots_text_placeholder)
                             }
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp)
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                                text = text,
+                                style = Caption1Regular,
+                                color = colorResource(id = R.color.text_secondary),
+                                textAlign = TextAlign.Center
+                            )
+                        }
+
+                        is UiSpaceSettingsItem.EntrySpace -> {
+                            Text(
+                                modifier = Modifier
+                                    .padding(horizontal = 32.dp)
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                                text = stringResource(id = R.string.default_space),
+                                style = Caption1Regular,
+                                color = colorResource(id = R.color.text_secondary),
+                                textAlign = TextAlign.Center
+                            )
                         }
 
                         is UiSpaceSettingsItem.Description -> {
-                            item {
-                                NewSpaceDescriptionBlock(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .border(
-                                            shape = RoundedCornerShape(16.dp),
-                                            width = 0.5.dp,
-                                            color = colorResource(id = R.color.shape_primary)
-                                        )
-                                        .padding(vertical = 12.dp, horizontal = 16.dp)
-                                        .animateItem()
-                                        .noRippleClickable {
-                                            showEditDescription = true
-                                        },
-                                    isEditEnabled = false,
-                                    description = initialDescription
-                                )
-                            }
+                            NewSpaceDescriptionBlock(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .border(
+                                        shape = RoundedCornerShape(16.dp),
+                                        width = 0.5.dp,
+                                        color = colorResource(id = R.color.shape_primary)
+                                    )
+                                    .padding(vertical = 12.dp, horizontal = 16.dp)
+                                    .animateItem()
+                                    .noRippleClickable {
+                                        showEditDescription = true
+                                    },
+                                isEditEnabled = false,
+                                description = initialDescription
+                            )
                         }
 
                         is UiSpaceSettingsItem.InviteLink -> {
-                            item {
-                                MultiplayerButtons(
-                                    link = item.link,
-                                    modifier = Modifier
-                                        .fillMaxWidth(),
-                                    uiEvent = uiEvent
-                                )
-                            }
+                            MultiplayerButtons(
+                                link = item.link,
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                uiEvent = uiEvent
+                            )
                         }
 
                         is UiSpaceSettingsItem.Chat -> {
@@ -326,205 +318,183 @@ fun NewSpaceSettingsScreen(
                         }
 
                         is UiSpaceSettingsItem.DefaultObjectType -> {
-                            item {
-                                DefaultTypeItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(OnDefaultObjectTypeClicked(item.id)) },
-                                    name = item.name,
-                                    icon = item.icon
-                                )
-                            }
+                            DefaultTypeItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(OnDefaultObjectTypeClicked(item.id)) },
+                                name = item.name,
+                                icon = item.icon
+                            )
                         }
 
                         UiSpaceSettingsItem.DeleteSpace -> {
-                            item {
-                                DeleteSpaceItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnDeleteSpaceClicked) },
-                                )
-                            }
+                            DeleteSpaceItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnDeleteSpaceClicked) },
+                            )
                         }
 
                         UiSpaceSettingsItem.LeaveSpace -> {
-                            item {
-                                LeaveSpaceItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnLeaveSpaceClicked) },
-                                )
-                            }
+                            LeaveSpaceItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnLeaveSpaceClicked) },
+                            )
                         }
 
                         is UiSpaceSettingsItem.Members -> {
-                            item {
-                                MembersItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) },
-                                    item = item
-                                )
-                            }
+                            MembersItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnSpaceMembersClicked) },
+                                item = item
+                            )
                         }
+
                         is UiSpaceSettingsItem.InviteMembers -> {
-                            item {
-                                BaseButton(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            uiEvent(UiEvent.OnInviteClicked)
-                                        },
-                                    title = stringResource(id = R.string.space_settings_invite_members),
-                                    icon = R.drawable.ic_space_settings_invite_members
-                                )
-                            }
+                            BaseButton(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        uiEvent(UiEvent.OnInviteClicked)
+                                    },
+                                title = stringResource(id = R.string.space_settings_invite_members),
+                                icon = R.drawable.ic_space_settings_invite_members
+                            )
                         }
+
                         UiSpaceSettingsItem.ObjectTypes -> {
-                            item {
-                                ObjectTypesItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            uiEvent(UiEvent.OnObjectTypesClicked)
-                                        }
-                                )
-                            }
+                            ObjectTypesItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        uiEvent(UiEvent.OnObjectTypesClicked)
+                                    }
+                            )
                         }
 
                         UiSpaceSettingsItem.Fields -> {
-                            item {
-                                FieldsItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            uiEvent(UiEvent.OnPropertiesClicked)
-                                        }
-                                )
-                            }
+                            FieldsItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        uiEvent(UiEvent.OnPropertiesClicked)
+                                    }
+                            )
                         }
 
                         is UiSpaceSettingsItem.RemoteStorage -> {
-                            item {
-                                RemoteStorageItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnRemoteStorageClick) }
-                                )
-                            }
+                            RemoteStorageItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnRemoteStorageClick) }
+                            )
                         }
 
                         is UiSpaceSettingsItem.Bin -> {
-                            item {
-                                BinItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable { uiEvent(UiEvent.OnBinClick) }
-                                )
-                            }
+                            BinItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable { uiEvent(UiEvent.OnBinClick) }
+                            )
                         }
 
                         is UiSpaceSettingsItem.Section -> {
-                            item {
-                                SpaceSettingsSection(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem(),
-                                    item = item
-                                )
-                            }
+                            SpaceSettingsSection(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem(),
+                                item = item
+                            )
                         }
 
                         UiSpaceSettingsItem.SpaceInfo -> {
-                            item {
-                                SpaceInfoItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            showTechInfo = true
-                                        }
-                                )
-                            }
+                            SpaceInfoItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        showTechInfo = true
+                                    }
+                            )
                         }
+
                         is UiSpaceSettingsItem.Wallpapers -> {
-                            item {
-                                WallpaperItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            showWallpaperPicker.value = true
-                                        },
-                                    item = item
-                                )
-                            }
+                            WallpaperItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        showWallpaperPicker.value = true
+                                    },
+                                item = item
+                            )
                         }
+
                         is UiSpaceSettingsItem.Spacer -> {
-                            item {
-                                Spacer(modifier = Modifier.height(item.height.dp))
-                            }
+                            Spacer(modifier = Modifier.height(item.height.dp))
                         }
 
                         is UiSpaceSettingsItem.Notifications -> {
-                            item {
-                                val (icon, supportText) = when (uiState.notificationState) {
-                                    NotificationState.ALL -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_all_short)
-                                    NotificationState.MENTIONS -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_mentions_short)
-                                    NotificationState.DISABLE -> R.drawable.ic_bell_cross_24 to stringResource(id = R.string.notifications_disable_short)
-                                }
-                                NotificationsItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            showNotificationsSettings = true
-                                        },
-                                    icon = icon,
-                                    supportText = supportText
+                            val (icon, supportText) = when (uiState.notificationState) {
+                                NotificationState.ALL -> R.drawable.ic_bell_24 to stringResource(id = R.string.notifications_all_short)
+                                NotificationState.MENTIONS -> R.drawable.ic_bell_24 to stringResource(
+                                    id = R.string.notifications_mentions_short
+                                )
+
+                                NotificationState.DISABLE -> R.drawable.ic_bell_cross_24 to stringResource(
+                                    id = R.string.notifications_disable_short
                                 )
                             }
+                            NotificationsItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        showNotificationsSettings = true
+                                    },
+                                icon = icon,
+                                supportText = supportText
+                            )
                         }
 
                         is UiSpaceSettingsItem.ChangeType -> {
-                            item {
-                                ChangeTypeItem(
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .animateItem()
-                                        .clip(RoundedCornerShape(16.dp))
-                                        .clickable {
-                                            if (item.isEnabled) {
-                                                showChangeTypeSheet = true
-                                            }
-                                        },
-                                    currentType = item
-                                )
-                            }
+                            ChangeTypeItem(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .animateItem()
+                                    .clip(RoundedCornerShape(16.dp))
+                                    .clickable {
+                                        if (item.isEnabled) {
+                                            showChangeTypeSheet = true
+                                        }
+                                    },
+                                currentType = item
+                            )
                         }
                     }
-
                 }
             }
 
@@ -651,7 +621,8 @@ fun NewSpaceSettingsScreen(
     }
 
     if (showChangeTypeSheet) {
-        val changeTypeItem = uiState.items.filterIsInstance<UiSpaceSettingsItem.ChangeType>().firstOrNull()
+        val changeTypeItem =
+            uiState.items.filterIsInstance<UiSpaceSettingsItem.ChangeType>().firstOrNull()
         if (changeTypeItem != null) {
             ChannelTypeBottomSheet(
                 currentType = changeTypeItem,

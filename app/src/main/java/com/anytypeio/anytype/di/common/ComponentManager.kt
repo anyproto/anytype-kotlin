@@ -43,8 +43,6 @@ import com.anytypeio.anytype.di.feature.ObjectSetMenuModule
 import com.anytypeio.anytype.di.feature.ObjectSetModule
 import com.anytypeio.anytype.di.feature.ObjectSetRecordModule
 import com.anytypeio.anytype.di.feature.ObjectSetSettingsModule
-import com.anytypeio.anytype.di.feature.ObjectTypeChangeModule
-import com.anytypeio.anytype.di.feature.PersonalizationSettingsModule
 import com.anytypeio.anytype.di.feature.RelationDataViewDateValueModule
 import com.anytypeio.anytype.di.feature.RelationDataViewTextValueModule
 import com.anytypeio.anytype.di.feature.RelationDateValueModule
@@ -123,6 +121,7 @@ import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.ShareSpaceViewModel
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
@@ -314,11 +313,6 @@ class ComponentManager(
             .build()
     }
 
-    val personalizationSettingsComponent = Component {
-        main.personalizationSettingsComponentBuilder()
-            .module(PersonalizationSettingsModule)
-            .build()
-    }
 
     val linkToObjectComponent = ComponentWithParams { param: ObjectSearchViewModel.VmParams ->
         DaggerLinkToObjectComponent
@@ -753,11 +747,10 @@ class ComponentManager(
             .build()
     }
 
-    val objectTypeChangeComponent = Component {
+    val objectTypeChangeComponent = ComponentWithParams { vmParams: ObjectTypeChangeViewModel.VmParams ->
         main
             .objectTypeChangeComponent()
-            .module(ObjectTypeChangeModule)
-            .build()
+            .create(vmParams)
     }
 
     val templateBlankComponent = Component {

@@ -1293,16 +1293,18 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(
+                    space = space,
                     selectedTypes = command.selectedTypes
                 )
                 fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen -> {
-                val fr = EmptyDataViewSelectSourceFragment()
+                val fr = EmptyDataViewSelectSourceFragment.newInstance(space = space)
                 fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
                 val fr = ObjectSelectTypeFragment.newInstance(
+                    space = space,
                     excludeTypes = command.excludedTypes
                 )
                 fr.showChildFragment()

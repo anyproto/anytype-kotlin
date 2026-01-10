@@ -100,6 +100,8 @@ import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
@@ -141,7 +143,8 @@ class SpaceSettingsViewModel(
     val commands = MutableSharedFlow<Command>()
     val isDismissed = MutableStateFlow(false)
 
-    val uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
+    private val _uiState = MutableStateFlow<UiSpaceSettingsState>(UiSpaceSettingsState.Initial)
+    val uiState: StateFlow<UiSpaceSettingsState> = _uiState.asStateFlow()
 
     val permissions = MutableStateFlow(SpaceMemberPermissions.NO_PERMISSIONS)
 
@@ -154,6 +157,8 @@ class SpaceSettingsViewModel(
         MutableStateFlow<SpaceInviteLinkAccessLevel>(SpaceInviteLinkAccessLevel.LinkDisabled())
 
     val spaceWallpapers = MutableStateFlow<List<WallpaperView>>(listOf())
+
+    private val selectedDefaultObjectType = MutableStateFlow<ObjectWrapper.Type?>(null)
 
     val spaceSettingsErrors = MutableStateFlow<SpaceSettingsErrors>(SpaceSettingsErrors.Hidden)
 
@@ -217,37 +222,39 @@ class SpaceSettingsViewModel(
 
         viewModelScope.launch {
 
+            // Get initial default type from backend (used as fallback)
             val defaultObjectTypeResponse = getDefaultObjectType
                 .async(params = vmParams.space)
                 .getOrNull()
-
-            val defaultObjectTypeSettingItem: UiSpaceSettingsItem.DefaultObjectType
-
-            if (defaultObjectTypeResponse != null) {
-                val defaultType = storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
-                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
-                    id = defaultType?.id,
-                    name = defaultType?.name.orEmpty(),
-                    icon = defaultType?.objectIcon()
-                        ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
-                )
+            val initialDefaultType = if (defaultObjectTypeResponse != null) {
+                storeOfObjectTypes.get(defaultObjectTypeResponse.id.id)
             } else {
-                defaultObjectTypeSettingItem = UiSpaceSettingsItem.DefaultObjectType(
-                    id = null,
-                    name = EMPTY_STRING_VALUE,
-                    icon = ObjectIcon.None
-                )
+                null
             }
-
-            // Get account for toView function
-            val account = getAccount.async(Unit).getOrNull()?.id
 
             combine(
                 restrictions,
                 otherFlows,
                 spaceInfoTitleClickCount,
-                inviteLinkAccessLevel
-            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink ->
+                inviteLinkAccessLevel,
+                selectedDefaultObjectType
+            ) { (permission, sharedSpaceCount, sharedSpaceLimit), (spaceView, spaceMembers, wallpaper), clickCount, inviteLink, selectedType ->
+
+                // Use selected type if available, otherwise fall back to initial default type
+                val effectiveDefaultType = selectedType ?: initialDefaultType
+                val defaultObjectTypeSettingItem = if (effectiveDefaultType != null) {
+                    UiSpaceSettingsItem.DefaultObjectType(
+                        id = effectiveDefaultType.id,
+                        name = effectiveDefaultType.name.orEmpty(),
+                        icon = effectiveDefaultType.objectIcon()
+                    )
+                } else {
+                    UiSpaceSettingsItem.DefaultObjectType(
+                        id = null,
+                        name = EMPTY_STRING_VALUE,
+                        icon = ObjectIcon.None
+                    )
+                }
 
                 Timber.d("Got shared space limit: $sharedSpaceLimit, shared space count: $sharedSpaceCount")
 
@@ -352,7 +359,7 @@ class SpaceSettingsViewModel(
                         val otherMember =
                             spaceMembers.members.find { it.identity == spaceView.oneToOneIdentity }
                         otherMember?.let {
-                            add(Spacer(height = 16))
+                            add(Spacer(id = "after-icon", height = 16))
                             add(
                                 UiSpaceSettingsItem.ParticipantIdentity(
                                     name = it.name.orEmpty(),
@@ -363,7 +370,7 @@ class SpaceSettingsViewModel(
                             add(UiSpaceSettingsItem.Section.Collaboration)
                         }
                     } else {
-                        add(Spacer(height = 24))
+                        add(Spacer(id = "after-icon", height = 24))
                         add(
                             UiSpaceSettingsItem.Name(
                                 name = spaceView.name.orEmpty()
@@ -372,14 +379,14 @@ class SpaceSettingsViewModel(
                     }
                     when (spaceView.spaceAccessType) {
                         SpaceAccessType.PRIVATE, SpaceAccessType.SHARED -> {
-                            add(Spacer(height = 4))
+                            add(Spacer(id = "after-name", height = 4))
                             if (spaceView.spaceUxType.shouldShowMemberCount) {
                                 add(MembersSmall(count = spaceMemberCount))
                             }
                         }
 
                         SpaceAccessType.DEFAULT, null -> {
-                            add(Spacer(height = 4))
+                            add(Spacer(id = "after-name-entry", height = 4))
                             add(EntrySpace)
                         }
                     }
@@ -390,7 +397,7 @@ class SpaceSettingsViewModel(
                             if (permission?.isOwner() == true && requests > 0) requests else null
                         when (inviteLink) {
                             is SpaceInviteLinkAccessLevel.EditorAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -403,7 +410,7 @@ class SpaceSettingsViewModel(
                             }
 
                             is SpaceInviteLinkAccessLevel.RequestAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -416,7 +423,7 @@ class SpaceSettingsViewModel(
                             }
 
                             is SpaceInviteLinkAccessLevel.ViewerAccess -> {
-                                add(Spacer(height = 24))
+                                add(Spacer(id = "before-invite-link", height = 24))
                                 add(InviteLink(inviteLink.link))
                                 add(UiSpaceSettingsItem.Section.Collaboration)
                                 add(
@@ -442,13 +449,13 @@ class SpaceSettingsViewModel(
                     }
 
                     if (spaceView.isShared || spaceView.isOneToOneSpace) {
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "before-notifications", height = 8))
                         add(Notifications)
                     }
 
 
                     if (shouldShowChangeTypeOption(permission, spaceView)) {
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "before-change-type", height = 8))
                         when (spaceView.spaceUxType) {
                             SpaceUxType.CHAT -> add(UiSpaceSettingsItem.ChangeType.Chat(isEnabled = true))
                             else -> add(UiSpaceSettingsItem.ChangeType.Data(isEnabled = true))
@@ -457,12 +464,12 @@ class SpaceSettingsViewModel(
 
                     add(UiSpaceSettingsItem.Section.ContentModel)
                     add(UiSpaceSettingsItem.ObjectTypes)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-object-types", height = 8))
                     add(UiSpaceSettingsItem.Fields)
 
                     add(UiSpaceSettingsItem.Section.Preferences)
                     add(defaultObjectTypeSettingItem)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-default-type", height = 8))
                     add(
                         UiSpaceSettingsItem.Wallpapers(
                             wallpaper = wallpaperResult,
@@ -473,19 +480,19 @@ class SpaceSettingsViewModel(
                     if (permission?.isOwnerOrEditor() == true) {
                         add(UiSpaceSettingsItem.Section.DataManagement)
                         add(UiSpaceSettingsItem.RemoteStorage)
-                        add(Spacer(height = 8))
+                        add(Spacer(id = "after-remote-storage", height = 8))
                         add(UiSpaceSettingsItem.Bin)
                     }
 
                     add(UiSpaceSettingsItem.Section.Misc)
                     add(UiSpaceSettingsItem.SpaceInfo)
-                    add(Spacer(height = 8))
+                    add(Spacer(id = "after-space-info", height = 8))
                     if (permission?.isOwner() == true) {
                         add(UiSpaceSettingsItem.DeleteSpace)
                     } else {
                         add(UiSpaceSettingsItem.LeaveSpace)
                     }
-                    add(Spacer(height = 32))
+                    add(Spacer(id = "bottom", height = 32))
                 }
 
                 UiSpaceSettingsState.SpaceSettings(
@@ -497,7 +504,7 @@ class SpaceSettingsViewModel(
                 )
 
             }.collect { update ->
-                uiState.value = update
+                _uiState.value = update
             }
         }
     }
@@ -617,13 +624,7 @@ class SpaceSettingsViewModel(
             is UiEvent.OnDefaultObjectTypeClicked -> {
                 viewModelScope.launch {
                     commands.emit(
-                        SelectDefaultObjectType(
-                            space = vmParams.space,
-                            excludedTypeIds = buildList {
-                                val curr = uiEvent.currentDefaultObjectTypeId
-                                if (!curr.isNullOrEmpty()) add(curr)
-                            }
-                        )
+                        SelectDefaultObjectType(space = vmParams.space)
                     )
                 }
             }
@@ -909,7 +910,11 @@ class SpaceSettingsViewModel(
     }
 
     fun onSelectObjectType(type: ObjectWrapper.Type) {
-        // Setting space default object type
+        Timber.d("onSelectObjectType: $type")
+        // Update local state FIRST for immediate UI feedback
+        selectedDefaultObjectType.value = type
+
+        // Then save to backend
         viewModelScope.launch {
             val params = SetDefaultObjectType.Params(
                 space = vmParams.space,
@@ -918,29 +923,10 @@ class SpaceSettingsViewModel(
             setDefaultObjectType.async(params).fold(
                 onFailure = {
                     Timber.e(it, "Error while setting default object type")
+                    // Revert local state on failure
+                    selectedDefaultObjectType.value = null
                 },
                 onSuccess = {
-                    when (val state = uiState.value) {
-                        is UiSpaceSettingsState.SpaceSettings -> {
-                            uiState.value = state.copy(
-                                items = state.items.map { item ->
-                                    if (item is UiSpaceSettingsItem.DefaultObjectType) {
-                                        UiSpaceSettingsItem.DefaultObjectType(
-                                            id = type.id,
-                                            name = type.name.orEmpty(),
-                                            icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
-                                        )
-                                    } else {
-                                        item
-                                    }
-                                }
-                            )
-                        }
-
-                        else -> {
-                            Timber.w("Unexpected ui state when updating object type: $state")
-                        }
-                    }
                     analytics.registerEvent(
                         EventAnalytics.Anytype(
                             name = defaultTypeChanged,
@@ -982,6 +968,8 @@ class SpaceSettingsViewModel(
             appActionManager.setup(actions = actions)
         }
     }
+
+
 
     fun updateNotificationState() {
         viewModelScope.launch {
@@ -1214,7 +1202,7 @@ class SpaceSettingsViewModel(
         data class ManageSharedSpace(val space: SpaceId) : Command()
         data class ShareInviteLink(val link: String) : Command()
         data class ManageBin(val space: SpaceId) : Command()
-        data class SelectDefaultObjectType(val space: SpaceId, val excludedTypeIds: List<Id>) :
+        data class SelectDefaultObjectType(val space: SpaceId) :
             Command()
 
         data object ExitToVault : Command()

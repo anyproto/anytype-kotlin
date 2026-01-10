@@ -710,6 +710,7 @@
     <string name="tab_upload_image">Last opp bilde</string>
     <string name="tab_gallery">Galleri</string>
     <string name="change_type">Endre type</string>
+    <string name="default_type_screen_title">Velg standard objekttype</string>
     <string name="change_cover">Endre omslag</string>
     <string name="remove">Fjern</string>
     <string name="choose_options">Velg alternativer</string>

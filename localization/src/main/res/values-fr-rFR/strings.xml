@@ -710,6 +710,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Galerie</string>
     <string name="change_type">Changer le type</string>
+    <string name="default_type_screen_title">Choisir le type d\'objet par défaut</string>
     <string name="change_cover">Modifier l\'image de couverture</string>
     <string name="remove">Supprimer</string>
     <string name="choose_options">Choose options</string>

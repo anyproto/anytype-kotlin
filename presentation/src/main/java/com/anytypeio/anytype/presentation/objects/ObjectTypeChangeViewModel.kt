@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -76,8 +77,12 @@ class ObjectTypeChangeViewModel(
             recommendedLayouts = recommendedLayouts
         )
 
+        // Sort types by priority before partitioning
+        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+
         proceedWithBuildingViewState(
-            types = filteredTypes,
+            types = sortedTypes,
             excludeTypes = currentExcludeTypes,
             query = query
         ).also {
@@ -159,7 +164,7 @@ class ObjectTypeChangeViewModel(
     ): ObjectTypeChangeViewState {
         Timber.d("Types count: ${types.size}")
 
-        val isWithCollection = when (vmParams.screen) {
+        val isWithListTypes = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE-> true
             Screen.OBJECT_TYPE_CHANGE,
@@ -192,7 +197,7 @@ class ObjectTypeChangeViewModel(
                 add(ObjectTypeChangeItem.Section.Lists)
                 addAll(
                     listTypes.toTypeItems(
-                        isWithCollection = isWithCollection,
+                        isWithListTypes = isWithListTypes,
                         isWithBookmark = isWithBookmark,
                         excludeTypes = excludeTypes
                     )
@@ -204,7 +209,7 @@ class ObjectTypeChangeViewModel(
                 add(ObjectTypeChangeItem.Section.Objects)
                 addAll(
                     objectTypes.toTypeItems(
-                        isWithCollection = isWithCollection,
+                        isWithListTypes = isWithListTypes,
                         isWithBookmark = isWithBookmark,
                         excludeTypes = excludeTypes
                     )
@@ -216,16 +221,15 @@ class ObjectTypeChangeViewModel(
     }
 
     private fun List<ObjectWrapper.Type>.toTypeItems(
-        isWithCollection: Boolean,
+        isWithListTypes: Boolean,
         isWithBookmark: Boolean,
         excludeTypes: List<Id>
     ): List<ObjectTypeChangeItem.Type> {
         return this.getObjectTypeViewsForSBPage(
-            isWithCollection = isWithCollection,
+            isWithListTypes = isWithListTypes,
             isWithBookmark = isWithBookmark,
             excludeTypes = excludeTypes,
-            selectedTypes = vmParams.selectedTypes,
-            useCustomComparator = vmParams.screen == Screen.DEFAULT_OBJECT_TYPE
+            selectedTypes = vmParams.selectedTypes
         ).map { typeView ->
             ObjectTypeChangeItem.Type(
                 id = typeView.id,

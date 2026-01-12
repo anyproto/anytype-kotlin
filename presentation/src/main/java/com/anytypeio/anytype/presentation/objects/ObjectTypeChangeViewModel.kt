@@ -195,29 +195,28 @@ class ObjectTypeChangeViewModel(
                     type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
         }
 
+        val listItems = listTypes.toTypeItems(
+            isWithListTypes = isWithListTypes,
+            isWithBookmark = isWithBookmark,
+            excludeTypes = excludeTypes
+        )
+        val objectItems = objectTypes.toTypeItems(
+            isWithListTypes = isWithListTypes,
+            isWithBookmark = isWithBookmark,
+            excludeTypes = excludeTypes
+        )
+
         val items = buildList {
-            // Add "Lists" section if there are any list types
-            if (listTypes.isNotEmpty()) {
+            // Add "Lists" section only if there are filtered list items
+            if (listItems.isNotEmpty()) {
                 add(ObjectTypeChangeItem.Section.Lists)
-                addAll(
-                    listTypes.toTypeItems(
-                        isWithListTypes = isWithListTypes,
-                        isWithBookmark = isWithBookmark,
-                        excludeTypes = excludeTypes
-                    )
-                )
+                addAll(listItems)
             }
 
-            // Add "Objects" section if there are any object types
-            if (objectTypes.isNotEmpty()) {
+            // Add "Objects" section only if there are filtered object items
+            if (objectItems.isNotEmpty()) {
                 add(ObjectTypeChangeItem.Section.Objects)
-                addAll(
-                    objectTypes.toTypeItems(
-                        isWithListTypes = isWithListTypes,
-                        isWithBookmark = isWithBookmark,
-                        excludeTypes = excludeTypes
-                    )
-                )
+                addAll(objectItems)
             }
         }
 

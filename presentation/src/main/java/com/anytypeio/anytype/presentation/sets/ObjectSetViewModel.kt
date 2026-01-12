@@ -2608,7 +2608,7 @@ class ObjectSetViewModel(
                 && type.recommendedLayout != ObjectType.Layout.PARTICIPANT
                 && type.uniqueKey != ObjectTypeIds.TEMPLATE
         }
-        val isChatSpace = spaceUxType == SpaceUxType.CHAT
+        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
         val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
         val list = buildList {
             add(TemplateObjectTypeView.Search)

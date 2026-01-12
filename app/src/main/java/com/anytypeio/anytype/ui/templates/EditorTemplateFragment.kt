@@ -27,6 +27,8 @@ class EditorTemplateFragment : EditorFragment() {
     private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
     private val fragmentType get() = argInt(ARG_SCREEN_TYPE)
 
+    override val navigationDestinationId: Int = R.id.templatesModalScreen
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initializeBinding()

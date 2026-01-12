@@ -31,7 +31,7 @@ class EditorObjectTypeUpdateFragment : BaseObjectTypeChangeFragment() {
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
             spaceId = SpaceId(space),
-            screen = ObjectTypeChangeViewModel.Screen.OBJECT_TYPE_CHANGE,
+            screen = ObjectTypeChangeViewModel.Screen.EDITOR_OBJECT_TYPE_UPDATE,
             excludeTypes = excludeTypes
         )
         componentManager().objectTypeChangeComponent.get(params).inject(this)

@@ -61,7 +61,7 @@ class ObjectTypeChangeViewModel(
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> createLayouts + SupportedLayouts.fileLayouts
-            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EDITOR_OBJECT_TYPE_UPDATE -> SupportedLayouts.editorCreateObjectLayouts
             Screen.CREATE_OBJECT_FOR_COLLECTION -> createLayouts
             Screen.DEFAULT_OBJECT_TYPE -> listOf(
                 ObjectType.Layout.BASIC,
@@ -104,7 +104,7 @@ class ObjectTypeChangeViewModel(
         val excludeParticipantAndTemplates = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> false
-            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
             Screen.DEFAULT_OBJECT_TYPE,
             Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
@@ -170,13 +170,13 @@ class ObjectTypeChangeViewModel(
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE,
             Screen.CREATE_OBJECT_FOR_COLLECTION -> true
-            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
             Screen.DEFAULT_OBJECT_TYPE -> false
         }
         val isWithBookmark = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE,
-            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
             Screen.DEFAULT_OBJECT_TYPE,
             Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
@@ -250,7 +250,7 @@ class ObjectTypeChangeViewModel(
     }
 
     enum class Screen {
-        OBJECT_TYPE_CHANGE,           // EditorObjectTypeUpdateFragment
+        EDITOR_OBJECT_TYPE_UPDATE,    // EditorObjectTypeUpdateFragment
         DATA_VIEW_SOURCE,             // DataViewSelectSourceFragment
         EMPTY_DATA_VIEW_SOURCE,       // EmptyDataViewSelectSourceFragment
         DEFAULT_OBJECT_TYPE,          // AppDefaultObjectTypeFragment

@@ -274,12 +274,12 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.objects.toObjectTypeViews
 import com.anytypeio.anytype.presentation.objects.getProperType
-import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
+import com.anytypeio.anytype.presentation.objects.toObjectTypeViews
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.view
@@ -3502,7 +3502,7 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     val spaceParams = provideParams(vmParams.space.id)
                     sendAnalyticsCreateLink(
-                        analytics = analytics, 
+                        analytics = analytics,
                         spaceParams = spaceParams,
                         route = if (fromSlashMenu) EventsDictionary.Routes.slashMenu else null
                     )
@@ -3513,7 +3513,8 @@ class EditorViewModel(
                         objType = storeOfObjectTypes.getByKey(objectTypeView.key),
                         spaceParams = spaceParams
                     )
-                    proceedWithOpeningObject(result.objectId)
+                    val createdObj = ObjectWrapper.Basic(result.details)
+                    proceedWithOpeningObject(createdObj)
                 }
             )
         }

@@ -120,6 +120,7 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
@@ -1303,7 +1304,7 @@ open class ObjectSetFragment :
                 fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
-                val fr = ObjectSelectTypeFragment.newInstance(
+                val fr = CollectionAddObjectTypeFragment.newInstance(
                     space = space,
                     excludeTypes = command.excludedTypes
                 )

@@ -920,7 +920,7 @@ fun ObjectTypesList(
     LaunchedEffect(state.objectTypes) {
         val selectedIndex = typeItems.indexOfFirst { it.isSelected }
         if (selectedIndex >= 0) {
-            delay(200)
+            delay(SCROLL_TO_SELECTED_DELAY_MS)
             listState.animateScrollToItem(index = selectedIndex)
         }
     }
@@ -1019,3 +1019,10 @@ enum class DragStates {
     VISIBLE,
     DISMISSED
 }
+
+/**
+ * Delay before auto-scrolling to selected item in ObjectTypesList.
+ * This allows the LazyRow to complete its initial composition and layout
+ * before attempting to scroll, ensuring reliable scroll behavior.
+ */
+private const val SCROLL_TO_SELECTED_DELAY_MS = 200L

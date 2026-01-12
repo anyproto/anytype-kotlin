@@ -922,7 +922,7 @@ fun ObjectTypesList(
         if (selectedIndex >= 0) {
             // +1 offset because Search button is at index 0
             val scrollIndex = selectedIndex + 1
-            listState.animateScrollToItem(scrollIndex)
+            listState.animateScrollToItem(index = scrollIndex, scrollOffset = -100)
         }
     }
 

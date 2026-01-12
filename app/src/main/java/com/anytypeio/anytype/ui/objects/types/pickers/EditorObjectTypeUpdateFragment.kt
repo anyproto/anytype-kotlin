@@ -46,12 +46,10 @@ class EditorObjectTypeUpdateFragment : BaseObjectTypeChangeFragment() {
 
         fun newInstance(
             space: Id,
-            excludeTypes: List<Id> = emptyList(),
             fromFeatured: Boolean = false
         ) = EditorObjectTypeUpdateFragment().apply {
             arguments = bundleOf(
                 ARG_SPACE to space,
-                ARG_EXCLUDE_TYPES to excludeTypes,
                 ARG_FROM_FEATURED to fromFeatured
             )
         }

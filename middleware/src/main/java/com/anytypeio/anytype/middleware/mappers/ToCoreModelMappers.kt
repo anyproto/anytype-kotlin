@@ -839,7 +839,8 @@ fun Rpc.BlockLink.CreateWithObject.Response.toCoreModel(): CreateBlockLinkWithOb
     return CreateBlockLinkWithObjectResult(
         blockId = blockId,
         objectId = targetId,
-        event = event.toPayload()
+        event = event.toPayload(),
+        details = details.toCoreModel()
     )
 }
 

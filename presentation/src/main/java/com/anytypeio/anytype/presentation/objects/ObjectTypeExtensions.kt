@@ -21,7 +21,6 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 
 /**
  * The method allows you to get object type views for using in the editor and set
- * The main filtering goes by SmartBlockType.PAGE
  * Resulting list of object types
  * @param includeListTypes This parameter determines whether to add list types (SET and COLLECTION) to the resulting list of object types
  * @param includeBookmarkType This parameter determines whether to add ObjectType BOOKMARK to the resulting list of object types

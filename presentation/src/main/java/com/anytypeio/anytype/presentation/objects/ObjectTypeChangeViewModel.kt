@@ -61,7 +61,8 @@ class ObjectTypeChangeViewModel(
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> createLayouts + SupportedLayouts.fileLayouts
-            Screen.OBJECT_TYPE_CHANGE -> createLayouts
+            Screen.OBJECT_TYPE_CHANGE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> createLayouts
             Screen.DEFAULT_OBJECT_TYPE -> listOf(
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.PROFILE,
@@ -104,7 +105,8 @@ class ObjectTypeChangeViewModel(
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> false
             Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> true
+            Screen.DEFAULT_OBJECT_TYPE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
 
         return allTypes.filter { type ->
@@ -166,7 +168,8 @@ class ObjectTypeChangeViewModel(
 
         val isWithListTypes = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
-            Screen.EMPTY_DATA_VIEW_SOURCE-> true
+            Screen.EMPTY_DATA_VIEW_SOURCE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
             Screen.OBJECT_TYPE_CHANGE,
             Screen.DEFAULT_OBJECT_TYPE -> false
         }
@@ -174,7 +177,8 @@ class ObjectTypeChangeViewModel(
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE,
             Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> true
+            Screen.DEFAULT_OBJECT_TYPE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
 
         if (types.isEmpty() && query.isNotEmpty()) {
@@ -247,10 +251,11 @@ class ObjectTypeChangeViewModel(
     }
 
     enum class Screen {
-        OBJECT_TYPE_CHANGE,        // ObjectSelectTypeFragment
-        DATA_VIEW_SOURCE,          // DataViewSelectSourceFragment
-        EMPTY_DATA_VIEW_SOURCE,    // EmptyDataViewSelectSourceFragment
-        DEFAULT_OBJECT_TYPE        // AppDefaultObjectTypeFragment
+        OBJECT_TYPE_CHANGE,           // ObjectSelectTypeFragment
+        DATA_VIEW_SOURCE,             // DataViewSelectSourceFragment
+        EMPTY_DATA_VIEW_SOURCE,       // EmptyDataViewSelectSourceFragment
+        DEFAULT_OBJECT_TYPE,          // AppDefaultObjectTypeFragment
+        CREATE_OBJECT_FOR_COLLECTION  // CollectionAddObjectTypeFragment
     }
 
     data class VmParams(

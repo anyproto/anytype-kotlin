@@ -12,7 +12,6 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Block.Content
 import com.anytypeio.anytype.core_models.Block.Prototype
-import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.Document
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.FileLimitsEvent
@@ -275,11 +274,12 @@ import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
-import com.anytypeio.anytype.presentation.objects.getObjectTypeViewsForSBPage
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
+import com.anytypeio.anytype.presentation.objects.toObjectTypeViews
 import com.anytypeio.anytype.presentation.objects.toViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.view
@@ -3502,7 +3502,7 @@ class EditorViewModel(
                     orchestrator.proxies.payloads.send(result.payload)
                     val spaceParams = provideParams(vmParams.space.id)
                     sendAnalyticsCreateLink(
-                        analytics = analytics, 
+                        analytics = analytics,
                         spaceParams = spaceParams,
                         route = if (fromSlashMenu) EventsDictionary.Routes.slashMenu else null
                     )
@@ -3513,7 +3513,8 @@ class EditorViewModel(
                         objType = storeOfObjectTypes.getByKey(objectTypeView.key),
                         spaceParams = spaceParams
                     )
-                    proceedWithOpeningObject(result.objectId)
+                    val createdObj = ObjectWrapper.Basic(result.details)
+                    proceedWithOpeningObject(createdObj)
                 }
             )
         }
@@ -5183,9 +5184,7 @@ class EditorViewModel(
                     controlPanelInteractor.onEvent(panelEvent)
                     return
                 }
-                proceedWithGettingObjectTypes(
-                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
-                ) { objectTypes ->
+                proceedWithGettingObjectTypes { objectTypes ->
                     getProperties { properties ->
                         val widgetState = SlashExtensions.getUpdatedSlashWidgetState(
                             text = event.filter,
@@ -5281,9 +5280,7 @@ class EditorViewModel(
                     analytics = analytics,
                     type = "Objects"
                 )
-                proceedWithGettingObjectTypes(
-                    sorts = ObjectSearchConstants.defaultObjectTypeSearchSorts()
-                ) {
+                proceedWithGettingObjectTypes {
                     proceedWithObjectTypes(it)
                 }
             }
@@ -5589,32 +5586,33 @@ class EditorViewModel(
     }
 
     private fun proceedWithGettingObjectTypes(
-        sorts: List<DVSort> = emptyList(),
         action: (List<ObjectTypeView>) -> Unit
     ) {
         viewModelScope.launch {
-            val params = GetObjectTypes.Params(
-                space = vmParams.space,
-                sorts = sorts,
-                filters = ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorLayouts
-                ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
+            val allTypes = storeOfObjectTypes.getAll()
+            val allowedLayouts = SupportedLayouts.editorLayouts + listOf(
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION
             )
-            getObjectTypes.async(params).fold(
-                onFailure = { Timber.e(it, "Error while getting library object types") },
-                onSuccess = { types ->
-                    _objectTypes.clear()
-                    _objectTypes.addAll(types)
-                    val views = types.getObjectTypeViewsForSBPage(
-                        isWithCollection = false,
-                        isWithBookmark = false,
-                        selectedTypes = emptyList(),
-                        excludeTypes = emptyList()
-                    )
-                    action.invoke(views)
-                }
+            val filteredTypes = allTypes.filter { type ->
+                val layout = type.recommendedLayout
+                layout != null &&
+                    allowedLayouts.contains(layout) &&
+                    layout != ObjectType.Layout.PARTICIPANT &&
+                    type.isArchived != true &&
+                    type.isDeleted != true &&
+                    type.uniqueKey != ObjectTypeIds.TEMPLATE
+            }
+            _objectTypes.clear()
+            _objectTypes.addAll(filteredTypes)
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+            val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+            val views = sortedTypes.toObjectTypeViews(
+                includeListTypes = true,
+                includeBookmarkType = true
             )
+            action.invoke(views)
         }
     }
 
@@ -6763,38 +6761,35 @@ class EditorViewModel(
     private fun proceedWithGettingObjectTypesForTypesWidget() {
         viewModelScope.launch {
             val excludeTypes = orchestrator.stores.details.current().getObject(vmParams.ctx)?.type.orEmpty()
-            val params = GetObjectTypes.Params(
-                sorts = emptyList(),
-                filters = ObjectSearchConstants.filterTypes(
-                    recommendedLayouts = SupportedLayouts.editorCreateObjectLayouts
-                ),
-                keys = ObjectSearchConstants.defaultKeysObjectType,
-                space = vmParams.space
-            )
-            getObjectTypes.async(params).fold(
-                onFailure = { Timber.e(it, "Error while getting library object types") },
-                onSuccess = { objects ->
-                    _objectTypes.clear()
-                    _objectTypes.addAll(objects)
-                    val items = buildList {
-                        add(TypesWidgetItem.Search)
-                        addAll(
-                            objects.getObjectTypeViewsForSBPage(
-                                isWithCollection = true,
-                                isWithBookmark = false,
-                                excludeTypes = excludeTypes,
-                            ).filter {
-                                !excludeTypes.contains(it.key)
-                            }.map {
-                                TypesWidgetItem.Type(it)
-                            }.distinctBy {
-                                it.item.id
-                            }
-                        )
+            val allTypes = storeOfObjectTypes.getAll()
+            val filteredTypes = allTypes.filter { type ->
+                val layout = type.recommendedLayout
+                layout != null &&
+                    SupportedLayouts.editorCreateObjectLayouts.contains(layout) &&
+                    type.isArchived != true &&
+                    type.isDeleted != true &&
+                    type.uniqueKey != ObjectTypeIds.TEMPLATE
+            }
+            _objectTypes.clear()
+            _objectTypes.addAll(filteredTypes)
+            val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
+            val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+            val sortedObjects = filteredTypes.sortByTypePriority(isChatSpace)
+            val items = buildList {
+                add(TypesWidgetItem.Search)
+                addAll(
+                    sortedObjects.toObjectTypeViews(
+                        includeListTypes = true,
+                        includeBookmarkType = true,
+                        excludedTypeIds = excludeTypes
+                    ).map {
+                        TypesWidgetItem.Type(it)
+                    }.distinctBy {
+                        it.item.id
                     }
-                    _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
-                }
-            )
+                )
+            }
+            _typesWidgetState.value = _typesWidgetState.value.copy(items = items)
         }
     }
 

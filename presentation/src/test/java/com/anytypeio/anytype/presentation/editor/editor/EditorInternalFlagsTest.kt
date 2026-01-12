@@ -280,9 +280,15 @@ class EditorInternalFlagsTest : EditorPresentationTestSetup() {
         stubGetDefaultObjectType()
         stubFileLimitEvents()
         stubSetInternalFlags()
-        stubGetObjectTypes(listOf(StubObjectType(id = ObjectTypeIds.PAGE)))
 
         val vm = buildViewModel()
+
+        // Set store after buildViewModel to override the default objType
+        setStoreOfObjectTypes(listOf(StubObjectType(
+            id = ObjectTypeIds.PAGE,
+            uniqueKey = ObjectTypeIds.PAGE,
+            recommendedLayout = ObjectType.Layout.BASIC.code.toDouble()
+        )))
         advanceUntilIdle()
 
         vm.typesWidgetState.test{

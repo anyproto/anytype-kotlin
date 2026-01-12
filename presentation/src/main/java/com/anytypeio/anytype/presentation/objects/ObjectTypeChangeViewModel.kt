@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -60,7 +61,8 @@ class ObjectTypeChangeViewModel(
         val recommendedLayouts = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> createLayouts + SupportedLayouts.fileLayouts
-            Screen.OBJECT_TYPE_CHANGE -> createLayouts
+            Screen.EDITOR_OBJECT_TYPE_UPDATE -> SupportedLayouts.editorCreateObjectLayouts
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> createLayouts
             Screen.DEFAULT_OBJECT_TYPE -> listOf(
                 ObjectType.Layout.BASIC,
                 ObjectType.Layout.PROFILE,
@@ -76,8 +78,12 @@ class ObjectTypeChangeViewModel(
             recommendedLayouts = recommendedLayouts
         )
 
+        // Sort types by priority before partitioning
+        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+
         proceedWithBuildingViewState(
-            types = filteredTypes,
+            types = sortedTypes,
             excludeTypes = currentExcludeTypes,
             query = query
         ).also {
@@ -98,8 +104,9 @@ class ObjectTypeChangeViewModel(
         val excludeParticipantAndTemplates = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE -> false
-            Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> true
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
+            Screen.DEFAULT_OBJECT_TYPE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
 
         return allTypes.filter { type ->
@@ -159,17 +166,19 @@ class ObjectTypeChangeViewModel(
     ): ObjectTypeChangeViewState {
         Timber.d("Types count: ${types.size}")
 
-        val isWithCollection = when (vmParams.screen) {
+        val isWithListTypes = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
-            Screen.EMPTY_DATA_VIEW_SOURCE-> true
-            Screen.OBJECT_TYPE_CHANGE,
+            Screen.EMPTY_DATA_VIEW_SOURCE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
             Screen.DEFAULT_OBJECT_TYPE -> false
         }
         val isWithBookmark = when (vmParams.screen) {
             Screen.DATA_VIEW_SOURCE,
             Screen.EMPTY_DATA_VIEW_SOURCE,
-            Screen.OBJECT_TYPE_CHANGE,
-            Screen.DEFAULT_OBJECT_TYPE -> true
+            Screen.EDITOR_OBJECT_TYPE_UPDATE,
+            Screen.DEFAULT_OBJECT_TYPE,
+            Screen.CREATE_OBJECT_FOR_COLLECTION -> true
         }
 
         if (types.isEmpty() && query.isNotEmpty()) {
@@ -186,29 +195,28 @@ class ObjectTypeChangeViewModel(
                     type.uniqueKey == ObjectTypeUniqueKeys.COLLECTION
         }
 
+        val listItems = listTypes.toTypeItems(
+            isWithListTypes = isWithListTypes,
+            isWithBookmark = isWithBookmark,
+            excludeTypes = excludeTypes
+        )
+        val objectItems = objectTypes.toTypeItems(
+            isWithListTypes = isWithListTypes,
+            isWithBookmark = isWithBookmark,
+            excludeTypes = excludeTypes
+        )
+
         val items = buildList {
-            // Add "Lists" section if there are any list types
-            if (listTypes.isNotEmpty()) {
+            // Add "Lists" section only if there are filtered list items
+            if (listItems.isNotEmpty()) {
                 add(ObjectTypeChangeItem.Section.Lists)
-                addAll(
-                    listTypes.toTypeItems(
-                        isWithCollection = isWithCollection,
-                        isWithBookmark = isWithBookmark,
-                        excludeTypes = excludeTypes
-                    )
-                )
+                addAll(listItems)
             }
 
-            // Add "Objects" section if there are any object types
-            if (objectTypes.isNotEmpty()) {
+            // Add "Objects" section only if there are filtered object items
+            if (objectItems.isNotEmpty()) {
                 add(ObjectTypeChangeItem.Section.Objects)
-                addAll(
-                    objectTypes.toTypeItems(
-                        isWithCollection = isWithCollection,
-                        isWithBookmark = isWithBookmark,
-                        excludeTypes = excludeTypes
-                    )
-                )
+                addAll(objectItems)
             }
         }
 
@@ -216,16 +224,15 @@ class ObjectTypeChangeViewModel(
     }
 
     private fun List<ObjectWrapper.Type>.toTypeItems(
-        isWithCollection: Boolean,
+        isWithListTypes: Boolean,
         isWithBookmark: Boolean,
         excludeTypes: List<Id>
     ): List<ObjectTypeChangeItem.Type> {
-        return this.getObjectTypeViewsForSBPage(
-            isWithCollection = isWithCollection,
-            isWithBookmark = isWithBookmark,
-            excludeTypes = excludeTypes,
-            selectedTypes = vmParams.selectedTypes,
-            useCustomComparator = vmParams.screen == Screen.DEFAULT_OBJECT_TYPE
+        return this.toObjectTypeViews(
+            includeListTypes = isWithListTypes,
+            includeBookmarkType = isWithBookmark,
+            excludedTypeIds = excludeTypes,
+            selectedTypeIds = vmParams.selectedTypes
         ).map { typeView ->
             ObjectTypeChangeItem.Type(
                 id = typeView.id,
@@ -243,10 +250,11 @@ class ObjectTypeChangeViewModel(
     }
 
     enum class Screen {
-        OBJECT_TYPE_CHANGE,        // ObjectSelectTypeFragment
-        DATA_VIEW_SOURCE,          // DataViewSelectSourceFragment
-        EMPTY_DATA_VIEW_SOURCE,    // EmptyDataViewSelectSourceFragment
-        DEFAULT_OBJECT_TYPE        // AppDefaultObjectTypeFragment
+        EDITOR_OBJECT_TYPE_UPDATE,    // EditorObjectTypeUpdateFragment
+        DATA_VIEW_SOURCE,             // DataViewSelectSourceFragment
+        EMPTY_DATA_VIEW_SOURCE,       // EmptyDataViewSelectSourceFragment
+        DEFAULT_OBJECT_TYPE,          // AppDefaultObjectTypeFragment
+        CREATE_OBJECT_FOR_COLLECTION  // CollectionAddObjectTypeFragment
     }
 
     data class VmParams(

@@ -171,7 +171,7 @@ import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeUpdateFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.EditorObjectTypeUpdateFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
 import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
@@ -1236,8 +1236,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectSelectTypeScreen -> {
                     runCatching {
                         hideKeyboard()
-                        val dialog = ObjectTypeUpdateFragment.new(
-                            excludedTypeKeys = command.excludedTypes,
+                        val dialog = EditorObjectTypeUpdateFragment.newInstance(
                             space = space,
                             fromFeatured = command.fromFeatured
                         )

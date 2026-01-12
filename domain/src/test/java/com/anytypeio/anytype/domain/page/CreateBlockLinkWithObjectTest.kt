@@ -164,7 +164,8 @@ class CreateBlockLinkWithObjectTest {
             onBlocking { createBlockLinkWithObject(any()) } doReturn CreateBlockLinkWithObjectResult(
                 blockId = "",
                 objectId = "",
-                event = Payload(context = "", events = listOf())
+                event = Payload(context = "", events = listOf()),
+                details = emptyMap()
             )
         }
     }

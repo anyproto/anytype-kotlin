@@ -54,6 +54,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -120,9 +121,10 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -148,7 +150,8 @@ open class ObjectSetFragment :
     TextValueEditReceiver,
     DateValueEditReceiver,
     OnDataViewSelectSourceAction,
-    ObjectTypeSelectionListener {
+    ObjectTypeSelectionListener,
+    CollectionObjectTypeSelectionListener {
 
     // Controls
 
@@ -1302,10 +1305,9 @@ open class ObjectSetFragment :
                 val fr = EmptyDataViewSelectSourceFragment.newInstance(space = space)
                 fr.showChildFragment()
             }
-            is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
-                val fr = ObjectSelectTypeFragment.newInstance(
-                    space = space,
-                    excludeTypes = command.excludedTypes
+            ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
+                val fr = CollectionAddObjectTypeFragment.newInstance(
+                    space = space
                 )
                 fr.showChildFragment()
             }
@@ -1564,6 +1566,10 @@ open class ObjectSetFragment :
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onAddNewDocumentClicked(objType)
+    }
+
+    override fun onSelectObjectTypeForCollection(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
 
     private fun observeSelectingTemplate() {

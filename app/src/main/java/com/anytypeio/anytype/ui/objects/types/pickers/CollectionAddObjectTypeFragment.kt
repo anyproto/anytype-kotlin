@@ -11,13 +11,15 @@ import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
- * Selecting an object type by SmartBlockType.Page for the object
+ * Selecting an object type to create when adding a new object to a collection.
+ * Includes list types (Set, Collection) and bookmarks.
+ * Excludes media types (Image, File, Video, Audio) and templates.
  */
-class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
+class CollectionAddObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun onItemClicked(item: ObjectWrapper.Type) {
-        withParentSafe<ObjectTypeSelectionListener> {
-            onSelectObjectType(objType = item)
+        withParentSafe<CollectionObjectTypeSelectionListener> {
+            onSelectObjectTypeForCollection(objType = item)
         }
     }
 
@@ -26,7 +28,7 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
             spaceId = SpaceId(space),
-            screen = ObjectTypeChangeViewModel.Screen.OBJECT_TYPE_CHANGE,
+            screen = ObjectTypeChangeViewModel.Screen.CREATE_OBJECT_FOR_COLLECTION,
             excludeTypes = excludeTypes
         )
         componentManager().objectTypeChangeComponent.get(params).inject(this)
@@ -37,10 +39,9 @@ class ObjectSelectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(space: Id, excludeTypes: List<Id>) = ObjectSelectTypeFragment().apply {
+        fun newInstance(space: Id) = CollectionAddObjectTypeFragment().apply {
             arguments = bundleOf(
-                ARG_SPACE to space,
-                ARG_EXCLUDE_TYPES to excludeTypes
+                ARG_SPACE to space
             )
         }
     }

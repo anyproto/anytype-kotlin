@@ -134,7 +134,7 @@ class EditorTemplateFragment : EditorFragment() {
             if (type != null) {
                 val typeName = type.name.orEmpty()
 
-                val titleContainer = binding.topToolbar.container as? ViewGroup ?: return@launch
+                val titleContainer = binding.topToolbar.container
                 val iconView = binding.topToolbar.icon
                 val titleView = binding.topToolbar.title
 

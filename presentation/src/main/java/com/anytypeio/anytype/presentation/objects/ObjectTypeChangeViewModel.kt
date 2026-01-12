@@ -250,7 +250,7 @@ class ObjectTypeChangeViewModel(
     }
 
     enum class Screen {
-        OBJECT_TYPE_CHANGE,           // ObjectSelectTypeFragment
+        OBJECT_TYPE_CHANGE,           // EditorObjectTypeUpdateFragment
         DATA_VIEW_SOURCE,             // DataViewSelectSourceFragment
         EMPTY_DATA_VIEW_SOURCE,       // EmptyDataViewSelectSourceFragment
         DEFAULT_OBJECT_TYPE,          // AppDefaultObjectTypeFragment

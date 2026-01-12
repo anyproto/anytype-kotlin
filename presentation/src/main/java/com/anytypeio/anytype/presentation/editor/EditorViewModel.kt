@@ -6782,9 +6782,7 @@ class EditorViewModel(
                         includeListTypes = true,
                         includeBookmarkType = true,
                         excludedTypeIds = excludeTypes
-                    ).filter {
-                        !excludeTypes.contains(it.key)
-                    }.map {
+                    ).map {
                         TypesWidgetItem.Type(it)
                     }.distinctBy {
                         it.item.id

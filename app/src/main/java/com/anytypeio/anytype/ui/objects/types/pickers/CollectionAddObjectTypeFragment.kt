@@ -18,8 +18,8 @@ import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 class CollectionAddObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun onItemClicked(item: ObjectWrapper.Type) {
-        withParentSafe<ObjectTypeSelectionListener> {
-            onSelectObjectType(objType = item)
+        withParentSafe<CollectionObjectTypeSelectionListener> {
+            onSelectObjectTypeForCollection(objType = item)
         }
     }
 

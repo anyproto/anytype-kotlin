@@ -107,6 +107,7 @@ import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.Te
 import com.anytypeio.anytype.presentation.widgets.TypeTemplatesWidgetUIAction.TypeClick
 import kotlin.math.roundToInt
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -913,107 +914,104 @@ fun ObjectTypesList(
     action: (TypeTemplatesWidgetUIAction) -> Unit
 ) {
     val listState = rememberLazyListState()
+    val typeItems = state.objectTypes.filterIsInstance<TemplateObjectTypeView.Item>()
 
     // Auto-scroll to selected type when objectTypes change
     LaunchedEffect(state.objectTypes) {
-        val selectedIndex = state.objectTypes.indexOfFirst { item ->
-            (item as? TemplateObjectTypeView.Item)?.isSelected == true
-        }
+        val selectedIndex = typeItems.indexOfFirst { it.isSelected }
         if (selectedIndex >= 0) {
-            // +1 offset because Search button is at index 0
-            val scrollIndex = selectedIndex + 1
-            listState.animateScrollToItem(index = scrollIndex, scrollOffset = -100)
+            delay(200)
+            listState.animateScrollToItem(index = selectedIndex)
         }
     }
 
-    LazyRow(
-        state = listState,
+    Row(
         modifier = Modifier
             .padding(top = 4.dp)
             .fillMaxWidth()
             .height(48.dp),
-        contentPadding = PaddingValues(start = 20.dp, end = 20.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        itemsIndexed(items = state.objectTypes,
-            itemContent = { _, item ->
-                when (item) {
-                    is TemplateObjectTypeView.Item -> {
-                        val borderWidth: Dp
-                        val borderColor: Color
-                        if (item.isSelected) {
-                            borderWidth = 2.dp
-                            borderColor = colorResource(id = R.color.palette_system_amber_50)
-                        } else {
-                            borderWidth = 1.dp
-                            borderColor = colorResource(id = R.color.shape_primary)
-                        }
-                        Box(
-                            modifier = Modifier
-                                .height(48.dp)
-                                .wrapContentWidth()
-                                .border(
-                                    width = borderWidth,
-                                    color = borderColor,
-                                    shape = RoundedCornerShape(size = 10.dp)
-                                )
-                                .noRippleThrottledClickable {
-                                    action(TypeClick.Item(item.type))
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            val (rowPaddingStart, textPaddingStart) = 14.dp to 8.dp
-                            Row(
-                                modifier = Modifier.padding(
-                                    start = 14.dp,
-                                    end = 16.dp
-                                ),
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                ListWidgetObjectIcon(
-                                    modifier = Modifier.size(20.dp),
-                                    icon = item.icon
-                                )
-                                Text(
-                                    text = item.type.name.orEmpty(),
-                                    style = BodyCalloutMedium.copy(
-                                        color = colorResource(id = R.color.text_primary)
-                                    ),
-                                    textAlign = TextAlign.Center,
-                                    modifier = Modifier
-                                        .padding(start = 8.dp)
-                                        .widthIn(max = 100.dp),
-                                    maxLines = 1,
-                                    overflow = TextOverflow.Ellipsis
-                                )
-                            }
-                        }
-                    }
+        // Search button - fixed position outside LazyRow
+        Spacer(modifier = Modifier.width(20.dp))
+        Box(
+            modifier = Modifier
+                .border(
+                    width = 1.dp,
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = RoundedCornerShape(size = 10.dp)
+                )
+                .size(48.dp)
+                .noRippleThrottledClickable {
+                    action(TypeClick.Search)
+                },
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_search),
+                contentDescription = "Search icon"
+            )
+        }
+        Spacer(modifier = Modifier.width(8.dp))
 
-                    TemplateObjectTypeView.Search -> {
-                        Box(
+        // Scrollable types list
+        LazyRow(
+            state = listState,
+            contentPadding = PaddingValues(end = 20.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            itemsIndexed(items = typeItems) { _, item ->
+                val borderWidth: Dp
+                val borderColor: Color
+                if (item.isSelected) {
+                    borderWidth = 2.dp
+                    borderColor = colorResource(id = R.color.palette_system_amber_50)
+                } else {
+                    borderWidth = 1.dp
+                    borderColor = colorResource(id = R.color.shape_primary)
+                }
+                Box(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .wrapContentWidth()
+                        .border(
+                            width = borderWidth,
+                            color = borderColor,
+                            shape = RoundedCornerShape(size = 10.dp)
+                        )
+                        .noRippleThrottledClickable {
+                            action(TypeClick.Item(item.type))
+                        },
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        modifier = Modifier.padding(
+                            start = 14.dp,
+                            end = 16.dp
+                        ),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        ListWidgetObjectIcon(
+                            modifier = Modifier.size(20.dp),
+                            icon = item.icon
+                        )
+                        Text(
+                            text = item.type.name.orEmpty(),
+                            style = BodyCalloutMedium.copy(
+                                color = colorResource(id = R.color.text_primary)
+                            ),
+                            textAlign = TextAlign.Center,
                             modifier = Modifier
-                                .border(
-                                    width = 1.dp,
-                                    color = colorResource(id = R.color.shape_primary),
-                                    shape = RoundedCornerShape(size = 10.dp)
-                                )
-                                .size(48.dp)
-                                .noRippleThrottledClickable {
-                                    action(TypeClick.Search)
-                                },
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Image(
-                                painter = painterResource(id = R.drawable.ic_search),
-                                contentDescription = "Search icon"
-                            )
-                        }
+                                .padding(start = 8.dp)
+                                .widthIn(max = 100.dp),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
                     }
                 }
             }
-        )
+        }
     }
 }
 

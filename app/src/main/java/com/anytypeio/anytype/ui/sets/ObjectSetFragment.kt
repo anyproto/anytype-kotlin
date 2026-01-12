@@ -1569,7 +1569,7 @@ open class ObjectSetFragment :
     }
 
     override fun onSelectObjectTypeForCollection(objType: ObjectWrapper.Type) {
-        vm.proceedWithDataViewObjectCreate(typeChosenBy = TypeKey(objType.uniqueKey))
+        vm.onNewTypeForViewerClicked(objType)
     }
 
     private fun observeSelectingTemplate() {

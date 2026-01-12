@@ -46,6 +46,7 @@ import androidx.compose.material.rememberSwipeableState
 import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -912,6 +913,19 @@ fun ObjectTypesList(
     action: (TypeTemplatesWidgetUIAction) -> Unit
 ) {
     val listState = rememberLazyListState()
+
+    // Auto-scroll to selected type when objectTypes change
+    LaunchedEffect(state.objectTypes) {
+        val selectedIndex = state.objectTypes.indexOfFirst { item ->
+            (item as? TemplateObjectTypeView.Item)?.isSelected == true
+        }
+        if (selectedIndex >= 0) {
+            // +1 offset because Search button is at index 0
+            val scrollIndex = selectedIndex + 1
+            listState.animateScrollToItem(scrollIndex)
+        }
+    }
+
     LazyRow(
         state = listState,
         modifier = Modifier

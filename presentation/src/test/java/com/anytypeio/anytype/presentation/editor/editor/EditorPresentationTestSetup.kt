@@ -890,6 +890,13 @@ open class EditorPresentationTestSetup {
         }
     }
 
+    fun setStoreOfObjectTypes(types: List<ObjectWrapper.Type>) {
+        runBlocking {
+            storeOfObjectTypes.clear()
+            storeOfObjectTypes.merge(types = types)
+        }
+    }
+
     fun stubFileLimitEvents() {
         interceptFileLimitEvents.stub {
             onBlocking { run(Unit) } doReturn emptyFlow()

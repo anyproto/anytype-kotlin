@@ -5589,10 +5589,15 @@ class EditorViewModel(
     ) {
         viewModelScope.launch {
             val allTypes = storeOfObjectTypes.getAll()
+            val allowedLayouts = SupportedLayouts.editorLayouts + listOf(
+                ObjectType.Layout.SET,
+                ObjectType.Layout.COLLECTION
+            )
             val filteredTypes = allTypes.filter { type ->
                 val layout = type.recommendedLayout
                 layout != null &&
-                    SupportedLayouts.editorLayouts.contains(layout) &&
+                    allowedLayouts.contains(layout) &&
+                    layout != ObjectType.Layout.PARTICIPANT &&
                     type.isArchived != true &&
                     type.isDeleted != true &&
                     type.uniqueKey != ObjectTypeIds.TEMPLATE

@@ -1303,10 +1303,9 @@ open class ObjectSetFragment :
                 val fr = EmptyDataViewSelectSourceFragment.newInstance(space = space)
                 fr.showChildFragment()
             }
-            is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
+            ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
                 val fr = CollectionAddObjectTypeFragment.newInstance(
-                    space = space,
-                    excludeTypes = command.excludedTypes
+                    space = space
                 )
                 fr.showChildFragment()
             }

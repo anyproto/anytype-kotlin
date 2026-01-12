@@ -2414,9 +2414,7 @@ class ObjectSetViewModel(
             TypeTemplatesWidgetUIAction.TypeClick.Search -> {
                 viewModelScope.launch {
                     _commands.emit(
-                        ObjectSetCommand.Modal.OpenSelectTypeScreen(
-                            excludedTypes = emptyList()
-                        )
+                        ObjectSetCommand.Modal.OpenSelectTypeScreen
                     )
                 }
             }

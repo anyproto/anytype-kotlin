@@ -39,10 +39,9 @@ class CollectionAddObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(space: Id, excludeTypes: List<Id>) = CollectionAddObjectTypeFragment().apply {
+        fun newInstance(space: Id) = CollectionAddObjectTypeFragment().apply {
             arguments = bundleOf(
-                ARG_SPACE to space,
-                ARG_EXCLUDE_TYPES to excludeTypes
+                ARG_SPACE to space
             )
         }
     }

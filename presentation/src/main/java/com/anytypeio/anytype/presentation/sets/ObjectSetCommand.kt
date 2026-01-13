@@ -97,9 +97,7 @@ sealed class ObjectSetCommand {
             val relation: Key
         ) : Modal()
 
-        data class OpenSelectTypeScreen(
-            val excludedTypes: List<Id>
-        ) : Modal()
+        data object OpenSelectTypeScreen : Modal()
 
         data class ShowObjectSetTypePopupMenu(
             val ctx: Id,

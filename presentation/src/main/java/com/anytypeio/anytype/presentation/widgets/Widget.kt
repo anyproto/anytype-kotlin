@@ -7,15 +7,12 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ObjectWrapper.Type
-import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.createObjectLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getSystemLayouts
 import com.anytypeio.anytype.core_models.ext.asMap
-import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -25,6 +22,8 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.home.ObjectViewState
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
@@ -599,75 +598,13 @@ internal suspend fun mapSpaceTypesToWidgets(
 
     Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
 
-    // Define custom sort order based on uniqueKey
-    val isChatSpace = spaceUxType == SpaceUxType.CHAT
-    val customUniqueKeyOrder = if (!isChatSpace) {
-        listOf(
-            ObjectTypeIds.PAGE,
-            ObjectTypeIds.NOTE,
-            ObjectTypeIds.TASK,
-            ObjectTypeIds.CHAT_DERIVED,
-            ObjectTypeIds.COLLECTION,
-            ObjectTypeIds.SET,
-            ObjectTypeIds.BOOKMARK,
-            ObjectTypeIds.PROJECT,
-            ObjectTypeIds.IMAGE,
-            ObjectTypeIds.FILE,
-            ObjectTypeIds.VIDEO,
-            ObjectTypeIds.AUDIO
-        )
-    } else {
-        listOf(
-            ObjectTypeIds.IMAGE,
-            ObjectTypeIds.BOOKMARK,
-            ObjectTypeIds.FILE,
-            ObjectTypeIds.PAGE,
-            ObjectTypeIds.NOTE,
-            ObjectTypeIds.TASK,
-            ObjectTypeIds.COLLECTION,
-            ObjectTypeIds.SET,
-            ObjectTypeIds.PROJECT,
-            ObjectTypeIds.VIDEO,
-            ObjectTypeIds.AUDIO
-        )
-    }
-
-    val sortedTypes = sortObjectTypesByPriority(filteredObjectTypes, customUniqueKeyOrder)
+    // Sort types by priority using shared extension
+    val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+    val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
     return sortedTypes.map { objectType ->
         createWidgetViewFromType(objectType, config)
     }
-}
-
-/** Sorts a list of ObjectWrapper.Type objects by priority.
- * 1. Primary: orderId (ascending, nulls at end)
- * 2. Secondary: customUniqueKeyOrder (position in list)
- * 3. Tertiary: name (ascending)
- *
- * @param types The list of ObjectWrapper.Type objects to sort.
- * @param customUniqueKeyOrder The custom order of unique keys to use for secondary sorting.
- * @return A new list of ObjectWrapper.Type objects sorted by the specified priority.
- */
-private fun sortObjectTypesByPriority(
-    types: List<ObjectWrapper.Type>,
-    customUniqueKeyOrder: List<String>
-): List<ObjectWrapper.Type> {
-    return types.sortedWith(
-        compareBy<ObjectWrapper.Type> { objectType ->
-            // Primary sort: orderId presence (items with orderId come first)
-            if (objectType.orderId != null) 0 else 1
-        }.thenBy { objectType ->
-            // Primary sort continuation: orderId value (for items that have orderId)
-            objectType.orderId ?: ""
-        }.thenBy { objectType ->
-            // Secondary sort: custom order by uniqueKey
-            val index = customUniqueKeyOrder.indexOf(objectType.uniqueKey)
-            if (index >= 0) index else Int.MAX_VALUE
-        }.thenBy { objectType ->
-            // Tertiary sort: name (case-insensitive)
-            objectType.name?.lowercase() ?: ""
-        }
-    )
 }
 
 /**

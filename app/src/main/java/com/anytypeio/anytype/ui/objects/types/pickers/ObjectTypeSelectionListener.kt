@@ -18,3 +18,7 @@ interface WidgetObjectTypeListener {
 interface WidgetSourceTypeListener {
     fun onSetNewWidgetSource(objType: ObjectWrapper.Type, widgetId: Id)
 }
+
+interface CollectionObjectTypeSelectionListener {
+    fun onSelectObjectTypeForCollection(objType: ObjectWrapper.Type)
+}

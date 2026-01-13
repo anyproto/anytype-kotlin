@@ -555,6 +555,7 @@
     <string name="blank">Tom</string>
     <string name="templates_menu_default_for_view">Standard for denne visningen</string>
     <string name="templates_menu_edit">Rediger mal</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Dupliser</string>
     <string name="templates_menu_delete">Slett</string>
     <string name="unsupported">Ikke støttet</string>

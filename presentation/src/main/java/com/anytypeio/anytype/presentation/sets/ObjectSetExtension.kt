@@ -171,10 +171,10 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
 }
 
 fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
-    filter { !it.isHidden }
+    filter { !it.isHidden || it.key == Relations.NAME || it.key == Relations.DONE }
 
 fun List<SimpleRelationView>.filterNotNameAndHidden(): List<SimpleRelationView> =
-    filterNot { it.key != Relations.NAME && it.isHidden }
+    filterNot { it.key != Relations.NAME && it.key != Relations.DONE && it.isHidden }
 
 fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> {
     val filters = this.toMutableList()

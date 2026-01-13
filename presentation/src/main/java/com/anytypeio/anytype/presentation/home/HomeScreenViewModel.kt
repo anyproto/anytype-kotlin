@@ -15,6 +15,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
@@ -118,6 +119,8 @@ import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
+import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
+import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.sets.prefillNewObjectDetails
 import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObjectData
@@ -1175,8 +1178,8 @@ class HomeScreenViewModel(
                 analytics.sendOpenSidebarObjectEvent(
                     isAutoCreated = isAutoCreated
                 )
+                proceedWithOpeningObject(obj)
             }
-            proceedWithOpeningObject(obj)
         } else {
             sendToast("Open bin to restore your archived object")
         }
@@ -1293,7 +1296,9 @@ class HomeScreenViewModel(
                         widget = widgetId,
                         source = source
                     )
-                    proceedWithOpeningObject(source.obj)
+                    viewModelScope.launch {
+                        proceedWithOpeningObject(source.obj)
+                    }
                 } else {
                     sendToast("Open bin to restore your archived object")
                 }
@@ -1385,12 +1390,16 @@ class HomeScreenViewModel(
                         }
                         else -> {
                             // Fall back to standard navigation without view
-                            proceedWithOpeningObject(source.obj)
+                            viewModelScope.launch {
+                                proceedWithOpeningObject(source.obj)
+                            }
                         }
                     }
                 } else {
                     // Fall back to standard navigation without view
-                    proceedWithOpeningObject(source.obj)
+                    viewModelScope.launch {
+                        proceedWithOpeningObject(source.obj)
+                    }
                 }
             } else {
                 sendToast("Open bin to restore your archived object")
@@ -1819,7 +1828,21 @@ class HomeScreenViewModel(
         mode.value = InteractionMode.Default
     }
 
-    private fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+    private suspend fun proceedWithOpeningObject(obj: ObjectWrapper.Basic) {
+        // Check if template before routing by layout
+        if (obj.isTemplateObject(storeOfObjectTypes) && !obj.layout.isDataView()) {
+            obj.getTypeForObjectAndTargetTypeForTemplate(storeOfObjectTypes)?.let { objType ->
+                navigate(
+                    Navigation.OpenTemplate(
+                        template = obj.id,
+                        templateTypeId = objType.id,
+                        templateTypeKey = objType.uniqueKey,
+                        space = vmParams.spaceId.id
+                    )
+                )
+                return
+            }
+        }
         proceedWithNavigation(obj.navigation())
     }
 
@@ -3302,6 +3325,12 @@ class HomeScreenViewModel(
         data class OpenType(val target: Id, val space: Id, val view: Id? = null) : Navigation()
         data class OpenOwnerOrEditorSpaceSettings(val space: Id) : Navigation()
         data class OpenBookmarkUrl(val url: String) : Navigation() // Added for opening bookmark URLs from widgets
+        data class OpenTemplate(
+            val template: Id,
+            val templateTypeId: Id,
+            val templateTypeKey: Key,
+            val space: Id
+        ) : Navigation()
     }
 
     sealed class ViewerSpaceSettingsState {

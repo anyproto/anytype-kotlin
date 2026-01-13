@@ -557,6 +557,7 @@
     <string name="blank">Пуста</string>
     <string name="templates_menu_default_for_view">Прадвызначаны для гэтага выгляду</string>
     <string name="templates_menu_edit">Рэдагаваць шаблон</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Дубляваць</string>
     <string name="templates_menu_delete">Выдаліць</string>
     <string name="unsupported">Не падтрымліваецца</string>

@@ -555,6 +555,7 @@
     <string name="blank">Leeg</string>
     <string name="templates_menu_default_for_view">Standaard voor deze weergave</string>
     <string name="templates_menu_edit">Sjabloon bewerken</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Dupliceer</string>
     <string name="templates_menu_delete">Verwijder</string>
     <string name="unsupported">Niet ondersteund</string>

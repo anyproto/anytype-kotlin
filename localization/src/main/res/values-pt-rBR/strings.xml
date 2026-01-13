@@ -555,6 +555,7 @@
     <string name="blank">Em branco</string>
     <string name="templates_menu_default_for_view">Padrão para esta exibição</string>
     <string name="templates_menu_edit">Editar modelo</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplicar</string>
     <string name="templates_menu_delete">Excluir</string>
     <string name="unsupported">Incompatível</string>

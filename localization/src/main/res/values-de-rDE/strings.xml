@@ -555,6 +555,7 @@
     <string name="blank">Leer</string>
     <string name="templates_menu_default_for_view">Standard für diese Ansicht</string>
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplizieren</string>
     <string name="templates_menu_delete">Löschen</string>
     <string name="unsupported">Nicht unterstützt</string>

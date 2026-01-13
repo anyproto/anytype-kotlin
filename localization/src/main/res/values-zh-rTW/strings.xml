@@ -554,6 +554,7 @@
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">預設此檢視</string>
     <string name="templates_menu_edit">編輯範本</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">建立副本</string>
     <string name="templates_menu_delete">刪除</string>
     <string name="unsupported">不支援</string>

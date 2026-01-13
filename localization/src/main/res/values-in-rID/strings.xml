@@ -554,6 +554,7 @@
     <string name="blank">Kosong</string>
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Sunting templat</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Gandakan</string>
     <string name="templates_menu_delete">Hapus</string>
     <string name="unsupported">Tidak didukung</string>

@@ -618,6 +618,7 @@
 
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Edit template</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
     <string name="unsupported">Unsupported</string>

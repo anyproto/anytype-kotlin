@@ -214,6 +214,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     protected val ctx get() = arg<Id>(CTX_KEY)
     protected val space get() = arg<Id>(SPACE_ID_KEY)
 
+    /**
+     * Navigation destination ID for safeNavigate calls.
+     * Override in subclasses that use different navigation graphs.
+     */
+    protected open val navigationDestinationId: Int = R.id.pageScreen
+
     private val sideEffect: OpenObjectNavigation.SideEffect
         get() {
             val attachedChatId = argOrNull<Id>(ATTACH_TO_CHAT_ID_KEY)
@@ -1125,7 +1131,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
-                        currentDestinationId = R.id.pageScreen,
+                        currentDestinationId = navigationDestinationId,
                         id = R.id.objectMenuScreen,
                         args = ObjectMenuFragment.args(
                             ctx = command.ctx,

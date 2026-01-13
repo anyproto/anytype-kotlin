@@ -7154,6 +7154,10 @@ class EditorViewModel(
         return getObjectTypeUniqueKeyFromDetails() == ObjectTypeIds.TEMPLATE
     }
 
+    suspend fun getObjectTypeById(id: Id): ObjectWrapper.Type? {
+        return storeOfObjectTypes.get(id)
+    }
+
     fun onSelectTemplateClicked() {
         viewModelScope.launch {
             sendAnalyticsSelectTemplateEvent(analytics)

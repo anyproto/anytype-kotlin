@@ -555,6 +555,7 @@
     <string name="blank">Boş</string>
     <string name="templates_menu_default_for_view">Bu görünüm için varsayılan</string>
     <string name="templates_menu_edit">Şablonu düzenle</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Çoğalt</string>
     <string name="templates_menu_delete">Sil</string>
     <string name="unsupported">Desteklenmiyor</string>

@@ -554,6 +554,7 @@
     <string name="blank">なし</string>
     <string name="templates_menu_default_for_view">このビューのデフォルト</string>
     <string name="templates_menu_edit">テンプレートを編集</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">複製</string>
     <string name="templates_menu_delete">削除</string>
     <string name="unsupported">未対応</string>

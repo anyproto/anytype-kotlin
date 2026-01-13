@@ -134,7 +134,8 @@ class ObjectSetSettingsViewModelTest {
                     isVisible = true,
                     isHidden = true,
                     isReadonly = false,
-                    isDefault = Relations.systemRelationKeys.contains(relationKey)
+                    isDefault = Relations.systemRelationKeys.contains(relationKey),
+                    canToggleVisibility = false
                 )
             )
         )
@@ -142,7 +143,7 @@ class ObjectSetSettingsViewModelTest {
     }
 
     @Test
-    fun `in case of Grid hidden Name should NOT be in the list`() = runTest {
+    fun `in case of Grid hidden Name should be in the list with toggle hidden`() = runTest {
         val relationKey = Relations.NAME
         val viewerId = "viewer-id"
         val blockId = "block-id"
@@ -202,8 +203,22 @@ class ObjectSetSettingsViewModelTest {
         viewModel.onStart(viewerId)
         coroutineTestRule.advanceUntilIdle()
 
-        // Assert
-        assertEquals(emptyList(), viewModel.views.value)
+        // Assert - Name should be in the list but with toggle hidden (canToggleVisibility = false)
+        val expected = listOf(
+            ViewerRelationListView.Relation(
+                SimpleRelationView(
+                    key = relationKey,
+                    title = relationName,
+                    format = RelationFormat.LONG_TEXT,
+                    isVisible = true,
+                    isHidden = true,
+                    isReadonly = false,
+                    isDefault = Relations.systemRelationKeys.contains(relationKey),
+                    canToggleVisibility = false
+                )
+            )
+        )
+        assertEquals(expected, viewModel.views.value)
     }
 
     @Test

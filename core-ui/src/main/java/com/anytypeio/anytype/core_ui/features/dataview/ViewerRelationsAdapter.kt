@@ -67,12 +67,16 @@ class ViewerRelationsAdapter(
             item: SimpleRelationView,
             onSwitchClick: (SimpleRelationView) -> Unit
         ) = with(binding) {
-            switchView.visible()
             iconRelation.bind(item.format)
             title.text = item.title
-            switchView.isChecked = item.isVisible
-            switchView.setOnCheckedChangeListener { _, isChecked ->
-                onSwitchClick(item.copy(isVisible = isChecked))
+            if (item.canToggleVisibility) {
+                switchView.visible()
+                switchView.isChecked = item.isVisible
+                switchView.setOnCheckedChangeListener { _, isChecked ->
+                    onSwitchClick(item.copy(isVisible = isChecked))
+                }
+            } else {
+                switchView.invisible()
             }
         }
     }

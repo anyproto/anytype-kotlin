@@ -679,7 +679,8 @@ fun List<ObjectWrapper.Relation>.mapToSimpleRelationView(
         isVisible = isVisible,
         isHidden = dataViewRelation.isHidden == true,
         isReadonly = dataViewRelation.isReadonlyValue,
-        isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key)
+        isDefault = Relations.systemRelationKeys.contains(dataViewRelation.key),
+        canToggleVisibility = dataViewRelation.key != Relations.NAME
     )
 }
 
@@ -699,7 +700,8 @@ fun List<Block.Content.DataView.Viewer.ViewerRelation>.toSimpleRelationView(
                         isVisible = viewerRelation.isVisible,
                         isHidden = relation.isHidden ?: false,
                         isReadonly = relation.isReadonlyValue,
-                        isDefault = Relations.systemRelationKeys.contains(viewerRelation.key)
+                        isDefault = Relations.systemRelationKeys.contains(viewerRelation.key),
+                        canToggleVisibility = relation.key != Relations.NAME
                     )
                 )
             }

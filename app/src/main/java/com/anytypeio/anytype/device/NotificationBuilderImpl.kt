@@ -111,12 +111,11 @@ class NotificationBuilderImpl(
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
-            .setContentTitle(message.senderName.trim())  // Line 1: Author name
-            .setContentText(secondLine)                   // Line 2: Chat/Space name (collapsed view)
+            .setContentTitle(message.senderName.trim())  // Title: Author name
+            .setContentText("$secondLine: $bodyText")     // Collapsed view
             .setStyle(
-                NotificationCompat.InboxStyle()
-                    .addLine(secondLine)  // Line 2: Chat/Space name
-                    .addLine(bodyText)    // Line 3: Message preview
+                NotificationCompat.BigTextStyle()
+                    .bigText("$secondLine\n$bodyText")    // Expanded: Chat/Space name + Message
             )
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

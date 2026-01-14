@@ -110,21 +110,23 @@ fun StubSpaceView(
     spaceUxType: SpaceUxType? = SpaceUxType.DATA,
     spaceOrder: String? = null,
     createdDate: Double = MockDataFactory.randomLong().toDouble(),
-    spaceJoinDate: Double = MockDataFactory.randomLong().toDouble(),
+    spaceJoinDate: Double? = null,
     spacePushNotificationMode: NotificationState? = null
 ) = ObjectWrapper.SpaceView(
-    map = mapOf(
-        Relations.ID to id,
-        Relations.CHAT_ID to chatId,
-        Relations.TARGET_SPACE_ID to targetSpaceId,
-        Relations.SPACE_ACCESS_TYPE to spaceAccessType.code.toDouble(),
-        Relations.SHARED_SPACES_LIMIT to sharedSpaceLimit?.toDouble(),
-        Relations.SPACE_ACCOUNT_STATUS to spaceAccountStatus?.code?.toDouble(),
-        Relations.SPACE_LOCAL_STATUS to spaceLocalStatus?.code?.toDouble(),
-        Relations.SPACE_UX_TYPE to spaceUxType?.code?.toDouble(),
-        Relations.SPACE_ORDER to spaceOrder,
-        Relations.CREATED_DATE to createdDate,
-        Relations.SPACE_JOIN_DATE to spaceJoinDate,
-        Relations.SPACE_PUSH_NOTIFICATION_MODE to spacePushNotificationMode?.code?.toDouble()
-    )
+    map = buildMap {
+        put(Relations.ID, id)
+        put(Relations.CHAT_ID, chatId)
+        put(Relations.TARGET_SPACE_ID, targetSpaceId)
+        put(Relations.SPACE_ACCESS_TYPE, spaceAccessType.code.toDouble())
+        put(Relations.SHARED_SPACES_LIMIT, sharedSpaceLimit?.toDouble())
+        put(Relations.SPACE_ACCOUNT_STATUS, spaceAccountStatus?.code?.toDouble())
+        put(Relations.SPACE_LOCAL_STATUS, spaceLocalStatus?.code?.toDouble())
+        put(Relations.SPACE_UX_TYPE, spaceUxType?.code?.toDouble())
+        put(Relations.SPACE_ORDER, spaceOrder)
+        put(Relations.CREATED_DATE, createdDate)
+        if (spaceJoinDate != null) {
+            put(Relations.SPACE_JOIN_DATE, spaceJoinDate)
+        }
+        put(Relations.SPACE_PUSH_NOTIFICATION_MODE, spacePushNotificationMode?.code?.toDouble())
+    }
 )

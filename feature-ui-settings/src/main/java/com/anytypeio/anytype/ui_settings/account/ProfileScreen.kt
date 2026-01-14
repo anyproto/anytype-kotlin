@@ -454,11 +454,15 @@ fun ProfileNameBlock(
     val nameValue = remember { mutableStateOf(name) }
     val focusManager = LocalFocusManager.current
 
-    LaunchedEffect(nameValue.value) {
+    // Sync external name changes to local state
+    LaunchedEffect(name) {
+        nameValue.value = name
+    }
+
+    LaunchedEffect(Unit) {
         snapshotFlow { nameValue.value }
             .debounce(PROFILE_NAME_CHANGE_DELAY)
             .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
             .collect { query ->
                 onNameSet(query)
             }

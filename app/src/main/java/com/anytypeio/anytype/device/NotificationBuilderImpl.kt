@@ -76,9 +76,8 @@ class NotificationBuilderImpl(
             spaceId = spaceId
         )
 
-        // Format the notification body text
+        // Format the notification body text (message preview)
         val bodyText = message.formatNotificationBody(attachmentText)
-        val singleLine = "${message.senderName.trim()}: $bodyText"
 
         // Generate unique notification ID based on message ID
         val notificationId = message.msgId.hashCode()
@@ -98,32 +97,26 @@ class NotificationBuilderImpl(
             Timber.w("Failed to load both chat and space icons for notification. spaceId=$spaceId, chatId=${message.chatId}")
         }
 
-        // Determine notification title:
-        // - For Data spaces: use "Space name - Chat name" format (with smart truncation)
-        // - For Chat spaces: use the space name (space and chat are the same)
-        val notificationTitle = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
-            val chatName = chatsDetailsSubscriptionContainer.get(message.chatId)?.name
+        // Determine Line 2 content:
+        // - For Data spaces: chat name (fallback to space name if unavailable)
+        // - For Chat spaces: space name (since space = chat in 1-to-1)
+        val secondLine = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
+            chatsDetailsSubscriptionContainer.get(message.chatId)?.name
                 ?.trim()
                 ?.takeIf { it.isNotBlank() }
-            if (chatName != null) {
-                buildTruncatedTitle(
-                    spaceName = message.spaceName.trim(),
-                    chatName = chatName,
-                    maxLength = MAX_NOTIFICATION_TITLE_LENGTH,
-                    separator = TITLE_SEPARATOR
-                )
-            } else {
-                message.spaceName.trim()  // Fallback to space name only if chat name unavailable
-            }
+                ?: message.spaceName.trim()  // Fallback to space name
         } else {
-            message.spaceName.trim()
+            message.spaceName.trim()  // Chat spaces use space name
         }
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
-            .setContentTitle(notificationTitle)
-            .setContentText(singleLine)
-            .setStyle(NotificationCompat.BigTextStyle().bigText(singleLine))
+            .setContentTitle(message.senderName.trim())  // Title: Author name
+            .setContentText("$secondLine: $bodyText")     // Collapsed view
+            .setStyle(
+                NotificationCompat.BigTextStyle()
+                    .bigText("$secondLine\n$bodyText")    // Expanded: Chat/Space name + Message
+            )
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setContentIntent(pending)
@@ -149,7 +142,7 @@ class NotificationBuilderImpl(
         // Create or update summary notification for the group
         updateSummaryNotification(
             groupId = groupId,
-            spaceName = notificationTitle,
+            chatOrSpaceName = secondLine,
             chatPendingIntent = pending,
             largeIcon = largeIcon
         )
@@ -346,10 +339,11 @@ class NotificationBuilderImpl(
 
     /**
      * Creates or updates the summary notification for a group of chat notifications.
+     * @param chatOrSpaceName The chat name (for Data spaces) or space name (for Chat spaces)
      */
     private fun updateSummaryNotification(
         groupId: String,
-        spaceName: String,
+        chatOrSpaceName: String,
         chatPendingIntent: PendingIntent,
         largeIcon: Bitmap?
     ) {
@@ -361,7 +355,7 @@ class NotificationBuilderImpl(
 
         val builder = NotificationCompat.Builder(context, CHAT_SUMMARY_CHANNEL_ID)
             .setSmallIcon(R.drawable.ic_app_notification)
-            .setContentTitle(spaceName.trim())
+            .setContentTitle(chatOrSpaceName.trim())
             .setContentText(resourceProvider.getMessagesCountText(messageCount))
             .setGroup(groupId)
             .setGroupSummary(true)
@@ -539,68 +533,11 @@ class NotificationBuilderImpl(
         return name.trim().replace(Regex("[^a-zA-Z0-9 _-]"), "_")
     }
 
-    /**
-     * Builds a truncated notification title that shows both space name and chat name.
-     * Ensures both names are visible even when either or both are long.
-     *
-     * Strategy:
-     * - If both fit within maxLength, use them as-is
-     * - If one is short and one is long, give more space to the long one
-     * - If both are long, split the available space evenly
-     */
-    private fun buildTruncatedTitle(
-        spaceName: String,
-        chatName: String,
-        maxLength: Int,
-        separator: String
-    ): String {
-        val separatorLength = separator.length
-        val availableLength = maxLength - separatorLength
-
-        // If both fit, use them as-is
-        if (spaceName.length + chatName.length <= availableLength) {
-            return "$spaceName$separator$chatName"
-        }
-
-        // Calculate allocation: split remaining space, giving more to shorter name if possible
-        val halfLength = availableLength / 2
-
-        val (truncatedSpace, truncatedChat) = when {
-            spaceName.length <= halfLength -> {
-                // Space name is short, give remaining space to chat name
-                val chatMax = availableLength - spaceName.length
-                spaceName to chatName.truncateWithEllipsis(chatMax)
-            }
-            chatName.length <= halfLength -> {
-                // Chat name is short, give remaining space to space name
-                val spaceMax = availableLength - chatName.length
-                spaceName.truncateWithEllipsis(spaceMax) to chatName
-            }
-            else -> {
-                // Both are long, split evenly
-                spaceName.truncateWithEllipsis(halfLength) to chatName.truncateWithEllipsis(halfLength)
-            }
-        }
-
-        return "$truncatedSpace$separator$truncatedChat"
-    }
-
-    private fun String.truncateWithEllipsis(maxLength: Int): String {
-        if (maxLength <= 0) return ""
-        return if (length <= maxLength) this
-        else take((maxLength - 1).coerceAtLeast(0)) + "…"
-    }
-
     companion object {
         private const val CHANNEL_GROUP_ID = "chats_group"
         private const val CHANNEL_GROUP_NAME = "Chats"
         private const val CHAT_SUMMARY_CHANNEL_ID = "chat_summary_channel"
         private const val SUMMARY_TAG = "chat_summary"
         private const val ICON_SIZE_DP = 48  // Size in dp for notification large icon
-
-        /** Maximum length for notification title before Android truncates it */
-        private const val MAX_NOTIFICATION_TITLE_LENGTH = 45
-        /** Separator between space name and chat name in notification title */
-        private const val TITLE_SEPARATOR = " - "
     }
 }

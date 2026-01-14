@@ -48,6 +48,12 @@ class ObjectSetSettingsViewModel(
     val screenState = MutableStateFlow(ScreenState.LIST)
     val commands = MutableSharedFlow<Command>()
 
+    /**
+     * Complete list of all relations (including hidden) in viewerRelations order.
+     * Used to preserve hidden properties during drag-drop reordering.
+     */
+    private val allViewerRelations = MutableStateFlow<List<SimpleRelationView>>(emptyList())
+
     init {
         Timber.i("ObjectSetSettingsViewModel, init")
     }

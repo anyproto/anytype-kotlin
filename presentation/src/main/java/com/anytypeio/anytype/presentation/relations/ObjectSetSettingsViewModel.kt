@@ -76,17 +76,16 @@ class ObjectSetSettingsViewModel(
 
                 Timber.d("Found in store: ${inStore.size}, available in index: ${state.dataViewContent.relationLinks.size}")
 
-                val relations = if (viewer.type == Type.GALLERY) {
-                    inStore.mapToSimpleRelationView(
-                        viewer.viewerRelations
-                    ).filterNotNameAndHidden()
-                        .map { view -> ViewerRelationListView.Relation(view) }
-                } else {
-                    inStore.mapToSimpleRelationView(
-                        viewer.viewerRelations
-                    ).filterHiddenRelations()
-                        .map { view -> ViewerRelationListView.Relation(view) }
-                }
+                // Get complete list of relations in viewerRelations order (includes hidden)
+                val completeRelations = viewer.viewerRelations.toSimpleRelationView(inStore)
+
+                // Store complete list for use in reordering (preserves hidden properties)
+                allViewerRelations.value = completeRelations
+
+                // Filter for UI display only
+                val relations = completeRelations
+                    .filterVisible()
+                    .map { view -> ViewerRelationListView.Relation(view) }
 
                 result.addAll(relations)
 

@@ -220,14 +220,80 @@ class ObjectSetSettingsViewModel(
     }
 
     /**
-     * @param [order] order of relation keys
+     * Called when user reorders properties via drag-and-drop.
+     * Preserves hidden properties by merging the new visible order with hidden ones.
+     * This matches iOS behavior where view.options (complete array) is reordered.
+     *
+     * @param [order] new order of visible relation views from the UI
      */
     fun onOrderChanged(ctx: Id, viewerId: Id, order: List<ViewerRelationListView>) {
+        val newVisibleKeys = order.filterIsInstance<ViewerRelationListView.Relation>()
+            .map { it.view.key }
+
+        // Get the complete list including hidden properties
+        val complete = allViewerRelations.value
+
+        // Build the complete order: merge new visible order with hidden properties
+        // Hidden properties maintain their relative positions
+        val completeOrder = buildCompleteOrderPreservingHidden(
+            completeRelations = complete,
+            newVisibleOrder = newVisibleKeys
+        )
+
         proceedWithChangeOrderUpdate(
             ctx = ctx,
             viewerId = viewerId,
-            order = order.filterIsInstance<ViewerRelationListView.Relation>().map { it.view.key }
+            order = completeOrder
         )
+    }
+
+    /**
+     * Merges the new visible order with hidden properties, preserving hidden positions.
+     * Algorithm: Insert hidden properties at their original relative positions.
+     * Made internal for testing purposes.
+     */
+    internal fun buildCompleteOrderPreservingHidden(
+        completeRelations: List<SimpleRelationView>,
+        newVisibleOrder: List<Key>
+    ): List<Key> {
+        // Get hidden keys in their original order
+        val hiddenKeys = completeRelations
+            .filter { it.isHidden && it.key !in newVisibleOrder }
+            .map { it.key }
+
+        if (hiddenKeys.isEmpty()) {
+            // No hidden properties, just return the visible order
+            return newVisibleOrder
+        }
+
+        // Build a map of original positions for hidden properties
+        val originalOrder = completeRelations.map { it.key }
+        val hiddenOriginalIndices = hiddenKeys.associateWith { key ->
+            originalOrder.indexOf(key)
+        }
+
+        // Start with visible keys
+        val result = newVisibleOrder.toMutableList()
+
+        // Insert hidden keys at appropriate positions
+        // We insert them relative to their original position among visible items
+        for (hiddenKey in hiddenKeys) {
+            val originalIndex = hiddenOriginalIndices[hiddenKey] ?: continue
+
+            // Find the best position: after the last visible item that was originally before this hidden item
+            var insertPosition = 0
+            for (i in result.indices) {
+                val visibleKey = result[i]
+                val visibleOriginalIndex = originalOrder.indexOf(visibleKey)
+                if (visibleOriginalIndex < originalIndex) {
+                    insertPosition = i + 1
+                }
+            }
+
+            result.add(insertPosition, hiddenKey)
+        }
+
+        return result
     }
 
     private fun proceedWithChangeOrderUpdate(ctx: Id, viewerId: Id, order: List<String>) {

@@ -303,7 +303,10 @@ class ChatViewModel @Inject constructor(
                 EventsDictionary.ChatRoute.NAVIGATION.value
             analytics.sendEvent(
                 eventName = EventsDictionary.chatScreenChat,
-                props = Props(mapOf(EventsPropertiesKey.route to route))
+                props = Props(mapOf(
+                    EventsPropertiesKey.route to route,
+                    EventsPropertiesKey.chatId to vmParams.ctx
+                ))
             )
         }
         subscribeToInviteLinkState()
@@ -1072,7 +1075,10 @@ class ChatViewModel @Inject constructor(
             analytics.sendEvent(
                 eventName = EventsDictionary.chatSentMessage,
                 props = Props(
-                    map = mapOf(EventsPropertiesKey.type to type)
+                    map = mapOf(
+                        EventsPropertiesKey.type to type,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
                 )
             )
         }
@@ -1260,7 +1266,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatDetachItemChat
+                eventName = EventsDictionary.chatDetachItemChat,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -1295,11 +1304,17 @@ class ChatViewModel @Inject constructor(
                     }
                     if (hasAlreadyUserReaction) {
                         analytics.sendEvent(
-                            eventName = EventsDictionary.chatRemoveReaction
+                            eventName = EventsDictionary.chatRemoveReaction,
+                            props = Props(
+                                map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                            )
                         )
                     } else {
                         analytics.sendEvent(
-                            eventName = EventsDictionary.chatAddReaction
+                            eventName = EventsDictionary.chatAddReaction,
+                            props = Props(
+                                map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                            )
                         )
                     }
                 }
@@ -1407,7 +1422,10 @@ class ChatViewModel @Inject constructor(
     fun onAttachmentMenuTriggered() {
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatScreenChatAttach
+                eventName = EventsDictionary.chatScreenChatAttach,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -2095,7 +2113,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatClickScrollToMention
+                eventName = EventsDictionary.chatClickScrollToMention,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -2106,7 +2127,12 @@ class ChatViewModel @Inject constructor(
             chatContainer.onLoadToReply(replyMessage = replyMessage)
         }
         viewModelScope.launch {
-            analytics.sendEvent(eventName = EventsDictionary.chatClickScrollToReply)
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToReply,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
+            )
         }
     }
 
@@ -2117,7 +2143,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatClickScrollToBottom
+                eventName = EventsDictionary.chatClickScrollToBottom,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }

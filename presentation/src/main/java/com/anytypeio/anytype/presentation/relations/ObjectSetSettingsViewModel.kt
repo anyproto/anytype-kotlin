@@ -262,10 +262,11 @@ class ObjectSetSettingsViewModel(
             return newVisibleOrder
         }
 
-        // Build a map of original positions for hidden properties
+        // Build a map of original positions for all keys (O(1) lookups instead of O(n) indexOf)
         val originalOrder = completeRelations.map { it.key }
+        val originalIndices = originalOrder.withIndex().associate { it.value to it.index }
         val hiddenOriginalIndices = hiddenKeys.associateWith { key ->
-            originalOrder.indexOf(key)
+            originalIndices[key] ?: -1
         }
 
         // Start with visible keys
@@ -280,7 +281,7 @@ class ObjectSetSettingsViewModel(
             var insertPosition = 0
             for (i in result.indices) {
                 val visibleKey = result[i]
-                val visibleOriginalIndex = originalOrder.indexOf(visibleKey)
+                val visibleOriginalIndex = originalIndices[visibleKey] ?: continue
                 if (visibleOriginalIndex < originalIndex) {
                     insertPosition = i + 1
                 }

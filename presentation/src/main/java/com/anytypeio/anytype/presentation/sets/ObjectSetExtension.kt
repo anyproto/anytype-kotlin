@@ -170,11 +170,16 @@ suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOf
     }
 }
 
-fun List<SimpleRelationView>.filterHiddenRelations(): List<SimpleRelationView> =
-    filter { !it.isHidden || it.key == Relations.NAME || it.key == Relations.DONE }
-
-fun List<SimpleRelationView>.filterNotNameAndHidden(): List<SimpleRelationView> =
-    filterNot { it.key != Relations.NAME && it.key != Relations.DONE && it.isHidden }
+/**
+ * Filters relations, keeping those that are not hidden or have a key matching
+ * one of the provided essential keys.
+ *
+ * @param essentialKeys A set of relation keys to always include, regardless of their
+ *                      'isHidden' status. Defaults to NAME and DONE.
+ */
+fun List<SimpleRelationView>.filterVisible(
+    essentialKeys: Set<String> = setOf(Relations.NAME, Relations.DONE)
+): List<SimpleRelationView> = this.filter { !it.isHidden || it.key in essentialKeys }
 
 fun List<DVFilter>.updateFilters(updates: List<DVFilterUpdate>): List<DVFilter> {
     val filters = this.toMutableList()

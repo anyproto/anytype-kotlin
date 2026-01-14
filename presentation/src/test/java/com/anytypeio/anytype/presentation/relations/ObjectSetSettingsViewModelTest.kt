@@ -14,7 +14,6 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -358,4 +357,197 @@ class ObjectSetSettingsViewModelTest {
         // Assert
         assertEquals(emptyList(), viewModel.views.value)
     }
+
+    //region buildCompleteOrderPreservingHidden tests
+
+    @Test
+    fun `should return visible order when no hidden properties exist`() = runTest {
+        // Arrange
+        objectState = MutableStateFlow(ObjectState.Init)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        val completeRelations = listOf(
+            createSimpleRelationView(key = "name", isHidden = false),
+            createSimpleRelationView(key = "status", isHidden = false),
+            createSimpleRelationView(key = "tags", isHidden = false)
+        )
+        val newVisibleOrder = listOf("tags", "name", "status") // User reordered
+
+        // Act
+        val result = viewModel.buildCompleteOrderPreservingHidden(
+            completeRelations = completeRelations,
+            newVisibleOrder = newVisibleOrder
+        )
+
+        // Assert - should match new visible order exactly
+        assertEquals(listOf("tags", "name", "status"), result)
+    }
+
+    @Test
+    fun `should preserve hidden property at original position when visible properties are reordered`() =
+        runTest {
+            // Arrange
+            objectState = MutableStateFlow(ObjectState.Init)
+            viewModel = ObjectSetSettingsViewModel(
+                objectState = objectState,
+                dispatcher = dispatcher,
+                updateDataViewViewer = updateDataViewViewer,
+                storeOfRelations = storeOfRelations,
+                analytics = analytics,
+                deleteRelationFromDataView = deleteRelationFromDataView,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+                spaceManager = spaceManager
+            )
+
+            // Original order: name, hiddenProp, status, tags
+            val completeRelations = listOf(
+                createSimpleRelationView(key = "name", isHidden = false),
+                createSimpleRelationView(key = "hiddenProp", isHidden = true),
+                createSimpleRelationView(key = "status", isHidden = false),
+                createSimpleRelationView(key = "tags", isHidden = false)
+            )
+            // User sees: name, status, tags (hiddenProp is filtered out)
+            // User drags tags to second position: name, tags, status
+            val newVisibleOrder = listOf("name", "tags", "status")
+
+            // Act
+            val result = viewModel.buildCompleteOrderPreservingHidden(
+                completeRelations = completeRelations,
+                newVisibleOrder = newVisibleOrder
+            )
+
+            // Assert - hiddenProp should stay after name (its original relative position)
+            assertEquals(listOf("name", "hiddenProp", "tags", "status"), result)
+        }
+
+    @Test
+    fun `should preserve multiple hidden properties at their relative positions`() = runTest {
+        // Arrange
+        objectState = MutableStateFlow(ObjectState.Init)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Original order: name(0), hidden1(1), status(2), hidden2(3), tags(4)
+        val completeRelations = listOf(
+            createSimpleRelationView(key = "name", isHidden = false),
+            createSimpleRelationView(key = "hidden1", isHidden = true),
+            createSimpleRelationView(key = "status", isHidden = false),
+            createSimpleRelationView(key = "hidden2", isHidden = true),
+            createSimpleRelationView(key = "tags", isHidden = false)
+        )
+        // User sees: name, status, tags
+        // User reverses order: tags, status, name
+        val newVisibleOrder = listOf("tags", "status", "name")
+
+        // Act
+        val result = viewModel.buildCompleteOrderPreservingHidden(
+            completeRelations = completeRelations,
+            newVisibleOrder = newVisibleOrder
+        )
+
+        // Assert - hidden properties are inserted after the last visible item that was originally before them:
+        // - hidden1 (orig idx 1): originally after name (idx 0), so inserted after name
+        // - hidden2 (orig idx 3): originally after status (idx 2) and name (idx 0), inserted after name (comes later in new order)
+        // Both hidden props end up after "name" because name is the last visible item that was before them both
+        assertEquals(listOf("tags", "status", "name", "hidden1", "hidden2"), result)
+    }
+
+    @Test
+    fun `should place hidden property at start if it was originally first`() = runTest {
+        // Arrange
+        objectState = MutableStateFlow(ObjectState.Init)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        // Original order: hiddenFirst, name, status
+        val completeRelations = listOf(
+            createSimpleRelationView(key = "hiddenFirst", isHidden = true),
+            createSimpleRelationView(key = "name", isHidden = false),
+            createSimpleRelationView(key = "status", isHidden = false)
+        )
+        // User sees: name, status
+        // User reorders: status, name
+        val newVisibleOrder = listOf("status", "name")
+
+        // Act
+        val result = viewModel.buildCompleteOrderPreservingHidden(
+            completeRelations = completeRelations,
+            newVisibleOrder = newVisibleOrder
+        )
+
+        // Assert - hiddenFirst should remain at position 0
+        assertEquals(listOf("hiddenFirst", "status", "name"), result)
+    }
+
+    @Test
+    fun `should handle empty visible order with only hidden properties`() = runTest {
+        // Arrange
+        objectState = MutableStateFlow(ObjectState.Init)
+        viewModel = ObjectSetSettingsViewModel(
+            objectState = objectState,
+            dispatcher = dispatcher,
+            updateDataViewViewer = updateDataViewViewer,
+            storeOfRelations = storeOfRelations,
+            analytics = analytics,
+            deleteRelationFromDataView = deleteRelationFromDataView,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
+            spaceManager = spaceManager
+        )
+
+        val completeRelations = listOf(
+            createSimpleRelationView(key = "hidden1", isHidden = true),
+            createSimpleRelationView(key = "hidden2", isHidden = true)
+        )
+        val newVisibleOrder = emptyList<String>()
+
+        // Act
+        val result = viewModel.buildCompleteOrderPreservingHidden(
+            completeRelations = completeRelations,
+            newVisibleOrder = newVisibleOrder
+        )
+
+        // Assert - hidden properties should be preserved in original order
+        assertEquals(listOf("hidden1", "hidden2"), result)
+    }
+
+    private fun createSimpleRelationView(
+        key: String,
+        isHidden: Boolean,
+        isVisible: Boolean = !isHidden
+    ): SimpleRelationView = SimpleRelationView(
+        key = key,
+        title = key,
+        format = RelationFormat.LONG_TEXT,
+        isVisible = isVisible,
+        isHidden = isHidden,
+        isReadonly = false,
+        isDefault = false
+    )
+
+    //endregion
 } 

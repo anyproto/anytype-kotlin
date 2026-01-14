@@ -370,16 +370,19 @@ class VaultViewModel(
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
-     * - If neither is available, return null (fallback to creation date in comparator)
+     * - If neither is available, fallback to createdDate
+     * - If createdDate is also unavailable, return null
      */
     private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
         val lastMessageDate = space.lastMessageDate
         val spaceJoinDate = space.space.spaceJoinDate?.toLong()
+        val createdDate = space.space.getSingleValue<Double>(Relations.CREATED_DATE)?.toLong()
 
         return when {
             lastMessageDate != null && spaceJoinDate != null -> maxOf(lastMessageDate, spaceJoinDate)
             lastMessageDate != null -> lastMessageDate
             spaceJoinDate != null -> spaceJoinDate
+            createdDate != null -> createdDate
             else -> null
         }
     }

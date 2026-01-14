@@ -1174,6 +1174,32 @@ class ChatViewModel @Inject constructor(
                 wrapper = obj
             )
         )
+        
+        viewModelScope.launch {
+            val objectType = obj.type
+            
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = buildMap {
+                        put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                        put(EventsPropertiesKey.chatId, vmParams.ctx)
+                    }
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = buildMap {
+                        put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                        put(EventsPropertiesKey.chatId, vmParams.ctx)
+                    }
+                )
+            )
+        }
     }
 
     fun onAttachObject(target: Id) {
@@ -1212,6 +1238,29 @@ class ChatViewModel @Inject constructor(
                                 type = typeName,
                                 meta = GlobalSearchItemView.Meta.None
                             )
+                        )
+                    )
+                    
+                    // Fire ClickScreenChatAttach event
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.chatClickScreenChatAttach,
+                        props = Props(
+                            map = buildMap {
+                                put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                                put(EventsPropertiesKey.chatId, vmParams.ctx)
+                            }
+                        )
+                    )
+                    
+                    // Fire AttachItemChat event
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.chatAttachItemChat,
+                        props = Props(
+                            map = buildMap {
+                                put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                                put(EventsPropertiesKey.count, 1)
+                                put(EventsPropertiesKey.chatId, vmParams.ctx)
+                            }
                         )
                     )
                 }
@@ -1508,6 +1557,39 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
+        val hasCameraCapture = uris.any { it.capturedByCamera }
+        val attachType = if (hasCameraCapture) {
+            EventsDictionary.ChatAttachType.CAMERA.value
+        } else {
+            EventsDictionary.ChatAttachType.PHOTO.value
+        }
+        
+        viewModelScope.launch {
+
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to attachType,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to attachType,
+                        EventsPropertiesKey.count to uris.size,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+        }
+
         viewModelScope.launch {
             chatBoxAttachments.value += uris.map { uri ->
                 ChatView.Message.ChatBoxAttachment.Media(
@@ -1517,6 +1599,7 @@ class ChatViewModel @Inject constructor(
                 )
             }
         }
+
         // Starting preloading files
 
         preloadingJobs += viewModelScope.launch {
@@ -1572,6 +1655,31 @@ class ChatViewModel @Inject constructor(
                 name = info.name,
                 size = info.size,
                 state = ChatView.Message.ChatBoxAttachment.State.Preloading
+            )
+        }
+        
+        viewModelScope.launch {
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.ChatAttachType.FILE.value,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.ChatAttachType.FILE.value,
+                        EventsPropertiesKey.count to infos.size,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
             )
         }
         // Starting preloading files

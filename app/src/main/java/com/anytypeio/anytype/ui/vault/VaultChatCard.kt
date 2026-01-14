@@ -602,7 +602,7 @@ internal fun buildChatContentWithInlineIcons(
             } else {
                 creatorName
             }
-            withStyle(style = mediumStyle) {
+            withStyle(style = regularStyle) {
                 if (singleLineFormat) {
                     append("$truncatedCreatorName: ")
                 } else {

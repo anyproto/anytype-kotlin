@@ -212,48 +212,48 @@ private fun QrCodeWithCircularText(
         contentAlignment = Alignment.Center
     ) {
         // Rounded square text around QR code
-        Box(
-            modifier = Modifier
-                .size(circularTextRadius * 2)
-                .drawBehind {
-                    val radiusPx = circularTextRadius.toPx()
-                    val centerX = size.width / 2
-                    val centerY = size.height / 2
-                    val cornerRadius = radiusPx * 0.2f
-
-                    val path = Path().apply {
-                        addRoundRect(
-                            RectF(
-                                centerX - radiusPx,
-                                centerY - radiusPx,
-                                centerX + radiusPx,
-                                centerY + radiusPx
-                            ),
-                            cornerRadius,
-                            cornerRadius,
-                            Path.Direction.CW
-                        )
-                    }
-
-                    val paint = Paint().apply {
-                        color = textColorInt
-                        textSize = with(density) { 11.sp.toPx() }
-                        isAntiAlias = true
-                        letterSpacing = 0.1f
-                    }
-
-                    // Repeat text to fill the rounded square
-                    val repeatedText = circularText.repeat(8)
-
-                    drawContext.canvas.nativeCanvas.drawTextOnPath(
-                        repeatedText,
-                        path,
-                        0f,
-                        0f,
-                        paint
-                    )
-                }
-        )
+//        Box(
+//            modifier = Modifier
+//                .size(circularTextRadius * 2)
+//                .drawBehind {
+//                    val radiusPx = circularTextRadius.toPx()
+//                    val centerX = size.width / 2
+//                    val centerY = size.height / 2
+//                    val cornerRadius = radiusPx * 0.2f
+//
+//                    val path = Path().apply {
+//                        addRoundRect(
+//                            RectF(
+//                                centerX - radiusPx,
+//                                centerY - radiusPx,
+//                                centerX + radiusPx,
+//                                centerY + radiusPx
+//                            ),
+//                            cornerRadius,
+//                            cornerRadius,
+//                            Path.Direction.CW
+//                        )
+//                    }
+//
+//                    val paint = Paint().apply {
+//                        color = textColorInt
+//                        textSize = with(density) { 11.sp.toPx() }
+//                        isAntiAlias = true
+//                        letterSpacing = 0.1f
+//                    }
+//
+//                    // Repeat text to fill the rounded square
+//                    val repeatedText = circularText.repeat(8)
+//
+//                    drawContext.canvas.nativeCanvas.drawTextOnPath(
+//                        repeatedText,
+//                        path,
+//                        0f,
+//                        0f,
+//                        paint
+//                    )
+//                }
+//        )
 
         // QR Code in center (no icon in center per design)
         QrCodeView(

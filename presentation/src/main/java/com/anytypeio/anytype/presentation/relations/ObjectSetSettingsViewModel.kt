@@ -5,7 +5,6 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.core_models.Block.Content.DataView.Viewer.Type
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -19,10 +18,9 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseListViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowObjectTypeScreen
-import com.anytypeio.anytype.presentation.mapper.mapToSimpleRelationView
+import com.anytypeio.anytype.presentation.mapper.toSimpleRelationView
 import com.anytypeio.anytype.presentation.sets.dataViewState
-import com.anytypeio.anytype.presentation.sets.filterHiddenRelations
-import com.anytypeio.anytype.presentation.sets.filterNotNameAndHidden
+import com.anytypeio.anytype.presentation.sets.filterVisible
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.ViewerRelationListView
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -88,8 +86,6 @@ class ObjectSetSettingsViewModel(
                     .map { view -> ViewerRelationListView.Relation(view) }
 
                 result.addAll(relations)
-
-                Timber.d("New views: $result")
 
                 _views.value = result
             }

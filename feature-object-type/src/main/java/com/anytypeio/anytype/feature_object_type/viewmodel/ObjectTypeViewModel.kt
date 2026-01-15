@@ -45,12 +45,14 @@ import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.ui.DeleteAlertObjectItem
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.Back
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenAddNewPropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiDeleteTypeAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
@@ -173,6 +175,7 @@ class ObjectTypeViewModel(
 
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
+    val uiDeleteTypeAlertState = MutableStateFlow<UiDeleteTypeAlertState>(UiDeleteTypeAlertState.Hidden)
     val uiFieldLocalInfoState =
         MutableStateFlow<UiLocalsFieldsInfoState>(UiLocalsFieldsInfoState.Hidden)
 
@@ -643,6 +646,43 @@ class ObjectTypeViewModel(
                     canEditDetails = _objectTypePermissionsState.value?.canEditDetails ?: false
                 )
             }
+
+            // Delete Type Alert (Move to Bin confirmation) events
+            TypeEvent.OnDeleteTypeAlertDismiss -> {
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+            }
+
+            TypeEvent.OnDeleteTypeAlertConfirm -> {
+                proceedWithDeleteTypeConfirm()
+            }
+
+            is TypeEvent.OnDeleteTypeAlertSelectAll -> {
+                val currentState = uiDeleteTypeAlertState.value
+                if (currentState is UiDeleteTypeAlertState.Visible) {
+                    val newSelectedIds = if (event.isSelected) {
+                        currentState.objects.map { it.id }.toSet()
+                    } else {
+                        emptySet()
+                    }
+                    uiDeleteTypeAlertState.value = currentState.copy(
+                        selectedObjectIds = newSelectedIds
+                    )
+                }
+            }
+
+            is TypeEvent.OnDeleteTypeAlertToggleObject -> {
+                val currentState = uiDeleteTypeAlertState.value
+                if (currentState is UiDeleteTypeAlertState.Visible) {
+                    val newSelectedIds = if (currentState.selectedObjectIds.contains(event.objectId)) {
+                        currentState.selectedObjectIds - event.objectId
+                    } else {
+                        currentState.selectedObjectIds + event.objectId
+                    }
+                    uiDeleteTypeAlertState.value = currentState.copy(
+                        selectedObjectIds = newSelectedIds
+                    )
+                }
+            }
         }
     }
 
@@ -661,7 +701,7 @@ class ObjectTypeViewModel(
             }
             ObjectTypeMenuEvent.OnToBinClick -> {
                 uiMenuState.value = UiObjectTypeMenuState.Hidden
-                proceedWithMoveTypeToBin()
+                showDeleteTypeConfirmation()
             }
             ObjectTypeMenuEvent.OnPinToggleClick -> {
                 if (uiMenuState.value.isPinned) {
@@ -1207,6 +1247,102 @@ class ObjectTypeViewModel(
         }
     }
 
+    /**
+     * Shows the delete type confirmation dialog.
+     * Fetches all objects using this type and displays them in a selectable list.
+     */
+    private fun showDeleteTypeConfirmation() {
+        viewModelScope.launch {
+            val typeName = uiTitleState.value.title.ifEmpty { uiTitleState.value.originalName }
+
+            // Fetch objects of this type
+            val searchParams = StoreSearchParams(
+                filters = filtersForSearch(objectTypeId = vmParams.objectId),
+                sorts = emptyList(),
+                space = vmParams.spaceId,
+                limit = MAX_OBJECTS_FOR_DELETE_ALERT,
+                keys = defaultKeys,
+                subscription = ""
+            )
+
+            try {
+                val results = storelessSubscriptionContainer.subscribe(searchParams)
+                results.collect { objects ->
+                    val objectItems = objects.map { obj ->
+                        DeleteAlertObjectItem(
+                            id = obj.id,
+                            name = obj.name.orEmpty(),
+                            icon = obj.objectIcon(builder = urlBuilder)
+                        )
+                    }
+
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
+                        typeName = typeName,
+                        objects = objectItems,
+                        selectedObjectIds = emptySet()
+                    )
+
+                    // Unsubscribe after getting the initial data
+                    storelessSubscriptionContainer.unsubscribe(listOf(""))
+                    return@collect
+                }
+            } catch (e: Exception) {
+                Timber.e(e, "Error fetching objects for delete type confirmation")
+                // Show dialog anyway with empty list
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
+                    typeName = typeName,
+                    objects = emptyList(),
+                    selectedObjectIds = emptySet()
+                )
+            }
+        }
+    }
+
+    /**
+     * Proceeds with deleting the type and selected objects.
+     * First archives the selected objects, then archives the type itself.
+     */
+    private fun proceedWithDeleteTypeConfirm() {
+        val currentState = uiDeleteTypeAlertState.value
+        if (currentState !is UiDeleteTypeAlertState.Visible) return
+
+        viewModelScope.launch {
+            // First, archive selected objects if any
+            val selectedObjectIds = currentState.selectedObjectIds.toList()
+            if (selectedObjectIds.isNotEmpty()) {
+                val archiveObjectsParams = SetObjectListIsArchived.Params(
+                    targets = selectedObjectIds,
+                    isArchived = true
+                )
+                setObjectListIsArchived.async(archiveObjectsParams).fold(
+                    onSuccess = {
+                        Timber.d("Archived ${selectedObjectIds.size} objects")
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while archiving selected objects")
+                    }
+                )
+            }
+
+            // Then archive the type itself
+            val archiveTypeParams = SetObjectListIsArchived.Params(
+                targets = listOf(vmParams.objectId),
+                isArchived = true
+            )
+            setObjectListIsArchived.async(archiveTypeParams).fold(
+                onSuccess = {
+                    Timber.d("Object type ${vmParams.objectId} moved to bin")
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                    commands.emit(ObjectTypeCommand.Back)
+                },
+                onFailure = {
+                    Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                }
+            )
+        }
+    }
+
     private fun proceedWithPinType() {
         viewModelScope.launch {
             val config = spaceManager.getConfig(vmParams.spaceId)
@@ -1519,6 +1655,7 @@ class ObjectTypeViewModel(
 
     companion object {
         const val TEMPLATE_MAX_COUNT = 100
+        const val MAX_OBJECTS_FOR_DELETE_ALERT = 100
 
         fun templatesSubId(objectId: Id) = "TYPE-TEMPLATES-SUB-ID--$objectId"
     }

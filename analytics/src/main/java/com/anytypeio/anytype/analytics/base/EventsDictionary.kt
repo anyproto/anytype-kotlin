@@ -523,4 +523,5 @@ object EventsPropertiesKey {
     const val spaceType = "spaceType"
     const val permissions = "permissions"
     const val sort = "sort"
+    const val chatId = "chatId"
 }

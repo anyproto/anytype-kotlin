@@ -191,11 +191,9 @@ fun CreateSpaceScreen(
         }
         ButtonOnboardingPrimaryLarge(
             onClick = {
-                if (isChatSpace || innerValue.text.isNotEmpty()) {
-                    focusManager.clearFocus()
-                    keyboardController?.hide()
-                    onCreate(innerValue.text)
-                }
+                focusManager.clearFocus()
+                keyboardController?.hide()
+                onCreate(innerValue.text)
             },
             text = stringResource(id = R.string.create),
             size = ButtonSize.Large,
@@ -206,7 +204,7 @@ fun CreateSpaceScreen(
                 .padding(horizontal = 16.dp)
                 .padding(bottom = 16.dp),
             loading = isLoading.value,
-            enabled = isChatSpace || innerValue.text.isNotEmpty()
+            enabled = true
         )
     }
 

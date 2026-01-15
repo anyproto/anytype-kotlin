@@ -73,13 +73,12 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         val identity = uri.pathSegments.firstOrNull()
         // Use explicit URL decoding on the encoded fragment to ensure proper decoding
         // of percent-encoded base64 characters like %2B (+), %2F (/), %3D (=)
+        // Use Uri.decode() instead of URLDecoder.decode() because:
+        // - URLDecoder converts '+' to space (for query strings)
+        // - Uri.decode() only decodes %XX sequences, preserving '+' for base64
+        // This handles both iOS (literal '+') and Desktop ('%2B') QR codes
         val metadataKey = uri.encodedFragment?.let { encoded ->
-            try {
-                java.net.URLDecoder.decode(encoded, "UTF-8")
-            } catch (e: Exception) {
-                Timber.e(e, "Failed to decode fragment: $encoded")
-                null
-            }
+            Uri.decode(encoded)
         }
 
         Timber.d("OneToOne deeplink: identity=$identity, encodedFragment=${uri.encodedFragment}, decodedKey=$metadataKey")

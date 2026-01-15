@@ -305,4 +305,24 @@ class DefaultDeepLinkResolverTest {
         // When & Then
         assertTrue(deepLinkResolver.isDeepLink(deeplink))
     }
+
+    @Test
+    fun `resolve preserves literal plus in iOS format hi any coop link`() {
+        // Given - iOS format with literal '+' (not percent-encoded)
+        val identity = "A8QyNvSpUiw8iPcXbkdJBLNUVDzrf1MvfP2wG5Y32G6A4QF4"
+        val metadataKey = "CAISIEnCArW+34o89A+CoMStH9OPKBML4SWLbxChduxnIypA"
+        val deeplink = "https://hi.any.coop/$identity#$metadataKey"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then - '+' should be preserved, not converted to space
+        assertEquals(
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            ),
+            result
+        )
+    }
 }

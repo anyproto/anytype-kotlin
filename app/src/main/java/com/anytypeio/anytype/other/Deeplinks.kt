@@ -12,6 +12,8 @@ const val DEEP_LINK_PATTERN = "anytype://"
 
 const val DEEP_LINK_INVITE_DOMAIN = "invite.any.coop"
 
+const val DEEP_LINK_ONE_TO_ONE_CHAT_DOMAIN = "hi.any.coop"
+
 const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
 
 /**
@@ -19,7 +21,6 @@ const val DEEP_LINK_TO_OBJECT_BASE_URL = "https://object.any.coop"
  */
 const val DEEP_LINK_INVITE_REG_EXP = "invite.any.coop/([a-zA-Z0-9]+)#([a-zA-Z0-9]+)"
 const val DEEP_LINK_TO_OBJECT_REG_EXP = """object\.any\.coop/([a-zA-Z0-9?=&._-]+)"""
-const val DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP = """hi\.any\.coop/([a-zA-Z0-9_-]+)#([a-zA-Z0-9_+/=-]+)"""
 const val DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP =
     "anytype://hi/\\?id=([a-zA-Z0-9_-]+)&key=([a-zA-Z0-9_+/=-]+)"
 
@@ -45,14 +46,13 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     private val defaultInviteRegex = Regex(DEEP_LINK_INVITE_REG_EXP)
     private val defaultLinkToObjectRegex = Regex(DEEP_LINK_TO_OBJECT_REG_EXP)
     private val customInviteRegex = Regex(DEE_LINK_INVITE_CUSTOM_REG_EXP)
-    private val oneToOneChatRegex = Regex(DEEP_LINK_ONE_TO_ONE_CHAT_REG_EXP)
     private val oneToOneChatCustomRegex = Regex(DEEP_LINK_ONE_TO_ONE_CHAT_CUSTOM_REG_EXP)
 
     override fun resolve(deeplink: String): DeepLinkResolver.Action {
         val uri = Uri.parse(deeplink)
         return when {
             deeplink.contains(IMPORT_EXPERIENCE_DEEPLINK) -> resolveImportExperience(uri)
-            oneToOneChatRegex.containsMatchIn(deeplink) -> resolveOneToOneChatLink(deeplink)
+            uri.host == DEEP_LINK_ONE_TO_ONE_CHAT_DOMAIN -> resolveOneToOneChatLink(deeplink)
             oneToOneChatCustomRegex.containsMatchIn(deeplink) -> resolveOneToOneChatCustomLink(uri)
             defaultInviteRegex.containsMatchIn(deeplink) -> DeepLinkResolver.Action.Invite(deeplink)
             customInviteRegex.containsMatchIn(deeplink) ->  DeepLinkResolver.Action.Invite(deeplink)
@@ -66,10 +66,24 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     private fun resolveOneToOneChatLink(deeplink: String): DeepLinkResolver.Action {
-        val result = oneToOneChatRegex.find(deeplink)
-        val identity = result?.groupValues?.getOrNull(1)
-        val metadataKey = result?.groupValues?.getOrNull(2)
-        return if (identity != null && metadataKey != null) {
+        val uri = Uri.parse(deeplink)
+        // Check if it's a hi.any.coop URL
+        if (uri.host != DEEP_LINK_ONE_TO_ONE_CHAT_DOMAIN) return DeepLinkResolver.Action.Unknown
+
+        val identity = uri.pathSegments.firstOrNull()
+        // Use explicit URL decoding on the encoded fragment to ensure proper decoding
+        // of percent-encoded base64 characters like %2B (+), %2F (/), %3D (=)
+        // Use Uri.decode() instead of URLDecoder.decode() because:
+        // - URLDecoder converts '+' to space (for query strings)
+        // - Uri.decode() only decodes %XX sequences, preserving '+' for base64
+        // This handles both iOS (literal '+') and Desktop ('%2B') QR codes
+        val metadataKey = uri.encodedFragment?.let { encoded ->
+            Uri.decode(encoded)
+        }
+
+        Timber.d("OneToOne deeplink: identity=$identity, encodedFragment=${uri.encodedFragment}, decodedKey=$metadataKey")
+
+        return if (!identity.isNullOrEmpty() && !metadataKey.isNullOrEmpty()) {
             DeepLinkResolver.Action.InitiateOneToOneChat(
                 identity = identity,
                 metadataKey = metadataKey
@@ -173,9 +187,10 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     }
 
     override fun isDeepLink(link: String): Boolean {
+        val uri = Uri.parse(link)
         return link.contains(defaultInviteRegex)
                 || link.contains(defaultLinkToObjectRegex)
-                || link.contains(oneToOneChatRegex)
+                || uri.host == DEEP_LINK_ONE_TO_ONE_CHAT_DOMAIN
                 || link.contains(oneToOneChatCustomRegex)
                 || link.contains(DEEP_LINK_PATTERN)
     }

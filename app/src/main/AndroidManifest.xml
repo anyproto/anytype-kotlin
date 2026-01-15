@@ -46,7 +46,9 @@
                 <data android:scheme="anytype" />
                 <data android:host="main" />
             </intent-filter>
-            <intent-filter android:label="Anytype Invite" android:autoVerify="true">
+            <intent-filter
+                android:label="Anytype Invite"
+                android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
@@ -58,10 +60,8 @@
                 android:label="Anytype 1-1 Chat"
                 android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
-
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-
                 <data android:scheme="https" />
                 <data android:scheme="http" />
                 <data android:host="hi.any.coop" />
@@ -99,6 +99,13 @@
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="anytype" />
                 <data android:host="membership" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="anytype" />
+                <data android:host="hi" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.SEND" />

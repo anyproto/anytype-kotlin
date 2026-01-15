@@ -53,8 +53,6 @@ class SearchOneToOneChatByIdentity @Inject constructor(
         val targetSpaceId = spaceView.getSingleValue<String>(Relations.TARGET_SPACE_ID) ?: return null
         val spaceId = spaceView.getSingleValue<String>(Relations.ID) ?: return null
 
-
-
         return ExistingOneToOneChat(
             spaceId = SpaceId(targetSpaceId),
             spaceViewId = spaceId

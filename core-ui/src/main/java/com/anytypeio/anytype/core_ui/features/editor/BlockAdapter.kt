@@ -360,18 +360,120 @@ class BlockAdapter(
             HOLDER_FILE_TITLE -> {
                 Title.File(
                     ItemBlockTitleFileBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onTitleEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
+                                )
+                            }
+                        )
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Title.File) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
+                        }
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Title.File)
+                                    view.text = editable.toString()
+                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                }
+                            }
+                        )
+                    }
+                }
             }
 
             HOLDER_IMAGE_TITLE -> {
                 Title.Image(
                     ItemBlockTitleImageBinding.inflate(inflater, parent, false)
-                )
+                ).apply {
+                    with(content) {
+                        enableEnterKeyDetector(
+                            onEnterClicked = { range ->
+                                onTitleEnterKeyListener(
+                                    views = views,
+                                    textView = content,
+                                    range = range,
+                                    onKeyPressedEvent = onKeyPressedEvent
+                                )
+                            }
+                        )
+                        selectionWatcher = { selection ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                if (view is BlockView.Title.Image) {
+                                    view.cursor = selection.last
+                                }
+                                onSelectionChanged(view.id, selection)
+                            }
+                        }
+                        addTextChangedListener(
+                            DefaultTextWatcher { editable ->
+                                val pos = bindingAdapterPosition
+                                if (pos != RecyclerView.NO_POSITION) {
+                                    val view = views[pos]
+                                    check(view is BlockView.Title.Image)
+                                    view.text = editable.toString()
+                                    onTitleBlockTextChanged(view.id, editable.toString())
+                                }
+                            }
+                        )
+                    }
+                }
             }
 
             HOLDER_VIDEO_TITLE -> Title.Video(
                 ItemBlockTitleVideoBinding.inflate(inflater, parent, false)
-            )
+            ).apply {
+                with(content) {
+                    enableEnterKeyDetector(
+                        onEnterClicked = { range ->
+                            onTitleEnterKeyListener(
+                                views = views,
+                                textView = content,
+                                range = range,
+                                onKeyPressedEvent = onKeyPressedEvent
+                            )
+                        }
+                    )
+                    selectionWatcher = { selection ->
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            val view = views[pos]
+                            if (view is BlockView.Title.Video) {
+                                view.cursor = selection.last
+                            }
+                            onSelectionChanged(view.id, selection)
+                        }
+                    }
+                    addTextChangedListener(
+                        DefaultTextWatcher { editable ->
+                            val pos = bindingAdapterPosition
+                            if (pos != RecyclerView.NO_POSITION) {
+                                val view = views[pos]
+                                check(view is BlockView.Title.Video)
+                                view.text = editable.toString()
+                                onTitleBlockTextChanged(view.id, editable.toString())
+                            }
+                        }
+                    )
+                }
+            }
 
             HOLDER_TODO_TITLE -> {
                 Title.Todo(

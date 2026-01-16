@@ -6,13 +6,45 @@ plugins {
     id "com.google.firebase.appdistribution"
     id 'androidx.navigation.safeargs.kotlin'
     id 'com.google.gms.google-services'
+    alias(libs.plugins.licensee)
 }
 
-if (rootProject.ext.onCi) {
-    apply plugin: "com.github.hierynomus.license-report"
-    downloadLicenses {
-        dependencyConfiguration = 'all'
-        includeProjectDependencies = true
+licensee {
+    // Allow common open source licenses
+    allow("Apache-2.0")
+    allow("MIT")
+
+    // Google/Android SDK Terms
+    allowUrl("https://developer.android.com/studio/terms.html") {
+        because("Google/Android SDK Terms - standard for Google Play Services and Android libraries")
+    }
+
+    // Google ML Kit Terms
+    allowUrl("https://developers.google.com/ml-kit/terms") {
+        because("Google ML Kit components required for barcode scanning")
+    }
+
+    // Facebook Shimmer (BSD-licensed)
+    allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") {
+        because("Facebook Shimmer is BSD-licensed")
+    }
+
+    // BouncyCastle
+    allowUrl("https://www.bouncycastle.org/licence.html") {
+        because("BouncyCastle is MIT-licensed")
+    }
+
+    // Allow specific dependencies
+    allowDependency("com.github.anyproto", "any-crypto-kotlin", "1.0.2") {
+        because("any-crypto-kotlin is MIT-licensed (verified in repository)")
+    }
+    allowDependency("com.github.komputing", "KBase58", "0.4") {
+        because("KBase58 is MIT-licensed (verified in repository)")
+    }
+
+    // Internal Anytype middleware library
+    allowDependency("io.anyproto", "anytype-heart-android", "v0.47.0") {
+        because("Internal Anytype library")
     }
 }
 

@@ -33,6 +33,7 @@ import com.anytypeio.anytype.feature_object_type.ui.BottomSyncStatus
 import com.anytypeio.anytype.feature_object_type.ui.TopBarContent
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiDeleteTypeAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiHorizontalButtonsState
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
@@ -42,6 +43,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiTemplatesModalListState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteAlertScreen
+import com.anytypeio.anytype.feature_object_type.ui.alerts.DeleteTypeAlertScreen
 import com.anytypeio.anytype.feature_object_type.ui.header.DescriptionWidget
 import com.anytypeio.anytype.feature_object_type.ui.header.HorizontalButtons
 import com.anytypeio.anytype.feature_object_type.ui.header.IconAndTitleWidget
@@ -67,6 +69,8 @@ fun WithSetScreen(
     uiTemplatesModalListState: UiTemplatesModalListState,
     //delete alert
     uiDeleteAlertState: UiDeleteAlertState,
+    //delete type alert (move to bin confirmation)
+    uiDeleteTypeAlertState: UiDeleteTypeAlertState,
     //events
     onTypeEvent: (TypeEvent) -> Unit,
     objectId: String,
@@ -121,6 +125,13 @@ fun WithSetScreen(
 
     if (uiDeleteAlertState is UiDeleteAlertState.Show) {
         DeleteAlertScreen(
+            onTypeEvent = onTypeEvent
+        )
+    }
+
+    if (uiDeleteTypeAlertState is UiDeleteTypeAlertState.Visible) {
+        DeleteTypeAlertScreen(
+            state = uiDeleteTypeAlertState,
             onTypeEvent = onTypeEvent
         )
     }

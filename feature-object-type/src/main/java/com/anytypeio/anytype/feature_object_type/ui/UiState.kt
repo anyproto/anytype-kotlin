@@ -239,6 +239,37 @@ sealed class UiDeleteAlertState {
     data object Hidden : UiDeleteAlertState()
     data object Show : UiDeleteAlertState()
 }
+
+/**
+ * Represents an object item in the delete type confirmation dialog.
+ * Shows objects that use the type being deleted.
+ */
+@Immutable
+data class DeleteAlertObjectItem(
+    val id: Id,
+    val name: String,
+    val icon: ObjectIcon
+)
+
+/**
+ * State for the "Move Type to Bin" confirmation bottom sheet.
+ * Shows a list of objects using this type, allowing users to select which ones
+ * should also be moved to bin along with the type.
+ */
+@Immutable
+sealed class UiDeleteTypeAlertState {
+    data object Hidden : UiDeleteTypeAlertState()
+
+    @Immutable
+    data class Visible(
+        val typeName: String,
+        val objects: List<DeleteAlertObjectItem>,
+        val selectedObjectIds: Set<Id>
+    ) : UiDeleteTypeAlertState() {
+        val isAllSelected: Boolean
+            get() = objects.isNotEmpty() && selectedObjectIds.size == objects.size
+    }
+}
 //endregion
 
 //region SYNC STATUS

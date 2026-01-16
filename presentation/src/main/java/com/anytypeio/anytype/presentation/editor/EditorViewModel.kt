@@ -5337,7 +5337,7 @@ class EditorViewModel(
                 }
                 val blockColor = block.content.asText().color
                 val color = if (blockColor != null) {
-                    ThemeColor.valueOf(blockColor.toUpperCase())
+                    ThemeColor.valueOf(blockColor.uppercase())
                 } else ThemeColor.DEFAULT
                 val items =
                     listOf(SlashItem.Subheader.ColorWithBack) + SlashExtensions.getSlashWidgetColorItems(
@@ -5363,7 +5363,7 @@ class EditorViewModel(
                 val background = if (blockBackground == null) {
                     ThemeColor.DEFAULT
                 } else {
-                    ThemeColor.valueOf(blockBackground.toUpperCase())
+                    ThemeColor.valueOf(blockBackground.uppercase())
                 }
                 val items = listOf(SlashItem.Subheader.BackgroundWithBack) +
                         SlashExtensions.getSlashWidgetBackgroundItems(

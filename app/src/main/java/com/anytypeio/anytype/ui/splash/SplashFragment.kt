@@ -8,11 +8,14 @@ import android.view.ViewGroup
 import androidx.annotation.IdRes
 import androidx.compose.runtime.Composable
 import androidx.fragment.app.viewModels
+import androidx.glance.appwidget.updateAll
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.NavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.app.DefaultAppActionManager.Companion.ACTION_CREATE_NEW_TYPE_KEY
+import com.anytypeio.anytype.appwidget.SingleObjectTypeWidget
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_utils.ext.gone
@@ -41,6 +44,7 @@ import com.anytypeio.anytype.ui.update.MigrationStartScreen
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import javax.inject.Inject
 import kotlin.collections.plusAssign
+import kotlinx.coroutines.launch
 import timber.log.Timber
 
 /**
@@ -367,4 +371,18 @@ class SplashFragment : BaseFragment<FragmentSplashBinding>(R.layout.fragment_spl
         inflater: LayoutInflater,
         container: ViewGroup?
     ): FragmentSplashBinding = FragmentSplashBinding.inflate(inflater, container, false)
+
+    override fun onResume() {
+        super.onResume()
+        lifecycleScope.launch {
+            SingleObjectTypeWidget().updateAll(requireContext())
+        }
+    }
+
+    override fun onPause() {
+        super.onPause()
+        lifecycleScope.launch {
+            SingleObjectTypeWidget().updateAll(requireContext())
+        }
+    }
 }

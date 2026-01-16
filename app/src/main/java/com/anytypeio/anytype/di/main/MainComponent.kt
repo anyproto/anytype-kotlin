@@ -26,6 +26,7 @@ import com.anytypeio.anytype.di.feature.PublishToWebDependencies
 import com.anytypeio.anytype.di.feature.SpacePropertiesDependencies
 import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
 import com.anytypeio.anytype.di.feature.SplashDependencies
+import com.anytypeio.anytype.di.feature.appwidget.AppWidgetDependencies
 import com.anytypeio.anytype.di.feature.auth.DeletedAccountDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatComponentDependencies
 import com.anytypeio.anytype.di.feature.chats.ChatReactionDependencies
@@ -153,7 +154,8 @@ interface MainComponent :
     MySitesDependencies,
     MediaDependencies,
     CreateChatObjectDependencies,
-    SharingDependencies
+    SharingDependencies,
+    AppWidgetDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -450,4 +452,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SharingDependencies::class)
     abstract fun sharingDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(AppWidgetDependencies::class)
+    abstract fun appWidgetDependencies(component: MainComponent): ComponentDependencies
 }

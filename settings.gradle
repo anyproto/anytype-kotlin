@@ -5,14 +5,18 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
     plugins {
         id 'androidx.navigation.safeargs.kotlin' version '2.8.3'
     }
-}
-
-plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == 'com.github.hierynomus.license-report') {
+                useModule("com.github.openkin:license-gradle-plugin:0d9582e233")
+            }
+        }
+    }
 }
 
 dependencyResolutionManagement {

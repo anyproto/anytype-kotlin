@@ -1868,7 +1868,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_join_space_by_qr_title">Beitreten</string>
     <string name="profile_qr_code_title">Connect with me</string>
     <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
-    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
     <string name="profile_qr_copy_button">Link kopieren</string>
     <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
@@ -2072,7 +2072,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="move_chat_to_bin_warning_title">Chat in den Papierkorb verschieben?</string>
     <string name="chat_move_to_bin_warning_description">Dieser Chat und alle Anhänge werden in den Papierkorb verschoben. Niemand wird in der Lage sein, neue Nachrichten zu senden. Du kannst ihn aus dem Papierkorb wiederherstellen, bevor er endgültig gelöscht wird.</string>
     <string name="chat_edit_info_upload_image">Bild hochladen</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Kanal auswählen</string>
     <string name="add_a_comment">Kommentar hinzufügen...</string>
     <string name="send">Senden</string>
     <string name="chat_notifications_receive_all">Alle empfangen</string>
@@ -2088,11 +2088,11 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="sharing_select_destination">Ziel auswählen</string>
     <string name="sharing_send_to_chat">An Chat senden</string>
     <string name="sharing_select_dest">Ziel auswählen</string>
-    <string name="sharing_no_objects_found">No objects found</string>
+    <string name="sharing_no_objects_found">Keine Objekte gefunden</string>
     <string name="sharing_success">Success!</string>
     <string name="sharing_added_to_space">Content added to %1$s</string>
     <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_send_to">An %1$s senden</string>
     <string name="sharing_send_to_multiple">Send to %1$d chats</string>
     <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
     <string name="sharing_sending_to">Sending to</string>

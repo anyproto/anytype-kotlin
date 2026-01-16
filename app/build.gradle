@@ -43,7 +43,7 @@ licensee {
     }
 
     // Internal Anytype middleware library
-    allowDependency("io.anyproto", "anytype-heart-android", "v0.47.0") {
+    allowDependency("io.anyproto", "anytype-heart-android", libs.versions.middlewareVersion.get()) {
         because("Internal Anytype library")
     }
 }

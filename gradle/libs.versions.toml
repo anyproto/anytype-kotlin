@@ -171,8 +171,8 @@ anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.11.1" }
-library = { id = "com.android.library", version = "8.11.1" }
+application = { id = "com.android.application", version = "8.13.2" }
+library = { id = "com.android.library", version = "8.13.2" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }

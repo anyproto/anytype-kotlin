@@ -19,7 +19,7 @@ accompanistVersion = "0.34.0"
 appcompatVersion = '1.7.0'
 fragmentVersion = "1.8.6"
 exoplayerVersion = "2.19.1"
-wireVersion = "4.9.8"
+wireVersion = "5.3.5"
 mockitoKotlinVersion = "5.3.1"
 junitVersion = '4.13.2'
 androidJunitVersion = "1.2.1"
@@ -171,13 +171,14 @@ anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2
 [bundles]
 
 [plugins]
-application = { id = "com.android.application", version = "8.10.1" }
-library = { id = "com.android.library", version = "8.10.1" }
+application = { id = "com.android.application", version = "8.13.2" }
+library = { id = "com.android.library", version = "8.13.2" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlinVersion" }
 compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlinVersion" }
 dokka = { id = "org.jetbrains.dokka", version.ref = "dokkaVersion" }
 kserialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlinVersion" }
-wire = { id = "com.squareup.wire", version = "4.9.8" }
+wire = { id = "com.squareup.wire", version.ref = "wireVersion" }
 firebaseDistribution = { id = "com.google.firebase.appdistribution", version = "5.1.1" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "kspVersion" }
 gms = { id = "com.google.gms.google-services", version = "4.4.2" }
+licensee = { id = "app.cash.licensee", version = "1.14.1" }

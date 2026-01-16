@@ -2313,6 +2313,16 @@ Please provide specific details of your needs here.</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
 
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Files</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">Search</string>
+    <string name="attachment_menu_no_results">No results for \"%1$s\"</string>
+    <string name="attachment_menu_no_results_hint">Try a different name</string>
+
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>
     <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>

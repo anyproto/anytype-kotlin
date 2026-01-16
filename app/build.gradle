@@ -127,7 +127,8 @@ android {
                 variant.outputs.configureEach { output ->
                     def appName = 'anytype'
                     def versionName = variant.versionName
-                    outputFileName = outputFileName
+                    def originalOutputFileName = outputFileName
+                    outputFileName = originalOutputFileName
                         .replace("app-", "${appName}-${versionName}-")
                         .replace("-release", "")
                         .replace("-universal", "")

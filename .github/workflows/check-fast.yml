@@ -12,28 +12,19 @@ jobs:
     if: github.event_name == 'workflow_dispatch' || github.base_ref == 'main' || startsWith(github.base_ref, 'release/')
     steps:
       - uses: actions/checkout@v3
-      - uses: actions/checkout@v3
+      - uses: actions/setup-java@v3
         with:
-          repository: anyproto/open
-          ref: refs/heads/main
-          path: ./open
-      - name: Setup Ruby (cached)
-        uses: ruby/setup-ruby@v1
+          distribution: "zulu"
+          java-version: 17
+      
+      # Gradle caching
+      - name: Setup Gradle cache
+        uses: gradle/gradle-build-action@v2
         with:
-          ruby-version: '3.0'
-          bundler-cache: true
+          cache-read-only: ${{ github.ref != 'refs/heads/main' }}
+      
       - name: Check licenses
-        run: |
-          cd open
-          python3 tools/generate.py --platform android
-          cd ..
-          sudo gem install license_finder
-          license_finder ignored_dependencies add skiko --why "Excluded due to native binary license concerns"
-          license_finder inherited_decisions add open/decisions.yml
-          license_finder approvals add KBase58 --project-path . --who "CI" --why "MIT (verified manually from komputing/KBase58)"
-          license_finder approvals add any-crypto-kotlin --project-path . --who "CI" --why "MIT (verified manually from anyproto/any-crypto-kotlin)"
-          license_finder permitted_licenses add "ML Kit Terms of Service" --project-path . --who "CI" --why "Google ML Kit components required; legal reviewed"
-          license_finder --gradle-command="./gradlew -Pcom.anytype.ci=true -Dorg.gradle.unsafe.configuration-cache=false"
+        run: ./gradlew :app:licenseeRelease
 
   unit-tests:
     runs-on: ubuntu-latest

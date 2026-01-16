@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.compose.compiler)
     id "com.google.firebase.appdistribution"
     id 'androidx.navigation.safeargs.kotlin'
+    id 'com.google.gms.google-services'
 }
 
 if (rootProject.ext.onCi) {
@@ -32,16 +33,16 @@ localProperties.with {
 android {
     def config = rootProject.ext
 
-    compileSdkVersion config.compile_sdk
+    compileSdk = config.compile_sdk
 
     androidResources {
-        generateLocaleConfig true
+        generateLocaleConfig = true
     }
 
     defaultConfig {
-        applicationId config.application_id
-        minSdkVersion config.min_sdk
-        targetSdkVersion config.target_sdk
+        applicationId = config.application_id
+        minSdk = config.min_sdk
+        targetSdk = config.target_sdk
         versionCode getBuildVersionCode()
         versionName getBuildVersionName()
         testInstrumentationRunner config.test_runner
@@ -121,25 +122,24 @@ android {
             }
         }
 
-        applicationVariants.all {
-            variant ->
-                if (variant.name == 'release') {
-                    variant.outputs.each {
-                        output ->
-                            project.ext { appName = 'anytype' }
-                            def newName = output.outputFile.name
-                            newName = newName.replace("app-", "$project.ext.appName-$variant.versionName-")
-                            newName = newName.replace("-release", "")
-                            newName = newName.replace("-universal", "")
-                            output.outputFileName = newName
-                    }
+        applicationVariants.configureEach { variant ->
+            if (variant.buildType.name == 'release') {
+                variant.outputs.configureEach { output ->
+                    def appName = 'anytype'
+                    def versionName = variant.versionName
+                    outputFileName = outputFileName
+                        .replace("app-", "${appName}-${versionName}-")
+                        .replace("-release", "")
+                        .replace("-universal", "")
                 }
+            }
         }
     }
 
     buildFeatures {
-        viewBinding true
-        compose true
+        viewBinding = true
+        compose = true
+        buildConfig = true
     }
 
     splits {
@@ -289,5 +289,3 @@ dependencies {
     debugImplementation libs.composeTooling
     implementation libs.composeToolingPreview
 }
-
-apply plugin: 'com.google.gms.google-services'

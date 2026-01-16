@@ -3,6 +3,11 @@ package com.anytypeio.anytype.presentation.widgets
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.analytics.base.EventsDictionary
+import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
+import com.anytypeio.anytype.analytics.base.sendEvent
+import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Name
@@ -26,6 +31,7 @@ import timber.log.Timber
 
 class CreateChatObjectViewModel(
     private val vmParams: VmParams,
+    private val analytics: Analytics,
     private val createObject: CreateObject,
     private val uploadFile: UploadFile,
     private val setObjectDetails: SetObjectDetails
@@ -139,6 +145,13 @@ class CreateChatObjectViewModel(
     }
 
     private suspend fun finishCreation(objectId: Id) {
+        // Fire CreateObject analytics event
+        analytics.sendEvent(
+            eventName = EventsDictionary.objectCreate,
+            props = Props(
+                mapOf(EventsPropertiesKey.objectType to "_otchatDerived")
+            )
+        )
         isLoading.value = false
         commands.emit(Command.ChatObjectCreated(objectId = objectId))
     }
@@ -171,6 +184,7 @@ class CreateChatObjectViewModel(
 
     class Factory @Inject constructor(
         private val vmParams: VmParams,
+        private val analytics: Analytics,
         private val createObject: CreateObject,
         private val uploadFile: UploadFile,
         private val setObjectDetails: SetObjectDetails
@@ -180,6 +194,7 @@ class CreateChatObjectViewModel(
             modelClass: Class<T>
         ) = CreateChatObjectViewModel(
             vmParams = vmParams,
+            analytics = analytics,
             createObject = createObject,
             uploadFile = uploadFile,
             setObjectDetails = setObjectDetails

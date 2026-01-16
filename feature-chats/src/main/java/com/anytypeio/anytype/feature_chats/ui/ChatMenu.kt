@@ -142,7 +142,8 @@ fun BoxScope.ChatMenu(
                     Text(
                         text = stringResource(R.string.notifications_title),
                         color = colorResource(id = R.color.text_primary),
-                        modifier = Modifier.weight(1f)
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular
                     )
                     Image(
                         painter = painterResource(id = R.drawable.ic_notifications),
@@ -234,7 +235,8 @@ private fun NotificationOptionItem(
         }
         Text(
             text = text,
-            color = colorResource(id = R.color.text_primary)
+            color = colorResource(id = R.color.text_primary),
+            style = BodyRegular
         )
     }
 }

@@ -618,6 +618,7 @@
 
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Edit template</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplicate</string>
     <string name="templates_menu_delete">Delete</string>
     <string name="unsupported">Unsupported</string>
@@ -783,6 +784,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Gallery</string>
     <string name="change_type">Change type</string>
+    <string name="default_type_screen_title">Choose default object type</string>
     <string name="change_cover">Change cover</string>
 
     <string name="remove">Remove</string>

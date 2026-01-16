@@ -54,43 +54,101 @@ data class ChatNotificationItem(
 )
 
 sealed class UiSpaceSettingsItem {
+    abstract val key: String
+
     sealed class Section : UiSpaceSettingsItem() {
-        data object Collaboration : Section()
-        data object ContentModel : Section()
-        data object Preferences : Section()
-        data object DataManagement : Section()
-        data object Misc : Section()
+        data object Collaboration : Section() {
+            override val key = "section-collaboration"
+        }
+        data object ContentModel : Section() {
+            override val key = "section-content-model"
+        }
+        data object Preferences : Section() {
+            override val key = "section-preferences"
+        }
+        data object DataManagement : Section() {
+            override val key = "section-data-management"
+        }
+        data object Misc : Section() {
+            override val key = "section-misc"
+        }
     }
 
-    data class Spacer(val height: Int) : UiSpaceSettingsItem()
-    data class Icon(val icon: SpaceIconView) : UiSpaceSettingsItem()
-    data class Name(val name: String) : UiSpaceSettingsItem()
+    data class Spacer(val id: String, val height: Int) : UiSpaceSettingsItem() {
+        override val key = "spacer-$id"
+    }
+    data class Icon(val icon: SpaceIconView) : UiSpaceSettingsItem() {
+        override val key = "icon"
+    }
+    data class Name(val name: String) : UiSpaceSettingsItem() {
+        override val key = "name"
+    }
     data class ParticipantIdentity(
         val name: String,
         val globalName: String?,
         val identity: String?
-    ) : UiSpaceSettingsItem()
-    data class Description(val description: String) : UiSpaceSettingsItem()
-    data class InviteLink(val link: String) : UiSpaceSettingsItem()
-    data class Members(val count: Int?, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem()
-    data class MembersSmall(val count: Int) : UiSpaceSettingsItem()
-    data object EntrySpace : UiSpaceSettingsItem()
-    data object InviteMembers : UiSpaceSettingsItem()
-    data class Chat(val isOn: Boolean) : UiSpaceSettingsItem()
-    data object ObjectTypes : UiSpaceSettingsItem()
-    data object Fields : UiSpaceSettingsItem()
-    data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem()
-    data class Wallpapers(val wallpaper: WallpaperResult, val spaceIconView: SpaceIconView) : UiSpaceSettingsItem()
-    data object RemoteStorage : UiSpaceSettingsItem()
-    data object Bin : UiSpaceSettingsItem()
-    data object SpaceInfo : UiSpaceSettingsItem()
-    data object DeleteSpace : UiSpaceSettingsItem()
-    data object LeaveSpace : UiSpaceSettingsItem()
-    data object Notifications : UiSpaceSettingsItem()
+    ) : UiSpaceSettingsItem() {
+        override val key = "participant-identity"
+    }
+    data class Description(val description: String) : UiSpaceSettingsItem() {
+        override val key = "description"
+    }
+    data class InviteLink(val link: String) : UiSpaceSettingsItem() {
+        override val key = "invite-link"
+    }
+    data class Members(val count: Int?, val withColor: Boolean = false, val editorLimit: Boolean = false) : UiSpaceSettingsItem() {
+        override val key = "members"
+    }
+    data class MembersSmall(val count: Int) : UiSpaceSettingsItem() {
+        override val key = "members-small"
+    }
+    data object EntrySpace : UiSpaceSettingsItem() {
+        override val key = "entry-space"
+    }
+    data object InviteMembers : UiSpaceSettingsItem() {
+        override val key = "invite-members"
+    }
+    data class Chat(val isOn: Boolean) : UiSpaceSettingsItem() {
+        override val key = "chat"
+    }
+    data object ObjectTypes : UiSpaceSettingsItem() {
+        override val key = "object-types"
+    }
+    data object Fields : UiSpaceSettingsItem() {
+        override val key = "fields"
+    }
+    data class DefaultObjectType(val id: Id?, val name: String, val icon: ObjectIcon) : UiSpaceSettingsItem() {
+        override val key = "default-object-type"
+    }
+    data class Wallpapers(val wallpaper: WallpaperResult, val spaceIconView: SpaceIconView) : UiSpaceSettingsItem() {
+        override val key = "wallpapers"
+    }
+    data object RemoteStorage : UiSpaceSettingsItem() {
+        override val key = "remote-storage"
+    }
+    data object Bin : UiSpaceSettingsItem() {
+        override val key = "bin"
+    }
+    data object SpaceInfo : UiSpaceSettingsItem() {
+        override val key = "space-info"
+    }
+    data object DeleteSpace : UiSpaceSettingsItem() {
+        override val key = "delete-space"
+    }
+    data object LeaveSpace : UiSpaceSettingsItem() {
+        override val key = "leave-space"
+    }
+    data object Notifications : UiSpaceSettingsItem() {
+        override val key = "notifications"
+    }
 
     sealed class ChangeType : UiSpaceSettingsItem() {
         abstract val isEnabled: Boolean
-        data class Data(override val isEnabled: Boolean = false) : ChangeType()
-        data class Chat(override val isEnabled: Boolean = false) : ChangeType()
+        data class Data(override val isEnabled: Boolean = false) : ChangeType() {
+            override val key = "change-type-data"
+        }
+        data class Chat(override val isEnabled: Boolean = false) : ChangeType() {
+            override val key = "change-type-chat"
+        }
     }
 }

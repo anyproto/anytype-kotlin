@@ -1,8 +1,5 @@
 package com.anytypeio.anytype.core_ui.features.profile
 
-import android.graphics.Paint
-import android.graphics.Path
-import android.graphics.RectF
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,16 +19,12 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.nativeCanvas
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -116,7 +109,6 @@ private fun ProfileQrCodeContent(
             QrCodeWithCircularText(
                 modifier = Modifier.align(Alignment.Center),
                 link = link,
-                circularText = stringResource(R.string.profile_qr_circular_text)
             )
 
             Column(
@@ -194,67 +186,13 @@ private fun QrCodeToolbar(
 private fun QrCodeWithCircularText(
     modifier: Modifier,
     link: String,
-    circularText: String,
     qrSize: Dp = 206.dp,
     circularTextRadius: Dp = 148.dp
 ) {
-    val density = LocalDensity.current
-    val textColor = colorResource(id = R.color.text_transparent_secondary)
-    val textColorInt = android.graphics.Color.argb(
-        (textColor.alpha * 255).toInt(),
-        (textColor.red * 255).toInt(),
-        (textColor.green * 255).toInt(),
-        (textColor.blue * 255).toInt()
-    )
-
     Box(
         modifier = modifier.size(circularTextRadius * 2 + 20.dp),
         contentAlignment = Alignment.Center
     ) {
-        // Rounded square text around QR code
-        Box(
-            modifier = Modifier
-                .size(circularTextRadius * 2)
-                .drawBehind {
-                    val radiusPx = circularTextRadius.toPx()
-                    val centerX = size.width / 2
-                    val centerY = size.height / 2
-                    val cornerRadius = radiusPx * 0.2f
-
-                    val path = Path().apply {
-                        addRoundRect(
-                            RectF(
-                                centerX - radiusPx,
-                                centerY - radiusPx,
-                                centerX + radiusPx,
-                                centerY + radiusPx
-                            ),
-                            cornerRadius,
-                            cornerRadius,
-                            Path.Direction.CW
-                        )
-                    }
-
-                    val paint = Paint().apply {
-                        color = textColorInt
-                        textSize = with(density) { 11.sp.toPx() }
-                        isAntiAlias = true
-                        letterSpacing = 0.1f
-                    }
-
-                    // Repeat text to fill the rounded square
-                    val repeatedText = circularText.repeat(8)
-
-                    drawContext.canvas.nativeCanvas.drawTextOnPath(
-                        repeatedText,
-                        path,
-                        0f,
-                        0f,
-                        paint
-                    )
-                }
-        )
-
         // QR Code in center (no icon in center per design)
         QrCodeView(
             data = link,

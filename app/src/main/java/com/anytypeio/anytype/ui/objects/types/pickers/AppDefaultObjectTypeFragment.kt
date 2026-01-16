@@ -5,9 +5,10 @@ import androidx.core.os.bundleOf
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_utils.ext.hideSoftInput
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.withParent
 import com.anytypeio.anytype.di.common.componentManager
+import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
 /**
@@ -15,29 +16,20 @@ import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
  */
 class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
-    override fun startWithParams() {
-        vm.onStart(
-            isWithCollection = false,
-            isWithBookmark = false,
-            isSetSource = false,
-            isWithFiles = false
-        )
-    }
-
     override fun onItemClicked(item: ObjectWrapper.Type) {
         withParent<ObjectTypeSelectionListener> {
             onSelectObjectType(objType = item)
         }
-        hideSoftInput()
-        dismiss()
     }
 
-    override fun setTitle() {
-        binding.tvTitle.text = getString(R.string.change_type)
-    }
+    override fun resolveTitle(): String = getString(R.string.default_type_screen_title)
 
     override fun injectDependencies() {
-        componentManager().objectTypeChangeComponent.get().inject(this)
+        val params = ObjectTypeChangeViewModel.VmParams(
+            spaceId = SpaceId(space),
+            screen = ObjectTypeChangeViewModel.Screen.DEFAULT_OBJECT_TYPE
+        )
+        componentManager().objectTypeChangeComponent.get(params).inject(this)
     }
 
     override fun releaseDependencies() {
@@ -45,9 +37,8 @@ class AppDefaultObjectTypeFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(excludeTypes: List<Id>) = AppDefaultObjectTypeFragment().apply {
-            arguments = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
-        }
-        fun args(excludeTypes: List<Id>) : Bundle = bundleOf(ARG_EXCLUDE_TYPES to excludeTypes)
+        fun args(space: Id) : Bundle = bundleOf(
+            ARG_SPACE to space
+        )
     }
 }

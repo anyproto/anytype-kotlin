@@ -92,6 +92,7 @@ import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
 import com.anytypeio.anytype.presentation.objects.isCreateObjectAllowed
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
@@ -242,6 +243,9 @@ class ObjectSetViewModel(
     val isLoading = MutableStateFlow(false)
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
+
+
+    private val pendingScrollToObject = MutableStateFlow<Id?>(null)
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
@@ -702,6 +706,10 @@ class ObjectSetViewModel(
             }.distinctUntilChanged().collect { viewState ->
                 Timber.d("subscribeToDataViewViewer, newViewerState:[$viewState]")
                 _currentViewer.value = viewState
+                pendingScrollToObject.value?.let { objectId ->
+                    pendingScrollToObject.value = null
+                    dispatch(ObjectSetCommand.ScrollToObject(objectId))
+                }
             }
         }
     }
@@ -1571,6 +1579,7 @@ class ObjectSetViewModel(
             onFailure = { Timber.e(it, "Error while creating new record") },
             onSuccess = { result ->
                 action?.invoke(result)
+                pendingScrollToObject.value = result.objectId
                 proceedWithNewDataViewObject(result)
                 sendAnalyticsObjectCreateEvent(
                     startTime = startTime,
@@ -2406,9 +2415,7 @@ class ObjectSetViewModel(
             TypeTemplatesWidgetUIAction.TypeClick.Search -> {
                 viewModelScope.launch {
                     _commands.emit(
-                        ObjectSetCommand.Modal.OpenSelectTypeScreen(
-                            excludedTypes = emptyList()
-                        )
+                        ObjectSetCommand.Modal.OpenSelectTypeScreen
                     )
                 }
             }
@@ -2593,28 +2600,21 @@ class ObjectSetViewModel(
         val spaceView = spaceViews.get(vmParams.space)
         val spaceUxType = spaceView?.spaceUxType
         val createLayouts = getCreateObjectLayouts(spaceUxType)
-        
-        val filters = ObjectSearchConstants.filterTypes(
-            recommendedLayouts = createLayouts
-        )
-        val params = GetObjectTypes.Params(
-            space = vmParams.space,
-            filters = filters,
-            keys = ObjectSearchConstants.defaultKeysObjectType
-        )
-        getObjectTypes.async(params).fold(
-            onSuccess = { types ->
-                val list = buildList {
-                    add(TemplateObjectTypeView.Search)
-                    addAll(types.toTemplateObjectTypeViewItems(selectedType))
-                }
-                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
-            },
-            onFailure = { error ->
-                Timber.e(error, "Error while fetching object types")
-                typeTemplatesWidgetState.value = widgetState.copy(objectTypes = emptyList())
-            }
-        )
+
+        val allTypes = storeOfObjectTypes.getAll()
+        val filteredTypes = allTypes.filter { type ->
+            val layout = type.recommendedLayout
+            layout != null && createLayouts.contains(layout)
+                && type.recommendedLayout != ObjectType.Layout.PARTICIPANT
+                && type.uniqueKey != ObjectTypeIds.TEMPLATE
+        }
+        val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
+        val sortedTypes = filteredTypes.sortByTypePriority(isChatSpace)
+        val list = buildList {
+            add(TemplateObjectTypeView.Search)
+            addAll(sortedTypes.toTemplateObjectTypeViewItems(selectedType))
+        }
+        typeTemplatesWidgetState.value = widgetState.copy(objectTypes = list)
     }
 
     fun proceedWithSelectedTemplate(

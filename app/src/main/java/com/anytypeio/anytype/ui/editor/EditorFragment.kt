@@ -171,7 +171,7 @@ import com.anytypeio.anytype.ui.moving.OnMoveToAction
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.objects.appearance.ObjectAppearanceSettingFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
-import com.anytypeio.anytype.ui.objects.creation.ObjectTypeUpdateFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.EditorObjectTypeUpdateFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
 import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
@@ -213,6 +213,12 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     protected val ctx get() = arg<Id>(CTX_KEY)
     protected val space get() = arg<Id>(SPACE_ID_KEY)
+
+    /**
+     * Navigation destination ID for safeNavigate calls.
+     * Override in subclasses that use different navigation graphs.
+     */
+    protected open val navigationDestinationId: Int = R.id.pageScreen
 
     private val sideEffect: OpenObjectNavigation.SideEffect
         get() {
@@ -1125,7 +1131,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenDocumentMenu -> {
                     hideKeyboard()
                     findNavController().safeNavigate(
-                        currentDestinationId = R.id.pageScreen,
+                        currentDestinationId = navigationDestinationId,
                         id = R.id.objectMenuScreen,
                         args = ObjectMenuFragment.args(
                             ctx = command.ctx,
@@ -1236,8 +1242,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                 is Command.OpenObjectSelectTypeScreen -> {
                     runCatching {
                         hideKeyboard()
-                        val dialog = ObjectTypeUpdateFragment.new(
-                            excludedTypeKeys = command.excludedTypes,
+                        val dialog = EditorObjectTypeUpdateFragment.newInstance(
                             space = space,
                             fromFeatured = command.fromFeatured
                         )

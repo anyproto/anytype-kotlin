@@ -31,6 +31,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.SET.code.toDouble(),
         description = "Set of objects with equal types and relations. Database experience based on all objects in Anytype",
         isReadOnly = true
     )
@@ -42,6 +43,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.COLLECTION.code.toDouble(),
         description = "Collection of objects with equal types and relations. Database experience based on all objects in Anytype",
         isReadOnly = true
     )
@@ -126,6 +128,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.NOTE.code.toDouble(),
         description = "Blank canvas with no Title. A brief record of points written down as an aid to memory",
         isReadOnly = true,
         iconEmoji = "📝"
@@ -138,6 +141,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.TODO.code.toDouble(),
         description = "A piece of work to be done or undertaken",
         isReadOnly = true,
         iconEmoji = "✅"
@@ -165,6 +169,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.BASIC.code.toDouble(),
         description = "Blank canvas with Title",
         isReadOnly = true,
         iconEmoji = "📄"
@@ -247,6 +252,7 @@ object MockObjectTypes {
         objectType = OBJECT_TYPE,
         smartBlockTypes = listOf(SmartBlockType.PAGE.code.toDouble()),
         layout = ObjectType.Layout.OBJECT_TYPE.code.toDouble(),
+        recommendedLayout = ObjectType.Layout.BASIC.code.toDouble(),
         description = "Custom object type description",
         iconEmoji = "💯"
     )

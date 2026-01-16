@@ -315,6 +315,9 @@ class EditorSlashWidgetClicksTest: EditorPresentationTestSetup() {
 
         val vm = buildViewModel()
 
+        // Set store after buildViewModel to override the default objType
+        setStoreOfObjectTypes(listOf(type2, type1, type3))
+
         vm.onStart(id = root, space = defaultSpace)
 
         advanceUntilIdle()

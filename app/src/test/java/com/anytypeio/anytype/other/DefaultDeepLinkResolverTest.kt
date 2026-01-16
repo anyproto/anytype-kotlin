@@ -275,4 +275,54 @@ class DefaultDeepLinkResolverTest {
         // Then
         assertEquals(DeepLinkResolver.Action.Unknown, result)
     }
+
+    @Test
+    fun `resolve correctly decodes URL-encoded metadata key in hi any coop link`() {
+        // Given - real-world example with percent-encoded base64 characters
+        val identity = "AAWfdD5bD5EPqfseF3Ze1q7jnZMjNBsH4xYa7DHVnALQxWe8"
+        val encodedMetadataKey = "CAISIM%2FbGH7Zx33A%2BVyTVrfhXSjcmN%2F%2B9Z2MBCZ42rZ2%2FgRF"
+        val decodedMetadataKey = "CAISIM/bGH7Zx33A+VyTVrfhXSjcmN/+9Z2MBCZ42rZ2/gRF"
+        val deeplink = "https://hi.any.coop/$identity#$encodedMetadataKey"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then
+        assertEquals(
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = decodedMetadataKey
+            ),
+            result
+        )
+    }
+
+    @Test
+    fun `isDeepLink returns true for URL-encoded hi any coop link`() {
+        // Given - real-world example with percent-encoded characters
+        val deeplink = "https://hi.any.coop/AAWfdD5bD5EPqfseF3Ze1q7jnZMjNBsH4xYa7DHVnALQxWe8#CAISIM%2FbGH7Zx33A%2BVyTVrfhXSjcmN%2F%2B9Z2MBCZ42rZ2%2FgRF"
+
+        // When & Then
+        assertTrue(deepLinkResolver.isDeepLink(deeplink))
+    }
+
+    @Test
+    fun `resolve preserves literal plus in iOS format hi any coop link`() {
+        // Given - iOS format with literal '+' (not percent-encoded)
+        val identity = "A8QyNvSpUiw8iPcXbkdJBLNUVDzrf1MvfP2wG5Y32G6A4QF4"
+        val metadataKey = "CAISIEnCArW+34o89A+CoMStH9OPKBML4SWLbxChduxnIypA"
+        val deeplink = "https://hi.any.coop/$identity#$metadataKey"
+
+        // When
+        val result = deepLinkResolver.resolve(deeplink)
+
+        // Then - '+' should be preserved, not converted to space
+        assertEquals(
+            DeepLinkResolver.Action.InitiateOneToOneChat(
+                identity = identity,
+                metadataKey = metadataKey
+            ),
+            result
+        )
+    }
 }

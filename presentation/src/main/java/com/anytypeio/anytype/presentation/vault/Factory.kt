@@ -12,7 +12,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -63,7 +63,7 @@ class VaultViewModelFactory @Inject constructor(
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
-    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage
@@ -99,7 +99,7 @@ class VaultViewModelFactory @Inject constructor(
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
         appInfo = appInfo,
-        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = createSpace,
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage

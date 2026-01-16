@@ -1,45 +1,3 @@
-import com.android.build.gradle.LibraryPlugin
-import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
-
-buildscript {
-    ext.compile_sdk = 35
-    ext.target_sdk = 35
-    ext.min_sdk = 26
-
-    ext.application_id = 'io.anytype.app'
-    ext.version_name = '1.0'
-    ext.version_code = 1
-    ext.test_runner = 'androidx.test.runner.AndroidJUnitRunner'
-    ext.onCi = project.properties.getOrDefault("com.anytype.ci", "false").toBoolean()
-
-    def githubProperties = new Properties()
-    def githubPropertiesFile = file("$rootDir${File.separator}github.properties")
-    githubProperties.load(new FileInputStream(githubPropertiesFile))
-
-    def apiKeysProperties = new Properties()
-    def apiKeysPropertiesFile = file("$rootDir${File.separator}apikeys.properties")
-    apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
-
-    ext.sentryApiKey = apiKeysProperties["sentry_dsn"]
-
-    repositories {
-        mavenLocal()
-        google()
-        mavenCentral()
-        maven { url "https://jitpack.io" }
-    }
-
-    if (ext.onCi) {
-        dependencies {
-            classpath "com.github.openkin:license-gradle-plugin:0d9582e233"
-        }
-    } else {
-        dependencies {
-            classpath "androidx.navigation:navigation-safe-args-gradle-plugin:2.8.9"
-        }
-    }
-}
-
 plugins {
     alias(libs.plugins.application) apply false
     alias(libs.plugins.library) apply false
@@ -51,8 +9,27 @@ plugins {
     alias(libs.plugins.firebaseDistribution) apply false
     alias(libs.plugins.gms) apply false
     alias(libs.plugins.ksp) apply false
-    id "app.cash.licensee" version "1.13.0" apply false
+    alias(libs.plugins.licensee) apply false
 }
+
+import com.android.build.gradle.LibraryPlugin
+import org.jetbrains.kotlin.gradle.plugin.KotlinAndroidPluginWrapper
+
+// SDK and application configuration from gradle.properties
+ext.compile_sdk = Integer.parseInt(project.findProperty("sdk.compile") ?: "35")
+ext.target_sdk = Integer.parseInt(project.findProperty("sdk.target") ?: "35")
+ext.min_sdk = Integer.parseInt(project.findProperty("sdk.min") ?: "26")
+ext.application_id = project.findProperty("app.applicationId") ?: "io.anytype.app"
+ext.test_runner = project.findProperty("app.testRunner") ?: "androidx.test.runner.AndroidJUnitRunner"
+ext.onCi = project.findProperty("com.anytype.ci")?.toBoolean() ?: false
+
+// Load API keys
+def apiKeysProperties = new Properties()
+def apiKeysPropertiesFile = file("$rootDir${File.separator}apikeys.properties")
+if (apiKeysPropertiesFile.exists()) {
+    apiKeysProperties.load(new FileInputStream(apiKeysPropertiesFile))
+}
+ext.sentryApiKey = apiKeysProperties["sentry_dsn"] ?: ""
 
 def testDebugAll = tasks.create("testDebugAll")
 
@@ -63,12 +40,16 @@ subprojects { sub ->
 
             android {
                 def config = rootProject.extensions.getByName("ext")
-                compileSdkVersion config["compile_sdk"]
+                compileSdk = config["compile_sdk"]
 
                 defaultConfig {
-                    minSdkVersion config["min_sdk"]
-                    targetSdkVersion config["target_sdk"]
-                    testInstrumentationRunner config["test_runner"]
+                    minSdk = config["min_sdk"]
+                    targetSdk = config["target_sdk"]
+                    testInstrumentationRunner = config["test_runner"]
+                }
+
+                buildFeatures {
+                    buildConfig = true
                 }
 
                 testOptions {
@@ -81,8 +62,8 @@ subprojects { sub ->
         if (plugin instanceof KotlinAndroidPluginWrapper) {
             android {
                 compileOptions {
-                    sourceCompatibility JavaVersion.VERSION_17
-                    targetCompatibility JavaVersion.VERSION_17
+                    sourceCompatibility = JavaVersion.VERSION_17
+                    targetCompatibility = JavaVersion.VERSION_17
                 }
 
                 kotlin {
@@ -93,73 +74,43 @@ subprojects { sub ->
 
     }
     
-    if (rootProject.ext.onCi) {
-        plugins.withId("com.android.application") {
-            // Apply the plugin after Android plugin is ready
-            sub.pluginManager.apply("app.cash.licensee")
-            sub.afterEvaluate {
-                // Configure licensee
-                sub.licensee {
-                    // Allow common SPDX identifiers
-                    allow("Apache-2.0")
-                    allow("MIT")
-                    allow("BSD-3-Clause")
-
-                    // Allow specific license URLs
-                    allowUrl("https://developer.android.com/studio/terms.html") {
-                        because("Google/Android SDK Terms - standard for Google Play Services and Android libraries")
-                    }
-                    allowUrl("https://github.com/facebook/shimmer-android/blob/master/LICENSE") {
-                        because("Facebook Shimmer is BSD-licensed")
-                    }
-                    allowUrl("https://www.bouncycastle.org/licence.html") {
-                        because("BouncyCastle is MIT-licensed")
-                    }
-                    
-                    // Allow specific dependencies that declare no licenses
-                    allowDependency("com.github.anyproto", "any-crypto-kotlin", "1.0.2") {
-                        because("any-crypto-kotlin is MIT-licensed (verified in repository)")
-                    }
-                    allowDependency("com.github.komputing", "KBase58", "0.4") {
-                        because("KBase58 is MIT-licensed (verified in repository)")
-                    }
-                    allowDependency("io.anyproto", "anytype-heart-android", "v0.43.0-rc02") {
-                        because("Internal Anytype library")
-                    }
-                }
-            }
-        }
-    }
 
     plugins.withId("kotlin") {
         testDebugAll.dependsOn(tasks.named("test"))
     }
     plugins.withId("com.android.library") {
         project.apply from: "$rootDir/lint.gradle"
-        afterEvaluate {
-            testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
+        tasks.configureEach { task ->
+            if (task.name == "testDebugUnitTest") {
+                testDebugAll.dependsOn(task)
+            }
         }
     }
     plugins.withId("com.android.application") {
         project.apply from: "$rootDir/lint.gradle"
-        afterEvaluate {
-            testDebugAll.dependsOn(tasks.named("testDebugUnitTest"))
+        tasks.configureEach { task ->
+            if (task.name == "testDebugUnitTest") {
+                testDebugAll.dependsOn(task)
+            }
         }
     }
 }
 
-task clean(type: Delete) {
-    delete rootProject.buildDir
+tasks.register("clean", Delete) {
+    delete(rootProject.layout.buildDirectory)
 }
 
-tasks.register("installGitHooks") {
-    setGroup("Build Setup")
-    setDescription("Install local repository git hooks")
-    exec {
-        commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+tasks.register("installGitHooks", Exec) {
+    group = "Build Setup"
+    description = "Install local repository git hooks"
+    commandLine 'sh', '-c', 'git config core.hooksPath .githooks'
+}
+
+// Make preBuild tasks depend on installGitHooks for automatic git hooks setup
+gradle.projectsEvaluated {
+    subprojects { sub ->
+        sub.tasks.matching { it.name == "preBuild" }.configureEach {
+            dependsOn(rootProject.tasks.named("installGitHooks"))
+        }
     }
 }
-
-var initialTaskNames = getProject().getGradle().getStartParameter().getTaskNames()
-getProject().getGradle().getStartParameter().setTaskNames(
-        initialTaskNames + Collections.singletonList("installGitHooks"))

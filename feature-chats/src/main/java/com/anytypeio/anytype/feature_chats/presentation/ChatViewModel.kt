@@ -67,6 +67,7 @@ import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
 import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
@@ -302,7 +303,10 @@ class ChatViewModel @Inject constructor(
                 EventsDictionary.ChatRoute.NAVIGATION.value
             analytics.sendEvent(
                 eventName = EventsDictionary.chatScreenChat,
-                props = Props(mapOf(EventsPropertiesKey.route to route))
+                props = Props(mapOf(
+                    EventsPropertiesKey.route to route,
+                    EventsPropertiesKey.chatId to vmParams.ctx
+                ))
             )
         }
         subscribeToInviteLinkState()
@@ -443,7 +447,7 @@ class ChatViewModel @Inject constructor(
                                 }
                         ),
                         reply = reply,
-                        author = member?.name ?: msg.creator.takeLast(5),
+                        author = member?.name.orEmpty(),
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         shouldHideUsername = shouldHideUsername,
@@ -1071,7 +1075,10 @@ class ChatViewModel @Inject constructor(
             analytics.sendEvent(
                 eventName = EventsDictionary.chatSentMessage,
                 props = Props(
-                    map = mapOf(EventsPropertiesKey.type to type)
+                    map = mapOf(
+                        EventsPropertiesKey.type to type,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
                 )
             )
         }
@@ -1167,6 +1174,32 @@ class ChatViewModel @Inject constructor(
                 wrapper = obj
             )
         )
+        
+        viewModelScope.launch {
+            val objectType = obj.type
+            
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = buildMap {
+                        put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                        put(EventsPropertiesKey.chatId, vmParams.ctx)
+                    }
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = buildMap {
+                        put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                        put(EventsPropertiesKey.chatId, vmParams.ctx)
+                    }
+                )
+            )
+        }
     }
 
     fun onAttachObject(target: Id) {
@@ -1205,6 +1238,29 @@ class ChatViewModel @Inject constructor(
                                 type = typeName,
                                 meta = GlobalSearchItemView.Meta.None
                             )
+                        )
+                    )
+                    
+                    // Fire ClickScreenChatAttach event
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.chatClickScreenChatAttach,
+                        props = Props(
+                            map = buildMap {
+                                put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                                put(EventsPropertiesKey.chatId, vmParams.ctx)
+                            }
+                        )
+                    )
+                    
+                    // Fire AttachItemChat event
+                    analytics.sendEvent(
+                        eventName = EventsDictionary.chatAttachItemChat,
+                        props = Props(
+                            map = buildMap {
+                                put(EventsPropertiesKey.type, EventsDictionary.ChatAttachType.OBJECT.value)
+                                put(EventsPropertiesKey.count, 1)
+                                put(EventsPropertiesKey.chatId, vmParams.ctx)
+                            }
                         )
                     )
                 }
@@ -1259,7 +1315,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatDetachItemChat
+                eventName = EventsDictionary.chatDetachItemChat,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -1294,11 +1353,17 @@ class ChatViewModel @Inject constructor(
                     }
                     if (hasAlreadyUserReaction) {
                         analytics.sendEvent(
-                            eventName = EventsDictionary.chatRemoveReaction
+                            eventName = EventsDictionary.chatRemoveReaction,
+                            props = Props(
+                                map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                            )
                         )
                     } else {
                         analytics.sendEvent(
-                            eventName = EventsDictionary.chatAddReaction
+                            eventName = EventsDictionary.chatAddReaction,
+                            props = Props(
+                                map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                            )
                         )
                     }
                 }
@@ -1406,7 +1471,10 @@ class ChatViewModel @Inject constructor(
     fun onAttachmentMenuTriggered() {
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatScreenChatAttach
+                eventName = EventsDictionary.chatScreenChatAttach,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -1489,6 +1557,39 @@ class ChatViewModel @Inject constructor(
 
     fun onChatBoxMediaPicked(uris: List<ChatBoxMediaUri>) {
         Timber.d("DROID-2966 onChatBoxMediaPicked: $uris")
+        val hasCameraCapture = uris.any { it.capturedByCamera }
+        val attachType = if (hasCameraCapture) {
+            EventsDictionary.ChatAttachType.CAMERA.value
+        } else {
+            EventsDictionary.ChatAttachType.PHOTO.value
+        }
+        
+        viewModelScope.launch {
+
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to attachType,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to attachType,
+                        EventsPropertiesKey.count to uris.size,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+        }
+
         viewModelScope.launch {
             chatBoxAttachments.value += uris.map { uri ->
                 ChatView.Message.ChatBoxAttachment.Media(
@@ -1498,6 +1599,7 @@ class ChatViewModel @Inject constructor(
                 )
             }
         }
+
         // Starting preloading files
 
         preloadingJobs += viewModelScope.launch {
@@ -1553,6 +1655,31 @@ class ChatViewModel @Inject constructor(
                 name = info.name,
                 size = info.size,
                 state = ChatView.Message.ChatBoxAttachment.State.Preloading
+            )
+        }
+        
+        viewModelScope.launch {
+            // Fire ClickScreenChatAttach event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScreenChatAttach,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.ChatAttachType.FILE.value,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
+            )
+            
+            // Fire AttachItemChat event
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatAttachItemChat,
+                props = Props(
+                    map = mapOf(
+                        EventsPropertiesKey.type to EventsDictionary.ChatAttachType.FILE.value,
+                        EventsPropertiesKey.count to infos.size,
+                        EventsPropertiesKey.chatId to vmParams.ctx
+                    )
+                )
             )
         }
         // Starting preloading files
@@ -1638,6 +1765,8 @@ class ChatViewModel @Inject constructor(
             val headerView = header.value
             if (headerView is HeaderView.ChatObject) {
                 val name = headerView.title
+                // Fire analytics event for opening chat info screen
+                analytics.sendEvent(eventName = EventsDictionary.screenChatInfo)
                 commands.emit(
                     ViewModelCommand.OpenChatInfo(
                         name = name,
@@ -1963,7 +2092,12 @@ class ChatViewModel @Inject constructor(
                     mode = mode
                 )
             ).onSuccess { payload ->
-                Timber.d("Notification setting changed successfully to: $setting, for chat: ${vmParams.ctx}")
+                Timber.d("Notification setting changed successfully to: $setting")
+                // Fire analytics event for chat-level notification change
+                analytics.sendAnalyticsChangeMessageNotificationState(
+                    spaceUxType = _currentSpaceUxType.value,
+                    notificationState = setting.toNotificationState()
+                )
             }.onFailure { e ->
                 Timber.e(e, "Failed to change notification setting")
                 // Revert header to previous state on error
@@ -2087,7 +2221,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatClickScrollToMention
+                eventName = EventsDictionary.chatClickScrollToMention,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }
@@ -2098,7 +2235,12 @@ class ChatViewModel @Inject constructor(
             chatContainer.onLoadToReply(replyMessage = replyMessage)
         }
         viewModelScope.launch {
-            analytics.sendEvent(eventName = EventsDictionary.chatClickScrollToReply)
+            analytics.sendEvent(
+                eventName = EventsDictionary.chatClickScrollToReply,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
+            )
         }
     }
 
@@ -2109,7 +2251,10 @@ class ChatViewModel @Inject constructor(
         }
         viewModelScope.launch {
             analytics.sendEvent(
-                eventName = EventsDictionary.chatClickScrollToBottom
+                eventName = EventsDictionary.chatClickScrollToBottom,
+                props = Props(
+                    map = mapOf(EventsPropertiesKey.chatId to vmParams.ctx)
+                )
             )
         }
     }

@@ -61,7 +61,7 @@ abstract class SearchRelationViewModel(
     /**
      * Fetches properties from the DataView's relationLinks and maps them to [SimpleRelationView].
      * After mapping, filters out relations that are:
-     * - Hidden (isHidden = true)
+     * - Hidden (isHidden = true), except for Name and Done which are always shown
      * - Of disallowed formats (RELATIONS, EMOJI, UNDEFINED)
      *
      * @see notAllowedRelations for filtering logic
@@ -98,7 +98,7 @@ abstract class SearchRelationViewModel(
 
     private fun notAllowedRelations(relation: SimpleRelationView): Boolean =
         notAllowedRelationFormats.contains(relation.format)
-                || (relation.isHidden)
+                || (relation.key != Relations.NAME && relation.key != Relations.DONE && relation.isHidden)
 
     fun onSearchQueryChanged(txt: String) {
         viewModelScope.launch { query.send(txt) }

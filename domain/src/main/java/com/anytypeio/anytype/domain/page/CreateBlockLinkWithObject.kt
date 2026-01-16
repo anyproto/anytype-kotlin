@@ -1,6 +1,11 @@
 package com.anytypeio.anytype.domain.page
 
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -34,7 +39,8 @@ class CreateBlockLinkWithObject(
         return Result(
             id = result.blockId,
             objectId = result.objectId,
-            payload = result.event
+            payload = result.event,
+            details = result.details
         )
     }
 
@@ -64,6 +70,7 @@ class CreateBlockLinkWithObject(
     data class Result(
         val id: Id,
         val objectId: Id,
+        val details: Struct,
         val payload: Payload
     )
 }

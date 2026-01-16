@@ -5,27 +5,31 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ext.withParent
+import com.anytypeio.anytype.core_utils.ext.withParentSafe
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 
-
-class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
+/**
+ * Selecting an object type to create when adding a new object to a collection.
+ * Includes list types (Set, Collection) and bookmarks.
+ * Excludes media types (Image, File, Video, Audio) and templates.
+ */
+class CollectionAddObjectTypeFragment : BaseObjectTypeChangeFragment() {
 
     override fun onItemClicked(item: ObjectWrapper.Type) {
-        withParent<OnDataViewSelectSourceAction> {
-            onProceedWithSelectSource(id = item.id)
+        withParentSafe<CollectionObjectTypeSelectionListener> {
+            onSelectObjectTypeForCollection(objType = item)
         }
     }
 
-    override fun resolveTitle(): String = getString(R.string.select_query)
+    override fun resolveTitle(): String = getString(R.string.change_type)
 
     override fun injectDependencies() {
         val params = ObjectTypeChangeViewModel.VmParams(
             spaceId = SpaceId(space),
-            screen = ObjectTypeChangeViewModel.Screen.DATA_VIEW_SOURCE,
-            selectedTypes = selectedTypes
+            screen = ObjectTypeChangeViewModel.Screen.CREATE_OBJECT_FOR_COLLECTION,
+            excludeTypes = excludeTypes
         )
         componentManager().objectTypeChangeComponent.get(params).inject(this)
     }
@@ -35,10 +39,9 @@ class DataViewSelectSourceFragment : BaseObjectTypeChangeFragment() {
     }
 
     companion object {
-        fun newInstance(space: Id, selectedTypes: List<Id>) = DataViewSelectSourceFragment().apply {
+        fun newInstance(space: Id) = CollectionAddObjectTypeFragment().apply {
             arguments = bundleOf(
-                ARG_SPACE to space,
-                ARG_SELECTED_TYPES to selectedTypes
+                ARG_SPACE to space
             )
         }
     }

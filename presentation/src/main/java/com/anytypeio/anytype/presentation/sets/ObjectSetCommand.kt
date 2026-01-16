@@ -97,9 +97,7 @@ sealed class ObjectSetCommand {
             val relation: Key
         ) : Modal()
 
-        data class OpenSelectTypeScreen(
-            val excludedTypes: List<Id>
-        ) : Modal()
+        data object OpenSelectTypeScreen : Modal()
 
         data class ShowObjectSetTypePopupMenu(
             val ctx: Id,
@@ -130,4 +128,6 @@ sealed class ObjectSetCommand {
     data class Browse(val url: String) : ObjectSetCommand()
 
     data class CopyLinkToClipboard(val link: String) : ObjectSetCommand()
+
+    data class ScrollToObject(val objectId: Id) : ObjectSetCommand()
 }

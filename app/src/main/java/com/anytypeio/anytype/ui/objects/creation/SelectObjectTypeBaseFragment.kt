@@ -40,7 +40,6 @@ import com.anytypeio.anytype.presentation.objects.Command
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeUpdateListener
 import com.anytypeio.anytype.ui.objects.types.pickers.WidgetSourceTypeListener
 import com.anytypeio.anytype.ui.settings.typography
 import javax.inject.Inject
@@ -95,39 +94,6 @@ class ObjectTypeSelectionFragment : SelectObjectTypeBaseFragment() {
     companion object {
         fun new(space: Id) = ObjectTypeSelectionFragment().apply {
             arguments = bundleOf(SPACE_ID_KEY to space)
-        }
-    }
-}
-
-/**
- * A fragment that allows you to update an object type of an existing object.
- */
-class ObjectTypeUpdateFragment : SelectObjectTypeBaseFragment() {
-
-    private val fromFeatured get() = argOrNull<Boolean>(OPEN_FROM_FEATURED_ARG) == true
-
-    override fun proceedWithSelectedType(objType: ObjectWrapper.Type) {
-        withParentSafe<ObjectTypeUpdateListener> {
-            onUpdateObjectType(
-                objType = objType,
-                fromFeatured = fromFeatured
-            )
-        }
-    }
-
-    override fun resolveScreenTitle(): String {
-        return getString(R.string.change_type)
-    }
-
-    companion object {
-        const val OPEN_FROM_FEATURED_ARG = "arg.object_type_choose_open_from"
-
-        fun new(space: Id, excludedTypeKeys: List<Key>, fromFeatured: Boolean = false) = ObjectTypeUpdateFragment().apply {
-            arguments = bundleOf(
-                SPACE_ID_KEY to space,
-                EXCLUDED_TYPE_KEYS_ARG_KEY to excludedTypeKeys,
-                OPEN_FROM_FEATURED_ARG to fromFeatured
-            )
         }
     }
 }

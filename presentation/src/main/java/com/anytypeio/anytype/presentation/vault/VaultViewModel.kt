@@ -31,7 +31,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -127,7 +127,7 @@ class VaultViewModel(
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
-    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage
@@ -370,16 +370,19 @@ class VaultViewModel(
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
-     * - If neither is available, return null (fallback to creation date in comparator)
+     * - If neither is available, fallback to createdDate
+     * - If createdDate is also unavailable, return null
      */
     private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
         val lastMessageDate = space.lastMessageDate
         val spaceJoinDate = space.space.spaceJoinDate?.toLong()
+        val createdDate = space.space.getSingleValue<Double>(Relations.CREATED_DATE)?.toLong()
 
         return when {
             lastMessageDate != null && spaceJoinDate != null -> maxOf(lastMessageDate, spaceJoinDate)
             lastMessageDate != null -> lastMessageDate
             spaceJoinDate != null -> spaceJoinDate
+            createdDate != null -> createdDate
             else -> null
         }
     }
@@ -1015,7 +1018,6 @@ class VaultViewModel(
 
     fun processPendingDeeplink() {
         viewModelScope.launch {
-            delay(1000) // Simulate some delay
             pendingIntentStore.getDeepLinkInvite()?.let { deeplink ->
                 Timber.d("Processing pending deeplink: $deeplink")
                 commands.emit(VaultCommand.Deeplink.Invite(deeplink))
@@ -1437,8 +1439,18 @@ class VaultViewModel(
         Timber.d("proceedWithOneToOneChatInitiation")
         viewModelScope.launch {
             // First, check if a 1-1 chat already exists with this identity
-            findOneToOneChatByIdentity.async(
-                FindOneToOneChatByIdentity.Params(identity = identity)
+            // Using direct middleware search to find space even if it's deleted/left
+            val techSpace = configStorage.getOrNull()?.techSpace
+            if (techSpace == null) {
+                Timber.e("Tech space not available, creating new 1-1 space")
+                createOneToOneSpace(identity, metadataKey)
+                return@launch
+            }
+            searchOneToOneChatByIdentity.async(
+                SearchOneToOneChatByIdentity.Params(
+                    identity = identity,
+                    techSpace = SpaceId(techSpace)
+                )
             ).fold(
                 onSuccess = { existingChat ->
                     if (existingChat != null) {

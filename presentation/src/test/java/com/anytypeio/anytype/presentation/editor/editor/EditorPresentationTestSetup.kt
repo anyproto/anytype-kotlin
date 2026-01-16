@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Response
+import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.StubObjectType
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -719,7 +720,8 @@ open class EditorPresentationTestSetup {
                     payload = Payload(
                         context = root,
                         events = emptyList()
-                    )
+                    ),
+                    details = emptyMap()
                 )
             )
         }
@@ -885,6 +887,13 @@ open class EditorPresentationTestSetup {
             onBlocking {
                 async(any())
             } doReturn Resultat.success(types)
+        }
+    }
+
+    fun setStoreOfObjectTypes(types: List<ObjectWrapper.Type>) {
+        runBlocking {
+            storeOfObjectTypes.clear()
+            storeOfObjectTypes.merge(types = types)
         }
     }
 

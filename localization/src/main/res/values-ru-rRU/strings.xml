@@ -557,7 +557,7 @@
     <string name="blank">Пусто</string>
     <string name="templates_menu_default_for_view">По умолчанию для этого представления</string>
     <string name="templates_menu_edit">Изменить шаблон</string>
-    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
+    <string name="template_title_prefix">Вы редактируете шаблон\u0020</string>
     <string name="templates_menu_duplicate">Дублировать</string>
     <string name="templates_menu_delete">Удалить</string>
     <string name="unsupported">Не поддерживается</string>

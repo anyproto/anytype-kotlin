@@ -555,6 +555,7 @@
     <string name="blank">Vuoto</string>
     <string name="templates_menu_default_for_view">Predefinito per questa vista</string>
     <string name="templates_menu_edit">Modifica modello</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplica</string>
     <string name="templates_menu_delete">Elimina</string>
     <string name="unsupported">Non supportato</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Galleria</string>
     <string name="change_type">Cambia tipo</string>
+    <string name="default_type_screen_title">Scegli il tipo di oggetto predefinito</string>
     <string name="change_cover">Modifica copertina</string>
     <string name="remove">Rimuovi</string>
     <string name="choose_options">Choose options</string>
@@ -1989,6 +1991,7 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disattivato</string>
     <string name="notification_settings_state_enabled">Abilitato</string>
     <string name="content_desc_muted">Silenziato</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Impossibile caricare l\'immagine</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unisciti tramite QR Code</string>
@@ -2097,4 +2100,5 @@ Please provide specific details of your needs here.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Salva</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

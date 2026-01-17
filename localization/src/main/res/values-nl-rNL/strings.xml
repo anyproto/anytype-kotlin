@@ -555,6 +555,7 @@
     <string name="blank">Leeg</string>
     <string name="templates_menu_default_for_view">Standaard voor deze weergave</string>
     <string name="templates_menu_edit">Sjabloon bewerken</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Dupliceer</string>
     <string name="templates_menu_delete">Verwijder</string>
     <string name="unsupported">Niet ondersteund</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Upload afbeelding</string>
     <string name="tab_gallery">Galerij</string>
     <string name="change_type">Verander type</string>
+    <string name="default_type_screen_title">Kies het standaard objecttype</string>
     <string name="change_cover">Wijzig omslag</string>
     <string name="remove">Verwijder</string>
     <string name="choose_options">Kies opties</string>
@@ -1988,6 +1990,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notification_settings_state_disabled">Uitgeschakeld</string>
     <string name="notification_settings_state_enabled">Ingeschakeld</string>
     <string name="content_desc_muted">Gedempt</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Laden afbeelding mislukt</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Neem deel via QR-code</string>
@@ -2096,4 +2099,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Sla op</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

@@ -554,6 +554,7 @@
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">預設此檢視</string>
     <string name="templates_menu_edit">編輯範本</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">建立副本</string>
     <string name="templates_menu_delete">刪除</string>
     <string name="unsupported">不支援</string>
@@ -709,6 +710,7 @@
     <string name="tab_upload_image">上傳圖片</string>
     <string name="tab_gallery">畫廊</string>
     <string name="change_type">變更類型</string>
+    <string name="default_type_screen_title">選擇預設物件類型</string>
     <string name="change_cover">更改封面</string>
     <string name="remove">移除</string>
     <string name="choose_options">選擇選項</string>
@@ -1975,6 +1977,7 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
@@ -2082,4 +2085,5 @@ Please provide specific details of your needs here.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Save</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

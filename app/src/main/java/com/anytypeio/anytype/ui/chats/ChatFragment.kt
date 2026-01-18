@@ -87,7 +87,7 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.vault.AlertScreenModals
+import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import javax.inject.Inject
 import timber.log.Timber
 

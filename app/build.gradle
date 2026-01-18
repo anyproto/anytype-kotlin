@@ -215,6 +215,7 @@ dependencies {
     implementation project(':feature-date')
     implementation project(':feature-object-type')
     implementation project(':feature-properties')
+    implementation project(':feature-vault')
 
     //Compile time dependencies
     ksp libs.daggerCompiler

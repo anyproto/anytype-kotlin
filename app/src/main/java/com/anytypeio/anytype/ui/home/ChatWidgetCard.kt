@@ -150,7 +150,7 @@ fun ChatWidgetCard(
                 val (chatText, inlineContent) = buildChatContentWithInlineIcons(
                     creatorName = creatorName,
                     messageText = messageText,
-                    attachmentPreviews = attachmentPreviews,
+                    attachmentPreviews = attachmentPreviews.toFeatureVaultAttachments(),
                     fallbackSubtitle = "",  // Empty fallback for now
                     singleLineFormat = true,
                     textColor = textColor
@@ -181,3 +181,19 @@ fun ChatWidgetCard(
     }
 }
 
+/**
+ * Converts presentation.vault.VaultSpaceView.AttachmentPreview to feature_vault types.
+ */
+private fun List<VaultSpaceView.AttachmentPreview>.toFeatureVaultAttachments(): List<FeatureVaultSpaceView.AttachmentPreview> {
+    return map { preview ->
+        FeatureVaultSpaceView.AttachmentPreview(
+            type = when (preview.type) {
+                VaultSpaceView.AttachmentType.IMAGE -> FeatureVaultSpaceView.AttachmentType.IMAGE
+                VaultSpaceView.AttachmentType.FILE -> FeatureVaultSpaceView.AttachmentType.FILE
+                VaultSpaceView.AttachmentType.LINK -> FeatureVaultSpaceView.AttachmentType.LINK
+            },
+            objectIcon = preview.objectIcon,
+            title = preview.title
+        )
+    }
+}

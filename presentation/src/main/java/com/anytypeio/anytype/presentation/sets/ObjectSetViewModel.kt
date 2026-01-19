@@ -1624,13 +1624,9 @@ class ObjectSetViewModel(
                 )
             }
             else -> {
-                dispatch(
-                    ObjectSetCommand.Modal.SetNameForCreatedObject(
-                        ctx = vmParams.ctx,
-                        target = response.objectId,
-                        space = vmParams.space.id
-                    )
-                )
+                val icon = obj.iconEmoji?.let { ObjectIcon.Basic.Emoji(unicode = it) }
+                    ?: ObjectIcon.None
+                showSetObjectNameSheet(objectId = response.objectId, icon = icon)
             }
         }
     }

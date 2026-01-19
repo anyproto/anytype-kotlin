@@ -3,7 +3,6 @@ package com.anytypeio.anytype.core_ui.features.sets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
@@ -73,7 +72,7 @@ fun SetObjectNameBottomSheet(
         sheetState = sheetState,
         containerColor = Color.Transparent,
         dragHandle = null,
-        windowInsets = WindowInsets(0)
+        shape = RoundedCornerShape(0.dp)
     ) {
         Box(
             modifier = Modifier

@@ -65,6 +65,7 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -685,6 +686,11 @@ object ObjectSetModule {
         analytics = analytics,
         dispatcher = dispatcher
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideEmojiProvider(): EmojiProvider = Emoji
 }
 
 data class DefaultComponentParam(

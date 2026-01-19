@@ -267,17 +267,11 @@ class ObjectSetViewModel(
         val isVisible: Boolean = false,
         val targetObjectId: Id? = null,
         val currentIcon: ObjectIcon = ObjectIcon.None,
-        val inputText: String = "",
-        val isIconPickerVisible: Boolean = false
+        val inputText: String = ""
     )
 
     private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
     val setObjectNameState: StateFlow<SetObjectNameState> = _setObjectNameState.asStateFlow()
-
-    private val _emojiPickerViews = MutableStateFlow<List<EmojiPickerView>>(emptyList())
-    val emojiPickerViews: StateFlow<List<EmojiPickerView>> = _emojiPickerViews.asStateFlow()
-
-    private val emojiQuery = MutableStateFlow("")
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
@@ -3502,8 +3496,7 @@ class ObjectSetViewModel(
             isVisible = true,
             targetObjectId = objectId,
             currentIcon = icon,
-            inputText = "",
-            isIconPickerVisible = false
+            inputText = ""
         )
     }
 
@@ -3545,97 +3538,17 @@ class ObjectSetViewModel(
     }
 
     /**
-     * Shows the nested emoji picker.
+     * Opens the icon picker for the newly created object.
      */
     fun onSetObjectNameIconClicked() {
-        _setObjectNameState.value = _setObjectNameState.value.copy(isIconPickerVisible = true)
-        if (_emojiPickerViews.value.isEmpty()) {
-            loadEmojiViews()
-        }
-    }
-
-    private fun loadEmojiViews() {
-        viewModelScope.launch {
-            val views = withContext(Dispatchers.IO) {
-                val result = mutableListOf<EmojiPickerView>()
-                emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
-                    result.add(EmojiPickerView.Category(index = categoryIndex))
-                    emojis.forEachIndexed { emojiIndex, emoji ->
-                        val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
-                        if (!skin) {
-                            result.add(
-                                EmojiPickerView.Emoji(
-                                    unicode = emoji,
-                                    page = categoryIndex,
-                                    index = emojiIndex
-                                )
-                            )
-                        }
-                    }
-                }
-                result
-            }
-            _emojiPickerViews.value = views
-        }
-    }
-
-    fun onEmojiQueryChanged(query: String) {
-        emojiQuery.value = query
-        viewModelScope.launch {
-            if (query.isEmpty()) {
-                loadEmojiViews()
-            } else {
-                val suggests = emojiSuggester.search(query)
-                val filtered = suggests.mapNotNull { suggest ->
-                    emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
-                        emojis.forEachIndexed { emojiIndex, emoji ->
-                            if (emoji == suggest.emoji) {
-                                return@mapNotNull EmojiPickerView.Emoji(
-                                    unicode = emoji,
-                                    page = categoryIndex,
-                                    index = emojiIndex
-                                )
-                            }
-                        }
-                    }
-                    null
-                }
-                _emojiPickerViews.value = filtered
-            }
-        }
-    }
-
-    /**
-     * Hides the nested emoji picker.
-     */
-    fun onIconPickerDismissed() {
-        _setObjectNameState.value = _setObjectNameState.value.copy(isIconPickerVisible = false)
-    }
-
-    /**
-     * Called when user selects an emoji from the picker.
-     */
-    fun onIconSelected(emoji: String) {
-        val state = _setObjectNameState.value
-        val targetId = state.targetObjectId ?: return
-
-        _setObjectNameState.value = state.copy(
-            currentIcon = ObjectIcon.Basic.Emoji(unicode = emoji),
-            isIconPickerVisible = false
-        )
-
-        viewModelScope.launch {
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = targetId,
-                    key = Relations.ICON_EMOJI,
-                    value = emoji
-                )
-            ).process(
-                failure = { Timber.e(it, "Error while updating object icon") },
-                success = { /* saved successfully */ }
+        Timber.d("onSetObjectNameIconClicked, ")
+        val objectId = _setObjectNameState.value.targetObjectId ?: return
+        dispatch(
+            ObjectSetCommand.Modal.OpenIconActionMenu(
+                target = objectId,
+                space = vmParams.space.id
             )
-        }
+        )
     }
 
     /**

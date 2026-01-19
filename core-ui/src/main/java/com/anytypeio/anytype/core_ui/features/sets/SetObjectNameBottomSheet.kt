@@ -41,8 +41,10 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_ui.widgets.EmojiPickerScreen
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.presentation.picker.EmojiPickerView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -156,5 +158,33 @@ fun SetObjectNameBottomSheet(
                 }
             }
         }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SetObjectIconPickerBottomSheet(
+    isVisible: Boolean,
+    views: List<EmojiPickerView>,
+    onEmojiClicked: (String) -> Unit,
+    onQueryChanged: (String) -> Unit,
+    onDismiss: () -> Unit
+) {
+    if (!isVisible) return
+
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = sheetState,
+        containerColor = colorResource(id = R.color.background_secondary),
+        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
+    ) {
+        EmojiPickerScreen(
+            views = views,
+            onEmojiClicked = onEmojiClicked,
+            onQueryChanged = onQueryChanged,
+            showDragger = false
+        )
     }
 }

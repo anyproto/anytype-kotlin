@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -85,6 +86,7 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
@@ -1637,8 +1639,10 @@ class ObjectSetViewModel(
                 )
             }
             else -> {
-                val icon = obj.iconEmoji?.let { ObjectIcon.Basic.Emoji(unicode = it) }
-                    ?: ObjectIcon.None
+                val icon = obj.objectIcon(
+                    builder = urlBuilder,
+                    objType = storeOfObjectTypes.getTypeOfObject(obj)
+                )
                 showSetObjectNameSheet(objectId = response.objectId, icon = icon)
             }
         }
@@ -3512,7 +3516,8 @@ class ObjectSetViewModel(
         _setObjectNameState.value = SetObjectNameState()
 
         if (objectId != null) {
-            pendingScrollToObject.value = objectId
+            // Dispatch scroll command directly instead of using pendingScrollToObject
+            dispatch(ObjectSetCommand.ScrollToObject(objectId))
         }
     }
 

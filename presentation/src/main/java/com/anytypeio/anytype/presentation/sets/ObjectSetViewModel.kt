@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
@@ -128,6 +129,7 @@ import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -246,6 +248,20 @@ class ObjectSetViewModel(
 
 
     private val pendingScrollToObject = MutableStateFlow<Id?>(null)
+
+    /**
+     * State for the Set Object Name bottom sheet.
+     */
+    data class SetObjectNameState(
+        val isVisible: Boolean = false,
+        val targetObjectId: Id? = null,
+        val currentIcon: ObjectIcon = ObjectIcon.None,
+        val inputText: String = "",
+        val isIconPickerVisible: Boolean = false
+    )
+
+    private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
+    val setObjectNameState: StateFlow<SetObjectNameState> = _setObjectNameState.asStateFlow()
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(

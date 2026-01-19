@@ -432,6 +432,28 @@ class ObjectSetViewModel(
             }.collect()
         }
 
+        // Observe icon changes for SetObjectNameBottomSheet
+        viewModelScope.launch {
+            _setObjectNameState
+                .filter { it.isVisible && it.targetObjectId != null }
+                .flatMapLatest { sheetState ->
+                    database.observe(sheetState.targetObjectId!!)
+                        .map { obj ->
+                            obj.objectIcon(
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(obj)
+                            )
+                        }
+                }
+                .distinctUntilChanged()
+                .catch {
+                    Timber.w(it, "Error while observing object icon")
+                }
+                .collect { icon ->
+                    _setObjectNameState.update { it.copy(currentIcon = icon) }
+                }
+        }
+
         subscribeToSelectedType()
         subscribeToSyncTypeRelations()
     }

@@ -68,8 +68,10 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.Emoji
 import com.anytypeio.anytype.emojifier.data.EmojiProvider
 import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
+import com.anytypeio.anytype.presentation.picker.EmojiPickerView
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -125,8 +127,10 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -266,6 +270,11 @@ class ObjectSetViewModel(
 
     private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
     val setObjectNameState: StateFlow<SetObjectNameState> = _setObjectNameState.asStateFlow()
+
+    private val _emojiPickerViews = MutableStateFlow<List<EmojiPickerView>>(emptyList())
+    val emojiPickerViews: StateFlow<List<EmojiPickerView>> = _emojiPickerViews.asStateFlow()
+
+    private val emojiQuery = MutableStateFlow("")
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
@@ -3512,6 +3521,60 @@ class ObjectSetViewModel(
      */
     fun onSetObjectNameIconClicked() {
         _setObjectNameState.value = _setObjectNameState.value.copy(isIconPickerVisible = true)
+        if (_emojiPickerViews.value.isEmpty()) {
+            loadEmojiViews()
+        }
+    }
+
+    private fun loadEmojiViews() {
+        viewModelScope.launch {
+            val views = withContext(Dispatchers.IO) {
+                val result = mutableListOf<EmojiPickerView>()
+                emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
+                    result.add(EmojiPickerView.Category(index = categoryIndex))
+                    emojis.forEachIndexed { emojiIndex, emoji ->
+                        val skin = Emoji.COLORS.any { color -> emoji.contains(color) }
+                        if (!skin) {
+                            result.add(
+                                EmojiPickerView.Emoji(
+                                    unicode = emoji,
+                                    page = categoryIndex,
+                                    index = emojiIndex
+                                )
+                            )
+                        }
+                    }
+                }
+                result
+            }
+            _emojiPickerViews.value = views
+        }
+    }
+
+    fun onEmojiQueryChanged(query: String) {
+        emojiQuery.value = query
+        viewModelScope.launch {
+            if (query.isEmpty()) {
+                loadEmojiViews()
+            } else {
+                val suggests = emojiSuggester.search(query)
+                val filtered = suggests.mapNotNull { suggest ->
+                    emojiProvider.emojis.forEachIndexed { categoryIndex, emojis ->
+                        emojis.forEachIndexed { emojiIndex, emoji ->
+                            if (emoji == suggest.emoji) {
+                                return@mapNotNull EmojiPickerView.Emoji(
+                                    unicode = emoji,
+                                    page = categoryIndex,
+                                    index = emojiIndex
+                                )
+                            }
+                        }
+                    }
+                    null
+                }
+                _emojiPickerViews.value = filtered
+            }
+        }
     }
 
     /**

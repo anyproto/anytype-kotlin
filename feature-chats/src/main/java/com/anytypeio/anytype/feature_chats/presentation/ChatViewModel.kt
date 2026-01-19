@@ -447,7 +447,7 @@ class ChatViewModel @Inject constructor(
                                 }
                         ),
                         reply = reply,
-                        author = member?.name ?: msg.creator.takeLast(5),
+                        author = member?.name.orEmpty(),
                         creator = member?.id,
                         isUserAuthor = msg.creator == account,
                         shouldHideUsername = shouldHideUsername,

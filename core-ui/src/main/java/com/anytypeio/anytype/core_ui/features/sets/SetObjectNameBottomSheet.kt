@@ -23,7 +23,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -150,7 +152,7 @@ fun SetObjectNameBottomSheet(
                         modifier = Modifier
                             .size(24.dp)
                             .noRippleClickable { onOpenClicked() },
-                        tint = colorResource(id = R.color.glyph_active)
+                        tint = colorResource(id = R.color.control_secondary)
                     )
                 }
             }
@@ -167,12 +169,27 @@ fun SetObjectIconPickerBottomSheet(
     onQueryChanged: (String) -> Unit,
     onDismiss: () -> Unit
 ) {
+    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    val scope = rememberCoroutineScope()
+
+    // Animate hide when isVisible becomes false
+    LaunchedEffect(isVisible) {
+        if (!isVisible && sheetState.isVisible) {
+            sheetState.hide()
+        }
+    }
+
+    // Only show when visible
     if (!isVisible) return
 
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
     ModalBottomSheet(
-        onDismissRequest = onDismiss,
+        onDismissRequest = {
+            scope.launch { sheetState.hide() }.invokeOnCompletion {
+                if (!sheetState.isVisible) {
+                    onDismiss()
+                }
+            }
+        },
         sheetState = sheetState,
         containerColor = colorResource(id = R.color.background_secondary),
         shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)

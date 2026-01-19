@@ -3456,6 +3456,117 @@ class ObjectSetViewModel(
     }
     //endregion
 
+    //region SET OBJECT NAME BOTTOM SHEET
+
+    /**
+     * Shows the set object name bottom sheet for a newly created object.
+     */
+    fun showSetObjectNameSheet(objectId: Id, icon: ObjectIcon) {
+        _setObjectNameState.value = SetObjectNameState(
+            isVisible = true,
+            targetObjectId = objectId,
+            currentIcon = icon,
+            inputText = "",
+            isIconPickerVisible = false
+        )
+    }
+
+    /**
+     * Called when user types in the name field. Auto-saves to backend.
+     */
+    fun onSetObjectNameChanged(text: String) {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = state.copy(inputText = text)
+
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = targetId,
+                    key = Relations.NAME,
+                    value = text
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while updating object name") },
+                success = { /* saved successfully */ }
+            )
+        }
+    }
+
+    /**
+     * Called when bottom sheet is dismissed (Done pressed or swipe).
+     * Triggers scroll to the object.
+     */
+    fun onSetObjectNameDismissed() {
+        val objectId = _setObjectNameState.value.targetObjectId
+        _setObjectNameState.value = SetObjectNameState()
+
+        if (objectId != null) {
+            pendingScrollToObject.value = objectId
+        }
+    }
+
+    /**
+     * Shows the nested emoji picker.
+     */
+    fun onSetObjectNameIconClicked() {
+        _setObjectNameState.value = _setObjectNameState.value.copy(isIconPickerVisible = true)
+    }
+
+    /**
+     * Hides the nested emoji picker.
+     */
+    fun onIconPickerDismissed() {
+        _setObjectNameState.value = _setObjectNameState.value.copy(isIconPickerVisible = false)
+    }
+
+    /**
+     * Called when user selects an emoji from the picker.
+     */
+    fun onIconSelected(emoji: String) {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = state.copy(
+            currentIcon = ObjectIcon.Basic.Emoji(unicode = emoji),
+            isIconPickerVisible = false
+        )
+
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = targetId,
+                    key = Relations.ICON_EMOJI,
+                    value = emoji
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while updating object icon") },
+                success = { /* saved successfully */ }
+            )
+        }
+    }
+
+    /**
+     * Opens the object in full editor from the name sheet.
+     */
+    fun onSetObjectNameOpenClicked() {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = SetObjectNameState()
+
+        viewModelScope.launch {
+            proceedWithOpeningObject(
+                target = targetId,
+                layout = null,
+                space = vmParams.space.id
+            )
+        }
+    }
+
+    //endregion
+
     companion object {
         const val NOT_ALLOWED = "Not allowed for this set"
         const val NOT_ALLOWED_CELL = "Not allowed for this cell"

@@ -1236,17 +1236,6 @@ open class ObjectSetFragment :
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.SetNameForCreatedObject -> {
-                findNavController().safeNavigate(
-                    R.id.objectSetScreen,
-                    R.id.setNameForNewRecordScreen,
-                    SetObjectCreateRecordFragmentBase.args(
-                        ctx = command.ctx,
-                        target = command.target,
-                        space = command.space
-                    )
-                )
-            }
             is ObjectSetCommand.Intent.MailTo -> {
                 try {
                     Intent(Intent.ACTION_SENDTO).apply {

@@ -148,7 +148,7 @@ fun SetObjectNameBottomSheet(
 
                     // Open button
                     Icon(
-                        painter = painterResource(id = R.drawable.ic_open_to_edit_24),
+                        painter = painterResource(id = R.drawable.ic_open_to_edit),
                         contentDescription = "Open object",
                         modifier = Modifier
                             .size(24.dp)

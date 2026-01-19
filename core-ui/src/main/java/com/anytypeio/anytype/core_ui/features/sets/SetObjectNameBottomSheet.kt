@@ -3,11 +3,17 @@ package com.anytypeio.anytype.core_ui.features.sets
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.text.KeyboardActions
@@ -23,9 +29,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
-import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
@@ -42,11 +46,10 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.widgets.EmojiPickerScreen
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.picker.EmojiPickerView
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -71,6 +74,11 @@ fun SetObjectNameBottomSheet(
     }
 
     ModalBottomSheet(
+        modifier = Modifier
+            .windowInsetsPadding(WindowInsets.ime)
+            .systemBarsPadding()
+            .fillMaxWidth()
+            .wrapContentHeight(),
         onDismissRequest = onDismiss,
         sheetState = sheetState,
         containerColor = Color.Transparent,
@@ -92,17 +100,24 @@ fun SetObjectNameBottomSheet(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 22.dp),
+                        .padding(end = 16.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Icon button
-                    ListWidgetObjectIcon(
+                    Box(
                         modifier = Modifier
-                            .size(20.dp)
-                            .noRippleClickable { onIconClicked() },
-                        icon = icon,
-                        iconSize = 20.dp
-                    )
+                            .height(68.dp)
+                            .width(36.dp)
+                            .noRippleThrottledClickable { onIconClicked() }
+                    ) {
+                        ListWidgetObjectIcon(
+                            modifier = Modifier
+                                .align(Alignment.CenterEnd)
+                                .size(20.dp),
+                            icon = icon,
+                            iconSize = 20.dp
+                        )
+                    }
 
                     Spacer(modifier = Modifier.width(8.dp))
 
@@ -157,49 +172,6 @@ fun SetObjectNameBottomSheet(
                 }
             }
         }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun SetObjectIconPickerBottomSheet(
-    isVisible: Boolean,
-    views: List<EmojiPickerView>,
-    onEmojiClicked: (String) -> Unit,
-    onQueryChanged: (String) -> Unit,
-    onDismiss: () -> Unit
-) {
-    val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-    val scope = rememberCoroutineScope()
-
-    // Animate hide when isVisible becomes false
-    LaunchedEffect(isVisible) {
-        if (!isVisible && sheetState.isVisible) {
-            sheetState.hide()
-        }
-    }
-
-    // Only show when visible
-    if (!isVisible) return
-
-    ModalBottomSheet(
-        onDismissRequest = {
-            scope.launch { sheetState.hide() }.invokeOnCompletion {
-                if (!sheetState.isVisible) {
-                    onDismiss()
-                }
-            }
-        },
-        sheetState = sheetState,
-        containerColor = colorResource(id = R.color.background_secondary),
-        shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp)
-    ) {
-        EmojiPickerScreen(
-            views = views,
-            onEmojiClicked = onEmojiClicked,
-            onQueryChanged = onQueryChanged,
-            showDragger = false
-        )
     }
 }
 

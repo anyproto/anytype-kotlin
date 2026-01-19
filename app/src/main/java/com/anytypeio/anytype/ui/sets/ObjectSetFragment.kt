@@ -58,6 +58,8 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.features.sets.SetObjectIconPickerBottomSheet
+import com.anytypeio.anytype.core_ui.features.sets.SetObjectNameBottomSheet
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
@@ -482,6 +484,31 @@ open class ObjectSetFragment :
                     uiState = vm.syncStatusWidget.collectAsStateWithLifecycle().value,
                     onDismiss = vm::onSyncWidgetDismiss,
                     onUpdateAppClick = vm::onUpdateAppClick
+                )
+            }
+        }
+
+        binding.setObjectNameSheet.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.setObjectNameState.collectAsStateWithLifecycle().value
+                val emojiViews = vm.emojiPickerViews.collectAsStateWithLifecycle().value
+
+                SetObjectNameBottomSheet(
+                    isVisible = state.isVisible,
+                    icon = state.currentIcon,
+                    onTextChanged = vm::onSetObjectNameChanged,
+                    onDismiss = vm::onSetObjectNameDismissed,
+                    onIconClicked = vm::onSetObjectNameIconClicked,
+                    onOpenClicked = vm::onSetObjectNameOpenClicked
+                )
+
+                SetObjectIconPickerBottomSheet(
+                    isVisible = state.isIconPickerVisible,
+                    views = emojiViews,
+                    onEmojiClicked = vm::onIconSelected,
+                    onQueryChanged = vm::onEmojiQueryChanged,
+                    onDismiss = vm::onIconPickerDismissed
                 )
             }
         }

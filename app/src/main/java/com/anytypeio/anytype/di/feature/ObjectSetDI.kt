@@ -65,6 +65,8 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -246,7 +248,9 @@ object ObjectSetModule {
         fieldParser: FieldParser,
         spaceViews: SpaceViewSubscriptionContainer,
         deepLinkResolver: DeepLinkResolver,
-        setDataViewProperties: SetDataViewProperties
+        setDataViewProperties: SetDataViewProperties,
+        emojiProvider: EmojiProvider,
+        emojiSuggester: EmojiSuggester
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -290,7 +294,9 @@ object ObjectSetModule {
         spaceViews = spaceViews,
         deepLinkResolver = deepLinkResolver,
         removeObjectFromCollection = removeObjectFromCollection,
-        setDataViewProperties = setDataViewProperties
+        setDataViewProperties = setDataViewProperties,
+        emojiProvider = emojiProvider,
+        emojiSuggester = emojiSuggester
     )
 
     @JvmStatic

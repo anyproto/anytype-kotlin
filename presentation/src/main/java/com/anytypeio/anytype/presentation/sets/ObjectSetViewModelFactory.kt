@@ -34,6 +34,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -87,7 +89,9 @@ class ObjectSetViewModelFactory(
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val deepLinkResolver: DeepLinkResolver,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val emojiProvider: EmojiProvider,
+    private val emojiSuggester: EmojiSuggester
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -134,7 +138,9 @@ class ObjectSetViewModelFactory(
             spaceViews = spaceViews,
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
-            setDataViewProperties = setDataViewProperties
+            setDataViewProperties = setDataViewProperties,
+            emojiProvider = emojiProvider,
+            emojiSuggester = emojiSuggester
         ) as T
     }
 }

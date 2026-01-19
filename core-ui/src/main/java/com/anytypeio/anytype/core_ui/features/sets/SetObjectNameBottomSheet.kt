@@ -38,8 +38,9 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.widgets.EmojiPickerScreen
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
@@ -89,20 +90,16 @@ fun SetObjectNameBottomSheet(
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 16.dp, vertical = 14.dp),
+                        .padding(horizontal = 16.dp, vertical = 22.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     // Icon button
                     ListWidgetObjectIcon(
                         modifier = Modifier
-                            .size(24.dp)
+                            .size(20.dp)
                             .noRippleClickable { onIconClicked() },
-                        icon = if (icon == ObjectIcon.None) {
-                            ObjectIcon.Basic.Emoji(unicode = "\uD83D\uDE42") // placeholder smiley
-                        } else {
-                            icon
-                        },
-                        iconSize = 24.dp
+                        icon = icon,
+                        iconSize = 20.dp
                     )
 
                     Spacer(modifier = Modifier.width(8.dp))
@@ -117,7 +114,7 @@ fun SetObjectNameBottomSheet(
                         modifier = Modifier
                             .weight(1f)
                             .focusRequester(focusRequester),
-                        textStyle = PreviewTitle1Medium.copy(
+                        textStyle = PreviewTitle2Medium.copy(
                             color = colorResource(id = R.color.text_primary)
                         ),
                         cursorBrush = SolidColor(colorResource(id = R.color.palette_system_blue)),
@@ -133,8 +130,9 @@ fun SetObjectNameBottomSheet(
                             Box {
                                 if (textFieldValue.text.isEmpty()) {
                                     Text(
+                                        modifier = Modifier.padding(start = 1.5.dp),
                                         text = stringResource(id = R.string.untitled),
-                                        style = PreviewTitle1Medium,
+                                        style = PreviewTitle2Medium,
                                         color = colorResource(id = R.color.text_tertiary)
                                     )
                                 }
@@ -187,3 +185,17 @@ fun SetObjectIconPickerBottomSheet(
         )
     }
 }
+
+@Composable
+@DefaultPreviews
+fun PreviewSetObjectNameBottomSheet() {
+    SetObjectNameBottomSheet(
+        isVisible = true,
+        icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+        onTextChanged = {},
+        onDismiss = {},
+        onIconClicked = {},
+        onOpenClicked = {}
+    )
+}
+

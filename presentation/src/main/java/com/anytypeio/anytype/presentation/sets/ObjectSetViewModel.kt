@@ -157,6 +157,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetViewModel(
     private val vmParams: Params,
     private val permissions: UserPermissionProvider,

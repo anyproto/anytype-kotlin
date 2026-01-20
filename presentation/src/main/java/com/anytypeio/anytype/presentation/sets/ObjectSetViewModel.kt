@@ -267,7 +267,8 @@ class ObjectSetViewModel(
         val isVisible: Boolean = false,
         val targetObjectId: Id? = null,
         val currentIcon: ObjectIcon = ObjectIcon.None,
-        val inputText: String = ""
+        val inputText: String = "",
+        val isIconChangeAllowed: Boolean = false
     )
 
     private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
@@ -3491,12 +3492,13 @@ class ObjectSetViewModel(
     /**
      * Shows the set object name bottom sheet for a newly created object.
      */
-    fun showSetObjectNameSheet(objectId: Id, icon: ObjectIcon) {
+    fun showSetObjectNameSheet(objectId: Id, icon: ObjectIcon, isIconChangeAllowed: Boolean) {
         _setObjectNameState.value = SetObjectNameState(
             isVisible = true,
             targetObjectId = objectId,
             currentIcon = icon,
-            inputText = ""
+            inputText = "",
+            isIconChangeAllowed = isIconChangeAllowed
         )
     }
 

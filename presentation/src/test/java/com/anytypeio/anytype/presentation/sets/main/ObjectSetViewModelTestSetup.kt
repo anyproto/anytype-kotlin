@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -240,6 +241,9 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var emojiSuggester: EmojiSuggester
 
+    @Mock
+    lateinit var createBlock: CreateBlock
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -360,7 +364,8 @@ open class ObjectSetViewModelTestSetup {
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
-            emojiSuggester = emojiSuggester
+            emojiSuggester = emojiSuggester,
+            createBlock = createBlock
         )
     }
 

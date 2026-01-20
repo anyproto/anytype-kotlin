@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
@@ -27,6 +29,7 @@ import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.permissions.layoutsSupportsEmojiAndImages
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -36,6 +39,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -168,6 +172,7 @@ class ObjectSetViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
+    private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
@@ -267,7 +272,9 @@ class ObjectSetViewModel(
         val isVisible: Boolean = false,
         val targetObjectId: Id? = null,
         val currentIcon: ObjectIcon = ObjectIcon.None,
-        val inputText: String = ""
+        val inputText: String = "",
+        val isIconChangeAllowed: Boolean = false,
+        val targetBlockId: Id? = null  // For Note objects, stores the blockId
     )
 
     private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
@@ -1642,25 +1649,26 @@ class ObjectSetViewModel(
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
         when (obj.layout) {
-            ObjectType.Layout.NOTE -> {
-                proceedWithOpeningObject(
-                    target = response.objectId,
-                    layout = obj.layout,
-                    space = vmParams.space.id
-                )
-            }
             ObjectType.Layout.CHAT_DERIVED -> {
                 proceedWithOpeningChat(
                     target = obj.id,
                     space = vmParams.space.id
                 )
             }
+            ObjectType.Layout.NOTE -> {
+                proceedWithCreatingNoteObject(obj = obj)
+            }
             else -> {
+                val isIconChangeAllowed = obj.layout in layoutsSupportsEmojiAndImages
                 val icon = obj.objectIcon(
                     builder = urlBuilder,
                     objType = storeOfObjectTypes.getTypeOfObject(obj)
                 )
-                showSetObjectNameSheet(objectId = response.objectId, icon = icon)
+                showSetObjectNameSheet(
+                    objectId = response.objectId,
+                    icon = icon,
+                    isIconChangeAllowed = isIconChangeAllowed
+                )
             }
         }
     }
@@ -1871,6 +1879,47 @@ class ObjectSetViewModel(
             onFailure = {
                 Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
                 navigate(EventWrapper(navigateCommand))
+            }
+        )
+    }
+
+    /**
+     * Handles creation flow for Note objects by creating the first text block.
+     * Note objects don't have titles - content goes directly into text blocks.
+     */
+    private suspend fun proceedWithCreatingNoteObject(obj: ObjectWrapper.Basic) {
+        val icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        )
+        createBlock.async(
+            CreateBlock.Params(
+                context = obj.id,
+                target = "header",
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+            )
+        ).fold(
+            onFailure = { error ->
+                Timber.e(error, "Error creating text block for Note object")
+                // Fallback: show sheet without blockId
+                showSetObjectNameSheet(
+                    objectId = obj.id,
+                    icon = icon,
+                    isIconChangeAllowed = false
+                )
+            },
+            onSuccess = { (blockId, payload) ->
+                // Update local state with payload
+                dispatcher.send(payload)
+
+                // Show name sheet with blockId
+                showSetObjectNameSheet(
+                    objectId = obj.id,
+                    icon = icon,
+                    isIconChangeAllowed = false,
+                    targetBlockId = blockId
+                )
             }
         )
     }
@@ -3491,12 +3540,19 @@ class ObjectSetViewModel(
     /**
      * Shows the set object name bottom sheet for a newly created object.
      */
-    fun showSetObjectNameSheet(objectId: Id, icon: ObjectIcon) {
+    fun showSetObjectNameSheet(
+        objectId: Id,
+        icon: ObjectIcon,
+        isIconChangeAllowed: Boolean,
+        targetBlockId: Id? = null
+    ) {
         _setObjectNameState.value = SetObjectNameState(
             isVisible = true,
             targetObjectId = objectId,
             currentIcon = icon,
-            inputText = ""
+            inputText = "",
+            isIconChangeAllowed = isIconChangeAllowed,
+            targetBlockId = targetBlockId
         )
     }
 
@@ -3510,16 +3566,32 @@ class ObjectSetViewModel(
         _setObjectNameState.value = state.copy(inputText = text)
 
         viewModelScope.launch {
-            setObjectDetails(
-                UpdateDetail.Params(
-                    target = targetId,
-                    key = Relations.NAME,
-                    value = text
+            if (state.targetBlockId != null) {
+                // Note object: update text block content
+                updateText(
+                    UpdateText.Params(
+                        context = targetId,
+                        target = state.targetBlockId,
+                        text = text,
+                        marks = emptyList()
+                    )
+                ).process(
+                    failure = { Timber.e(it, "Error while updating note text block") },
+                    success = { /* saved successfully */ }
                 )
-            ).process(
-                failure = { Timber.e(it, "Error while updating object name") },
-                success = { /* saved successfully */ }
-            )
+            } else {
+                // Other layouts: update name relation
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        target = targetId,
+                        key = Relations.NAME,
+                        value = text
+                    )
+                ).process(
+                    failure = { Timber.e(it, "Error while updating object name") },
+                    success = { /* saved successfully */ }
+                )
+            }
         }
     }
 

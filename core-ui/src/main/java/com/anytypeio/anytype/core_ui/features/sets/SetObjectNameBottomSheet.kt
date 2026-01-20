@@ -56,6 +56,7 @@ import com.anytypeio.anytype.presentation.objects.ObjectIcon
 fun SetObjectNameBottomSheet(
     isVisible: Boolean,
     icon: ObjectIcon,
+    isIconChangeAllowed: Boolean,
     onTextChanged: (String) -> Unit,
     onDismiss: () -> Unit,
     onIconClicked: () -> Unit,
@@ -108,7 +109,9 @@ fun SetObjectNameBottomSheet(
                         modifier = Modifier
                             .height(68.dp)
                             .width(36.dp)
-                            .noRippleThrottledClickable { onIconClicked() }
+                            .noRippleThrottledClickable {
+                                if (isIconChangeAllowed) onIconClicked()
+                            }
                     ) {
                         ListWidgetObjectIcon(
                             modifier = Modifier
@@ -181,6 +184,7 @@ fun PreviewSetObjectNameBottomSheet() {
     SetObjectNameBottomSheet(
         isVisible = true,
         icon = ObjectIcon.TypeIcon.Default.DEFAULT,
+        isIconChangeAllowed = true,
         onTextChanged = {},
         onDismiss = {},
         onIconClicked = {},

@@ -351,6 +351,9 @@ abstract class TestObjectSetSetup {
             spaceViews = spacedViews,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = mock(),
+            createBlock = mock(),
+            emojiProvider = mock(),
+            emojiSuggester = mock()
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

@@ -27,6 +27,7 @@ import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.permissions.layoutsSupportsEmojiAndImages
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -1643,13 +1644,6 @@ class ObjectSetViewModel(
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
         when (obj.layout) {
-            ObjectType.Layout.NOTE -> {
-                proceedWithOpeningObject(
-                    target = response.objectId,
-                    layout = obj.layout,
-                    space = vmParams.space.id
-                )
-            }
             ObjectType.Layout.CHAT_DERIVED -> {
                 proceedWithOpeningChat(
                     target = obj.id,
@@ -1657,11 +1651,16 @@ class ObjectSetViewModel(
                 )
             }
             else -> {
+                val isIconChangeAllowed = obj.layout in layoutsSupportsEmojiAndImages
                 val icon = obj.objectIcon(
                     builder = urlBuilder,
                     objType = storeOfObjectTypes.getTypeOfObject(obj)
                 )
-                showSetObjectNameSheet(objectId = response.objectId, icon = icon)
+                showSetObjectNameSheet(
+                    objectId = response.objectId,
+                    icon = icon,
+                    isIconChangeAllowed = isIconChangeAllowed
+                )
             }
         }
     }

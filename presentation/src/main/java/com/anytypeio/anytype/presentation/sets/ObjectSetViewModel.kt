@@ -58,6 +58,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -68,6 +69,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -81,11 +84,13 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
@@ -122,12 +127,15 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.withContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.catch
@@ -137,6 +145,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -144,9 +153,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetViewModel(
     private val vmParams: Params,
     private val permissions: UserPermissionProvider,
@@ -190,7 +201,9 @@ class ObjectSetViewModel(
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val deepLinkResolver: DeepLinkResolver,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val emojiProvider: EmojiProvider,
+    private val emojiSuggester: EmojiSuggester
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -246,6 +259,19 @@ class ObjectSetViewModel(
 
 
     private val pendingScrollToObject = MutableStateFlow<Id?>(null)
+
+    /**
+     * State for the Set Object Name bottom sheet.
+     */
+    data class SetObjectNameState(
+        val isVisible: Boolean = false,
+        val targetObjectId: Id? = null,
+        val currentIcon: ObjectIcon = ObjectIcon.None,
+        val inputText: String = ""
+    )
+
+    private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
+    val setObjectNameState: StateFlow<SetObjectNameState> = _setObjectNameState.asStateFlow()
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
@@ -399,6 +425,28 @@ class ObjectSetViewModel(
                     }
                 }
             }.collect()
+        }
+
+        // Observe icon changes for SetObjectNameBottomSheet
+        viewModelScope.launch {
+            _setObjectNameState
+                .filter { it.isVisible && it.targetObjectId != null }
+                .flatMapLatest { sheetState ->
+                    database.observe(sheetState.targetObjectId!!)
+                        .map { obj ->
+                            obj.objectIcon(
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(obj)
+                            )
+                        }
+                }
+                .distinctUntilChanged()
+                .catch {
+                    Timber.w(it, "Error while observing object icon")
+                }
+                .collect { icon ->
+                    _setObjectNameState.update { it.copy(currentIcon = icon) }
+                }
         }
 
         subscribeToSelectedType()
@@ -1608,13 +1656,11 @@ class ObjectSetViewModel(
                 )
             }
             else -> {
-                dispatch(
-                    ObjectSetCommand.Modal.SetNameForCreatedObject(
-                        ctx = vmParams.ctx,
-                        target = response.objectId,
-                        space = vmParams.space.id
-                    )
+                val icon = obj.objectIcon(
+                    builder = urlBuilder,
+                    objType = storeOfObjectTypes.getTypeOfObject(obj)
                 )
+                showSetObjectNameSheet(objectId = response.objectId, icon = icon)
             }
         }
     }
@@ -3438,6 +3484,91 @@ class ObjectSetViewModel(
             handleReadOnlyValue(timeInMillis = timeInMillis)
         }
     }
+    //endregion
+
+    //region SET OBJECT NAME BOTTOM SHEET
+
+    /**
+     * Shows the set object name bottom sheet for a newly created object.
+     */
+    fun showSetObjectNameSheet(objectId: Id, icon: ObjectIcon) {
+        _setObjectNameState.value = SetObjectNameState(
+            isVisible = true,
+            targetObjectId = objectId,
+            currentIcon = icon,
+            inputText = ""
+        )
+    }
+
+    /**
+     * Called when user types in the name field. Auto-saves to backend.
+     */
+    fun onSetObjectNameChanged(text: String) {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = state.copy(inputText = text)
+
+        viewModelScope.launch {
+            setObjectDetails(
+                UpdateDetail.Params(
+                    target = targetId,
+                    key = Relations.NAME,
+                    value = text
+                )
+            ).process(
+                failure = { Timber.e(it, "Error while updating object name") },
+                success = { /* saved successfully */ }
+            )
+        }
+    }
+
+    /**
+     * Called when bottom sheet is dismissed (Done pressed or swipe).
+     * Triggers scroll to the object.
+     */
+    fun onSetObjectNameDismissed() {
+        val objectId = _setObjectNameState.value.targetObjectId
+        _setObjectNameState.value = SetObjectNameState()
+
+        if (objectId != null) {
+            // Dispatch scroll command directly instead of using pendingScrollToObject
+            dispatch(ObjectSetCommand.ScrollToObject(objectId))
+        }
+    }
+
+    /**
+     * Opens the icon picker for the newly created object.
+     */
+    fun onSetObjectNameIconClicked() {
+        Timber.d("onSetObjectNameIconClicked, ")
+        val objectId = _setObjectNameState.value.targetObjectId ?: return
+        dispatch(
+            ObjectSetCommand.Modal.OpenIconActionMenu(
+                target = objectId,
+                space = vmParams.space.id
+            )
+        )
+    }
+
+    /**
+     * Opens the object in full editor from the name sheet.
+     */
+    fun onSetObjectNameOpenClicked() {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = SetObjectNameState()
+
+        viewModelScope.launch {
+            proceedWithOpeningObject(
+                target = targetId,
+                layout = null,
+                space = vmParams.space.id
+            )
+        }
+    }
+
     //endregion
 
     companion object {

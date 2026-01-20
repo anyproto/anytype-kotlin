@@ -108,7 +108,9 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             spaceViews = spacedViews,
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
-            setDataViewProperties = setDataViewProperties
+            setDataViewProperties = setDataViewProperties,
+            emojiProvider = emojiProvider,
+            emojiSuggester = emojiSuggester
         )
     }
 

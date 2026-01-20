@@ -96,8 +96,6 @@ class SpaceTypesViewModel(
                             }
                         }
 
-                    Timber.d("All types: $allTypes")
-
                     val (myTypes, systemTypes) = allTypes.partition {
                         !it.restrictions.contains(
                             ObjectRestriction.DELETE

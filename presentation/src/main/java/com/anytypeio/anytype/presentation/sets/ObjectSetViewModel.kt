@@ -37,6 +37,7 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -169,6 +170,7 @@ class ObjectSetViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
+    private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,

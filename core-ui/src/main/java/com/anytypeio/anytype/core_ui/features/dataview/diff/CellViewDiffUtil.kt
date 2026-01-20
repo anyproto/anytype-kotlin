@@ -2,7 +2,6 @@ package com.anytypeio.anytype.core_ui.features.dataview.diff
 
 import androidx.recyclerview.widget.DiffUtil
 import com.anytypeio.anytype.presentation.sets.model.CellView
-import timber.log.Timber
 
 class CellViewDiffUtil(
     private val old: List<CellView>,
@@ -12,13 +11,13 @@ class CellViewDiffUtil(
     override fun areItemsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
-        return (oldItem.id == newItem.id).also { Timber.d("areItemsTheSame: $it") }
+        return (oldItem.id == newItem.id)
     }
 
     override fun areContentsTheSame(oldItemPosition: Int, newItemPosition: Int): Boolean {
         val oldItem = old[oldItemPosition]
         val newItem = new[newItemPosition]
-        return (oldItem == newItem).also { Timber.d("areContentsTheSame: $it") }
+        return (oldItem == newItem)
     }
 
     override fun getOldListSize(): Int = old.size

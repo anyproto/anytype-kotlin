@@ -495,6 +495,7 @@ open class ObjectSetFragment :
                 SetObjectNameBottomSheet(
                     isVisible = state.isVisible,
                     icon = state.currentIcon,
+                    isIconChangeAllowed = state.isIconChangeAllowed,
                     onTextChanged = vm::onSetObjectNameChanged,
                     onDismiss = vm::onSetObjectNameDismissed,
                     onIconClicked = vm::onSetObjectNameIconClicked,

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
@@ -56,6 +57,7 @@ class ObjectSetViewModelFactory(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
+    private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
@@ -140,7 +142,8 @@ class ObjectSetViewModelFactory(
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
-            emojiSuggester = emojiSuggester
+            emojiSuggester = emojiSuggester,
+            createBlock = createBlock
         ) as T
     }
 }

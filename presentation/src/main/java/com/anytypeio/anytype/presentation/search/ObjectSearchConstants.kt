@@ -1019,6 +1019,13 @@ object ObjectSearchConstants {
                 value = true
             )
         )
+        add(
+            DVFilter(
+                relation = Relations.UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.PARTICIPANT
+            )
+        )
     }
 
     val defaultKeysObjectType = listOf(

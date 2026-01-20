@@ -5,6 +5,7 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.primitives.Space
+import com.anytypeio.anytype.core_utils.di.scope.PerDialog
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.feature.cover.UnsplashSubComponent
 import com.anytypeio.anytype.di.feature.relations.RelationAddToDataViewSubComponent
@@ -15,6 +16,7 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -212,6 +214,7 @@ object ObjectSetModule {
         closeObject: CloseObject,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
+        createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
         createDataViewObject: CreateDataViewObject,
         createObject: CreateObject,
@@ -259,6 +262,7 @@ object ObjectSetModule {
         setObjectDetails = setObjectDetails,
         createDataViewObject = createDataViewObject,
         updateText = updateText,
+        createBlock = createBlock,
         interceptEvents = interceptEvents,
         dispatcher = dispatcher,
         delegator = delegator,
@@ -307,6 +311,17 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): ConvertObjectToCollection = ConvertObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateBlock(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateBlock = CreateBlock(
         repo = repo,
         dispatchers = dispatchers
     )

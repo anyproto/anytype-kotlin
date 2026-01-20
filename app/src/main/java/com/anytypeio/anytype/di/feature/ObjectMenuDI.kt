@@ -341,17 +341,6 @@ object ObjectSetMenuModule {
     @JvmStatic
     @Provides
     @PerDialog
-    fun provideCreateBlock(
-        repo: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): CreateBlock = CreateBlock(
-        repo = repo,
-        dispatchers = dispatchers
-    )
-
-    @JvmStatic
-    @Provides
-    @PerDialog
     fun provideFavoriteUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers

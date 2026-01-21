@@ -4666,7 +4666,7 @@ class EditorViewModel(
             props = Props(
                 mapOf(
                     EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
-                    EventsPropertiesKey.spaceId to provideParams(vmParams.space.id).spaceId
+                    EventsPropertiesKey.spaceId to vmParams.space.id
                 )
             )
         )

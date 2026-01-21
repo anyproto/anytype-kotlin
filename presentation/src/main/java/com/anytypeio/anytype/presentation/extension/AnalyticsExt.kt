@@ -348,7 +348,8 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -371,7 +372,8 @@ fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -389,7 +391,8 @@ fun CoroutineScope.sendAnalyticsReorderRelationEvent(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -409,7 +412,8 @@ fun CoroutineScope.sendAnalyticsResolveObjectConflict(
             EventsPropertiesKey.route to EventsDictionary.Routes.objectRoute,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -427,7 +431,8 @@ fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(

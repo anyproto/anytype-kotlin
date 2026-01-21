@@ -49,7 +49,6 @@ import com.anytypeio.anytype.presentation.relations.toViewRelation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.dataViewState
-import com.anytypeio.anytype.presentation.sets.model.ColumnView
 import com.anytypeio.anytype.presentation.sets.model.FilterValue
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
@@ -77,8 +76,9 @@ open class FilterViewModel(
     private val getOptions: GetOptions,
     private val spaceManager: SpaceManager,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
-) : ViewModel() {
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
+) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     val commands = MutableSharedFlow<Commands>()
     val isCompleted = MutableSharedFlow<Boolean>(0)
@@ -838,30 +838,13 @@ open class FilterViewModel(
             onSuccess = {
                 dispatcher.send(it).also {
                     val spaceId = SpaceId(spaceManager.get())
-                    val spaceView = spaceViews.get(spaceId)
                     viewModelScope.logEvent(
                         state = objectState.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE,
                         startTime = startTime,
                         condition = updatedFilter.condition,
-                        spaceParams = AnalyticSpaceHelperDelegate.Params(
-                            permission = "",
-                            spaceType = when (spaceView?.spaceAccessType) {
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.DEFAULT -> "Personal"
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.PRIVATE -> "Private"
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.SHARED -> "Shared"
-                                else -> ""
-                            },
-                            spaceUxType = when (spaceView?.spaceUxType) {
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.DATA -> "Data"
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.STREAM -> "Stream"
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.CHAT -> "Chat"
-                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.ONE_TO_ONE -> "OneToOne"
-                                else -> ""
-                            },
-                            spaceId = spaceId.id
-                        )
+                        spaceParams = provideParams(spaceId.id)
                     )
                     isCompleted.emit(true)
                 }
@@ -972,7 +955,8 @@ open class FilterViewModel(
         private val analytics: Analytics,
         private val spaceManager: SpaceManager,
         private val fieldParser: FieldParser,
-        private val spaceViews: SpaceViewSubscriptionContainer
+        private val spaceViews: SpaceViewSubscriptionContainer,
+        private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -989,7 +973,8 @@ open class FilterViewModel(
                 analytics = analytics,
                 spaceManager = spaceManager,
                 fieldParser = fieldParser,
-                spaceViews = spaceViews
+                spaceViews = spaceViews,
+                analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
             ) as T
         }
     }

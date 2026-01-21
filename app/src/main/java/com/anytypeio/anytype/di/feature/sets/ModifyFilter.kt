@@ -12,6 +12,7 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
 import com.anytypeio.anytype.presentation.sets.filter.FilterViewModel
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -56,7 +57,8 @@ object ModifyFilterModule {
         storeOfRelations: StoreOfRelations,
         spaceManager: SpaceManager,
         fieldParser: FieldParser,
-        spaceViews: SpaceViewSubscriptionContainer
+        spaceViews: SpaceViewSubscriptionContainer,
+        analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate
     ): FilterViewModel.Factory = FilterViewModel.Factory(
         objectState = state,
         dispatcher = dispatcher,
@@ -70,6 +72,7 @@ object ModifyFilterModule {
         getOptions = getOptions,
         spaceManager = spaceManager,
         fieldParser = fieldParser,
-        spaceViews = spaceViews
+        spaceViews = spaceViews,
+        analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
     )
 }

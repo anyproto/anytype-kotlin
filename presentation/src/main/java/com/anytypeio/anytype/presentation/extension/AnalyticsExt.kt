@@ -1722,11 +1722,11 @@ private fun buildProps(
                 EventsPropertiesKey.spaceType,
                 spaceParams.spaceType
             )
-            if(spaceParams.spaceUxType.isNotEmpty()) put(
+            if (spaceParams.spaceUxType.isNotEmpty()) put(
                 EventsPropertiesKey.uxType,
                 spaceParams.spaceUxType
             )
-            if(spaceParams.spaceId.isNotEmpty()) put(
+            if (spaceParams.spaceId.isNotEmpty()) put(
                 EventsPropertiesKey.spaceId,
                 spaceParams.spaceId
             )

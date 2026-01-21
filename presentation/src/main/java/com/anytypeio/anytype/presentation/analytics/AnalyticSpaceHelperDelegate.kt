@@ -17,10 +17,11 @@ interface AnalyticSpaceHelperDelegate {
     data class Params(
         val permission: String,
         val spaceType: String,
-        val spaceUxType: String
+        val spaceUxType: String,
+        val spaceId: String
     ) {
         companion object {
-            val EMPTY = Params("", "", "")
+            val EMPTY = Params("", "", "", "")
         }
     }
 }
@@ -35,7 +36,7 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
         val permissions = userPermissionProvider.get(spaceId)
         val spaceView = spaceViewContainer.get(spaceId)
         val spaceType = spaceView?.spaceAccessType
-        val spaceUxType = spaceView?.spaceUxType
+        val spaceUxType = spaceView?.spaceUxType ?: SpaceUxType.DATA
         return AnalyticSpaceHelperDelegate.Params(
             permission = when (permissions) {
                 SpaceMemberPermissions.READER -> "Reader"
@@ -55,8 +56,9 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
                 SpaceUxType.STREAM -> "Stream"
                 SpaceUxType.CHAT -> "Chat"
                 SpaceUxType.ONE_TO_ONE -> "OneToOne"
-                SpaceUxType.NONE, null -> EMPTY_STRING_VALUE
-            }
+                SpaceUxType.NONE -> EMPTY_STRING_VALUE
+            },
+            spaceId = space
         )
     }
 }

@@ -17,10 +17,11 @@ interface AnalyticSpaceHelperDelegate {
     data class Params(
         val permission: String,
         val spaceType: String,
-        val spaceUxType: String
+        val spaceUxType: String,
+        val spaceId: String
     ) {
         companion object {
-            val EMPTY = Params("", "", "")
+            val EMPTY = Params("", "", "", "")
         }
     }
 }
@@ -56,7 +57,8 @@ class DefaultAnalyticsParamsProvider @Inject constructor(
                 SpaceUxType.CHAT -> "Chat"
                 SpaceUxType.ONE_TO_ONE -> "OneToOne"
                 SpaceUxType.NONE, null -> EMPTY_STRING_VALUE
-            }
+            },
+            spaceId = space
         )
     }
 }

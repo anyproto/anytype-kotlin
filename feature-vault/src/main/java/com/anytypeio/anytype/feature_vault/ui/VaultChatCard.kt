@@ -36,9 +36,6 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
-import com.anytypeio.anytype.feature_chats.R as FeatureChatsR
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -54,8 +51,9 @@ import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 /**
  * Determines the text color for chat preview based on notification state and read/unread status.
@@ -74,15 +72,15 @@ fun getChatTextColor(
     return when {
         // Muted/disabled chats: always show as secondary (even if unread)
         notificationMode == NotificationState.DISABLE ->
-            colorResource(id = CoreUiR.color.text_transparent_secondary)
+            colorResource(id = R.color.text_transparent_secondary)
 
         // Read messages: show as secondary
         unreadMessageCount == 0 && unreadMentionCount == 0 ->
-            colorResource(id = CoreUiR.color.text_transparent_secondary)
+            colorResource(id = R.color.text_transparent_secondary)
 
         // Unread messages (when notifications enabled): show as primary
         else ->
-            colorResource(id = CoreUiR.color.text_primary)
+            colorResource(id = R.color.text_primary)
     }
 }
 
@@ -91,10 +89,10 @@ private fun getUnreadMentionCountBadgeColor(
     notificationMode: NotificationState?
 ): androidx.compose.ui.graphics.Color {
     return when (notificationMode) {
-        NotificationState.ALL -> colorResource(id = CoreUiR.color.control_accent)
-        NotificationState.MENTIONS -> colorResource(id = CoreUiR.color.control_accent)
-        NotificationState.DISABLE -> colorResource(id = CoreUiR.color.control_transparent_tetriary)
-        else -> colorResource(id = CoreUiR.color.control_accent)
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_accent)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
     }
 }
 
@@ -103,10 +101,10 @@ private fun getUnreadMessageCountBadgeColor(
     notificationMode: NotificationState?
 ): androidx.compose.ui.graphics.Color {
     return when (notificationMode) {
-        NotificationState.ALL -> colorResource(id = CoreUiR.color.control_accent)
-        NotificationState.MENTIONS -> colorResource(id = CoreUiR.color.control_transparent_tetriary)
-        NotificationState.DISABLE -> colorResource(id = CoreUiR.color.control_transparent_tetriary)
-        else -> colorResource(id = CoreUiR.color.control_accent)
+        NotificationState.ALL -> colorResource(id = R.color.control_accent)
+        NotificationState.MENTIONS -> colorResource(id = R.color.control_transparent_tetriary)
+        NotificationState.DISABLE -> colorResource(id = R.color.control_transparent_tetriary)
+        else -> colorResource(id = R.color.control_accent)
     }
 }
 
@@ -164,7 +162,7 @@ fun VaultChatSpaceCard(
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = colorResource(id = CoreUiR.color.background_secondary),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp)
@@ -186,7 +184,7 @@ fun VaultChatSpaceCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title.ifEmpty { stringResource(id = LocalizationR.string.untitled) },
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             creatorName = creatorName,
             messageText = messageText,
@@ -272,10 +270,10 @@ private fun RowScope.ContentChat(
             // Show pin icon when no content but is pinned
             if (!hasContent && isPinned) {
                 Image(
-                    painter = painterResource(CoreUiR.drawable.ic_pin_18),
-                    contentDescription = stringResource(LocalizationR.string.content_desc_pin),
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
                     modifier = Modifier.size(18.dp),
-                    colorFilter = ColorFilter.tint(colorResource(CoreUiR.color.control_transparent_secondary))
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                 )
             }
         }
@@ -371,7 +369,7 @@ fun UnreadIndicatorsRow(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(CoreUiR.drawable.ic_chat_widget_mention),
+                    painter = painterResource(R.drawable.ic_chat_widget_mention),
                     contentDescription = "Mentions icon"
                 )
             }
@@ -399,17 +397,17 @@ fun UnreadIndicatorsRow(
                 Text(
                     text = unreadMessageCount.toString(),
                     style = Caption2Regular,
-                    color = colorResource(id = CoreUiR.color.text_white),
+                    color = colorResource(id = R.color.text_white),
                 )
             }
         }
 
         if (unreadMessageCount == 0 && unreadMentionCount == 0 && isPinned) {
             Image(
-                painter = painterResource(CoreUiR.drawable.ic_pin_18),
-                contentDescription = stringResource(LocalizationR.string.content_desc_pin),
+                painter = painterResource(R.drawable.ic_pin_18),
+                contentDescription = stringResource(R.string.content_desc_pin),
                 modifier = Modifier.size(18.dp),
-                colorFilter = ColorFilter.tint(colorResource(CoreUiR.color.control_transparent_secondary))
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
             )
         }
     }
@@ -437,24 +435,24 @@ fun TitleRow(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = BodySemiBold,
-                    color = colorResource(id = CoreUiR.color.text_primary),
+                    color = colorResource(id = R.color.text_primary),
                 )
                 // 1: optional muted icon (only if isMuted == true)
                 if (isMuted == true) {
                     Image(
-                        painter = painterResource(CoreUiR.drawable.ic_chat_muted_18),
-                        contentDescription = stringResource(LocalizationR.string.content_desc_muted),
+                        painter = painterResource(R.drawable.ic_chat_muted_18),
+                        contentDescription = stringResource(R.string.content_desc_muted),
                         modifier = Modifier.size(18.dp),
-                        colorFilter = ColorFilter.tint(colorResource(CoreUiR.color.control_transparent_secondary))
+                        colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                     )
                 }
                 // 2: optional pending indicator (only if showPendingIndicator == true)
                 if (showPendingIndicator) {
                     Image(
-                        painter = painterResource(FeatureChatsR.drawable.ic_chat_msg_not_synced),
-                        contentDescription = stringResource(LocalizationR.string.content_desc_pending_sync),
+                        painter = painterResource(R.drawable.ic_chat_msg_not_synced),
+                        contentDescription = stringResource(R.string.content_desc_pending_sync),
                         modifier = Modifier.size(12.dp),
-                        colorFilter = ColorFilter.tint(colorResource(CoreUiR.color.text_primary))
+                        colorFilter = ColorFilter.tint(colorResource(R.color.text_primary))
                     )
                 }
                 // 3: optional time (only if messageTime != null)
@@ -462,7 +460,7 @@ fun TitleRow(
                     Text(
                         text = it,
                         style = Relations2,
-                        color = colorResource(id = CoreUiR.color.text_transparent_secondary),
+                        color = colorResource(id = R.color.text_transparent_secondary),
                     )
                 }
             }
@@ -584,7 +582,7 @@ fun buildChatContentWithInlineIcons(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
     fallbackSubtitle: String,
     singleLineFormat: Boolean = false,
-    textColor: androidx.compose.ui.graphics.Color = colorResource(id = CoreUiR.color.text_transparent_secondary),
+    textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary),
     mediumStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewMedium.toSpanStyle().copy(color = textColor),
     regularStyle: androidx.compose.ui.text.SpanStyle = CodeChatPreviewRegular.toSpanStyle().copy(color = textColor)
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
@@ -654,20 +652,20 @@ fun buildChatContentWithInlineIcons(
                         when {
                             imageCount == 1 -> {
                                 withStyle(style = mediumStyle) {
-                                    append(stringResource(LocalizationR.string.image))
+                                    append(stringResource(R.string.image))
                                 }
                             }
 
                             fileCount == 1 -> {
                                 withStyle(style = mediumStyle) {
-                                    append(stringResource(LocalizationR.string.file))
+                                    append(stringResource(R.string.file))
                                 }
                             }
 
                             linkCount == 1 -> {
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
-                                        ?: stringResource(LocalizationR.string.objects)
+                                        ?: stringResource(R.string.objects)
                                 withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                 }
@@ -689,7 +687,7 @@ fun buildChatContentWithInlineIcons(
                                 // For links: show title + messageText
                                 val linkTitle =
                                     attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
-                                        ?: stringResource(LocalizationR.string.object_1)
+                                        ?: stringResource(R.string.object_1)
                                 withStyle(style = mediumStyle) {
                                     append(linkTitle)
                                     append(" ")
@@ -719,28 +717,28 @@ fun buildChatContentWithInlineIcons(
                             imageCount > 0 && fileCount == 0 && linkCount == 0 -> {
                                 // Images only
                                 withStyle(style = mediumStyle) {
-                                    append("$imageCount ${stringResource(LocalizationR.string.images)}")
+                                    append("$imageCount ${stringResource(R.string.images)}")
                                 }
                             }
 
                             fileCount > 0 && imageCount == 0 && linkCount == 0 -> {
                                 // Files only
                                 withStyle(style = mediumStyle) {
-                                    append("$fileCount ${stringResource(LocalizationR.string.files)}")
+                                    append("$fileCount ${stringResource(R.string.files)}")
                                 }
                             }
 
                             linkCount > 0 && imageCount == 0 && fileCount == 0 -> {
                                 // Objects only
                                 withStyle(style = mediumStyle) {
-                                    append("$linkCount ${stringResource(LocalizationR.string.objects)}")
+                                    append("$linkCount ${stringResource(R.string.objects)}")
                                 }
                             }
 
                             else -> {
                                 // Mixed types
                                 withStyle(style = mediumStyle) {
-                                    append("$attachmentCount ${stringResource(LocalizationR.string.attachments)}")
+                                    append("$attachmentCount ${stringResource(R.string.attachments)}")
                                 }
                             }
                         }

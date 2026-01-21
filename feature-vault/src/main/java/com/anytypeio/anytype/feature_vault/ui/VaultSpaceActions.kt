@@ -17,10 +17,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.feature_vault.R
 
 @Composable
 fun SpaceActionsDropdownMenu(
@@ -38,7 +37,7 @@ fun SpaceActionsDropdownMenu(
         modifier = Modifier.width(254.dp),
         expanded = expanded,
         onDismissRequest = onDismiss,
-        containerColor = colorResource(CoreUiR.color.background_secondary),
+        containerColor = colorResource(R.color.background_secondary),
         shape = RoundedCornerShape(12.dp),
         tonalElevation = 8.dp,
         offset = DpOffset(
@@ -53,19 +52,19 @@ fun SpaceActionsDropdownMenu(
                 },
                 text = {
                     val stringRes = if (isPinned) {
-                        LocalizationR.string.vault_unpin_space
+                        R.string.vault_unpin_space
                     } else {
-                        LocalizationR.string.vault_pin_space
+                        R.string.vault_pin_space
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             modifier = Modifier.weight(1f),
                             text = stringResource(id = stringRes),
                             style = BodyRegular,
-                            color = colorResource(id = CoreUiR.color.text_primary)
+                            color = colorResource(id = R.color.text_primary)
                         )
                         Image(
-                            painter = painterResource(id = if (isPinned) CoreUiR.drawable.ic_unpin_24 else CoreUiR.drawable.ic_pin_24),
+                            painter = painterResource(id = if (isPinned) R.drawable.ic_unpin_24 else R.drawable.ic_pin_24),
                             contentDescription = null,
                             modifier = Modifier
                                 .padding(end = 4.dp)
@@ -85,16 +84,16 @@ fun SpaceActionsDropdownMenu(
                 },
                 text = {
                     val (stringRes, iconRes) = if (isMuted) {
-                        LocalizationR.string.space_notify_unmute to CoreUiR.drawable.ic_notifications
+                        R.string.space_notify_unmute to R.drawable.ic_notifications
                     } else {
-                        LocalizationR.string.space_notify_mute to CoreUiR.drawable.ic_notifications_off
+                        R.string.space_notify_mute to R.drawable.ic_notifications_off
                     }
                     Row(verticalAlignment = Alignment.CenterVertically) {
                         Text(
                             modifier = Modifier.weight(1f),
                             text = stringResource(id = stringRes),
                             style = BodyRegular,
-                            color = colorResource(id = CoreUiR.color.text_primary)
+                            color = colorResource(id = R.color.text_primary)
                         )
                         Image(
                             painter = painterResource(id = iconRes),
@@ -119,11 +118,11 @@ fun SpaceActionsDropdownMenu(
                     Text(
                         modifier = Modifier.weight(1f),
                         style = BodyRegular,
-                        color = colorResource(id = CoreUiR.color.text_primary),
-                        text = stringResource(LocalizationR.string.vault_space_settings)
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(R.string.vault_space_settings)
                     )
                     Image(
-                        painter = painterResource(id = CoreUiR.drawable.ic_space_settings_24),
+                        painter = painterResource(id = R.drawable.ic_space_settings_24),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 4.dp)
@@ -141,19 +140,19 @@ fun SpaceActionsDropdownMenu(
             },
             text = {
                 val stringRes = if (isOwner) {
-                    LocalizationR.string.delete_space
+                    R.string.delete_space
                 } else {
-                    LocalizationR.string.multiplayer_leave_space
+                    R.string.multiplayer_leave_space
                 }
                 Row(verticalAlignment = Alignment.CenterVertically) {
                     Text(
                         modifier = Modifier.weight(1f),
                         style = BodyRegular,
-                        color = colorResource(id = CoreUiR.color.text_primary),
+                        color = colorResource(id = R.color.text_primary),
                         text = stringResource(id = stringRes)
                     )
                     Image(
-                        painter = painterResource(id = CoreUiR.drawable.ic_leave_space_24),
+                        painter = painterResource(id = R.drawable.ic_leave_space_24),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 4.dp)

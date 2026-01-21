@@ -3,6 +3,7 @@ package com.anytypeio.anytype.feature_vault.ui
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,26 +26,24 @@ import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.ui.draw.clip
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.feature_vault.R
 import kotlinx.coroutines.launch
 
 
@@ -79,7 +78,7 @@ fun SpacesIntroductionScreen(
                 .fillMaxSize()
                 .background(
                     shape = RoundedCornerShape(12.dp),
-                    color = colorResource(id = CoreUiR.color.background_secondary)
+                    color = colorResource(id = R.color.background_secondary)
                 )
         ) {
             // Drag indicator
@@ -100,31 +99,31 @@ fun SpacesIntroductionScreen(
             ) { page ->
                 when (page) {
                     0 -> IntroductionPage(
-                        imageLightRes = CoreUiR.drawable.introduce_chat_1,
-                        imageDarkRes = CoreUiR.drawable.introduce_chat_1_dark,
-                        titleRes = LocalizationR.string.spaces_introduction_page1_title,
-                        descriptionRes = LocalizationR.string.spaces_introduction_page1_description
+                        imageLightRes = R.drawable.introduce_chat_1,
+                        imageDarkRes = R.drawable.introduce_chat_1_dark,
+                        titleRes = R.string.spaces_introduction_page1_title,
+                        descriptionRes = R.string.spaces_introduction_page1_description
                     )
 
                     1 -> IntroductionPage(
-                        imageLightRes = CoreUiR.drawable.introduce_chat_2,
-                        imageDarkRes = CoreUiR.drawable.introduce_chat_2_dark,
-                        titleRes = LocalizationR.string.spaces_introduction_page2_title,
-                        descriptionRes = LocalizationR.string.spaces_introduction_page2_description
+                        imageLightRes = R.drawable.introduce_chat_2,
+                        imageDarkRes = R.drawable.introduce_chat_2_dark,
+                        titleRes = R.string.spaces_introduction_page2_title,
+                        descriptionRes = R.string.spaces_introduction_page2_description
                     )
 
                     2 -> IntroductionPage(
-                        imageLightRes = CoreUiR.drawable.introduce_chat_3,
-                        imageDarkRes = CoreUiR.drawable.introduce_chat_3_dark,
-                        titleRes = LocalizationR.string.spaces_introduction_page3_title,
-                        descriptionRes = LocalizationR.string.spaces_introduction_page3_description
+                        imageLightRes = R.drawable.introduce_chat_3,
+                        imageDarkRes = R.drawable.introduce_chat_3_dark,
+                        titleRes = R.string.spaces_introduction_page3_title,
+                        descriptionRes = R.string.spaces_introduction_page3_description
                     )
 
                     3 -> IntroductionPage(
-                        imageLightRes = CoreUiR.drawable.introduce_chat_4,
-                        imageDarkRes = CoreUiR.drawable.introduce_chat_4_dark,
-                        titleRes = LocalizationR.string.spaces_introduction_page4_title,
-                        descriptionRes = LocalizationR.string.spaces_introduction_page4_description
+                        imageLightRes = R.drawable.introduce_chat_4,
+                        imageDarkRes = R.drawable.introduce_chat_4_dark,
+                        titleRes = R.string.spaces_introduction_page4_title,
+                        descriptionRes = R.string.spaces_introduction_page4_description
                     )
                 }
             }
@@ -145,9 +144,9 @@ fun SpacesIntroductionScreen(
                             .clip(CircleShape)
                             .background(
                                 if (pagerState.currentPage == index)
-                                    colorResource(id = CoreUiR.color.glyph_active)
+                                    colorResource(id = R.color.glyph_active)
                                 else
-                                    colorResource(id = CoreUiR.color.shape_transparent_secondary)
+                                    colorResource(id = R.color.shape_transparent_secondary)
                             )
                     )
                     if (index < 3) {
@@ -171,9 +170,9 @@ fun SpacesIntroductionScreen(
                     }
                 },
                 text = if (pagerState.currentPage < 3) {
-                    stringResource(id = LocalizationR.string.next)
+                    stringResource(id = R.string.next)
                 } else {
-                    stringResource(id = LocalizationR.string.spaces_introduction_try_it)
+                    stringResource(id = R.string.spaces_introduction_try_it)
                 },
                 size = ButtonSize.Large,
                 modifier = Modifier
@@ -229,7 +228,7 @@ private fun IntroductionPage(
         Text(
             text = stringResource(id = titleRes),
             style = HeadlineHeading,
-            color = colorResource(id = CoreUiR.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
 
@@ -240,7 +239,7 @@ private fun IntroductionPage(
         Text(
             text = stringResource(id = descriptionRes),
             style = BodyRegular,
-            color = colorResource(id = CoreUiR.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
             modifier = Modifier.padding(horizontal = 24.dp),
             maxLines = 3
@@ -258,9 +257,9 @@ private fun SpacesIntroductionScreenPreview() {
 @Composable
 private fun Introduction1ScreenPreview() {
     IntroductionPage(
-        imageLightRes = CoreUiR.drawable.introduce_chat_1,
-        imageDarkRes = CoreUiR.drawable.introduce_chat_1_dark,
-        titleRes = LocalizationR.string.spaces_introduction_page1_title,
-        descriptionRes = LocalizationR.string.spaces_introduction_page1_description
+        imageLightRes = R.drawable.introduce_chat_1,
+        imageDarkRes = R.drawable.introduce_chat_1_dark,
+        titleRes = R.string.spaces_introduction_page1_title,
+        descriptionRes = R.string.spaces_introduction_page1_description
     )
 }

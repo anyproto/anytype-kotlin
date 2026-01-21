@@ -26,13 +26,12 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.feature_vault.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -62,7 +61,7 @@ fun ChooseSpaceTypeScreen(
                 .padding(horizontal = 8.dp)
                 .background(
                     shape = RoundedCornerShape(16.dp),
-                    color = colorResource(id = CoreUiR.color.background_secondary)
+                    color = colorResource(id = R.color.background_secondary)
                 )
         ) {
             Dragger(
@@ -83,21 +82,21 @@ fun ChooseSpaceTypeScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Image(
-                        painter = painterResource(id = CoreUiR.drawable.ic_space_type_chat),
+                        painter = painterResource(id = R.drawable.ic_space_type_chat),
                         contentDescription = "Create Chat",
                         modifier = Modifier.size(56.dp)
                     )
                     Spacer(modifier = Modifier.width(12.dp))
                     Column {
                         Text(
-                            text = stringResource(id = LocalizationR.string.vault_create_chat),
+                            text = stringResource(id = R.string.vault_create_chat),
                             style = Title1,
-                            color = colorResource(id = CoreUiR.color.text_primary)
+                            color = colorResource(id = R.color.text_primary)
                         )
                         Text(
-                            text = stringResource(id = LocalizationR.string.vault_create_chat_description),
+                            text = stringResource(id = R.string.vault_create_chat_description),
                             style = Caption1Regular,
-                            color = colorResource(id = CoreUiR.color.control_transparent_secondary),
+                            color = colorResource(id = R.color.control_transparent_secondary),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -116,21 +115,21 @@ fun ChooseSpaceTypeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = CoreUiR.drawable.ic_space_type_space),
+                    painter = painterResource(id = R.drawable.ic_space_type_space),
                     contentDescription = "Create Space",
                     modifier = Modifier.size(56.dp)
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = stringResource(id = LocalizationR.string.vault_create_space),
+                        text = stringResource(id = R.string.vault_create_space),
                         style = Title1,
-                        color = colorResource(id = CoreUiR.color.text_primary)
+                        color = colorResource(id = R.color.text_primary)
                     )
                     Text(
-                        text = stringResource(id = LocalizationR.string.vault_create_space_description),
+                        text = stringResource(id = R.string.vault_create_space_description),
                         style = Caption1Regular,
-                        color = colorResource(id = CoreUiR.color.control_transparent_secondary),
+                        color = colorResource(id = R.color.control_transparent_secondary),
                         maxLines = 2,
                         overflow = TextOverflow.Ellipsis
                     )
@@ -148,22 +147,22 @@ fun ChooseSpaceTypeScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
-                    painter = painterResource(id = CoreUiR.drawable.ic_join_via_qr_code_32),
+                    painter = painterResource(id = R.drawable.ic_join_via_qr_code_32),
                     contentDescription = "Join via QR Code",
                     modifier = Modifier
                         .size(56.dp)
                         .background(
                             shape = CircleShape, color =
-                                colorResource(id = CoreUiR.color.shape_transparent_secondary)
+                                colorResource(id = R.color.shape_transparent_secondary)
                         ),
                     contentScale = ContentScale.Inside
                 )
                 Spacer(modifier = Modifier.width(12.dp))
                 Column {
                     Text(
-                        text = stringResource(id = LocalizationR.string.vault_join_via_qr),
+                        text = stringResource(id = R.string.vault_join_via_qr),
                         style = Title1,
-                        color = colorResource(id = CoreUiR.color.text_primary)
+                        color = colorResource(id = R.color.text_primary)
                     )
                 }
             }

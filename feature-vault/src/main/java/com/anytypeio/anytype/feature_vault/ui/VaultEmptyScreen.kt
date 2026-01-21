@@ -18,17 +18,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.feature_vault.R
 
 @Composable
 fun VaultEmptyState(
     modifier: Modifier = Modifier,
-    textRes: Int = LocalizationR.string.vault_empty_state_text,
+    textRes: Int = R.string.vault_empty_state_text,
     showButton: Boolean = true,
     onCreateSpaceClicked: () -> Unit
 ) {
@@ -41,7 +40,7 @@ fun VaultEmptyState(
         verticalArrangement = Arrangement.Center
     ) {
         Image(
-            painter = painterResource(id = CoreUiR.drawable.ic_vault_create_space),
+            painter = painterResource(id = R.drawable.ic_vault_create_space),
             contentDescription = "Empty state icon",
             modifier = Modifier.wrapContentSize()
         )
@@ -51,7 +50,7 @@ fun VaultEmptyState(
         Text(
             text = stringResource(id = textRes),
             style = BodyRegular,
-            color = colorResource(id = CoreUiR.color.text_primary),
+            color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center
         )
 
@@ -62,7 +61,7 @@ fun VaultEmptyState(
                 onClick = onCreateSpaceClicked,
                 modifier = Modifier,
                 size = ButtonSize.Small,
-                text = stringResource(id = LocalizationR.string.create_space),
+                text = stringResource(id = R.string.create_space),
             )
         }
     }

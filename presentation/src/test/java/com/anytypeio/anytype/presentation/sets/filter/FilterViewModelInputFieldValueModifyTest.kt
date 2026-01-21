@@ -37,6 +37,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -195,6 +196,10 @@ class FilterViewModelInputFieldValueModifyTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         urlBuilder = UrlBuilder(gateway)
+        val analyticSpaceHelperDelegate = mock<com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate>()
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(any()) } doReturn com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
         viewModel = FilterViewModel(
             objectState = state,
             dispatcher = dispatcher,
@@ -208,7 +213,8 @@ class FilterViewModelInputFieldValueModifyTest {
             getOptions = getOptions,
             spaceManager = spaceManager,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            analyticSpaceHelperDelegate = analyticSpaceHelperDelegate
         )
     }
 
@@ -410,6 +416,9 @@ class FilterViewModelInputFieldValueModifyTest {
                     events = emptyList()
                 )
             )
+        }
+        spaceManager.stub {
+            onBlocking { get() } doReturn MockDataFactory.randomString()
         }
     }
 

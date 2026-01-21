@@ -35,6 +35,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -201,7 +202,8 @@ class FilterViewModelInputFieldValueCreateTest {
             getOptions = getOptions,
             spaceManager = spaceManager,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            analyticSpaceHelperDelegate = mock()
         )
     }
 

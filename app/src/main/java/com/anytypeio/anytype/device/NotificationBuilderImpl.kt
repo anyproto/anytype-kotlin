@@ -55,8 +55,8 @@ class NotificationBuilderImpl(
     private val groupNotificationIds = mutableMapOf<String, MutableSet<Int>>()
 
     /**
-     * In-memory cache for notification icon bitmaps (both space and chat icons) to avoid redundant generation
-     * when multiple notifications arrive for the same space or chat in quick succession.
+     * In-memory cache for notification icon bitmaps (space icons only) to avoid redundant generation
+     * when multiple notifications arrive for the same space in quick succession.
      * Cache is cleared when notifications are dismissed to allow fresh icons if changed.
      */
     private val spaceIconCache = mutableMapOf<Id, Bitmap>()
@@ -82,24 +82,17 @@ class NotificationBuilderImpl(
         // Generate unique notification ID based on message ID
         val notificationId = message.msgId.hashCode()
 
-        // Load icon for notification:
-        // - For Data spaces: use the chat's icon (each chat has its own icon)
-        // - For Chat spaces: use the space icon (space and chat are the same)
-        val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
-        val largeIcon = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
-            loadChatIconBitmap(chatId = message.chatId)
-                ?: loadSpaceIconBitmap(spaceId)  // Fallback to space icon if chat icon fails
-        } else {
-            loadSpaceIconBitmap(spaceId)
-        }
+        // Load space icon for all notifications
+        val largeIcon = loadSpaceIconBitmap(spaceId)
 
         if (largeIcon == null) {
-            Timber.w("Failed to load both chat and space icons for notification. spaceId=$spaceId, chatId=${message.chatId}")
+            Timber.w("Failed to load space icon for notification. spaceId=$spaceId")
         }
 
         // Determine Line 2 content:
         // - For Data spaces: chat name (fallback to space name if unavailable)
         // - For Chat spaces: space name (since space = chat in 1-to-1)
+        val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
         val secondLine = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
             chatsDetailsSubscriptionContainer.get(message.chatId)?.name
                 ?.trim()
@@ -209,51 +202,6 @@ class NotificationBuilderImpl(
         }.getOrNull()
     }
 
-    /**
-     * Loads a chat object's icon as a Bitmap for use in notifications.
-     * Chat objects (CHAT_DERIVED layout) can have: iconImage, iconEmoji, or fallback placeholder.
-     * Used for Data spaces where each chat has its own distinct icon.
-     * Uses ChatsDetailsSubscriptionContainer which already has cached chat details.
-     */
-    private suspend fun loadChatIconBitmap(chatId: Id): Bitmap? {
-        // Check cache first using chatId as key
-        spaceIconCache[chatId]?.let { cached ->
-            Timber.d("Using cached chat icon for chat: $chatId")
-            return cached
-        }
-
-        Timber.d("Loading chat icon for chat: $chatId")
-        return runCatching {
-            // Use cached chat details from subscription container (no network call)
-            val chatObject =
-                chatsDetailsSubscriptionContainer.get(chatId) ?: return@runCatching null
-
-            val iconImage = chatObject.iconImage
-            val iconEmoji = chatObject.iconEmoji
-            val iconOption = chatObject.iconOption?.toInt() ?: 0
-            val chatName = chatObject.name.orEmpty()
-            val color = SystemColor.color(idx = iconOption)
-
-            when {
-                !iconImage.isNullOrBlank() -> {
-                    val url = urlBuilder.thumbnail(iconImage)
-                    loadImageOrPlaceholder(url = url, color = color, name = chatName)
-                }
-
-                !iconEmoji.isNullOrBlank() -> {
-                    generateEmojiPlaceholderBitmap(emoji = iconEmoji, color = color)
-                }
-
-                else -> {
-                    generatePlaceholderBitmap(color = color, name = chatName)
-                }
-            }
-        }.onSuccess { bitmap ->
-            bitmap?.let { spaceIconCache[chatId] = it }
-        }.onFailure { error ->
-            Timber.w(error, "Failed to load chat icon bitmap for chat: $chatId")
-        }.getOrNull()
-    }
 
     /**
      * Attempts to load an image from cache, falling back to a placeholder if not available.
@@ -306,36 +254,6 @@ class NotificationBuilderImpl(
         return bitmap
     }
 
-    /**
-     * Generates a circular placeholder bitmap with an emoji centered on it.
-     * Used for chat objects that have an emoji icon.
-     */
-    private fun generateEmojiPlaceholderBitmap(
-        emoji: String,
-        color: SystemColor
-    ): Bitmap {
-        val size = iconSizePx
-        val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
-        val canvas = Canvas(bitmap)
-
-        // Draw circular background
-        val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            this.color = context.getColor(color.resInt())
-            style = Paint.Style.FILL
-        }
-        val radius = size / 2f
-        canvas.drawCircle(radius, radius, radius, paint)
-
-        // Draw emoji
-        val textPaint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
-            textSize = size / 2f
-            textAlign = Paint.Align.CENTER
-        }
-        val textY = (size / 2f) - ((textPaint.descent() + textPaint.ascent()) / 2f)
-        canvas.drawText(emoji, radius, textY, textPaint)
-
-        return bitmap
-    }
 
     /**
      * Creates or updates the summary notification for a group of chat notifications.

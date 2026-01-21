@@ -598,7 +598,8 @@ class CollectionViewModel(
                             eventName = EventsDictionary.reorderObjects,
                             props = Props(
                                 mapOf(
-                                    EventsPropertiesKey.route to EventsDictionary.Routes.home
+                                    EventsPropertiesKey.route to EventsDictionary.Routes.home,
+                                    EventsPropertiesKey.spaceId to vmParams.spaceId.id
                                 )
                             )
                         )
@@ -904,7 +905,12 @@ class CollectionViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                    EventsPropertiesKey.spaceId to vmParams.spaceId.id
+                )
+            )
         )
         viewModelScope.launch {
             commands.emit(
@@ -917,7 +923,12 @@ class CollectionViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.createObjectCollectionsNavBar,
-            props = Props(mapOf(EventsPropertiesKey.context to null))
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.context to null,
+                    EventsPropertiesKey.spaceId to vmParams.spaceId.id
+                )
+            )
         )
 
         val startTime = System.currentTimeMillis()

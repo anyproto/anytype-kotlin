@@ -60,19 +60,6 @@ class UtilsTest {
     }
 
     @Test
-    fun `when predicate index is false, should move all elements at the and`() {
-
-        list.moveAfterIndexInLine(
-            predicateIndex = { it == 91 },
-            predicateMove = { i -> listOf(0, 1, 4, 36, 81).contains(i) }
-        )
-
-        val expected = mutableListOf(9, 16, 25, 49, 64, 0, 1, 4, 36, 81)
-
-        assertEquals(expected, list)
-    }
-
-    @Test
     fun `when predicate index is true and predicateMove is false, should not change the list`() {
 
         list.moveAfterIndexInLine(

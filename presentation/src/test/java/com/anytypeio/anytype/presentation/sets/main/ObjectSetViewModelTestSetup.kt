@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -72,6 +73,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.collections.MockCollection
 import com.anytypeio.anytype.presentation.collections.MockSet
@@ -232,6 +235,15 @@ open class ObjectSetViewModelTestSetup {
     @Mock
     lateinit var setDataViewProperties: SetDataViewProperties
 
+    @Mock
+    lateinit var emojiProvider: EmojiProvider
+
+    @Mock
+    lateinit var emojiSuggester: EmojiSuggester
+
+    @Mock
+    lateinit var createBlock: CreateBlock
+
     var permissions: UserPermissionProvider = UserPermissionProviderStub()
 
     lateinit var spaceConfig: Config
@@ -350,7 +362,10 @@ open class ObjectSetViewModelTestSetup {
             spaceViews = spacedViews,
             deepLinkResolver = deepLinkResolver,
             removeObjectFromCollection = removeObjectFromCollection,
-            setDataViewProperties = setDataViewProperties
+            setDataViewProperties = setDataViewProperties,
+            emojiProvider = emojiProvider,
+            emojiSuggester = emojiSuggester,
+            createBlock = createBlock
         )
     }
 

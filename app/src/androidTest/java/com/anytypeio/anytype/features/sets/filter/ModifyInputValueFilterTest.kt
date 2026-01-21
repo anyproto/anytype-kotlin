@@ -51,6 +51,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verifyBlocking
@@ -118,7 +119,8 @@ class ModifyInputValueFilterTest {
             getOptions = getOptions,
             spaceManager = spaceManager,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            analyticSpaceHelperDelegate = mock()
         )
     }
 

@@ -189,7 +189,7 @@ fun NewSpaceSettingsScreen(
                                             showEditTitle = true
                                         }
                                     },
-                                text = item.name,
+                                text = item.name.ifBlank { stringResource(R.string.untitled) },
                                 style = HeadlineHeading,
                                 color = colorResource(id = R.color.text_primary),
                                 textAlign = TextAlign.Center
@@ -674,6 +674,7 @@ private fun EditNameField(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
+                val hasChanged = fieldInput != initialInput
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -683,7 +684,7 @@ private fun EditNameField(
                         },
                     text = "Done",
                     style = PreviewTitle1Medium,
-                    color = if (fieldInput != initialInput) {
+                    color = if (hasChanged) {
                         colorResource(id = R.color.text_primary)
                     } else {
                         colorResource(id = R.color.text_tertiary)
@@ -721,7 +722,8 @@ private fun EditNameField(
                     onNameSet = { newName ->
                         fieldInput = newName
                     },
-                    isEditEnabled = true
+                    isEditEnabled = true,
+                    allowEmptyValue = true
                 )
             }
         }

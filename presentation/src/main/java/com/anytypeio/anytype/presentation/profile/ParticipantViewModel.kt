@@ -15,14 +15,18 @@ import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.suspendFold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.library.StoreSearchByIdsParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.CreateSpace
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import timber.log.Timber
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import javax.inject.Inject
@@ -39,7 +43,9 @@ class ParticipantViewModel(
     private val fieldsParser: FieldParser,
     private val userPermissionProvider: UserPermissionProvider,
     private val configStorage: ConfigStorage,
-    private val createSpace: CreateSpace
+    private val createSpace: CreateSpace,
+    private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
+    private val spaceManager: SpaceManager
 ) : ViewModel() {
 
     val uiState = MutableStateFlow<UiParticipantScreenState>(UiParticipantScreenState.EMPTY)
@@ -148,43 +154,97 @@ class ParticipantViewModel(
             // Set loading state
             uiState.value = state.copy(isConnecting = true)
 
-            // Create the 1-on-1 space
-            val params = CreateSpace.Params(
-                details = mapOf(
-                    Relations.ONE_TO_ONE_IDENTITY to participantIdentity,
-                    Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
-                    Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
-                ),
-                useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
-            )
-
-            createSpace.async(params).suspendFold(
-                onSuccess = { response ->
-                    // Send CreateSpace analytics event
-                    analytics.sendEvent(
-                        eventName = EventsDictionary.createSpace,
-                        props = Props(
-                            mapOf(
-                                EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
-                                EventsPropertiesKey.uxType to "OneToOne"
-                            )
-                        )
-                    )
-                    // Reset loading state
-                    uiState.value = state.copy(isConnecting = false)
-                    // Switch to the new space
-                    commands.emit(Command.SwitchToVault(response.space.id))
+            // First, check if a 1-1 chat already exists with this identity
+            // Using direct middleware search to find space even if it's deleted/left
+            val techSpace = configStorage.getOrNull()?.techSpace
+            if (techSpace == null) {
+                Timber.e("Tech space not available, creating new 1-1 space")
+                createNewOneToOneSpace(participantIdentity)
+                return@launch
+            }
+            searchOneToOneChatByIdentity.async(
+                SearchOneToOneChatByIdentity.Params(
+                    identity = participantIdentity,
+                    techSpace = SpaceId(techSpace)
+                )
+            ).fold(
+                onSuccess = { existingChat ->
+                    if (existingChat != null) {
+                        Timber.d("Found existing 1-1 chat: ${existingChat.spaceId}")
+                        // Navigate to existing chat
+                        navigateToOneToOneChat(existingChat.spaceId.id, isNewSpace = false)
+                    } else {
+                        Timber.d("No existing 1-1 chat found, creating new space")
+                        createNewOneToOneSpace(participantIdentity)
+                    }
                 },
                 onFailure = { error ->
-                    // Reset loading state
-                    uiState.value = state.copy(isConnecting = false)
-                    // Show error
-                    commands.emit(
-                        Command.Toast.Error(
-                            error.message ?: "Failed to create 1-on-1 space"
+                    Timber.e(error, "Error finding existing 1-1 chat")
+                    // Error checking, try to create a new space anyway
+                    createNewOneToOneSpace(participantIdentity)
+                }
+            )
+        }
+    }
+
+    private suspend fun createNewOneToOneSpace(participantIdentity: String) {
+        val state = uiState.value
+        val params = CreateSpace.Params(
+            details = mapOf(
+                Relations.ONE_TO_ONE_IDENTITY to participantIdentity,
+                Relations.SPACE_UX_TYPE to SpaceUxType.ONE_TO_ONE.code.toDouble(),
+                Relations.SPACE_ACCESS_TYPE to SpaceAccessType.SHARED.code.toDouble(),
+            ),
+            useCase = SpaceCreationUseCase.ONE_TO_ONE_SPACE
+        )
+
+        createSpace.async(params).suspendFold(
+            onSuccess = { response ->
+                // Send CreateSpace analytics event
+                analytics.sendEvent(
+                    eventName = EventsDictionary.createSpace,
+                    props = Props(
+                        mapOf(
+                            EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                            EventsPropertiesKey.uxType to "OneToOne"
                         )
                     )
-                }
+                )
+                Timber.d("Successfully created 1-1 space: ${response.space.id}")
+                navigateToOneToOneChat(response.space.id, isNewSpace = true)
+            },
+            onFailure = { error ->
+                // Reset loading state
+                uiState.value = state.copy(isConnecting = false)
+                Timber.e(error, "Failed to create 1-1 space")
+                // Show error
+                commands.emit(
+                    Command.Toast.Error(
+                        error.message ?: "Failed to create 1-on-1 space"
+                    )
+                )
+            }
+        )
+    }
+
+    private suspend fun navigateToOneToOneChat(spaceId: Id, isNewSpace: Boolean) {
+        val state = uiState.value
+        val result = spaceManager.set(spaceId)
+        if (result.isSuccess) {
+            Timber.d("Successfully set space: $spaceId, navigating to vault")
+            // Reset loading state
+            uiState.value = state.copy(isConnecting = false)
+            // Navigate to vault - it will open the current space
+            commands.emit(Command.SwitchToVault(spaceId))
+        } else {
+            val error = result.exceptionOrNull()
+            Timber.e(error, "Failed to set space: $spaceId")
+            // Reset loading state
+            uiState.value = state.copy(isConnecting = false)
+            commands.emit(
+                Command.Toast.Error(
+                    error?.message ?: "Failed to open chat"
+                )
             )
         }
     }
@@ -235,7 +295,9 @@ class ParticipantViewModel(
         private val fieldsParser: FieldParser,
         private val userPermissionProvider: UserPermissionProvider,
         private val configStorage: ConfigStorage,
-        private val createSpace: CreateSpace
+        private val createSpace: CreateSpace,
+        private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
+        private val spaceManager: SpaceManager
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -248,7 +310,9 @@ class ParticipantViewModel(
                 fieldsParser = fieldsParser,
                 userPermissionProvider = userPermissionProvider,
                 configStorage = configStorage,
-                createSpace = createSpace
+                createSpace = createSpace,
+                searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
+                spaceManager = spaceManager
             ) as T
         }
     }

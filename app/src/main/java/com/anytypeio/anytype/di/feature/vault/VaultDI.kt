@@ -22,7 +22,7 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -105,11 +105,11 @@ object VaultModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideFindOneToOneChatByIdentity(
-        spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
+    fun provideSearchOneToOneChatByIdentity(
+        repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
-    ): FindOneToOneChatByIdentity = FindOneToOneChatByIdentity(
-        spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
+    ): SearchOneToOneChatByIdentity = SearchOneToOneChatByIdentity(
+        repo = repo,
         dispatchers = dispatchers
     )
 

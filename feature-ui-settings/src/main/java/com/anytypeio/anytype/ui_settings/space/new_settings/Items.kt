@@ -473,7 +473,8 @@ fun NewSpaceNameInputField(
     modifier: Modifier = Modifier,
     name: String,
     isEditEnabled: Boolean,
-    onNameSet: (String) -> Unit = {}
+    onNameSet: (String) -> Unit = {},
+    allowEmptyValue: Boolean = false
 ) {
 
     val nameValue = remember { mutableStateOf(name) }
@@ -488,7 +489,7 @@ fun NewSpaceNameInputField(
             .debounce(300L)
             .dropWhile { input -> input == name }
             .distinctUntilChanged()
-            .filter { it.isNotEmpty() }
+            .filter { if (allowEmptyValue) true else it.isNotEmpty() }
             .collect { query ->
                 onNameSet(query)
             }

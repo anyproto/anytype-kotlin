@@ -522,6 +522,7 @@ object EventsPropertiesKey {
     const val name = "name"
     const val spaceType = "spaceType"
     const val permissions = "permissions"
+    const val spaceId = "spaceId"
     const val sort = "sort"
     const val chatId = "chatId"
 }

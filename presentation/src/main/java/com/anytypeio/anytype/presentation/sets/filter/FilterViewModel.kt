@@ -837,13 +837,31 @@ open class FilterViewModel(
             onFailure = { Timber.e(it, "Error while creating filter") },
             onSuccess = {
                 dispatcher.send(it).also {
+                    val spaceId = SpaceId(spaceManager.get())
+                    val spaceView = spaceViews.get(spaceId)
                     viewModelScope.logEvent(
                         state = objectState.value,
                         analytics = analytics,
                         event = ObjectStateAnalyticsEvent.CHANGE_FILTER_VALUE,
                         startTime = startTime,
                         condition = updatedFilter.condition,
-                        spaceParams = AnalyticSpaceHelperDelegate.Params.EMPTY
+                        spaceParams = AnalyticSpaceHelperDelegate.Params(
+                            permission = "",
+                            spaceType = when (spaceView?.spaceAccessType) {
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.DEFAULT -> "Personal"
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.PRIVATE -> "Private"
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType.SHARED -> "Shared"
+                                else -> ""
+                            },
+                            spaceUxType = when (spaceView?.spaceUxType) {
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.DATA -> "Data"
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.STREAM -> "Stream"
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.CHAT -> "Chat"
+                                com.anytypeio.anytype.core_models.multiplayer.SpaceUxType.ONE_TO_ONE -> "OneToOne"
+                                else -> ""
+                            },
+                            spaceId = spaceId.id
+                        )
                     )
                     isCompleted.emit(true)
                 }

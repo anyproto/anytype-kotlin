@@ -1855,9 +1855,6 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     BundledWidgetSourceView.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
                     }
-                    BundledWidgetSourceView.AllObjects -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
-                    }
                     BundledWidgetSourceView.Chat -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }

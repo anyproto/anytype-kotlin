@@ -39,12 +39,13 @@ import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
+import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_object_type.ui.DeleteAlertObjectItem
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteTypeAlertState
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 /**
@@ -96,9 +97,11 @@ private fun DeleteTypeAlertContent(
             .fillMaxWidth()
             .navigationBarsPadding()
     ) {
+        Spacer(modifier = Modifier.height(16.dp))
+
         // Title
         Text(
-            text = stringResource(LocalizationR.string.move_type_to_bin_title, state.typeName),
+            text = stringResource(R.string.move_type_to_bin_title, state.typeName),
             style = HeadlineHeading,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
@@ -111,7 +114,7 @@ private fun DeleteTypeAlertContent(
 
         // Description
         Text(
-            text = stringResource(LocalizationR.string.move_type_to_bin_description),
+            text = stringResource(R.string.move_type_to_bin_description),
             style = BodyCalloutRegular,
             color = colorResource(id = R.color.text_primary),
             textAlign = TextAlign.Center,
@@ -179,7 +182,7 @@ private fun SelectAllRow(
             .fillMaxWidth()
             .height(52.dp)
             .noRippleThrottledClickable { onSelectAll(!isSelected) }
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -194,8 +197,8 @@ private fun SelectAllRow(
         Spacer(modifier = Modifier.width(12.dp))
 
         Text(
-            text = stringResource(LocalizationR.string.select_all),
-            style = PreviewTitle2Regular,
+            text = stringResource(R.string.move_type_to_bin_select_all),
+            style = Title2,
             color = colorResource(id = R.color.text_secondary)
         )
     }
@@ -210,9 +213,9 @@ private fun ObjectSelectableItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(68.dp)
+            .height(52.dp)
             .noRippleThrottledClickable { onClick() }
-            .padding(horizontal = 20.dp),
+            .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Image(
@@ -228,15 +231,15 @@ private fun ObjectSelectableItem(
 
         ListWidgetObjectIcon(
             icon = item.icon,
-            modifier = Modifier,
-            iconSize = 48.dp
+            modifier = Modifier.size(24.dp),
+            iconSize = 24.dp
         )
 
         Spacer(modifier = Modifier.width(12.dp))
 
         Text(
             text = item.name.ifEmpty { stringResource(R.string.untitled) },
-            style = PreviewTitle2Regular,
+            style = Title2,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
@@ -254,7 +257,7 @@ private fun EmptyObjectsState() {
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = stringResource(LocalizationR.string.move_type_to_bin_no_objects),
+            text = stringResource(R.string.move_type_to_bin_no_objects),
             style = BodyCalloutRegular,
             color = colorResource(id = R.color.text_secondary),
             textAlign = TextAlign.Center
@@ -273,7 +276,7 @@ private fun ActionButtons(
             .padding(horizontal = 20.dp)
     ) {
         ButtonWarning(
-            text = stringResource(LocalizationR.string.move_to_bin),
+            text = stringResource(R.string.move_type_to_bin_to_bin),
             onClick = onMoveClick,
             size = ButtonSize.Large,
             modifier = Modifier.fillMaxWidth()

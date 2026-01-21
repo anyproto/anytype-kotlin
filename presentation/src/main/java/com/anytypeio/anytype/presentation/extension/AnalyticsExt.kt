@@ -92,6 +92,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -106,6 +107,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -128,6 +130,7 @@ fun Block.Prototype.getAnalyticsEvent(
                         put(EventsPropertiesKey.permissions, spaceParams.permission)
                         put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                         put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                        put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                         if (route != null) {
                             put(EventsPropertiesKey.route, route)
                         }
@@ -141,6 +144,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -154,6 +158,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -168,6 +173,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -180,6 +186,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -191,6 +198,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -202,6 +210,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -213,6 +222,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }

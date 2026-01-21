@@ -450,7 +450,8 @@ fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(

@@ -31,16 +31,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.constraintlayout.compose.ConstraintLayout
 import coil3.compose.rememberAsyncImagePainter
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.feature_vault.R
+import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
 
 @Composable
 fun VaultScreenTopToolbar(
@@ -149,8 +148,8 @@ fun VaultScreenToolbar(
                             bottom.linkTo(parent.bottom)
                         },
                     style = Title1,
-                    text = stringResource(LocalizationR.string.vault_my_spaces),
-                    color = colorResource(id = CoreUiR.color.text_primary),
+                    text = stringResource(R.string.vault_my_spaces),
+                    color = colorResource(id = R.color.text_primary),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
@@ -164,7 +163,7 @@ fun VaultScreenToolbar(
                                 top.linkTo(parent.top)
                                 bottom.linkTo(parent.bottom)
                             },
-                        color = colorResource(id = CoreUiR.color.glyph_active),
+                        color = colorResource(id = R.color.glyph_active),
                         strokeWidth = 2.dp
                     )
                 }
@@ -211,7 +210,7 @@ private fun ProfileIcon(
 
                     else -> {
                         val nameFirstChar = if (profile.name.isEmpty()) {
-                            stringResource(id = LocalizationR.string.account_default_name)
+                            stringResource(id = R.string.account_default_name)
                         } else {
                             profile.name.first().uppercaseChar().toString()
                         }
@@ -257,7 +256,7 @@ private fun ProfileIconWithBadge(
                     .align(Alignment.TopEnd)
                     .size(12.dp)
                     .background(
-                        color = colorResource(id = CoreUiR.color.background_primary),
+                        color = colorResource(id = R.color.background_primary),
                         shape = CircleShape
                     ),
                 contentAlignment = Alignment.Center,
@@ -266,7 +265,7 @@ private fun ProfileIconWithBadge(
                     modifier = Modifier
                         .size(8.dp)
                         .background(
-                            color = colorResource(id = CoreUiR.color.palette_system_red),
+                            color = colorResource(id = R.color.palette_system_red),
                             shape = CircleShape
                         )
                 )
@@ -328,25 +327,29 @@ private fun CreateSpaceButtonWithBadge(
     showBadge: Boolean = false
 ) {
     Box(
-        modifier = Modifier.height(34.dp).width(40.dp)
+        modifier = Modifier
+            .height(34.dp)
+            .width(40.dp)
     ) {
         // Main "+" icon
         Image(
-            painter = painterResource(id = CoreUiR.drawable.ic_plus_18),
-            contentDescription = stringResource(LocalizationR.string.content_description_plus_button),
-            modifier = Modifier.size(28.dp).align(Alignment.Center),
+            painter = painterResource(id = R.drawable.ic_plus_18),
+            contentDescription = stringResource(R.string.content_description_plus_button),
+            modifier = Modifier
+                .size(28.dp)
+                .align(Alignment.Center),
             contentScale = ContentScale.Fit
         )
 
         // Blue dot badge positioned in top-right corner
         if (showBadge) {
             Image(
-                painter = painterResource(id = CoreUiR.drawable.ic_space_create_dot),
+                painter = painterResource(id = R.drawable.ic_space_create_dot),
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .size(16.dp)
                     .background(
-                        color = colorResource(id = CoreUiR.color.background_primary),
+                        color = colorResource(id = R.color.background_primary),
                         shape = CircleShape
                     ),
                 contentDescription = "Create space badge",

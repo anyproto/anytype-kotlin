@@ -20,16 +20,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun DataSpaceCard(
@@ -73,7 +72,7 @@ fun DataSpaceCard(
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = colorResource(id = CoreUiR.color.background_secondary),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp)
@@ -133,16 +132,16 @@ private fun ContentSpace(
                 modifier = Modifier
                     .weight(1f)
                     .padding(end = 16.dp),
-                text = title.ifEmpty { stringResource(id = LocalizationR.string.untitled) },
+                text = title.ifEmpty { stringResource(id = R.string.untitled) },
                 style = BodySemiBold,
-                color = colorResource(id = CoreUiR.color.text_primary),
+                color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis
             )
             if (isPinned) {
                 Image(
-                    painter = painterResource(CoreUiR.drawable.ic_pin_18),
-                    contentDescription = stringResource(LocalizationR.string.content_desc_pin),
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
                     modifier = Modifier.size(18.dp)
                 )
             }

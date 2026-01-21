@@ -10,7 +10,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.OptIn
 import androidx.camera.core.CameraSelector
+import androidx.camera.core.ExperimentalGetImage
 import androidx.camera.core.ImageAnalysis
 import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
@@ -41,12 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.R
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import timber.log.Timber
 import java.util.concurrent.Executors
+import timber.log.Timber
 
 class QrScannerActivity : ComponentActivity() {
 
@@ -149,7 +150,7 @@ private fun QrScannerScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    painter = painterResource(id = CoreUiR.drawable.ic_back_24),
+                    painter = painterResource(id = R.drawable.ic_back_24),
                     contentDescription = "Back",
                     tint = Color.White
                 )
@@ -158,6 +159,7 @@ private fun QrScannerScreen(
     }
 }
 
+@OptIn(ExperimentalGetImage::class)
 @Composable
 private fun CameraPreview(
     onQrCodeScanned: (String) -> Unit,
@@ -208,7 +210,6 @@ private fun CameraPreview(
                                 return@setAnalyzer
                             }
 
-                            @androidx.camera.core.ExperimentalGetImage
                             val mediaImage = imageProxy.image
                             if (mediaImage != null) {
                                 val image = InputImage.fromMediaImage(

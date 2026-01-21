@@ -23,8 +23,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -34,8 +32,9 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
+import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 @Composable
 fun VaultOneToOneSpaceCard(
@@ -90,7 +89,7 @@ fun VaultOneToOneSpaceCard(
             .height(96.dp)
             .padding(horizontal = 16.dp)
             .background(
-                color = colorResource(id = CoreUiR.color.background_secondary),
+                color = colorResource(id = R.color.background_secondary),
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(horizontal = 16.dp)
@@ -113,7 +112,7 @@ fun VaultOneToOneSpaceCard(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(start = 12.dp),
-            title = title.ifEmpty { stringResource(id = LocalizationR.string.untitled) },
+            title = title.ifEmpty { stringResource(id = R.string.untitled) },
             subtitle = messageText ?: chatPreview?.message?.content?.text.orEmpty(),
             messageText = messageText,
             messageTime = messageTime,
@@ -199,10 +198,10 @@ private fun ContentOneToOne(
             // Show pin icon when no content but is pinned
             if (!hasContent && isPinned) {
                 Image(
-                    painter = painterResource(CoreUiR.drawable.ic_pin_18),
-                    contentDescription = stringResource(LocalizationR.string.content_desc_pin),
+                    painter = painterResource(R.drawable.ic_pin_18),
+                    contentDescription = stringResource(R.string.content_desc_pin),
                     modifier = Modifier.size(18.dp),
-                    colorFilter = ColorFilter.tint(colorResource(CoreUiR.color.control_transparent_secondary))
+                    colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
                 )
             }
         }

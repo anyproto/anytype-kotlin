@@ -25,15 +25,14 @@ import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_ui.common.ReorderHapticFeedbackType
 import com.anytypeio.anytype.core_ui.common.rememberReorderHapticFeedback
 import com.anytypeio.anytype.core_ui.widgets.toSpaceBackground
-import com.anytypeio.anytype.presentation.profile.AccountProfile
+import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
+import com.anytypeio.anytype.presentation.profile.AccountProfile
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -65,7 +64,7 @@ fun VaultScreen(
             .fillMaxSize()
             .nestedScroll(rememberNestedScrollInteropConnection()),
         contentWindowInsets = WindowInsets(0.dp),
-        containerColor = colorResource(id = CoreUiR.color.background_primary),
+        containerColor = colorResource(id = R.color.background_primary),
         topBar = {
             VaultScreenTopToolbar(
                 profile = profile,
@@ -181,7 +180,7 @@ fun VaultScreenContent(
     } else if (!hasAnyFilteredSpaces) {
         VaultEmptyState(
             modifier = Modifier.padding(paddings),
-            textRes = LocalizationR.string.vault_empty_search_state_text,
+            textRes = R.string.vault_empty_search_state_text,
             showButton = false,
             onCreateSpaceClicked = onCreateSpaceClicked
         )

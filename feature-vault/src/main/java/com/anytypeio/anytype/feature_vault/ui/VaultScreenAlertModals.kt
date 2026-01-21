@@ -11,9 +11,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.stringResource
-import com.anytypeio.anytype.core_ui.R as CoreUiR
-import com.anytypeio.anytype.localization.R as LocalizationR
 import com.anytypeio.anytype.core_ui.foundation.Prompt
+import com.anytypeio.anytype.feature_vault.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,8 +20,8 @@ fun AlertScreenModals(
     title: String,
     description: String,
     firstButtonText: String,
-    icon: Int = CoreUiR.drawable.ic_popup_alert_56,
-    secondButtonText: String = stringResource(id = LocalizationR.string.cancel),
+    icon: Int = R.drawable.ic_popup_alert_56,
+    secondButtonText: String = stringResource(id = R.string.cancel),
     onAction: () -> Unit = { },
     onDismiss: () -> Unit = { },
 ) {
@@ -35,7 +34,7 @@ fun AlertScreenModals(
             .windowInsetsPadding(WindowInsets.navigationBars),
         onDismissRequest = onDismiss,
         dragHandle = null,
-        containerColor = colorResource(id = CoreUiR.color.background_secondary),
+        containerColor = colorResource(id = R.color.background_secondary),
         sheetState = bottomSheetState
     ) {
         Prompt(

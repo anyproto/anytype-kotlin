@@ -64,6 +64,13 @@ object ObjectSearchConstants {
                 value = ObjectTypeUniqueKeys.TEMPLATE
             )
         )
+        add(
+            DVFilter(
+                relation = Relations.UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.PARTICIPANT
+            )
+        )
         // Exclude chat types in chat and 1-1 spaces
         if (spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE) {
             // Filter out objects whose type is chat
@@ -148,6 +155,13 @@ object ObjectSearchConstants {
                 relation = Relations.TYPE_UNIQUE_KEY,
                 condition = DVFilterCondition.NOT_EQUAL,
                 value = ObjectTypeUniqueKeys.TEMPLATE
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.PARTICIPANT
             )
         )
         // Exclude chat types in chat and 1-1 spaces
@@ -1003,6 +1017,13 @@ object ObjectSearchConstants {
                 relation = Relations.IS_ARCHIVED,
                 condition = Condition.NOT_EQUAL,
                 value = true
+            )
+        )
+        add(
+            DVFilter(
+                relation = Relations.UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.PARTICIPANT
             )
         )
     }

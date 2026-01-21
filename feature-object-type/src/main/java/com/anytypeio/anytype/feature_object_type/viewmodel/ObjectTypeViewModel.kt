@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
@@ -37,6 +40,7 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -139,7 +143,8 @@ class ObjectTypeViewModel(
     private val getObject: GetObject,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val updateText: UpdateText
+    private val updateText: UpdateText,
+    private val searchObjects: SearchObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -1256,18 +1261,31 @@ class ObjectTypeViewModel(
             val typeName = uiTitleState.value.title.ifEmpty { uiTitleState.value.originalName }
 
             // Fetch objects of this type
-            val searchParams = StoreSearchParams(
+            val searchParams = SearchObjects.Params(
                 filters = filtersForSearch(objectTypeId = vmParams.objectId),
-                sorts = emptyList(),
+                sorts = listOf(
+                    DVSort(
+                        relationKey = Relations.LAST_MODIFIED_DATE,
+                        type = DVSortType.DESC,
+                        includeTime = true,
+                        relationFormat = RelationFormat.DATE
+                    )
+                ),
                 space = vmParams.spaceId,
                 limit = MAX_OBJECTS_FOR_DELETE_ALERT,
                 keys = defaultKeys,
-                subscription = ""
             )
-
-            try {
-                val results = storelessSubscriptionContainer.subscribe(searchParams)
-                results.collect { objects ->
+            searchObjects.invoke(params = searchParams).proceed(
+                failure = { e ->
+                    Timber.e(e, "Error fetching objects for delete type confirmation")
+                    // Show dialog anyway with empty list
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
+                        typeName = typeName,
+                        objects = emptyList(),
+                        selectedObjectIds = emptySet()
+                    )
+                },
+                success = { objects ->
                     val objectItems = objects.map { obj ->
                         DeleteAlertObjectItem(
                             id = obj.id,
@@ -1281,20 +1299,8 @@ class ObjectTypeViewModel(
                         objects = objectItems,
                         selectedObjectIds = emptySet()
                     )
-
-                    // Unsubscribe after getting the initial data
-                    storelessSubscriptionContainer.unsubscribe(listOf(""))
-                    return@collect
                 }
-            } catch (e: Exception) {
-                Timber.e(e, "Error fetching objects for delete type confirmation")
-                // Show dialog anyway with empty list
-                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
-                    typeName = typeName,
-                    objects = emptyList(),
-                    selectedObjectIds = emptySet()
-                )
-            }
+            )
         }
     }
 

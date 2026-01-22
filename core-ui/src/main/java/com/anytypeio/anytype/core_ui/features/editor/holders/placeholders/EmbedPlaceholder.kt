@@ -5,6 +5,7 @@ import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
+import com.anytypeio.anytype.core_ui.extensions.toEmbedIconResource
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -58,6 +59,8 @@ class EmbedPlaceholder(
         } else {
             binding.embedUrl.gone()
         }
+        // Set the embed icon based on processor type
+        binding.embedIcon.setImageResource(item.processor.toEmbedIconResource())
         binding.root.setOnClickListener {
             clicked(ListenerType.Embed.Click(item))
         }

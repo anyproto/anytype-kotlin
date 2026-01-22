@@ -337,7 +337,6 @@ abstract class TestObjectSetSetup {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             params = ObjectSetViewModel.Params(
                 ctx = ctx,

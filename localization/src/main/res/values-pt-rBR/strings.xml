@@ -751,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Você tem certeza que deseja excluir %1$d objetos?</string>
     <string name="delete_irrevocably">Esses objetos serão excluídos permanentemente. Você não pode desfazer esta ação.</string>
     <string name="delete_irrevocably_one_object">Esse objeto será excluído permanentemente. Você não pode desfazer esta ação.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Selecionar todos</string>
+    <string name="move_type_to_bin_to_bin">Move to Bin</string>
     <string name="shared">Compartilhado</string>
     <string name="object_not_exist">Esse objeto não existe</string>
     <string name="back_to_dashboard">Voltar ao painel</string>

@@ -750,6 +750,12 @@
     <string name="are_you_sure_delete_n_objects">本当に%1$d個のオブジェクトを削除してもよろしいですか？</string>
     <string name="delete_irrevocably">これらのオブジェクトは完全に削除されます。この操作は取り消せません。</string>
     <string name="delete_irrevocably_one_object">このオブジェクトは完全に削除されます。この操作は取り消せません。</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">すべて選択</string>
+    <string name="move_type_to_bin_to_bin">ゴミ箱に移動</string>
     <string name="shared">共有済み</string>
     <string name="object_not_exist">このオブジェクトは存在しません</string>
     <string name="back_to_dashboard">ダッシュボードへ戻る</string>

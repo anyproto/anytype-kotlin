@@ -16,7 +16,6 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.onSuccess
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -27,7 +26,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
 import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
@@ -49,7 +47,6 @@ class SelectWidgetSourceViewModel(
     private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
-    private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val dispatcher: Dispatcher<WidgetDispatchEvent>,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -61,7 +58,6 @@ class SelectWidgetSourceViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
     searchObjects = searchObjects,
-    getObjectTypes = getObjectTypes,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
     fieldParser = fieldParser,
@@ -271,7 +267,6 @@ class SelectWidgetSourceViewModel(
                 )
             }
         }
-        getObjectTypes()
         startProcessingSearchQuery(null)
     }
 
@@ -455,7 +450,6 @@ class SelectWidgetSourceViewModel(
         private val vmParams: VmParams,
         private val urlBuilder: UrlBuilder,
         private val searchObjects: SearchObjects,
-        private val getObjectTypes: GetObjectTypes,
         private val analytics: Analytics,
         private val dispatcher: Dispatcher<WidgetDispatchEvent>,
         private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -472,7 +466,6 @@ class SelectWidgetSourceViewModel(
                 urlBuilder = urlBuilder,
                 searchObjects = searchObjects,
                 analytics = analytics,
-                getObjectTypes = getObjectTypes,
                 dispatcher = dispatcher,
                 analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
                 fieldParser = fieldParser,

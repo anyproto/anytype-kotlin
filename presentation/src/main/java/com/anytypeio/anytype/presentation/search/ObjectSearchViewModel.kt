@@ -13,10 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -46,7 +43,6 @@ open class ObjectSearchViewModel(
     private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
-    private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
@@ -82,7 +78,6 @@ open class ObjectSearchViewModel(
                     Resultat.success(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
-                            objectTypes = listOfTypes.getOrThrow(),
                             fieldParser = fieldParser,
                             storeOfObjectTypes = storeOfObjectTypes
                         )
@@ -117,31 +112,11 @@ open class ObjectSearchViewModel(
 
     fun onStart(route: String, ignore: Id? = null) {
         eventRoute = route
-        getObjectTypes()
         startProcessingSearchQuery(ignore)
     }
 
     fun onStop() {
         jobs.cancel()
-    }
-
-    protected fun getObjectTypes() {
-        jobs += viewModelScope.launch {
-            val params = GetObjectTypes.Params(
-                space = vmParams.space,
-                sorts = emptyList(),
-                filters = ObjectSearchConstants.filterTypes(
-                    excludeParticipant = false
-                ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
-            )
-            getObjectTypes.async(params).fold(
-                onFailure = { Timber.e(it, "Error while getting object types") },
-                onSuccess = {
-                    types.value = Resultat.success(it)
-                }
-            )
-        }
     }
 
     protected fun startProcessingSearchQuery(ignore: Id?) {

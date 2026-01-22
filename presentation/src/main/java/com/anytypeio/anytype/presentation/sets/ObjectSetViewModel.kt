@@ -41,7 +41,6 @@ import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -193,7 +192,6 @@ class ObjectSetViewModel(
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,

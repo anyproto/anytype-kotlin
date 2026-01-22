@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -18,7 +17,6 @@ import javax.inject.Inject
 class LinkToObjectViewModelFactory(
     private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
-    private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -32,7 +30,6 @@ class LinkToObjectViewModelFactory(
         return LinkToObjectViewModel(
             vmParams = vmParams,
             urlBuilder = urlBuilder,
-            getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
@@ -76,7 +73,6 @@ class LinkToObjectOrWebViewModelFactory(
 class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
     private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
-    private val getObjectTypes: GetObjectTypes,
     private val searchObjects: SearchObjects,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -90,7 +86,6 @@ class BackLinkOrAddToObjectViewModelFactory @Inject constructor(
         return BackLinkOrAddToObjectViewModel(
             vmParams = vmParams,
             urlBuilder = urlBuilder,
-            getObjectTypes = getObjectTypes,
             searchObjects = searchObjects,
             analytics = analytics,
             analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,

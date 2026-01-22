@@ -1272,12 +1272,12 @@ class ObjectTypeViewModel(
                     )
                 ),
                 space = vmParams.spaceId,
-                limit = MAX_OBJECTS_FOR_DELETE_ALERT,
                 keys = defaultKeys,
             )
             searchObjects.invoke(params = searchParams).proceed(
                 failure = { e ->
                     Timber.e(e, "Error fetching objects for delete type confirmation")
+                    commands.emit(ObjectTypeCommand.ShowToast("Failed to load objects"))
                     // Show dialog anyway with empty list
                     uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
                         typeName = typeName,
@@ -1669,7 +1669,6 @@ class ObjectTypeViewModel(
 
     companion object {
         const val TEMPLATE_MAX_COUNT = 100
-        const val MAX_OBJECTS_FOR_DELETE_ALERT = 100
 
         fun templatesSubId(objectId: Id) = "TYPE-TEMPLATES-SUB-ID--$objectId"
     }

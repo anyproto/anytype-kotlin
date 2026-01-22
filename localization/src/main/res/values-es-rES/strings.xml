@@ -752,9 +752,9 @@
     <string name="delete_irrevocably">Estos objetos se eliminarán de forma definitiva. No se puede deshacer esta acción.</string>
     <string name="delete_irrevocably_one_object">Este objeto se eliminará de forma definitiva. No se puede deshacer esta acción.</string>
     <!-- Object Type Deletion Confirmation -->
-    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
-    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
-    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_title">¿Mover «%s» a la papelera?</string>
+    <string name="move_type_to_bin_description">Hay objetos que usan este tipo. Selecciona los que quieres eliminar con él. Se conservarán los objetos que no selecciones, pero se quedarán sin tipo.</string>
+    <string name="move_type_to_bin_no_objects">No hay ningún objeto de este tipo.</string>
     <string name="move_type_to_bin_select_all">Seleccionar todo</string>
     <string name="move_type_to_bin_to_bin">Mover a la papelera</string>
     <string name="shared">Compartido</string>

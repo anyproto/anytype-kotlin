@@ -1313,7 +1313,6 @@ class ObjectTypeViewModel(
         if (currentState !is UiDeleteTypeAlertState.Visible) return
 
         viewModelScope.launch {
-            // First, archive selected objects if any
             val selectedObjectIds = currentState.selectedObjectIds.toList()
             if (selectedObjectIds.isNotEmpty()) {
                 val archiveObjectsParams = SetObjectListIsArchived.Params(
@@ -1323,30 +1322,39 @@ class ObjectTypeViewModel(
                 setObjectListIsArchived.async(archiveObjectsParams).fold(
                     onSuccess = {
                         Timber.d("Archived ${selectedObjectIds.size} objects")
+                        // Proceed to archive type only after objects are archived
+                        archiveTypeAndClose()
                     },
                     onFailure = {
                         Timber.e(it, "Error while archiving selected objects")
+                        uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to delete selected objects"))
+                        return@launch
                     }
                 )
+            } else {
+                // No objects selected, proceed to archive type directly
+                archiveTypeAndClose()
             }
-
-            // Then archive the type itself
-            val archiveTypeParams = SetObjectListIsArchived.Params(
-                targets = listOf(vmParams.objectId),
-                isArchived = true
-            )
-            setObjectListIsArchived.async(archiveTypeParams).fold(
-                onSuccess = {
-                    Timber.d("Object type ${vmParams.objectId} moved to bin")
-                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
-                    commands.emit(ObjectTypeCommand.Back)
-                },
-                onFailure = {
-                    Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
-                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
-                }
-            )
         }
+    }
+
+    private suspend fun archiveTypeAndClose() {
+        val archiveTypeParams = SetObjectListIsArchived.Params(
+            targets = listOf(vmParams.objectId),
+            isArchived = true
+        )
+        setObjectListIsArchived.async(archiveTypeParams).fold(
+            onSuccess = {
+                Timber.d("Object type ${vmParams.objectId} moved to bin")
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                commands.emit(ObjectTypeCommand.Back)
+            },
+            onFailure = {
+                Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+            }
+        )
     }
 
     private fun proceedWithPinType() {

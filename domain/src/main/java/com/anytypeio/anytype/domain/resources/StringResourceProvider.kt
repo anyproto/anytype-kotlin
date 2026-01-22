@@ -28,4 +28,5 @@ interface StringResourceProvider {
     fun getMultiplayerRemoveMember(): String
     fun getMultiplayerViewRequest(): String
     fun getMultiplayerApprove(): String
+    fun getDeletedTypeName(): String
 }

@@ -751,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Bist du sicher, dass du %1$d Objekte löschen möchtest?</string>
     <string name="delete_irrevocably">Diese Objekte werden endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
     <string name="delete_irrevocably_one_object">Dieses Objekt wird endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Alles auswählen</string>
+    <string name="move_type_to_bin_to_bin">In den Papierkorb verschieben</string>
     <string name="shared">Geteilt</string>
     <string name="object_not_exist">Dieses Objekt existiert nicht</string>
     <string name="back_to_dashboard">Zurück zum Dashboard</string>

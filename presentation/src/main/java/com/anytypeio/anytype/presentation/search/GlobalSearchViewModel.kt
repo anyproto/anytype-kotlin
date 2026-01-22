@@ -563,7 +563,10 @@ suspend fun Command.SearchWithMeta.Result.view(
 ) : GlobalSearchItemView? {
     if (wrapper.spaceId == null) return null
     if (wrapper.layout == null) return null
-    val type = wrapper.type.firstOrNull()
+    val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+        objectWrapper = wrapper,
+        types = storeOfObjectTypes.getAll()
+    )
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
@@ -577,11 +580,7 @@ suspend fun Command.SearchWithMeta.Result.view(
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
         title = fieldParser.getObjectNameOrPluralsForTypes(wrapper),
-        type =  if (type != null) {
-            storeOfObjectTypes.get(type)?.name.orEmpty()
-        } else {
-            EMPTY_STRING_VALUE
-        },
+        type =  typeName,
         meta = if (meta != null) {
             when(val source = meta.source) {
                 is Command.SearchWithMeta.Result.Meta.Source.Block -> {

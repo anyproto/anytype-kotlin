@@ -752,9 +752,9 @@
     <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
     <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
     <!-- Object Type Deletion Confirmation -->
-    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
-    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
-    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_title">\"%s\" Çöp Kutusuna taşınsın mı?</string>
+    <string name="move_type_to_bin_description">Bazı nesneler bu türü kullanıyor. Silinmesini istediğin nesneleri de seç. Seçmediğin nesneler kalacak ancak türleri kaybolacak.</string>
+    <string name="move_type_to_bin_no_objects">Bu türe ait nesne yok</string>
     <string name="move_type_to_bin_select_all">Tümünü seç</string>
     <string name="move_type_to_bin_to_bin">Çöpe Taşı</string>
     <string name="shared">Paylaşılan</string>

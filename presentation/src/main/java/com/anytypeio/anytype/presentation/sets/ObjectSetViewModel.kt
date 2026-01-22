@@ -49,6 +49,7 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -106,10 +107,10 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription.Companion.getDataViewSubscriptionId
@@ -130,17 +131,15 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -206,7 +205,8 @@ class ObjectSetViewModel(
     private val deepLinkResolver: DeepLinkResolver,
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
-    private val emojiSuggester: EmojiSuggester
+    private val emojiSuggester: EmojiSuggester,
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -1449,11 +1449,30 @@ class ObjectSetViewModel(
                 return
             }
 
-            val (defaultObjectType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
+            // Get dataview block ID for cleanup
+            val dvBlock = when (currentState) {
+                is ObjectState.DataView -> currentState.dataViewBlock.id
+                else -> null
+            }
+
+            val (resolvedType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
                 ctx = vmParams.ctx,
                 activeView = viewer,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                onDeletedTypeDetected = { deletedViewer ->
+                    // Cleanup deleted type in viewer (fire-and-forget)
+                    if (dvBlock != null) {
+                        cleanupDeletedTypeInViewer(
+                            ctx = vmParams.ctx,
+                            dv = dvBlock,
+                            viewer = deletedViewer
+                        )
+                    }
+                }
             )
+
+            // If type is null due to deleted type, use space default
+            val defaultObjectType = resolvedType ?: getSpaceDefaultType()
 
             val objectTypeUniqueKey = defaultObjectType?.uniqueKey
 
@@ -1572,11 +1591,25 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
-        val (defaultObjectType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
+        // Get dataview block ID for cleanup
+        val dvBlock = state.dataViewBlock.id
+
+        val (resolvedType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
             ctx = vmParams.ctx,
             activeView = viewer,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            onDeletedTypeDetected = { deletedViewer ->
+                // Cleanup deleted type in viewer (fire-and-forget)
+                cleanupDeletedTypeInViewer(
+                    ctx = vmParams.ctx,
+                    dv = dvBlock,
+                    viewer = deletedViewer
+                )
+            }
         )
+
+        // If type is null due to deleted type, use space default
+        val defaultObjectType = resolvedType ?: getSpaceDefaultType()
 
         val defaultObjectTypeUniqueKey = defaultObjectType?.uniqueKey?.let {
             TypeKey(it)
@@ -2486,10 +2519,35 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
             val viewer = getViewer(dataView) ?: return@launch
-            val (type, _) = dataView.getActiveViewTypeAndTemplate(vmParams.ctx, viewer, storeOfObjectTypes)
-            if (type == null) return@launch
+
+            // Get dataview block ID for cleanup
+            val dvBlock = when (dataView) {
+                is ObjectState.DataView -> dataView.dataViewBlock.id
+                else -> null
+            }
+
+            val (type, _) = dataView.getActiveViewTypeAndTemplate(
+                ctx = vmParams.ctx,
+                activeView = viewer,
+                storeOfObjectTypes = storeOfObjectTypes,
+                onDeletedTypeDetected = { deletedViewer ->
+                    // Cleanup deleted type in viewer (fire-and-forget)
+                    if (dvBlock != null) {
+                        cleanupDeletedTypeInViewer(
+                            ctx = vmParams.ctx,
+                            dv = dvBlock,
+                            viewer = deletedViewer
+                        )
+                    }
+                }
+            )
+
+            // If type is null due to deleted type, use space default
+            val effectiveType = type ?: getSpaceDefaultType()
+            if (effectiveType == null) return@launch
+
             typeTemplatesWidgetState.value = createState(viewer)
-            selectedTypeFlow.value = type
+            selectedTypeFlow.value = effectiveType
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
         logEvent(ObjectStateAnalyticsEvent.SCREEN_TYPE_TEMPLATE_SELECTOR)
@@ -2616,17 +2674,40 @@ class ObjectSetViewModel(
                     val dataView = state.dataViewState() ?: return@map emptyList<TemplateView>()
                     val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
                     val selectedTypeId = selectedTypeFlow.value?.id ?: return@map emptyList<TemplateView>()
+
+                    // Get dataview block ID for cleanup
+                    val dvBlock = when (dataView) {
+                        is ObjectState.DataView -> dataView.dataViewBlock.id
+                        else -> null
+                    }
+
                     val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                        vmParams.ctx,
-                        viewer,
-                        storeOfObjectTypes
+                        ctx = vmParams.ctx,
+                        activeView = viewer,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        onDeletedTypeDetected = { deletedViewer ->
+                            // Cleanup deleted type in viewer (fire-and-forget)
+                            if (dvBlock != null) {
+                                cleanupDeletedTypeInViewer(
+                                    ctx = vmParams.ctx,
+                                    dv = dvBlock,
+                                    viewer = deletedViewer
+                                )
+                            }
+                        }
                     )
+
+                    // If type is null due to deleted type, use space default
+                    val effectiveType = type ?: getSpaceDefaultType()
+
                     when (typeTemplatesWidgetState.value) {
                         is TypeTemplatesWidgetUI.Data -> {
-                            if (type?.id == selectedTypeFlow.value?.id) {
+                            if (effectiveType?.id == selectedTypeFlow.value?.id) {
                                 processTemplates(
                                     templates = templates,
-                                    viewerDefType = type ?: storeOfObjectTypes.get(selectedTypeId),
+                                    viewerDefType = effectiveType ?: storeOfObjectTypes.get(
+                                        selectedTypeId
+                                    ),
                                     viewerDefTemplate = template
                                         ?: selectedTypeFlow.value?.defaultTemplateId
                                 )
@@ -2728,6 +2809,86 @@ class ObjectSetViewModel(
         onTypeTemplatesWidgetAction(action = TypeTemplatesWidgetUIAction.TemplateClick(templateView))
     }
 
+    /**
+     * Gets the space's default object type with fallback to PAGE type.
+     * Used when viewer's type is deleted or not available.
+     */
+    private suspend fun getSpaceDefaultType(): ObjectWrapper.Type? {
+        val result = getDefaultObjectType.async(vmParams.space)
+        return when (result) {
+            is Result.Success<*> -> {
+                @Suppress("UNCHECKED_CAST")
+                val response = result.data as GetDefaultObjectType.Response
+                storeOfObjectTypes.get(response.id.id)
+            }
+
+            is Result.Failure<*> -> {
+                Timber.e("Failed to get space default type: ${result.error}")
+                // Fall back to hardcoded PAGE type
+                storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
+            }
+
+            else -> {
+                // Shouldn't happen, but handle gracefully
+                Timber.w("Unexpected result type when getting space default type")
+                storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
+            }
+        }
+    }
+
+    /**
+     * Cleans up a viewer's defaultObjectType when it references a deleted type.
+     * This is a fire-and-forget operation that updates the view asynchronously.
+     *
+     * @param ctx The context (object) ID
+     * @param dv The dataview block ID
+     * @param viewer The viewer with stale type ID
+     */
+    private fun cleanupDeletedTypeInViewer(
+        ctx: Id,
+        dv: Id,
+        viewer: DVViewer
+    ) {
+        viewModelScope.launch {
+            try {
+                Timber.d("Cleaning up deleted type in viewer ${viewer.id}")
+                val updatedViewer = viewer.copy(defaultObjectType = null)
+                onEvent(
+                    ViewerEvent.UpdateView(
+                        ctx = ctx,
+                        dv = dv,
+                        viewer = updatedViewer,
+                        onResult = {
+                            Timber.d("Successfully cleaned up deleted type in viewer ${viewer.id}")
+                        }
+                    )
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to cleanup deleted type in viewer ${viewer.id}")
+            }
+        }
+    }
+
+    /**
+     * Refreshes the TypeTemplatesWidget to show only valid types.
+     * Called when a deleted type is detected to update the UI.
+     */
+    private fun refreshTypeTemplatesWidgetTypes() {
+        viewModelScope.launch {
+            when (val widgetState = typeTemplatesWidgetState.value) {
+                is TypeTemplatesWidgetUI.Data -> {
+                    // Trigger refresh of available types using existing logic
+                    val selectedType = selectedTypeFlow.value?.id ?: VIEW_DEFAULT_OBJECT_TYPE
+                    updateTypesForTypeTemplatesWidget(selectedType)
+                }
+
+                else -> {
+                    // Widget not active, do nothing
+                }
+            }
+        }
+    }
+
     private fun processTemplates(
         templates: List<ObjectWrapper.Basic>,
         viewerDefType: ObjectWrapper.Type?,
@@ -2735,7 +2896,9 @@ class ObjectSetViewModel(
     ): List<TemplateView> {
 
         if (viewerDefType == null) {
-            Timber.e("processTemplates, Viewer def type is null")
+            Timber.w("processTemplates, Viewer def type is null (likely deleted type, fallback should have been applied)")
+            // Refresh widget to show valid types
+            refreshTypeTemplatesWidgetTypes()
             return emptyList()
         }
 

@@ -60,6 +60,7 @@ import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
@@ -137,7 +138,8 @@ class ChatViewModel @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
-    private val setChatNotificationMode: SetChatNotificationMode
+    private val setChatNotificationMode: SetChatNotificationMode,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -286,7 +288,8 @@ class ChatViewModel @Inject constructor(
 
             proceedWithObservingChatMessages(
                 account = account,
-                chat = vmParams.ctx
+                chat = vmParams.ctx,
+                fieldParser = fieldParser
             )
         }
 
@@ -341,7 +344,8 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
-        chat: Id
+        chat: Id,
+        fieldParser: FieldParser
     ) {
         combine(
             chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
@@ -464,24 +468,24 @@ class ChatViewModel @Inject constructor(
                                 )
                             }
                             .take(ChatConfig.MAX_REACTION_COUNT),
-                        attachments = msg.attachments.map { attachment ->
+                        attachments = msg.attachments.mapNotNull { attachment ->
+
+                            val wrapper = dependencies[attachment.target]
+                            if (wrapper == null || !wrapper.isValid) return@mapNotNull null
+
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
-                                    val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
                                         obj = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
-                                        name = wrapper?.name.orEmpty(),
-                                        ext = wrapper?.fileExt.orEmpty(),
-                                        status = wrapper
-                                            ?.syncStatus()
-                                            ?: ChatView.Message.Attachment.SyncStatus.Unknown
+                                        name = wrapper.name.orEmpty(),
+                                        ext = wrapper.fileExt.orEmpty(),
+                                        status = wrapper.syncStatus()
                                     )
                                 }
 
                                 else -> {
-                                    val wrapper = dependencies[attachment.target]
-                                    when (wrapper?.layout) {
+                                    when (wrapper.layout) {
                                         ObjectType.Layout.IMAGE -> {
                                             ChatView.Message.Attachment.Image(
                                                 obj = attachment.target,
@@ -520,21 +524,21 @@ class ChatViewModel @Inject constructor(
                                         }
 
                                         else -> {
-                                            val type = wrapper?.type?.firstOrNull()
+                                            val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                                                wrapper,
+                                                storeOfObjectTypes.getAll()
+                                            )
                                             ChatView.Message.Attachment.Link(
                                                 obj = attachment.target,
                                                 wrapper = wrapper,
-                                                icon = wrapper?.objectIcon(
+                                                icon = wrapper.objectIcon(
                                                     builder = urlBuilder,
                                                     objType = storeOfObjectTypes.getTypeOfObject(
                                                         wrapper
                                                     )
-                                                ) ?: ObjectIcon.None,
-                                                typeName = if (type != null)
-                                                    storeOfObjectTypes.get(type)?.name.orEmpty()
-                                                else
-                                                    "",
-                                                isDeleted = wrapper?.isDeleted == true
+                                                ),
+                                                typeName = typeName,
+                                                isDeleted = wrapper.isDeleted == true
                                             )
                                         }
                                     }
@@ -1132,8 +1136,11 @@ class ChatViewModel @Inject constructor(
 
                         is ChatView.Message.Attachment.Link -> {
                             val wrapper = a.wrapper
-                            if (wrapper != null) {
-                                val type = wrapper.type.firstOrNull()
+                            if (wrapper != null && wrapper.isValid) {
+                                val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                                    wrapper,
+                                    storeOfObjectTypes.getAll()
+                                )
                                 val name = if (wrapper.layout == ObjectType.Layout.NOTE) {
                                     wrapper.snippet.orEmpty()
                                 } else {
@@ -1147,10 +1154,7 @@ class ChatViewModel @Inject constructor(
                                             builder = urlBuilder,
                                             objType = storeOfObjectTypes.getTypeOfObject(wrapper)
                                         ),
-                                        typeName = if (type != null)
-                                            storeOfObjectTypes.get(type)?.name.orEmpty()
-                                        else
-                                            ""
+                                        typeName = typeName
                                     )
                                 )
                             }

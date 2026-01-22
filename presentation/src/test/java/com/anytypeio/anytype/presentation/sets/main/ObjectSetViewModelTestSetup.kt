@@ -349,7 +349,6 @@ open class ObjectSetViewModelTestSetup {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,

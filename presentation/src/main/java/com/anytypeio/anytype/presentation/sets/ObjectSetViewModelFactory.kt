@@ -6,7 +6,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -78,7 +77,6 @@ class ObjectSetViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -126,7 +124,6 @@ class ObjectSetViewModelFactory(
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            getObjectTypes = getObjectTypes,
             duplicateObjects = duplicateObjects,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,

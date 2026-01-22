@@ -23,6 +23,7 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -61,7 +62,8 @@ class ObjectTypeVMFactory @Inject constructor(
     private val getObject: GetObject,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val updateText: UpdateText
+    private val updateText: UpdateText,
+    private val searchObjects: SearchObjects
 ) : ViewModelProvider.Factory {
 
     @Suppress("UNCHECKED_CAST")
@@ -94,6 +96,7 @@ class ObjectTypeVMFactory @Inject constructor(
             getObject = getObject,
             addToFeaturedRelations = addToFeaturedRelations,
             removeFromFeaturedRelations = removeFromFeaturedRelations,
-            updateText = updateText
+            updateText = updateText,
+            searchObjects = searchObjects
         ) as T
 }

@@ -24,6 +24,7 @@ import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -136,4 +137,5 @@ interface ChatComponentDependencies : ComponentDependencies {
     fun setChatNotificationMode(): SetChatNotificationMode
     fun resetSpaceChatNotification(): ResetSpaceChatNotification
     fun payloadDelegator(): PayloadDelegator
+    fun fieldParser(): FieldParser
 }

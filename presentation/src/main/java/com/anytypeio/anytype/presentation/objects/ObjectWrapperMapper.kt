@@ -18,13 +18,11 @@ import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
 suspend fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectView> = map { obj ->
     obj.toView(
         urlBuilder = urlBuilder,
-        objectTypes = objectTypes,
         fieldParser = fieldParser,
         storeOfObjectTypes = storeOfObjectTypes
     )
@@ -32,7 +30,6 @@ suspend fun List<ObjectWrapper.Basic>.toViews(
 
 suspend fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
     usePluralNames: Boolean = true
@@ -40,7 +37,7 @@ suspend fun ObjectWrapper.Basic.toView(
     val obj = this
     val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
         objectWrapper = obj,
-        types = objectTypes
+        types =  storeOfObjectTypes.getAll()
     )
     val layout = obj.getProperLayout()
     return DefaultObjectView(

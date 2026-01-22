@@ -14,7 +14,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -425,14 +424,12 @@ class SelectWidgetSourceViewModel(
         }
     }
 
-    private fun CoroutineScope.dispatchSelectCustomSourceAnalyticEvent(
+    private suspend fun CoroutineScope.dispatchSelectCustomSourceAnalyticEvent(
         view: DefaultObjectView,
         isForNewWidget: Boolean,
         isInEditMode: Boolean
     ) {
-        val sourceObjectType = types.value.getOrDefault(emptyList()).find { type ->
-            type.id == view.type
-        }
+        val sourceObjectType = storeOfObjectTypes.get(view.id)
         if (sourceObjectType != null) {
             sendChangeWidgetSourceEvent(
                 analytics = analytics,

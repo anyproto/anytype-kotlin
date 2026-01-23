@@ -164,6 +164,14 @@ suspend fun StoreOfObjectTypes.getTypeOfObject(obj: ObjectWrapper.Basic): Object
 }
 
 /**
+ * Looks up an object type by either ID or uniqueKey.
+ * Useful when the identifier could be either format (e.g., from Widget.Source.type).
+ */
+suspend fun StoreOfObjectTypes.getByIdOrKey(idOrKey: String): ObjectWrapper.Type? {
+    return get(idOrKey) ?: getByKey(idOrKey)
+}
+
+/**
  * Shared helper to build the limit object types for a property.
  */
 suspend fun StoreOfObjectTypes.mapLimitObjectTypes(

@@ -6,7 +6,6 @@ import android.text.Editable
 import android.text.SpannableStringBuilder
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_utils.ext.VALUE_ROUNDED
-import com.anytypeio.anytype.core_utils.ext.removeSpans
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_ui.extensions.EmojiUtils
@@ -65,26 +64,10 @@ fun Editable.setMarkup(
         underlineHeight = underlineHeight
     )
 
-    // Update text only if it changed after emoji processing
-    val newText = built.toString()
-    if (newText != toString()) {
-        clear()
-        append(newText)
-    }
-
-    // Clear existing spans and apply new ones
-    removeSpans<Span>()
-
-    // Copy spans from the prepared builder back into this Editable
-    val spans = built.getSpans(0, built.length, Any::class.java)
-    spans.forEach { span ->
-        val start = built.getSpanStart(span)
-        val end = built.getSpanEnd(span)
-        val flags = built.getSpanFlags(span)
-        if (start >= 0 && end >= 0 && start <= length && end <= length) {
-            setSpan(span, start, end, flags)
-        }
-    }
+    // Atomic replacement: replaces entire content including spans in one operation.
+    // This avoids O(n²) complexity from multiple removeSpan/setSpan calls,
+    // and ensures complete span cleanup (including ClickableSpan).
+    replace(0, length, built, 0, built.length)
 }
 
 fun isRangeValid(mark: Markup.Mark, textLength: Int): Boolean {

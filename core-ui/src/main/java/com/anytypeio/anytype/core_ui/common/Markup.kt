@@ -64,9 +64,10 @@ fun Editable.setMarkup(
         underlineHeight = underlineHeight
     )
 
-    // Atomic replacement: replaces entire content including spans in one operation.
-    // This avoids O(n²) complexity from multiple removeSpan/setSpan calls,
-    // and ensures complete span cleanup (including ClickableSpan).
+    // Clear all existing spans first, then replace content with built spannable.
+    // This ensures complete span cleanup (including ClickableSpan and other non-Span types).
+    // The replace() call copies both text and spans from built efficiently.
+    getSpans(0, length, Any::class.java).forEach { removeSpan(it) }
     replace(0, length, built, 0, built.length)
 }
 

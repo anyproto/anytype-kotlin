@@ -44,4 +44,8 @@ dependencies {
 
     testImplementation libs.junit
     testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.timberJUnit
+    testImplementation libs.turbine
 }

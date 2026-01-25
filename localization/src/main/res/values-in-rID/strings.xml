@@ -751,9 +751,9 @@
     <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="delete_irrevocably_one_object">This object will be deleted irrevocably. You can\'t undo this action.</string>
     <!-- Object Type Deletion Confirmation -->
-    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
-    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
-    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_title">Buang \"%s\" ke bak sampah?</string>
+    <string name="move_type_to_bin_description">Beberapa objek menggunakan tipe ini. Pilih yang ingin kamu hapus juga. Objek yang tidak kamu pilih akan tetap ada, namun akan kehilangan tipenya.</string>
+    <string name="move_type_to_bin_no_objects">Tidak ada objek dengan tipe ini</string>
     <string name="move_type_to_bin_select_all">Pilih semua</string>
     <string name="move_type_to_bin_to_bin">Buang ke Bak Sampah</string>
     <string name="shared">Berbagi</string>

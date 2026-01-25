@@ -25,7 +25,6 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -93,7 +92,6 @@ class CollectionViewModel(
     private val vmParams: VmParams,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val getObjectTypes: GetObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
     private val actionObjectFilter: ActionObjectFilter,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -209,22 +207,6 @@ class CollectionViewModel(
                     navPanelState.value = it
                 }
         }
-    }
-
-    private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
-        val params = GetObjectTypes.Params(
-            space = SpaceId(vmParams.spaceId.id),
-            sorts = emptyList(),
-            filters = ObjectSearchConstants.filterTypes(),
-            keys = ObjectSearchConstants.defaultKeysObjectType
-        )
-        return getObjectTypes
-            .asFlow(params)
-            .catch { e ->
-                Timber.e(e, "Error while getting object types for fullscreen widgets")
-                emit(emptyList())
-            }
-            .stateIn(viewModelScope)
     }
 
     @FlowPreview
@@ -343,8 +325,8 @@ class CollectionViewModel(
         combine(
             container.subscribe(params).map { results -> results.distinctBy { it.id } },
             queryFlow(),
-            objectTypes()
-        ) { objects, query, types ->
+            storeOfObjectTypes.trackChanges()
+        ) { objects, query, _ ->
 
             val filteredResults = objects.filter { obj ->
                 val name = fieldParser.getObjectName(obj)
@@ -354,7 +336,6 @@ class CollectionViewModel(
             val views = filteredResults
                 .toViews(
                     urlBuilder = urlBuilder,
-                    objectTypes = types,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes
                 )
@@ -402,7 +383,7 @@ class CollectionViewModel(
         combine(
             container.subscribe(buildSearchParams()),
             queryFlow(),
-            objectTypes(),
+            storeOfObjectTypes.trackChanges(),
             spaceManager
                 .observe(vmParams.spaceId)
                 .flatMapLatest { config ->
@@ -416,8 +397,8 @@ class CollectionViewModel(
                         )
                         .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
                 }
-        ) { objs, query, types, favorotiesObj ->
-            val result = prepareFavorites(favorotiesObj, objs, query, types)
+        ) { objs, query, _, favorotiesObj ->
+            val result = prepareFavorites(favorotiesObj, objs, query)
             if (result.isEmpty() && query.isNotEmpty())
                 listOf(CollectionView.EmptySearch(query))
             else
@@ -430,7 +411,6 @@ class CollectionViewModel(
         favoritesObj: CoreObjectView,
         objs: List<ObjectWrapper.Basic>,
         query: String,
-        types: List<ObjectWrapper.Type>
     ): List<CollectionObjectView> {
         val favs = favoritesObj.blocks.parseFavorites(
             root = favoritesObj.root,
@@ -440,7 +420,11 @@ class CollectionViewModel(
             val name = fieldParser.getObjectName(obj)
             name.lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types, fieldParser, storeOfObjectTypes)
+            .toViews(
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 
@@ -1065,7 +1049,6 @@ class CollectionViewModel(
         private val vmParams: VmParams,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val getObjectTypes: GetObjectTypes,
         private val dispatchers: AppCoroutineDispatchers,
         private val actionObjectFilter: ActionObjectFilter,
         private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -1094,7 +1077,6 @@ class CollectionViewModel(
             return CollectionViewModel(
                 container = container,
                 urlBuilder = urlBuilder,
-                getObjectTypes = getObjectTypes,
                 dispatchers = dispatchers,
                 actionObjectFilter = actionObjectFilter,
                 setObjectListIsArchived = setObjectListIsArchived,

@@ -6,8 +6,6 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -26,7 +24,6 @@ class BackLinkOrAddToObjectViewModel(
     private val vmParams: VmParams,
     urlBuilder: UrlBuilder,
     searchObjects: SearchObjects,
-    getObjectTypes: GetObjectTypes,
     analytics: Analytics,
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     fieldParser: FieldParser,
@@ -35,7 +32,6 @@ class BackLinkOrAddToObjectViewModel(
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
-    getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,

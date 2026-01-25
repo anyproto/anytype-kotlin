@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
@@ -69,7 +70,8 @@ class ChatViewModelFactory @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
-    private val setChatNotificationMode: SetChatNotificationMode
+    private val setChatNotificationMode: SetChatNotificationMode,
+    private val fieldParser: FieldParser
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T = ChatViewModel(
@@ -105,6 +107,7 @@ class ChatViewModelFactory @Inject constructor(
         setObjectListIsArchived = setObjectListIsArchived,
         setObjectDetails = setObjectDetails,
         setSpaceDetails = setSpaceDetails,
-        setChatNotificationMode = setChatNotificationMode
+        setChatNotificationMode = setChatNotificationMode,
+        fieldParser = fieldParser
     ) as T
 }

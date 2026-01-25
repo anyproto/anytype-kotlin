@@ -7,6 +7,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
 import com.anytypeio.anytype.core_ui.extensions.canOpenEmbedExternally
 import com.anytypeio.anytype.core_ui.extensions.toEmbedIconResource
+import com.anytypeio.anytype.core_ui.extensions.toEmbedIconResource
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewHolder
@@ -49,10 +50,10 @@ class EmbedPlaceholder(
     fun bind(item: BlockView.Embed, clicked: (ListenerType) -> Unit) {
         timber.log.Timber.d("EmbedPlaceholder: bind called with isSelected=${item.isSelected} for id=${item.id}")
         select(item.isSelected)
-        
+
         val trimmedText = item.text.trim()
         val canOpen = item.processor.canOpenEmbedExternally() && trimmedText.isNotEmpty()
-        
+
         // Determine the appropriate message based on state
         binding.embedTitle.text = when {
             trimmedText.isEmpty() -> {
@@ -68,10 +69,10 @@ class EmbedPlaceholder(
                 binding.root.context.getString(R.string.embed_content_not_available, item.processor)
             }
         }
-        
+
         // Set the embed icon based on processor type
         binding.embedIcon.setImageResource(item.processor.toEmbedIconResource())
-        
+
         // Show/hide Open button based on whether embed can be opened
         if (canOpen) {
             binding.openButton.visible()
@@ -81,7 +82,9 @@ class EmbedPlaceholder(
         } else {
             binding.openButton.gone()
         }
-        
+        // Set the embed icon based on processor type
+        binding.embedIcon.setImageResource(item.processor.toEmbedIconResource())
+
         // Keep root clickable for selection mode
         binding.root.setOnClickListener {
             clicked(ListenerType.Embed.Click(item))

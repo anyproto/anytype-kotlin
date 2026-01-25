@@ -19,7 +19,7 @@ fun String.canOpenEmbedExternally(): Boolean {
         // Design/collaboration tools
         "Miro", "Figma", "Sketchfab" -> true
         // Diagram/code tools that don't open externally on mobile
-        "Mermaid", "Chart", "Excalidraw", "Kroki", "Graphviz", 
+        "Mermaid", "Chart", "Excalidraw", "Kroki", "Graphviz",
         "CodePen", "GitHub Gist", "Draw.io" -> false
         // Images
         "Image" -> false

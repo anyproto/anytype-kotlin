@@ -67,7 +67,6 @@ class MoveToViewModel(
                     Resultat.success(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
-                            objectTypes = storeOfObjectTypes.getAll(),
                             fieldParser = fieldParser,
                             storeOfObjectTypes = storeOfObjectTypes
                         )

@@ -5,10 +5,7 @@ import android.view.KeyEvent
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -26,7 +23,11 @@ import com.anytypeio.anytype.presentation.MockBlockFactory.text
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsFocused
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -50,7 +51,7 @@ class DeleteBlockTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.CTX_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     @Before
     override fun setup() {
@@ -311,6 +312,15 @@ class DeleteBlockTesting : EditorTestSetup() {
             targets = listOf(b.id)
         )
 
+        // List items and highlights are first converted to paragraph before unlinking
+        val isClearable = secondStyle in listOf(
+            Block.Content.Text.Style.BULLET,
+            Block.Content.Text.Style.CHECKBOX,
+            Block.Content.Text.Style.NUMBERED,
+            Block.Content.Text.Style.TOGGLE,
+            Block.Content.Text.Style.QUOTE
+        )
+
         stubInterceptEvents()
         stubOpenDocument(document)
         stubInterceptThreadStatus()
@@ -318,21 +328,37 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         stubUnlinkBlocks(params, events)
 
+        if (isClearable) {
+            stubUpdateTextStyle(
+                events = listOf(
+                    Event.Command.GranularChange(
+                        context = root,
+                        id = b.id,
+                        style = Block.Content.Text.Style.P
+                    )
+                )
+            )
+        }
+
         val scenario = launchFragment(args)
 
         // TESTING
 
-        val target = Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(1, targetViewId)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.performClick()
 
         // Delete text from B
 
         repeat(4) { target.perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL)) }
+
+        if (isClearable) {
+            // Style was cleared to paragraph; one more DEL to trigger unlink
+            Thread.sleep(100)
+            rvMatcher.onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
+        }
 
         // Check results
 
@@ -340,11 +366,9 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(0, firstViewId)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("Foo")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(0, firstViewId).apply {
+            checkHasText("Foo")
+            checkIsFocused()
         }
 
         // Check cursor position
@@ -476,7 +500,6 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-
         val titleBlock = text(
             content = StubTextContent(
                 text = title,
@@ -532,6 +555,15 @@ class DeleteBlockTesting : EditorTestSetup() {
             targets = listOf(a.id)
         )
 
+        // List items and highlights are first converted to paragraph before unlinking
+        val isClearable = firstStyle in listOf(
+            Block.Content.Text.Style.BULLET,
+            Block.Content.Text.Style.CHECKBOX,
+            Block.Content.Text.Style.NUMBERED,
+            Block.Content.Text.Style.TOGGLE,
+            Block.Content.Text.Style.QUOTE
+        )
+
         stubInterceptEvents()
         stubInterceptThreadStatus()
 
@@ -549,15 +581,26 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         stubUnlinkBlocks(params, events)
 
+        if (isClearable) {
+            stubUpdateTextStyle(
+                events = listOf(
+                    Event.Command.GranularChange(
+                        context = root,
+                        id = a.id,
+                        style = Block.Content.Text.Style.P
+                    )
+                )
+            )
+        }
+
         val scenario = launchFragment(args)
 
         // TESTING
 
-        val target = Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, firstViewId)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(1, firstViewId)
 
-        target.perform(ViewActions.click())
+        target.performClick()
 
         // Set cursor programmatically
 
@@ -569,9 +612,16 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        // Delete text from B
+        // Delete text from A
 
         repeat(4) { target.perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL)) }
+
+        if (isClearable) {
+            // Style was cleared to paragraph; one more DEL to trigger unlink
+            Thread.sleep(100)
+            rvMatcher.onItemView(1, R.id.textContent)
+                .perform(ViewActions.pressKey(KeyEvent.KEYCODE_DEL))
+        }
 
         // Check results
 
@@ -579,17 +629,13 @@ class DeleteBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.title)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText(title)))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(0, R.id.title).apply {
+            checkHasText(title)
+            checkIsFocused()
         }
 
-        Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, secondViewId)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("Bar")))
+        rvMatcher.onItemView(1, secondViewId).apply {
+            checkHasText("Bar")
         }
 
         // Check cursor position

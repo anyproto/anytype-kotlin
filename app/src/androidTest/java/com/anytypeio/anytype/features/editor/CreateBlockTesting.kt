@@ -13,7 +13,6 @@ import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateTextStyle
 import com.anytypeio.anytype.features.editor.base.EditorTestSetup
@@ -35,10 +34,10 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
+import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
-import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
@@ -164,7 +163,7 @@ class CreateBlockTesting : EditorTestSetup() {
         stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
-        stubCreateBlocks(params, new, events)
+        stubCreateBlocks(new, events)
 
         val scenario = launchFragment(args)
 
@@ -185,7 +184,9 @@ class CreateBlockTesting : EditorTestSetup() {
 
         // Check results
 
-        verify(createBlock, times(1)).async(params)
+        verifyBlocking(repo, times(1)) {
+            create(command = any())
+        }
 
         rvMatcher.onItemView(0, targetViewId).checkHasText("")
 
@@ -310,16 +311,13 @@ class CreateBlockTesting : EditorTestSetup() {
     // STUBBING & SETUP
 
     private fun stubCreateBlocks(
-        params: CreateBlock.Params,
         new: Block,
         events: List<Event.Command>
     ) {
-        createBlock.stub {
+        repo.stub {
             onBlocking {
-                async(params)
-            } doReturn Resultat.success(
-                Pair(new.id, Payload(context = root, events = events))
-            )
+                create(command = any())
+            } doReturn Pair(new.id, Payload(context = root, events = events))
         }
     }
 

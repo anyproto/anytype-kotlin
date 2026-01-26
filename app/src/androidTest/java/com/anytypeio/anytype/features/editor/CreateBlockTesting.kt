@@ -4,10 +4,7 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -24,11 +21,16 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.utils.TestUtils
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsFocused
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlin.test.assertEquals
+import kotlinx.coroutines.runBlocking
 import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
@@ -36,6 +38,7 @@ import org.junit.runner.RunWith
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
+import org.mockito.kotlin.verify
 import org.mockito.kotlin.verifyBlocking
 
 @RunWith(AndroidJUnit4::class)
@@ -48,7 +51,7 @@ class CreateBlockTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(EditorFragment.CTX_KEY to root)
+    val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     @Before
     override fun setup() {
@@ -113,7 +116,7 @@ class CreateBlockTesting : EditorTestSetup() {
     private fun createNewParagraphByPressingEnterInsideAnyEmptyTextBlockExceptLists(
         targetStyle: Block.Content.Text.Style,
         targetViewId: Int
-    ) {
+    ) = runBlocking {
 
         // SETUP
         val a = MockBlockFactory.text(
@@ -157,6 +160,8 @@ class CreateBlockTesting : EditorTestSetup() {
             )
         )
 
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
         stubOpenDocument(document)
         stubUpdateText()
         stubCreateBlocks(params, new, events)
@@ -165,35 +170,30 @@ class CreateBlockTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, targetViewId)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.checkHasText("")
+
+        target.performClick()
 
         // Press ENTER on empty text block A
 
         target.perform(ViewActions.pressImeActionButton())
 
+        coroutineTestRule.advanceTime(100)
+
         // Check results
 
-        verifyBlocking(createBlock, times(1)) { asFlow(params) }
+        verify(createBlock, times(1)).async(params)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("")))
-        }
+        rvMatcher.onItemView(0, targetViewId).checkHasText("")
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(1, R.id.textContent).apply {
+            checkHasText("")
+            checkIsFocused()
         }
 
         // Check cursor position at block B
@@ -264,13 +264,10 @@ class CreateBlockTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, targetViewId)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.perform(ViewActions.click())
 
         // Press ENTER on empty text block A
 
@@ -282,11 +279,9 @@ class CreateBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(0, R.id.textContent).apply {
+            checkHasText("")
+            checkIsFocused()
         }
 
         // Check cursor position at block B
@@ -321,7 +316,7 @@ class CreateBlockTesting : EditorTestSetup() {
     ) {
         createBlock.stub {
             onBlocking {
-                execute(params)
+                async(params)
             } doReturn Resultat.success(
                 Pair(new.id, Payload(context = root, events = events))
             )

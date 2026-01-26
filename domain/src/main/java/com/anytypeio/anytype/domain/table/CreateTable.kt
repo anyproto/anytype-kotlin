@@ -7,7 +7,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class CreateTable(
+open class CreateTable(
     private val repo: BlockRepository
 ) : BaseUseCase<Payload, CreateTable.Params>() {
 

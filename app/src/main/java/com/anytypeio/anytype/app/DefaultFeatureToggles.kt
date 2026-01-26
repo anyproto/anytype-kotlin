@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.BuildProvider
 import javax.inject.Inject
 
-class DefaultFeatureToggles @Inject constructor(
+open class DefaultFeatureToggles @Inject constructor(
     buildProvider: BuildProvider
 ) : FeatureToggles {
 

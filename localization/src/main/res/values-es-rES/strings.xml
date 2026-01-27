@@ -843,6 +843,9 @@
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
     <string name="embed_content_not_available">Incrustación de %1$s. Este contenido no está disponible en el móvil</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Abrir</string>
     <string name="personal">Por defecto</string>
     <string name="create_space">Crear espacio</string>
     <string name="create_chat">Crear chat</string>

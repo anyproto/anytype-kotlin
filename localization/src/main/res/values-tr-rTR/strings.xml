@@ -843,8 +843,8 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="embed_content_not_available">%1$s embed. Bu içerik mobil cihazlarda mevcut değil.</string>
-    <string name="embed_is_empty">%1$s embed is empty</string>
-    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="embed_is_empty">%1$s embed boş</string>
+    <string name="embed_opens_externally">%1$s embed. Harici uygulamada veya tarayıcıda açılır</string>
     <string name="open">Aç</string>
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>

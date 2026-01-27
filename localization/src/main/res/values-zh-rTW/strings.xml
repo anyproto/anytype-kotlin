@@ -841,6 +841,9 @@
     <string name="exiting_please_wait">正在離開... 請稍候</string>
     <string name="loading_please_wait">正在載入... 請稍候</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">開啟</string>
     <string name="personal">預設</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>

@@ -9,7 +9,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import javax.inject.Inject
 
-class SearchObjects @Inject constructor(
+open class SearchObjects @Inject constructor(
     private val repo: BlockRepository
 ) : BaseUseCase<List<ObjectWrapper.Basic>, SearchObjects.Params>() {
 

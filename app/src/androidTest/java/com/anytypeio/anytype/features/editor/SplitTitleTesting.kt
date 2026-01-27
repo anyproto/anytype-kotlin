@@ -49,7 +49,7 @@ class SplitTitleTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.CTX_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     @Before
     override fun setup() {

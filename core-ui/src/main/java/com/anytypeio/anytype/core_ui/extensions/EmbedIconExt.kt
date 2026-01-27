@@ -4,6 +4,30 @@ import androidx.annotation.DrawableRes
 import com.anytypeio.anytype.core_ui.R
 
 /**
+ * Determines if an embed can be opened in an external app or browser.
+ */
+fun String.canOpenEmbedExternally(): Boolean {
+    return when (this) {
+        // Video platforms
+        "YouTube", "Vimeo", "Bilibili" -> true
+        // Social media
+        "Twitter", "Facebook", "Instagram", "Reddit", "Telegram" -> true
+        // Audio platforms
+        "SoundCloud", "Spotify" -> true
+        // Maps
+        "Google Maps", "OpenStreetMap" -> true
+        // Design/collaboration tools
+        "Miro", "Figma", "Sketchfab" -> true
+        // Diagram/code tools that don't open externally on mobile
+        "Mermaid", "Chart", "Excalidraw", "Kroki", "Graphviz",
+        "CodePen", "GitHub Gist", "Draw.io" -> false
+        // Images
+        "Image" -> false
+        else -> false
+    }
+}
+
+/**
  * Maps embed processor display name to its corresponding icon drawable resource.
  * Returns the generic embed icon as a fallback if no specific icon is found.
  */

@@ -5,6 +5,7 @@ import android.view.ViewConfiguration
 import android.widget.FrameLayout
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockEmbedBinding
+import com.anytypeio.anytype.core_ui.extensions.canOpenEmbedExternally
 import com.anytypeio.anytype.core_ui.extensions.toEmbedIconResource
 import com.anytypeio.anytype.core_ui.extensions.veryLight
 import com.anytypeio.anytype.core_ui.features.editor.BlockViewDiffUtil
@@ -48,19 +49,40 @@ class EmbedPlaceholder(
     fun bind(item: BlockView.Embed, clicked: (ListenerType) -> Unit) {
         timber.log.Timber.d("EmbedPlaceholder: bind called with isSelected=${item.isSelected} for id=${item.id}")
         select(item.isSelected)
-        binding.embedMessage.text = binding.root.context.getString(
-            R.string.embed_content_not_available,
-            item.processor
-        )
+
         val trimmedText = item.text.trim()
-        if (trimmedText.isNotEmpty()) {
-            binding.embedUrl.visible()
-            binding.embedUrl.text = trimmedText
-        } else {
-            binding.embedUrl.gone()
+        val canOpen = item.processor.canOpenEmbedExternally() && trimmedText.isNotEmpty()
+
+        // Determine the appropriate message based on state
+        binding.embedTitle.text = when {
+            trimmedText.isEmpty() -> {
+                // No URL provided - embed is empty
+                binding.root.context.getString(R.string.embed_is_empty, item.processor)
+            }
+            item.processor.canOpenEmbedExternally() -> {
+                // Can be opened in external app or browser
+                binding.root.context.getString(R.string.embed_opens_externally, item.processor)
+            }
+            else -> {
+                // Not available on mobile (e.g., Mermaid, Chart, etc.)
+                binding.root.context.getString(R.string.embed_content_not_available, item.processor)
+            }
         }
+
         // Set the embed icon based on processor type
         binding.embedIcon.setImageResource(item.processor.toEmbedIconResource())
+
+        // Show/hide Open button based on whether embed can be opened
+        if (canOpen) {
+            binding.openButton.visible()
+            binding.openButton.setOnClickListener {
+                clicked(ListenerType.Embed.Click(item))
+            }
+        } else {
+            binding.openButton.gone()
+        }
+
+        // Keep root clickable for selection mode
         binding.root.setOnClickListener {
             clicked(ListenerType.Embed.Click(item))
         }

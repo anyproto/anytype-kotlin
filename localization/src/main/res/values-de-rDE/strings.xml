@@ -843,6 +843,9 @@
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Öffnen</string>
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>

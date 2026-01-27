@@ -337,7 +337,6 @@ abstract class TestObjectSetSetup {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             params = ObjectSetViewModel.Params(
                 ctx = ctx,
@@ -351,6 +350,9 @@ abstract class TestObjectSetSetup {
             spaceViews = spacedViews,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = mock(),
+            createBlock = mock(),
+            emojiProvider = mock(),
+            emojiSuggester = mock()
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

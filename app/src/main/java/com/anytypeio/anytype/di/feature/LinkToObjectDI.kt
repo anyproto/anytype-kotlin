@@ -59,7 +59,6 @@ object LinkToObjectModule {
     fun provideLinkToObjectViewModelFactory(
         vmParams: ObjectSearchViewModel.VmParams,
         urlBuilder: UrlBuilder,
-        getObjectTypes: GetObjectTypes,
         searchObjects: SearchObjects,
         analytics: Analytics,
         analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
@@ -69,7 +68,6 @@ object LinkToObjectModule {
     ): LinkToObjectViewModelFactory = LinkToObjectViewModelFactory(
         vmParams = vmParams,
         urlBuilder = urlBuilder,
-        getObjectTypes = getObjectTypes,
         searchObjects = searchObjects,
         analytics = analytics,
         analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,

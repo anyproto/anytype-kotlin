@@ -149,6 +149,7 @@ class ObjectTypeFragment : BaseComposeFragment() {
                     uiLayoutTypeState = vm.uiTypeLayoutsState.collectAsStateWithLifecycle().value,
                     uiSyncStatusState = vm.uiSyncStatusWidgetState.collectAsStateWithLifecycle().value,
                     uiDeleteAlertState = vm.uiAlertState.collectAsStateWithLifecycle().value,
+                    uiDeleteTypeAlertState = vm.uiDeleteTypeAlertState.collectAsStateWithLifecycle().value,
                     objectId = objectId,
                     space = space,
                     view = view,

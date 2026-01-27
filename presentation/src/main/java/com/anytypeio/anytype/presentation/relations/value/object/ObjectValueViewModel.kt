@@ -235,7 +235,6 @@ class ObjectValueViewModel(
         ObjectValueItem.Object(
             view = obj.toView(
                 urlBuilder = urlBuilder,
-                objectTypes = storeOfObjectTypes.getAll(),
                 fieldParser = fieldParser,
                 storeOfObjectTypes = storeOfObjectTypes,
                 usePluralNames = false

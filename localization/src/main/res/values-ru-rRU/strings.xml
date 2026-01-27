@@ -847,6 +847,9 @@
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
     <string name="embed_content_not_available">%1$s встраиваемый контент не доступен на мобильном устройстве</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Открыть</string>
     <string name="personal">По умолчанию</string>
     <string name="create_space">Создать пространство</string>
     <string name="create_chat">Создать чат</string>

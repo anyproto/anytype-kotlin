@@ -91,15 +91,15 @@ class EditorTouchProcessor(
                 actionHandler.removeCallbacksAndMessages(null)
                 moves.clear()
 
-                if (v is TextInputWidget) {
+                if (v is TextInputWidget && !v.inReadMode) {
                     val x = (event.x - v.totalPaddingLeft + v.scrollX).toInt()
                     val y = (event.y - v.totalPaddingTop + v.scrollY).toInt()
                     val layout: Layout = v.layout
                     val line = layout.getLineForVertical(y)
                     if (x <= layout.getLineMax(line)) {
                         val offset = layout.getOffsetForHorizontal(line, x.toFloat())
-                        val link = v.editableText.getSpans(offset, offset, ClickableSpan::class.java)
-                        if (link.isNotEmpty()) {
+                        val link = v.editableText?.getSpans(offset, offset, ClickableSpan::class.java)
+                        if (link != null && link.isNotEmpty()) {
                             v.clearFocus()
                             link[0].onClick(v)
                             return true

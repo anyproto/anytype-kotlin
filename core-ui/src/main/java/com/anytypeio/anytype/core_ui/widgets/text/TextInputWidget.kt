@@ -62,7 +62,8 @@ class TextInputWidget : AppCompatEditText {
 
     private var ignoreDragAndDrop = false
     private var pasteAsPlainTextOnly = false
-    private var inReadMode = false
+    var inReadMode: Boolean = false
+        private set
 
     val editorTouchProcessor by lazy {
         EditorTouchProcessor(

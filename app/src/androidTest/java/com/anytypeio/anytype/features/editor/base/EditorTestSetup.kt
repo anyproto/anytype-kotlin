@@ -23,7 +23,6 @@ import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
@@ -129,6 +128,7 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -162,7 +162,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var dateProvider: DateProvider
 
-    @Mock
     lateinit var openPage: OpenPage
 
     @Mock
@@ -171,7 +170,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var updateText: UpdateText
 
-    @Mock
     lateinit var createBlock: CreateBlock
 
     @Mock
@@ -358,6 +356,11 @@ open class EditorTestSetup {
         )
         appCoroutineDispatchers = dispatchers
 
+        openPage = OpenPage(
+            repo = repo,
+            settings = userSettingsRepository,
+            dispatchers = dispatchers
+        )
         splitBlock = SplitBlock(repo)
         undo = Undo(repo, dispatchers)
         redo = Redo(repo, dispatchers)
@@ -366,6 +369,7 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         uploadBlock = UploadBlock(repo)
+        createBlock = CreateBlock(repo, dispatchers)
         createBlockLinkWithObject = CreateBlockLinkWithObject(repo, dispatchers)
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
@@ -560,18 +564,18 @@ open class EditorTestSetup {
         details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         relations: List<Relation> = emptyList()
     ) {
-        openPage.stub {
-            onBlocking { async(any()) } doReturn Resultat.success(
-                Result.Success(
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.ShowObject(
-                                context = root,
-                                root = root,
-                                details = details.details,
-                                blocks = document,
-                            )
+        repo.stub {
+            onBlocking {
+                openPage(any(), anySpaceId())
+            } doReturn Result.Success(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.ShowObject(
+                            context = root,
+                            root = root,
+                            details = details.details,
+                            blocks = document,
                         )
                     )
                 )
@@ -579,16 +583,27 @@ open class EditorTestSetup {
         }
     }
 
+    /**
+     * Mockito matcher workaround for Kotlin value class [SpaceId].
+     * Standard matchers (any(), eq()) fail because the value class is unboxed
+     * at JVM level, causing NPE during unboxing of the null matcher return.
+     * This registers a matcher on Mockito's stack while returning a valid
+     * SpaceId instance for the Kotlin compiler's unboxing code.
+     */
+    protected fun anySpaceId(): SpaceId {
+        Mockito.any<Any>()
+        return SpaceId("")
+    }
+
     fun stubCreateBlock(
-        params: CreateBlock.Params,
         events: List<Event.Command>
     ) {
-        createBlock.stub {
-            onBlocking { execute(params) } doReturn Resultat.success(
-                Pair(
-                    MockDataFactory.randomUuid(),
-                    Payload(context = root, events = events)
-                )
+        repo.stub {
+            onBlocking {
+                create(command = any())
+            } doReturn Pair(
+                MockDataFactory.randomUuid(),
+                Payload(context = root, events = events)
             )
         }
     }

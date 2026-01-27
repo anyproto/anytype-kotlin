@@ -286,6 +286,7 @@ dependencies {
     }
 
     debugImplementation libs.fragmentTesting
+    debugImplementation libs.androidXTestCore
     debugImplementation libs.composeTooling
     implementation libs.composeToolingPreview
 }

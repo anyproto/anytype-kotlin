@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.navigation
+package com.anytypeio.anytype.domain.workspace
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -6,7 +6,6 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.FetchObject
 import com.anytypeio.anytype.domain.spaces.SaveCurrentSpace
-import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.emitAll
@@ -23,13 +22,13 @@ interface DeepLinkToObjectDelegate {
         obj: Id,
         space: SpaceId,
         switchSpaceIfObjectFound: Boolean = true
-    ) : Result
+    ): Result
 
     fun onDeepLinkToObjectAwait(
         obj: Id,
         space: SpaceId,
         switchSpaceIfObjectFound: Boolean = true
-    ) : Flow<Result>
+    ): Flow<Result>
 
     class Default @Inject constructor(
         private val spaceManager: SpaceManager,
@@ -42,7 +41,7 @@ interface DeepLinkToObjectDelegate {
             obj: Id,
             space: SpaceId,
             switchSpaceIfObjectFound: Boolean
-        ) : Result {
+        ): Result {
             val wrapper = fetchObject
                 .async(
                     params = FetchObject.Params(
@@ -123,10 +122,11 @@ interface DeepLinkToObjectDelegate {
 
     sealed class Result {
         sealed class Error : Result() {
-            object PermissionNeeded: Error()
-            object ObjectNotFound: Error()
-            object CouldNotOpenSpace: Error()
+            object PermissionNeeded : Error()
+            object ObjectNotFound : Error()
+            object CouldNotOpenSpace : Error()
         }
-        data class Success(val obj: ObjectWrapper.Basic): Result()
+
+        data class Success(val obj: ObjectWrapper.Basic) : Result()
     }
 }

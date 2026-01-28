@@ -8,7 +8,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
 
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
 sealed class VaultSpaceView {
 

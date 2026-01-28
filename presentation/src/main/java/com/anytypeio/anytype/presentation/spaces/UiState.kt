@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
 sealed class UiSpaceSettingsState {
     data object Initial : UiSpaceSettingsState()

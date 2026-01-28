@@ -3,17 +3,9 @@ package com.anytypeio.anytype.presentation.wallpaper
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
 
 import timber.log.Timber
-
-/**
- * Result of wallpaper computation
- */
-sealed class WallpaperResult {
-    data class Gradient(val gradientCode: String) : WallpaperResult()
-    data class SolidColor(val colorHex: String) : WallpaperResult()
-    data object None : WallpaperResult()
-}
 
 /**
  * Computes the wallpaper result with priority:

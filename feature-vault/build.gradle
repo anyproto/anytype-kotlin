@@ -27,9 +27,6 @@ dependencies {
     implementation project(':library-emojifier')
     implementation project(':feature-chats')
 
-    // Temporary dependency on :presentation until all mappers are extracted
-    implementation project(':presentation')
-
     // DI - javax.inject for constructor injection annotations
     compileOnly libs.javaxInject
 

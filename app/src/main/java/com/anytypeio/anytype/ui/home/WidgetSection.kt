@@ -246,7 +246,8 @@ fun LazyListScope.renderWidgetSection(
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
-                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly,
+                        cornerRadius = if (item.isCompact && item.tabs.isNotEmpty()) 16.dp else 24.dp
                     )
 
                     DataViewListWidgetCard(
@@ -367,7 +368,8 @@ fun LazyListScope.renderWidgetSection(
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
-                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
+                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly,
+                        cornerRadius = if (item.isCompact && item.tabs.isNotEmpty()) 16.dp else 24.dp
                     )
 
                     ChatListWidgetCard(
@@ -659,10 +661,10 @@ fun UnreadChatListWidget(
             .fillMaxWidth()
             .padding(horizontal = 20.dp, vertical = 6.dp)
             .background(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(24.dp))
     ) {
         Column(
             modifier = Modifier.fillMaxWidth()

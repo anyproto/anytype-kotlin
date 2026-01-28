@@ -19,8 +19,6 @@ import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -28,11 +26,12 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 /**
  * Sealed class representing menu items in the attachment popup.
@@ -240,7 +239,7 @@ private fun AttachmentMenuContentPreview() {
                     name = "Page",
                     icon = ObjectIcon.TypeIcon.Default(
                         rawValue = "document",
-                        color = com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor.DEFAULT
+                        color = CustomIconColor.DEFAULT
                     )
                 ),
                 ObjectTypeMenuItem(
@@ -248,7 +247,7 @@ private fun AttachmentMenuContentPreview() {
                     name = "Task",
                     icon = ObjectIcon.TypeIcon.Default(
                         rawValue = "checkbox",
-                        color = com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor.DEFAULT
+                        color = CustomIconColor.DEFAULT
                     )
                 ),
                 ObjectTypeMenuItem(
@@ -256,7 +255,7 @@ private fun AttachmentMenuContentPreview() {
                     name = "Collection",
                     icon = ObjectIcon.TypeIcon.Default(
                         rawValue = "layers",
-                        color = com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor.DEFAULT
+                        color = CustomIconColor.DEFAULT
                     )
                 )
             )

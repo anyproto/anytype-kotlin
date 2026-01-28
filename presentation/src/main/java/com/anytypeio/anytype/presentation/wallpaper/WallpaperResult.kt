@@ -2,7 +2,8 @@ package com.anytypeio.anytype.presentation.wallpaper
 
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+
 import timber.log.Timber
 
 /**

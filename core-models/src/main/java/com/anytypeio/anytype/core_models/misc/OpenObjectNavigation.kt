@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.home
+package com.anytypeio.anytype.core_models.misc
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType

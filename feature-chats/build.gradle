@@ -25,6 +25,7 @@ dependencies {
     implementation project(':localization')
     implementation project(':presentation')
     implementation project(':library-emojifier')
+    implementation project(':feature-create-object')
     implementation libs.navigationCompose
 
     compileOnly libs.javaxInject

@@ -1450,10 +1450,7 @@ class ObjectSetViewModel(
             }
 
             // Get dataview block ID for cleanup
-            val dvBlock = when (currentState) {
-                is ObjectState.DataView -> currentState.dataViewBlock.id
-                else -> null
-            }
+            val dvBlock = currentState.dataViewBlock.id
 
             val (resolvedType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
                 ctx = vmParams.ctx,
@@ -1461,23 +1458,31 @@ class ObjectSetViewModel(
                 storeOfObjectTypes = storeOfObjectTypes,
                 onDeletedTypeDetected = { deletedViewer ->
                     // Cleanup deleted type in viewer (fire-and-forget)
-                    if (dvBlock != null) {
-                        cleanupDeletedTypeInViewer(
-                            ctx = vmParams.ctx,
-                            dv = dvBlock,
-                            viewer = deletedViewer
-                        )
-                    }
+                    cleanupDeletedTypeInViewer(
+                        ctx = vmParams.ctx,
+                        dv = dvBlock,
+                        viewer = deletedViewer
+                    )
                 }
             )
 
-            // If type is null due to deleted type, use space default
-            val defaultObjectType = resolvedType ?: getSpaceDefaultType()
+            // Resolve type and template with fallback handling
+            val (defaultObjectType, resolvedTemplate) = resolveTypeAndTemplateWithFallback(
+                resolvedType = resolvedType,
+                defaultTemplate = defaultTemplate,
+                userChosenTemplate = templateChosenBy
+            )
 
-            val objectTypeUniqueKey = defaultObjectType?.uniqueKey
+            if (defaultObjectType == null) {
+                toast("Unable to create object: default type not found. Please try again or contact support.")
+                Timber.e("Both resolved type and space default type are null")
+                return
+            }
+
+            val objectTypeUniqueKey = defaultObjectType.uniqueKey
 
             val sourceId = setObject?.setOf?.singleOrNull()
-            if (sourceId == null || objectTypeUniqueKey == null) {
+            if (sourceId == null) {
                 toast("Unable to define a source for a new object.")
             } else {
                 val wrapper = currentState.details.getObject(sourceId)
@@ -1498,7 +1503,7 @@ class ObjectSetViewModel(
                                         )
                                 )
                             } else {
-                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val validTemplateId = resolvedTemplate
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider
@@ -1522,7 +1527,7 @@ class ObjectSetViewModel(
                                     )
                                 )
                             } else {
-                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val validTemplateId = resolvedTemplate
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
@@ -1608,8 +1613,12 @@ class ObjectSetViewModel(
             }
         )
 
-        // If type is null due to deleted type, use space default
-        val defaultObjectType = resolvedType ?: getSpaceDefaultType()
+        // Resolve type and template with fallback handling
+        val (defaultObjectType, resolvedTemplate) = resolveTypeAndTemplateWithFallback(
+            resolvedType = resolvedType,
+            defaultTemplate = defaultTemplate,
+            userChosenTemplate = templateChosenBy
+        )
 
         val defaultObjectTypeUniqueKey = defaultObjectType?.uniqueKey?.let {
             TypeKey(it)
@@ -1620,7 +1629,7 @@ class ObjectSetViewModel(
             return
         }
 
-        val validTemplateId = templateChosenBy ?: defaultTemplate
+        val validTemplateId = resolvedTemplate
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider
@@ -2825,6 +2834,39 @@ class ObjectSetViewModel(
             return storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
         }
         return typeObject
+    }
+
+    /**
+     * Resolves type and template with fallback to space default.
+     *
+     * When the viewer's type is deleted (resolvedType is null), falls back to the space
+     * default type AND its default template to maintain consistency between type and template.
+     *
+     * @param resolvedType The type resolved from the viewer (null if deleted)
+     * @param defaultTemplate The template from the viewer's type (may be invalid if type is deleted)
+     * @param userChosenTemplate Optional template explicitly chosen by the user (highest priority)
+     * @return Pair of (finalType, finalTemplate) where both are aligned to the same type
+     */
+    private suspend fun resolveTypeAndTemplateWithFallback(
+        resolvedType: ObjectWrapper.Type?,
+        defaultTemplate: Id?,
+        userChosenTemplate: Id?
+    ): Pair<ObjectWrapper.Type?, Id?> {
+        // User-chosen template always has highest priority
+        if (userChosenTemplate != null) {
+            val finalType = resolvedType ?: getSpaceDefaultType()
+            return Pair(finalType, userChosenTemplate)
+        }
+
+        // If type is null (deleted), use space default type AND its template
+        if (resolvedType == null) {
+            val spaceDefaultType = getSpaceDefaultType()
+            val spaceDefaultTemplate = spaceDefaultType?.defaultTemplateId
+            return Pair(spaceDefaultType, spaceDefaultTemplate)
+        }
+
+        // Normal case: type exists, use its template
+        return Pair(resolvedType, defaultTemplate)
     }
 
     /**

@@ -557,6 +557,7 @@
     <string name="blank">Пусто</string>
     <string name="templates_menu_default_for_view">По умолчанию для этого представления</string>
     <string name="templates_menu_edit">Изменить шаблон</string>
+    <string name="template_title_prefix">Вы редактируете шаблон\u0020</string>
     <string name="templates_menu_duplicate">Дублировать</string>
     <string name="templates_menu_delete">Удалить</string>
     <string name="unsupported">Не поддерживается</string>
@@ -712,6 +713,7 @@
     <string name="tab_upload_image">Загрузить изображение</string>
     <string name="tab_gallery">Галерея</string>
     <string name="change_type">Изменить тип</string>
+    <string name="default_type_screen_title">Выберите тип объекта по умолчанию</string>
     <string name="change_cover">Изменить обложку</string>
     <string name="remove">Удалить</string>
     <string name="choose_options">Выберите параметры</string>
@@ -751,6 +753,12 @@
     <string name="are_you_sure_delete_n_objects">Вы уверены, что хотите удалить %1$d объектов?</string>
     <string name="delete_irrevocably">Элементы будут безвозвратно удалены. Вы не сможете отменить это действие.</string>
     <string name="delete_irrevocably_one_object">Элементы будут безвозвратно удалены. Вы не сможете отменить это действие.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Выбрать все</string>
+    <string name="move_type_to_bin_to_bin">Переместить в Корзину</string>
     <string name="shared">Общие</string>
     <string name="object_not_exist">Этого объекта не существует</string>
     <string name="back_to_dashboard">Вернуться на рабочий стол</string>
@@ -838,7 +846,10 @@
     <string name="go_to_the_app">Перейти в приложение</string>
     <string name="exiting_please_wait">Выход... пожалуйста, подождите</string>
     <string name="loading_please_wait">Загружается... Пожалуйста, подождите</string>
-    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_content_not_available">%1$s встраиваемый контент не доступен на мобильном устройстве</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Открыть</string>
     <string name="personal">По умолчанию</string>
     <string name="create_space">Создать пространство</string>
     <string name="create_chat">Создать чат</string>
@@ -1134,27 +1145,27 @@
     <string name="sharing_menu_btn_add">Добавить</string>
     <string name="sharing_menu_btn_open">Открыть</string>
     <!-- Snackbar messages for content added to chat -->
-    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
-    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
-    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
-    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
-    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
-    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
-    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
-    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
-    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
-    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <string name="sharing_snackbar_image_added">Изображение добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_images_added">Изображения добавлены в \'%1$s\'</string>
+    <string name="sharing_snackbar_video_added">Видео добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_audio_added">Аудио добавлено в \'%1$s\'</string>
+    <string name="sharing_snackbar_pdf_added">PDF добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_file_added">Файл добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_files_added">Файлы добавлены в \'%1$s\'</string>
+    <string name="sharing_snackbar_text_added">Текст добавлен в \'%1$s\'</string>
+    <string name="sharing_snackbar_link_added">Ссылка добавлена в \'%1$s\'</string>
+    <string name="sharing_snackbar_content_added">Контент добавлен в \'%1$s\'</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Изображение связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_images_linked">Изображения, связанные с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_video_linked">Видео связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_audio_linked">Аудио привязано к \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_pdf_linked">PDF связано с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_file_linked">Файл связан с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_files_linked">Файлы, связанные с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_text_linked">Текст, связанный с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_link_linked">Ссылка связана с \'%1$s\' в \'%2$s\'</string>
+    <string name="sharing_snackbar_content_linked">Контент связан с \'%1$s\' в \'%2$s\'</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Нет</string>
@@ -2017,6 +2028,7 @@
     <string name="notification_settings_state_disabled">Отключено</string>
     <string name="notification_settings_state_enabled">Включено</string>
     <string name="content_desc_muted">Заглушен</string>
+    <string name="content_desc_pending_sync">Ожидание синхронизации</string>
     <string name="failed_to_load_image">Не удалось загрузить изображение</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Присоединиться через QR-код</string>
@@ -2099,7 +2111,7 @@
     <string name="move_chat_to_bin_warning_title">Переместить чат в корзину?</string>
     <string name="chat_move_to_bin_warning_description">Этот чат и все его вложения будут перемещены в Корзину. Никто не сможет отправлять новые сообщения. Вы можете восстановить его от Бин, пока он не будет полностью очищен.</string>
     <string name="chat_edit_info_upload_image">Загрузить изображение</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Выбрать канал</string>
     <string name="add_a_comment">Добавить комментарий...</string>
     <string name="send">Отправить</string>
     <string name="chat_notifications_receive_all">Получить все</string>
@@ -2115,15 +2127,16 @@
     <string name="sharing_select_destination">Выберите пункт назначения</string>
     <string name="sharing_send_to_chat">Отправить в чат</string>
     <string name="sharing_select_dest">Выберите пункт назначения</string>
-    <string name="sharing_no_objects_found">No objects found</string>
-    <string name="sharing_success">Success!</string>
-    <string name="sharing_added_to_space">Content added to %1$s</string>
-    <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
-    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
-    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
-    <string name="sharing_sending_to">Sending to</string>
-    <string name="clear_selection">Clear selection</string>
+    <string name="sharing_no_objects_found">Объекты не найдены</string>
+    <string name="sharing_success">Успешно!</string>
+    <string name="sharing_added_to_space">Контент добавлен в %1$s</string>
+    <string name="sharing_error">Что-то пошло не так</string>
+    <string name="sharing_send_to">Отправить в %1$s</string>
+    <string name="sharing_send_to_multiple">Отправить в %1$d чатов</string>
+    <string name="sharing_selection_limit_reached">Вы можете выбрать до %1$d направлений</string>
+    <string name="sharing_sending_to">Отправка в</string>
+    <string name="clear_selection">Очистить выбор</string>
     <string name="save">Сохранить</string>
-    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="you_dont_have_any_spaces_yet">У вас пока нет мест</string>
+    <string name="loading_channels">Загрузка каналов</string>
 </resources>

@@ -80,10 +80,29 @@ fun DVSortType.text(format: RelationFormat): Int = when (format) {
 }
 
 fun String?.getMimeIcon(extension: String?): Int {
-    var mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    // First check extension for known types that may not be properly handled by Android
+    var mime = when (extension?.lowercase()) {
+        "bmp" -> "image/bmp"
+        "tiff", "tif" -> "image/tiff"
+        "webp" -> "image/webp"
+        "svg" -> "image/svg+xml"
+        "avif" -> "image/avif"
+        "apng" -> "image/apng"
+        "flac" -> "audio/flac"
+        "m4a" -> "audio/m4a"
+        else -> null
+    }
+    
+    // If no explicit override, try Android's MimeTypeMap
+    if (mime == null) {
+        mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    
+    // If still null, fall back to the provided MIME type
     if (mime.isNullOrBlank()) {
         mime = this
     }
+    
     return when (MimeTypes.category(mime)) {
         MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
         MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image

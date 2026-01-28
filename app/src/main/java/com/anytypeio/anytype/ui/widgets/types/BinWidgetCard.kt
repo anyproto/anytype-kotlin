@@ -55,7 +55,7 @@ fun BinWidgetCard(
             .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
             .alpha(if (isCardMenuExpanded.value || isHeaderMenuExpanded.value) 0.8f else 1f)
             .background(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
             .then(

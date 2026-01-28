@@ -14,7 +14,7 @@ class CreateObjectViewModelFactory @Inject constructor(
 
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        return CreateObjectViewModel(
+        return NewCreateObjectViewModel(
             storeOfObjectTypes = storeOfObjectTypes
         ) as T
     }

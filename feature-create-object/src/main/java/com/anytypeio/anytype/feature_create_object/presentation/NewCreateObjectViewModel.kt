@@ -18,12 +18,12 @@ import timber.log.Timber
  *
  * @param storeOfObjectTypes Store containing all available object types
  */
-class CreateObjectViewModel @Inject constructor(
+class NewCreateObjectViewModel @Inject constructor(
     private val storeOfObjectTypes: StoreOfObjectTypes
 ) : ViewModel() {
 
-    private val _state = MutableStateFlow(CreateObjectState())
-    val state: StateFlow<CreateObjectState> = _state.asStateFlow()
+    private val _state = MutableStateFlow(NewCreateObjectState())
+    val state: StateFlow<NewCreateObjectState> = _state.asStateFlow()
 
     init {
         loadObjectTypes()

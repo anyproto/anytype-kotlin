@@ -12,7 +12,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
-import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectState
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectState
 
 /**
  * Popup variant of the create object screen.
@@ -30,7 +30,7 @@ import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectStat
 fun CreateObjectPopup(
     expanded: Boolean,
     onDismissRequest: () -> Unit,
-    state: CreateObjectState,
+    state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
     modifier: Modifier = Modifier,
     offset: DpOffset = DpOffset(8.dp, 0.dp)

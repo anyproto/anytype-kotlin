@@ -16,7 +16,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
-import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectState
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectState
 
 /**
  * Bottom sheet variant of the create object screen.
@@ -34,7 +34,7 @@ import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectStat
 fun CreateObjectBottomSheet(
     visible: Boolean,
     onDismissRequest: () -> Unit,
-    state: CreateObjectState,
+    state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
     modifier: Modifier = Modifier
 ) {

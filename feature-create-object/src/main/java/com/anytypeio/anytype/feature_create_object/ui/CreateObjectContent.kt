@@ -11,13 +11,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -32,7 +33,7 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
-import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectState
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectState
 import com.anytypeio.anytype.feature_create_object.presentation.ObjectTypeItem
 
 /**
@@ -51,7 +52,7 @@ import com.anytypeio.anytype.feature_create_object.presentation.ObjectTypeItem
  */
 @Composable
 fun CreateObjectContent(
-    state: CreateObjectState,
+    state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -71,7 +72,7 @@ fun CreateObjectContent(
         // Object types list with search
         Box(
             modifier = Modifier
-                .weight(1f)
+                .heightIn(max = 400.dp)
                 .fillMaxWidth()
         ) {
             when {
@@ -181,17 +182,18 @@ private fun AttachExistingObjectButton(
 
 /**
  * Scrollable list of object types.
+ * Uses Column + verticalScroll instead of LazyColumn to support intrinsic measurements
+ * required by DropdownMenu.
  */
 @Composable
 private fun ObjectTypesList(
     types: List<ObjectTypeItem>,
     onTypeClick: (ObjectTypeItem) -> Unit
 ) {
-    LazyColumn {
-        items(
-            items = types,
-            key = { it.typeKey }
-        ) { type ->
+    Column(
+        modifier = Modifier.verticalScroll(rememberScrollState())
+    ) {
+        types.forEach { type ->
             ObjectTypeMenuItem(
                 type = type,
                 onClick = { onTypeClick(type) }

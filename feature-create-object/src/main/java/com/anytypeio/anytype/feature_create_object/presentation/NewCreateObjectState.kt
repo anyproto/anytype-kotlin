@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
  * UI state for the create object screen.
  * Manages the list of object types, search query, and visibility of sections.
  */
-data class CreateObjectState(
+data class NewCreateObjectState(
     val objectTypes: List<ObjectTypeItem> = emptyList(),
     val filteredObjectTypes: List<ObjectTypeItem> = emptyList(),
     val searchQuery: String = "",

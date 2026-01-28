@@ -365,7 +365,8 @@ open class ObjectSetViewModelTestSetup {
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
-            createBlock = createBlock
+            createBlock = createBlock,
+            getDefaultObjectType = getDefaultObjectType
         )
     }
 
@@ -521,14 +522,18 @@ open class ObjectSetViewModelTestSetup {
         type: TypeKey = defaultObjectPageType,
         name: String = defaultObjectPageTypeName,
         id: TypeId = TypeId(MockDataFactory.randomString()),
-        template: Id? = null
+        template: Id? = null,
+        spaceId: SpaceId? = null
     ) {
+        val properSpaceId = spaceId ?: SpaceId(spaceConfig.space)
         getDefaultObjectType.stub {
-            onBlocking { run(SpaceId(spaceConfig.space)) } doReturn GetDefaultObjectType.Response(
+            onBlocking { async(properSpaceId) } doReturn Resultat.Success(
+                GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = id,
                 defaultTemplate = template
+                )
             )
         }
     }

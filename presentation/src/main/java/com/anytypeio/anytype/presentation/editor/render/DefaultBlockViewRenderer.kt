@@ -1523,9 +1523,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             ObjectType.Layout.VIDEO -> {
                 BlockView.Title.Video(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
+                    text = content.text,
                     videoUrl = urlBuilder.video(
                         currentObject.id
                     ),
@@ -1545,9 +1545,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.PDF -> {
                 val objType = storeOfObjectTypes.getTypeOfObject(currentObject)
                 BlockView.Title.File(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
+                    text = content.text,
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1561,7 +1561,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.IMAGE -> {
                 val icon =  currentObject.iconImage
                 BlockView.Title.Image(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
                     text = content.text,
                     image = if (!icon.isNullOrEmpty()) urlBuilder.large(icon) else null,

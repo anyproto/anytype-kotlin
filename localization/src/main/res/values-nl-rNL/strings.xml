@@ -555,6 +555,7 @@
     <string name="blank">Leeg</string>
     <string name="templates_menu_default_for_view">Standaard voor deze weergave</string>
     <string name="templates_menu_edit">Sjabloon bewerken</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Dupliceer</string>
     <string name="templates_menu_delete">Verwijder</string>
     <string name="unsupported">Niet ondersteund</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Upload afbeelding</string>
     <string name="tab_gallery">Galerij</string>
     <string name="change_type">Verander type</string>
+    <string name="default_type_screen_title">Kies het standaard objecttype</string>
     <string name="change_cover">Wijzig omslag</string>
     <string name="remove">Verwijder</string>
     <string name="choose_options">Kies opties</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Weet je zeker dat je  %1$d objecten wilt verwijderen?</string>
     <string name="delete_irrevocably">Deze objecten worden permanent verwijderd. Je kunt deze actie niet ongedaan maken.</string>
     <string name="delete_irrevocably_one_object">Dit object zal permanent worden verwijderd. Je kunt deze actie niet ongedaan maken.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Selecteer alle</string>
+    <string name="move_type_to_bin_to_bin">Verplaats naar prullenbak</string>
     <string name="shared">Gedeeld</string>
     <string name="object_not_exist">Dit object bestaat niet</string>
     <string name="back_to_dashboard">Terug naar dashboard</string>
@@ -835,6 +843,9 @@
     <string name="exiting_please_wait">Aan het afsluiten... een ogenblik geduld</string>
     <string name="loading_please_wait">Aan het laden... even geduld a.j.b.</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Open</string>
     <string name="personal">Standaard</string>
     <string name="create_space">Maak ruimte</string>
     <string name="create_chat">Maak chat</string>
@@ -1988,6 +1999,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="notification_settings_state_disabled">Uitgeschakeld</string>
     <string name="notification_settings_state_enabled">Ingeschakeld</string>
     <string name="content_desc_muted">Gedempt</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Laden afbeelding mislukt</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Neem deel via QR-code</string>
@@ -2096,4 +2108,5 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Sla op</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

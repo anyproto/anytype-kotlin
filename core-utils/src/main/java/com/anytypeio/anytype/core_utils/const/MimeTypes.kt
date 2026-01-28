@@ -18,6 +18,8 @@ object MimeTypes {
         "image/avif",
         "image/apng",
         "image/bmp",
+        "image/x-bmp",
+        "image/x-ms-bmp",
         "image/vnd.dwg",
         "image/x-dwg",
         "image/tiff",

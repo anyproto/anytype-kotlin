@@ -59,10 +59,10 @@ fun SpaceChatWidgetCard(
             .fillMaxWidth()
             .height(52.dp)
             .background(
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(24.dp),
                 color = colorResource(id = R.color.dashboard_card_background)
             )
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(24.dp))
             .then(
                 if (mode !is InteractionMode.Edit) {
                     Modifier.combinedClickable(

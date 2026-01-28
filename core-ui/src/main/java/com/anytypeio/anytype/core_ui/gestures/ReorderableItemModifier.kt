@@ -38,7 +38,8 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
     onItemClicked: () -> Unit,
     onItemLongClicked: () -> Unit,
     dragModifier: Modifier? = null,
-    shouldEnableLongClick: Boolean = true
+    shouldEnableLongClick: Boolean = true,
+    cornerRadius: Dp = 24.dp
 ): Modifier {
     val haptic = LocalHapticFeedback.current
     val touchSlop = LocalViewConfiguration.current.touchSlop
@@ -52,7 +53,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
         .alpha(if (isMenuExpanded) 0.8f else 1f)
         .background(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(cornerRadius),
             color = colorResource(id = R.color.dashboard_card_background)
         )
 

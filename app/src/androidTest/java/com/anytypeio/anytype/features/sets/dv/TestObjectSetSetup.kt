@@ -352,7 +352,8 @@ abstract class TestObjectSetSetup {
             setDataViewProperties = mock(),
             createBlock = mock(),
             emojiProvider = mock(),
-            emojiSuggester = mock()
+            emojiSuggester = mock(),
+            getDefaultObjectType = getDefaultObjectType
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

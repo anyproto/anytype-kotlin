@@ -42,6 +42,7 @@ import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
 import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -68,7 +69,6 @@ import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
 import com.anytypeio.anytype.presentation.sharing.SharedContent
 import com.anytypeio.anytype.presentation.sharing.SharingCommand
 import com.anytypeio.anytype.presentation.sharing.SharingViewModel
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment

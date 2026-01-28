@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.wallpaper
+package com.anytypeio.anytype.core_models.ui
 
 enum class WallpaperColor(val code: String, val hex: String) {
     YELLOW(

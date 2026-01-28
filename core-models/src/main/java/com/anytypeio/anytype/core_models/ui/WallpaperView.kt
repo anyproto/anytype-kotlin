@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.wallpaper
+package com.anytypeio.anytype.core_models.ui
 
 import com.anytypeio.anytype.core_models.SystemColor
 

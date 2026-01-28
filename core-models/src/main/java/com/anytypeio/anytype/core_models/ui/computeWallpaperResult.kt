@@ -1,11 +1,7 @@
-package com.anytypeio.anytype.presentation.wallpaper
+package com.anytypeio.anytype.core_models.ui
 
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.Wallpaper
-import com.anytypeio.anytype.core_models.ui.SpaceIconView
-import com.anytypeio.anytype.core_models.ui.WallpaperResult
-
-import timber.log.Timber
 
 /**
  * Computes the wallpaper result with priority:
@@ -36,7 +32,6 @@ fun computeWallpaperResult(
                         WallpaperResult.SolidColor(wallpaperColor.hex)
                     } catch (e: IllegalArgumentException) {
                         // Handle invalid color format
-                        Timber.w(e, "Invalid wallpaper color format: ${wallpaperColor.hex}")
                         WallpaperResult.SolidColor(WallpaperColor.ICE.hex)
                     }
                 }

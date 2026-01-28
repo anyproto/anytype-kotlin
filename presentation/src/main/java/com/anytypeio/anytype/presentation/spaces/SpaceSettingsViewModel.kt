@@ -36,6 +36,10 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.WallpaperColor
+import com.anytypeio.anytype.core_models.ui.WallpaperView
+import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
+import com.anytypeio.anytype.core_models.ui.getSpaceIconColor
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
@@ -93,10 +97,6 @@ import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.MembersSmal
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Name
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Notifications
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem.Spacer
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
-import com.anytypeio.anytype.presentation.wallpaper.computeWallpaperResult
-import com.anytypeio.anytype.presentation.wallpaper.getSpaceIconColor
 import javax.inject.Inject
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow

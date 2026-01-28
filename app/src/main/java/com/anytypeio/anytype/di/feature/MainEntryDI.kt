@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
 import com.anytypeio.anytype.domain.account.AccountStatusChannel
@@ -15,14 +16,13 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.device.PathProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
@@ -31,11 +31,11 @@ import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.ui.main.MainActivity

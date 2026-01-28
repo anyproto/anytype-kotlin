@@ -26,15 +26,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Title3
+import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.gallery_experience.models.GalleryInstallationSpacesState
 import com.anytypeio.anytype.gallery_experience.models.GallerySpaceView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

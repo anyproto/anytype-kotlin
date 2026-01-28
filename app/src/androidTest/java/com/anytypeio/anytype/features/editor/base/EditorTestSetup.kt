@@ -62,7 +62,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.presentation.util.UrlHelper
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -317,7 +318,7 @@ open class EditorTestSetup {
     lateinit var urlHelper: UrlHelper
 
     private val urlBuilder by lazy {
-        UrlBuilder(gateway = gateway)
+        UrlBuilderImpl(gateway = gateway)
     }
 
     private val intents = Proxy.Intents()

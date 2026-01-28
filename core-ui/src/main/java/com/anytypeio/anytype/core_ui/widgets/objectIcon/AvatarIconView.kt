@@ -21,10 +21,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.rememberAsyncImagePainter
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
 import com.anytypeio.anytype.core_ui.views.animations.LoadingIndicator
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 
 
 val avatarBackgroundColor = R.color.shape_tertiary

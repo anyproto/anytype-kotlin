@@ -2,7 +2,9 @@ package com.anytypeio.anytype.di.feature.vault
 
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
@@ -21,9 +23,8 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -34,11 +35,10 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.vault.VaultViewModelFactory
 import com.anytypeio.anytype.ui.vault.VaultFragment
 import dagger.Binds
 import dagger.Component

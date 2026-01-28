@@ -9,7 +9,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.UrlValidator
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -64,7 +65,7 @@ open class LinkToObjectOrWebViewModelTest {
     var store: Editor.Storage = Editor.Storage()
     val spaceId = MockDataFactory.randomString()
 
-    protected val builder: UrlBuilder get() = UrlBuilder(gateway)
+    protected val builder: UrlBuilder get() = UrlBuilderImpl(gateway)
     private val storeOfObjectTypes: StoreOfObjectTypes = DefaultStoreOfObjectTypes()
 
     val vmParams = LinkToObjectOrWebViewModel.VmParams(

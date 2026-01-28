@@ -30,20 +30,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil3.compose.AsyncImage
+import com.anytypeio.anytype.core_models.ui.ProfileIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.AvatarTitle
+import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
+import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Regular
 import com.anytypeio.anytype.presentation.profile.ParticipantEvent
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel.UiParticipantScreenState
-import com.anytypeio.anytype.presentation.profile.ProfileIconView
-import coil3.compose.AsyncImage
-import com.anytypeio.anytype.core_ui.views.ButtonSecondaryLoading
-import com.anytypeio.anytype.core_ui.views.ButtonSize
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

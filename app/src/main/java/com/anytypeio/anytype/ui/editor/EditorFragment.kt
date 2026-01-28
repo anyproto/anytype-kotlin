@@ -66,8 +66,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.extensions.addTextFromSelectedStart
 import com.anytypeio.anytype.core_ui.extensions.color
 import com.anytypeio.anytype.core_ui.extensions.cursorYBottomCoordinate
@@ -148,8 +150,6 @@ import com.anytypeio.anytype.presentation.editor.editor.sam.ScrollAndMoveTargetD
 import com.anytypeio.anytype.presentation.editor.markup.MarkupColorView
 import com.anytypeio.anytype.presentation.editor.model.EditorFooter
 import com.anytypeio.anytype.presentation.editor.template.SelectTemplateViewState
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment

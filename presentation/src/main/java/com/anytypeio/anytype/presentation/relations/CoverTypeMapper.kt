@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.CoverType
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider

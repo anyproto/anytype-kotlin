@@ -9,8 +9,13 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.membership.MembershipStatus
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.AccountProfile
+import com.anytypeio.anytype.core_models.ui.profileIcon
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
@@ -18,7 +23,6 @@ import com.anytypeio.anytype.domain.icon.RemoveObjectIcon
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.GenerateOneToOneChatLink
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -26,11 +30,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
-import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.UiProfileQrCodeState
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow

@@ -57,7 +57,8 @@ import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+as SpaceIcon
 
 /**
  * Data model for selectable space items in the grid

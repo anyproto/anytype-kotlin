@@ -36,6 +36,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.addMention
 import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.ext.content
@@ -49,6 +50,8 @@ import com.anytypeio.anytype.core_models.ext.supportNesting
 import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.ext.updateTextContent
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -56,6 +59,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -86,7 +90,6 @@ import com.anytypeio.anytype.domain.icon.SetImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -252,8 +255,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
@@ -271,7 +272,6 @@ import com.anytypeio.anytype.presentation.navigation.SectionObjects
 import com.anytypeio.anytype.presentation.navigation.SelectDateItem
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getProperType

@@ -34,7 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider

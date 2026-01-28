@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.main
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.account.InterceptAccountStatus
 import com.anytypeio.anytype.domain.auth.interactor.AppShutdown
@@ -12,27 +14,25 @@ import com.anytypeio.anytype.domain.auth.interactor.ResumeAccount
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.config.ConfigStorage
+import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.debugging.DebugRunProfiler
-import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.SystemNotificationService
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscriptionManager
+import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
 import com.anytypeio.anytype.domain.wallpaper.ObserveSpaceWallpaper
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.membership.provider.MembershipProvider
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationActionDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
-import com.anytypeio.anytype.domain.config.ObserveShowSpacesIntroduction
-import com.anytypeio.anytype.domain.vault.SetSpacesIntroductionShown
-import com.anytypeio.anytype.core_utils.tools.AppInfo
 
 class MainViewModelFactory @Inject constructor(
     private val resumeAccount: ResumeAccount,

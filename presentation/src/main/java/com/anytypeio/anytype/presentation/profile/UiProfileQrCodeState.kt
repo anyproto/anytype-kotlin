@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.profile
 
+import com.anytypeio.anytype.core_models.ui.ProfileIconView
+
 /**
  * Represents the UI state for the profile QR code screen.
  *

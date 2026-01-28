@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.debugging.Logger
@@ -17,6 +17,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Before
@@ -30,7 +31,7 @@ class MapperExtensionKtTest {
     @Mock
     lateinit var gateway: Gateway
 
-    private val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
+    private val urlBuilder: UrlBuilder get() = UrlBuilderImpl(gateway)
 
     private val targetObjectId : Id = "647tyhfgehf7ru"
     private val objectId : Id = MockDataFactory.randomUuid()

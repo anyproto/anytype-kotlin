@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.onFailure
 import com.anytypeio.anytype.domain.base.onSuccess
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.publishing.CreatePublishing
 import com.anytypeio.anytype.domain.publishing.GetPublishingDomain
@@ -21,8 +21,8 @@ import com.anytypeio.anytype.domain.publishing.GetPublishingState
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import java.text.Normalizer
 import java.util.Locale
 import javax.inject.Inject

@@ -16,7 +16,7 @@ import com.anytypeio.anytype.domain.history.SetVersion
 import com.anytypeio.anytype.domain.history.ShowVersion
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -25,7 +25,7 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.GROUP_DATE_FORMAT_OTHER_YEAR
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel.Companion.VERSIONS_MAX_LIMIT
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.state.DefaultObjectStateReducer
 import java.time.ZoneId

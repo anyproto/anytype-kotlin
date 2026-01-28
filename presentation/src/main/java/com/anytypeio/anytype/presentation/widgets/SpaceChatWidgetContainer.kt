@@ -1,10 +1,10 @@
 package com.anytypeio.anytype.presentation.widgets
 
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import javax.inject.Inject
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.Flow

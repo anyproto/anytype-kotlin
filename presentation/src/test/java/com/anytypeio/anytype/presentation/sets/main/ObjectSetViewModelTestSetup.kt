@@ -46,7 +46,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -262,7 +263,7 @@ open class ObjectSetViewModelTestSetup {
     protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     val database = ObjectSetDatabase(objectStore)
 
-    val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
+    val urlBuilder: UrlBuilder get() = UrlBuilderImpl(gateway)
 
     val defaultObjectPageType = TypeKey(MockDataFactory.randomString())
     val defaultObjectPageTypeName = MockDataFactory.randomString()

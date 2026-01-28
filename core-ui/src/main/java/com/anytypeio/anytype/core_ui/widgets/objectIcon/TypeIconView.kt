@@ -15,15 +15,15 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.colorRes
 import com.anytypeio.anytype.core_ui.widgets.cornerRadius
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CiExtensionPuzzle
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Deleted.DEFAULT_DELETED_ICON
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.Deleted.DEFAULT_DELETED_ICON
 
 @Composable
 fun TypeIconView(

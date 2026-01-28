@@ -63,7 +63,7 @@ import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewState
 import com.anytypeio.anytype.ui_settings.space.new_settings.NewSpaceNameInputField
 import timber.log.Timber

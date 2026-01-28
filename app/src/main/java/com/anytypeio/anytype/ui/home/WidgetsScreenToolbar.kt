@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -29,7 +30,6 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import timber.log.Timber
 
 @Composable

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.misc
 
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.config.Gateway
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -17,7 +18,7 @@ class UrlBuilderTest {
     @Before
     fun setup() {
         MockitoAnnotations.initMocks(this)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
     }
 
     @Test
@@ -25,7 +26,7 @@ class UrlBuilderTest {
         val hash = "image001"
 
         val expected =
-            gateway.provide() + UrlBuilder.IMAGE_PATH + hash + UrlBuilder.LARGE_WIDTH_PARAM
+            gateway.provide() + UrlBuilderImpl.IMAGE_PATH + hash + UrlBuilderImpl.LARGE_WIDTH_PARAM
         val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }
@@ -34,7 +35,7 @@ class UrlBuilderTest {
     fun `should return url without hash when image hash is empty`() {
         val hash = ""
 
-        val expected = gateway.provide() + UrlBuilder.IMAGE_PATH + UrlBuilder.LARGE_WIDTH_PARAM
+        val expected = gateway.provide() + UrlBuilderImpl.IMAGE_PATH + UrlBuilderImpl.LARGE_WIDTH_PARAM
         val actual = urlBuilder.large(hash)
         assertEquals(expected, actual)
     }
@@ -43,7 +44,7 @@ class UrlBuilderTest {
     fun `should return file url`() {
         val hash = "file001"
 
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH + hash
+        val expected = gateway.provide() + UrlBuilderImpl.FILE_PATH + hash
         val actual = urlBuilder.file(hash)
         assertEquals(expected, actual)
     }
@@ -52,7 +53,7 @@ class UrlBuilderTest {
     fun `should return url without hash when file hash is empty`() {
         val hash = ""
 
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH
+        val expected = gateway.provide() + UrlBuilderImpl.FILE_PATH
         val actual = urlBuilder.file(hash)
         assertEquals(expected, actual)
     }
@@ -61,7 +62,7 @@ class UrlBuilderTest {
     fun `should return video url`() {
         val hash = "video001"
 
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH + hash
+        val expected = gateway.provide() + UrlBuilderImpl.FILE_PATH + hash
         val actual = urlBuilder.video(hash)
         assertEquals(expected, actual)
     }
@@ -70,7 +71,7 @@ class UrlBuilderTest {
     fun `should return url without hash when video hash is empty`() {
         val hash = ""
 
-        val expected = gateway.provide() + UrlBuilder.FILE_PATH
+        val expected = gateway.provide() + UrlBuilderImpl.FILE_PATH
         val actual = urlBuilder.video(hash)
         assertEquals(expected, actual)
     }

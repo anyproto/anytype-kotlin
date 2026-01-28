@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardMediumIc
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemBlockObjectLinkCardSmallIconCoverBinding
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.TestFragment
 import org.hamcrest.MatcherAssert.assertThat

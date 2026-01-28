@@ -6,11 +6,12 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlin.test.Test
 import kotlin.test.assertEquals
@@ -30,7 +31,7 @@ class MentionExtTest {
     @Before
     fun before() {
         MockitoAnnotations.openMocks(this)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
     }
 
     @Test

@@ -705,6 +705,14 @@ fun List<BlockView>.highlight(
             val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
             view.copy(searchFields = highlighter(fields))
         }
+        is BlockView.Title.Image -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
+        is BlockView.Title.Video -> {
+            val fields = listOf(DEFAULT_SEARCH_FIELD_KEY to view.text.orEmpty())
+            view.copy(searchFields = highlighter(fields))
+        }
         is BlockView.Media.Bookmark -> {
             val fields = listOf(
                 SEARCH_FIELD_DESCRIPTION_KEY to view.description.orEmpty(),
@@ -809,6 +817,8 @@ fun BlockView.setHighlight(
     is BlockView.Title.Profile -> copy(searchFields = highlights)
     is BlockView.Title.Todo -> copy(searchFields = highlights)
     is BlockView.Title.File -> copy(searchFields = highlights)
+    is BlockView.Title.Image -> copy(searchFields = highlights)
+    is BlockView.Title.Video -> copy(searchFields = highlights)
     is BlockView.Media.Bookmark -> copy(searchFields = highlights)
     is BlockView.Media.File -> copy(searchFields = highlights)
     is BlockView.LinkToObject.Default.Text -> copy(searchFields = highlights)

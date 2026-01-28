@@ -18,6 +18,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParserImpl
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.ColumnView
@@ -157,7 +158,7 @@ class TagAndStatusTests {
 
         val result = columns.buildGridRow(
             obj = ObjectWrapper.Basic(records),
-            builder = UrlBuilder(gateway),
+            builder = UrlBuilderImpl(gateway),
             showIcon = false,
             store = store,
             fieldParser = fieldParser,
@@ -295,7 +296,7 @@ class TagAndStatusTests {
 
         val result = columns.buildGridRow(
             obj = ObjectWrapper.Basic(records),
-            builder = UrlBuilder(gateway),
+            builder = UrlBuilderImpl(gateway),
             showIcon = false,
             store = store,
             fieldParser = fieldParser,

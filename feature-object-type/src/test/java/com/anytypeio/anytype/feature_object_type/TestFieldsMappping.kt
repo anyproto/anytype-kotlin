@@ -11,6 +11,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
@@ -161,7 +162,7 @@ class TestFieldsMappping {
         MockitoAnnotations.openMocks(this)
         storeOfRelations = DefaultStoreOfRelations()
         storeOfObjectTypes = DefaultStoreOfObjectTypes()
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         fieldParser =
             FieldParserImpl(
                 dateProvider = dateProvider,

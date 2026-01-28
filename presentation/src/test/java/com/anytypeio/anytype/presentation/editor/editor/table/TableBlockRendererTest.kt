@@ -25,6 +25,7 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.BlockViewRenderer
@@ -103,7 +104,7 @@ class TableBlockRendererTest {
     fun setup() {
         MockitoAnnotations.openMocks(this)
         renderer = DefaultBlockViewRenderer(
-            urlBuilder = UrlBuilder(gateway),
+            urlBuilder = UrlBuilderImpl(gateway),
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,

@@ -3,6 +3,7 @@ package com.anytypeio.anytype.sample
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.MimeCategory
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_CUSTOM_ICON
 import com.anytypeio.anytype.core_utils.const.MimeTypes
@@ -97,7 +98,7 @@ class XmlIconsActivity : AppCompatActivity() {
         binding.iconFile40.setIcon(fileIcon)
 
         // FileDefault
-        val fileDefaultIcon = ObjectIcon.FileDefault(MimeTypes.Category.IMAGE)
+        val fileDefaultIcon = ObjectIcon.FileDefault(MimeCategory.IMAGE)
         binding.iconFileDefault20.setIcon(fileDefaultIcon)
         binding.iconFileDefault30.setIcon(fileDefaultIcon)
         binding.iconFileDefault32.setIcon(fileDefaultIcon)

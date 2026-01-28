@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 
 val StubVerticalItems = listOf(

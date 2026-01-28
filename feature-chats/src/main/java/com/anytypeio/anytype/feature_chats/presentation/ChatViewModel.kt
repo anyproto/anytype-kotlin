@@ -74,7 +74,7 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNo
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView

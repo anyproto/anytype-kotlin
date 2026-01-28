@@ -452,7 +452,7 @@ class VaultViewModel(
         val attachmentPreviews = if (chatPreview != null && message != null) {
             message.attachments?.map { attachment ->
                 val dependency = chatPreview.dependencies.find { it.id == attachment.target }
-                val preview = mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser)
+                val preview = mapToAttachmentPreview(attachment, dependency, urlBuilder, fieldParser, storeOfObjectTypes)
                 Timber.d("Created attachment preview: $preview for attachment: $attachment")
                 preview
             } ?: emptyList()

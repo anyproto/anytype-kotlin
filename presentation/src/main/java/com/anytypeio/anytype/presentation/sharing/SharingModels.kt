@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.sharing
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 
 /**

@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.menu
 
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 /**
  * UI state for ObjectType menu bottom sheet

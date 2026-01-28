@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.extension.getObject

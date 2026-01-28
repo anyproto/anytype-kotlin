@@ -7,7 +7,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CiExtensionPuzzle
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 @Composable
 fun SimpleIcon(

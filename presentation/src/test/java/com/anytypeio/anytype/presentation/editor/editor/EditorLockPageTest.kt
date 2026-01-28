@@ -16,7 +16,7 @@ import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.test_utils.MockDataFactory

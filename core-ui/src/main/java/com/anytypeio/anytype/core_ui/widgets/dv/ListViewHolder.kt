@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemDvListViewProfileSmallBindi
 import com.anytypeio.anytype.core_ui.databinding.ItemDvListViewTaskBinding
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.visible
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 
 sealed class ListViewHolder(view: View) : RecyclerView.ViewHolder(view) {

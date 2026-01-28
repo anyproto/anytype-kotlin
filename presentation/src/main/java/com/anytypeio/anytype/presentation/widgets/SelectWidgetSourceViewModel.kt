@@ -23,7 +23,7 @@ import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.widgets.GetSuggestedWidgetTypes
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendChangeWidgetSourceEvent
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection

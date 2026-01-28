@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewMedium
 import com.anytypeio.anytype.core_ui.views.CodeChatPreviewRegular
@@ -47,7 +48,7 @@ fun VaultDataSpaceChatCard(
     messageTime: String? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
@@ -171,7 +172,7 @@ private fun ContentDataSpaceChat(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState,
     isPinned: Boolean = false,
@@ -258,7 +259,7 @@ private fun ContentDataSpaceChat(
 private fun DataSpaceChatPreviewRow(
     creatorName: String?,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    attachmentPreviews: List<AttachmentPreview>,
     chatPreview: Chat.Preview?,
     chatPreviewNotificationState: NotificationState?
 ) {

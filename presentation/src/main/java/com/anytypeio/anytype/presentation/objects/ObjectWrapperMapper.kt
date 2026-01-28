@@ -7,11 +7,12 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView

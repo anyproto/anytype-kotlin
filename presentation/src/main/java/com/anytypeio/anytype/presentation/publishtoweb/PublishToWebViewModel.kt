@@ -21,8 +21,8 @@ import com.anytypeio.anytype.domain.publishing.GetPublishingState
 import com.anytypeio.anytype.domain.publishing.RemovePublishing
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import java.text.Normalizer
 import java.util.Locale
 import javax.inject.Inject

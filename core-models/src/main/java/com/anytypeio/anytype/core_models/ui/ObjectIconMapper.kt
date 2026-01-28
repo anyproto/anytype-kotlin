@@ -1,11 +1,8 @@
-package com.anytypeio.anytype.presentation.mapper
+package com.anytypeio.anytype.core_models.ui
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
-import com.anytypeio.anytype.core_models.ui.CustomIconColor
-import com.anytypeio.anytype.core_models.ui.ObjectIcon
-import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.Fallback.Companion.DEFAULT_FALLBACK_ICON
 
 fun ObjectWrapper.Basic.objectIcon(
     builder: UrlBuilder,
@@ -88,7 +85,7 @@ fun ObjectWrapper.Basic.objectIcon(
         }
         ObjectType.Layout.CHAT_DERIVED -> {
             val fallback = objType?.objectFallbackIcon(isCircleShape = true) ?: ObjectIcon.TypeIcon.Fallback(
-                rawValue = DEFAULT_FALLBACK_ICON,
+                rawValue = ObjectIcon.TypeIcon.Fallback.Companion.DEFAULT_FALLBACK_ICON,
                 isCircleShape = true
             )
             when {

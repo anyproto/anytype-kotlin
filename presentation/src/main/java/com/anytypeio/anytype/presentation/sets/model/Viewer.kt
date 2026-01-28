@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.Viewer.Filter.Condition.Checkbox.None
 import kotlinx.parcelize.Parcelize

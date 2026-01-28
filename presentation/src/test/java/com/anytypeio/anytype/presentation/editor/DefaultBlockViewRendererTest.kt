@@ -46,7 +46,7 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.NestedDecorationData
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory

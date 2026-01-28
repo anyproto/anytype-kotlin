@@ -21,7 +21,7 @@ import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import timber.log.Timber
 
 

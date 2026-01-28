@@ -15,7 +15,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.presentation.editor.editor.model.types.Types
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashEvent
 import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi

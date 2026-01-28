@@ -29,12 +29,14 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.widgets.SpaceBackground
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultSpaceView
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import kotlin.collections.isNotEmpty
 
 @Composable
 fun VaultOneToOneSpaceCard(
@@ -47,7 +49,7 @@ fun VaultOneToOneSpaceCard(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.OneToOneSpace,
     expandedSpaceId: String? = null,
@@ -167,7 +169,7 @@ private fun ContentOneToOne(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false,
@@ -225,7 +227,7 @@ private fun ContentOneToOne(
 private fun OneToOneSubtitleRow(
     subtitle: String,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    attachmentPreviews: List<AttachmentPreview>,
     chatPreview: Chat.Preview?,
     unreadMessageCount: Int,
     unreadMentionCount: Int,

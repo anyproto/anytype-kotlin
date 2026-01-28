@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.feature_object_type.ui.create
 
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 sealed class UiTypeSetupTitleAndIconState {
 

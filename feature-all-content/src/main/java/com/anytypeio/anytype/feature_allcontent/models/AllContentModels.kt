@@ -20,10 +20,10 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperType
 

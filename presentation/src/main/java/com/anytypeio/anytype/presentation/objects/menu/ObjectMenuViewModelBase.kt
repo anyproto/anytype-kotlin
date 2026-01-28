@@ -42,9 +42,9 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsBackLinkAddEven
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsDuplicateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsMoveToBinEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRemoveFromFavoritesEvent
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader

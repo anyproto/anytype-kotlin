@@ -2,10 +2,10 @@ package com.anytypeio.anytype.sample
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_CUSTOM_ICON
 import com.anytypeio.anytype.core_utils.const.MimeTypes
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Default.Companion.DEFAULT_CUSTOM_ICON
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.sample.databinding.ActivityXmlIconsBinding
 
 class XmlIconsActivity : AppCompatActivity() {

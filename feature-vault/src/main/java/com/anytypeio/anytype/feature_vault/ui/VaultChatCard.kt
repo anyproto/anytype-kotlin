@@ -42,6 +42,8 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.AttachmentType
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
@@ -120,7 +122,7 @@ fun VaultChatSpaceCard(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.ChatSpace,
     expandedSpaceId: String? = null,
@@ -241,7 +243,7 @@ private fun RowScope.ContentChat(
     chatPreview: Chat.Preview? = null,
     unreadMessageCount: Int = 0,
     unreadMentionCount: Int = 0,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
     isPinned: Boolean = false,
@@ -299,7 +301,7 @@ private fun ChatSubtitleRow(
     subtitle: String,
     creatorName: String?,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    attachmentPreviews: List<AttachmentPreview>,
     chatPreview: Chat.Preview?,
     unreadMessageCount: Int,
     unreadMentionCount: Int,
@@ -579,7 +581,7 @@ fun TitleRow(
 fun buildChatContentWithInlineIcons(
     creatorName: String?,
     messageText: String?,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+    attachmentPreviews: List<AttachmentPreview>,
     fallbackSubtitle: String,
     singleLineFormat: Boolean = false,
     textColor: androidx.compose.ui.graphics.Color = colorResource(id = R.color.text_transparent_secondary),
@@ -588,9 +590,9 @@ fun buildChatContentWithInlineIcons(
 ): Pair<AnnotatedString, Map<String, InlineTextContent>> {
 
     val attachmentCount = attachmentPreviews.size
-    val imageCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.IMAGE }
-    val fileCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.FILE }
-    val linkCount = attachmentPreviews.count { it.type == VaultSpaceView.AttachmentType.LINK }
+    val imageCount = attachmentPreviews.count { it.type == AttachmentType.IMAGE }
+    val fileCount = attachmentPreviews.count { it.type == AttachmentType.FILE }
+    val linkCount = attachmentPreviews.count { it.type == AttachmentType.LINK }
 
     val inlineContentMap = mutableMapOf<String, InlineTextContent>()
 
@@ -664,7 +666,7 @@ fun buildChatContentWithInlineIcons(
 
                             linkCount == 1 -> {
                                 val linkTitle =
-                                    attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
+                                    attachmentPreviews.find { it.type == AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.objects)
                                 withStyle(style = mediumStyle) {
                                     append(linkTitle)
@@ -686,7 +688,7 @@ fun buildChatContentWithInlineIcons(
                             linkCount == 1 -> {
                                 // For links: show title + messageText
                                 val linkTitle =
-                                    attachmentPreviews.find { it.type == VaultSpaceView.AttachmentType.LINK }?.title
+                                    attachmentPreviews.find { it.type == AttachmentType.LINK }?.title
                                         ?: stringResource(R.string.object_1)
                                 withStyle(style = mediumStyle) {
                                     append(linkTitle)

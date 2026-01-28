@@ -37,9 +37,9 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenVersionPr
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsShowVersionHistoryScreen
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsVersionHistoryRestore
 import com.anytypeio.anytype.presentation.history.VersionHistoryGroup.GroupTitle
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toViewerColumns
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig
 import com.anytypeio.anytype.presentation.relations.getRelationFormat
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants

@@ -34,7 +34,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.sharing.SelectableObjectView
 import com.anytypeio.anytype.presentation.sharing.SelectableSpaceView
 import com.anytypeio.anytype.presentation.sharing.SharedContent

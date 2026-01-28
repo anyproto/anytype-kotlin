@@ -36,7 +36,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.moving.MoveToView
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModelFactory
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import javax.inject.Inject
 import kotlinx.coroutines.launch

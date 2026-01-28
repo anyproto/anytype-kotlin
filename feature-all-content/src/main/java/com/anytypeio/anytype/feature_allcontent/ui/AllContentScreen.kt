@@ -100,7 +100,7 @@ import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch

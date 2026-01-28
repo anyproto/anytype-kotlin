@@ -11,6 +11,7 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import timber.log.Timber
 
 // Helper to produce the "default" fallback icon when dependency is missing or invalid

@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds.COLLECTION
 import com.anytypeio.anytype.core_models.ObjectTypeIds.NOTE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.PAGE
 import com.anytypeio.anytype.core_models.ObjectTypeIds.TASK
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 data class ObjectTypeView(
     val id: Id,

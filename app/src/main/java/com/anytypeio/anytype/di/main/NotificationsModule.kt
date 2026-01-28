@@ -4,6 +4,7 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.device.NotificationBuilderImpl
@@ -118,7 +119,7 @@ object NotificationsModule {
         context: Context,
         notificationManager: NotificationManager,
         stringResourceProvider: StringResourceProvider,
-        urlBuilder: com.anytypeio.anytype.domain.misc.UrlBuilder,
+        urlBuilder: UrlBuilder,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer
     ): NotificationBuilder = NotificationBuilderImpl(

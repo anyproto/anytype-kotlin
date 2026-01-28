@@ -10,7 +10,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.relationsFilteredByHiddenAndDescription
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.sets.model.Viewer

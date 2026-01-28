@@ -83,7 +83,7 @@ import com.anytypeio.anytype.feature_object_type.ui.UiIconState
 import com.anytypeio.anytype.feature_object_type.ui.UiTitleState
 import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState
 import com.anytypeio.anytype.feature_properties.edit.ui.PropertyScreen
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import kotlinx.coroutines.delay
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.ReorderableLazyListState

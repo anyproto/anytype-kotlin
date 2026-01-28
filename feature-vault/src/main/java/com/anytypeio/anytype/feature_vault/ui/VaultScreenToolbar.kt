@@ -37,7 +37,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.feature_vault.R
 import com.anytypeio.anytype.feature_vault.presentation.VaultUiState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.Profile.Avatar
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.Profile.Avatar
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.ProfileIconView
 

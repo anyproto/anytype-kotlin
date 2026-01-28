@@ -36,7 +36,7 @@ import com.anytypeio.anytype.databinding.FragmentObjectSearchBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModel
 import com.anytypeio.anytype.presentation.linking.BackLinkOrAddToObjectViewModelFactory
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchView
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import com.anytypeio.anytype.ui.moving.hideProgress

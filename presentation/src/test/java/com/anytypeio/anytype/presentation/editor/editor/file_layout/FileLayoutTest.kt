@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSe
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory

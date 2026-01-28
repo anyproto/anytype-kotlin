@@ -17,7 +17,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.setTypeRelationIconsAsNone
 import com.anytypeio.anytype.presentation.objects.values
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper

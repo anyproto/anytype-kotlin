@@ -31,12 +31,12 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.mapper.marks
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toFileView
 import com.anytypeio.anytype.presentation.mapper.toPictureView
 import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper

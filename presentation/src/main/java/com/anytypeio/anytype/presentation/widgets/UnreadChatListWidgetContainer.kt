@@ -24,11 +24,11 @@ import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.`object`.resolveParticipantName
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.presentation.objects.resolveParticipantName
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow

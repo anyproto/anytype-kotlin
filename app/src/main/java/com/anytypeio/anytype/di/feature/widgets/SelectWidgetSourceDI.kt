@@ -4,7 +4,6 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.UrlBuilder
@@ -68,7 +67,6 @@ object SelectWidgetSourceModule {
         urlBuilder: UrlBuilder,
         analytics: Analytics,
         searchObjects: SearchObjects,
-        getObjectTypes: GetObjectTypes,
         dispatcher: Dispatcher<WidgetDispatchEvent>,
         analyticsHelper: AnalyticSpaceHelperDelegate,
         fieldParser: FieldParser,
@@ -80,7 +78,6 @@ object SelectWidgetSourceModule {
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         analytics = analytics,
-        getObjectTypes = getObjectTypes,
         dispatcher = dispatcher,
         analyticSpaceHelperDelegate = analyticsHelper,
         fieldParser = fieldParser,

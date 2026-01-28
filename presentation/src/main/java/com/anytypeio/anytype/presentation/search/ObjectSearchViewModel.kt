@@ -13,10 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ui.TextInputDialogBottomBehaviorApplier
 import com.anytypeio.anytype.core_utils.ui.ViewStateViewModel
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrThrow
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
-import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -46,7 +43,6 @@ open class ObjectSearchViewModel(
     private val vmParams: VmParams,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
-    private val getObjectTypes: GetObjectTypes,
     private val analytics: Analytics,
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
@@ -55,7 +51,7 @@ open class ObjectSearchViewModel(
 ) : ViewStateViewModel<ObjectSearchView>(),
     SupportNavigation<EventWrapper<AppNavigation.Command>>,
     TextInputDialogBottomBehaviorApplier.OnDialogCancelListener,
-    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate  {
+    AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val jobs = mutableListOf<Job>()
 
@@ -66,8 +62,8 @@ open class ObjectSearchViewModel(
             emitAll(userInput.drop(1).debounce(DEBOUNCE_DURATION).distinctUntilChanged())
         }
 
-    protected val types = MutableStateFlow<Resultat<List<ObjectWrapper.Type>>>(Resultat.Loading())
-    protected val objects = MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
+    protected val objects =
+        MutableStateFlow<Resultat<List<ObjectWrapper.Basic>>>(Resultat.Loading())
 
     override val navigation = MutableLiveData<EventWrapper<AppNavigation.Command>>()
 
@@ -75,14 +71,13 @@ open class ObjectSearchViewModel(
 
     init {
         viewModelScope.launch {
-            combine(objects, types) { listOfObjects, listOfTypes ->
-                if (listOfObjects.isLoading || listOfTypes.isLoading) {
+            combine(objects, storeOfObjectTypes.trackChanges()) { listOfObjects, _ ->
+                if (listOfObjects.isLoading) {
                     Resultat.Loading()
                 } else {
                     Resultat.success(
                         listOfObjects.getOrThrow().toViews(
                             urlBuilder = urlBuilder,
-                            objectTypes = listOfTypes.getOrThrow(),
                             fieldParser = fieldParser,
                             storeOfObjectTypes = storeOfObjectTypes
                         )
@@ -117,31 +112,11 @@ open class ObjectSearchViewModel(
 
     fun onStart(route: String, ignore: Id? = null) {
         eventRoute = route
-        getObjectTypes()
         startProcessingSearchQuery(ignore)
     }
 
     fun onStop() {
         jobs.cancel()
-    }
-
-    protected fun getObjectTypes() {
-        jobs += viewModelScope.launch {
-            val params = GetObjectTypes.Params(
-                space = vmParams.space,
-                sorts = emptyList(),
-                filters = ObjectSearchConstants.filterTypes(
-                    excludeParticipant = false
-                ),
-                keys = ObjectSearchConstants.defaultKeysObjectType
-            )
-            getObjectTypes.async(params).fold(
-                onFailure = { Timber.e(it, "Error while getting object types") },
-                onSuccess = {
-                    types.value = Resultat.success(it)
-                }
-            )
-        }
     }
 
     protected fun startProcessingSearchQuery(ignore: Id?) {
@@ -150,7 +125,10 @@ open class ObjectSearchViewModel(
                 objects.emit(Resultat.Loading())
                 val params = getSearchObjectsParams(ignore).copy(fulltext = query)
                 searchObjects(params = params).process(
-                    success = { objects -> setObjects(objects) },
+                    success = { objects ->
+                        Timber.d("SearchObjects success with ${objects.size} items")
+                        setObjects(objects)
+                    },
                     failure = { Timber.e(it, "Error while searching for objects") }
                 )
             }

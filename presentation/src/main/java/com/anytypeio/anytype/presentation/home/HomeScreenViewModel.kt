@@ -2289,7 +2289,12 @@ class HomeScreenViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                    EventsPropertiesKey.spaceId to vmParams.spaceId.id
+                )
+            )
         )
     }
 

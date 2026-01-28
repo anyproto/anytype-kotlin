@@ -4663,7 +4663,12 @@ class EditorViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
+            props = Props(
+                mapOf(
+                    EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                    EventsPropertiesKey.spaceId to vmParams.space.id
+                )
+            )
         )
 
         viewModelScope.launch {
@@ -6632,7 +6637,6 @@ class EditorViewModel(
                         val objects = result
                             .toViews(
                                 urlBuilder = urlBuilder,
-                                objectTypes = storeOfObjectTypes.getAll(),
                                 fieldParser = fieldParser,
                                 storeOfObjectTypes = storeOfObjectTypes
                             )

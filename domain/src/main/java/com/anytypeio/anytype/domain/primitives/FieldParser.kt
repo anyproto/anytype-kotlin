@@ -45,7 +45,7 @@ interface FieldParser {
     fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
-    ): Pair<Id?, String?>
+    ): Pair<Id?, String>
 
     suspend fun getObjectParsedProperties(
         objectType: ObjectWrapper.Type?,
@@ -218,17 +218,35 @@ class FieldParserImpl @Inject constructor(
     override fun getObjectTypeIdAndName(
         objectWrapper: ObjectWrapper.Basic,
         types: List<ObjectWrapper.Type>
-    ): Pair<Id?, String?> {
+    ): Pair<Id?, String> {
         val id = when (objectWrapper.layout) {
             ObjectType.Layout.DATE -> ObjectTypeIds.DATE
             else -> objectWrapper.type.firstOrNull()
         }
 
-        return if (id != null) {
-            id to types.find { it.id == id }?.name
-        } else {
-            null to null
+        // Case 1: No type id - type was deleted
+        if (id == null) {
+            return null to stringResourceProvider.getDeletedTypeName()
         }
+
+        // Find the type in store
+        val type = types.find { it.id == id }
+
+        // Case 2: Type not found in store - assume deleted
+        if (type == null) {
+            return id to stringResourceProvider.getDeletedTypeName()
+        }
+
+        // Case 3: Type is deleted
+        if (type.isDeleted == true) {
+            return id to stringResourceProvider.getDeletedTypeName()
+        }
+
+        // Case 4 & 5: Type exists (possibly archived) - return name or "Untitled"
+        val name = type.name?.takeIf { it.isNotBlank() }
+            ?: stringResourceProvider.getUntitledObjectTitle()
+
+        return id to name
     }
     //endregion
 

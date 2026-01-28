@@ -5,11 +5,14 @@ import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.DVSort
+import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.permissions.ObjectPermissions
@@ -37,6 +40,7 @@ import com.anytypeio.anytype.domain.primitives.SetObjectTypeRecommendedFields
 import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
 import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
@@ -45,12 +49,14 @@ import com.anytypeio.anytype.feature_object_type.fields.FieldEvent
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListItem
 import com.anytypeio.anytype.feature_object_type.fields.UiFieldsListState
 import com.anytypeio.anytype.feature_object_type.fields.UiLocalsFieldsInfoState
+import com.anytypeio.anytype.feature_object_type.ui.DeleteAlertObjectItem
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.Back
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeCommand.OpenAddNewPropertyScreen
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.ui.TypeEvent
 import com.anytypeio.anytype.feature_object_type.ui.UiDeleteAlertState
+import com.anytypeio.anytype.feature_object_type.ui.UiDeleteTypeAlertState
 import com.anytypeio.anytype.feature_object_type.ui.UiDescriptionState
 import com.anytypeio.anytype.feature_object_type.ui.UiEditButton
 import com.anytypeio.anytype.feature_object_type.ui.UiErrorState
@@ -137,7 +143,8 @@ class ObjectTypeViewModel(
     private val getObject: GetObject,
     private val addToFeaturedRelations: AddToFeaturedRelations,
     private val removeFromFeaturedRelations: RemoveFromFeaturedRelations,
-    private val updateText: UpdateText
+    private val updateText: UpdateText,
+    private val searchObjects: SearchObjects
 ) : ViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     //region UI STATE
@@ -173,6 +180,7 @@ class ObjectTypeViewModel(
 
     //alerts
     val uiAlertState = MutableStateFlow<UiDeleteAlertState>(UiDeleteAlertState.Hidden)
+    val uiDeleteTypeAlertState = MutableStateFlow<UiDeleteTypeAlertState>(UiDeleteTypeAlertState.Hidden)
     val uiFieldLocalInfoState =
         MutableStateFlow<UiLocalsFieldsInfoState>(UiLocalsFieldsInfoState.Hidden)
 
@@ -643,6 +651,43 @@ class ObjectTypeViewModel(
                     canEditDetails = _objectTypePermissionsState.value?.canEditDetails ?: false
                 )
             }
+
+            // Delete Type Alert (Move to Bin confirmation) events
+            TypeEvent.OnDeleteTypeAlertDismiss -> {
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+            }
+
+            TypeEvent.OnDeleteTypeAlertConfirm -> {
+                proceedWithDeleteTypeConfirm()
+            }
+
+            is TypeEvent.OnDeleteTypeAlertSelectAll -> {
+                val currentState = uiDeleteTypeAlertState.value
+                if (currentState is UiDeleteTypeAlertState.Visible) {
+                    val newSelectedIds = if (event.isSelected) {
+                        currentState.objects.map { it.id }.toSet()
+                    } else {
+                        emptySet()
+                    }
+                    uiDeleteTypeAlertState.value = currentState.copy(
+                        selectedObjectIds = newSelectedIds
+                    )
+                }
+            }
+
+            is TypeEvent.OnDeleteTypeAlertToggleObject -> {
+                val currentState = uiDeleteTypeAlertState.value
+                if (currentState is UiDeleteTypeAlertState.Visible) {
+                    val newSelectedIds = if (currentState.selectedObjectIds.contains(event.objectId)) {
+                        currentState.selectedObjectIds - event.objectId
+                    } else {
+                        currentState.selectedObjectIds + event.objectId
+                    }
+                    uiDeleteTypeAlertState.value = currentState.copy(
+                        selectedObjectIds = newSelectedIds
+                    )
+                }
+            }
         }
     }
 
@@ -661,7 +706,7 @@ class ObjectTypeViewModel(
             }
             ObjectTypeMenuEvent.OnToBinClick -> {
                 uiMenuState.value = UiObjectTypeMenuState.Hidden
-                proceedWithMoveTypeToBin()
+                showDeleteTypeConfirmation()
             }
             ObjectTypeMenuEvent.OnPinToggleClick -> {
                 if (uiMenuState.value.isPinned) {
@@ -1205,6 +1250,111 @@ class ObjectTypeViewModel(
                 }
             )
         }
+    }
+
+    /**
+     * Shows the delete type confirmation dialog.
+     * Fetches all objects using this type and displays them in a selectable list.
+     */
+    private fun showDeleteTypeConfirmation() {
+        viewModelScope.launch {
+            val typeName = uiTitleState.value.title.ifEmpty { uiTitleState.value.originalName }
+
+            // Fetch objects of this type
+            val searchParams = SearchObjects.Params(
+                filters = filtersForSearch(objectTypeId = vmParams.objectId),
+                sorts = listOf(
+                    DVSort(
+                        relationKey = Relations.LAST_MODIFIED_DATE,
+                        type = DVSortType.DESC,
+                        includeTime = true,
+                        relationFormat = RelationFormat.DATE
+                    )
+                ),
+                space = vmParams.spaceId,
+                keys = defaultKeys,
+            )
+            searchObjects.invoke(params = searchParams).proceed(
+                failure = { e ->
+                    Timber.e(e, "Error fetching objects for delete type confirmation")
+                    commands.emit(ObjectTypeCommand.ShowToast("Failed to load objects"))
+                    // Show dialog anyway with empty list
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
+                        typeName = typeName,
+                        objects = emptyList(),
+                        selectedObjectIds = emptySet()
+                    )
+                },
+                success = { objects ->
+                    val objectItems = objects.map { obj ->
+                        DeleteAlertObjectItem(
+                            id = obj.id,
+                            name = obj.name.orEmpty(),
+                            icon = obj.objectIcon(builder = urlBuilder)
+                        )
+                    }
+
+                    uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Visible(
+                        typeName = typeName,
+                        objects = objectItems,
+                        selectedObjectIds = emptySet()
+                    )
+                }
+            )
+        }
+    }
+
+    /**
+     * Proceeds with deleting the type and selected objects.
+     * First archives the selected objects, then archives the type itself.
+     */
+    private fun proceedWithDeleteTypeConfirm() {
+        val currentState = uiDeleteTypeAlertState.value
+        if (currentState !is UiDeleteTypeAlertState.Visible) return
+
+        viewModelScope.launch {
+            val selectedObjectIds = currentState.selectedObjectIds.toList()
+            if (selectedObjectIds.isNotEmpty()) {
+                val archiveObjectsParams = SetObjectListIsArchived.Params(
+                    targets = selectedObjectIds,
+                    isArchived = true
+                )
+                setObjectListIsArchived.async(archiveObjectsParams).fold(
+                    onSuccess = {
+                        Timber.d("Archived ${selectedObjectIds.size} objects")
+                        // Proceed to archive type only after objects are archived
+                        archiveTypeAndClose()
+                    },
+                    onFailure = {
+                        Timber.e(it, "Error while archiving selected objects")
+                        uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                        commands.emit(ObjectTypeCommand.ShowToast("Failed to delete selected objects"))
+                        return@launch
+                    }
+                )
+            } else {
+                // No objects selected, proceed to archive type directly
+                archiveTypeAndClose()
+            }
+        }
+    }
+
+    private suspend fun archiveTypeAndClose() {
+        val archiveTypeParams = SetObjectListIsArchived.Params(
+            targets = listOf(vmParams.objectId),
+            isArchived = true
+        )
+        setObjectListIsArchived.async(archiveTypeParams).fold(
+            onSuccess = {
+                Timber.d("Object type ${vmParams.objectId} moved to bin")
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+                commands.emit(ObjectTypeCommand.Back)
+            },
+            onFailure = {
+                Timber.e(it, "Error while moving object type ${vmParams.objectId} to bin")
+                uiDeleteTypeAlertState.value = UiDeleteTypeAlertState.Hidden
+            }
+        )
     }
 
     private fun proceedWithPinType() {

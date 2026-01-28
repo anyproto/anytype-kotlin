@@ -555,6 +555,7 @@
     <string name="blank">En blanco</string>
     <string name="templates_menu_default_for_view">Por defecto para esta vista</string>
     <string name="templates_menu_edit">Editar plantilla</string>
+    <string name="template_title_prefix">Estás editando una plantilla de\u0020</string>
     <string name="templates_menu_duplicate">Duplicar</string>
     <string name="templates_menu_delete">Eliminar</string>
     <string name="unsupported">No compatible</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Cargar una imagen</string>
     <string name="tab_gallery">Galería</string>
     <string name="change_type">Cambiar tipo</string>
+    <string name="default_type_screen_title">Elige el tipo de objeto por defecto</string>
     <string name="change_cover">Cambiar portada</string>
     <string name="remove">Borrar</string>
     <string name="choose_options">Elegir opciones</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">¿Seguro que quieres eliminar %1$d objetos?</string>
     <string name="delete_irrevocably">Estos objetos se eliminarán de forma definitiva. No se puede deshacer esta acción.</string>
     <string name="delete_irrevocably_one_object">Este objeto se eliminará de forma definitiva. No se puede deshacer esta acción.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">¿Mover «%s» a la papelera?</string>
+    <string name="move_type_to_bin_description">Hay objetos que usan este tipo. Selecciona los que quieres eliminar con él. Se conservarán los objetos que no selecciones, pero se quedarán sin tipo.</string>
+    <string name="move_type_to_bin_no_objects">No hay ningún objeto de este tipo.</string>
+    <string name="move_type_to_bin_select_all">Seleccionar todo</string>
+    <string name="move_type_to_bin_to_bin">Mover a la papelera</string>
     <string name="shared">Compartido</string>
     <string name="object_not_exist">Este objeto no existe</string>
     <string name="back_to_dashboard">Volver al tablero</string>
@@ -834,7 +842,10 @@
     <string name="go_to_the_app">Ir a la aplicación</string>
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
-    <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_content_not_available">Incrustación de %1$s. Este contenido no está disponible en el móvil</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Abrir</string>
     <string name="personal">Por defecto</string>
     <string name="create_space">Crear espacio</string>
     <string name="create_chat">Crear chat</string>
@@ -1130,27 +1141,27 @@
     <string name="sharing_menu_btn_add">Añadir</string>
     <string name="sharing_menu_btn_open">Abrir</string>
     <!-- Snackbar messages for content added to chat -->
-    <string name="sharing_snackbar_image_added">Image added to \'%1$s\'</string>
-    <string name="sharing_snackbar_images_added">Images added to \'%1$s\'</string>
-    <string name="sharing_snackbar_video_added">Video added to \'%1$s\'</string>
-    <string name="sharing_snackbar_audio_added">Audio added to \'%1$s\'</string>
-    <string name="sharing_snackbar_pdf_added">PDF added to \'%1$s\'</string>
-    <string name="sharing_snackbar_file_added">File added to \'%1$s\'</string>
-    <string name="sharing_snackbar_files_added">Files added to \'%1$s\'</string>
-    <string name="sharing_snackbar_text_added">Text added to \'%1$s\'</string>
-    <string name="sharing_snackbar_link_added">Link added to \'%1$s\'</string>
-    <string name="sharing_snackbar_content_added">Content added to \'%1$s\'</string>
+    <string name="sharing_snackbar_image_added">Imagen añadida a «%1$s»</string>
+    <string name="sharing_snackbar_images_added">Imágenes añadidas a «%1$s»</string>
+    <string name="sharing_snackbar_video_added">Vídeo añadido a «%1$s»</string>
+    <string name="sharing_snackbar_audio_added">Audio añadido a «%1$s»</string>
+    <string name="sharing_snackbar_pdf_added">PDF añadido a «%1$s»</string>
+    <string name="sharing_snackbar_file_added">Archivo añadido a «%1$s»</string>
+    <string name="sharing_snackbar_files_added">Archivos añadidos a «%1$s»</string>
+    <string name="sharing_snackbar_text_added">Texto añadido a «%1$s»</string>
+    <string name="sharing_snackbar_link_added">Enlace añadido a %1$s.</string>
+    <string name="sharing_snackbar_content_added">Contenido añadido a «%1$s»</string>
     <!-- Snackbar messages for content linked to an object in a space -->
-    <string name="sharing_snackbar_image_linked">Image linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_images_linked">Images linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_video_linked">Video linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_audio_linked">Audio linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_pdf_linked">PDF linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_file_linked">File linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_files_linked">Files linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_text_linked">Text linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_link_linked">Link linked to \'%1$s\' in \'%2$s\'</string>
-    <string name="sharing_snackbar_content_linked">Content linked to \'%1$s\' in \'%2$s\'</string>
+    <string name="sharing_snackbar_image_linked">Imagen enlazada a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_images_linked">Imágenes enlazadas a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_video_linked">Vídeo enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_audio_linked">Audio enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_pdf_linked">PDF enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_file_linked">Archivo enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_files_linked">Archivos enlazados a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_text_linked">Texto enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_link_linked">Enlace enlazado a «%1$s» en «%2$s»</string>
+    <string name="sharing_snackbar_content_linked">Contenido enlazado a «%1$s» en «%2$s»</string>
     <!--endregion-->
     <!--region ORIGIN PROPERTIES VALUES -->
     <string name="relation_origin_none">Ninguno</string>
@@ -1377,7 +1388,7 @@
         <item quantity="other">%1$d solicitudes</item>
     </plurals>
     <string name="multiplayer_you_as_member">tú</string>
-    <string name="multiplayer_spaces">Espacios</string>
+    <string name="multiplayer_spaces">Canales</string>
     <string name="multiplayer_space_status_joining">Accediendo</string>
     <string name="multiplayer_space_status_active">Activo</string>
     <string name="multiplayer_space_status_removing">Eliminado</string>
@@ -1988,6 +1999,7 @@ En concreto,
     <string name="notification_settings_state_disabled">Deshabilitado</string>
     <string name="notification_settings_state_enabled">Activado</string>
     <string name="content_desc_muted">Silenciado</string>
+    <string name="content_desc_pending_sync">Sincronización pendiente</string>
     <string name="failed_to_load_image">Error al cargar la imagen</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Unirse con código QR</string>
@@ -2068,7 +2080,7 @@ En concreto,
     <string name="move_chat_to_bin_warning_title">¿Mover el chat a la papelera?</string>
     <string name="chat_move_to_bin_warning_description">Este chat y sus archivos adjuntos se moverán a la papelera. Nadie podrá enviar más mensajes. Puedes restaurarlo desde la papelera antes de que se elimine definitivamente.</string>
     <string name="chat_edit_info_upload_image">Cargar imagen</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Seleccionar canal</string>
     <string name="add_a_comment">Añade un comentario…</string>
     <string name="send">Enviar</string>
     <string name="chat_notifications_receive_all">Recibir todas</string>
@@ -2084,15 +2096,16 @@ En concreto,
     <string name="sharing_select_destination">Seleccionar destino</string>
     <string name="sharing_send_to_chat">Enviar al chat</string>
     <string name="sharing_select_dest">Seleccionar destino</string>
-    <string name="sharing_no_objects_found">No objects found</string>
-    <string name="sharing_success">Success!</string>
-    <string name="sharing_added_to_space">Content added to %1$s</string>
-    <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
-    <string name="sharing_send_to_multiple">Send to %1$d chats</string>
-    <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
-    <string name="sharing_sending_to">Sending to</string>
-    <string name="clear_selection">Clear selection</string>
+    <string name="sharing_no_objects_found">Ningún objeto encontrado</string>
+    <string name="sharing_success">¡Hecho!</string>
+    <string name="sharing_added_to_space">Contenido añadido a %1$s</string>
+    <string name="sharing_error">Se ha producido un error</string>
+    <string name="sharing_send_to">Enviar a %1$s</string>
+    <string name="sharing_send_to_multiple">Enviar a %1$d chats</string>
+    <string name="sharing_selection_limit_reached">Puedes seleccionar hasta %1$d destinos</string>
+    <string name="sharing_sending_to">Enviando a</string>
+    <string name="clear_selection">Borrar selección</string>
     <string name="save">Guardar</string>
-    <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="you_dont_have_any_spaces_yet">Aúyn no tienes ningún espacio</string>
+    <string name="loading_channels">Cargando canales</string>
 </resources>

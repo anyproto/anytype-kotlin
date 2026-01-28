@@ -555,6 +555,7 @@
     <string name="blank">Leer</string>
     <string name="templates_menu_default_for_view">Standard für diese Ansicht</string>
     <string name="templates_menu_edit">Vorlage bearbeiten</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplizieren</string>
     <string name="templates_menu_delete">Löschen</string>
     <string name="unsupported">Nicht unterstützt</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Bild hochladen</string>
     <string name="tab_gallery">Galerie</string>
     <string name="change_type">Typ ändern</string>
+    <string name="default_type_screen_title">Standard Objekttyp auswählen</string>
     <string name="change_cover">Titelbild ändern</string>
     <string name="remove">Entfernen</string>
     <string name="choose_options">Optionen auswählen</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Bist du sicher, dass du %1$d Objekte löschen möchtest?</string>
     <string name="delete_irrevocably">Diese Objekte werden endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
     <string name="delete_irrevocably_one_object">Dieses Objekt wird endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Alles auswählen</string>
+    <string name="move_type_to_bin_to_bin">In den Papierkorb verschieben</string>
     <string name="shared">Geteilt</string>
     <string name="object_not_exist">Dieses Objekt existiert nicht</string>
     <string name="back_to_dashboard">Zurück zum Dashboard</string>
@@ -835,6 +843,9 @@
     <string name="exiting_please_wait">Beenden... bitte warten</string>
     <string name="loading_please_wait">Wird geladen... bitte warten</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Öffnen</string>
     <string name="personal">Standard</string>
     <string name="create_space">Space erstellen</string>
     <string name="create_chat">Chat erstellen</string>
@@ -1866,7 +1877,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_join_space_by_qr_title">Beitreten</string>
     <string name="profile_qr_code_title">Connect with me</string>
     <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
-    <string name="profile_qr_code_button">My QR code</string>
+    <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
     <string name="profile_qr_copy_button">Link kopieren</string>
     <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
@@ -1988,6 +1999,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
     <string name="content_desc_muted">Stumm geschaltet</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
@@ -2069,7 +2081,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="move_chat_to_bin_warning_title">Chat in den Papierkorb verschieben?</string>
     <string name="chat_move_to_bin_warning_description">Dieser Chat und alle Anhänge werden in den Papierkorb verschoben. Niemand wird in der Lage sein, neue Nachrichten zu senden. Du kannst ihn aus dem Papierkorb wiederherstellen, bevor er endgültig gelöscht wird.</string>
     <string name="chat_edit_info_upload_image">Bild hochladen</string>
-    <string name="select_space">Select Channel</string>
+    <string name="select_space">Kanal auswählen</string>
     <string name="add_a_comment">Kommentar hinzufügen...</string>
     <string name="send">Senden</string>
     <string name="chat_notifications_receive_all">Alle empfangen</string>
@@ -2085,15 +2097,16 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="sharing_select_destination">Ziel auswählen</string>
     <string name="sharing_send_to_chat">An Chat senden</string>
     <string name="sharing_select_dest">Ziel auswählen</string>
-    <string name="sharing_no_objects_found">No objects found</string>
+    <string name="sharing_no_objects_found">Keine Objekte gefunden</string>
     <string name="sharing_success">Success!</string>
     <string name="sharing_added_to_space">Content added to %1$s</string>
     <string name="sharing_error">Something went wrong</string>
-    <string name="sharing_send_to">Send to %1$s</string>
+    <string name="sharing_send_to">An %1$s senden</string>
     <string name="sharing_send_to_multiple">Send to %1$d chats</string>
     <string name="sharing_selection_limit_reached">You can select up to %1$d destinations</string>
     <string name="sharing_sending_to">Sending to</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Speichern</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

@@ -555,6 +555,7 @@
     <string name="blank">Boş</string>
     <string name="templates_menu_default_for_view">Bu görünüm için varsayılan</string>
     <string name="templates_menu_edit">Şablonu düzenle</string>
+    <string name="template_title_prefix">Şu anda bir şablonu düzenliyorsun\u0020</string>
     <string name="templates_menu_duplicate">Çoğalt</string>
     <string name="templates_menu_delete">Sil</string>
     <string name="unsupported">Desteklenmiyor</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Resim yükle</string>
     <string name="tab_gallery">Galeri</string>
     <string name="change_type">Türü değiştir</string>
+    <string name="default_type_screen_title">Varsayılan nesne türünü seç</string>
     <string name="change_cover">Kapağı değiştir</string>
     <string name="remove">Kaldır</string>
     <string name="choose_options">Seçenekleri belirleyin</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">%1$d nesneyi silmek istediğinden emin misin?</string>
     <string name="delete_irrevocably">Bu nesneler geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
     <string name="delete_irrevocably_one_object">Bu nesne geri alınamaz şekilde silinecektir. Bu işlemi geri alamazsın.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">\"%s\" Çöp Kutusuna taşınsın mı?</string>
+    <string name="move_type_to_bin_description">Bazı nesneler bu türü kullanıyor. Silinmesini istediğin nesneleri de seç. Seçmediğin nesneler kalacak ancak türleri kaybolacak.</string>
+    <string name="move_type_to_bin_no_objects">Bu türe ait nesne yok</string>
+    <string name="move_type_to_bin_select_all">Tümünü seç</string>
+    <string name="move_type_to_bin_to_bin">Çöpe Taşı</string>
     <string name="shared">Paylaşılan</string>
     <string name="object_not_exist">Bu nesne mevcut değil</string>
     <string name="back_to_dashboard">Kontrol paneline geri dön</string>
@@ -835,6 +843,9 @@
     <string name="exiting_please_wait">Çıkılıyor... Lütfen bekleyin.</string>
     <string name="loading_please_wait">Yükleniyor... Lütfen bekleyin.</string>
     <string name="embed_content_not_available">%1$s embed. Bu içerik mobil cihazlarda mevcut değil.</string>
+    <string name="embed_is_empty">%1$s embed boş</string>
+    <string name="embed_opens_externally">%1$s embed. Harici uygulamada veya tarayıcıda açılır</string>
+    <string name="open">Aç</string>
     <string name="personal">Varsayılan</string>
     <string name="create_space">Alan oluştur</string>
     <string name="create_chat">Sohbet oluştur</string>
@@ -1988,6 +1999,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="notification_settings_state_disabled">Devre dışı</string>
     <string name="notification_settings_state_enabled">Etkinleştirilmiş</string>
     <string name="content_desc_muted">Sessiz</string>
+    <string name="content_desc_pending_sync">Senkro. bekleniyor</string>
     <string name="failed_to_load_image">Görüntü yüklenemedi</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Karekod ile katıl</string>
@@ -2096,4 +2108,5 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="clear_selection">Seçimi temizle</string>
     <string name="save">Kaydet</string>
     <string name="you_dont_have_any_spaces_yet">Henüz hiçbir alana sahip değilsin</string>
+    <string name="loading_channels">Kanallar yükleniyor</string>
 </resources>

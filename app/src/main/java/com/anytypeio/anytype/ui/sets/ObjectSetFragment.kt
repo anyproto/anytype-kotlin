@@ -4,7 +4,6 @@ import android.content.Intent
 import android.content.res.ColorStateList
 import android.graphics.Color
 import android.net.Uri
-import android.os.Build
 import android.os.Bundle
 import android.text.InputType
 import android.view.ContextThemeWrapper
@@ -48,7 +47,6 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.RecyclerView
 import coil3.load
-import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -56,10 +54,11 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
-import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.features.sets.SetObjectNameBottomSheet
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
@@ -80,6 +79,7 @@ import com.anytypeio.anytype.core_ui.widgets.dv.ViewersWidget
 import com.anytypeio.anytype.core_ui.widgets.text.TextInputWidget
 import com.anytypeio.anytype.core_ui.widgets.toolbar.DataViewInfo
 import com.anytypeio.anytype.core_utils.OnSwipeListener
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.arg
 import com.anytypeio.anytype.core_utils.ext.argOrNull
 import com.anytypeio.anytype.core_utils.ext.argString
@@ -90,6 +90,7 @@ import com.anytypeio.anytype.core_utils.ext.hideKeyboard
 import com.anytypeio.anytype.core_utils.ext.hideSoftInput
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.safeNavigate
+import com.anytypeio.anytype.core_utils.ext.smoothScrollToFirst
 import com.anytypeio.anytype.core_utils.ext.startMarketPageOrWeb
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.syncFocusWithImeVisibility
@@ -103,7 +104,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.di.feature.DefaultComponentParam
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.Relation.*
+import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType.Relation.SetQuery
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.RelationContext
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetCommand
@@ -121,11 +122,12 @@ import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.ObjectSelectTypeFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
+import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment.DateValueEditReceiver
 import com.anytypeio.anytype.ui.relations.RelationTextValueFragment
@@ -140,7 +142,6 @@ import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_T
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TARGET_TYPE_KEY
 import com.anytypeio.anytype.ui.templates.EditorTemplateFragment.Companion.ARG_TEMPLATE_ID
 import javax.inject.Inject
-import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.launchIn
 import kotlinx.coroutines.flow.onEach
 import timber.log.Timber
@@ -150,7 +151,8 @@ open class ObjectSetFragment :
     TextValueEditReceiver,
     DateValueEditReceiver,
     OnDataViewSelectSourceAction,
-    ObjectTypeSelectionListener {
+    ObjectTypeSelectionListener,
+    CollectionObjectTypeSelectionListener {
 
     // Controls
 
@@ -484,6 +486,23 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        binding.setObjectNameSheet.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.setObjectNameState.collectAsStateWithLifecycle().value
+
+                SetObjectNameBottomSheet(
+                    isVisible = state.isVisible,
+                    icon = state.currentIcon,
+                    isIconChangeAllowed = state.isIconChangeAllowed,
+                    onTextChanged = vm::onSetObjectNameChanged,
+                    onDismiss = vm::onSetObjectNameDismissed,
+                    onIconClicked = vm::onSetObjectNameIconClicked,
+                    onOpenClicked = vm::onSetObjectNameOpenClicked
+                )
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -498,6 +517,9 @@ open class ObjectSetFragment :
             dispatchMode = DISPATCH_MODE_STOP
         )
         binding.titleWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.setObjectNameSheet.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
         )
     }
@@ -895,6 +917,31 @@ open class ObjectSetFragment :
         }
     }
 
+    private fun scrollToObject(objectId: Id) {
+        val viewer = when (val state = vm.currentViewer.value) {
+            is DataViewViewState.Collection.Default -> state.viewer
+            is DataViewViewState.Set.Default -> state.viewer
+            is DataViewViewState.TypeSet.Default -> state.viewer
+            else -> null
+        }
+        when (viewer) {
+            is Viewer.GridView -> {
+                rvRows.smoothScrollToFirst(viewer.rows) { it.id == objectId }
+            }
+
+            is Viewer.GalleryView -> {
+                binding.galleryView.smoothScrollToFirst(viewer.items) { it.objectId == objectId }
+            }
+
+            is Viewer.ListView -> {
+                binding.listView.smoothScrollToFirst(viewer.items) { it.objectId == objectId }
+            }
+
+            else -> { /* no scroll for unsupported views */
+            }
+        }
+    }
+
     private fun bindHeader(header: SetOrCollectionHeaderState.Default) {
         setupHeaderMargins(header)
 
@@ -1183,17 +1230,6 @@ open class ObjectSetFragment :
                 )
                 fr.showChildFragment(EMPTY_TAG)
             }
-            is ObjectSetCommand.Modal.SetNameForCreatedObject -> {
-                findNavController().safeNavigate(
-                    R.id.objectSetScreen,
-                    R.id.setNameForNewRecordScreen,
-                    SetObjectCreateRecordFragmentBase.args(
-                        ctx = command.ctx,
-                        target = command.target,
-                        space = command.space
-                    )
-                )
-            }
             is ObjectSetCommand.Intent.MailTo -> {
                 try {
                     Intent(Intent.ACTION_SENDTO).apply {
@@ -1270,17 +1306,18 @@ open class ObjectSetFragment :
             }
             is ObjectSetCommand.Modal.OpenDataViewSelectQueryScreen -> {
                 val fr = DataViewSelectSourceFragment.newInstance(
+                    space = space,
                     selectedTypes = command.selectedTypes
                 )
                 fr.showChildFragment()
             }
             is ObjectSetCommand.Modal.OpenEmptyDataViewSelectQueryScreen -> {
-                val fr = EmptyDataViewSelectSourceFragment()
+                val fr = EmptyDataViewSelectSourceFragment.newInstance(space = space)
                 fr.showChildFragment()
             }
-            is ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
-                val fr = ObjectSelectTypeFragment.newInstance(
-                    excludeTypes = command.excludedTypes
+            ObjectSetCommand.Modal.OpenSelectTypeScreen -> {
+                val fr = CollectionAddObjectTypeFragment.newInstance(
+                    space = space
                 )
                 fr.showChildFragment()
             }
@@ -1341,6 +1378,9 @@ open class ObjectSetFragment :
                     label = "Object link",
                     successToast = getString(R.string.link_copied)
                 )
+            }
+            is ObjectSetCommand.ScrollToObject -> {
+                scrollToObject(command.objectId)
             }
         }
     }
@@ -1536,6 +1576,10 @@ open class ObjectSetFragment :
 
     override fun onSelectObjectType(objType: ObjectWrapper.Type) {
         vm.onAddNewDocumentClicked(objType)
+    }
+
+    override fun onSelectObjectTypeForCollection(objType: ObjectWrapper.Type) {
+        vm.onNewTypeForViewerClicked(objType)
     }
 
     private fun observeSelectingTemplate() {

@@ -15,6 +15,7 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -22,6 +23,7 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.AddDataViewViewer
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.dataview.interactor.DeleteDataViewViewer
@@ -64,6 +66,9 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.Emoji
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -180,6 +185,17 @@ object ObjectSetModule {
     @JvmStatic
     @Provides
     @PerScreen
+    fun provideSetDataViewProperties(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetDataViewProperties = SetDataViewProperties(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
     fun provideDuplicateObjectsListUseCase(
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
@@ -197,6 +213,7 @@ object ObjectSetModule {
         closeObject: CloseObject,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
+        createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
         createDataViewObject: CreateDataViewObject,
         createObject: CreateObject,
@@ -233,7 +250,10 @@ object ObjectSetModule {
         spaceSyncAndP2PStatusProvider: SpaceSyncAndP2PStatusProvider,
         fieldParser: FieldParser,
         spaceViews: SpaceViewSubscriptionContainer,
-        deepLinkResolver: DeepLinkResolver
+        deepLinkResolver: DeepLinkResolver,
+        setDataViewProperties: SetDataViewProperties,
+        emojiProvider: EmojiProvider,
+        emojiSuggester: EmojiSuggester
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -241,6 +261,7 @@ object ObjectSetModule {
         setObjectDetails = setObjectDetails,
         createDataViewObject = createDataViewObject,
         updateText = updateText,
+        createBlock = createBlock,
         interceptEvents = interceptEvents,
         dispatcher = dispatcher,
         delegator = delegator,
@@ -262,7 +283,6 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        getObjectTypes = getObjectTypes,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
@@ -276,7 +296,10 @@ object ObjectSetModule {
         fieldParser = fieldParser,
         spaceViews = spaceViews,
         deepLinkResolver = deepLinkResolver,
-        removeObjectFromCollection = removeObjectFromCollection
+        removeObjectFromCollection = removeObjectFromCollection,
+        setDataViewProperties = setDataViewProperties,
+        emojiProvider = emojiProvider,
+        emojiSuggester = emojiSuggester
     )
 
     @JvmStatic
@@ -286,6 +309,17 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): ConvertObjectToCollection = ConvertObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateBlock(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateBlock = CreateBlock(
         repo = repo,
         dispatchers = dispatchers
     )
@@ -665,6 +699,11 @@ object ObjectSetModule {
         analytics = analytics,
         dispatcher = dispatcher
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideEmojiProvider(): EmojiProvider = Emoji
 }
 
 data class DefaultComponentParam(

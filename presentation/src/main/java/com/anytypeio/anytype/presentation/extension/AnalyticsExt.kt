@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.RelationKey
 import com.anytypeio.anytype.core_utils.ext.Mimetype
@@ -91,6 +92,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -105,6 +107,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -127,6 +130,7 @@ fun Block.Prototype.getAnalyticsEvent(
                         put(EventsPropertiesKey.permissions, spaceParams.permission)
                         put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                         put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                        put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                         if (route != null) {
                             put(EventsPropertiesKey.route, route)
                         }
@@ -140,6 +144,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -153,6 +158,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -167,6 +173,7 @@ fun Block.Prototype.getAnalyticsEvent(
                     put(EventsPropertiesKey.permissions, spaceParams.permission)
                     put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                     put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                    put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                     if (route != null) {
                         put(EventsPropertiesKey.route, route)
                     }
@@ -179,6 +186,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -190,6 +198,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -201,6 +210,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -212,6 +222,7 @@ fun Block.Prototype.getAnalyticsEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -337,7 +348,8 @@ fun CoroutineScope.sendAnalyticsObjectShowEvent(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -360,7 +372,8 @@ fun CoroutineScope.sendAnalyticsShowObjectTypeScreen(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -378,7 +391,8 @@ fun CoroutineScope.sendAnalyticsReorderRelationEvent(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -398,7 +412,8 @@ fun CoroutineScope.sendAnalyticsResolveObjectConflict(
             EventsPropertiesKey.route to EventsDictionary.Routes.objectRoute,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -416,7 +431,8 @@ fun CoroutineScope.sendAnalyticsPropertiesLocalInfo(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -434,7 +450,8 @@ fun CoroutineScope.sendAnalyticsLocalPropertyResolve(
         mapOf(
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -464,7 +481,8 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
                 EventsPropertiesKey.length to length,
                 EventsPropertiesKey.permissions to spaceParams.permission,
                 EventsPropertiesKey.spaceType to spaceParams.spaceType,
-                EventsPropertiesKey.uxType to spaceParams.spaceUxType
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+                EventsPropertiesKey.spaceId to spaceParams.spaceId
             )
         )
     )
@@ -481,7 +499,8 @@ fun CoroutineScope.sendAnalyticsSearchResultEvent(
             mapOf(
                 EventsPropertiesKey.permissions to spaceParams.permission,
                 EventsPropertiesKey.spaceType to spaceParams.spaceType,
-                EventsPropertiesKey.uxType to spaceParams.spaceUxType
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+                EventsPropertiesKey.spaceId to spaceParams.spaceId
             )
         )
     )
@@ -513,7 +532,8 @@ fun CoroutineScope.sendAnalyticsSearchBacklinksEvent(
             mapOf(
                 EventsPropertiesKey.permissions to spaceParams.permission,
                 EventsPropertiesKey.spaceType to spaceParams.spaceType,
-                EventsPropertiesKey.uxType to spaceParams.spaceUxType
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+                EventsPropertiesKey.spaceId to spaceParams.spaceId
             )
         )
     )
@@ -566,6 +586,7 @@ fun CoroutineScope.sendAnalyticsBackLinkAddEvent(
             put(EventsPropertiesKey.permissions, spaceParams.permission)
             put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
             put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+            put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
         }
     )
     sendEvent(
@@ -622,7 +643,8 @@ fun CoroutineScope.sendAnalyticsDuplicateEvent(
             EventsPropertiesKey.objectType to objType,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -648,7 +670,8 @@ suspend fun Analytics.sendAnalyticsSplitBlockEvent(
                 EventsPropertiesKey.style to style.getStyleName(),
                 EventsPropertiesKey.permissions to spaceParams.permission,
                 EventsPropertiesKey.spaceType to spaceParams.spaceType,
-                EventsPropertiesKey.uxType to spaceParams.spaceUxType
+                EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+                EventsPropertiesKey.spaceId to spaceParams.spaceId
             )
         ),
         duration = EventAnalytics.Duration(
@@ -874,7 +897,8 @@ fun CoroutineScope.sendAnalyticsObjectTypeSelectOrChangeEvent(
             EventsPropertiesKey.route to route,
             EventsPropertiesKey.permissions to spaceParams?.permission,
             EventsPropertiesKey.spaceType to spaceParams?.spaceType,
-            EventsPropertiesKey.uxType to spaceParams?.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams?.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams?.spaceId
         )
     )
     val event = if (containsFlagType) {
@@ -916,6 +940,7 @@ fun CoroutineScope.sendAnalyticsCreateRelationEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -947,6 +972,7 @@ suspend fun Analytics.sendAnalyticsRelationEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
             }
         )
     )
@@ -967,7 +993,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -995,7 +1022,8 @@ fun CoroutineScope.sendAnalyticsObjectCreateEvent(
             EventsPropertiesKey.view to view,
             EventsPropertiesKey.permissions to spaceParams.permission,
             EventsPropertiesKey.spaceType to spaceParams.spaceType,
-            EventsPropertiesKey.uxType to spaceParams.spaceUxType
+            EventsPropertiesKey.uxType to spaceParams.spaceUxType,
+            EventsPropertiesKey.spaceId to spaceParams.spaceId
         )
     )
     sendEvent(
@@ -1694,9 +1722,13 @@ private fun buildProps(
                 EventsPropertiesKey.spaceType,
                 spaceParams.spaceType
             )
-            if(spaceParams.spaceUxType.isNotEmpty()) put(
+            if (spaceParams.spaceUxType.isNotEmpty()) put(
                 EventsPropertiesKey.uxType,
                 spaceParams.spaceUxType
+            )
+            if (spaceParams.spaceId.isNotEmpty()) put(
+                EventsPropertiesKey.spaceId,
+                spaceParams.spaceId
             )
         }
     )
@@ -1822,9 +1854,6 @@ fun CoroutineScope.sendChangeWidgetSourceEvent(
                     }
                     BundledWidgetSourceView.AllObjects -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_ALL_OBJECTS)
-                    }
-                    BundledWidgetSourceView.AllObjects -> {
-                        put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
                     }
                     BundledWidgetSourceView.Chat -> {
                         put(WidgetAnalytics.TYPE, WidgetAnalytics.WIDGET_SOURCE_CHAT)
@@ -2310,6 +2339,7 @@ fun CoroutineScope.sendAnalyticsScreenTemplateSelectorEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
             }
         )
     )
@@ -2336,6 +2366,7 @@ fun CoroutineScope.sendAnalyticsCreateTemplateEvent(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
             }
         ),
         startTime = startTime,
@@ -2390,6 +2421,7 @@ fun CoroutineScope.sendAnalyticsCreateLink(
                 put(EventsPropertiesKey.permissions, spaceParams.permission)
                 put(EventsPropertiesKey.spaceType, spaceParams.spaceType)
                 put(EventsPropertiesKey.uxType, spaceParams.spaceUxType)
+                put(EventsPropertiesKey.spaceId, spaceParams.spaceId)
                 if (route != null) {
                     put(EventsPropertiesKey.route, route)
                 }
@@ -2724,6 +2756,33 @@ fun CoroutineScope.sendAnalyticsScreenObjectType(
     sendEvent(
         analytics = analytics,
         eventName = EventsDictionary.screenObjectType
+    )
+}
+//endregion
+
+//region Notifications
+suspend fun Analytics.sendAnalyticsChangeMessageNotificationState(
+    spaceUxType: SpaceUxType?,
+    notificationState: NotificationState
+) {
+    val uxType = when (spaceUxType) {
+        SpaceUxType.ONE_TO_ONE -> "OneToOne"
+        SpaceUxType.CHAT -> "Chat"
+        else -> "Data"
+    }
+    val type = when (notificationState) {
+        NotificationState.ALL -> "All"
+        NotificationState.MENTIONS -> "Mentions"
+        NotificationState.DISABLE -> "Nothing"
+    }
+    sendEvent(
+        eventName = EventsDictionary.changeMessageNotificationState,
+        props = Props(
+            mapOf(
+                EventsPropertiesKey.uxType to uxType,
+                EventsPropertiesKey.type to type
+            )
+        )
     )
 }
 //endregion

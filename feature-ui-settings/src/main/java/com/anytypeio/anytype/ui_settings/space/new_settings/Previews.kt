@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui_settings.space.new_settings
 
 import androidx.compose.runtime.Composable
-import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -20,16 +19,16 @@ fun NewSpaceSettingsScreenPreview() {
     NewSpaceSettingsScreen(
         uiState = UiSpaceSettingsState.SpaceSettings(
             items = listOf(
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-8", height = 8),
                 UiSpaceSettingsItem.Icon(SpaceIconView.DataSpace.Placeholder()),
-                UiSpaceSettingsItem.Spacer(height = 16),
+                UiSpaceSettingsItem.Spacer(id = "preview-16", height = 16),
                 UiSpaceSettingsItem.Name("Dream team"),
-                UiSpaceSettingsItem.Spacer(height = 4),
+                UiSpaceSettingsItem.Spacer(id = "preview-4", height = 4),
                 UiSpaceSettingsItem.EntrySpace,
                 UiSpaceSettingsItem.MembersSmall(2),
-                UiSpaceSettingsItem.Spacer(height = 12),
+                UiSpaceSettingsItem.Spacer(id = "preview-12", height = 12),
                 UiSpaceSettingsItem.InviteLink("linkl"),
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-81", height = 8),
                 UiSpaceSettingsItem.Section.Collaboration,
                 UiSpaceSettingsItem.Members(1, false, false),
                 UiSpaceSettingsItem.Section.ContentModel,
@@ -40,16 +39,16 @@ fun NewSpaceSettingsScreenPreview() {
                     name = "Taskwithveryverlylongname",
                     icon = ObjectIcon.TypeIcon.Default.DEFAULT,
                 ),
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-82", height = 8),
                 //UiSpaceSettingsItem.Wallpapers(null),
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-83", height = 8),
                 UiSpaceSettingsItem.Section.DataManagement,
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-84", height = 8),
                 UiSpaceSettingsItem.Section.Misc,
                 UiSpaceSettingsItem.SpaceInfo,
-                UiSpaceSettingsItem.Spacer(height = 8),
+                UiSpaceSettingsItem.Spacer(id = "preview-85", height = 8),
                 UiSpaceSettingsItem.DeleteSpace,
-                UiSpaceSettingsItem.Spacer(height = 32),
+                UiSpaceSettingsItem.Spacer(id = "preview-32", height = 32),
 
                 ),
             isEditEnabled = true,

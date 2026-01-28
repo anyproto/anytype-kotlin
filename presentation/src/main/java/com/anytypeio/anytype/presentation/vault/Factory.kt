@@ -5,13 +5,14 @@ import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -62,9 +63,10 @@ class VaultViewModelFactory @Inject constructor(
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
-    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val configStorage: ConfigStorage
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -97,8 +99,9 @@ class VaultViewModelFactory @Inject constructor(
         shouldShowCreateSpaceBadge = shouldShowCreateSpaceBadge,
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
         appInfo = appInfo,
-        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = createSpace,
-        deepLinkResolver = deepLinkResolver
+        deepLinkResolver = deepLinkResolver,
+        configStorage = configStorage
     ) as T
 }

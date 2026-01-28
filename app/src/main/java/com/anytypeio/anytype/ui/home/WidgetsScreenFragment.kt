@@ -544,6 +544,19 @@ class WidgetsScreenFragment : Fragment(),
                     toast("Failed to open URL")
                 }
             }
+
+            is Navigation.OpenTemplate -> {
+                runCatching {
+                    navigation().openModalTemplateEdit(
+                        template = destination.template,
+                        templateTypeId = destination.templateTypeId,
+                        templateTypeKey = destination.templateTypeKey,
+                        space = destination.space
+                    )
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening template from widgets")
+                }
+            }
         }
     }
 

@@ -122,6 +122,7 @@ fun <T> MutableList<T>.addAfterIndexInLine(
 
 /**
  * Moves all items meeting a [predicateMove] after the index meeting a [predicateIndex]
+ * Special case: if predicateIndex doesn't match (newIndex == -1), inserts at the beginning
  */
 fun <T> MutableList<T>.moveAfterIndexInLine(
     predicateIndex: (T) -> Boolean,
@@ -134,7 +135,8 @@ fun <T> MutableList<T>.moveAfterIndexInLine(
     if (newIndex in 0 until size) {
         addAll(newIndex + 1, split.first)
     } else {
-        addAll(size, split.first)
+        // afterId not found (empty or invalid) - insert at beginning
+        addAll(0, split.first)
     }
 }
 

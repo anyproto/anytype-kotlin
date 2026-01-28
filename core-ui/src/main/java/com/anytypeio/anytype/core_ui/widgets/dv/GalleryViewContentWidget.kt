@@ -1,17 +1,14 @@
 package com.anytypeio.anytype.core_ui.widgets.dv
 
 import android.content.Context
-import android.graphics.Color
 import android.text.TextUtils
 import android.util.AttributeSet
-import android.util.TypedValue
 import android.view.ContextThemeWrapper
 import android.view.Gravity
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.content.res.ResourcesCompat
 import androidx.core.content.res.use
 import androidx.core.view.updateLayoutParams
 import com.anytypeio.anytype.core_models.ThemeColor
@@ -19,15 +16,11 @@ import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.dark
 import com.anytypeio.anytype.core_ui.extensions.getPrettyName
 import com.anytypeio.anytype.core_ui.extensions.light
+import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
 import com.anytypeio.anytype.core_utils.ext.setDrawableColor
-import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.model.DefaultObjectRelationValueView
 import com.anytypeio.anytype.presentation.sets.model.ObjectView
-import coil3.load
-import coil3.request.transformations
-import coil3.transform.CircleCropTransformation
-import timber.log.Timber
 
 class GalleryViewContentWidget @JvmOverloads constructor(
     context: Context,
@@ -215,139 +208,65 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         id = generateViewId()
                         orientation = HORIZONTAL
                     }
-                    relation.objects.forEachIndexed { idx, obj ->
-                        if (obj is ObjectView.Default) {
-                            when (val icon = obj.icon) {
-                                is ObjectIcon.None -> {
-                                    // Do nothing
-                                }
-                                is ObjectIcon.Basic.Emoji -> {
-                                    try {
-                                        val image = ImageView(context)
-                                        group.addView(image)
-                                        image.updateLayoutParams<LayoutParams> {
-                                            width = resources.getDimension(R.dimen.dp_16).toInt()
-                                            height = resources.getDimension(R.dimen.dp_16).toInt()
-                                            gravity = Gravity.CENTER_VERTICAL
-                                            marginStart = if (idx == 0) {
-                                                firstItemMargin
-                                            } else {
-                                                intervalItemMargin
-                                            }
-                                            marginEnd = marginAfterIcon
-                                        }
-                                        image.load(Emojifier.uri(icon.unicode))
-                                    } catch (e: Throwable) {
-                                        Timber.w(
-                                            e,
-                                            "Error while setting emoji icon for: ${icon.unicode}"
-                                        )
-                                    }
-                                }
-                                is ObjectIcon.Basic.Image -> {
-                                    val image = ImageView(context)
-                                    group.addView(image)
-                                    image.updateLayoutParams<LayoutParams> {
-                                        width = resources.getDimension(R.dimen.dp_16).toInt()
-                                        height = resources.getDimension(R.dimen.dp_16).toInt()
-                                        gravity = Gravity.CENTER_VERTICAL
-                                        marginStart = if (idx == 0) {
-                                            firstItemMargin
-                                        } else {
-                                            0
-                                        }
-                                        marginEnd = marginAfterIcon
-                                    }
-                                    image.load(icon.hash)
-                                }
-                                is ObjectIcon.Profile.Avatar -> {
-                                    val avatar = TextView(themeWrapper).apply {
-                                        gravity = Gravity.CENTER
-                                        isAllCaps = true
-                                        setBackgroundResource(R.drawable.circle_default_avatar_background)
-                                        setTextSize(
-                                            TypedValue.COMPLEX_UNIT_PX,
-                                            resources.getDimension(R.dimen.defaultGalleryViewAvatarTextSize)
-                                        )
-                                        typeface =
-                                            ResourcesCompat.getFont(context, R.font.inter_medium)
-                                        setTextColor(Color.WHITE)
-                                        text = if (icon.name.isNotEmpty())
-                                            icon.name.first().toString()
-                                        else
-                                            resources.getText(R.string.u)
-                                    }
-                                    group.addView(avatar)
-                                    avatar.updateLayoutParams<LayoutParams> {
-                                        width = resources.getDimension(R.dimen.dp_16).toInt()
-                                        height = resources.getDimension(R.dimen.dp_16).toInt()
-                                        marginStart = if (idx == 0) {
-                                            firstItemMargin
-                                        } else {
-                                            0
-                                        }
-                                        marginEnd = marginAfterIcon
-                                    }
-                                }
-                                is ObjectIcon.Profile.Image -> {
-                                    val image = ImageView(context)
-                                    group.addView(image)
-                                    image.updateLayoutParams<LayoutParams> {
-                                        width = resources.getDimension(R.dimen.dp_16).toInt()
-                                        height = resources.getDimension(R.dimen.dp_16).toInt()
-                                        gravity = Gravity.CENTER_VERTICAL
-                                        marginStart = if (idx == 0) {
-                                            firstItemMargin
-                                        } else {
-                                            0
-                                        }
-                                        marginEnd = marginAfterIcon
-                                    }
-                                    image.load(icon.hash) {
-                                        transformations(CircleCropTransformation())
-                                    }
-                                }
-                                is ObjectIcon.Task -> {
-                                    val image = ImageView(context).apply {
-                                        if (icon.isChecked) {
-                                            setImageResource(R.drawable.ic_gallery_view_task_checked)
-                                        } else {
-                                            setImageResource(R.drawable.ic_gallery_view_task_unchecked)
-                                        }
-                                    }
-                                    group.addView(image)
-                                    image.updateLayoutParams<LayoutParams> {
-                                        width = resources.getDimension(R.dimen.dp_16).toInt()
-                                        height = resources.getDimension(R.dimen.dp_16).toInt()
-                                        gravity = Gravity.CENTER_VERTICAL
-                                        marginStart = if (idx == 0) {
-                                            firstItemMargin
-                                        } else {
-                                            0
-                                        }
-                                        marginEnd = marginAfterIcon
-                                    }
-                                }
-                                else -> {}
+                    // Only show the first object
+                    val firstObj = relation.objects.firstOrNull()
+                    if (firstObj is ObjectView.Default) {
+                        val noIcon = firstObj.icon is ObjectIcon.None
+                        if (!noIcon) {
+                            val iconWidget = ObjectIconWidget(context).apply {
+                                setIcon(firstObj.icon)
                             }
-
-                            val noIcon = obj.icon == ObjectIcon.None
-
-                            val view = TextView(themeWrapper).apply {
-                                id = generateViewId()
-                                isSingleLine = true
-                                maxLines = 1
-                                ellipsize = TextUtils.TruncateAt.END
-                                setHint(R.string.untitled)
-                                text = obj.name
-                            }
-                            group.addView(view)
-                            view.updateLayoutParams<LayoutParams> {
-                                marginStart = if (idx == 0 && noIcon) firstItemMargin else 0
-                                marginEnd = marginAfterText
+                            group.addView(iconWidget)
+                            iconWidget.updateLayoutParams<LayoutParams> {
+                                width = resources.getDimension(R.dimen.dp_16).toInt()
+                                height = resources.getDimension(R.dimen.dp_16).toInt()
+                                gravity = Gravity.CENTER_VERTICAL
+                                marginStart = firstItemMargin
+                                marginEnd = marginAfterIcon
                             }
                         }
+
+                        val hasMoreObjects = relation.objects.size > 1
+                        val view = TextView(themeWrapper).apply {
+                            id = generateViewId()
+                            isSingleLine = true
+                            maxLines = 1
+                            ellipsize = TextUtils.TruncateAt.END
+                            setHint(R.string.untitled)
+                            text = firstObj.name
+                        }
+                        group.addView(view)
+                        view.updateLayoutParams<LayoutParams> {
+                            if (hasMoreObjects) {
+                                // Use weight to ensure text shrinks for badge
+                                width = 0
+                                weight = 1f
+                            }
+                            marginStart = if (noIcon) firstItemMargin else 0
+                        }
                     }
+
+                    // Add "+n" badge if there are more objects
+                    val remainingCount = relation.objects.size - 1
+                    if (remainingCount > 0) {
+                        val countBadgePadding = resources.getDimension(R.dimen.dp_4).toInt()
+                        val countBadgeMargin = resources.getDimension(R.dimen.dp_4).toInt()
+                        val countView = TextView(themeWrapper).apply {
+                            id = generateViewId()
+                            isSingleLine = true
+                            maxLines = 1
+                            text = "+$remainingCount"
+                            setBackgroundResource(R.drawable.bg_dv_list_item_object_count)
+                            setTextColor(resources.getColor(R.color.text_secondary, null))
+                            setPadding(countBadgePadding, 0, countBadgePadding, 0)
+                        }
+                        group.addView(countView)
+                        countView.updateLayoutParams<LayoutParams> {
+                            gravity = Gravity.CENTER_VERTICAL
+                            marginStart = countBadgeMargin
+                        }
+                    }
+
                     addView(group)
                     group.updateLayoutParams<LayoutParams> {
                         bottomMargin = if (index == size - 1) 0 else defaultBottomMargin
@@ -360,7 +279,7 @@ class GalleryViewContentWidget @JvmOverloads constructor(
                         orientation = HORIZONTAL
                     }
                     relation.tags.forEachIndexed { idx, tag ->
-                        val color = ThemeColor.values().find { v -> v.code == tag.color }
+                        val color = ThemeColor.entries.find { v -> v.code == tag.color }
                         val defaultTextColor = resources.getColor(R.color.text_primary, null)
                         val defaultBackground = resources.getColor(R.color.shape_primary, null)
                         val view = TextView(themeWrapper).apply {

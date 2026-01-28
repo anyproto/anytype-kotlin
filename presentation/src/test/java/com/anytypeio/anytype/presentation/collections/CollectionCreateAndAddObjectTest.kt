@@ -95,7 +95,6 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
@@ -107,7 +106,11 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             fieldParser = fieldParser,
             spaceViews = spacedViews,
             deepLinkResolver = deepLinkResolver,
-            removeObjectFromCollection = removeObjectFromCollection
+            removeObjectFromCollection = removeObjectFromCollection,
+            setDataViewProperties = setDataViewProperties,
+            emojiProvider = emojiProvider,
+            emojiSuggester = emojiSuggester,
+            createBlock = mock()
         )
     }
 

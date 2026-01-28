@@ -5,14 +5,11 @@ pluginManagement {
         gradlePluginPortal()
         google()
         mavenCentral()
+        maven { url "https://jitpack.io" }
     }
     plugins {
-        id 'androidx.navigation.safeargs.kotlin' version '2.8.3'
+        id 'androidx.navigation.safeargs.kotlin' version '2.9.6'
     }
-}
-
-plugins {
-    id 'org.gradle.toolchains.foojay-resolver-convention' version '0.8.0'
 }
 
 dependencyResolutionManagement {

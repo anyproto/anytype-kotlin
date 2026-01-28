@@ -5,16 +5,15 @@ import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.domain.base.Resultat
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.ObjectSearchViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -25,7 +24,6 @@ class LinkToObjectViewModel(
     private val vmParams: VmParams,
     urlBuilder: UrlBuilder,
     searchObjects: SearchObjects,
-    getObjectTypes: GetObjectTypes,
     analytics: Analytics,
     analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     fieldParser: FieldParser,
@@ -34,7 +32,6 @@ class LinkToObjectViewModel(
 ) : ObjectSearchViewModel(
     vmParams = vmParams,
     urlBuilder = urlBuilder,
-    getObjectTypes = getObjectTypes,
     searchObjects = searchObjects,
     analytics = analytics,
     analyticSpaceHelperDelegate = analyticSpaceHelperDelegate,
@@ -85,6 +82,7 @@ class LinkToObjectViewModel(
     }
 
     override suspend fun setObjects(data: List<ObjectWrapper.Basic>) {
+        Timber.d("LinkToObjectViewModel setObjects called with ${data.size} items")
         val spaceUxType = spaceViews.get(vmParams.space)?.spaceUxType
         val supportedLayouts = SupportedLayouts.getLayouts(spaceUxType)
         objects.emit(

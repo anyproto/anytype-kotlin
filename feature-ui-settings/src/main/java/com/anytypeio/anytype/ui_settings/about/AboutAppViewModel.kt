@@ -61,11 +61,14 @@ class AboutAppViewModel(
                 )
             }
         }
-        viewModelScope.launch {
-            val config = configStorage.get()
-            analyticsId.value = config.analytics
-            deviceId.value = config.device
-            ethereumAddress.value = config.ethereumAddress
+
+        val config = configStorage.getOrNull()
+        if (config != null) {
+            viewModelScope.launch {
+                analyticsId.value = config.analytics
+                deviceId.value = config.device
+                ethereumAddress.value = config.ethereumAddress
+            }
         }
         viewModelScope.launch {
             getLibraryVersion(BaseUseCase.None).process(

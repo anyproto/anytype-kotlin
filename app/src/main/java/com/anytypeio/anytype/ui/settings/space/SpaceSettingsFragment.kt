@@ -302,9 +302,9 @@ class SpaceSettingsFragment : Fragment(), ObjectTypeSelectionListener {
                 }
                 is Command.SelectDefaultObjectType -> {
                    runCatching {
-                       val fragment = AppDefaultObjectTypeFragment.newInstance(
-                           excludeTypes = command.excludedTypeIds
-                       )
+                       val fragment = AppDefaultObjectTypeFragment().apply {
+                           arguments = AppDefaultObjectTypeFragment.args(space = space)
+                       }
                        fragment.show(childFragmentManager, AppDefaultObjectTypeFragment::class.simpleName)
                    }.onFailure {
                        Timber.e(it, "Error while opening set-default-object-type screen")

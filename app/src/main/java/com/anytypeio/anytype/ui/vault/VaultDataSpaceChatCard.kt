@@ -52,12 +52,15 @@ fun VaultDataSpaceChatCard(
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.DataSpaceWithChat,
     expandedSpaceId: String? = null,
+    isLastMessageOutgoing: Boolean = false,
+    isLastMessageSynced: Boolean = true,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {}
+    onSpaceSettings: (Id) -> Unit = {},
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
 
     val updatedModifier = when (spaceBackground) {
@@ -119,7 +122,8 @@ fun VaultDataSpaceChatCard(
             attachmentPreviews = attachmentPreviews,
             spaceNotificationState = spaceNotificationState,
             isMuted = isSpaceMuted,
-            isPinned = isPinned
+            isPinned = isPinned,
+            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
         )
 
         val shouldShowAsMuted =
@@ -131,6 +135,7 @@ fun VaultDataSpaceChatCard(
             onDismiss = onDismissMenu,
             isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
+            isOwner = spaceView.isOwner,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
                     if (shouldShowAsMuted) {
@@ -147,6 +152,9 @@ fun VaultDataSpaceChatCard(
             },
             onSpaceSettings = {
                 spaceView.space.id.let { onSpaceSettings(it) }
+            },
+            onDeleteOrLeaveSpace = {
+                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
             }
         )
     }
@@ -166,7 +174,8 @@ private fun ContentDataSpaceChat(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState,
-    isPinned: Boolean = false
+    isPinned: Boolean = false,
+    showPendingIndicator: Boolean = false
 ) {
     Column(modifier = modifier, verticalArrangement = Arrangement.Center) {
         val hasContent = !creatorName.isNullOrEmpty() ||
@@ -184,7 +193,8 @@ private fun ContentDataSpaceChat(
                 modifier = Modifier.weight(1f),
                 message = title,
                 messageTime = messageTime,
-                isMuted = isMuted
+                isMuted = isMuted,
+                showPendingIndicator = showPendingIndicator
             )
         }
 
@@ -340,6 +350,8 @@ fun DataSpaceChatMuted() {
             messageTime = "09:15",
             unreadMessageCount = 5,
             unreadMentionCount = 0,
+            isLastMessageSynced = false,
+            isLastMessageOutgoing = true,
             spaceNotificationState = NotificationState.DISABLE,
             isPinned = true,
             spaceBackground = SpaceBackground.SolidColor(color = androidx.compose.ui.graphics.Color(0xFFFFF3E0)),

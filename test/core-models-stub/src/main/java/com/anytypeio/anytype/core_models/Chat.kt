@@ -38,13 +38,15 @@ fun stubChatPreview(
     spaceId: String,
     chatId: String,
     lastMessageDate: Long,
+    creator: String = "user1",
+    synced: Boolean = true
 ): Chat.Preview {
     return Chat.Preview(
         space = SpaceId(spaceId),
         chat = chatId,
         message = Chat.Message(
             id = "msg1",
-            creator = "user1",
+            creator = creator,
             content = Chat.Message.Content(
                 text = "Hello, user1",
                 style = TextStyle.P,
@@ -54,7 +56,7 @@ fun stubChatPreview(
             attachments = emptyList(),
             order = "order1",
             modifiedAt = System.currentTimeMillis(),
-            synced = true
+            synced = synced
         ),
         dependencies = emptyList(),
         state = null

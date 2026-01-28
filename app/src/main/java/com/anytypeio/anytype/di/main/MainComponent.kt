@@ -22,7 +22,6 @@ import com.anytypeio.anytype.di.feature.MySitesDependencies
 import com.anytypeio.anytype.di.feature.ObjectSetSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeChangeSubComponent
 import com.anytypeio.anytype.di.feature.ObjectTypeDependencies
-import com.anytypeio.anytype.di.feature.PersonalizationSettingsSubComponent
 import com.anytypeio.anytype.di.feature.PublishToWebDependencies
 import com.anytypeio.anytype.di.feature.SpacePropertiesDependencies
 import com.anytypeio.anytype.di.feature.SpaceTypesDependencies
@@ -163,7 +162,7 @@ interface MainComponent :
     fun createBookmarkBuilder(): CreateBookmarkSubComponent.Builder
     fun mainEntryComponentBuilder(): MainEntrySubComponent.Builder
     fun objectSetComponentBuilder(): ObjectSetSubComponent.Builder
-    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Builder
+    fun objectTypeChangeComponent(): ObjectTypeChangeSubComponent.Factory
     fun createObjectComponent(): CreateObjectSubComponent.Builder
 
     //region Settings
@@ -171,7 +170,6 @@ interface MainComponent :
     fun profileComponent(): ProfileSubComponent.Builder
     fun debugSettingsBuilder(): DebugSettingsSubComponent.Builder
     fun keychainPhraseComponentBuilder(): KeychainPhraseSubComponent.Builder
-    fun personalizationSettingsComponentBuilder(): PersonalizationSettingsSubComponent.Builder
     fun logoutWarningComponent(): LogoutWarningSubComponent.Builder
 
     //endregion

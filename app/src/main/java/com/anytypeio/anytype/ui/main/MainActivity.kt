@@ -295,7 +295,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 // Navigate to vault where the deeplink will be processed
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
-                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    // Try to pop to Vault; if fails (not in stack), navigate to Vault
+                                    if (!controller.popBackStack(R.id.vaultScreen, false)) {
+                                        controller.navigate(R.id.vaultScreen)
+                                    }
                                     // The VaultViewModel will handle the 1-1 chat initiation
                                 }.onFailure {
                                     Timber.w(
@@ -311,9 +314,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
         if (savedInstanceState == null) {
             Timber.d("onSaveInstanceStateNull")
-            val action = intent.action
-            if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
-                proceedWithShareIntent(intent)
+            when (intent.action) {
+                Intent.ACTION_VIEW -> {
+                    intent.data?.let { uri ->
+                        val data = uri.toString()
+                        if (DefaultDeepLinkResolver.isDeepLink(data)) {
+                            vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                        }
+                    }
+                }
+                Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE -> {
+                    proceedWithShareIntent(intent)
+                }
             }
         } else {
             Timber.d("onSaveInstanceStateNotNull")
@@ -857,7 +869,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
                     else -> R.string.sharing_snackbar_files_linked
                 }
-                is SharedContent.Mixed -> R.string.sharing_snackbar_content_linked
             }
             getString(stringResId, destinationName, spaceName)
         } else {
@@ -876,7 +887,6 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
                     else -> R.string.sharing_snackbar_files_added
                 }
-                is SharedContent.Mixed -> R.string.sharing_snackbar_content_added
             }
             getString(stringResId, destinationName)
         }

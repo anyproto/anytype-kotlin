@@ -2682,7 +2682,7 @@ class HomeScreenViewModelTest {
 
     private fun stubConfig() {
         configStorage.stub {
-            on { get() } doReturn defaultSpaceConfig
+            on { getOrNull() } doReturn defaultSpaceConfig
         }
         configStorage.stub {
             on { getOrNull() } doReturn defaultSpaceConfig

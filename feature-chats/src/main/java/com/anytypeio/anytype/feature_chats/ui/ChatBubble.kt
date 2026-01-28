@@ -155,7 +155,7 @@ fun Bubble(
         // Bubble username section
         if (!isUserAuthor && !shouldHideUsername) {
             Text(
-                text = name.ifEmpty { stringResource(R.string.untitled) },
+                text = name.ifEmpty { stringResource(R.string.unknown) },
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,
@@ -310,18 +310,13 @@ fun Bubble(
                         modifier = Modifier
                             .align(Alignment.BottomEnd)
                     ) {
-                        if (isSynced) {
-                            Image(
-                                painter = painterResource(R.drawable.ic_chat_msg_synced),
-                                contentDescription = "Message synced icon"
-                            )
-                        } else {
+                        if (!isSynced) {
                             Image(
                                 painter = painterResource(R.drawable.ic_chat_msg_not_synced),
                                 contentDescription = "Message not synced icon"
                             )
+                            Spacer(modifier = Modifier.width(2.dp))
                         }
-                        Spacer(modifier = Modifier.width(2.dp))
                         Text(
                             text = timestamp.formatTimeInMillis(TIME_H24).let {
                                 if (isEdited) {

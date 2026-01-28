@@ -51,12 +51,15 @@ fun VaultOneToOneSpaceCard(
     isPinned: Boolean = false,
     spaceView: VaultSpaceView.OneToOneSpace,
     expandedSpaceId: String? = null,
+    isLastMessageOutgoing: Boolean = false,
+    isLastMessageSynced: Boolean = true,
     onDismissMenu: () -> Unit = {},
     onMuteSpace: (Id) -> Unit = {},
     onUnmuteSpace: (Id) -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {}
+    onSpaceSettings: (Id) -> Unit = {},
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
 
     val updatedModifier = when (spaceBackground) {
@@ -119,7 +122,8 @@ fun VaultOneToOneSpaceCard(
             attachmentPreviews = attachmentPreviews,
             isMuted = spaceView.spaceNotificationState == NotificationState.DISABLE,
             spaceNotificationState = spaceView.spaceNotificationState,
-            isPinned = isPinned
+            isPinned = isPinned,
+            showPendingIndicator = isLastMessageOutgoing && !isLastMessageSynced
         )
 
         // Include dropdown menu inside the card
@@ -128,6 +132,7 @@ fun VaultOneToOneSpaceCard(
             onDismiss = onDismissMenu,
             isMuted = shouldShowAsMuted,
             isPinned = spaceView.isPinned,
+            isOwner = spaceView.isOwner,
             onMuteToggle = {
                 spaceView.space.targetSpaceId?.let {
                     if (shouldShowAsMuted) {
@@ -144,6 +149,9 @@ fun VaultOneToOneSpaceCard(
             },
             onSpaceSettings = {
                 spaceView.space.id.let { onSpaceSettings(it) }
+            },
+            onDeleteOrLeaveSpace = {
+                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
             }
         )
     }
@@ -162,7 +170,8 @@ private fun ContentOneToOne(
     attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
     isMuted: Boolean? = null,
     spaceNotificationState: NotificationState? = null,
-    isPinned: Boolean = false
+    isPinned: Boolean = false,
+    showPendingIndicator: Boolean = false
 ) {
     Column(
         modifier = modifier,
@@ -182,7 +191,8 @@ private fun ContentOneToOne(
                 modifier = Modifier.weight(1f),
                 message = title,
                 messageTime = messageTime,
-                isMuted = isMuted
+                isMuted = isMuted,
+                showPendingIndicator = showPendingIndicator
             )
 
             // Show pin icon when no content but is pinned
@@ -282,6 +292,8 @@ fun OneToOneSpaceCardPreview() {
             messageTime = "14:25",
             unreadMessageCount = 2,
             unreadMentionCount = 0,
+            isLastMessageSynced = false,
+            isLastMessageOutgoing = true,
             chatPreview = Chat.Preview(
                 space = SpaceId("space-id"),
                 chat = "chat-id",

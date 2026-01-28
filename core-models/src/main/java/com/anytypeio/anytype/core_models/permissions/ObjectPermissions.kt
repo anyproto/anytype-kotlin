@@ -226,6 +226,13 @@ private val layoutsWithIcon = listOf(
     ObjectType.Layout.PROFILE
 )
 
+val layoutsSupportsEmojiAndImages = listOf(
+    ObjectType.Layout.BASIC,
+    ObjectType.Layout.SET,
+    ObjectType.Layout.COLLECTION,
+    ObjectType.Layout.CHAT_DERIVED
+)
+
 private val layoutsWithCover = layoutsWithIcon + listOf(
     ObjectType.Layout.TODO,
     ObjectType.Layout.BOOKMARK

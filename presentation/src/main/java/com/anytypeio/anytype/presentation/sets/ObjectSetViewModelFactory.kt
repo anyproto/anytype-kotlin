@@ -4,11 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
+import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
@@ -33,6 +34,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -53,6 +56,7 @@ class ObjectSetViewModelFactory(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
+    private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
@@ -73,7 +77,6 @@ class ObjectSetViewModelFactory(
     private val objectToCollection: ConvertObjectToCollection,
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -85,7 +88,10 @@ class ObjectSetViewModelFactory(
     private val analyticSpaceHelperDelegate: AnalyticSpaceHelperDelegate,
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val setDataViewProperties: SetDataViewProperties,
+    private val emojiProvider: EmojiProvider,
+    private val emojiSuggester: EmojiSuggester
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -118,7 +124,6 @@ class ObjectSetViewModelFactory(
             addObjectToCollection = addObjectToCollection,
             objectToCollection = objectToCollection,
             storeOfObjectTypes = storeOfObjectTypes,
-            getObjectTypes = getObjectTypes,
             duplicateObjects = duplicateObjects,
             templatesContainer = templatesContainer,
             setObjectListIsArchived = setObjectListIsArchived,
@@ -131,7 +136,11 @@ class ObjectSetViewModelFactory(
             fieldParser = fieldParser,
             spaceViews = spaceViews,
             deepLinkResolver = deepLinkResolver,
-            removeObjectFromCollection = removeObjectFromCollection
+            removeObjectFromCollection = removeObjectFromCollection,
+            setDataViewProperties = setDataViewProperties,
+            emojiProvider = emojiProvider,
+            emojiSuggester = emojiSuggester,
+            createBlock = createBlock
         ) as T
     }
 }

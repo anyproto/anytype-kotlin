@@ -42,7 +42,8 @@ fun DataSpaceCard(
     onDismissMenu: () -> Unit = {},
     onPinSpace: (Id) -> Unit = {},
     onUnpinSpace: (Id) -> Unit = {},
-    onSpaceSettings: (Id) -> Unit = {}
+    onSpaceSettings: (Id) -> Unit = {},
+    onDeleteOrLeaveSpace: (Id, Boolean) -> Unit = { _, _ -> }
 ) {
     val updatedModifier = when (spaceBackground) {
         is SpaceBackground.SolidColor -> modifier
@@ -99,6 +100,7 @@ fun DataSpaceCard(
             expanded = expandedSpaceId == spaceView.space.id,
             onDismiss = onDismissMenu,
             isPinned = spaceView.isPinned,
+            isOwner = spaceView.isOwner,
             onPinToggle = {
                 spaceView.space.id.let {
                     if (spaceView.isPinned) onUnpinSpace(it) else onPinSpace(it)
@@ -106,6 +108,9 @@ fun DataSpaceCard(
             },
             onSpaceSettings = {
                 spaceView.space.id.let { onSpaceSettings(it) }
+            },
+            onDeleteOrLeaveSpace = {
+                spaceView.space.targetSpaceId?.let { onDeleteOrLeaveSpace(it, spaceView.isOwner) }
             }
         )
     }

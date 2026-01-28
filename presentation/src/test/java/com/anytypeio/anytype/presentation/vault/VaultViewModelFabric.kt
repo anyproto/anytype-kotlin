@@ -1,15 +1,17 @@
 package com.anytypeio.anytype.presentation.vault
 
 import com.anytypeio.anytype.analytics.base.Analytics
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
@@ -43,7 +45,9 @@ object VaultViewModelFabric {
         deepLinkToObjectDelegate: DeepLinkToObjectDelegate = mock(),
         appActionManager: AppActionManager = mock(),
         spaceInviteResolver: SpaceInviteResolver = mock(),
-        profileContainer: ProfileSubscriptionManager = mock(),
+        profileContainer: ProfileSubscriptionManager = mock {
+            on { observe() }.thenReturn(flowOf(ObjectWrapper.Basic(emptyMap())))
+        },
         chatPreviewContainer: ChatPreviewContainer = mock(),
         chatsDetailsContainer: ChatsDetailsSubscriptionContainer = mock {
             on { observe() }.thenReturn(flowOf(emptyList()))
@@ -60,7 +64,7 @@ object VaultViewModelFabric {
         unpinSpace: UnpinSpace = mock(),
         setSpaceOrder: SetSpaceOrder = mock(),
         getSpaceWallpaper: GetSpaceWallpapers = mock(),
-        findOneToOneChatByIdentity: FindOneToOneChatByIdentity = mock(),
+        searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity = mock(),
         shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge = mock {
             on { runBlocking { async(any()) } }.thenReturn(com.anytypeio.anytype.domain.base.Resultat.Success(false))
         },
@@ -68,7 +72,10 @@ object VaultViewModelFabric {
         appInfo: AppInfo = mock {
             on { versionName }.thenReturn("1.0.0-test")
         },
-        participantSubscriptionContainer: ParticipantSubscriptionContainer = mock()
+        participantSubscriptionContainer: ParticipantSubscriptionContainer = mock(),
+        configStorage: ConfigStorage = mock {
+            on { getOrNull() }.thenReturn(null)
+        }
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -97,8 +104,9 @@ object VaultViewModelFabric {
         setCreateSpaceBadgeSeen = setCreateSpaceBadgeSeen,
         appInfo = appInfo,
         participantContainer = participantSubscriptionContainer,
-        findOneToOneChatByIdentity = findOneToOneChatByIdentity,
+        searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = mock(),
-        deepLinkResolver = mock()
+        deepLinkResolver = mock(),
+        configStorage = configStorage
     )
 } 

@@ -27,9 +27,11 @@ fun SpaceActionsDropdownMenu(
     onDismiss: () -> Unit,
     isMuted: Boolean? = null,
     isPinned: Boolean,
+    isOwner: Boolean = true,
     onMuteToggle: () -> Unit = {},
     onPinToggle: () -> Unit,
-    onSpaceSettings: () -> Unit
+    onSpaceSettings: () -> Unit,
+    onDeleteOrLeaveSpace: () -> Unit = {}
 ) {
     DropdownMenu(
         modifier = Modifier.width(254.dp),
@@ -121,6 +123,36 @@ fun SpaceActionsDropdownMenu(
                     )
                     Image(
                         painter = painterResource(id = R.drawable.ic_space_settings_24),
+                        contentDescription = null,
+                        modifier = Modifier
+                            .padding(end = 4.dp)
+                            .size(24.dp)
+                    )
+                }
+            }
+        )
+        Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
+        // Delete/Leave Space (always shown)
+        DropdownMenuItem(
+            onClick = {
+                onDeleteOrLeaveSpace()
+                onDismiss()
+            },
+            text = {
+                val stringRes = if (isOwner) {
+                    R.string.delete_space
+                } else {
+                    R.string.multiplayer_leave_space
+                }
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        modifier = Modifier.weight(1f),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_primary),
+                        text = stringResource(id = stringRes)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_leave_space_24),
                         contentDescription = null,
                         modifier = Modifier
                             .padding(end = 4.dp)

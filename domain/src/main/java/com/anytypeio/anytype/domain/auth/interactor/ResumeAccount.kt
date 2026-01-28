@@ -38,14 +38,16 @@ class ResumeAccount @Inject constructor(
 
         val networkMode = repository.getNetworkMode()
 
+        val currentAccountId = repository.getCurrentAccountId()
+
         val command = Command.AccountSelect(
-            id = repository.getCurrentAccountId(),
+            id = currentAccountId,
             path = pathProvider.providePath(),
             networkMode = networkMode.networkMode,
             networkConfigFilePath = networkMode.storedFilePath
         )
         val result = repository.selectAccount(command).let { setup ->
-            configStorage.set(config = setup.config)
+            configStorage.set(config = setup.config, accountId = currentAccountId)
             val lastSessionSpace = settings.getCurrentSpace()
             if (lastSessionSpace != null) {
                 val result = spaceManager.set(lastSessionSpace.id)

@@ -7,7 +7,6 @@ import com.anytypeio.anytype.analytics.base.EventsDictionary
 import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
-import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
@@ -24,13 +23,15 @@ import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
+import com.anytypeio.anytype.core_models.Config
+import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
 import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.multiplayer.FindOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -126,9 +127,10 @@ class VaultViewModel(
     private val shouldShowCreateSpaceBadge: ShouldShowCreateSpaceBadge,
     private val setCreateSpaceBadgeSeen: SetCreateSpaceBadgeSeen,
     private val appInfo: AppInfo,
-    private val findOneToOneChatByIdentity: FindOneToOneChatByIdentity,
+    private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val configStorage: ConfigStorage
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -185,6 +187,10 @@ class VaultViewModel(
         )
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5_000), AccountProfile.Idle)
 
+    // Flow for account identity (used to determine outgoing messages)
+    // The Config.id is the account identity used as message creator
+    private val accountIdentityFlow: StateFlow<Id?> = MutableStateFlow(configStorage.getAccountId())
+
     private val _uiState = MutableStateFlow<VaultUiState>(VaultUiState.Loading)
     val uiState: StateFlow<VaultUiState> = _uiState.asStateFlow()
 
@@ -199,10 +205,11 @@ class VaultViewModel(
             combine(
                 notificationsFlow,
                 chatDetailsFlow,
-                participantsFlow
-            ) { _, chatDetails, participants -> Pair(chatDetails, participants) }
-        ) { (previews, spaces, perms), (chatDetails, participants) ->
-            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants)
+                participantsFlow,
+                accountIdentityFlow
+            ) { _, chatDetails, participants, accountIdentity -> Triple(chatDetails, participants, accountIdentity) }
+        ) { (previews, spaces, perms), (chatDetails, participants, accountIdentity) ->
+            transformToVaultSpaceViews(spaces, previews.items, perms, chatDetails, participants, accountIdentity)
         }.onEach { sections ->
             val previousState = _uiState.value
 
@@ -282,7 +289,8 @@ class VaultViewModel(
         chatPreviews: List<Chat.Preview>,
         permissions: Map<Id, SpaceMemberPermissions>,
         chatDetails: List<ObjectWrapper.Basic>,
-        participants: List<ObjectWrapper.SpaceMember>
+        participants: List<ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultUiState.Sections {
         // Index participants by identity for O(1) lookup when resolving creator names
         val participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember> = participants.associateBy { it.identity }
@@ -324,7 +332,7 @@ class VaultViewModel(
                 unreadCountsPerSpace[spaceId]
             }
 
-            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+            mapToVaultSpaceViewItemWithCanPin(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
         }
 
         // Loading state is now managed in the main combine flow, not here
@@ -362,16 +370,19 @@ class VaultViewModel(
      * Calculates the effective date for a space by taking the maximum of lastMessageDate and spaceJoinDate.
      * - If both lastMessageDate and spaceJoinDate are available, return the maximum
      * - If only one is available, return that one
-     * - If neither is available, return null (fallback to creation date in comparator)
+     * - If neither is available, fallback to createdDate
+     * - If createdDate is also unavailable, return null
      */
     private fun calculateEffectiveDate(space: VaultSpaceView): Long? {
         val lastMessageDate = space.lastMessageDate
         val spaceJoinDate = space.space.spaceJoinDate?.toLong()
+        val createdDate = space.space.getSingleValue<Double>(Relations.CREATED_DATE)?.toLong()
 
         return when {
             lastMessageDate != null && spaceJoinDate != null -> maxOf(lastMessageDate, spaceJoinDate)
             lastMessageDate != null -> lastMessageDate
             spaceJoinDate != null -> spaceJoinDate
+            createdDate != null -> createdDate
             else -> null
         }
     }
@@ -383,20 +394,21 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView {
         return when {
             // ONE_TO_ONE space with chat preview → VaultSpaceView.OneToOneSpace
             space.spaceUxType == SpaceUxType.ONE_TO_ONE -> {
-                createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createOneToOneSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // Pure CHAT space with chat preview → VaultSpaceView.ChatSpace
             space.spaceUxType == SpaceUxType.CHAT -> {
-                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createChatSpaceView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // any other space with chat preview → VaultSpaceView.DataSpaceWithChat
             chatPreview != null -> {
-                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity)
+                createDataSpaceWithChatView(space, chatPreview, unreadCounts, permissions, wallpapers, chatDetailsMap, participantsByIdentity, accountIdentity)
             }
             // any other space without chat preview → VaultSpaceView.DataSpace
             else -> {
@@ -501,16 +513,23 @@ class VaultViewModel(
         val creatorName: String?,
         val messageText: String?,
         val messageTime: String?,
-        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>
+        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+        val isOutgoing: Boolean,
+        val isSynced: Boolean
     )
 
     /**
      * Extracts message preview data from a chat preview.
      * Returns null values when message is deleted (null).
+     *
+     * @param chatPreview The chat preview containing the last message
+     * @param participantsByIdentity Map of participants indexed by identity
+     * @param accountIdentity The current user's account identity (for determining outgoing messages)
      */
     private suspend fun extractMessagePreviewData(
         chatPreview: Chat.Preview?,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): MessagePreviewData {
         val message = chatPreview?.message
 
@@ -540,7 +559,17 @@ class VaultViewModel(
             emptyList()
         }
 
-        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews)
+        // Determine if message is outgoing (from current user)
+        val isOutgoing = if (message != null && accountIdentity != null) {
+            message.creator == accountIdentity
+        } else {
+            false
+        }
+
+        // Get sync status (default to true if no message to avoid showing pending indicator)
+        val isSynced = message?.synced ?: true
+
+        return MessagePreviewData(creatorName, messageText, messageTime, attachmentPreviews, isOutgoing, isSynced)
     }
 
     /**
@@ -553,9 +582,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.ChatSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -581,7 +611,9 @@ class VaultViewModel(
             attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult
+            wallpaper = wallpaperResult,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 
@@ -595,9 +627,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.OneToOneSpace {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -622,7 +655,9 @@ class VaultViewModel(
             attachmentPreviews = previewData.attachmentPreviews,
             isOwner = isOwner,
             spaceNotificationState = space.spacePushNotificationMode,
-            wallpaper = wallpaperResult
+            wallpaper = wallpaperResult,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 
@@ -636,9 +671,10 @@ class VaultViewModel(
         permissions: Map<Id, SpaceMemberPermissions>,
         wallpapers: Map<Id, Wallpaper>,
         chatDetailsMap: Map<Id, ObjectWrapper.Basic>,
-        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>
+        participantsByIdentity: Map<Id, ObjectWrapper.SpaceMember>,
+        accountIdentity: Id?
     ): VaultSpaceView.DataSpaceWithChat {
-        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity)
+        val previewData = extractMessagePreviewData(chatPreview, participantsByIdentity, accountIdentity)
 
         val icon = space.spaceIcon(urlBuilder)
 
@@ -672,7 +708,9 @@ class VaultViewModel(
             ),
             wallpaper = wallpaperResult,
             spaceNotificationState = space.spacePushNotificationMode,
-            chatName = chatName
+            chatName = chatName,
+            isLastMessageOutgoing = previewData.isOutgoing,
+            isLastMessageSynced = previewData.isSynced
         )
     }
 
@@ -980,7 +1018,6 @@ class VaultViewModel(
 
     fun processPendingDeeplink() {
         viewModelScope.launch {
-            delay(1000) // Simulate some delay
             pendingIntentStore.getDeepLinkInvite()?.let { deeplink ->
                 Timber.d("Processing pending deeplink: $deeplink")
                 commands.emit(VaultCommand.Deeplink.Invite(deeplink))
@@ -1195,6 +1232,16 @@ class VaultViewModel(
         }
     }
 
+    fun onDeleteSpaceClicked(spaceId: Id, isOwner: Boolean) {
+        viewModelScope.launch {
+            if (isOwner) {
+                commands.emit(VaultCommand.ShowDeleteSpaceWarning(spaceId))
+            } else {
+                commands.emit(VaultCommand.ShowLeaveSpaceWarning(spaceId))
+            }
+        }
+    }
+
     fun onDeleteSpaceWarningCancelled() {
         viewModelScope.launch {
             analytics.sendEvent(
@@ -1392,8 +1439,18 @@ class VaultViewModel(
         Timber.d("proceedWithOneToOneChatInitiation")
         viewModelScope.launch {
             // First, check if a 1-1 chat already exists with this identity
-            findOneToOneChatByIdentity.async(
-                FindOneToOneChatByIdentity.Params(identity = identity)
+            // Using direct middleware search to find space even if it's deleted/left
+            val techSpace = configStorage.getOrNull()?.techSpace
+            if (techSpace == null) {
+                Timber.e("Tech space not available, creating new 1-1 space")
+                createOneToOneSpace(identity, metadataKey)
+                return@launch
+            }
+            searchOneToOneChatByIdentity.async(
+                SearchOneToOneChatByIdentity.Params(
+                    identity = identity,
+                    techSpace = SpaceId(techSpace)
+                )
             ).fold(
                 onSuccess = { existingChat ->
                     if (existingChat != null) {

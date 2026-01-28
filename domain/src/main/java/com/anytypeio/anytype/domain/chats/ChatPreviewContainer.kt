@@ -213,12 +213,27 @@ interface ChatPreviewContainer {
                 }
 
                 is Event.Command.Chats.Delete -> state.map { preview ->
-                    if (preview.chat == event.context && preview.message?.id == event.message) {
-                        // Remove deleted message from history and get previous message
+                    if (preview.chat == event.context) {
+                        // Always remove deleted message from history
                         val history = messageHistory[event.context]
                         history?.removeIf { it.id == event.message }
-                        val previousMessage = history?.lastOrNull()
-                        preview.copy(message = previousMessage)
+
+                        // Only update preview if the deleted message was the current one
+                        if (preview.message?.id == event.message) {
+                            val previousMessage = history?.lastOrNull()
+                            preview.copy(message = previousMessage)
+                        } else {
+                            preview
+                        }
+                    } else preview
+                }
+
+                is Event.Command.Chats.UpdateMessageSyncStatus -> state.map { preview ->
+                    val message = preview.message
+                    if (preview.chat == event.context &&
+                        message != null &&
+                        event.messages.contains(message.id)) {
+                        preview.copy(message = message.copy(synced = event.isSynced))
                     } else preview
                 }
 

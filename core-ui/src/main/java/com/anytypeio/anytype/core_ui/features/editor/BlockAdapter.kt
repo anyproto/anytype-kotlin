@@ -350,7 +350,7 @@ class BlockAdapter(
                                     val text = editable.toString()
                                     view.text = text
                                     onTitleBlockTextChanged(view.id, text)
-                                    onTitleTextChanged(text)
+                                    onTitleTextChanged(view, text)
                                 }
                             }
                         )
@@ -1505,7 +1505,6 @@ class BlockAdapter(
                 holder.apply {
                     bind(
                         item = blocks[position] as BlockView.Title.Todo,
-                        onPageIconClicked = onPageIconClicked,
                         onCoverClicked = onCoverClicked,
                         click = onClickListener
                     )

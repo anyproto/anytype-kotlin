@@ -121,7 +121,6 @@ class ObjectWrapperExtensionsKtTest {
 
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
-            objectTypes = listOf(),
             fieldParser,
             storeOfObjectTypes
         )
@@ -150,7 +149,6 @@ class ObjectWrapperExtensionsKtTest {
 
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
-            objectTypes = listOf(),
             fieldParser,
             storeOfObjectTypes
         )
@@ -180,7 +178,6 @@ class ObjectWrapperExtensionsKtTest {
 
         val result = listOf(obj).toViews(
             urlBuilder = urlBuilder,
-            objectTypes = listOf(),
             fieldParser = fieldParser,
             storeOfObjectTypes = storeOfObjectTypes
         )

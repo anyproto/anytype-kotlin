@@ -27,7 +27,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_utils.ext.runSafely
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.resources.StringResourceProvider

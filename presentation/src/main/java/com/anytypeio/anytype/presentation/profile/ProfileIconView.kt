@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.profile
 
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 
 sealed class ProfileIconView {
     object Loading : ProfileIconView()

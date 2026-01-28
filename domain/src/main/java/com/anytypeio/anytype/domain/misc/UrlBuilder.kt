@@ -1,43 +1,44 @@
 package com.anytypeio.anytype.domain.misc
 
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.config.Gateway
 
 /**
  * Helper class for building urls for files and images
  * @property gateway gateway data
  */
-class UrlBuilder(val gateway: Gateway) {
+class UrlBuilderImpl(val gateway: Gateway): UrlBuilder {
 
     /**
      * Builds large image url for given [path]
      */
-    fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
+    override fun large(path: String): Url = gateway.provide() + IMAGE_PATH + path + LARGE_WIDTH_PARAM
 
     /**
      * Builds original image url for given [path]
      */
-    fun original(path: String): Url = gateway.provide() + IMAGE_PATH + path
+    override fun original(path: String): Url = gateway.provide() + IMAGE_PATH + path
 
     /**
      * Builds small image url for given [path]
      */
-    fun thumbnail(path: String): Url = medium(path)
+    override fun thumbnail(path: String): Url = medium(path)
 
     /**
      * Builds medium image url for given [path]
      */
-    fun medium(path: String): Url = gateway.provide() + IMAGE_PATH + path + MEDIUM_WIDTH_PARAM
+    override fun medium(path: String): Url = gateway.provide() + IMAGE_PATH + path + MEDIUM_WIDTH_PARAM
 
     /**
      * Builds file url for given [path]
      */
-    fun file(path: String): Url = gateway.provide() + FILE_PATH + path
+    override fun file(path: String): Url = gateway.provide() + FILE_PATH + path
 
     /**
      * Builds video url for given [path]
      */
-    fun video(path: String): Url = gateway.provide() + FILE_PATH + path
+    override fun video(path: String): Url = gateway.provide() + FILE_PATH + path
 
     companion object {
         const val IMAGE_PATH = "/image/"

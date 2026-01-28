@@ -56,7 +56,6 @@ import com.anytypeio.anytype.core_ui.views.UxSmallTextRegular
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.types.UiSpaceTypeItem
 import com.anytypeio.anytype.presentation.types.UiSpaceTypesScreenState
 

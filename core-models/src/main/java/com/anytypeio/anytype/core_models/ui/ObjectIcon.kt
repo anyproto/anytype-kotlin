@@ -110,13 +110,3 @@ sealed class ObjectIcon {
 
     data class SimpleIcon(val rawValue: String, val color: Int) : ObjectIcon()
 }
-
-/**
- * Represents the visual icon for a space member.
- */
-sealed class SpaceMemberIconView {
-    data class Placeholder(val name: String) : SpaceMemberIconView()
-    data class Image(val url: String, val name: String) : SpaceMemberIconView()
-
-    companion object
-}

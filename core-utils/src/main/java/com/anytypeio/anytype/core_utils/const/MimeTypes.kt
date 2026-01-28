@@ -107,6 +107,7 @@ object MimeTypes {
         "application/pgp-keys"
     )
 
+    @Deprecated("Use MimeCategory instead")
     enum class Category {
         IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION
     }

@@ -23,7 +23,6 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Deleted.DEFAULT_DELETED_ICON
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 @Composable
 fun TypeIconView(

@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubFile
 import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.domain.debugging.Logger

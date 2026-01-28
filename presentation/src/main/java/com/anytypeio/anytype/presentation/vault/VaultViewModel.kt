@@ -19,7 +19,6 @@ import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -30,7 +29,11 @@ import com.anytypeio.anytype.domain.deeplink.PendingIntentStore
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.AttachmentType
+import com.anytypeio.anytype.core_models.ui.MimeCategory
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
@@ -60,8 +63,6 @@ import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.FileDefault
 import com.anytypeio.anytype.presentation.profile.AccountProfile
 import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.spaces.spaceIcon
@@ -420,7 +421,7 @@ class VaultViewModel(
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
         dependency: ObjectWrapper.Basic?
-    ): VaultSpaceView.AttachmentPreview {
+    ): AttachmentPreview {
         Timber.d("mapToAttachmentPreview, attachment: $attachment, dependency: $dependency")
         
         // Check if we have a valid dependency with ID
@@ -439,18 +440,18 @@ class VaultViewModel(
         
         // Helper to pick the preview‐type enum based on effective type
         val previewType = when (effectiveType) {
-            Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
-            Chat.Message.Attachment.Type.File -> VaultSpaceView.AttachmentType.FILE
-            Chat.Message.Attachment.Type.Link -> VaultSpaceView.AttachmentType.LINK
+            Chat.Message.Attachment.Type.Image -> AttachmentType.IMAGE
+            Chat.Message.Attachment.Type.File -> AttachmentType.FILE
+            Chat.Message.Attachment.Type.Link -> AttachmentType.LINK
         }
 
         // Helper to produce the "default" fallback icon when dependency is missing or invalid
         fun defaultIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
             Chat.Message.Attachment.Type.Image ->
-                FileDefault(mime = MimeTypes.Category.IMAGE)
+                ObjectIcon.FileDefault(mime = MimeCategory.IMAGE)
 
             Chat.Message.Attachment.Type.File ->
-                FileDefault(mime = MimeTypes.Category.OTHER)
+                ObjectIcon.FileDefault(mime = MimeCategory.OTHER)
 
             Chat.Message.Attachment.Type.Link ->
                 ObjectIcon.TypeIcon.Default.DEFAULT
@@ -497,7 +498,7 @@ class VaultViewModel(
             fieldParser.getObjectName(objectWrapper = dependency)
         } else null
 
-        return VaultSpaceView.AttachmentPreview(
+        return AttachmentPreview(
             type = previewType,
             objectIcon = icon,
             title = title
@@ -513,7 +514,7 @@ class VaultViewModel(
         val creatorName: String?,
         val messageText: String?,
         val messageTime: String?,
-        val attachmentPreviews: List<VaultSpaceView.AttachmentPreview>,
+        val attachmentPreviews: List<AttachmentPreview>,
         val isOutgoing: Boolean,
         val isSynced: Boolean
     )

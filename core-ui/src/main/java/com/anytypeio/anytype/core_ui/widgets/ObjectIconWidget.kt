@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import coil3.load
 import coil3.request.CachePolicy
 import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.*

@@ -2,12 +2,10 @@ package com.anytypeio.anytype.presentation.mapper
 
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.Basic
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.Fallback.Companion.DEFAULT_FALLBACK_ICON
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.Fallback.Companion.DEFAULT_FALLBACK_ICON
 
 fun ObjectWrapper.Basic.objectIcon(
     builder: UrlBuilder,
@@ -36,12 +34,12 @@ fun ObjectWrapper.Basic.objectIcon(
         ObjectType.Layout.COLLECTION -> {
             val fallback = objType?.objectFallbackIcon() ?: ObjectIcon.TypeIcon.Fallback.DEFAULT
             when {
-                !objImage.isNullOrBlank() -> Basic.Image(
+                !objImage.isNullOrBlank() -> ObjectIcon.Basic.Image(
                     hash = builder.thumbnail(objImage),
                     fallback = fallback
                 )
 
-                !objEmoji.isNullOrBlank() -> Basic.Emoji(
+                !objEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(
                     unicode = objEmoji,
                     fallback = fallback
                 )
@@ -89,7 +87,7 @@ fun ObjectWrapper.Basic.objectIcon(
             }
         }
         ObjectType.Layout.CHAT_DERIVED -> {
-            val fallback = objType?.objectFallbackIcon(isCircleShape = true) ?: Fallback(
+            val fallback = objType?.objectFallbackIcon(isCircleShape = true) ?: ObjectIcon.TypeIcon.Fallback(
                 rawValue = DEFAULT_FALLBACK_ICON,
                 isCircleShape = true
             )
@@ -98,7 +96,7 @@ fun ObjectWrapper.Basic.objectIcon(
                     hash = builder.thumbnail(objImage),
                     name = objName
                 )
-                !objEmoji.isNullOrBlank() -> Basic.Emoji(
+                !objEmoji.isNullOrBlank() -> ObjectIcon.Basic.Emoji(
                     unicode = objEmoji,
                     fallback = fallback,
                     circleShape = true

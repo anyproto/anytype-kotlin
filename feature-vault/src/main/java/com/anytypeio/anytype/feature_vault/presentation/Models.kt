@@ -5,7 +5,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 
@@ -85,16 +85,6 @@ sealed class VaultSpaceView {
         val isLastMessageOutgoing: Boolean = false,
         val isLastMessageSynced: Boolean = true
     ) : VaultSpaceView()
-
-    data class AttachmentPreview(
-        val type: AttachmentType,
-        val objectIcon: ObjectIcon,
-        val title: String? = null
-    )
-
-    enum class AttachmentType {
-        IMAGE, FILE, LINK
-    }
 }
 
 sealed class VaultUiState {

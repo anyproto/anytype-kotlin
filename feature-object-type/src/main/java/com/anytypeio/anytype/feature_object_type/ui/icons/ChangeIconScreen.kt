@@ -55,7 +55,6 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.custom_icons.CustomIcons
 import com.anytypeio.anytype.feature_object_type.R
 import com.anytypeio.anytype.feature_object_type.ui.icons.ChangeIconScreenConst.secondRowColors
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

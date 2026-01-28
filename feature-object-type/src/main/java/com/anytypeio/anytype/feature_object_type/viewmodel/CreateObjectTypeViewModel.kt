@@ -16,7 +16,6 @@ import com.anytypeio.anytype.feature_object_type.ui.create.UiTypeSetupTitleAndIc
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeCommand.NavigateToObjectType
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow

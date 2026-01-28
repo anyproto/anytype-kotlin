@@ -2814,26 +2814,17 @@ class ObjectSetViewModel(
      * Used when viewer's type is deleted or not available.
      */
     private suspend fun getSpaceDefaultType(): ObjectWrapper.Type? {
-        val result = getDefaultObjectType.async(vmParams.space)
-        return when (result) {
-            is Result.Success<*> -> {
-                @Suppress("UNCHECKED_CAST")
-                val response = result.data as GetDefaultObjectType.Response
-                storeOfObjectTypes.get(response.id.id)
-            }
-
-            is Result.Failure<*> -> {
-                Timber.e("Failed to get space default type: ${result.error}")
-                // Fall back to hardcoded PAGE type
-                storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
-            }
-
-            else -> {
-                // Shouldn't happen, but handle gracefully
-                Timber.w("Unexpected result type when getting space default type")
-                storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
-            }
+        val typeKey = getDefaultObjectType.async(vmParams.space).getOrNull()?.type
+        if (typeKey == null) {
+            Timber.w("Space default type key is null, falling back to VIEW_DEFAULT_OBJECT_TYPE type")
+            return storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
         }
+        val typeObject = storeOfObjectTypes.getByKey(typeKey.key)
+        if (typeObject == null) {
+            Timber.w("Space default type not found in store, falling back to VIEW_DEFAULT_OBJECT_TYPE type")
+            return storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
+        }
+        return typeObject
     }
 
     /**

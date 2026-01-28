@@ -2,11 +2,12 @@ package com.anytypeio.anytype.feature_vault.presentation
 
 import app.cash.turbine.test
 import app.cash.turbine.turbineScope
-import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.StubSpaceView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.stubChatPreview
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
@@ -16,8 +17,6 @@ import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.feature_vault.util.DefaultCoroutineTestRule
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow

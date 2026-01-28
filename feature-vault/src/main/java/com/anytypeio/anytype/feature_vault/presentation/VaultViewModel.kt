@@ -26,6 +26,8 @@ import com.anytypeio.anytype.core_models.ui.AttachmentPreview
 import com.anytypeio.anytype.core_models.ui.computeWallpaperResult
 import com.anytypeio.anytype.core_models.ui.profileIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
@@ -59,8 +61,6 @@ import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow

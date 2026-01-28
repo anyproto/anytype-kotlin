@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.notifications
+package com.anytypeio.anytype.core_utils.notifications
 
 import android.Manifest
 import android.content.Context
@@ -6,7 +6,6 @@ import android.content.SharedPreferences
 import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.NotificationManagerCompat
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl.PermissionState
 import javax.inject.Inject
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,7 +18,7 @@ interface NotificationPermissionManager {
     fun onPermissionGranted()
     fun onPermissionDenied()
     fun onPermissionDismissed()
-    fun permissionState(): Flow<PermissionState>
+    fun permissionState(): Flow<NotificationPermissionManagerImpl.PermissionState>
     fun refreshPermissionState()
     fun areNotificationsEnabled(): Boolean
 }
@@ -43,7 +42,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
 
         // Check if user has ever been shown the dialog before
         val hasBeenShown = sharedPreferences.getBoolean(KEY_DIALOG_SHOWN, false)
-        
+
         // Check if user has dismissed the dialog before
         val hasBeenDismissed = sharedPreferences.getBoolean(KEY_DIALOG_DISMISSED, false)
 
@@ -108,7 +107,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
 
             true
         } catch (e: Exception) {
-            Timber.w(e, "Error checking notification permissions")
+            Timber.Forest.w(e, "Error checking notification permissions")
             // If we can't determine the state safely, assume notifications are disabled
             // This prevents crashes when the app is in an unstable state
             false
@@ -132,7 +131,7 @@ class NotificationPermissionManagerImpl @Inject constructor(
                 else -> PermissionState.Denied
             }
         } catch (e: Exception) {
-            Timber.w(e, "Error refreshing notification permission state")
+            Timber.Forest.w(e, "Error refreshing notification permission state")
             _permissionState.value = PermissionState.Denied
         }
     }
@@ -149,4 +148,4 @@ class NotificationPermissionManagerImpl @Inject constructor(
         private const val KEY_DIALOG_DISMISSED = "notification_permission_dialog_dismissed"
         private const val KEY_PERMISSION_GRANTED = "notification_permission_granted"
     }
-} 
+}

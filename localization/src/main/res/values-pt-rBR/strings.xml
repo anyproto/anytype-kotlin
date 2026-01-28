@@ -555,6 +555,7 @@
     <string name="blank">Em branco</string>
     <string name="templates_menu_default_for_view">Padrão para esta exibição</string>
     <string name="templates_menu_edit">Editar modelo</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Duplicar</string>
     <string name="templates_menu_delete">Excluir</string>
     <string name="unsupported">Incompatível</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Carregue uma imagem</string>
     <string name="tab_gallery">Galeria</string>
     <string name="change_type">Alterar tipo</string>
+    <string name="default_type_screen_title">Escolher tipo de objeto padrão</string>
     <string name="change_cover">Alterar capa</string>
     <string name="remove">Remover</string>
     <string name="choose_options">Escolha as opções</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Você tem certeza que deseja excluir %1$d objetos?</string>
     <string name="delete_irrevocably">Esses objetos serão excluídos permanentemente. Você não pode desfazer esta ação.</string>
     <string name="delete_irrevocably_one_object">Esse objeto será excluído permanentemente. Você não pode desfazer esta ação.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Selecionar todos</string>
+    <string name="move_type_to_bin_to_bin">Move to Bin</string>
     <string name="shared">Compartilhado</string>
     <string name="object_not_exist">Esse objeto não existe</string>
     <string name="back_to_dashboard">Voltar ao painel</string>
@@ -835,6 +843,9 @@
     <string name="exiting_please_wait">Saindo... por favor aguarde</string>
     <string name="loading_please_wait">Carregando... aguarde por favor.</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Abrir</string>
     <string name="personal">Padrão</string>
     <string name="create_space">Criar espaço</string>
     <string name="create_chat">Criar conversa</string>
@@ -1985,6 +1996,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
@@ -2093,4 +2105,5 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Salvar</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

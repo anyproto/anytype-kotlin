@@ -555,6 +555,7 @@
     <string name="blank">Vide</string>
     <string name="templates_menu_default_for_view">Default for this view</string>
     <string name="templates_menu_edit">Modifier le modèle</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">Dupliquer</string>
     <string name="templates_menu_delete">Supprimer</string>
     <string name="unsupported">Non pris en charge</string>
@@ -710,6 +711,7 @@
     <string name="tab_upload_image">Upload image</string>
     <string name="tab_gallery">Galerie</string>
     <string name="change_type">Changer le type</string>
+    <string name="default_type_screen_title">Choisir le type d\'objet par défaut</string>
     <string name="change_cover">Modifier l\'image de couverture</string>
     <string name="remove">Supprimer</string>
     <string name="choose_options">Choose options</string>
@@ -749,6 +751,12 @@
     <string name="are_you_sure_delete_n_objects">Are you sure you want to delete %1$d objects?</string>
     <string name="delete_irrevocably">These objects will be deleted irrevocably. You can\'t undo this action.</string>
     <string name="delete_irrevocably_one_object">This object will be deleted irrevocably. You can\'t undo this action.</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">Tout sélectionner</string>
+    <string name="move_type_to_bin_to_bin">Déplacer vers la corbeille</string>
     <string name="shared">Partagé</string>
     <string name="object_not_exist">Cet objet n\'existe pas</string>
     <string name="back_to_dashboard">Back to dashboard</string>
@@ -835,6 +843,9 @@
     <string name="exiting_please_wait">Fermeture en cours... Veuillez patienter</string>
     <string name="loading_please_wait">Chargement en cours... veuillez patienter</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">Ouvrir</string>
     <string name="personal">Default</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
@@ -1985,6 +1996,7 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="notification_settings_state_disabled">Désactivé</string>
     <string name="notification_settings_state_enabled">Activé</string>
     <string name="content_desc_muted">En sourdine</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
@@ -2093,4 +2105,5 @@ Merci de décrire ici vos besoins spécifiques.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Sauvegarder</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

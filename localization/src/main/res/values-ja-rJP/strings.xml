@@ -554,6 +554,7 @@
     <string name="blank">なし</string>
     <string name="templates_menu_default_for_view">このビューのデフォルト</string>
     <string name="templates_menu_edit">テンプレートを編集</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">複製</string>
     <string name="templates_menu_delete">削除</string>
     <string name="unsupported">未対応</string>
@@ -709,6 +710,7 @@
     <string name="tab_upload_image">画像をアップロード</string>
     <string name="tab_gallery">ギャラリー</string>
     <string name="change_type">タイプを変更</string>
+    <string name="default_type_screen_title">デフォルトのタイプを選択</string>
     <string name="change_cover">カバー画像を変更</string>
     <string name="remove">削除</string>
     <string name="choose_options">オプションを選択</string>
@@ -748,6 +750,12 @@
     <string name="are_you_sure_delete_n_objects">本当に%1$d個のオブジェクトを削除してもよろしいですか？</string>
     <string name="delete_irrevocably">これらのオブジェクトは完全に削除されます。この操作は取り消せません。</string>
     <string name="delete_irrevocably_one_object">このオブジェクトは完全に削除されます。この操作は取り消せません。</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">すべて選択</string>
+    <string name="move_type_to_bin_to_bin">ゴミ箱に移動</string>
     <string name="shared">共有済み</string>
     <string name="object_not_exist">このオブジェクトは存在しません</string>
     <string name="back_to_dashboard">ダッシュボードへ戻る</string>
@@ -833,6 +841,9 @@
     <string name="exiting_please_wait">終了中です。少々お待ち下さい…</string>
     <string name="loading_please_wait">読み込み中です。少々お待ち下さい…</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">開く</string>
     <string name="personal">デフォルト</string>
     <string name="create_space">スペースを作成</string>
     <string name="create_chat">チャットを作成</string>
@@ -1976,6 +1987,7 @@
     <string name="notification_settings_state_disabled">無効</string>
     <string name="notification_settings_state_enabled">有効</string>
     <string name="content_desc_muted">ミュート</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">画像を読み込めませんでした</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">QRコードで参加</string>
@@ -2083,4 +2095,5 @@
     <string name="clear_selection">Clear selection</string>
     <string name="save">保存</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

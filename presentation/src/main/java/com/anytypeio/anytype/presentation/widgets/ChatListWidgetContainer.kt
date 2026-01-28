@@ -30,7 +30,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.extension.resolveParticipantName
+import com.anytypeio.anytype.presentation.objects.resolveParticipantName
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.core_models.ui.ObjectIcon

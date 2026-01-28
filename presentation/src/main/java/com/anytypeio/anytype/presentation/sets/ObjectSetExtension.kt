@@ -479,6 +479,15 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     }
 }
 
+/**
+ * Resolves the object type and template for the active viewer.
+ *
+ * @param activeView The viewer to resolve type/template for
+ * @param storeOfObjectTypes Store to look up type information
+ * @param onDeletedTypeDetected Callback invoked (asynchronously) when the viewer references
+ *                              a deleted type ID. Use this to trigger cleanup of the viewer.
+ * @return Pair of (ObjectType, TemplateId) or (null, null) if type is deleted/not found
+ */
 suspend fun resolveTypeAndActiveViewTemplate(
     activeView: DVViewer,
     storeOfObjectTypes: StoreOfObjectTypes,

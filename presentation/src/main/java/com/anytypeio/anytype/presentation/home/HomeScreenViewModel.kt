@@ -26,7 +26,6 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -35,6 +34,7 @@ import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -3664,106 +3664,6 @@ fun ObjectWrapper.Type.navigation(
         target = id,
         space = spaceId
     )
-}
-
-/**
- * @param [attachmentTarget] optional target, to which the object will be attached
- */
-fun ObjectWrapper.Basic.navigation(
-    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
-    openBookmarkAsObject: Boolean = false,
-) : OpenObjectNavigation {
-    if (!isValid) return OpenObjectNavigation.NonValidObject
-    return when (layout) {
-        ObjectType.Layout.BOOKMARK -> {
-            if (openBookmarkAsObject) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                val url = getValue<String>(Relations.SOURCE)
-                if (url.isNullOrEmpty()) {
-                    OpenObjectNavigation.OpenEditor(
-                        target = id,
-                        space = requireNotNull(spaceId),
-                        effect = effect
-                    )
-                } else {
-                    OpenObjectNavigation.OpenBookmarkUrl(url)
-                }
-            }
-        }
-        ObjectType.Layout.BASIC,
-        ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.PROFILE -> {
-            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
-            if (identityLink.isNullOrEmpty()) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                OpenObjectNavigation.OpenEditor(
-                    target = identityLink,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            }
-        }
-        ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.CHAT,
-        ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenChat(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDateObject(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenParticipant(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.OBJECT_TYPE -> {
-            OpenObjectNavigation.OpenType(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        else -> {
-            OpenObjectNavigation.UnexpectedLayoutError(layout)
-        }
-    }
 }
 
 data class HomeScreenVmParams(val spaceId: SpaceId)

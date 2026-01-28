@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.TimeInSeconds
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TimestampInSeconds
@@ -46,7 +47,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEve
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectListSort
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsScreenDate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSwitchRelationDate
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.UiObjectsListItem
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams

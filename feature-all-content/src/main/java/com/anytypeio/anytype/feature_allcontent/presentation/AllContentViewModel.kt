@@ -13,6 +13,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -60,7 +61,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScree
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentSearchInput
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort

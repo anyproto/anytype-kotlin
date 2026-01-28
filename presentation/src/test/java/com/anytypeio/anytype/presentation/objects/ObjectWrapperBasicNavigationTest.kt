@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 import org.junit.Test

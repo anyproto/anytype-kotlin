@@ -22,6 +22,7 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
@@ -78,7 +79,6 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite

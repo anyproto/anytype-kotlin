@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_models.ext.title
 import com.anytypeio.anytype.core_models.ext.toObject
 import com.anytypeio.anytype.core_models.ext.updateTextContent
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
@@ -254,7 +255,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsSetTitleEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsStyleMenuEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsUpdateTextMarkupEvent
 import com.anytypeio.anytype.presentation.extension.sendHideKeyboardEvent
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.mark
 import com.anytypeio.anytype.presentation.mapper.style
 import com.anytypeio.anytype.presentation.navigation.AppNavigation

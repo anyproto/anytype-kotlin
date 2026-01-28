@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
@@ -47,7 +48,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterSearchObjects
 import javax.inject.Inject

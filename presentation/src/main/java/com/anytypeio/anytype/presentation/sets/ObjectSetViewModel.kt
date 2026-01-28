@@ -9,6 +9,7 @@ import com.anytypeio.anytype.analytics.base.EventsPropertiesKey
 import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.Props.Companion.OBJ_TYPE_CUSTOM
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerCardSize
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -19,6 +20,7 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
@@ -27,6 +29,7 @@ import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.permissions.layoutsSupportsEmojiAndImages
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
@@ -36,8 +39,8 @@ import com.anytypeio.anytype.core_utils.common.EventWrapper
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.base.Result
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.collections.RemoveObjectFromCollection
 import com.anytypeio.anytype.domain.cover.SetDocCoverImage
@@ -46,9 +49,10 @@ import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.error.Error
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.event.interactor.SpaceSyncAndP2PStatusProvider
+import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -58,6 +62,7 @@ import com.anytypeio.anytype.domain.objects.ObjectStore
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -68,6 +73,8 @@ import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
 import com.anytypeio.anytype.domain.templates.CreateTemplate
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -81,11 +88,13 @@ import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Companion.HOME_SCREEN_PROFILE_OBJECT_SUBSCRIPTION
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toTemplateObjectTypeViewItems
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.SupportNavigation
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.hasLayoutConflict
@@ -98,10 +107,10 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.sets.state.ObjectStateReducer
 import com.anytypeio.anytype.presentation.sets.subscription.DataViewSubscription
 import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription.Companion.getDataViewSubscriptionId
@@ -130,6 +139,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -137,6 +147,7 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.consumeAsFlow
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emptyFlow
+import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.firstOrNull
@@ -144,9 +155,11 @@ import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapLatest
 import kotlinx.coroutines.flow.onEach
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
+@OptIn(ExperimentalCoroutinesApi::class)
 class ObjectSetViewModel(
     private val vmParams: Params,
     private val permissions: UserPermissionProvider,
@@ -157,6 +170,7 @@ class ObjectSetViewModel(
     private val downloadUnsplashImage: DownloadUnsplashImage,
     private val setDocCoverImage: SetDocCoverImage,
     private val updateText: UpdateText,
+    private val createBlock: CreateBlock,
     private val interceptEvents: InterceptEvents,
     private val dispatcher: Dispatcher<Payload>,
     private val delegator: Delegator<Action>,
@@ -177,7 +191,6 @@ class ObjectSetViewModel(
     private val removeObjectFromCollection: RemoveObjectFromCollection,
     private val objectToCollection: ConvertObjectToCollection,
     private val storeOfObjectTypes: StoreOfObjectTypes,
-    private val getObjectTypes: GetObjectTypes,
     private val duplicateObjects: DuplicateObjects,
     private val templatesContainer: ObjectTypeTemplatesContainer,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -190,7 +203,10 @@ class ObjectSetViewModel(
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val deepLinkResolver: DeepLinkResolver,
-    private val setDataViewProperties: SetDataViewProperties
+    private val setDataViewProperties: SetDataViewProperties,
+    private val emojiProvider: EmojiProvider,
+    private val emojiSuggester: EmojiSuggester,
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -246,6 +262,21 @@ class ObjectSetViewModel(
 
 
     private val pendingScrollToObject = MutableStateFlow<Id?>(null)
+
+    /**
+     * State for the Set Object Name bottom sheet.
+     */
+    data class SetObjectNameState(
+        val isVisible: Boolean = false,
+        val targetObjectId: Id? = null,
+        val currentIcon: ObjectIcon = ObjectIcon.None,
+        val inputText: String = "",
+        val isIconChangeAllowed: Boolean = false,
+        val targetBlockId: Id? = null  // For Note objects, stores the blockId
+    )
+
+    private val _setObjectNameState = MutableStateFlow(SetObjectNameState())
+    val setObjectNameState: StateFlow<SetObjectNameState> = _setObjectNameState.asStateFlow()
 
     val navPanelState = permission.map { permission ->
         NavPanelState.fromPermission(
@@ -399,6 +430,28 @@ class ObjectSetViewModel(
                     }
                 }
             }.collect()
+        }
+
+        // Observe icon changes for SetObjectNameBottomSheet
+        viewModelScope.launch {
+            _setObjectNameState
+                .filter { it.isVisible && it.targetObjectId != null }
+                .flatMapLatest { sheetState ->
+                    database.observe(sheetState.targetObjectId!!)
+                        .map { obj ->
+                            obj.objectIcon(
+                                builder = urlBuilder,
+                                objType = storeOfObjectTypes.getTypeOfObject(obj)
+                            )
+                        }
+                }
+                .distinctUntilChanged()
+                .catch {
+                    Timber.w(it, "Error while observing object icon")
+                }
+                .collect { icon ->
+                    _setObjectNameState.update { it.copy(currentIcon = icon) }
+                }
         }
 
         subscribeToSelectedType()
@@ -1396,16 +1449,40 @@ class ObjectSetViewModel(
                 return
             }
 
-            val (defaultObjectType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
+            // Get dataview block ID for cleanup
+            val dvBlock = currentState.dataViewBlock.id
+
+            val (resolvedType, defaultTemplate) = currentState.getActiveViewTypeAndTemplate(
                 ctx = vmParams.ctx,
                 activeView = viewer,
-                storeOfObjectTypes = storeOfObjectTypes
+                storeOfObjectTypes = storeOfObjectTypes,
+                onDeletedTypeDetected = { deletedViewer ->
+                    // Cleanup deleted type in viewer (fire-and-forget)
+                    cleanupDeletedTypeInViewer(
+                        ctx = vmParams.ctx,
+                        dv = dvBlock,
+                        viewer = deletedViewer
+                    )
+                }
             )
 
-            val objectTypeUniqueKey = defaultObjectType?.uniqueKey
+            // Resolve type and template with fallback handling
+            val (defaultObjectType, resolvedTemplate) = resolveTypeAndTemplateWithFallback(
+                resolvedType = resolvedType,
+                defaultTemplate = defaultTemplate,
+                userChosenTemplate = templateChosenBy
+            )
+
+            if (defaultObjectType == null) {
+                toast("Unable to create object: default type not found. Please try again or contact support.")
+                Timber.e("Both resolved type and space default type are null")
+                return
+            }
+
+            val objectTypeUniqueKey = defaultObjectType.uniqueKey
 
             val sourceId = setObject?.setOf?.singleOrNull()
-            if (sourceId == null || objectTypeUniqueKey == null) {
+            if (sourceId == null) {
                 toast("Unable to define a source for a new object.")
             } else {
                 val wrapper = currentState.details.getObject(sourceId)
@@ -1426,7 +1503,7 @@ class ObjectSetViewModel(
                                         )
                                 )
                             } else {
-                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val validTemplateId = resolvedTemplate
                                 val prefilled = viewer.prefillNewObjectDetails(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider
@@ -1450,7 +1527,7 @@ class ObjectSetViewModel(
                                     )
                                 )
                             } else {
-                                val validTemplateId = templateChosenBy ?: defaultTemplate
+                                val validTemplateId = resolvedTemplate
                                 val prefilled = viewer.resolveSetByRelationPrefilledObjectData(
                                     storeOfRelations = storeOfRelations,
                                     dateProvider = dateProvider,
@@ -1519,10 +1596,28 @@ class ObjectSetViewModel(
         val state = stateReducer.state.value.dataViewState() ?: return
         val viewer = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
 
-        val (defaultObjectType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
+        // Get dataview block ID for cleanup
+        val dvBlock = state.dataViewBlock.id
+
+        val (resolvedType, defaultTemplate) = state.getActiveViewTypeAndTemplate(
             ctx = vmParams.ctx,
             activeView = viewer,
-            storeOfObjectTypes = storeOfObjectTypes
+            storeOfObjectTypes = storeOfObjectTypes,
+            onDeletedTypeDetected = { deletedViewer ->
+                // Cleanup deleted type in viewer (fire-and-forget)
+                cleanupDeletedTypeInViewer(
+                    ctx = vmParams.ctx,
+                    dv = dvBlock,
+                    viewer = deletedViewer
+                )
+            }
+        )
+
+        // Resolve type and template with fallback handling
+        val (defaultObjectType, resolvedTemplate) = resolveTypeAndTemplateWithFallback(
+            resolvedType = resolvedType,
+            defaultTemplate = defaultTemplate,
+            userChosenTemplate = templateChosenBy
         )
 
         val defaultObjectTypeUniqueKey = defaultObjectType?.uniqueKey?.let {
@@ -1534,7 +1629,7 @@ class ObjectSetViewModel(
             return
         }
 
-        val validTemplateId = templateChosenBy ?: defaultTemplate
+        val validTemplateId = resolvedTemplate
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider
@@ -1594,26 +1689,25 @@ class ObjectSetViewModel(
     ) {
         val obj = ObjectWrapper.Basic(response.struct.orEmpty())
         when (obj.layout) {
-            ObjectType.Layout.NOTE -> {
-                proceedWithOpeningObject(
-                    target = response.objectId,
-                    layout = obj.layout,
-                    space = vmParams.space.id
-                )
-            }
             ObjectType.Layout.CHAT_DERIVED -> {
                 proceedWithOpeningChat(
                     target = obj.id,
                     space = vmParams.space.id
                 )
             }
+            ObjectType.Layout.NOTE -> {
+                proceedWithCreatingNoteObject(obj = obj)
+            }
             else -> {
-                dispatch(
-                    ObjectSetCommand.Modal.SetNameForCreatedObject(
-                        ctx = vmParams.ctx,
-                        target = response.objectId,
-                        space = vmParams.space.id
-                    )
+                val isIconChangeAllowed = obj.layout in layoutsSupportsEmojiAndImages
+                val icon = obj.objectIcon(
+                    builder = urlBuilder,
+                    objType = storeOfObjectTypes.getTypeOfObject(obj)
+                )
+                showSetObjectNameSheet(
+                    objectId = response.objectId,
+                    icon = icon,
+                    isIconChangeAllowed = isIconChangeAllowed
                 )
             }
         }
@@ -1825,6 +1919,47 @@ class ObjectSetViewModel(
             onFailure = {
                 Timber.e(it, "Error while closing object set: ${vmParams.ctx}")
                 navigate(EventWrapper(navigateCommand))
+            }
+        )
+    }
+
+    /**
+     * Handles creation flow for Note objects by creating the first text block.
+     * Note objects don't have titles - content goes directly into text blocks.
+     */
+    private suspend fun proceedWithCreatingNoteObject(obj: ObjectWrapper.Basic) {
+        val icon = obj.objectIcon(
+            builder = urlBuilder,
+            objType = storeOfObjectTypes.getTypeOfObject(obj)
+        )
+        createBlock.async(
+            CreateBlock.Params(
+                context = obj.id,
+                target = "header",
+                position = Position.BOTTOM,
+                prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+            )
+        ).fold(
+            onFailure = { error ->
+                Timber.e(error, "Error creating text block for Note object")
+                // Fallback: show sheet without blockId
+                showSetObjectNameSheet(
+                    objectId = obj.id,
+                    icon = icon,
+                    isIconChangeAllowed = false
+                )
+            },
+            onSuccess = { (blockId, payload) ->
+                // Update local state with payload
+                dispatcher.send(payload)
+
+                // Show name sheet with blockId
+                showSetObjectNameSheet(
+                    objectId = obj.id,
+                    icon = icon,
+                    isIconChangeAllowed = false,
+                    targetBlockId = blockId
+                )
             }
         )
     }
@@ -2112,7 +2247,10 @@ class ObjectSetViewModel(
         viewModelScope.sendEvent(
             analytics = analytics,
             eventName = EventsDictionary.searchScreenShow,
-            props = Props(mapOf(EventsPropertiesKey.route to EventsDictionary.Routes.navigation))
+            props = Props(mapOf(
+                EventsPropertiesKey.route to EventsDictionary.Routes.navigation,
+                EventsPropertiesKey.spaceId to vmParams.space.id
+            ))
         )
         viewModelScope.launch {
             dispatch(
@@ -2390,10 +2528,35 @@ class ObjectSetViewModel(
         viewModelScope.launch {
             val dataView = stateReducer.state.value.dataViewState() ?: return@launch
             val viewer = getViewer(dataView) ?: return@launch
-            val (type, _) = dataView.getActiveViewTypeAndTemplate(vmParams.ctx, viewer, storeOfObjectTypes)
-            if (type == null) return@launch
+
+            // Get dataview block ID for cleanup
+            val dvBlock = when (dataView) {
+                is ObjectState.DataView -> dataView.dataViewBlock.id
+                else -> null
+            }
+
+            val (type, _) = dataView.getActiveViewTypeAndTemplate(
+                ctx = vmParams.ctx,
+                activeView = viewer,
+                storeOfObjectTypes = storeOfObjectTypes,
+                onDeletedTypeDetected = { deletedViewer ->
+                    // Cleanup deleted type in viewer (fire-and-forget)
+                    if (dvBlock != null) {
+                        cleanupDeletedTypeInViewer(
+                            ctx = vmParams.ctx,
+                            dv = dvBlock,
+                            viewer = deletedViewer
+                        )
+                    }
+                }
+            )
+
+            // If type is null due to deleted type, use space default
+            val effectiveType = type ?: getSpaceDefaultType()
+            if (effectiveType == null) return@launch
+
             typeTemplatesWidgetState.value = createState(viewer)
-            selectedTypeFlow.value = type
+            selectedTypeFlow.value = effectiveType
         }
         logEvent(ObjectStateAnalyticsEvent.SHOW_TEMPLATES)
         logEvent(ObjectStateAnalyticsEvent.SCREEN_TYPE_TEMPLATE_SELECTOR)
@@ -2520,17 +2683,40 @@ class ObjectSetViewModel(
                     val dataView = state.dataViewState() ?: return@map emptyList<TemplateView>()
                     val viewer = dataView.viewerById(viewerId) ?: return@map emptyList<TemplateView>()
                     val selectedTypeId = selectedTypeFlow.value?.id ?: return@map emptyList<TemplateView>()
+
+                    // Get dataview block ID for cleanup
+                    val dvBlock = when (dataView) {
+                        is ObjectState.DataView -> dataView.dataViewBlock.id
+                        else -> null
+                    }
+
                     val (type, template) = dataView.getActiveViewTypeAndTemplate(
-                        vmParams.ctx,
-                        viewer,
-                        storeOfObjectTypes
+                        ctx = vmParams.ctx,
+                        activeView = viewer,
+                        storeOfObjectTypes = storeOfObjectTypes,
+                        onDeletedTypeDetected = { deletedViewer ->
+                            // Cleanup deleted type in viewer (fire-and-forget)
+                            if (dvBlock != null) {
+                                cleanupDeletedTypeInViewer(
+                                    ctx = vmParams.ctx,
+                                    dv = dvBlock,
+                                    viewer = deletedViewer
+                                )
+                            }
+                        }
                     )
+
+                    // If type is null due to deleted type, use space default
+                    val effectiveType = type ?: getSpaceDefaultType()
+
                     when (typeTemplatesWidgetState.value) {
                         is TypeTemplatesWidgetUI.Data -> {
-                            if (type?.id == selectedTypeFlow.value?.id) {
+                            if (effectiveType?.id == selectedTypeFlow.value?.id) {
                                 processTemplates(
                                     templates = templates,
-                                    viewerDefType = type ?: storeOfObjectTypes.get(selectedTypeId),
+                                    viewerDefType = effectiveType ?: storeOfObjectTypes.get(
+                                        selectedTypeId
+                                    ),
                                     viewerDefTemplate = template
                                         ?: selectedTypeFlow.value?.defaultTemplateId
                                 )
@@ -2632,6 +2818,110 @@ class ObjectSetViewModel(
         onTypeTemplatesWidgetAction(action = TypeTemplatesWidgetUIAction.TemplateClick(templateView))
     }
 
+    /**
+     * Gets the space's default object type with fallback to PAGE type.
+     * Used when viewer's type is deleted or not available.
+     */
+    private suspend fun getSpaceDefaultType(): ObjectWrapper.Type? {
+        val typeKey = getDefaultObjectType.async(vmParams.space).getOrNull()?.type
+        if (typeKey == null) {
+            Timber.w("Space default type key is null, falling back to VIEW_DEFAULT_OBJECT_TYPE type")
+            return storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
+        }
+        val typeObject = storeOfObjectTypes.getByKey(typeKey.key)
+        if (typeObject == null) {
+            Timber.w("Space default type not found in store, falling back to VIEW_DEFAULT_OBJECT_TYPE type")
+            return storeOfObjectTypes.get(VIEW_DEFAULT_OBJECT_TYPE)
+        }
+        return typeObject
+    }
+
+    /**
+     * Resolves type and template with fallback to space default.
+     *
+     * When the viewer's type is deleted (resolvedType is null), falls back to the space
+     * default type AND its default template to maintain consistency between type and template.
+     *
+     * @param resolvedType The type resolved from the viewer (null if deleted)
+     * @param defaultTemplate The template from the viewer's type (may be invalid if type is deleted)
+     * @param userChosenTemplate Optional template explicitly chosen by the user (highest priority)
+     * @return Pair of (finalType, finalTemplate) where both are aligned to the same type
+     */
+    private suspend fun resolveTypeAndTemplateWithFallback(
+        resolvedType: ObjectWrapper.Type?,
+        defaultTemplate: Id?,
+        userChosenTemplate: Id?
+    ): Pair<ObjectWrapper.Type?, Id?> {
+        // User-chosen template always has highest priority
+        if (userChosenTemplate != null) {
+            val finalType = resolvedType ?: getSpaceDefaultType()
+            return Pair(finalType, userChosenTemplate)
+        }
+
+        // If type is null (deleted), use space default type AND its template
+        if (resolvedType == null) {
+            val spaceDefaultType = getSpaceDefaultType()
+            val spaceDefaultTemplate = spaceDefaultType?.defaultTemplateId
+            return Pair(spaceDefaultType, spaceDefaultTemplate)
+        }
+
+        // Normal case: type exists, use its template
+        return Pair(resolvedType, defaultTemplate)
+    }
+
+    /**
+     * Cleans up a viewer's defaultObjectType when it references a deleted type.
+     * This is a fire-and-forget operation that updates the view asynchronously.
+     *
+     * @param ctx The context (object) ID
+     * @param dv The dataview block ID
+     * @param viewer The viewer with stale type ID
+     */
+    private fun cleanupDeletedTypeInViewer(
+        ctx: Id,
+        dv: Id,
+        viewer: DVViewer
+    ) {
+        viewModelScope.launch {
+            try {
+                Timber.d("Cleaning up deleted type in viewer ${viewer.id}")
+                val updatedViewer = viewer.copy(defaultObjectType = null)
+                onEvent(
+                    ViewerEvent.UpdateView(
+                        ctx = ctx,
+                        dv = dv,
+                        viewer = updatedViewer,
+                        onResult = {
+                            Timber.d("Successfully cleaned up deleted type in viewer ${viewer.id}")
+                        }
+                    )
+                )
+            } catch (e: Exception) {
+                Timber.e(e, "Failed to cleanup deleted type in viewer ${viewer.id}")
+            }
+        }
+    }
+
+    /**
+     * Refreshes the TypeTemplatesWidget to show only valid types.
+     * Called when a deleted type is detected to update the UI.
+     */
+    private fun refreshTypeTemplatesWidgetTypes() {
+        viewModelScope.launch {
+            when (val widgetState = typeTemplatesWidgetState.value) {
+                is TypeTemplatesWidgetUI.Data -> {
+                    // Trigger refresh of available types using existing logic
+                    val selectedType = selectedTypeFlow.value?.id ?: VIEW_DEFAULT_OBJECT_TYPE
+                    updateTypesForTypeTemplatesWidget(selectedType)
+                }
+
+                else -> {
+                    // Widget not active, do nothing
+                }
+            }
+        }
+    }
+
     private fun processTemplates(
         templates: List<ObjectWrapper.Basic>,
         viewerDefType: ObjectWrapper.Type?,
@@ -2639,7 +2929,9 @@ class ObjectSetViewModel(
     ): List<TemplateView> {
 
         if (viewerDefType == null) {
-            Timber.e("processTemplates, Viewer def type is null")
+            Timber.w("processTemplates, Viewer def type is null (likely deleted type, fallback should have been applied)")
+            // Refresh widget to show valid types
+            refreshTypeTemplatesWidgetTypes()
             return emptyList()
         }
 
@@ -3438,6 +3730,114 @@ class ObjectSetViewModel(
             handleReadOnlyValue(timeInMillis = timeInMillis)
         }
     }
+    //endregion
+
+    //region SET OBJECT NAME BOTTOM SHEET
+
+    /**
+     * Shows the set object name bottom sheet for a newly created object.
+     */
+    fun showSetObjectNameSheet(
+        objectId: Id,
+        icon: ObjectIcon,
+        isIconChangeAllowed: Boolean,
+        targetBlockId: Id? = null
+    ) {
+        _setObjectNameState.value = SetObjectNameState(
+            isVisible = true,
+            targetObjectId = objectId,
+            currentIcon = icon,
+            inputText = "",
+            isIconChangeAllowed = isIconChangeAllowed,
+            targetBlockId = targetBlockId
+        )
+    }
+
+    /**
+     * Called when user types in the name field. Auto-saves to backend.
+     */
+    fun onSetObjectNameChanged(text: String) {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = state.copy(inputText = text)
+
+        viewModelScope.launch {
+            if (state.targetBlockId != null) {
+                // Note object: update text block content
+                updateText(
+                    UpdateText.Params(
+                        context = targetId,
+                        target = state.targetBlockId,
+                        text = text,
+                        marks = emptyList()
+                    )
+                ).process(
+                    failure = { Timber.e(it, "Error while updating note text block") },
+                    success = { /* saved successfully */ }
+                )
+            } else {
+                // Other layouts: update name relation
+                setObjectDetails(
+                    UpdateDetail.Params(
+                        target = targetId,
+                        key = Relations.NAME,
+                        value = text
+                    )
+                ).process(
+                    failure = { Timber.e(it, "Error while updating object name") },
+                    success = { /* saved successfully */ }
+                )
+            }
+        }
+    }
+
+    /**
+     * Called when bottom sheet is dismissed (Done pressed or swipe).
+     * Triggers scroll to the object.
+     */
+    fun onSetObjectNameDismissed() {
+        val objectId = _setObjectNameState.value.targetObjectId
+        _setObjectNameState.value = SetObjectNameState()
+
+        if (objectId != null) {
+            // Dispatch scroll command directly instead of using pendingScrollToObject
+            dispatch(ObjectSetCommand.ScrollToObject(objectId))
+        }
+    }
+
+    /**
+     * Opens the icon picker for the newly created object.
+     */
+    fun onSetObjectNameIconClicked() {
+        Timber.d("onSetObjectNameIconClicked, ")
+        val objectId = _setObjectNameState.value.targetObjectId ?: return
+        dispatch(
+            ObjectSetCommand.Modal.OpenIconActionMenu(
+                target = objectId,
+                space = vmParams.space.id
+            )
+        )
+    }
+
+    /**
+     * Opens the object in full editor from the name sheet.
+     */
+    fun onSetObjectNameOpenClicked() {
+        val state = _setObjectNameState.value
+        val targetId = state.targetObjectId ?: return
+
+        _setObjectNameState.value = SetObjectNameState()
+
+        viewModelScope.launch {
+            proceedWithOpeningObject(
+                target = targetId,
+                layout = null,
+                space = vmParams.space.id
+            )
+        }
+    }
+
     //endregion
 
     companion object {

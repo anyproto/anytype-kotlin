@@ -2,7 +2,8 @@ package com.anytypeio.anytype.gallery_experience.models
 
 import com.anytypeio.anytype.core_models.ManifestInfo
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+
 
 sealed class GalleryInstallationState {
     object Hidden : GalleryInstallationState()

@@ -14,7 +14,7 @@ import com.anytypeio.anytype.core_models.ext.textColor
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.editor.Editor.Cursor
 import com.anytypeio.anytype.domain.editor.Editor.Focus
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -31,12 +31,12 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.extension.getBookmarkObject
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.mapper.marks
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.mapper.toFileView
 import com.anytypeio.anytype.presentation.mapper.toPictureView
 import com.anytypeio.anytype.presentation.mapper.toVideoView
 import com.anytypeio.anytype.presentation.mapper.toView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.appearance.LinkAppearanceFactory
 import com.anytypeio.anytype.presentation.objects.toFeaturedPropertiesViews
 import com.anytypeio.anytype.presentation.relations.BasicObjectCoverWrapper
@@ -1523,9 +1523,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             }
             ObjectType.Layout.VIDEO -> {
                 BlockView.Title.Video(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
+                    text = content.text,
                     videoUrl = urlBuilder.video(
                         currentObject.id
                     ),
@@ -1545,9 +1545,9 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.PDF -> {
                 val objType = storeOfObjectTypes.getTypeOfObject(currentObject)
                 BlockView.Title.File(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
-                    text = fieldParser.getObjectName(currentObject),
+                    text = content.text,
                     isFocused = resolveIsFocused(focus, block),
                     cursor = cursor,
                     coverColor = coverContainer.coverColor,
@@ -1561,7 +1561,7 @@ class DefaultBlockViewRenderer @Inject constructor(
             ObjectType.Layout.IMAGE -> {
                 val icon =  currentObject.iconImage
                 BlockView.Title.Image(
-                    mode = Mode.READ,
+                    mode = blockMode,
                     id = block.id,
                     text = content.text,
                     image = if (!icon.isNullOrEmpty()) urlBuilder.large(icon) else null,

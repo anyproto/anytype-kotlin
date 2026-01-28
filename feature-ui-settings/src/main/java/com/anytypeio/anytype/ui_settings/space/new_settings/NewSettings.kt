@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -64,7 +65,6 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToSpa
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 import java.util.Locale
@@ -189,7 +189,7 @@ fun NewSpaceSettingsScreen(
                                             showEditTitle = true
                                         }
                                     },
-                                text = item.name,
+                                text = item.name.ifBlank { stringResource(R.string.untitled) },
                                 style = HeadlineHeading,
                                 color = colorResource(id = R.color.text_primary),
                                 textAlign = TextAlign.Center
@@ -674,6 +674,7 @@ private fun EditNameField(
                     .fillMaxWidth()
                     .height(48.dp)
             ) {
+                val hasChanged = fieldInput != initialInput
                 Text(
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
@@ -683,7 +684,7 @@ private fun EditNameField(
                         },
                     text = "Done",
                     style = PreviewTitle1Medium,
-                    color = if (fieldInput != initialInput) {
+                    color = if (hasChanged) {
                         colorResource(id = R.color.text_primary)
                     } else {
                         colorResource(id = R.color.text_tertiary)
@@ -721,7 +722,8 @@ private fun EditNameField(
                     onNameSet = { newName ->
                         fieldInput = newName
                     },
-                    isEditEnabled = true
+                    isEditEnabled = true,
+                    allowEmptyValue = true
                 )
             }
         }

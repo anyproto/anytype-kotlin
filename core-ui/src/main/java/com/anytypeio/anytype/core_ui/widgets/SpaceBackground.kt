@@ -3,8 +3,8 @@ package com.anytypeio.anytype.core_ui.widgets
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
 import com.anytypeio.anytype.core_ui.extensions.getWallpaperGradientByCode
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
 import timber.log.Timber
 
 /**

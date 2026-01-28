@@ -1,6 +1,6 @@
 package com.anytypeio.anytype.core_ui.features.dataview
 
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import org.junit.Test

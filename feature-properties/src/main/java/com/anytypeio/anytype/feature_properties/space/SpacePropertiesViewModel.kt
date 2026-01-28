@@ -35,7 +35,7 @@ import com.anytypeio.anytype.feature_properties.getAllObjectTypesByFormat
 import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel.Command.*
 import com.anytypeio.anytype.feature_properties.space.ui.SpacePropertiesEvent
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import javax.inject.Inject
 import kotlin.collections.sortedBy
 import kotlin.text.orEmpty

@@ -1,8 +1,9 @@
 package com.anytypeio.anytype.feature_object_type.ui
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType.Layout
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
 import com.anytypeio.anytype.presentation.templates.TemplateView
 
 sealed class TypeEvent {
@@ -15,6 +16,13 @@ sealed class TypeEvent {
     data object OnAlertDeleteDismiss : TypeEvent()
     data object OnAlertDeleteConfirm : TypeEvent()
     data object OnBackClick : TypeEvent()
+    //endregion
+
+    //region Delete Type Alert (Move to Bin confirmation)
+    data object OnDeleteTypeAlertDismiss : TypeEvent()
+    data object OnDeleteTypeAlertConfirm : TypeEvent()
+    data class OnDeleteTypeAlertSelectAll(val isSelected: Boolean) : TypeEvent()
+    data class OnDeleteTypeAlertToggleObject(val objectId: Id) : TypeEvent()
     //endregion
 
     //region Object Type Header

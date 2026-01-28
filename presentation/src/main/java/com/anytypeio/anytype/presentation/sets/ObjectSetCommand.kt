@@ -59,8 +59,6 @@ sealed class ObjectSetCommand {
             val relationKey: Key
         ) : Modal()
 
-        data class SetNameForCreatedObject(val ctx: Id, val space: Id, val target: Id) : Modal()
-
         data class CreateBookmark(val ctx: Id, val space: Id) : Modal()
 
         data class OpenIconActionMenu(

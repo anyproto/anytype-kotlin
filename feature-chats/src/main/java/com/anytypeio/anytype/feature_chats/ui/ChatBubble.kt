@@ -155,7 +155,7 @@ fun Bubble(
         // Bubble username section
         if (!isUserAuthor && !shouldHideUsername) {
             Text(
-                text = name.ifEmpty { stringResource(R.string.untitled) },
+                text = name.ifEmpty { stringResource(R.string.unknown) },
                 style = Caption1Medium,
                 color = colorResource(id = R.color.text_primary),
                 maxLines = 1,

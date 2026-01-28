@@ -18,10 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
-import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
-import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
-import com.anytypeio.anytype.presentation.sharing.SharingCommand
-import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -43,34 +39,36 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
+import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
-import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.presentation.sharing.SharedContent
-import com.google.android.material.snackbar.Snackbar
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
+import com.anytypeio.anytype.feature_vault.ui.SpacesIntroductionScreen
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
+import com.anytypeio.anytype.presentation.sharing.SharedContent
+import com.anytypeio.anytype.presentation.sharing.SharingCommand
+import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
@@ -85,8 +83,8 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -295,7 +293,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 // Navigate to vault where the deeplink will be processed
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
-                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    // Try to pop to Vault; if fails (not in stack), navigate to Vault
+                                    if (!controller.popBackStack(R.id.vaultScreen, false)) {
+                                        controller.navigate(R.id.vaultScreen)
+                                    }
                                     // The VaultViewModel will handle the 1-1 chat initiation
                                 }.onFailure {
                                     Timber.w(
@@ -311,9 +312,18 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
         if (savedInstanceState == null) {
             Timber.d("onSaveInstanceStateNull")
-            val action = intent.action
-            if (action == Intent.ACTION_SEND || action == Intent.ACTION_SEND_MULTIPLE) {
-                proceedWithShareIntent(intent)
+            when (intent.action) {
+                Intent.ACTION_VIEW -> {
+                    intent.data?.let { uri ->
+                        val data = uri.toString()
+                        if (DefaultDeepLinkResolver.isDeepLink(data)) {
+                            vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                        }
+                    }
+                }
+                Intent.ACTION_SEND, Intent.ACTION_SEND_MULTIPLE -> {
+                    proceedWithShareIntent(intent)
+                }
             }
         } else {
             Timber.d("onSaveInstanceStateNotNull")

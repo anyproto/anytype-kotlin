@@ -15,6 +15,7 @@ import com.anytypeio.anytype.di.feature.sets.CreateFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.ModifyFilterSubComponent
 import com.anytypeio.anytype.di.feature.sets.SelectFilterRelationSubComponent
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.block.interactor.UpdateText
 import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -36,7 +37,7 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.ConvertObjectToCollection
@@ -65,6 +66,9 @@ import com.anytypeio.anytype.domain.templates.GetTemplates
 import com.anytypeio.anytype.domain.unsplash.DownloadUnsplashImage
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.emojifier.data.Emoji
+import com.anytypeio.anytype.emojifier.data.EmojiProvider
+import com.anytypeio.anytype.emojifier.suggest.EmojiSuggester
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
@@ -72,11 +76,11 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -93,8 +97,8 @@ import com.anytypeio.anytype.presentation.sets.viewer.DefaultViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
@@ -209,6 +213,7 @@ object ObjectSetModule {
         closeObject: CloseObject,
         setObjectDetails: UpdateDetail,
         updateText: UpdateText,
+        createBlock: CreateBlock,
         interceptEvents: InterceptEvents,
         createDataViewObject: CreateDataViewObject,
         createObject: CreateObject,
@@ -246,7 +251,10 @@ object ObjectSetModule {
         fieldParser: FieldParser,
         spaceViews: SpaceViewSubscriptionContainer,
         deepLinkResolver: DeepLinkResolver,
-        setDataViewProperties: SetDataViewProperties
+        setDataViewProperties: SetDataViewProperties,
+        emojiProvider: EmojiProvider,
+        emojiSuggester: EmojiSuggester,
+        getDefaultObjectType: GetDefaultObjectType
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -254,6 +262,7 @@ object ObjectSetModule {
         setObjectDetails = setObjectDetails,
         createDataViewObject = createDataViewObject,
         updateText = updateText,
+        createBlock = createBlock,
         interceptEvents = interceptEvents,
         dispatcher = dispatcher,
         delegator = delegator,
@@ -275,7 +284,6 @@ object ObjectSetModule {
         addObjectToCollection = addObjectToCollection,
         objectToCollection = convertObjectToCollection,
         storeOfObjectTypes = storeOfObjectTypes,
-        getObjectTypes = getObjectTypes,
         duplicateObjects = duplicateObjects,
         templatesContainer = templatesContainer,
         setObjectListIsArchived = setObjectListIsArchived,
@@ -290,7 +298,10 @@ object ObjectSetModule {
         spaceViews = spaceViews,
         deepLinkResolver = deepLinkResolver,
         removeObjectFromCollection = removeObjectFromCollection,
-        setDataViewProperties = setDataViewProperties
+        setDataViewProperties = setDataViewProperties,
+        emojiProvider = emojiProvider,
+        emojiSuggester = emojiSuggester,
+        getDefaultObjectType = getDefaultObjectType
     )
 
     @JvmStatic
@@ -300,6 +311,17 @@ object ObjectSetModule {
         repo: BlockRepository,
         dispatchers: AppCoroutineDispatchers
     ): ConvertObjectToCollection = ConvertObjectToCollection(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideCreateBlock(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): CreateBlock = CreateBlock(
         repo = repo,
         dispatchers = dispatchers
     )
@@ -679,6 +701,11 @@ object ObjectSetModule {
         analytics = analytics,
         dispatcher = dispatcher
     )
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideEmojiProvider(): EmojiProvider = Emoji
 }
 
 data class DefaultComponentParam(

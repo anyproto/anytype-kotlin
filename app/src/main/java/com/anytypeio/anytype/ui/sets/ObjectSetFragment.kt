@@ -58,6 +58,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
+import com.anytypeio.anytype.core_ui.features.sets.SetObjectNameBottomSheet
 import com.anytypeio.anytype.core_ui.menu.ObjectHeaderContextMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetRelationPopupMenu
 import com.anytypeio.anytype.core_ui.menu.ObjectSetTypePopupMenu
@@ -485,6 +486,23 @@ open class ObjectSetFragment :
                 )
             }
         }
+
+        binding.setObjectNameSheet.apply {
+            setViewCompositionStrategy(ViewCompositionStrategy.DisposeOnViewTreeLifecycleDestroyed)
+            setContent {
+                val state = vm.setObjectNameState.collectAsStateWithLifecycle().value
+
+                SetObjectNameBottomSheet(
+                    isVisible = state.isVisible,
+                    icon = state.currentIcon,
+                    isIconChangeAllowed = state.isIconChangeAllowed,
+                    onTextChanged = vm::onSetObjectNameChanged,
+                    onDismiss = vm::onSetObjectNameDismissed,
+                    onIconClicked = vm::onSetObjectNameIconClicked,
+                    onOpenClicked = vm::onSetObjectNameOpenClicked
+                )
+            }
+        }
     }
 
     private fun setupWindowInsetAnimation() {
@@ -499,6 +517,9 @@ open class ObjectSetFragment :
             dispatchMode = DISPATCH_MODE_STOP
         )
         binding.titleWidget.syncTranslationWithImeVisibility(
+            dispatchMode = DISPATCH_MODE_STOP
+        )
+        binding.setObjectNameSheet.syncTranslationWithImeVisibility(
             dispatchMode = DISPATCH_MODE_STOP
         )
     }
@@ -1208,17 +1229,6 @@ open class ObjectSetFragment :
                     space = space
                 )
                 fr.showChildFragment(EMPTY_TAG)
-            }
-            is ObjectSetCommand.Modal.SetNameForCreatedObject -> {
-                findNavController().safeNavigate(
-                    R.id.objectSetScreen,
-                    R.id.setNameForNewRecordScreen,
-                    SetObjectCreateRecordFragmentBase.args(
-                        ctx = command.ctx,
-                        target = command.target,
-                        space = command.space
-                    )
-                )
             }
             is ObjectSetCommand.Intent.MailTo -> {
                 try {

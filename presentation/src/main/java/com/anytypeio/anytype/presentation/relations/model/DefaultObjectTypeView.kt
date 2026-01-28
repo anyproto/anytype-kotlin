@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.relations.model
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 data class DefaultObjectTypeView(
     val id: Id,

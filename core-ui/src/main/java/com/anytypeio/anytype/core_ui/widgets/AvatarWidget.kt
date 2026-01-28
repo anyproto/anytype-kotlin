@@ -49,7 +49,7 @@ class AvatarWidget @JvmOverloads constructor(
     fun bind(name: String, color: Int? = null) {
         binding.initials.visible()
         binding.initials.text =
-            if (name.isNotEmpty()) name.first().toUpperCase().toString() else name
+            if (name.isNotEmpty()) name.first().uppercase() else name
         binding.icon.invisible()
         backgroundTintList = ColorStateList.valueOf(color ?: randomColor(name))
     }

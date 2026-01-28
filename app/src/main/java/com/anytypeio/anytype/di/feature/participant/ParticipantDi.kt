@@ -12,9 +12,12 @@ import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -85,6 +88,17 @@ object ParticipantModule {
         logger = logger
     )
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSearchOneToOneChatByIdentity(
+        repo: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SearchOneToOneChatByIdentity = SearchOneToOneChatByIdentity(
+        repo = repo,
+        dispatchers = dispatchers
+    )
+
     @Module
     interface Declarations {
         @PerScreen
@@ -109,4 +123,6 @@ interface ParticipantComponentDependencies : ComponentDependencies {
     fun provideMembershipProvider(): MembershipProvider
     fun subEventChannel(): SubscriptionEventChannel
     fun provideConfigStorage(): ConfigStorage
+    fun spaceViewSubscriptionContainer(): SpaceViewSubscriptionContainer
+    fun spaceManager(): SpaceManager
 }

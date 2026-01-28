@@ -10,7 +10,8 @@ import com.anytypeio.anytype.core_models.StubRelationObject
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -35,6 +36,7 @@ import org.junit.Before
 import org.junit.Rule
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
@@ -187,7 +189,7 @@ class FilterViewModelInputFieldValueCreateTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         viewModel = FilterViewModel(
             objectState = state,
             dispatcher = dispatcher,
@@ -201,7 +203,8 @@ class FilterViewModelInputFieldValueCreateTest {
             getOptions = getOptions,
             spaceManager = spaceManager,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            analyticSpaceHelperDelegate = mock()
         )
     }
 

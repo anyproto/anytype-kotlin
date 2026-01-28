@@ -1,13 +1,17 @@
 package com.anytypeio.anytype.presentation.collections
 
 import app.cash.turbine.turbineScope
+import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.domain.base.Resultat
+import com.anytypeio.anytype.domain.block.interactor.CreateBlock
 import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
@@ -47,7 +51,7 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
     }
 
     @Test
-    fun `Should create and open Object with NOTE Layout when clicking on New button in Set By Type`() =
+    fun `Should create and not open Object with NOTE Layout when clicking on New button in Set By Type`() =
         runTest {
 
             val setOfId = "setOf-id-${RandomString.make()}"
@@ -109,6 +113,15 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
             doReturn(Resultat.success(Unit)).`when`(closeObject).async(
                 CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace))
             )
+            val blockId = MockDataFactory.randomUuid()
+            doReturn(Resultat.success(Pair(blockId, Payload(context = newObjectId, events = emptyList())))).`when`(createBlock).async(
+                CreateBlock.Params(
+                    context = newObjectId,
+                    target = "header",
+                    position = Position.BOTTOM,
+                    prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+                )
+            )
 
             // TESTING
             proceedWithStartingViewModel()
@@ -130,9 +143,18 @@ class ObjectCreateTest : ObjectSetViewModelTestSetup() {
                 )
             }
 
-            verifyBlocking(closeObject, times(1)) {
-                async(CloseObject.Params(mockObjectSet.root, SpaceId(defaultSpace)))
+            verifyBlocking(createBlock, times(1)) {
+                async(
+                    CreateBlock.Params(
+                        context = newObjectId,
+                        target = "header",
+                        position = Position.BOTTOM,
+                        prototype = Block.Prototype.Text(style = Block.Content.Text.Style.P)
+                    )
+                )
             }
+
+            verifyNoInteractions(closeObject)
         }
 
     @Test

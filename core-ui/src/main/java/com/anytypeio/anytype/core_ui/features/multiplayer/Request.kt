@@ -26,6 +26,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.throttledClick
 import com.anytypeio.anytype.core_ui.foundation.Dragger
@@ -38,7 +39,6 @@ import com.anytypeio.anytype.core_ui.views.ButtonWarning
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
 import com.anytypeio.anytype.presentation.multiplayer.InviteButton
 import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel.ViewState
-import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
 
 @SuppressLint("UnusedBoxWithConstraintsScope")
 @Preview(

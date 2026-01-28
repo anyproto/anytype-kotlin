@@ -19,7 +19,7 @@ import com.anytypeio.anytype.presentation.editor.editor.EditorPresentationTestSe
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.listener.ListenerType
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
 import com.anytypeio.anytype.presentation.util.downloader.MiddlewareShareDownloader
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -117,10 +117,10 @@ class FileLayoutTest : EditorPresentationTestSetup() {
         val firstTimeExpected = ViewState.Success(
             listOf(
                 BlockView.Title.File(
-                    mode = BlockView.Mode.READ, //in this case for a File Object title is always locked!
+                    mode = BlockView.Mode.EDIT, //File objects can now be edited/renamed
                     isFocused = false,
                     id = title.id,
-                    text = "${fileObject.name}.$fileExt",
+                    text = title.content.asText().text,
                     icon = ObjectIcon.File(
                         mime = fileObject.fileMimeType,
                         extensions = fileExt
@@ -187,7 +187,7 @@ class FileLayoutTest : EditorPresentationTestSetup() {
                     isFocused = false,
                     id = title.id,
                     text = title.content.asText().text,
-                    mode = BlockView.Mode.READ,
+                    mode = BlockView.Mode.EDIT,
                     icon = ObjectIcon.TypeIcon.Fallback.DEFAULT
                 ),
                 BlockView.ButtonOpenFile.ImageButton(

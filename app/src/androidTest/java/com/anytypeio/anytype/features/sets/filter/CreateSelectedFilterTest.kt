@@ -17,7 +17,8 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
@@ -48,6 +49,7 @@ import org.junit.Rule
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.mockito.Mock
+import org.mockito.Mockito.mock
 import org.mockito.MockitoAnnotations
 
 @RunWith(AndroidJUnit4::class)
@@ -100,7 +102,7 @@ class CreateSelectedFilterTest {
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         searchObjects = SearchObjects(repo)
         getOptions = GetOptions(repo)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         TestCreateSelectedFilterFragment.testVmFactory = FilterViewModel.Factory(
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,
@@ -114,7 +116,8 @@ class CreateSelectedFilterTest {
             getOptions = getOptions,
             spaceManager = spaceManager,
             fieldParser = fieldParser,
-            spaceViews = spaceViews
+            spaceViews = spaceViews,
+            analyticSpaceHelperDelegate = mock()
         )
     }
 

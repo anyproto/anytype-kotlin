@@ -39,7 +39,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -289,7 +290,7 @@ abstract class TestObjectSetSetup {
         setObjectDetails = UpdateDetail(repo)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers)
         closeObject = CloseObject(repo, dispatchers)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         downloadUnsplashImage = DownloadUnsplashImage(unsplashRepo)
         setDocCoverImage = SetDocCoverImage(repo)
         getTemplates = GetTemplates(
@@ -337,7 +338,6 @@ abstract class TestObjectSetSetup {
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             params = ObjectSetViewModel.Params(
                 ctx = ctx,
@@ -351,6 +351,10 @@ abstract class TestObjectSetSetup {
             spaceViews = spacedViews,
             removeObjectFromCollection = removeObjectFromCollection,
             setDataViewProperties = mock(),
+            createBlock = mock(),
+            emojiProvider = mock(),
+            emojiSuggester = mock(),
+            getDefaultObjectType = getDefaultObjectType
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

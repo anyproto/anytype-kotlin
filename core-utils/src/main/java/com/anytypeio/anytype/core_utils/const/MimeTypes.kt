@@ -18,6 +18,8 @@ object MimeTypes {
         "image/avif",
         "image/apng",
         "image/bmp",
+        "image/x-bmp",
+        "image/x-ms-bmp",
         "image/vnd.dwg",
         "image/x-dwg",
         "image/tiff",
@@ -107,6 +109,7 @@ object MimeTypes {
         "application/pgp-keys"
     )
 
+    @Deprecated("Use MimeCategory instead")
     enum class Category {
         IMAGE, PDF, TEXT, AUDIO, VIDEO, ARCHIVE, OTHER, TABLE, PRESENTATION
     }

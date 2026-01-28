@@ -2,7 +2,7 @@ package com.anytypeio.anytype.core_ui.features.editor.slash.holders
 
 import androidx.recyclerview.widget.RecyclerView
 import com.anytypeio.anytype.core_ui.databinding.ItemSlashWidgetSelectDateBinding
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 class DateSelectHolder(
     val binding: ItemSlashWidgetSelectDateBinding

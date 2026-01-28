@@ -2,15 +2,13 @@ plugins {
     id 'maven-publish'
 }
 
-afterEvaluate {
-    publishing {
-        publications {
-            myLocalPublication(MavenPublication) {
-                artifact(file('lib.aar'))
-                groupId 'io.anyproto'
-                artifactId 'anytype-heart-android'
-                version = '0.99'
-            }
+publishing {
+    publications {
+        create("myLocalPublication", MavenPublication) {
+            artifact(file('lib.aar'))
+            groupId = 'io.anyproto'
+            artifactId = 'anytype-heart-android'
+            version = '0.99'
         }
     }
 }

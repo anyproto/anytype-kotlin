@@ -19,6 +19,7 @@ object ObjectTypeIds {
     const val DATE = "ot-date"
     const val PROFILE = "ot-profile" //contains User Profile page and Anytype Person page
     const val HUMAN = "ot-human"
+    const val PARTICIPANT = "ot-participant"
     const val NOTE = "ot-note"
     const val WORKSPACE = "ot-space"
     const val DASHBOARD = "ot-dashboard"

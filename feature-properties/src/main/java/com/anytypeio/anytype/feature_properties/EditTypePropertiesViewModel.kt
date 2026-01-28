@@ -12,7 +12,7 @@ import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.SetDataViewProperties
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -31,7 +31,7 @@ import com.anytypeio.anytype.feature_properties.edit.UiEditPropertyState.Visible
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyFormatsListState.*
 import com.anytypeio.anytype.feature_properties.edit.UiPropertyLimitTypeItem
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlin.collections.plus
 import kotlinx.coroutines.FlowPreview

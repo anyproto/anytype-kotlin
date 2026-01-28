@@ -4,27 +4,26 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.DateParser
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.linking.LinkToItemView
-import com.anytypeio.anytype.presentation.mapper.objectIcon
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.sets.filter.CreateFilterView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView
 
 suspend fun List<ObjectWrapper.Basic>.toViews(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes
 ): List<DefaultObjectView> = map { obj ->
     obj.toView(
         urlBuilder = urlBuilder,
-        objectTypes = objectTypes,
         fieldParser = fieldParser,
         storeOfObjectTypes = storeOfObjectTypes
     )
@@ -32,7 +31,6 @@ suspend fun List<ObjectWrapper.Basic>.toViews(
 
 suspend fun ObjectWrapper.Basic.toView(
     urlBuilder: UrlBuilder,
-    objectTypes: List<ObjectWrapper.Type>,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes,
     usePluralNames: Boolean = true
@@ -40,7 +38,7 @@ suspend fun ObjectWrapper.Basic.toView(
     val obj = this
     val (objTypeId, objTypeName) = fieldParser.getObjectTypeIdAndName(
         objectWrapper = obj,
-        types = objectTypes
+        types =  storeOfObjectTypes.getAll()
     )
     val layout = obj.getProperLayout()
     return DefaultObjectView(
@@ -200,3 +198,4 @@ fun List<ObjectWrapper.Basic>.toSpaceMembers(): List<ObjectWrapper.SpaceMember> 
             ObjectWrapper.SpaceMember(basic.map)
         }
     }
+

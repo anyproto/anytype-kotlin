@@ -12,10 +12,11 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.RelativeDate
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.MimeCategory
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_utils.const.MimeTypes
 import com.anytypeio.anytype.presentation.editor.cover.CoverGradient
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 
 fun Context.drawable(
@@ -80,10 +81,29 @@ fun DVSortType.text(format: RelationFormat): Int = when (format) {
 }
 
 fun String?.getMimeIcon(extension: String?): Int {
-    var mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    // First check extension for known types that may not be properly handled by Android
+    var mime = when (extension?.lowercase()) {
+        "bmp" -> "image/bmp"
+        "tiff", "tif" -> "image/tiff"
+        "webp" -> "image/webp"
+        "svg" -> "image/svg+xml"
+        "avif" -> "image/avif"
+        "apng" -> "image/apng"
+        "flac" -> "audio/flac"
+        "m4a" -> "audio/m4a"
+        else -> null
+    }
+    
+    // If no explicit override, try Android's MimeTypeMap
+    if (mime == null) {
+        mime = MimeTypeMap.getSingleton().getMimeTypeFromExtension(extension)
+    }
+    
+    // If still null, fall back to the provided MIME type
     if (mime.isNullOrBlank()) {
         mime = this
     }
+    
     return when (MimeTypes.category(mime)) {
         MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
         MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
@@ -97,17 +117,17 @@ fun String?.getMimeIcon(extension: String?): Int {
     }
 }
 
-fun MimeTypes.Category.getMimeIcon(): Int {
+fun MimeCategory.getMimeIcon(): Int {
     return when (this) {
-        MimeTypes.Category.PDF -> R.drawable.ic_mime_pdf
-        MimeTypes.Category.IMAGE -> R.drawable.ic_mime_image
-        MimeTypes.Category.AUDIO -> R.drawable.ic_mime_music
-        MimeTypes.Category.TEXT -> R.drawable.ic_mime_text
-        MimeTypes.Category.VIDEO -> R.drawable.ic_mime_video
-        MimeTypes.Category.ARCHIVE -> R.drawable.ic_mime_archive
-        MimeTypes.Category.TABLE -> R.drawable.ic_mime_table
-        MimeTypes.Category.PRESENTATION -> R.drawable.ic_mime_presentation
-        MimeTypes.Category.OTHER -> R.drawable.ic_mime_other
+        MimeCategory.PDF -> R.drawable.ic_mime_pdf
+        MimeCategory.IMAGE -> R.drawable.ic_mime_image
+        MimeCategory.AUDIO -> R.drawable.ic_mime_music
+        MimeCategory.TEXT -> R.drawable.ic_mime_text
+        MimeCategory.VIDEO -> R.drawable.ic_mime_video
+        MimeCategory.ARCHIVE -> R.drawable.ic_mime_archive
+        MimeCategory.TABLE -> R.drawable.ic_mime_table
+        MimeCategory.PRESENTATION -> R.drawable.ic_mime_presentation
+        MimeCategory.OTHER -> R.drawable.ic_mime_other
     }
 }
 

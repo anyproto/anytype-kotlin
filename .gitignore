@@ -25,6 +25,7 @@ signing.properties
 app/release
 .kotlin/
 app/.cxx
+docs/plans/
 
 # Added by Task Master AI
 # Logs
@@ -46,3 +47,4 @@ tasks/
 .roomodes
 .cursor/
 .taskmaster/
+/docs/plans/

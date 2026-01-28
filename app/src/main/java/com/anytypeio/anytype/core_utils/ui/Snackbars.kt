@@ -8,7 +8,7 @@ import androidx.annotation.StringRes
 import androidx.core.view.isVisible
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.google.android.material.snackbar.Snackbar
 
 

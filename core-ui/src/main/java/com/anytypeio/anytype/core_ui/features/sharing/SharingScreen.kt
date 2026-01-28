@@ -27,6 +27,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -34,13 +36,12 @@ import com.anytypeio.anytype.core_ui.views.ButtonPrimary
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.sharing.SelectableObjectView
 import com.anytypeio.anytype.presentation.sharing.SelectableSpaceView
 import com.anytypeio.anytype.presentation.sharing.SharedContent
 import com.anytypeio.anytype.presentation.sharing.SharingFlowType
 import com.anytypeio.anytype.presentation.sharing.SharingScreenState
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
+
 
 /**
  * Main sharing screen that orchestrates the different UI states.

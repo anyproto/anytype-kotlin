@@ -5,32 +5,31 @@ import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relation
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.const.MimeTypes
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.AttachmentType
+import com.anytypeio.anytype.core_models.ui.MimeCategory
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.`object`.resolveParticipantName
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.presentation.extension.resolveParticipantName
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
@@ -304,13 +303,13 @@ class UnreadChatListWidgetContainer(
     }
 
     /**
-     * Transforms a Chat.Message.Attachment to VaultSpaceView.AttachmentPreview.
+     * Transforms a Chat.Message.Attachment to AttachmentPreview.
      * Handles Image/File/Link types with proper ObjectIcon creation.
      */
     private suspend fun mapToAttachmentPreview(
         attachment: Chat.Message.Attachment,
         dependency: ObjectWrapper.Basic?
-    ): VaultSpaceView.AttachmentPreview {
+    ): AttachmentPreview {
         val hasValidDependency = dependency != null && dependency.isValid
         
         // Determine the actual type based on MIME type if available
@@ -326,15 +325,15 @@ class UnreadChatListWidgetContainer(
         
         // Map to preview type enum
         val previewType = when (effectiveType) {
-            Chat.Message.Attachment.Type.Image -> VaultSpaceView.AttachmentType.IMAGE
-            Chat.Message.Attachment.Type.File -> VaultSpaceView.AttachmentType.FILE
-            Chat.Message.Attachment.Type.Link -> VaultSpaceView.AttachmentType.LINK
+            Chat.Message.Attachment.Type.Image -> AttachmentType.IMAGE
+            Chat.Message.Attachment.Type.File -> AttachmentType.FILE
+            Chat.Message.Attachment.Type.Link -> AttachmentType.LINK
         }
         
         // Default fallback icon
         fun defaultIconFor(type: Chat.Message.Attachment.Type): ObjectIcon = when (type) {
-            Chat.Message.Attachment.Type.Image -> ObjectIcon.FileDefault(mime = MimeTypes.Category.IMAGE)
-            Chat.Message.Attachment.Type.File -> ObjectIcon.FileDefault(mime = MimeTypes.Category.OTHER)
+            Chat.Message.Attachment.Type.Image -> ObjectIcon.FileDefault(mime = MimeCategory.IMAGE)
+            Chat.Message.Attachment.Type.File -> ObjectIcon.FileDefault(mime = MimeCategory.OTHER)
             Chat.Message.Attachment.Type.Link -> ObjectIcon.TypeIcon.Default.DEFAULT
         }
         
@@ -375,7 +374,7 @@ class UnreadChatListWidgetContainer(
             fieldParser.getObjectName(objectWrapper = dependency)
         } else null
         
-        return VaultSpaceView.AttachmentPreview(
+        return AttachmentPreview(
             type = previewType,
             objectIcon = icon,
             title = title

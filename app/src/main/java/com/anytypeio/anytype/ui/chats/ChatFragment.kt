@@ -13,7 +13,6 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -41,12 +40,13 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.fragment.compose.content
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.navigation.findNavController
 import androidx.navigation.fragment.findNavController
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.features.multiplayer.ShareSpaceQrCodeScreen
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
@@ -71,12 +71,12 @@ import com.anytypeio.anytype.feature_chats.tools.LinkDetector.ANYTYPE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.FILE_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.MAILTO_PREFIX
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector.TEL_PREFIX
-import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.ChatInfoScreenState
 import com.anytypeio.anytype.feature_chats.ui.ChatScreenWrapper
 import com.anytypeio.anytype.feature_chats.ui.ChatTopToolbar
+import com.anytypeio.anytype.feature_chats.ui.EditChatInfoScreen
 import com.anytypeio.anytype.feature_chats.ui.NotificationPermissionContent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
+import com.anytypeio.anytype.feature_vault.ui.AlertScreenModals
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
@@ -87,7 +87,6 @@ import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchScreen
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
-import com.anytypeio.anytype.ui.vault.AlertScreenModals
 import javax.inject.Inject
 import timber.log.Timber
 
@@ -131,7 +130,7 @@ class ChatFragment : Fragment() {
                 rememberModalBottomSheetState(skipPartiallyExpanded = true)
             var showGlobalSearchBottomSheet by remember { mutableStateOf(false) }
             var showChatInfoScreen by remember { mutableStateOf(false) }
-            var chatInfoData by remember { mutableStateOf<Pair<String, com.anytypeio.anytype.presentation.objects.ObjectIcon>?>(null) }
+            var chatInfoData by remember { mutableStateOf<Pair<String, ObjectIcon>?>(null) }
             val showNotificationPermissionDialog =
                 vm.showNotificationPermissionDialog.collectAsStateWithLifecycle().value
             val showMoveToBinDialog =

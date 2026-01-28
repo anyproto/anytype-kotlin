@@ -1,7 +1,8 @@
-package com.anytypeio.anytype.presentation.profile
+package com.anytypeio.anytype.core_models.ui
 
-import com.anytypeio.anytype.core_models.ui.ProfileIconView
-
+/**
+ * Represents the current user's account profile state.
+ */
 sealed class AccountProfile {
     data object Idle : AccountProfile()
     class Data(

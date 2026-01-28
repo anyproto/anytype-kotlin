@@ -13,19 +13,6 @@ sealed class ProfileIconView {
     data class Image(val url: Url) : ProfileIconView()
 }
 
-/**
- * Represents the current user's account profile state.
- */
-sealed class AccountProfile {
-    data object Idle : AccountProfile()
-    data class Data(
-        val name: String,
-        val icon: ProfileIconView,
-        val identity: String? = null,
-        val globalName: String? = null
-    ) : AccountProfile()
-}
-
 fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder): ProfileIconView = when {
     !iconImage.isNullOrEmpty() -> {
         val hash = checkNotNull(iconImage)

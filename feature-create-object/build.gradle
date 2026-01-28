@@ -9,7 +9,7 @@ android {
         compose true
     }
 
-    namespace 'com.anytypeio.anytype.feature_chats'
+    namespace 'com.anytypeio.anytype.feature_create_object'
 
     testOptions {
         unitTests.returnDefaultValues = true
@@ -17,47 +17,40 @@ android {
 }
 
 dependencies {
+    // Core dependencies
     implementation project(':domain')
     implementation project(':core-ui')
-    implementation project(':analytics')
     implementation project(':core-models')
     implementation project(':core-utils')
+    implementation project(':analytics')
     implementation project(':localization')
-    implementation project(':presentation')
-    implementation project(':library-emojifier')
-    implementation project(':feature-create-object')
-    implementation libs.navigationCompose
 
+    // Dependency Injection
     compileOnly libs.javaxInject
 
+    // Lifecycle
     implementation libs.lifecycleViewModel
     implementation libs.lifecycleRuntime
 
-    implementation libs.appcompat
+    // Compose
     implementation libs.compose
-    implementation libs.activityCompose
     implementation libs.composeFoundation
     implementation libs.composeToolingPreview
     implementation libs.composeMaterial3
     implementation libs.composeMaterial
 
-    implementation libs.coilCompose
-    implementation libs.coilVideo
-
     debugImplementation libs.composeTooling
 
+    // Logging
     implementation libs.timber
 
+    // Testing
     testImplementation libs.junit
     testImplementation libs.kotlinTest
     testImplementation libs.mockitoKotlin
     testImplementation libs.coroutineTesting
-    testImplementation libs.liveDataTesting
-    testImplementation libs.archCoreTesting
-    testImplementation libs.androidXTestCore
-    testImplementation libs.robolectric
-    testImplementation libs.timberJUnit
     testImplementation libs.turbine
+    testImplementation libs.archCoreTesting
 
     testImplementation project(":test:utils")
     testImplementation project(":test:core-models-stub")

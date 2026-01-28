@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.ui.AttachmentType
 import com.anytypeio.anytype.core_models.ui.MimeCategory
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.profileIcon
 import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_utils.tools.AppInfo
 import com.anytypeio.anytype.domain.base.fold
@@ -65,7 +66,6 @@ import com.anytypeio.anytype.presentation.notifications.NotificationPermissionMa
 import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.resolveParticipantName
 import com.anytypeio.anytype.presentation.profile.AccountProfile
-import com.anytypeio.anytype.presentation.profile.profileIcon
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenChat
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenDateObject
 import com.anytypeio.anytype.presentation.vault.VaultNavigation.OpenObject

@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.core_models.ui
 
+import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
 
 /**
  * Represents the visual icon for a user profile in the UI.
@@ -22,4 +24,15 @@ sealed class AccountProfile {
         val identity: String? = null,
         val globalName: String? = null
     ) : AccountProfile()
+}
+
+fun ObjectWrapper.Basic.profileIcon(builder: UrlBuilder): ProfileIconView = when {
+    !iconImage.isNullOrEmpty() -> {
+        val hash = checkNotNull(iconImage)
+        ProfileIconView.Image(builder.medium(hash))
+    }
+
+    else -> ProfileIconView.Placeholder(
+        name = name?.trim()?.ifEmpty { null }
+    )
 }

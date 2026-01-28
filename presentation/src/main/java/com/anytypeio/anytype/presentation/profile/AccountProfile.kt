@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.presentation.profile
 
+import com.anytypeio.anytype.core_models.ui.ProfileIconView
+
 sealed class AccountProfile {
     data object Idle : AccountProfile()
     class Data(

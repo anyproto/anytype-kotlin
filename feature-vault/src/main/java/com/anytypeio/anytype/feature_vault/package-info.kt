@@ -38,7 +38,6 @@
  * - All vault model imports use feature_vault.presentation package
  *
  * ## Dependencies
- * - :presentation (temporary, for mappers and shared presentation utilities)
  * - :feature-chats (for chat-specific icons)
  * - :core-ui, :core-models, :localization, :domain, :analytics
  *
@@ -57,7 +56,5 @@
  *
  * ## Next Steps
  * - Create Hilt DI module for vault dependencies
- * - Remove vault code from :presentation after verifying stability
- * - Consider moving shared types (VaultSpaceView) to avoid duplication
  */
 package com.anytypeio.anytype.feature_vault

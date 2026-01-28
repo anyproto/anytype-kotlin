@@ -37,6 +37,7 @@ enum class SectionType {
     PINNED,
     UNREAD,
     TYPES,
+    RECENTLY_EDITED,
     NONE
 }
 

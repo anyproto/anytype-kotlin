@@ -96,6 +96,7 @@ import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerSharingComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
+import com.anytypeio.anytype.di.feature.spaces.DaggerManageSectionsComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
@@ -860,6 +861,12 @@ class ComponentManager(
                 vmParams = vmParams,
                 dependencies = findComponentDependencies()
             )
+    }
+
+    val manageSectionsComponent = Component {
+        DaggerManageSectionsComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     val selectObjectTypeComponent = ComponentWithParams { params: SelectObjectTypeViewModel.Params ->

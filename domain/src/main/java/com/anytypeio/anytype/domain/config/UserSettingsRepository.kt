@@ -8,6 +8,7 @@ import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
+import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import kotlinx.coroutines.flow.Flow
 
@@ -80,4 +81,8 @@ interface UserSettingsRepository {
     suspend fun setCurrentAppVersion(account: Account, version: String)
     suspend fun getPreviousAppVersion(account: Account): String?
     suspend fun setPreviousAppVersion(account: Account, version: String)
+
+    suspend fun getWidgetSections(space: SpaceId): WidgetSections
+    suspend fun setWidgetSections(space: SpaceId, sections: WidgetSections)
+    fun observeWidgetSections(space: SpaceId): Flow<WidgetSections>
 }

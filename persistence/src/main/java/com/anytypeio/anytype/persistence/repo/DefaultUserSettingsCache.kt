@@ -10,6 +10,7 @@ import com.anytypeio.anytype.core_models.DEFAULT_SHOW_INTRODUCE_VAULT
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.NO_VALUE
+import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -29,6 +30,8 @@ import com.anytypeio.anytype.persistence.common.toJsonString
 import com.anytypeio.anytype.persistence.common.toStringMap
 import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
+import com.anytypeio.anytype.persistence.model.toDomain
+import com.anytypeio.anytype.persistence.model.toProto
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
@@ -769,6 +772,53 @@ class DefaultUserSettingsCache(
                 )
             )
         }
+    }
+
+    override suspend fun getWidgetSections(space: SpaceId): WidgetSections {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.sectionSettings
+                    ?.toDomain()
+                    ?: WidgetSections.default()
+            }
+            .first()
+    }
+
+    override suspend fun setWidgetSections(space: SpaceId, sections: WidgetSections) {
+        context.spacePrefsStore.updateData { existingPreferences ->
+            val givenSpacePreference = existingPreferences
+                .preferences
+                .getOrDefault(key = space.id, defaultValue = SpacePreference())
+
+            val updated = givenSpacePreference.copy(
+                sectionSettings = sections.toProto()
+            )
+
+            val result = buildMap {
+                putAll(existingPreferences.preferences)
+                put(key = space.id, updated)
+            }
+            SpacePreferences(preferences = result)
+        }
+    }
+
+    override fun observeWidgetSections(space: SpaceId): Flow<WidgetSections> {
+        return context.spacePrefsStore
+            .data
+            .map { preferences ->
+                preferences
+                    .preferences[space.id]
+                    ?.sectionSettings
+                    ?.toDomain()
+                    ?: WidgetSections.default()
+            }
+            .catch { e ->
+                Timber.e(e, "Error observing widget sections for space ${space.id}, emitting defaults")
+                emit(WidgetSections.default())
+            }
     }
 
     companion object {

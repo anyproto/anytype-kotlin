@@ -4,8 +4,8 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged

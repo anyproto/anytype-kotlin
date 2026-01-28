@@ -40,6 +40,7 @@ import com.anytypeio.anytype.domain.multiplayer.SearchOneToOneChatByIdentity
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -59,7 +60,6 @@ import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator.calculateChatNotificationState
 import com.anytypeio.anytype.presentation.objects.resolveParticipantName
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay

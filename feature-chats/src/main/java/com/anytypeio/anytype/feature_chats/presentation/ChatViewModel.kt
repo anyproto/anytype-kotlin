@@ -55,6 +55,7 @@ import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionCon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -78,7 +79,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNo
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite

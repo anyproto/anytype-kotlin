@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.presentation.notifications
+package com.anytypeio.anytype.domain.notifications
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -60,4 +60,4 @@ object NotificationStateCalculator {
             else -> chatSpace.spacePushNotificationMode
         }
     }
-} 
+}

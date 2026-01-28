@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.multiplayer.sharedSpaceCount
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.ResetSpaceChatNotification
 import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -76,7 +77,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNo
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.spaceLimitsState
 import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageBin
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel.Command.ManageRemoteStorage

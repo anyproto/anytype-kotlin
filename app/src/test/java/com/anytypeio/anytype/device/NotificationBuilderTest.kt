@@ -538,4 +538,94 @@ class NotificationBuilderTest {
         })
     }
 
+    @Test
+    fun `buildAndNotify should not show space name for ONE_TO_ONE space notifications`() = runBlocking {
+        // Given: A ONE_TO_ONE space where showing the space name is redundant
+        val spaceName = "John Doe"  // In 1-to-1, space name is the other person's name
+        val senderName = "John Doe"
+        val messageText = "Hey, how are you?"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.ONE_TO_ONE.code.toDouble()
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+
+        val testMessage = message.copy(spaceName = spaceName, senderName = senderName, text = messageText)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should have only the message text without space name prefix
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val contentText = notification.extras?.getCharSequence("android.text")?.toString()
+            // For ONE_TO_ONE, the content should be just the message, not "$spaceName: $message"
+            contentText == messageText
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should show space name for CHAT space notifications`() = runBlocking {
+        // Given: A regular CHAT space (not ONE_TO_ONE)
+        val spaceName = "Team Chat"
+        val senderName = "Alice"
+        val messageText = "Hello team!"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.CHAT.code.toDouble()
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+
+        val testMessage = message.copy(spaceName = spaceName, senderName = senderName, text = messageText)
+
+        // When
+        builder.buildAndNotify(testMessage, testSpaceId, testGroupId)
+
+        // Then: Notification should include space name prefix
+        verify(notificationManager).notify(eq(testGroupId), any(), argThat { notification ->
+            val contentText = notification.extras?.getCharSequence("android.text")?.toString()
+            // For CHAT spaces, the content should be "$spaceName: $message"
+            contentText == "$spaceName: $messageText"
+        })
+    }
+
+    @Test
+    fun `buildAndNotify should use sender name for summary in ONE_TO_ONE space`() = runBlocking {
+        // Given: A ONE_TO_ONE space with multiple messages
+        val spaceName = "John Doe"
+        val senderName = "John Doe"
+
+        val spaceView = ObjectWrapper.SpaceView(
+            map = mapOf(
+                "id" to testSpaceId,
+                "name" to spaceName,
+                "spaceUxType" to SpaceUxType.ONE_TO_ONE.code.toDouble()
+            )
+        )
+
+        whenever(spaceViewSubscriptionContainer.get(SpaceId(testSpaceId))).thenReturn(spaceView)
+
+        val testMessage1 = message.copy(msgId = "msg1", spaceName = spaceName, senderName = senderName, text = "First")
+        val testMessage2 = message.copy(msgId = "msg2", spaceName = spaceName, senderName = senderName, text = "Second")
+
+        // When sending multiple messages to trigger summary notification
+        builder.buildAndNotify(testMessage1, testSpaceId, testGroupId)
+        builder.buildAndNotify(testMessage2, testSpaceId, testGroupId)
+
+        // Then: Summary notification should use sender name as title (since secondLine is null for ONE_TO_ONE)
+        verify(notificationManager).notify(eq("chat_summary"), any(), argThat { notification ->
+            val title = notification.extras?.getCharSequence("android.title")?.toString()
+            title == senderName.trim()
+        })
+    }
+
 }

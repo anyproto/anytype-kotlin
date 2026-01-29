@@ -6,7 +6,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class DocumentFileShareDownloader(
+open class DocumentFileShareDownloader(
     private val repo: BlockRepository,
     context: Context,
     uriFileProvider: UriFileProvider,

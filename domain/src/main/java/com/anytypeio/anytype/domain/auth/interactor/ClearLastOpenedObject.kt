@@ -9,7 +9,7 @@ import javax.inject.Inject
  * Use case for clearing last open object's id from user session.
  * @see SaveLastOpenedObject
  */
-class ClearLastOpenedObject @Inject constructor(
+open class ClearLastOpenedObject @Inject constructor(
     private val repo: UserSettingsRepository
 ) : BaseUseCase<Unit, ClearLastOpenedObject.Params>() {
 

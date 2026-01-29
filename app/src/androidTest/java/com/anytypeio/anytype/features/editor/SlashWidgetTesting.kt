@@ -58,7 +58,7 @@ class SlashWidgetTesting : EditorTestSetup() {
     @get:Rule
     val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.CTX_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     private val defaultDetails = ObjectViewDetails(
         mapOf(
@@ -545,15 +545,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
         stubCreateBlock(
-            params = CreateBlock.Params(
-                context = root,
-                target = paragraph.id,
-                position = Position.BOTTOM,
-                prototype = Block.Prototype.File(
-                    type = Block.Content.File.Type.FILE,
-                    state = Block.Content.File.State.EMPTY
-                )
-            ),
             events = listOf(
                 Event.Command.UpdateStructure(
                     context = root,
@@ -613,15 +604,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
         stubCreateBlock(
-            params = CreateBlock.Params(
-                context = root,
-                target = paragraph.id,
-                position = Position.BOTTOM,
-                prototype = Block.Prototype.File(
-                    type = Block.Content.File.Type.IMAGE,
-                    state = Block.Content.File.State.EMPTY
-                )
-            ),
             events = listOf(
                 Event.Command.UpdateStructure(
                     context = root,
@@ -687,15 +669,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
         stubCreateBlock(
-            params = CreateBlock.Params(
-                context = root,
-                target = paragraph.id,
-                position = Position.BOTTOM,
-                prototype = Block.Prototype.File(
-                    type = Block.Content.File.Type.VIDEO,
-                    state = Block.Content.File.State.EMPTY
-                )
-            ),
             events = listOf(
                 Event.Command.UpdateStructure(
                     context = root,
@@ -757,12 +730,6 @@ class SlashWidgetTesting : EditorTestSetup() {
         stubUpdateText()
         stubOpenDocument(document, defaultDetails)
         stubCreateBlock(
-            params = CreateBlock.Params(
-                context = root,
-                target = paragraph.id,
-                position = Position.BOTTOM,
-                prototype = Block.Prototype.Bookmark.New
-            ),
             events = listOf(
                 Event.Command.UpdateStructure(
                     context = root,

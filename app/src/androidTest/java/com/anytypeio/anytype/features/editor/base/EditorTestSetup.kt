@@ -10,17 +10,19 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.NetworkModeConfig
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
+import com.anytypeio.anytype.core_models.primitives.ParsedProperties
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.base.Result
-import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.block.UpdateDivider
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockContent
 import com.anytypeio.anytype.domain.block.interactor.ClearBlockStyle
@@ -116,15 +118,18 @@ import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
+import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectoryImpl
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DocumentFileShareDownloader
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.emptyFlow
-import kotlinx.coroutines.test.StandardTestDispatcher
+import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.test.UnconfinedTestDispatcher
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
+import org.mockito.Mockito
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
 import org.mockito.kotlin.mock
@@ -149,6 +154,7 @@ open class EditorTestSetup {
     lateinit var setRelationKey: SetRelationKey
     lateinit var updateDetail: UpdateDetail
 
+    @Mock
     lateinit var copyFileToCacheDirectory: CopyFileToCacheDirectory
 
     @Mock
@@ -157,7 +163,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var dateProvider: DateProvider
 
-    @Mock
     lateinit var openPage: OpenPage
 
     @Mock
@@ -166,7 +171,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var updateText: UpdateText
 
-    @Mock
     lateinit var createBlock: CreateBlock
 
     @Mock
@@ -201,7 +205,6 @@ open class EditorTestSetup {
     @Mock
     lateinit var createObject: CreateObject
 
-    @Mock
     lateinit var appCoroutineDispatchers: AppCoroutineDispatchers
 
     @Mock
@@ -338,12 +341,27 @@ open class EditorTestSetup {
     open fun setup() {
         MockitoAnnotations.openMocks(this)
 
-        val dispatchers = AppCoroutineDispatchers(
-            io = StandardTestDispatcher(),
-            main = StandardTestDispatcher(),
-            computation = StandardTestDispatcher()
-        )
+        stubInterceptEvents()
+        stubInterceptThreadStatus()
+        stubNetworkMode()
+        stubParsedProperties()
+        stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+        stubFileLimitEvents()
+        stubSpaceManager()
 
+        val dispatchers = AppCoroutineDispatchers(
+            io = UnconfinedTestDispatcher(),
+            main = UnconfinedTestDispatcher(),
+            computation = UnconfinedTestDispatcher()
+        )
+        appCoroutineDispatchers = dispatchers
+
+        openPage = OpenPage(
+            repo = repo,
+            settings = userSettingsRepository,
+            dispatchers = dispatchers
+        )
         splitBlock = SplitBlock(repo)
         undo = Undo(repo, dispatchers)
         redo = Redo(repo, dispatchers)
@@ -352,6 +370,7 @@ open class EditorTestSetup {
         setupBookmark = SetupBookmark(repo)
         updateAlignment = UpdateAlignment(repo)
         uploadBlock = UploadBlock(repo)
+        createBlock = CreateBlock(repo, dispatchers)
         createBlockLinkWithObject = CreateBlockLinkWithObject(repo, dispatchers)
         setRelationKey = SetRelationKey(repo)
         turnIntoDocument = TurnIntoDocument(repo)
@@ -546,18 +565,18 @@ open class EditorTestSetup {
         details: ObjectViewDetails = ObjectViewDetails.EMPTY,
         relations: List<Relation> = emptyList()
     ) {
-        openPage.stub {
-            onBlocking { execute(any()) } doReturn Resultat.success(
-                Result.Success(
-                    Payload(
-                        context = root,
-                        events = listOf(
-                            Event.Command.ShowObject(
-                                context = root,
-                                root = root,
-                                details = details.details,
-                                blocks = document,
-                            )
+        repo.stub {
+            onBlocking {
+                openPage(any(), anySpaceId())
+            } doReturn Result.Success(
+                Payload(
+                    context = root,
+                    events = listOf(
+                        Event.Command.ShowObject(
+                            context = root,
+                            root = root,
+                            details = details.details,
+                            blocks = document,
                         )
                     )
                 )
@@ -565,16 +584,27 @@ open class EditorTestSetup {
         }
     }
 
+    /**
+     * Mockito matcher workaround for Kotlin value class [SpaceId].
+     * Standard matchers (any(), eq()) fail because the value class is unboxed
+     * at JVM level, causing NPE during unboxing of the null matcher return.
+     * This registers a matcher on Mockito's stack while returning a valid
+     * SpaceId instance for the Kotlin compiler's unboxing code.
+     */
+    protected fun anySpaceId(): SpaceId {
+        Mockito.any<Any>()
+        return SpaceId("")
+    }
+
     fun stubCreateBlock(
-        params: CreateBlock.Params,
         events: List<Event.Command>
     ) {
-        createBlock.stub {
-            onBlocking { execute(params) } doReturn Resultat.success(
-                Pair(
-                    MockDataFactory.randomUuid(),
-                    Payload(context = root, events = events)
-                )
+        repo.stub {
+            onBlocking {
+                create(command = any())
+            } doReturn Pair(
+                MockDataFactory.randomUuid(),
+                Payload(context = root, events = events)
             )
         }
     }
@@ -629,6 +659,48 @@ open class EditorTestSetup {
     fun stubAnalytics() {
         analytics.stub {
             onBlocking { registerEvent(any()) } doReturn Unit
+        }
+    }
+
+    fun stubNetworkMode() {
+        getNetworkMode.stub {
+            onBlocking { run(Unit) } doReturn NetworkModeConfig()
+        }
+    }
+
+    fun stubParsedProperties() {
+        fieldParser.stub {
+            onBlocking {
+                getObjectParsedProperties(
+                    objectType = any(),
+                    objPropertiesKeys = any(),
+                    storeOfRelations = any()
+                )
+            } doReturn ParsedProperties()
+        }
+    }
+
+    fun stubUserPermission() {
+        permissions.stub {
+            on { observe(space = SpaceId(defaultSpace)) } doReturn flowOf(SpaceMemberPermissions.OWNER)
+        }
+    }
+
+    fun stubAnalyticSpaceHelperDelegate() {
+        analyticSpaceHelperDelegate.stub {
+            on { provideParams(any()) } doReturn AnalyticSpaceHelperDelegate.Params.EMPTY
+        }
+    }
+
+    fun stubFileLimitEvents() {
+        fileLimitsEventChannel.stub {
+            onBlocking { observe() } doReturn emptyFlow()
+        }
+    }
+
+    fun stubSpaceManager() {
+        spaceManager.stub {
+            onBlocking { get() } doReturn defaultSpace
         }
     }
 

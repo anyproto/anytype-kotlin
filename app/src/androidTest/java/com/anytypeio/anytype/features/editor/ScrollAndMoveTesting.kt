@@ -18,6 +18,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel.Companion.TEXT_
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import org.junit.Before
 import org.junit.Rule
@@ -31,10 +32,10 @@ class ScrollAndMoveTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-//    @get:Rule
-//    val coroutineTestRule = CoroutinesTestRule()
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(EditorFragment.CTX_KEY to root)
+    val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     private val title = Block(
         id = MockDataFactory.randomUuid(),
@@ -140,6 +141,6 @@ class ScrollAndMoveTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-//        coroutineTestRule.advanceTime(millis)
+        coroutineTestRule.advanceTime(millis)
     }
 }

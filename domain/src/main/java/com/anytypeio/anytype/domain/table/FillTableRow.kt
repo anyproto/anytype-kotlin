@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Either
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
-class FillTableRow(
+open class FillTableRow(
     private val repo: BlockRepository
 ) : BaseUseCase<Payload, FillTableRow.Params>() {
 

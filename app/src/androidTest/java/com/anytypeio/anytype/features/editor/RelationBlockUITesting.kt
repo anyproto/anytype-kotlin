@@ -23,6 +23,7 @@ import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.test_utils.MockDataFactory
 import com.anytypeio.anytype.test_utils.utils.checkHasBackgroundColor
+import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.anytypeio.anytype.test_utils.utils.checkHasNoBackground
 import com.anytypeio.anytype.test_utils.utils.checkHasText
 import com.anytypeio.anytype.test_utils.utils.checkIsDisplayed
@@ -49,10 +50,10 @@ class RelationBlockUITesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-//    @get:Rule
-//    val coroutineTestRule = CoroutinesTestRule()
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
-    private val args = bundleOf(EditorFragment.CTX_KEY to root)
+    private val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     private val defaultDetails = ObjectViewDetails(
         mapOf(
@@ -1155,6 +1156,6 @@ class RelationBlockUITesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-//        coroutineTestRule.advanceTime(millis)
+        coroutineTestRule.advanceTime(millis)
     }
 }

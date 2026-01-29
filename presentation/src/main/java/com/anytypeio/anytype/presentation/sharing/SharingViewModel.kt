@@ -272,10 +272,17 @@ class SharingViewModel(
             it.copy(isSelected = it.id in selectedDestinationObjectIds)
         }
 
+        // Clear comment text if no chat objects are selected
+        val hasAnyChatSelected = updatedChatObjects.any { it.id in selectedDestinationObjectIds }
+        if (!hasAnyChatSelected) {
+            commentText = ""
+        }
+
         _screenState.value = currentState.copy(
             objects = updatedObjects,
             chatObjects = updatedChatObjects,
-            selectedObjectIds = selectedDestinationObjectIds.toSet()
+            selectedObjectIds = selectedDestinationObjectIds.toSet(),
+            commentText = commentText
         )
     }
 

@@ -178,6 +178,17 @@ fun ColumnScope.SharingScreen(
                             }
                         }
                     },
+                    onNewObjectClicked = {
+                        // Clear all selections to indicate "create new"
+                        state.selectedObjectIds.forEach { selectedId ->
+                            state.objects.find { it.id == selectedId }?.let { obj ->
+                                onObjectSelected(obj)
+                            }
+                            state.chatObjects.find { it.id == selectedId }?.let { chat ->
+                                onObjectSelected(chat)
+                            }
+                        }
+                    },
                     onCommentChanged = onCommentChanged,
                     onSendClicked = onSendClicked,
                     onBackPressed = onBackPressed

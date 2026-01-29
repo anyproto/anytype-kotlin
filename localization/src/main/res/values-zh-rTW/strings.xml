@@ -554,6 +554,7 @@
     <string name="blank">空白</string>
     <string name="templates_menu_default_for_view">預設此檢視</string>
     <string name="templates_menu_edit">編輯範本</string>
+    <string name="template_title_prefix">You\'re editing a template of\u0020</string>
     <string name="templates_menu_duplicate">建立副本</string>
     <string name="templates_menu_delete">刪除</string>
     <string name="unsupported">不支援</string>
@@ -709,6 +710,7 @@
     <string name="tab_upload_image">上傳圖片</string>
     <string name="tab_gallery">畫廊</string>
     <string name="change_type">變更類型</string>
+    <string name="default_type_screen_title">選擇預設物件類型</string>
     <string name="change_cover">更改封面</string>
     <string name="remove">移除</string>
     <string name="choose_options">選擇選項</string>
@@ -748,6 +750,12 @@
     <string name="are_you_sure_delete_n_objects">您確定要刪除 %1$d 個物件嗎？</string>
     <string name="delete_irrevocably">這些物件將被永久刪除。您無法撤銷此操作。</string>
     <string name="delete_irrevocably_one_object">此物件將被永久刪除。您無法撤銷此操作。</string>
+    <!-- Object Type Deletion Confirmation -->
+    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
+    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
+    <string name="move_type_to_bin_select_all">選取全部</string>
+    <string name="move_type_to_bin_to_bin">Move to Bin</string>
     <string name="shared">分享</string>
     <string name="object_not_exist">此物件不存在</string>
     <string name="back_to_dashboard">返回儀錶板</string>
@@ -833,6 +841,9 @@
     <string name="exiting_please_wait">正在離開... 請稍候</string>
     <string name="loading_please_wait">正在載入... 請稍候</string>
     <string name="embed_content_not_available">%1$s embed. This content is not available on mobile</string>
+    <string name="embed_is_empty">%1$s embed is empty</string>
+    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="open">開啟</string>
     <string name="personal">預設</string>
     <string name="create_space">Create space</string>
     <string name="create_chat">Create chat</string>
@@ -1975,6 +1986,7 @@ Please provide specific details of your needs here.</string>
     <string name="notification_settings_state_disabled">Disabled</string>
     <string name="notification_settings_state_enabled">Enabled</string>
     <string name="content_desc_muted">Muted</string>
+    <string name="content_desc_pending_sync">Pending sync</string>
     <string name="failed_to_load_image">Failed to load image</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Join via QR Code</string>
@@ -2082,4 +2094,5 @@ Please provide specific details of your needs here.</string>
     <string name="clear_selection">Clear selection</string>
     <string name="save">Save</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
+    <string name="loading_channels">Loading channels</string>
 </resources>

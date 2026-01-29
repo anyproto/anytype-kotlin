@@ -27,11 +27,15 @@ import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeColor
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -44,10 +48,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterSearchObjects
 import javax.inject.Inject
@@ -563,7 +563,10 @@ suspend fun Command.SearchWithMeta.Result.view(
 ) : GlobalSearchItemView? {
     if (wrapper.spaceId == null) return null
     if (wrapper.layout == null) return null
-    val type = wrapper.type.firstOrNull()
+    val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+        objectWrapper = wrapper,
+        types = storeOfObjectTypes.getAll()
+    )
     val meta = metas.firstOrNull()
     return GlobalSearchItemView(
         id = obj,
@@ -577,11 +580,7 @@ suspend fun Command.SearchWithMeta.Result.view(
         space = SpaceId(requireNotNull(wrapper.spaceId)),
         layout = requireNotNull(wrapper.layout),
         title = fieldParser.getObjectNameOrPluralsForTypes(wrapper),
-        type =  if (type != null) {
-            storeOfObjectTypes.get(type)?.name.orEmpty()
-        } else {
-            EMPTY_STRING_VALUE
-        },
+        type =  typeName,
         meta = if (meta != null) {
             when(val source = meta.source) {
                 is Command.SearchWithMeta.Result.Meta.Source.Block -> {

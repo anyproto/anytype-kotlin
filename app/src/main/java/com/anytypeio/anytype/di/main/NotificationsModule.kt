@@ -4,6 +4,9 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.SharedPreferences
 import com.anytypeio.anytype.app.AnytypeNotificationService
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.data.auth.event.NotificationsDateChannel
 import com.anytypeio.anytype.data.auth.event.NotificationsRemoteChannel
 import com.anytypeio.anytype.device.NotificationBuilderImpl
@@ -20,8 +23,6 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.interactor.NotificationsMiddlewareChannel
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManagerImpl
 import com.anytypeio.anytype.presentation.notifications.NotificationsProvider
 import com.anytypeio.anytype.presentation.notifications.PushKeyProviderImpl
 import dagger.Module
@@ -118,7 +119,7 @@ object NotificationsModule {
         context: Context,
         notificationManager: NotificationManager,
         stringResourceProvider: StringResourceProvider,
-        urlBuilder: com.anytypeio.anytype.domain.misc.UrlBuilder,
+        urlBuilder: UrlBuilder,
         spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
         chatsDetailsSubscriptionContainer: ChatsDetailsSubscriptionContainer
     ): NotificationBuilder = NotificationBuilderImpl(

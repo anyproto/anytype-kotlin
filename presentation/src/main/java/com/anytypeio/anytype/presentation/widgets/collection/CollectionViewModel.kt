@@ -15,7 +15,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -25,7 +28,6 @@ import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.base.getOrDefault
 import com.anytypeio.anytype.domain.block.interactor.Move
-import com.anytypeio.anytype.domain.block.interactor.sets.GetObjectTypes
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.event.interactor.InterceptEvents
 import com.anytypeio.anytype.domain.library.StoreSearchParams
@@ -33,7 +35,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -48,8 +49,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
@@ -62,7 +61,16 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.*
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.Exit
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.LaunchDocument
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.LaunchObjectSet
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenChat
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenDateObject
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenParticipant
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenShareScreen
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenTypeObject
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenUrl
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.ToSpaceHome
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -93,7 +101,6 @@ class CollectionViewModel(
     private val vmParams: VmParams,
     private val container: StorelessSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val getObjectTypes: GetObjectTypes,
     private val dispatchers: AppCoroutineDispatchers,
     private val actionObjectFilter: ActionObjectFilter,
     private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -209,22 +216,6 @@ class CollectionViewModel(
                     navPanelState.value = it
                 }
         }
-    }
-
-    private suspend fun objectTypes(): StateFlow<List<ObjectWrapper.Type>> {
-        val params = GetObjectTypes.Params(
-            space = SpaceId(vmParams.spaceId.id),
-            sorts = emptyList(),
-            filters = ObjectSearchConstants.filterTypes(),
-            keys = ObjectSearchConstants.defaultKeysObjectType
-        )
-        return getObjectTypes
-            .asFlow(params)
-            .catch { e ->
-                Timber.e(e, "Error while getting object types for fullscreen widgets")
-                emit(emptyList())
-            }
-            .stateIn(viewModelScope)
     }
 
     @FlowPreview
@@ -343,8 +334,8 @@ class CollectionViewModel(
         combine(
             container.subscribe(params).map { results -> results.distinctBy { it.id } },
             queryFlow(),
-            objectTypes()
-        ) { objects, query, types ->
+            storeOfObjectTypes.trackChanges()
+        ) { objects, query, _ ->
 
             val filteredResults = objects.filter { obj ->
                 val name = fieldParser.getObjectName(obj)
@@ -354,7 +345,6 @@ class CollectionViewModel(
             val views = filteredResults
                 .toViews(
                     urlBuilder = urlBuilder,
-                    objectTypes = types,
                     fieldParser = fieldParser,
                     storeOfObjectTypes = storeOfObjectTypes
                 )
@@ -402,7 +392,7 @@ class CollectionViewModel(
         combine(
             container.subscribe(buildSearchParams()),
             queryFlow(),
-            objectTypes(),
+            storeOfObjectTypes.trackChanges(),
             spaceManager
                 .observe(vmParams.spaceId)
                 .flatMapLatest { config ->
@@ -416,8 +406,8 @@ class CollectionViewModel(
                         )
                         .flatMapLatest { obj -> payloads.scan(obj) { s, p -> reduce(s, p) } }
                 }
-        ) { objs, query, types, favorotiesObj ->
-            val result = prepareFavorites(favorotiesObj, objs, query, types)
+        ) { objs, query, _, favorotiesObj ->
+            val result = prepareFavorites(favorotiesObj, objs, query)
             if (result.isEmpty() && query.isNotEmpty())
                 listOf(CollectionView.EmptySearch(query))
             else
@@ -430,7 +420,6 @@ class CollectionViewModel(
         favoritesObj: CoreObjectView,
         objs: List<ObjectWrapper.Basic>,
         query: String,
-        types: List<ObjectWrapper.Type>
     ): List<CollectionObjectView> {
         val favs = favoritesObj.blocks.parseFavorites(
             root = favoritesObj.root,
@@ -440,7 +429,11 @@ class CollectionViewModel(
             val name = fieldParser.getObjectName(obj)
             name.lowercase().contains(query.lowercase(), true)
         }
-            .toViews(urlBuilder, types, fieldParser, storeOfObjectTypes)
+            .toViews(
+                urlBuilder = urlBuilder,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
             .map { FavoritesView(it, favs[it.id]?.blockId ?: "") }
     }
 
@@ -1065,7 +1058,6 @@ class CollectionViewModel(
         private val vmParams: VmParams,
         private val container: StorelessSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val getObjectTypes: GetObjectTypes,
         private val dispatchers: AppCoroutineDispatchers,
         private val actionObjectFilter: ActionObjectFilter,
         private val setObjectListIsArchived: SetObjectListIsArchived,
@@ -1094,7 +1086,6 @@ class CollectionViewModel(
             return CollectionViewModel(
                 container = container,
                 urlBuilder = urlBuilder,
-                getObjectTypes = getObjectTypes,
                 dispatchers = dispatchers,
                 actionObjectFilter = actionObjectFilter,
                 setObjectListIsArchived = setObjectListIsArchived,

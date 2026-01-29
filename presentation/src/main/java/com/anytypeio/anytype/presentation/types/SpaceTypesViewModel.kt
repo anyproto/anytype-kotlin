@@ -16,8 +16,8 @@ import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel.VmParams
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -48,7 +48,7 @@ class SpaceTypesViewModel(
          * Base system layouts that are always excluded from the Object Types list,
          * regardless of space type.
          */
-        val baseSystemLayouts = listOf(
+        private val baseSystemLayouts = listOf(
             ObjectType.Layout.RELATION,
             ObjectType.Layout.RELATION_OPTION,
             ObjectType.Layout.DASHBOARD,
@@ -57,6 +57,7 @@ class SpaceTypesViewModel(
             ObjectType.Layout.TAG,
             ObjectType.Layout.DATE,
             ObjectType.Layout.OBJECT_TYPE,
+            ObjectType.Layout.PARTICIPANT
         )
     }
 
@@ -69,6 +70,7 @@ class SpaceTypesViewModel(
         viewModelScope.launch {
             storeOfObjectTypes.trackChanges()
                 .collectLatest { event ->
+
                     // Get space UX type to determine which layouts to exclude
                     val spaceView = spaceViewContainer.get(vmParams.spaceId)
                     val spaceUxType = spaceView?.spaceUxType
@@ -93,6 +95,7 @@ class SpaceTypesViewModel(
                                 objectType
                             }
                         }
+
                     val (myTypes, systemTypes) = allTypes.partition {
                         !it.restrictions.contains(
                             ObjectRestriction.DELETE

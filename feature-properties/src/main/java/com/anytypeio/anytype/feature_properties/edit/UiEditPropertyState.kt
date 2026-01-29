@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.feature_properties.add.UiEditTypePropertiesItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 sealed class UiEditPropertyState {
     data object Hidden : UiEditPropertyState()

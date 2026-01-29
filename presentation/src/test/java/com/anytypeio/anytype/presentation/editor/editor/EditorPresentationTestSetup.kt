@@ -63,7 +63,8 @@ import com.anytypeio.anytype.domain.icon.SetDocumentImageIcon
 import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -324,7 +325,7 @@ open class EditorPresentationTestSetup {
     @Mock
     lateinit var templatesContainer: ObjectTypeTemplatesContainer
 
-    protected val builder: UrlBuilder get() = UrlBuilder(gateway)
+    protected val builder: UrlBuilder get() = UrlBuilderImpl(gateway)
 
     private lateinit var updateDetail: UpdateDetail
     private lateinit var downloadUnsplashImage: DownloadUnsplashImage

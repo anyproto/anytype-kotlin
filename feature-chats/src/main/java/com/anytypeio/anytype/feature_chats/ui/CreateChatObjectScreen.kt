@@ -63,7 +63,7 @@ import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.ext.TRANSPARENT_COLOR
 import com.anytypeio.anytype.feature_chats.R
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 @Composable
 fun CreateChatObjectScreen(

@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.main
 
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.data.auth.repo.config.GatewayProvider
 import com.anytypeio.anytype.domain.account.AwaitAccountStartManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -8,6 +9,7 @@ import com.anytypeio.anytype.domain.config.ConfigStorage
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.config.TechSpaceProvider
 import com.anytypeio.anytype.domain.debugging.Logger
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import dagger.Module
 import dagger.Provides
 import javax.inject.Named
@@ -28,6 +30,15 @@ object ConfigModule {
     ): Gateway = GatewayProvider(
         configStorage = configStorage,
         logger = logger
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideUrlBuilder(
+        getGateway: Gateway
+    ): UrlBuilder = UrlBuilderImpl(
+        gateway = getGateway
     )
 
     @JvmStatic

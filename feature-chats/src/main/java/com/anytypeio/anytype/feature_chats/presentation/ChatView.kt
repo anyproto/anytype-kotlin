@@ -10,7 +10,7 @@ import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.domain.chats.ChatContainer
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 
 sealed interface ChatView {

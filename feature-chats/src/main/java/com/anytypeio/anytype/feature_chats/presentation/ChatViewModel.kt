@@ -18,18 +18,26 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
 import com.anytypeio.anytype.core_models.Url
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceInviteLinkAccessLevel
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
+import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.core_utils.ext.cancel
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.onFailure
@@ -45,42 +53,35 @@ import com.anytypeio.anytype.domain.media.DiscardPreloadedFile
 import com.anytypeio.anytype.domain.media.PreloadFile
 import com.anytypeio.anytype.domain.media.UploadFile
 import com.anytypeio.anytype.domain.misc.GetLinkPreview
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer.Store
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import com.anytypeio.anytype.domain.notifications.SetChatNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
 import com.anytypeio.anytype.feature_chats.tools.toNotificationState
+import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.notifications.NotificationStateCalculator
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.PinObjectAsWidgetDelegate
@@ -137,7 +138,8 @@ class ChatViewModel @Inject constructor(
     private val setObjectListIsArchived: SetObjectListIsArchived,
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
-    private val setChatNotificationMode: SetChatNotificationMode
+    private val setChatNotificationMode: SetChatNotificationMode,
+    private val fieldParser: FieldParser
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
     PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
@@ -286,7 +288,8 @@ class ChatViewModel @Inject constructor(
 
             proceedWithObservingChatMessages(
                 account = account,
-                chat = vmParams.ctx
+                chat = vmParams.ctx,
+                fieldParser = fieldParser
             )
         }
 
@@ -341,7 +344,8 @@ class ChatViewModel @Inject constructor(
 
     private suspend fun proceedWithObservingChatMessages(
         account: Id,
-        chat: Id
+        chat: Id,
+        fieldParser: FieldParser
     ) {
         combine(
             chatContainer.watchWhileTrackingAttachments(chat = chat).distinctUntilChanged(),
@@ -464,24 +468,24 @@ class ChatViewModel @Inject constructor(
                                 )
                             }
                             .take(ChatConfig.MAX_REACTION_COUNT),
-                        attachments = msg.attachments.map { attachment ->
+                        attachments = msg.attachments.mapNotNull { attachment ->
+
+                            val wrapper = dependencies[attachment.target]
+                            if (wrapper == null || !wrapper.isValid) return@mapNotNull null
+
                             when (attachment.type) {
                                 Chat.Message.Attachment.Type.Image -> {
-                                    val wrapper = dependencies[attachment.target]
                                     ChatView.Message.Attachment.Image(
                                         obj = attachment.target,
                                         url = urlBuilder.large(path = attachment.target),
-                                        name = wrapper?.name.orEmpty(),
-                                        ext = wrapper?.fileExt.orEmpty(),
-                                        status = wrapper
-                                            ?.syncStatus()
-                                            ?: ChatView.Message.Attachment.SyncStatus.Unknown
+                                        name = wrapper.name.orEmpty(),
+                                        ext = wrapper.fileExt.orEmpty(),
+                                        status = wrapper.syncStatus()
                                     )
                                 }
 
                                 else -> {
-                                    val wrapper = dependencies[attachment.target]
-                                    when (wrapper?.layout) {
+                                    when (wrapper.layout) {
                                         ObjectType.Layout.IMAGE -> {
                                             ChatView.Message.Attachment.Image(
                                                 obj = attachment.target,
@@ -520,21 +524,21 @@ class ChatViewModel @Inject constructor(
                                         }
 
                                         else -> {
-                                            val type = wrapper?.type?.firstOrNull()
+                                            val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                                                wrapper,
+                                                storeOfObjectTypes.getAll()
+                                            )
                                             ChatView.Message.Attachment.Link(
                                                 obj = attachment.target,
                                                 wrapper = wrapper,
-                                                icon = wrapper?.objectIcon(
+                                                icon = wrapper.objectIcon(
                                                     builder = urlBuilder,
                                                     objType = storeOfObjectTypes.getTypeOfObject(
                                                         wrapper
                                                     )
-                                                ) ?: ObjectIcon.None,
-                                                typeName = if (type != null)
-                                                    storeOfObjectTypes.get(type)?.name.orEmpty()
-                                                else
-                                                    "",
-                                                isDeleted = wrapper?.isDeleted == true
+                                                ),
+                                                typeName = typeName,
+                                                isDeleted = wrapper.isDeleted == true
                                             )
                                         }
                                     }
@@ -1132,8 +1136,11 @@ class ChatViewModel @Inject constructor(
 
                         is ChatView.Message.Attachment.Link -> {
                             val wrapper = a.wrapper
-                            if (wrapper != null) {
-                                val type = wrapper.type.firstOrNull()
+                            if (wrapper != null && wrapper.isValid) {
+                                val (_, typeName) = fieldParser.getObjectTypeIdAndName(
+                                    wrapper,
+                                    storeOfObjectTypes.getAll()
+                                )
                                 val name = if (wrapper.layout == ObjectType.Layout.NOTE) {
                                     wrapper.snippet.orEmpty()
                                 } else {
@@ -1147,10 +1154,7 @@ class ChatViewModel @Inject constructor(
                                             builder = urlBuilder,
                                             objType = storeOfObjectTypes.getTypeOfObject(wrapper)
                                         ),
-                                        typeName = if (type != null)
-                                            storeOfObjectTypes.get(type)?.name.orEmpty()
-                                        else
-                                            ""
+                                        typeName = typeName
                                     )
                                 )
                             }

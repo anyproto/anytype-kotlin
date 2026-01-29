@@ -17,6 +17,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ui.MimeCategory
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getMimeIcon
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -28,7 +29,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.ObjectIconProfile
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SimpleIcon
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.TypeIconView
 import com.anytypeio.anytype.core_utils.const.MimeTypes
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 @Composable
 fun ListWidgetObjectIcon(
@@ -198,7 +199,7 @@ fun DefaultFileObjectImageIcon(
 fun DefaultFileObjectImageIcon(
     modifier: Modifier,
     iconSize: Dp,
-    mime: MimeTypes.Category
+    mime: MimeCategory
 ) {
     val mimeIcon = mime.getMimeIcon()
     Box(

@@ -21,6 +21,7 @@ import androidx.compose.ui.hapticfeedback.HapticFeedbackType
 import androidx.compose.ui.platform.LocalHapticFeedback
 import androidx.compose.ui.platform.LocalViewConfiguration
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
@@ -38,7 +39,8 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
     onItemClicked: () -> Unit,
     onItemLongClicked: () -> Unit,
     dragModifier: Modifier? = null,
-    shouldEnableLongClick: Boolean = true
+    shouldEnableLongClick: Boolean = true,
+    cornerRadius: Dp = 24.dp
 ): Modifier {
     val haptic = LocalHapticFeedback.current
     val touchSlop = LocalViewConfiguration.current.touchSlop
@@ -52,7 +54,7 @@ fun ReorderableCollectionItemScope.ReorderableItemModifier(
         .padding(start = 20.dp, end = 20.dp, top = 6.dp, bottom = 6.dp)
         .alpha(if (isMenuExpanded) 0.8f else 1f)
         .background(
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(cornerRadius),
             color = colorResource(id = R.color.dashboard_card_background)
         )
 

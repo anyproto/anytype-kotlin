@@ -25,6 +25,7 @@ signing.properties
 app/release
 .kotlin/
 app/.cxx
+docs/plans/
 
 # Added by Task Master AI
 # Logs

@@ -17,34 +17,19 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.chats.Chat
 import com.anytypeio.anytype.core_models.chats.NotificationState
-import com.anytypeio.anytype.core_ui.views.BodySemiBold
+import com.anytypeio.anytype.core_models.ui.AttachmentPreview
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
-import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.views.Relations3
-import com.anytypeio.anytype.core_ui.views.Title3
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
-import com.anytypeio.anytype.data.auth.repo.config.GatewayProvider
-import com.anytypeio.anytype.domain.config.ConfigStorage
-import com.anytypeio.anytype.domain.misc.UrlBuilder
-import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
-import com.anytypeio.anytype.domain.objects.getTypeOfObject
-import com.anytypeio.anytype.domain.primitives.FieldParser
-import com.anytypeio.anytype.other.BasicLogger
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.vault.VaultSpaceView
-import com.anytypeio.anytype.ui.vault.UnreadIndicatorsRow
-import com.anytypeio.anytype.ui.vault.buildChatContentWithInlineIcons
-import com.anytypeio.anytype.ui.vault.getChatTextColor
+import com.anytypeio.anytype.feature_vault.ui.UnreadIndicatorsRow
+import com.anytypeio.anytype.feature_vault.ui.buildChatContentWithInlineIcons
+import com.anytypeio.anytype.feature_vault.ui.getChatTextColor
 
 /**
  * Compact chat widget card for home screen and widgets.
@@ -66,7 +51,7 @@ fun ChatWidgetCard(
     creatorName: String? = null,
     messageText: String? = null,
     messageTime: String? = null,
-    attachmentPreviews: List<VaultSpaceView.AttachmentPreview> = emptyList(),
+    attachmentPreviews: List<AttachmentPreview> = emptyList(),
     unreadMessageCount: Int,
     unreadMentionCount: Int,
     chatNotificationState: NotificationState,
@@ -179,4 +164,3 @@ fun ChatWidgetCard(
         }
     }
 }
-

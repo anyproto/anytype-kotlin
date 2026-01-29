@@ -30,6 +30,8 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
@@ -116,6 +118,7 @@ fun BoxScope.SelectDestinationObjectScreen(
         // Object list
         LazyColumn(
             modifier = Modifier
+                .nestedScroll(rememberNestedScrollInteropConnection())
                 .weight(1f)
                 .fillMaxWidth()
         ) {

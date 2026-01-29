@@ -45,6 +45,8 @@ import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
@@ -116,6 +118,7 @@ fun SelectSpaceScreen(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 22.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
             modifier = Modifier
+                .nestedScroll(rememberNestedScrollInteropConnection())
                 .weight(1f)
                 .fillMaxWidth()
         ) {

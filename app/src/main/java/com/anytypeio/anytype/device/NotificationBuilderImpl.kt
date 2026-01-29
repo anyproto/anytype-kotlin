@@ -91,24 +91,27 @@ class NotificationBuilderImpl(
 
         // Determine Line 2 content:
         // - For Data spaces: chat name (fallback to space name if unavailable)
-        // - For Chat spaces: space name (since space = chat in 1-to-1)
+        // - For One-to-One spaces: null (don't show space name, it's redundant)
+        // - For other Chat spaces: space name
         val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
-        val secondLine = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
-            chatsDetailsSubscriptionContainer.get(message.chatId)?.name
-                ?.trim()
-                ?.takeIf { it.isNotBlank() }
-                ?: message.spaceName.trim()  // Fallback to space name
-        } else {
-            message.spaceName.trim()  // Chat spaces use space name
+        val secondLine: String? = when (spaceView?.spaceUxType) {
+            SpaceUxType.DATA -> {
+                chatsDetailsSubscriptionContainer.get(message.chatId)?.name
+                    ?.trim()
+                    ?.takeIf { it.isNotBlank() }
+                    ?: message.spaceName.trim()  // Fallback to space name
+            }
+            SpaceUxType.ONE_TO_ONE -> null  // Don't show space name for one-on-one
+            else -> message.spaceName.trim()  // Other chat spaces use space name
         }
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.senderName.trim())  // Title: Author name
-            .setContentText("$secondLine: $bodyText")     // Collapsed view
+            .setContentText(if (secondLine != null) "$secondLine: $bodyText" else bodyText)  // Collapsed view
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("$secondLine\n$bodyText")    // Expanded: Chat/Space name + Message
+                    .bigText(if (secondLine != null) "$secondLine\n$bodyText" else bodyText)  // Expanded view
             )
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -135,7 +138,7 @@ class NotificationBuilderImpl(
         // Create or update summary notification for the group
         updateSummaryNotification(
             groupId = groupId,
-            chatOrSpaceName = secondLine,
+            chatOrSpaceName = secondLine ?: message.senderName.trim(),
             chatPendingIntent = pending,
             largeIcon = largeIcon
         )

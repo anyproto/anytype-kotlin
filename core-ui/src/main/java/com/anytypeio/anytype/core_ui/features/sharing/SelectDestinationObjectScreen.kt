@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -93,6 +94,7 @@ fun BoxScope.SelectDestinationObjectScreen(
     showCommentInput: Boolean,
     onSearchQueryChanged: (String) -> Unit,
     onObjectSelected: (DestinationObjectItem) -> Unit,
+    onNewObjectClicked: () -> Unit,
     onCommentChanged: (String) -> Unit,
     onSendClicked: () -> Unit,
     onBackPressed: () -> Unit,
@@ -100,6 +102,9 @@ fun BoxScope.SelectDestinationObjectScreen(
 ) {
     // Track real-time character count for button state
     var currentCharCount by remember { mutableStateOf(commentText.length) }
+
+    // Track if "New object" option is selected
+    val isNewObjectSelected = selectedObjectIds.isEmpty()
 
     Column(
         modifier = modifier
@@ -130,12 +135,11 @@ fun BoxScope.SelectDestinationObjectScreen(
                 .weight(1f)
                 .fillMaxWidth()
         ) {
-            item {
-                Text(
-                    text = stringResource(R.string.sharing_select_dest),
-                    style = Caption1Medium,
-                    color = colorResource(id = R.color.text_secondary),
-                    modifier = Modifier.padding(start = 20.dp, bottom = 8.dp)
+            // New object option - always appears first
+            item(key = "new_object_option") {
+                NewObjectListItem(
+                    isSelected = isNewObjectSelected,
+                    onClick = onNewObjectClicked
                 )
             }
             item {
@@ -152,8 +156,6 @@ fun BoxScope.SelectDestinationObjectScreen(
                         isSelected = chat.id in selectedObjectIds,
                         onClick = { onObjectSelected(chat) }
                     )
-                }
-                item(key = "chats_divider") {
                     Divider()
                 }
             }
@@ -214,11 +216,14 @@ fun BoxScope.SelectDestinationObjectScreen(
         }
 
         // Bottom button
+        // Button enabled logic: must have selection AND comment within limit
+        val hasSelection = selectedObjectIds.isNotEmpty() || isNewObjectSelected
         val isCommentOverLimit = if (showCommentInput) {
             currentCharCount > MAX_MESSAGE_CHARACTER_LIMIT
         } else {
             false
         }
+        val isButtonEnabled = hasSelection && !isCommentOverLimit
 
         ButtonOnboardingPrimaryLarge(
             text = if (showCommentInput) {
@@ -228,7 +233,7 @@ fun BoxScope.SelectDestinationObjectScreen(
             },
             onClick = onSendClicked,
             size = ButtonSize.Large,
-            enabled = !isCommentOverLimit,
+            enabled = isButtonEnabled,
             modifierBox = Modifier
                 .fillMaxWidth()
         )
@@ -327,11 +332,61 @@ private fun ObjectListItem(
                 contentDescription = "Selected",
             )
         } else {
+            Spacer(
+                modifier = Modifier.size(24.dp)
+            )
+        }
+    }
+}
+
+@Composable
+private fun NewObjectListItem(
+    isSelected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick)
+            .padding(horizontal = 20.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        // Plus icon in a circle
+        Box(
+            modifier = Modifier
+                .size(48.dp)
+                .background(
+                    color = colorResource(id = R.color.shape_primary),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Image(
+                painter = painterResource(id = R.drawable.ic_default_plus),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.width(12.dp))
+
+        Text(
+            text = stringResource(R.string.new_object),
+            style = Title2,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.weight(1f)
+        )
+
+        // Selection indicator
+        if (isSelected) {
             Image(
                 modifier = Modifier.size(24.dp),
-                painter = painterResource(id = R.drawable.ic_checkbox_unchecked),
-                contentDescription = "Not selected",
+                painter = painterResource(id = R.drawable.ic_checkbox_checked),
+                contentDescription = "Selected"
             )
+        } else {
+            Spacer(modifier = Modifier.size(24.dp))
         }
     }
 }
@@ -409,6 +464,7 @@ private fun SelectDestinationObjectScreenPreview() {
             showCommentInput = false,
             onSearchQueryChanged = {},
             onObjectSelected = {},
+            onNewObjectClicked = {},
             onCommentChanged = {},
             onSendClicked = {},
             onBackPressed = {}
@@ -438,6 +494,7 @@ private fun SelectDestinationObjectScreenWithChatSelectedPreview() {
             showCommentInput = true,
             onSearchQueryChanged = {},
             onObjectSelected = {},
+            onNewObjectClicked = {},
             onCommentChanged = {},
             onSendClicked = {},
             onBackPressed = {}

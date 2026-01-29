@@ -33,6 +33,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.platform.LocalFocusManager
@@ -57,8 +58,10 @@ import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.views.ButtonOnboardingPrimaryLarge
 import com.anytypeio.anytype.core_ui.views.ButtonSize
+import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
+import com.anytypeio.anytype.presentation.confgs.ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
 
 /**
@@ -258,50 +261,73 @@ private fun CommentSection(
 
     Column(
         modifier = modifier
-            .padding(horizontal = 16.dp, vertical = 12.dp)
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Comment Text Field
-        OutlinedTextField(
-            value = innerValue,
-            onValueChange = {
-                innerValue = it
-                onCommentChanged(it.text)
-            },
-            textStyle = BodySemiBold.copy(
-                color = colorResource(id = R.color.text_primary)
-            ),
-            singleLine = true,
-            enabled = true,
-            colors = TextFieldDefaults.colors(
-                disabledTextColor = colorResource(id = R.color.text_primary),
-                cursorColor = colorResource(id = R.color.color_accent),
-                focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .wrapContentHeight()
-                .padding(start = 0.dp, top = 12.dp)
-                .focusRequester(focusRequester),
-            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-            keyboardActions = KeyboardActions {
-                keyboardController?.hide()
-                focusManager.clearFocus()
-            },
-            shape = RoundedCornerShape(size = 26.dp),
-            placeholder = {
-                Text(
-                    modifier = Modifier.padding(start = 1.dp),
-                    text = stringResource(id = R.string.add_a_comment),
-                    style = BodyRegular,
-                    color = colorResource(id = R.color.text_tertiary)
+        // Character counter badge (shown only when at or over limit)
+        val characterCount = innerValue.text.length  // Use innerValue.text for real-time updates
+        val maxCharacters = MAX_MESSAGE_CHARACTER_LIMIT
+        val isOverLimit = characterCount > maxCharacters
+        val isAtOrOverLimit = characterCount >= maxCharacters
+
+        // Comment Text Field with overlay badge
+        Box(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            OutlinedTextField(
+                value = innerValue,
+                onValueChange = {
+                    innerValue = it
+                    onCommentChanged(it.text)
+                },
+                textStyle = BodySemiBold.copy(
+                    color = colorResource(id = R.color.text_primary)
+                ),
+                maxLines = 5,
+                enabled = true,
+                colors = TextFieldDefaults.colors(
+                    disabledTextColor = colorResource(id = R.color.text_primary),
+                    cursorColor = colorResource(id = R.color.color_accent),
+                    focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                    focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                    errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(start = 0.dp, top = 12.dp)
+                    .focusRequester(focusRequester),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+                keyboardActions = KeyboardActions {
+                    keyboardController?.hide()
+                    focusManager.clearFocus()
+                },
+                shape = RoundedCornerShape(size = 26.dp),
+                placeholder = {
+                    Text(
+                        modifier = Modifier.padding(start = 1.dp),
+                        text = stringResource(id = R.string.add_a_comment),
+                        style = BodyRegular,
+                        color = colorResource(id = R.color.text_tertiary)
+                    )
+                }
+            )
+
+            // Badge overlaying the text field
+            if (isAtOrOverLimit) {
+                CharacterCounterBadge(
+                    currentCount = characterCount,
+                    maxCount = maxCharacters,
+                    isOverLimit = isOverLimit,
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(top = 20.dp)
                 )
             }
-        )
+        }
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -310,7 +336,52 @@ private fun CommentSection(
             text = stringResource(R.string.send),
             onClick = onSendClicked,
             size = ButtonSize.Large,
+            enabled = !isOverLimit,
             modifierBox = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+/**
+ * Character counter badge overlaid on top of the comment text field.
+ * Shows format: "currentCount / maxCount"
+ * Displays in red when over limit.
+ *
+ * Note: This badge should only be shown when character count is at or exceeds the limit.
+ * The badge is positioned at the top-center of the text field as an overlay.
+ *
+ * @param currentCount Current character count
+ * @param maxCount Maximum allowed characters
+ * @param isOverLimit Whether current count exceeds max
+ * @param modifier Modifier for the badge
+ */
+@Composable
+private fun CharacterCounterBadge(
+    currentCount: Int,
+    maxCount: Int,
+    isOverLimit: Boolean,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier
+            .shadow(
+                elevation = 10.dp,
+                shape = RoundedCornerShape(16.dp)
+            )
+            .background(
+                color = colorResource(id = R.color.background_secondary),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 2.dp)
+    ) {
+        Text(
+            text = "$currentCount / $maxCount",
+            style = Caption1Medium,
+            color = if (isOverLimit) {
+                colorResource(id = R.color.palette_system_red)
+            } else {
+                colorResource(id = R.color.text_secondary)
+            }
         )
     }
 }
@@ -337,46 +408,69 @@ internal fun CommentInputField(
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
 
-    OutlinedTextField(
-        value = innerValue,
-        onValueChange = {
-            innerValue = it
-            onCommentChanged(it.text)
-        },
-        textStyle = BodySemiBold.copy(
-            color = colorResource(id = R.color.text_primary)
-        ),
-        singleLine = true,
-        enabled = true,
-        colors = TextFieldDefaults.colors(
-            disabledTextColor = colorResource(id = R.color.text_primary),
-            cursorColor = colorResource(id = R.color.color_accent),
-            focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-            unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-            errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-            focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-            unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-            errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
-        ),
+    // Character counter badge (shown only when at or over limit)
+    val characterCount = innerValue.text.length  // Use innerValue.text for real-time updates
+    val maxCharacters = MAX_MESSAGE_CHARACTER_LIMIT
+    val isOverLimit = characterCount > maxCharacters
+    val isAtOrOverLimit = characterCount >= maxCharacters
+
+    // Comment Text Field with overlay badge
+    Box(
         modifier = modifier
-            .fillMaxWidth()
-            .wrapContentHeight()
-            .focusRequester(focusRequester),
-        keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-        keyboardActions = KeyboardActions {
-            keyboardController?.hide()
-            focusManager.clearFocus()
-        },
-        shape = RoundedCornerShape(size = 26.dp),
-        placeholder = {
-            Text(
-                modifier = Modifier.padding(start = 1.dp),
-                text = stringResource(id = R.string.add_a_comment),
-                style = BodyRegular,
-                color = colorResource(id = R.color.text_tertiary)
+    ) {
+        OutlinedTextField(
+            value = innerValue,
+            onValueChange = {
+                innerValue = it
+                onCommentChanged(it.text)
+            },
+            textStyle = BodySemiBold.copy(
+                color = colorResource(id = R.color.text_primary)
+            ),
+            maxLines = 5,
+            enabled = true,
+            colors = TextFieldDefaults.colors(
+                disabledTextColor = colorResource(id = R.color.text_primary),
+                cursorColor = colorResource(id = R.color.color_accent),
+                focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
+                focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
+                errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+                .focusRequester(focusRequester),
+            keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
+            keyboardActions = KeyboardActions {
+                keyboardController?.hide()
+                focusManager.clearFocus()
+            },
+            shape = RoundedCornerShape(size = 26.dp),
+            placeholder = {
+                Text(
+                    modifier = Modifier.padding(start = 1.dp),
+                    text = stringResource(id = R.string.add_a_comment),
+                    style = BodyRegular,
+                    color = colorResource(id = R.color.text_tertiary)
+                )
+            }
+        )
+
+        // Badge overlaying the text field
+        if (isAtOrOverLimit) {
+            CharacterCounterBadge(
+                currentCount = characterCount,
+                maxCount = maxCharacters,
+                isOverLimit = isOverLimit,
+                modifier = Modifier
+                    .align(Alignment.TopCenter)
+                    .padding(top = 6.dp)
             )
         }
-    )
+    }
 }
 
 /**
@@ -507,6 +601,82 @@ private fun SelectSpaceScreenEmptyPreview() {
             onSearchQueryChanged = {},
             onCommentChanged = {},
             onSpaceSelected = {},
+            onSendClicked = {}
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun SelectSpaceScreenCharacterLimitExceededPreview() {
+    val sampleSpace = SelectableSpaceItem(
+        id = "1",
+        icon = SpaceIcon.DataSpace.Placeholder(
+            name = "Team Chat",
+            color = SystemColor.PINK
+        ),
+        name = "Team Chat",
+        isSelected = true,
+        isChatSpace = true
+    )
+
+    // Generate text over 2000 characters to trigger the red badge and disabled button
+    val longCommentText = "This is a very long comment that exceeds the character limit. ".repeat(40)
+
+    Box {
+        SelectSpaceScreen(
+            spaces = listOf(sampleSpace),
+            searchQuery = "",
+            commentText = longCommentText,
+            onSearchQueryChanged = {},
+            onCommentChanged = {},
+            onSpaceSelected = {},
+            onSendClicked = {}
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun CommentSectionAtLimitPreview() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.background_primary))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "At Limit (2000 chars) - Gray Badge",
+            style = BodyBold,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        CommentSection(
+            commentText = "x".repeat(2000),
+            onCommentChanged = {},
+            onSendClicked = {}
+        )
+    }
+}
+
+@DefaultPreviews
+@Composable
+private fun CommentSectionOverLimitPreview() {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(color = colorResource(id = R.color.background_primary))
+            .padding(16.dp)
+    ) {
+        Text(
+            text = "Over Limit (2100 chars) - Red Badge, Disabled Button",
+            style = BodyBold,
+            color = colorResource(id = R.color.text_primary),
+            modifier = Modifier.padding(bottom = 8.dp)
+        )
+        CommentSection(
+            commentText = "x".repeat(2100),
+            onCommentChanged = {},
             onSendClicked = {}
         )
     }

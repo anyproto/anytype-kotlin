@@ -105,13 +105,16 @@ class NotificationBuilderImpl(
             else -> message.spaceName.trim()  // Other chat spaces use space name
         }
 
+        val formattedContent = secondLine?.let { "$it: $bodyText" } ?: bodyText
+        val formattedBigText = secondLine?.let { "$it\n$bodyText" } ?: bodyText
+
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.senderName.trim())  // Title: Author name
-            .setContentText(if (secondLine != null) "$secondLine: $bodyText" else bodyText)  // Collapsed view
+            .setContentText(formattedContent)  // Collapsed view
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText(if (secondLine != null) "$secondLine\n$bodyText" else bodyText)  // Expanded view
+                    .bigText(formattedBigText)  // Expanded view
             )
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)

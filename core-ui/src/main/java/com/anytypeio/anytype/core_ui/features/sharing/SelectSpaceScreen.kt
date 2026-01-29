@@ -25,6 +25,7 @@ import androidx.compose.material.Text
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -350,6 +351,13 @@ internal fun CommentTextField(
 ): CommentFieldState {
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(commentText))
+    }
+
+    // Sync external state changes (e.g., when parent clears commentText)
+    LaunchedEffect(commentText) {
+        if (innerValue.text != commentText) {
+            innerValue = TextFieldValue(commentText)
+        }
     }
 
     val focusRequester = remember { FocusRequester() }

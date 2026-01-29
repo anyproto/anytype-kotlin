@@ -45,6 +45,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
@@ -63,6 +64,13 @@ import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.presentation.confgs.ChatConfig.MAX_MESSAGE_CHARACTER_LIMIT
 import com.anytypeio.anytype.presentation.spaces.SpaceIconView as SpaceIcon
+
+/**
+ * State returned by CommentTextField to inform callers about character limit status
+ */
+data class CommentFieldState(
+    val isOverLimit: Boolean
+)
 
 /**
  * Data model for selectable space items in the grid
@@ -251,83 +259,18 @@ private fun CommentSection(
     onSendClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
-        mutableStateOf(TextFieldValue(""))
-    }
-
-    val focusRequester = remember { FocusRequester() }
-    val focusManager = LocalFocusManager.current
-    val keyboardController = LocalSoftwareKeyboardController.current
-
     Column(
         modifier = modifier
             .padding(horizontal = 16.dp, vertical = 12.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Character counter badge (shown only when at or over limit)
-        val characterCount = innerValue.text.length  // Use innerValue.text for real-time updates
-        val maxCharacters = MAX_MESSAGE_CHARACTER_LIMIT
-        val isOverLimit = characterCount > maxCharacters
-        val isAtOrOverLimit = characterCount >= maxCharacters
-
-        // Comment Text Field with overlay badge
-        Box(
+        val state = CommentTextField(
+            commentText = commentText,
+            onCommentChanged = onCommentChanged,
+            badgeTopPadding = 20.dp,
+            textFieldTopPadding = 12.dp,
             modifier = Modifier.fillMaxWidth()
-        ) {
-            OutlinedTextField(
-                value = innerValue,
-                onValueChange = {
-                    innerValue = it
-                    onCommentChanged(it.text)
-                },
-                textStyle = BodySemiBold.copy(
-                    color = colorResource(id = R.color.text_primary)
-                ),
-                maxLines = 5,
-                enabled = true,
-                colors = TextFieldDefaults.colors(
-                    disabledTextColor = colorResource(id = R.color.text_primary),
-                    cursorColor = colorResource(id = R.color.color_accent),
-                    focusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    unfocusedContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    errorContainerColor = colorResource(id = R.color.shape_transparent_secondary),
-                    focusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                    unfocusedIndicatorColor = androidx.compose.ui.graphics.Color.Transparent,
-                    errorIndicatorColor = androidx.compose.ui.graphics.Color.Transparent
-                ),
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(start = 0.dp, top = 12.dp)
-                    .focusRequester(focusRequester),
-                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
-                keyboardActions = KeyboardActions {
-                    keyboardController?.hide()
-                    focusManager.clearFocus()
-                },
-                shape = RoundedCornerShape(size = 26.dp),
-                placeholder = {
-                    Text(
-                        modifier = Modifier.padding(start = 1.dp),
-                        text = stringResource(id = R.string.add_a_comment),
-                        style = BodyRegular,
-                        color = colorResource(id = R.color.text_tertiary)
-                    )
-                }
-            )
-
-            // Badge overlaying the text field
-            if (isAtOrOverLimit) {
-                CharacterCounterBadge(
-                    currentCount = characterCount,
-                    maxCount = maxCharacters,
-                    isOverLimit = isOverLimit,
-                    modifier = Modifier
-                        .align(Alignment.TopCenter)
-                        .padding(top = 20.dp)
-                )
-            }
-        }
+        )
 
         Spacer(modifier = Modifier.height(12.dp))
 
@@ -336,7 +279,7 @@ private fun CommentSection(
             text = stringResource(R.string.send),
             onClick = onSendClicked,
             size = ButtonSize.Large,
-            enabled = !isOverLimit,
+            enabled = !state.isOverLimit,
             modifierBox = Modifier.fillMaxWidth()
         )
     }
@@ -387,19 +330,24 @@ private fun CharacterCounterBadge(
 }
 
 /**
- * Standalone comment input field that can be reused across screens.
- * Uses Material3 OutlinedTextField with proper keyboard handling.
+ * Core text field component with character counter badge.
+ * Extracted shared logic from CommentSection and CommentInputField.
  *
- * @param commentText Current comment text (for display, state managed via innerValue)
+ * @param commentText Current comment text (for initial state, internal state managed via innerValue)
  * @param onCommentChanged Callback when comment text changes
- * @param modifier Modifier for the text field
+ * @param badgeTopPadding Padding from top of Box to the badge (6.dp for CommentInputField, 20.dp for CommentSection)
+ * @param textFieldTopPadding Padding from top of text field (0.dp for CommentInputField, 12.dp for CommentSection)
+ * @param modifier Modifier for the component
+ * @return CommentFieldState with isOverLimit flag for callers needing button state
  */
 @Composable
-internal fun CommentInputField(
+internal fun CommentTextField(
     commentText: String,
     onCommentChanged: (String) -> Unit,
+    badgeTopPadding: Dp = 6.dp,
+    textFieldTopPadding: Dp = 0.dp,
     modifier: Modifier = Modifier
-) {
+): CommentFieldState {
     var innerValue by rememberSaveable(stateSaver = TextFieldValue.Saver) {
         mutableStateOf(TextFieldValue(commentText))
     }
@@ -409,7 +357,7 @@ internal fun CommentInputField(
     val keyboardController = LocalSoftwareKeyboardController.current
 
     // Character counter badge (shown only when at or over limit)
-    val characterCount = innerValue.text.length  // Use innerValue.text for real-time updates
+    val characterCount = innerValue.text.length
     val maxCharacters = MAX_MESSAGE_CHARACTER_LIMIT
     val isOverLimit = characterCount > maxCharacters
     val isAtOrOverLimit = characterCount >= maxCharacters
@@ -442,6 +390,7 @@ internal fun CommentInputField(
             modifier = Modifier
                 .fillMaxWidth()
                 .wrapContentHeight()
+                .padding(top = textFieldTopPadding)
                 .focusRequester(focusRequester),
             keyboardOptions = KeyboardOptions(imeAction = ImeAction.Done),
             keyboardActions = KeyboardActions {
@@ -467,10 +416,33 @@ internal fun CommentInputField(
                 isOverLimit = isOverLimit,
                 modifier = Modifier
                     .align(Alignment.TopCenter)
-                    .padding(top = 6.dp)
+                    .padding(top = badgeTopPadding)
             )
         }
     }
+
+    return CommentFieldState(isOverLimit = isOverLimit)
+}
+
+/**
+ * Standalone comment input field that can be reused across screens.
+ * Uses Material3 OutlinedTextField with proper keyboard handling.
+ *
+ * @param commentText Current comment text (for display, state managed via innerValue)
+ * @param onCommentChanged Callback when comment text changes
+ * @param modifier Modifier for the text field
+ */
+@Composable
+internal fun CommentInputField(
+    commentText: String,
+    onCommentChanged: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    CommentTextField(
+        commentText = commentText,
+        onCommentChanged = onCommentChanged,
+        modifier = modifier.fillMaxWidth()
+    )
 }
 
 /**

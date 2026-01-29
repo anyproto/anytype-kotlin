@@ -846,11 +846,50 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
+     * Returns the string resource ID for "linked" messages (used when spaceName != null).
+     * Format: "Content linked to 'ObjectName' in 'SpaceName'"
+     */
+    private fun getLinkedStringResId(contentType: SharedContent): Int = when (contentType) {
+        is SharedContent.Text -> R.string.sharing_snackbar_text_linked
+        is SharedContent.Url -> R.string.sharing_snackbar_link_linked
+        is SharedContent.SingleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_linked
+            SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_linked
+            SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_linked
+            SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_linked
+            SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_linked
+        }
+        is SharedContent.MultipleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
+            else -> R.string.sharing_snackbar_files_linked
+        }
+    }
+
+    /**
+     * Returns the string resource ID for "added" messages (used for chat or new object destinations).
+     * Format: "Content added to DestinationName"
+     */
+    private fun getAddedStringResId(contentType: SharedContent): Int = when (contentType) {
+        is SharedContent.Text -> R.string.sharing_snackbar_text_added
+        is SharedContent.Url -> R.string.sharing_snackbar_link_added
+        is SharedContent.SingleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
+            SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
+            SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
+            SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
+            SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
+        }
+        is SharedContent.MultipleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
+            else -> R.string.sharing_snackbar_files_added
+        }
+    }
+
+    /**
      * Returns content-specific Snackbar message based on the shared content type.
-     * Three message formats:
+     * Two message formats:
      * 1. spaceName != null -> "Content linked to 'ObjectName' in 'SpaceName'"
-     * 2. isChat = true -> "Content added to Chat Name"
-     * 3. else (new object in space) -> "Content added to Space name"
+     * 2. else (chat or new object) -> "Content added to DestinationName"
      */
     private fun getSnackbarMessage(
         contentType: SharedContent,
@@ -858,69 +897,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         spaceName: String?,
         isChat: Boolean
     ): String {
-        return when {
-            // Case 1: Linked to existing object
-            spaceName != null -> {
-                // "Content linked to 'ObjectName' in 'SpaceName'"
-                val stringResId = when (contentType) {
-                    is SharedContent.Text -> R.string.sharing_snackbar_text_linked
-                    is SharedContent.Url -> R.string.sharing_snackbar_link_linked
-                    is SharedContent.SingleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_linked
-                        SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_linked
-                        SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_linked
-                        SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_linked
-                        SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_linked
-                    }
-                    is SharedContent.MultipleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
-                        else -> R.string.sharing_snackbar_files_linked
-                    }
-                }
-                getString(stringResId, destinationName, spaceName)
-            }
-
-            // Case 2: Chat destination (spaceName is null and isChat is true)
-            isChat -> {
-                // "8 images added to Chat Name"
-                val stringResId = when (contentType) {
-                    is SharedContent.Text -> R.string.sharing_snackbar_text_added
-                    is SharedContent.Url -> R.string.sharing_snackbar_link_added
-                    is SharedContent.SingleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
-                        SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
-                        SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
-                        SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
-                        SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
-                    }
-                    is SharedContent.MultipleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
-                        else -> R.string.sharing_snackbar_files_added
-                    }
-                }
-                getString(stringResId, destinationName)
-            }
-
-            // Case 3: New Object in Space (spaceName is null and isChat is false)
-            else -> {
-                // "8 images added to Space name"
-                val stringResId = when (contentType) {
-                    is SharedContent.Text -> R.string.sharing_snackbar_text_added
-                    is SharedContent.Url -> R.string.sharing_snackbar_link_added
-                    is SharedContent.SingleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
-                        SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
-                        SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
-                        SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
-                        SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
-                    }
-                    is SharedContent.MultipleMedia -> when (contentType.type) {
-                        SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
-                        else -> R.string.sharing_snackbar_files_added
-                    }
-                }
-                getString(stringResId, destinationName)
-            }
+        return if (spaceName != null) {
+            getString(getLinkedStringResId(contentType), destinationName, spaceName)
+        } else {
+            getString(getAddedStringResId(contentType), destinationName)
         }
     }
 

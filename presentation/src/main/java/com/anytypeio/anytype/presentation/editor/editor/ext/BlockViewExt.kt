@@ -168,6 +168,10 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Description -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
+        )
         else -> view.also {
             check(view !is BlockView.Permission) { "Actual type was: ${view.getViewType()}" }
         }
@@ -508,6 +512,10 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
         else -> view.also {
             check(view !is BlockView.Permission) { "Actual type is: ${view.getViewType()}" }
         }
@@ -549,6 +557,7 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Embed -> view.copy(mode = BlockView.Mode.READ)
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }
@@ -600,6 +609,7 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Embed -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         else -> view.also { check(view !is BlockView.Permission) }
     }
 }

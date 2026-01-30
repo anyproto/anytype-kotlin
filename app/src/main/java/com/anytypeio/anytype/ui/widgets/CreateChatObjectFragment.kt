@@ -50,7 +50,10 @@ class CreateChatObjectFragment : BaseBottomSheetComposeFragment() {
     ) { uri ->
         if (uri != null) {
             context?.let {
-                vm.onImageSelected(url = uri.parseImagePath(it))
+                val path = uri.parseImagePath(it)
+                if (path != null) {
+                    vm.onImageSelected(url = path)
+                }
             }
         }
     }

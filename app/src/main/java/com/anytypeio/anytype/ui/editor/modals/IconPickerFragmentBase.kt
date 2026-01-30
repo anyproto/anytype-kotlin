@@ -154,16 +154,15 @@ abstract class IconPickerFragmentBase<T> :
 
     private val getContent = registerForActivityResult(GetImageContract()) { uri: Uri? ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onPickedFromDevice(
                     iconable = target,
                     path = path,
                     space = space
                 )
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for cover image")
-                Timber.d(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.e("Error while upload cover image, URI is null")
@@ -183,16 +182,15 @@ abstract class IconPickerFragmentBase<T> :
 
     val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onPickedFromDevice(
                     iconable = target,
                     path = path,
                     space = space
                 )
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for media file")
-                Timber.e(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.i("No media selected")

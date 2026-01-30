@@ -2442,12 +2442,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     //region Media Picker
     private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onProceedWithFilePath(path)
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for media file")
-                Timber.e(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.i("No media selected")
@@ -2456,15 +2455,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onPickedDocImageFromDevice(
                     ctx = ctx,
                     path = path
                 )
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for media file")
-                Timber.e(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.i("No media selected")

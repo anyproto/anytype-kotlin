@@ -531,7 +531,9 @@ fun List<BlockView>.updateCursorAndEditMode(
             isSelected = false
         )
         else -> view.also {
-            check(view !is BlockView.Permission) { "Actual type is: ${view.getViewType()}" }
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in updateCursorAndEditMode: ${view.getViewType()}")
+            }
         }
     }
 }

@@ -22,7 +22,7 @@ import com.anytypeio.anytype.core_utils.ext.hide
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.presentation.editor.editor.ViewState
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
-import com.anytypeio.anytype.presentation.mapper.objectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import kotlinx.coroutines.launch
 import timber.log.Timber

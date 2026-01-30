@@ -1,0 +1,70 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    alias(libs.plugins.compose.compiler)
+}
+
+android {
+    buildFeatures {
+        compose true
+    }
+
+    namespace 'com.anytypeio.anytype.feature_vault'
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    // Project modules
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':core-models')
+    implementation project(':core-utils')
+    implementation project(':localization')
+    implementation project(':analytics')
+    implementation project(':library-emojifier')
+    implementation project(':feature-chats')
+
+    // DI - javax.inject for constructor injection annotations
+    compileOnly libs.javaxInject
+
+    // Lifecycle
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+
+    // Compose
+    implementation libs.appcompat
+    implementation libs.compose
+    implementation libs.activityCompose
+    implementation libs.composeFoundation
+    implementation libs.composeToolingPreview
+    implementation libs.composeMaterial3
+    implementation libs.composeMaterial
+    implementation libs.navigationCompose
+
+    // ConstraintLayout for Compose
+    implementation libs.composeConstraintLayout
+
+    // Reorderable lists
+    implementation libs.composeReorderable
+
+    // Image loading
+    implementation libs.coilCompose
+
+    debugImplementation libs.composeTooling
+
+    implementation libs.timber
+
+    // Testing
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.turbine
+    testImplementation libs.robolectric
+    testImplementation libs.androidXTestCore
+    testImplementation project(":test:utils")
+    testImplementation project(":test:core-models-stub")
+}

@@ -33,12 +33,12 @@ import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineHeading
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.ui_settings.R
@@ -105,7 +105,9 @@ fun ViewerSpaceSettings(
         )
         Spacer(modifier = Modifier.height(16.dp))
         Text(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
             text = title.ifEmpty { stringResource(R.string.untitled) },
             style = HeadlineHeading,
             color = colorResource(R.color.text_primary),

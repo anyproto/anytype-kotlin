@@ -22,17 +22,17 @@ import com.anytypeio.anytype.core_models.DecryptedPushContent
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_ui.extensions.resInt
 import com.anytypeio.anytype.core_utils.ext.runSafely
 import com.anytypeio.anytype.domain.chats.ChatsDetailsSubscriptionContainer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.notifications.NotificationBuilder
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.ui.main.MainActivity
 import kotlin.math.absoluteValue
 import timber.log.Timber
@@ -91,24 +91,30 @@ class NotificationBuilderImpl(
 
         // Determine Line 2 content:
         // - For Data spaces: chat name (fallback to space name if unavailable)
-        // - For Chat spaces: space name (since space = chat in 1-to-1)
+        // - For One-to-One spaces: null (don't show space name, it's redundant)
+        // - For other Chat spaces: space name
         val spaceView = spaceViewSubscriptionContainer.get(SpaceId(spaceId))
-        val secondLine = if (spaceView?.spaceUxType == SpaceUxType.DATA) {
-            chatsDetailsSubscriptionContainer.get(message.chatId)?.name
-                ?.trim()
-                ?.takeIf { it.isNotBlank() }
-                ?: message.spaceName.trim()  // Fallback to space name
-        } else {
-            message.spaceName.trim()  // Chat spaces use space name
+        val secondLine: String? = when (spaceView?.spaceUxType) {
+            SpaceUxType.DATA -> {
+                chatsDetailsSubscriptionContainer.get(message.chatId)?.name
+                    ?.trim()
+                    ?.takeIf { it.isNotBlank() }
+                    ?: message.spaceName.trim()  // Fallback to space name
+            }
+            SpaceUxType.ONE_TO_ONE -> null  // Don't show space name for one-on-one
+            else -> message.spaceName.trim()  // Other chat spaces use space name
         }
+
+        val formattedContent = secondLine?.let { "$it: $bodyText" } ?: bodyText
+        val formattedBigText = secondLine?.let { "$it\n$bodyText" } ?: bodyText
 
         val builder = NotificationCompat.Builder(context, channelId)
             .setSmallIcon(R.drawable.ic_app_notification)
             .setContentTitle(message.senderName.trim())  // Title: Author name
-            .setContentText("$secondLine: $bodyText")     // Collapsed view
+            .setContentText(formattedContent)  // Collapsed view
             .setStyle(
                 NotificationCompat.BigTextStyle()
-                    .bigText("$secondLine\n$bodyText")    // Expanded: Chat/Space name + Message
+                    .bigText(formattedBigText)  // Expanded view
             )
             .setAutoCancel(true)
             .setPriority(NotificationCompat.PRIORITY_HIGH)
@@ -135,7 +141,7 @@ class NotificationBuilderImpl(
         // Create or update summary notification for the group
         updateSummaryNotification(
             groupId = groupId,
-            chatOrSpaceName = secondLine,
+            chatOrSpaceName = secondLine ?: message.senderName.trim(),
             chatPendingIntent = pending,
             largeIcon = largeIcon
         )

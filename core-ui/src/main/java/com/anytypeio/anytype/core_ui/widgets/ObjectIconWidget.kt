@@ -26,12 +26,12 @@ import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.emojifier.Emojifier
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon
-import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon
 import coil3.load
 import coil3.request.CachePolicy
-import com.anytypeio.anytype.presentation.objects.ObjectIcon.TypeIcon.*
+import com.anytypeio.anytype.core_models.ui.CustomIconColor
+import com.anytypeio.anytype.core_models.ui.ObjectIcon.TypeIcon.*
 import timber.log.Timber
 
 class ObjectIconWidget @JvmOverloads constructor(

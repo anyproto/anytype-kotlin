@@ -8,7 +8,7 @@ import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.download.DownloadFile
 import com.anytypeio.anytype.domain.download.Downloader
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.presentation.media.MediaViewModel
 import com.anytypeio.anytype.ui.media.MediaActivity
 import dagger.Binds

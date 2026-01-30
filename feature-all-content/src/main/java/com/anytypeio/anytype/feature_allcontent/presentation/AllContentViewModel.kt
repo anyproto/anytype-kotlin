@@ -11,7 +11,9 @@ import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.SpaceType
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.simpleIcon
@@ -20,7 +22,6 @@ import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
@@ -46,8 +47,11 @@ import com.anytypeio.anytype.feature_allcontent.models.toAllContentItem
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsModeType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsSortType
 import com.anytypeio.anytype.feature_allcontent.models.toAnalyticsTabType
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.*
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.SendToast.*
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.NavigateToEditor
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.NavigateToObjectType
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.NavigateToParticipant
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.OpenShareScreen
+import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.OpenTypeCreation
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeMode
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeSort
@@ -57,8 +61,6 @@ import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentScree
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentSearchInput
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentToBin
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort

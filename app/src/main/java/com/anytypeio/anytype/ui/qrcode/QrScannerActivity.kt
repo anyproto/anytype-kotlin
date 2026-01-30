@@ -43,11 +43,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
-import com.anytypeio.anytype.R
+import com.anytypeio.anytype.core_ui.R
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
-import timber.log.Timber
 import java.util.concurrent.Executors
+import timber.log.Timber
 
 class QrScannerActivity : ComponentActivity() {
 
@@ -210,7 +210,6 @@ private fun CameraPreview(
                                 return@setAnalyzer
                             }
 
-                            @androidx.camera.core.ExperimentalGetImage
                             val mediaImage = imageProxy.image
                             if (mediaImage != null) {
                                 val image = InputImage.fromMediaImage(

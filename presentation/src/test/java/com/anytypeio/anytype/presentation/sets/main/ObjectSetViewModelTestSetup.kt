@@ -46,7 +46,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.networkmode.GetNetworkMode
@@ -262,7 +263,7 @@ open class ObjectSetViewModelTestSetup {
     protected val storeOfRelations: StoreOfRelations = DefaultStoreOfRelations()
     val database = ObjectSetDatabase(objectStore)
 
-    val urlBuilder: UrlBuilder get() = UrlBuilder(gateway)
+    val urlBuilder: UrlBuilder get() = UrlBuilderImpl(gateway)
 
     val defaultObjectPageType = TypeKey(MockDataFactory.randomString())
     val defaultObjectPageTypeName = MockDataFactory.randomString()
@@ -364,7 +365,8 @@ open class ObjectSetViewModelTestSetup {
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
-            createBlock = createBlock
+            createBlock = createBlock,
+            getDefaultObjectType = getDefaultObjectType
         )
     }
 
@@ -520,14 +522,18 @@ open class ObjectSetViewModelTestSetup {
         type: TypeKey = defaultObjectPageType,
         name: String = defaultObjectPageTypeName,
         id: TypeId = TypeId(MockDataFactory.randomString()),
-        template: Id? = null
+        template: Id? = null,
+        spaceId: SpaceId? = null
     ) {
+        val properSpaceId = spaceId ?: SpaceId(spaceConfig.space)
         getDefaultObjectType.stub {
-            onBlocking { run(SpaceId(spaceConfig.space)) } doReturn GetDefaultObjectType.Response(
+            onBlocking { async(properSpaceId) } doReturn Resultat.Success(
+                GetDefaultObjectType.Response(
                 type = type,
                 name = name,
                 id = id,
                 defaultTemplate = template
+                )
             )
         }
     }

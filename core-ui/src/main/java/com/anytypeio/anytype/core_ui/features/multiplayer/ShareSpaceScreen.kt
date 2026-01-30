@@ -95,7 +95,7 @@ import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.presentation.multiplayer.SpaceLimitsState
 import com.anytypeio.anytype.presentation.multiplayer.SpaceMemberView
-import com.anytypeio.anytype.presentation.objects.SpaceMemberIconView
+import com.anytypeio.anytype.core_models.ui.SpaceMemberIconView
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @Composable

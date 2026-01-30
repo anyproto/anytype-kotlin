@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.notifications
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue

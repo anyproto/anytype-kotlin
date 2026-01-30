@@ -3,7 +3,7 @@ package com.anytypeio.anytype.presentation.widgets.source
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 /**
  * Used for picking bundled widget source from list of objects.

@@ -23,7 +23,7 @@ import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.editor.Editor
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
@@ -46,7 +46,8 @@ import com.anytypeio.anytype.presentation.editor.render.DefaultBlockViewRenderer
 import com.anytypeio.anytype.presentation.editor.render.NestedDecorationData
 import com.anytypeio.anytype.presentation.editor.render.parseThemeBackgroundColor
 import com.anytypeio.anytype.presentation.editor.toggle.ToggleStateHolder
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.presentation.util.TXT
 import com.anytypeio.anytype.presentation.widgets.collection.ResourceProvider
 import com.anytypeio.anytype.test_utils.MockDataFactory
@@ -136,7 +137,7 @@ class DefaultBlockViewRendererTest {
         MockitoAnnotations.openMocks(this)
         fieldParser = FieldParserImpl(dateProvider, logger, getDateObjectByTimestamp, stringResourceProvider)
         renderer = DefaultBlockViewRenderer(
-            urlBuilder = UrlBuilder(gateway),
+            urlBuilder = UrlBuilderImpl(gateway),
             toggleStateHolder = toggleStateHolder,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
@@ -674,7 +675,7 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilder(gateway).medium(imageName)
+                image = UrlBuilderImpl(gateway).medium(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,
@@ -769,7 +770,7 @@ class DefaultBlockViewRendererTest {
                 id = title.id,
                 isFocused = false,
                 text = title.content<Block.Content.Text>().text,
-                image = UrlBuilder(gateway).medium(imageName)
+                image = UrlBuilderImpl(gateway).medium(imageName)
             ),
             BlockView.Text.Paragraph(
                 isFocused = true,

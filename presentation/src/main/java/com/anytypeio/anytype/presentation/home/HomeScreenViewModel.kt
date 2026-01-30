@@ -15,8 +15,8 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -26,22 +26,27 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -64,7 +69,6 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -94,6 +98,7 @@ import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -113,11 +118,9 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.Ex
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
 import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
@@ -127,12 +130,10 @@ import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObje
 import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -3655,23 +3656,6 @@ typealias Widgets = List<Widget>?
  */
 typealias Containers = List<WidgetContainer>?
 
-sealed class OpenObjectNavigation {
-    data class OpenEditor(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None) : OpenObjectNavigation()
-    data class OpenDataView(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None): OpenObjectNavigation()
-    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
-    data object NonValidObject: OpenObjectNavigation()
-    data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
-    data class OpenBookmarkUrl(val url: String) : OpenObjectNavigation() // For opening bookmark URLs
-
-    sealed class SideEffect {
-        data object None: SideEffect()
-        data class AttachToChat(val chat: Id, val space: Id): SideEffect()
-    }
-}
-
 fun ObjectWrapper.Type.navigation(
     spaceId: Id,
 ): OpenObjectNavigation {
@@ -3680,106 +3664,6 @@ fun ObjectWrapper.Type.navigation(
         target = id,
         space = spaceId
     )
-}
-
-/**
- * @param [attachmentTarget] optional target, to which the object will be attached
- */
-fun ObjectWrapper.Basic.navigation(
-    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
-    openBookmarkAsObject: Boolean = false,
-) : OpenObjectNavigation {
-    if (!isValid) return OpenObjectNavigation.NonValidObject
-    return when (layout) {
-        ObjectType.Layout.BOOKMARK -> {
-            if (openBookmarkAsObject) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                val url = getValue<String>(Relations.SOURCE)
-                if (url.isNullOrEmpty()) {
-                    OpenObjectNavigation.OpenEditor(
-                        target = id,
-                        space = requireNotNull(spaceId),
-                        effect = effect
-                    )
-                } else {
-                    OpenObjectNavigation.OpenBookmarkUrl(url)
-                }
-            }
-        }
-        ObjectType.Layout.BASIC,
-        ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.PROFILE -> {
-            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
-            if (identityLink.isNullOrEmpty()) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                OpenObjectNavigation.OpenEditor(
-                    target = identityLink,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            }
-        }
-        ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.CHAT,
-        ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenChat(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDateObject(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenParticipant(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.OBJECT_TYPE -> {
-            OpenObjectNavigation.OpenType(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        else -> {
-            OpenObjectNavigation.UnexpectedLayoutError(layout)
-        }
-    }
 }
 
 data class HomeScreenVmParams(val spaceId: SpaceId)

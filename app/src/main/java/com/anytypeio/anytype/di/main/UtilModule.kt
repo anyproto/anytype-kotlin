@@ -17,13 +17,11 @@ import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
 import com.anytypeio.anytype.device.providers.DateProviderImpl
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.debugging.DebugConfig
 import com.anytypeio.anytype.domain.debugging.Logger
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.LocaleProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.primitives.FieldParserImpl
@@ -48,11 +46,6 @@ import kotlinx.serialization.json.Json
 
 @Module(includes = [UtilModule.Bindings::class])
 object UtilModule {
-
-    @JvmStatic
-    @Provides
-    @Singleton
-    fun provideUrlBuilder(gateway: Gateway): UrlBuilder = UrlBuilder(gateway)
 
     @JvmStatic
     @Provides

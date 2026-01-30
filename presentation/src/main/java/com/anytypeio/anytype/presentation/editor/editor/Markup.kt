@@ -2,7 +2,7 @@ package com.anytypeio.anytype.presentation.editor.editor
 
 import android.text.Spannable
 import com.anytypeio.anytype.core_models.ThemeColor
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 /**
  * Classes implementing this interface should support markup rendering.

@@ -49,6 +49,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.chats.NotificationState
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.foundation.Dragger
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
@@ -64,7 +65,6 @@ import com.anytypeio.anytype.presentation.spaces.UiEvent.OnChangeSpaceType.ToSpa
 import com.anytypeio.anytype.presentation.spaces.UiEvent.OnDefaultObjectTypeClicked
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsItem
 import com.anytypeio.anytype.presentation.spaces.UiSpaceSettingsState
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 import com.anytypeio.anytype.ui_settings.BuildConfig
 import com.anytypeio.anytype.ui_settings.R
 import java.util.Locale

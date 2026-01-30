@@ -34,7 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
@@ -423,17 +423,26 @@ fun DVViewer.isActiveViewer(index: Int, session: ObjectSetSession): Boolean {
 suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     ctx: Id,
     activeView: DVViewer?,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    onDeletedTypeDetected: suspend (DVViewer) -> Unit = {}
 ): Pair<ObjectWrapper.Type?, Id?> {
     if (activeView == null) return Pair(null, null)
     when (this) {
         is ObjectState.DataView.Collection -> {
-            return resolveTypeAndActiveViewTemplate(activeView, storeOfObjectTypes)
+            return resolveTypeAndActiveViewTemplate(
+                activeView,
+                storeOfObjectTypes,
+                onDeletedTypeDetected
+            )
         }
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
             return if (isSetByRelation(setOfValue = setOfValue)) {
-                resolveTypeAndActiveViewTemplate(activeView, storeOfObjectTypes)
+                resolveTypeAndActiveViewTemplate(
+                    activeView,
+                    storeOfObjectTypes,
+                    onDeletedTypeDetected
+                )
             } else {
                 val setOf = setOfValue.firstOrNull()
                 if (setOf.isNullOrBlank()) {
@@ -470,9 +479,19 @@ suspend fun ObjectState.DataView.getActiveViewTypeAndTemplate(
     }
 }
 
+/**
+ * Resolves the object type and template for the active viewer.
+ *
+ * @param activeView The viewer to resolve type/template for
+ * @param storeOfObjectTypes Store to look up type information
+ * @param onDeletedTypeDetected Callback invoked (asynchronously) when the viewer references
+ *                              a deleted type ID. Use this to trigger cleanup of the viewer.
+ * @return Pair of (ObjectType, TemplateId) or (null, null) if type is deleted/not found
+ */
 suspend fun resolveTypeAndActiveViewTemplate(
     activeView: DVViewer,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    onDeletedTypeDetected: suspend (DVViewer) -> Unit = {}
 ): Pair<ObjectWrapper.Type?, Id?> {
     val activeViewDefaultObjectType = activeView.defaultObjectType
     val defaultSetObjectTypId = if (!activeViewDefaultObjectType.isNullOrBlank()) {
@@ -481,6 +500,18 @@ suspend fun resolveTypeAndActiveViewTemplate(
         VIEW_DEFAULT_OBJECT_TYPE
     }
     val defaultSetObjectType = storeOfObjectTypes.get(defaultSetObjectTypId) ?: storeOfObjectTypes.getByKey(defaultSetObjectTypId)
+
+    // DETECT DELETED TYPE: If viewer has a type ID but it's not in store
+    if (!activeViewDefaultObjectType.isNullOrBlank() && defaultSetObjectType == null) {
+        Timber.w("Deleted object type detected in view. ViewerId: ${activeView.id}, DeletedTypeId: $activeViewDefaultObjectType")
+
+        // Trigger async cleanup (fire-and-forget)
+        onDeletedTypeDetected(activeView)
+
+        // Return null to signal caller to use fallback
+        return Pair(null, null)
+    }
+
     return if (activeView.defaultTemplate.isNullOrEmpty()) {
         val defaultTemplateId = defaultSetObjectType?.defaultTemplateId
         Pair(defaultSetObjectType, defaultTemplateId)

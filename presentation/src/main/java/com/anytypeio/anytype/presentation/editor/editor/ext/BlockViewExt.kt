@@ -165,6 +165,12 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Title.Archive -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Title.Video -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Image -> view.copy(
+            mode = BlockView.Mode.READ
+        )
         is BlockView.Description -> view.copy(
             mode = BlockView.Mode.READ
         )
@@ -324,6 +330,12 @@ fun List<BlockView>.enterSAM(
             mode = BlockView.Mode.READ
         )
         is BlockView.Title.Archive -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Video -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Image -> view.copy(
             mode = BlockView.Mode.READ
         )
         is BlockView.Description -> view.copy(
@@ -512,6 +524,8 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Embed -> view.copy(
             mode = BlockView.Mode.EDIT,
             isSelected = false
@@ -539,6 +553,8 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Title.File -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Description -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Error.File -> view.copy(mode = BlockView.Mode.READ)
@@ -609,6 +625,8 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Title.Todo -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.File -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Embed -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
         else -> view.also { check(view !is BlockView.Permission) }
     }

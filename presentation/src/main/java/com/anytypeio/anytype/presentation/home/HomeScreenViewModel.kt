@@ -94,6 +94,7 @@ import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
@@ -253,6 +254,7 @@ class HomeScreenViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
+    private val observeWidgetSections: ObserveWidgetSections,
     private val scope: CoroutineScope,
     private val stringResourceProvider : StringResourceProvider,
     private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
@@ -275,6 +277,15 @@ class HomeScreenViewModel(
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
+
+    // Widget sections configuration
+    val widgetSections: StateFlow<com.anytypeio.anytype.core_models.WidgetSections> = observeWidgetSections
+        .flow(ObserveWidgetSections.Params(spaceId = vmParams.spaceId))
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = com.anytypeio.anytype.core_models.WidgetSections.default()
+        )
 
     // Separate StateFlows for different widget sections
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -3464,6 +3475,7 @@ class HomeScreenViewModel(
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
+        private val observeWidgetSections: ObserveWidgetSections,
         private val scope: CoroutineScope,
         private val stringResourceProvider : StringResourceProvider,
         private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
@@ -3527,6 +3539,7 @@ class HomeScreenViewModel(
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
+            observeWidgetSections = observeWidgetSections,
             scope = scope,
             stringResourceProvider = stringResourceProvider,
             updateObjectTypesOrderIds = updateObjectTypesOrderIds

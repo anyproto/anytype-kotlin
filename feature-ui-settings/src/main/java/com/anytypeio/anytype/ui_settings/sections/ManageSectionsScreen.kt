@@ -29,9 +29,10 @@ import com.anytypeio.anytype.core_ui.foundation.Toolbar
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.ButtonSecondary
-import com.anytypeio.anytype.localization.R
 import com.anytypeio.anytype.presentation.spaces.ManageSectionsState
 import com.anytypeio.anytype.presentation.spaces.SectionItem
+import com.anytypeio.anytype.ui_settings.R
+import com.anytypeio.anytype.localization.R as LocalizationR
 
 @Composable
 fun ManageSectionsScreen(
@@ -53,14 +54,14 @@ fun ManageSectionsScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = stringResource(R.string.manage_sections_title),
+                text = stringResource(LocalizationR.string.manage_sections_title),
                 style = BodyCalloutRegular,
                 color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1f)
             )
             
             ButtonSecondary(
-                text = stringResource(R.string.done),
+                text = stringResource(LocalizationR.string.done),
                 onClick = onBackPressed,
                 size = ButtonSize.Small
             )
@@ -73,7 +74,7 @@ fun ManageSectionsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.loading),
+                        text = stringResource(LocalizationR.string.loading),
                         style = BodyCalloutRegular,
                         color = colorResource(R.color.text_secondary)
                     )
@@ -85,7 +86,7 @@ fun ManageSectionsScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.error_loading_sections),
+                        text = stringResource(LocalizationR.string.error_loading_sections),
                         style = BodyCalloutRegular,
                         color = colorResource(R.color.text_secondary),
                         textAlign = TextAlign.Center
@@ -161,10 +162,10 @@ private fun SectionListItem(
 @Composable
 private fun getSectionTitle(type: WidgetSectionType): String {
     return when (type) {
-        WidgetSectionType.UNREAD -> stringResource(R.string.section_unread)
-        WidgetSectionType.PINNED -> stringResource(R.string.section_pinned)
-        WidgetSectionType.OBJECTS -> stringResource(R.string.section_objects)
-        WidgetSectionType.RECENTLY_EDITED -> stringResource(R.string.section_recently_edited)
-        WidgetSectionType.BIN -> stringResource(R.string.section_bin)
+        WidgetSectionType.UNREAD -> stringResource(LocalizationR.string.section_unread)
+        WidgetSectionType.PINNED -> stringResource(LocalizationR.string.section_pinned)
+        WidgetSectionType.OBJECTS -> stringResource(LocalizationR.string.section_objects)
+        WidgetSectionType.RECENTLY_EDITED -> stringResource(LocalizationR.string.section_recently_edited)
+        WidgetSectionType.BIN -> stringResource(LocalizationR.string.section_bin)
     }
 }

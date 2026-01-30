@@ -2385,6 +2385,13 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onManageSectionsClicked() {
+        Timber.d("onManageSectionsClicked")
+        viewModelScope.launch {
+            commands.emit(Command.OpenManageSections)
+        }
+    }
+
     fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {
@@ -3155,6 +3162,10 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly expanded it
                 !expandedIds.contains(widget.id)
             }
+            SectionType.RECENTLY_EDITED -> {
+                // Recently edited widgets behavior - TODO: Define default behavior
+                expandedIds.contains(widget.id)
+            }
             SectionType.NONE -> {
                 true
             }
@@ -3643,6 +3654,7 @@ sealed class Command {
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
     data class CreateChatObject(val space: SpaceId) : Command()
+    data object OpenManageSections : Command()
 }
 
 /**

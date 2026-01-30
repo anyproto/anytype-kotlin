@@ -11,7 +11,7 @@ import com.anytypeio.anytype.persistence.SectionSettings as ProtoSectionSettings
  */
 fun ProtoSectionSettings.toDomain(): WidgetSections {
     return WidgetSections(
-        sections = sectionsList.map { it.toDomain() }
+        sections = sections.map { it.toDomain() }
     )
 }
 

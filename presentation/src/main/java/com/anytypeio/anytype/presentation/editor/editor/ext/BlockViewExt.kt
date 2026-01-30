@@ -576,7 +576,11 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Embed -> view.copy(mode = BlockView.Mode.READ)
-        else -> view.also { check(view !is BlockView.Permission) }
+        else -> view.also {
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in toReadMode: ${view.getViewType()}")
+            }
+        }
     }
 }
 
@@ -630,7 +634,11 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Embed -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
-        else -> view.also { check(view !is BlockView.Permission) }
+        else -> view.also {
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in toEditMode: ${view.getViewType()}")
+            }
+        }
     }
 }
 

@@ -1290,13 +1290,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     jobs += lifecycleScope.launch {
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
-                        val fr = LinkToObjectFragment.new(
-                            target = command.target,
-                            position = command.position,
-                            ignore = vm.context,
-                            space = space
-                        )
-                        fr.showChildFragment()
+                        if (childFragmentManager.findFragmentByTag(TAG_LINK_TO_OBJECT) == null) {
+                            val fr = LinkToObjectFragment.new(
+                                target = command.target,
+                                position = command.position,
+                                ignore = vm.context,
+                                space = space
+                            )
+                            fr.showChildFragment(TAG_LINK_TO_OBJECT)
+                        }
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
@@ -2519,6 +2521,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
         const val TAG_ALERT = "tag.alert"
         const val TAG_LINK = "tag.link"
         const val TAG_TEXT_BLOCK_ICON_PICKER = "tag.text.block.icon.picker"
+        const val TAG_LINK_TO_OBJECT = "tag.link.to.object"
 
         const val EMPTY_TEXT = ""
         const val DRAG_AND_DROP_LABEL = "Anytype's editor drag-and-drop."

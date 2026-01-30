@@ -132,27 +132,48 @@ class TableBlockHolder(
     }
 
     private fun updateCellsSelection(item: BlockView.Table) {
-        if (item.selectedCellsIds.isEmpty()) {
+        try {
+            if (item.selectedCellsIds.isEmpty()) {
+                cellsSelectionState.clear()
+                if (recycler.containsItemDecoration(cellSelectionDecoration)) {
+                    recycler.removeItemDecoration(cellSelectionDecoration)
+                }
+            } else {
+                val selectedCells = item.cells.filter { cell ->
+                    item.selectedCellsIds.contains(cell.getId())
+                }
+                cellsSelectionState.clear()
+                cellsSelectionState.set(cells = selectedCells, rowsSize = item.rows.size)
+                if (cellsSelectionState.current().isNotEmpty()) {
+                    cellSelectionDecoration.setSelectionState(cellsSelectionState.current())
+                    if (!recycler.containsItemDecoration(cellSelectionDecoration)) {
+                        recycler.addItemDecoration(cellSelectionDecoration)
+                    } else {
+                        recycler.invalidateItemDecorations()
+                    }
+                } else {
+                    recycler.removeItemDecoration(cellSelectionDecoration)
+                }
+            }
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Error updating cell selection decoration")
             cellsSelectionState.clear()
+        }
+    }
+
+    /**
+     * Cleanup method to be called when the holder is recycled.
+     * Safely removes decorations and clears state to prevent crashes
+     * when the nested RecyclerView is in an inconsistent state.
+     */
+    fun cleanup() {
+        cellsSelectionState.clear()
+        try {
             if (recycler.containsItemDecoration(cellSelectionDecoration)) {
                 recycler.removeItemDecoration(cellSelectionDecoration)
             }
-        } else {
-            val selectedCells = item.cells.filter { cell ->
-                item.selectedCellsIds.contains(cell.getId())
-            }
-            cellsSelectionState.clear()
-            cellsSelectionState.set(cells = selectedCells, rowsSize = item.rows.size)
-            if (cellsSelectionState.current().isNotEmpty()) {
-                cellSelectionDecoration.setSelectionState(cellsSelectionState.current())
-                if (!recycler.containsItemDecoration(cellSelectionDecoration)) {
-                    recycler.addItemDecoration(cellSelectionDecoration)
-                } else {
-                    recycler.invalidateItemDecorations()
-                }
-            } else {
-                recycler.removeItemDecoration(cellSelectionDecoration)
-            }
+        } catch (e: IllegalArgumentException) {
+            Timber.e(e, "Error removing cell selection decoration during cleanup")
         }
     }
 

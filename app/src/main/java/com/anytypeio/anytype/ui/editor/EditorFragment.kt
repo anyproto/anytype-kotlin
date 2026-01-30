@@ -1064,11 +1064,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenTextBlockIconPicker -> {
-                    TextBlockIconPickerFragment.new(
-                        context = ctx,
-                        blockId = command.block,
-                        space = space
-                    ).showChildFragment()
+                    if (childFragmentManager.findFragmentByTag(TAG_TEXT_BLOCK_ICON_PICKER) == null) {
+                        TextBlockIconPickerFragment.new(
+                            context = ctx,
+                            blockId = command.block,
+                            space = space
+                        ).showChildFragment(TAG_TEXT_BLOCK_ICON_PICKER)
+                    }
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
@@ -2516,6 +2518,7 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         const val TAG_ALERT = "tag.alert"
         const val TAG_LINK = "tag.link"
+        const val TAG_TEXT_BLOCK_ICON_PICKER = "tag.text.block.icon.picker"
 
         const val EMPTY_TEXT = ""
         const val DRAG_AND_DROP_LABEL = "Anytype's editor drag-and-drop."

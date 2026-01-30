@@ -78,6 +78,7 @@ import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.objects.getByIdOrKey
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -2058,7 +2059,7 @@ class HomeScreenViewModel(
                 is Widget.Source.Default -> {
                     val sourceObjectType = source.type
                     if (sourceObjectType != null) {
-                        val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                        val objectTypeWrapper = storeOfObjectTypes.getByIdOrKey(sourceObjectType)
                         if (objectTypeWrapper != null) {
                             sendDeleteWidgetEvent(
                                 analytics = analytics,
@@ -2100,7 +2101,7 @@ class HomeScreenViewModel(
             val isAutoCreated = currentWidgets?.find { it.id == widget }?.isAutoCreated
             val sourceObjectType = source.type
             if (sourceObjectType != null) {
-                val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                val objectTypeWrapper = storeOfObjectTypes.getByIdOrKey(sourceObjectType)
                 if (objectTypeWrapper != null) {
                     sendClickWidgetTitleEvent(
                         analytics = analytics,
@@ -2138,7 +2139,7 @@ class HomeScreenViewModel(
                 is Widget.Source.Default -> {
                     val sourceObjectType = source.type
                     if (sourceObjectType != null) {
-                        val objectTypeWrapper = storeOfObjectTypes.get(sourceObjectType)
+                        val objectTypeWrapper = storeOfObjectTypes.getByIdOrKey(sourceObjectType)
                         if (objectTypeWrapper != null) {
                             sendReorderWidgetEvent(
                                 analytics = analytics,

@@ -80,6 +80,12 @@ class HighlightDrawer(
         )
     }
 
+    private fun isSpanPositionValid(spanStart: Int, spanEnd: Int, textLength: Int): Boolean {
+        return spanStart >= 0 && spanEnd >= 0 &&
+               spanStart <= textLength && spanEnd <= textLength &&
+               spanStart <= spanEnd
+    }
+
     /**
      * Call this function during onDraw of another widget such as TextView.
      *
@@ -115,7 +121,7 @@ class HighlightDrawer(
         canvas: Canvas,
         resources: Resources
     ) {
-        val value = ThemeColor.values().find { value -> value.code == span.value }
+        val value = ThemeColor.entries.find { value -> value.code == span.value }
         val default = resources.getColor(R.color.background_primary, null)
         val color = if (value != null && value != ThemeColor.DEFAULT) {
             resources.veryLight(value, default)
@@ -126,6 +132,12 @@ class HighlightDrawer(
 
         val spanStart = text.getSpanStart(span)
         val spanEnd = text.getSpanEnd(span)
+
+        if (!isSpanPositionValid(spanStart, spanEnd, text.length)) {
+            Timber.w("Skipping background highlight: invalid span position start=$spanStart, end=$spanEnd, textLength=${text.length}")
+            return
+        }
+
         val startLine = layout.getLineForOffset(spanStart)
         val endLine = layout.getLineForOffset(spanEnd)
 
@@ -160,6 +172,12 @@ class HighlightDrawer(
     ) {
         val spanStart = text.getSpanStart(span)
         val spanEnd = text.getSpanEnd(span)
+
+        if (!isSpanPositionValid(spanStart, spanEnd, text.length)) {
+            Timber.w("Skipping code highlight: invalid span position start=$spanStart, end=$spanEnd, textLength=${text.length}")
+            return
+        }
+
         val startLine = layout.getLineForOffset(spanStart)
         val endLine = layout.getLineForOffset(spanEnd)
 

@@ -388,6 +388,19 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }
 
+        /**
+         * Checks if the space account is ready for use during app startup.
+         *
+         * Unlike [isActive], which requires [spaceLocalStatus] to be [SpaceStatus.OK],
+         * this property only checks the [spaceAccountStatus]. This allows the app to
+         * launch immediately while local sync happens in the background.
+         *
+         * [SpaceStatus.UNKNOWN] is accepted because it's the default state before
+         * status is determined - the space data will sync as it becomes available.
+         * This approach matches the desktop client's startup logic.
+         *
+         * @see isActive for full local + account status validation
+         */
         val isAccountActive: Boolean
             get() {
                 return spaceAccountStatus == SpaceStatus.UNKNOWN

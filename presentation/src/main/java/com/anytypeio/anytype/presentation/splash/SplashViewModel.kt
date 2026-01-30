@@ -327,14 +327,20 @@ class SplashViewModel(
 
     //region NAVIGATION
     private suspend fun awaitActiveSpaceView(space: SpaceId) = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
+        val startTime = System.currentTimeMillis()
         spaceViews
             .observe(space)
             .onEach { view ->
+                val elapsed = System.currentTimeMillis() - startTime
                 Timber.i(
-                    "Observing space view for ${space.id}, isAccountActive: ${view.isAccountActive}, " +
-                    "spaceLocalStatus: ${view.spaceLocalStatus}, " +
-                    "spaceAccountStatus: ${view.spaceAccountStatus}, " +
-                    "spaceUxType: ${view.spaceUxType}, chat: ${view.chatId}"
+                    "SPACE_STATUS_INVESTIGATION: elapsed=${elapsed}ms, " +
+                    "space=${space.id}, " +
+                    "spaceLocalStatus=${view.spaceLocalStatus}, " +
+                    "spaceAccountStatus=${view.spaceAccountStatus}, " +
+                    "isAccountActive=${view.isAccountActive}, " +
+                    "isActive=${view.isActive}, " +
+                    "spaceUxType=${view.spaceUxType}, " +
+                    "chat=${view.chatId}"
                 )
             }
             .filter { view -> view.isAccountActive }

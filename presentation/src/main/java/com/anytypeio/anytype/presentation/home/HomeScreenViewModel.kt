@@ -815,7 +815,13 @@ class HomeScreenViewModel(
                 userPermissions,
                 widgetPreferences,
                 spaceViewSubscriptionContainer.observe(vmParams.spaceId),
-            ) { _, state, userPermission, preferences, spaceView ->
+                widgetSections
+            ) { values ->
+                val state = values[1] as ObjectViewState
+                val userPermission = values[2] as? SpaceMemberPermissions
+                val preferences = values[3] as WidgetPreferences
+                val spaceView = values[4] as ObjectWrapper.SpaceView
+                val sectionConfig = values[5] as com.anytypeio.anytype.core_models.WidgetSections
                 val params = WidgetUiParams(
                     isOwnerOrEditor = userPermission?.isOwnerOrEditor() == true,
                     expandedIds = preferences.expandedWidgetIds.toSet(),
@@ -828,7 +834,8 @@ class HomeScreenViewModel(
                         params = params,
                         urlBuilder = urlBuilder,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        spaceView = spaceView
+                        spaceView = spaceView,
+                        sectionConfig = sectionConfig
                     )
 
                     // Initialize active views for all widgets

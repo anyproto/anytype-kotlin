@@ -58,15 +58,23 @@ class ManageSectionsViewModel(
                     _uiState.value = ManageSectionsState.Error
                 }
                 .collect { widgetSections ->
-                    val items = widgetSections.sections.map { config ->
-                        SectionItem(
-                            type = config.id,
-                            isVisible = config.isVisible,
-                            order = config.order,
-                            canReorder = config.id != WidgetSectionType.UNREAD,
-                            canToggle = config.id != WidgetSectionType.UNREAD
-                        )
-                    }.sortedBy { it.order }
+                    val items = widgetSections.sections
+                        .filter { config ->
+                            // Filter out UNREAD (always visible, can't be changed)
+                            // and RECENTLY_EDITED (not implemented yet)
+                            config.id != WidgetSectionType.UNREAD && 
+                            config.id != WidgetSectionType.RECENTLY_EDITED
+                        }
+                        .map { config ->
+                            SectionItem(
+                                type = config.id,
+                                isVisible = config.isVisible,
+                                order = config.order,
+                                canReorder = true,
+                                canToggle = true
+                            )
+                        }
+                        .sortedBy { it.order }
                     
                     _uiState.value = ManageSectionsState.Content(
                         sections = items,

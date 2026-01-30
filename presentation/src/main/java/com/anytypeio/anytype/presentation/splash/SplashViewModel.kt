@@ -331,10 +331,13 @@ class SplashViewModel(
             .observe(space)
             .onEach { view ->
                 Timber.i(
-                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}, chat: ${view.chatId}"
+                    "Observing space view for ${space.id}, isAccountActive: ${view.isAccountActive}, " +
+                    "spaceLocalStatus: ${view.spaceLocalStatus}, " +
+                    "spaceAccountStatus: ${view.spaceAccountStatus}, " +
+                    "spaceUxType: ${view.spaceUxType}, chat: ${view.chatId}"
                 )
             }
-            .filter { view -> view.isActive }
+            .filter { view -> view.isAccountActive }
             .take(1)
             .catch {
                 Timber.w(it, "Error while observing space view for ${space.id}")

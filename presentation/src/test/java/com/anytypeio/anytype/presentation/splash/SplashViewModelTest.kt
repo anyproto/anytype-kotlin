@@ -265,7 +265,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE
         )
 
         stubCheckAuthStatus(response)
@@ -320,7 +320,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE,
             chatId = chatId,
             spaceUxType = SpaceUxType.CHAT
         )
@@ -373,7 +373,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE,
             chatId = chatId,
             spaceUxType = SpaceUxType.DATA
         )

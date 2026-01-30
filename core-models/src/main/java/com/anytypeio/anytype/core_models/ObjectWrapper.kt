@@ -388,6 +388,12 @@ sealed class ObjectWrapper {
                         && spaceAccountStatus != SpaceStatus.SPACE_DELETED
             }
 
+        val isAccountActive: Boolean
+            get() {
+                return spaceAccountStatus == SpaceStatus.UNKNOWN
+                        || spaceAccountStatus == SpaceStatus.SPACE_ACTIVE
+            }
+
         val isUnknown: Boolean
             get() {
                 return spaceLocalStatus == SpaceStatus.UNKNOWN

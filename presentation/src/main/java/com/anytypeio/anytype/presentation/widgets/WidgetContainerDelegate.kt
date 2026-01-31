@@ -89,6 +89,7 @@ class WidgetContainerDelegateImpl(
             is Widget.View -> createViewContainer(widget, currentlyDisplayedViews)
             is Widget.AllObjects -> createAllObjectsContainer(widget)
             is Widget.Bin -> createBinContainer(widget)
+            is Widget.ObjectTypesGroup -> createObjectTypesGroupContainer(widget, currentlyDisplayedViews)
         }
     }
 
@@ -376,5 +377,29 @@ class WidgetContainerDelegateImpl(
 
     private fun createBinContainer(widget: Widget.Bin): WidgetContainer {
         return BinWidgetContainer(widget = widget)
+    }
+
+    private fun createObjectTypesGroupContainer(
+        widget: Widget.ObjectTypesGroup,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return ObjectTypesGroupWidgetContainer(
+            widget = widget,
+            storeOfObjectTypes = storeOfObjectTypes,
+            storelessSubscriptionContainer = storelessSubscriptionContainer,
+            isWidgetCollapsed = combine(
+                expandedWidgetIds,
+                userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+            ) { expanded, collapsedSecs ->
+                isWidgetCollapsed(widget, expanded, collapsedSecs)
+            },
+            fieldParser = fieldParser,
+            isSessionActive = isSessionActive,
+            onRequestCache = {
+                currentlyDisplayedViews.find { view ->
+                    view.id == widget.id && view is WidgetView.ObjectTypesGroup
+                } as? WidgetView.ObjectTypesGroup
+            }
+        )
     }
 }

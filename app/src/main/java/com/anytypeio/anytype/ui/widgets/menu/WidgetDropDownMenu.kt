@@ -298,6 +298,9 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         }
                         add(WidgetMenuItem.RemoveWidget)
                     }
+                    is WidgetView.ObjectTypesGroup -> {
+                        // Grouped types widget has no menu (types are not pinnable)
+                    }
                 }
             }
         }

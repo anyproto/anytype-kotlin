@@ -139,6 +139,27 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
+    /**
+     * Grouped widget for displaying object types as a navigation list.
+     * Shows type rows with icon and name only - no nested objects are fetched.
+     * @property [id] unique identifier for the widget
+     * @property [typeIds] ordered list of type IDs to display
+     * @property [config] widget configuration
+     * @property [isAutoCreated] whether this widget was auto-created
+     * @property [icon] widget icon (typically None for grouped display)
+     * @property [sectionType] always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id = "widget_object_types_group",
+        val typeIds: kotlin.collections.List<Id>,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.TYPES
+    ) : Widget() {
+        override val source: Source = Source.Other
+    }
+
     sealed class Source {
 
         abstract val id: Id
@@ -508,6 +529,7 @@ private suspend fun buildPinnedSection(
 
 /**
  * Builds the object type widgets section.
+ * Returns a single grouped widget containing all types as navigation rows.
  */
 private suspend fun buildTypeSection(
     state: ObjectViewState.Success,
@@ -520,16 +542,33 @@ private suspend fun buildTypeSection(
     val sectionStateDesc = if (isObjectTypeSectionCollapsed) "collapsed" else "expanded"
 
     if (!isObjectTypeSectionCollapsed) {
-        val types = mapSpaceTypesToWidgets(
-            isOwnerOrEditor = params.isOwnerOrEditor,
-            config = state.config,
+        // Get filtered and sorted type IDs
+        val typeIds = getFilteredAndSortedTypeIds(
             storeOfObjectTypes = storeOfObjectTypes,
             spaceUxType = spaceUxType
         )
-        addAll(types)
-        Timber.d("ObjectType section: $sectionStateDesc, widgets added: ${types.size}")
+        
+        // Create single grouped widget
+        if (typeIds.isNotEmpty()) {
+            add(
+                Widget.ObjectTypesGroup(
+                    typeIds = typeIds,
+                    config = state.config
+                )
+            )
+            Timber.d("ObjectType section: $sectionStateDesc, grouped widget with ${typeIds.size} types")
+        } else {
+            // Even with no types, create the widget to show "New type" button
+            add(
+                Widget.ObjectTypesGroup(
+                    typeIds = emptyList<Id>(),
+                    config = state.config
+                )
+            )
+            Timber.d("ObjectType section: $sectionStateDesc, grouped widget with 0 types (empty state)")
+        }
     } else {
-        Timber.d("ObjectType section: $sectionStateDesc, widgets: 0 (section collapsed)")
+        Timber.d("ObjectType section: $sectionStateDesc, no widgets (section collapsed)")
     }
 }
 
@@ -567,12 +606,14 @@ private fun buildBinWidget(
     }
 }
 
-internal suspend fun mapSpaceTypesToWidgets(
-    isOwnerOrEditor: Boolean,
-    config: Config,
+/**
+ * Gets filtered and sorted type IDs for the grouped types widget.
+ * Applies same filtering logic as the old mapSpaceTypesToWidgets.
+ */
+internal suspend fun getFilteredAndSortedTypeIds(
     storeOfObjectTypes: StoreOfObjectTypes,
     spaceUxType: SpaceUxType?
-): List<Widget> {
+): List<Id> {
     val allTypes = storeOfObjectTypes.getAll()
     
     // Get system layouts based on space context
@@ -582,28 +623,48 @@ internal suspend fun mapSpaceTypesToWidgets(
         ObjectType.Layout.PARTICIPANT
     )
     
+    Timber.d("getFilteredAndSortedTypeIds: allTypes = ${allTypes.size}, excludedLayouts = $excludedLayouts")
+    
     val filteredObjectTypes = allTypes
-        .mapNotNull { objectType ->
-            if (!objectType.isValid ||
-                excludedLayouts.contains(objectType.recommendedLayout) ||
-                objectType.isArchived == true ||
-                objectType.isDeleted == true ||
-                objectType.uniqueKey == ObjectTypeIds.TEMPLATE
-            ) {
-                return@mapNotNull null
-            } else {
-                objectType
+        .filter { objectType ->
+            val isValid = objectType.isValid
+            val notExcluded = !excludedLayouts.contains(objectType.recommendedLayout)
+            val notArchived = objectType.isArchived != true
+            val notDeleted = objectType.isDeleted != true
+            val notTemplate = objectType.uniqueKey != ObjectTypeIds.TEMPLATE
+            val passes = isValid && notExcluded && notArchived && notDeleted && notTemplate
+            
+            if (!passes) {
+                Timber.d("  Type ${objectType.name} filtered out: valid=$isValid, notExcluded=$notExcluded, notArchived=$notArchived, notDeleted=$notDeleted, notTemplate=$notTemplate")
             }
+            
+            passes
         }
 
-    Timber.d("Refreshing system types, isOwnerOrEditor = $isOwnerOrEditor, allTypes = ${allTypes.size}, types = ${filteredObjectTypes.size}")
+    Timber.d("Filtered object types: allTypes = ${allTypes.size}, filtered = ${filteredObjectTypes.size}, filteredNames = ${filteredObjectTypes.map { it.name }}")
 
     // Sort types by priority using shared extension
     val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
     val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
-    return sortedTypes.map { objectType ->
-        createWidgetViewFromType(objectType, config)
+    return sortedTypes.map { it.id }
+}
+
+/**
+ * Legacy function kept for pinned widgets that still use individual type widgets.
+ */
+internal suspend fun mapSpaceTypesToWidgets(
+    isOwnerOrEditor: Boolean,
+    config: Config,
+    storeOfObjectTypes: StoreOfObjectTypes,
+    spaceUxType: SpaceUxType?
+): List<Widget> {
+    val typeIds = getFilteredAndSortedTypeIds(storeOfObjectTypes, spaceUxType)
+    
+    return typeIds.mapNotNull { typeId ->
+        storeOfObjectTypes.get(typeId)?.let { objectType ->
+            createWidgetViewFromType(objectType, config)
+        }
     }
 }
 

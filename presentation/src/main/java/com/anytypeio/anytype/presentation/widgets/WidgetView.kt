@@ -278,6 +278,35 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null
     }
 
+    /**
+     * Grouped view for displaying object types as a navigation list.
+     * Shows type rows with icon and name only - no nested objects are displayed.
+     * @property [id] unique identifier for the widget view
+     * @property [types] list of type rows to display
+     * @property [isExpanded] whether the widget is expanded
+     * @property [sectionType] always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id,
+        val types: List<TypeRow>,
+        val isExpanded: Boolean,
+        override val sectionType: SectionType? = SectionType.TYPES
+    ) : WidgetView() {
+        override val canCreateObjectOfType: Boolean = false
+
+        /**
+         * Represents a single type row in the grouped types list.
+         * @property [id] type ID
+         * @property [icon] type icon
+         * @property [name] type name
+         */
+        data class TypeRow(
+            val id: Id,
+            val icon: ObjectIcon,
+            val name: Name
+        )
+    }
+
     interface Draggable
 
     data class ChatCounter(

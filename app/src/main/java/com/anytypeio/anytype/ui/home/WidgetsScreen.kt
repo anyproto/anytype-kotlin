@@ -266,7 +266,6 @@ fun WidgetsScreen(
                 ) {
                     SpaceObjectTypesSectionHeader(
                         mode = mode,
-                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
                         onSectionClicked = viewModel::onSectionTypesClicked
                     )
                 }
@@ -291,7 +290,8 @@ fun WidgetsScreen(
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
                 onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
                 onCreateElement = viewModel::onCreateWidgetElementClicked,
-                onCreateWidget = viewModel::onCreateWidgetClicked
+                onCreateWidget = viewModel::onCreateWidgetClicked,
+                onTypeReordered = viewModel::onObjectTypesGroupReordered
             )
 
             binWidget?.let { bin ->

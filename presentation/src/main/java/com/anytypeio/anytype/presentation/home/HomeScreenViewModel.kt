@@ -1611,6 +1611,7 @@ class HomeScreenViewModel(
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
         is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -3311,6 +3312,40 @@ class HomeScreenViewModel(
         pendingTypeWidgetOrder = null
         // NOTE: We do NOT clear typeWidgetEventLockTimestamp here
         // The lock must remain active for the full duration to block post-response events
+    }
+
+    /**
+     * Called when types are reordered within the grouped ObjectTypesGroup widget.
+     * This handles the new grouped widget where all types are rows within a single widget card.
+     *
+     * @param orderedTypeIds The new order of type IDs after reordering
+     */
+    fun onObjectTypesGroupReordered(orderedTypeIds: List<Id>) {
+        Timber.d("onObjectTypesGroupReordered: newOrder=${orderedTypeIds.map { it.takeLast(4) }}")
+        
+        if (orderedTypeIds.isEmpty()) {
+            Timber.d("onObjectTypesGroupReordered: Empty order list, ignoring")
+            return
+        }
+        
+        viewModelScope.launch {
+            // Activate event lock before sending to middleware
+            activateTypeWidgetEventLock()
+            
+            updateObjectTypesOrderIds.async(
+                UpdateObjectTypesOrderIds.Params(
+                    spaceId = vmParams.spaceId,
+                    orderedIds = orderedTypeIds
+                )
+            ).fold(
+                onFailure = { error ->
+                    Timber.e(error, "Failed to reorder object types: $orderedTypeIds")
+                },
+                onSuccess = { finalOrder ->
+                    Timber.d("Successfully reordered object types with final order: $finalOrder")
+                }
+            )
+        }
     }
     //endregion
 

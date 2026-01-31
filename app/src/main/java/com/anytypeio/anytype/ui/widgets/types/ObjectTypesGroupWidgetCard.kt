@@ -235,6 +235,7 @@ private fun NewTypeRowItem(
     Row(
         modifier = Modifier
             .fillMaxWidth()
+            .height(48.dp)
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .noRippleClickable { onClick() },
         verticalAlignment = Alignment.CenterVertically

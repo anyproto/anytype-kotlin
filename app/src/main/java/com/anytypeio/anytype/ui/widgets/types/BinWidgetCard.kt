@@ -80,8 +80,8 @@ fun BinWidgetCard(
         Row (
             Modifier
                 .fillMaxWidth()
-                .height(52.dp)
-                .padding(horizontal = 16.dp),
+                .height(48.dp)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
@@ -90,7 +90,7 @@ fun BinWidgetCard(
                 contentDescription = "Bin icon",
                 modifier = Modifier
                     .padding(end = 12.dp)
-                    .size(18.dp)
+                    .size(20.dp)
             )
 
             Text(

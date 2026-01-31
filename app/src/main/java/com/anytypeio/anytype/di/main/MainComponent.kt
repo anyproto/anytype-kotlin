@@ -58,6 +58,7 @@ import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.sharing.SharingDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.ManageSectionsDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
@@ -119,6 +120,7 @@ interface MainComponent :
     CreateSpaceDependencies,
     SpaceListDependencies,
     SpaceSettingsDependencies,
+    ManageSectionsDependencies,
     SelectObjectTypeDependencies,
     SpacesStorageDependencies,
     AppPreferencesDependencies,
@@ -275,6 +277,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SpaceSettingsDependencies::class)
     abstract fun provideSpaceSettingsDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ManageSectionsDependencies::class)
+    abstract fun provideManageSectionsDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap

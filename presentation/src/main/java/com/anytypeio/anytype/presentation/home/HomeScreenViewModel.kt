@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -76,6 +77,8 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -94,6 +97,7 @@ import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
@@ -253,9 +257,11 @@ class HomeScreenViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
+    private val observeWidgetSections: ObserveWidgetSections,
     private val scope: CoroutineScope,
     private val stringResourceProvider : StringResourceProvider,
-    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -275,6 +281,15 @@ class HomeScreenViewModel(
 
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
+
+    // Widget sections configuration
+    val widgetSections: StateFlow<com.anytypeio.anytype.core_models.WidgetSections> = observeWidgetSections
+        .flow(ObserveWidgetSections.Params(spaceId = vmParams.spaceId))
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = com.anytypeio.anytype.core_models.WidgetSections.default()
+        )
 
     // Separate StateFlows for different widget sections
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
@@ -428,6 +443,18 @@ class HomeScreenViewModel(
 
     private val _spaceViewState = MutableStateFlow<SpaceViewState>(SpaceViewState.Init)
     val spaceViewState: StateFlow<SpaceViewState> = _spaceViewState
+
+    // Mute state derived from space notification mode
+    val isMuted: StateFlow<Boolean> = spaceViewSubscriptionContainer
+        .observe(vmParams.spaceId)
+        .map { spaceView ->
+            NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -804,7 +831,13 @@ class HomeScreenViewModel(
                 userPermissions,
                 widgetPreferences,
                 spaceViewSubscriptionContainer.observe(vmParams.spaceId),
-            ) { _, state, userPermission, preferences, spaceView ->
+                widgetSections
+            ) { values ->
+                val state = values[1] as ObjectViewState
+                val userPermission = values[2] as? SpaceMemberPermissions
+                val preferences = values[3] as WidgetPreferences
+                val spaceView = values[4] as ObjectWrapper.SpaceView
+                val sectionConfig = values[5] as com.anytypeio.anytype.core_models.WidgetSections
                 val params = WidgetUiParams(
                     isOwnerOrEditor = userPermission?.isOwnerOrEditor() == true,
                     expandedIds = preferences.expandedWidgetIds.toSet(),
@@ -817,7 +850,8 @@ class HomeScreenViewModel(
                         params = params,
                         urlBuilder = urlBuilder,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        spaceView = spaceView
+                        spaceView = spaceView,
+                        sectionConfig = sectionConfig
                     )
 
                     // Initialize active views for all widgets
@@ -2385,6 +2419,121 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onManageSectionsClicked() {
+        Timber.d("onManageSectionsClicked")
+        viewModelScope.launch {
+            commands.emit(Command.OpenManageSections)
+        }
+    }
+
+    fun onMembersClicked() {
+        Timber.d("onMembersClicked")
+        viewModelScope.launch {
+            commands.emit(ShareSpace(vmParams.spaceId))
+        }
+    }
+
+    fun onMuteClicked() {
+        Timber.d("onMuteClicked")
+        viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView == null) {
+                Timber.w("Space view not found for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            val targetSpaceId = spaceView.targetSpaceId
+            if (targetSpaceId == null) {
+                Timber.w("Target space ID is null for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            // Determine current mute state and toggle
+            val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+            val newMode = if (isMuted) {
+                NotificationState.ALL  // Unmute
+            } else {
+                NotificationState.DISABLE  // Mute
+            }
+
+            Timber.d("Toggling notification state: current muted=$isMuted, new mode=$newMode")
+
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = targetSpaceId,
+                    mode = newMode
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully set notification mode to $newMode")
+                    commands.emit(
+                        if (newMode == NotificationState.DISABLE) {
+                            Command.Toast.SpaceMuted
+                        } else {
+                            Command.Toast.SpaceUnmuted
+                        }
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Failed to set notification mode")
+                    commands.emit(Command.Toast.FailedToChangeNotificationSettings)
+                }
+            )
+        }
+    }
+
+    fun onQrCodeClicked() {
+        Timber.d("onQrCodeClicked")
+        viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView != null) {
+                val inviteLink = getSpaceInviteLink
+                    .async(vmParams.spaceId)
+                    .getOrNull()
+                    ?.scheme
+                if (inviteLink != null) {
+                    uiQrCodeState.value = SpaceInvite(
+                        link = inviteLink,
+                        spaceName = spaceView.name.orEmpty(),
+                        icon = spaceView.spaceIcon(urlBuilder)
+                    )
+                } else {
+                    Timber.w("Could not get invite link for QR code")
+                    sendToast("Unable to generate QR code")
+                }
+            }
+        }
+    }
+
+    fun onCopyInviteLinkClicked() {
+        Timber.d("onCopyInviteLinkClicked")
+        viewModelScope.launch {
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.spaceId)
+                .getOrNull()
+                ?.scheme
+            if (inviteLink != null) {
+                val params = CopyInviteLinkToClipboard.Params(inviteLink)
+                copyInviteLinkToClipboard.invoke(params)
+                    .proceed(
+                        failure = {
+                            Timber.e(it, "Failed to copy invite link to clipboard")
+                            sendToast("Failed to copy invite link")
+                        },
+                        success = {
+                            Timber.d("Invite link copied to clipboard: $inviteLink")
+                            sendToast("Invite link copied to clipboard")
+                        }
+                    )
+            } else {
+                Timber.w("Could not get invite link to copy")
+                sendToast("Unable to copy invite link")
+            }
+        }
+    }
+
     fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {
@@ -3155,6 +3304,10 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly expanded it
                 !expandedIds.contains(widget.id)
             }
+            SectionType.RECENTLY_EDITED -> {
+                // Recently edited widgets behavior - TODO: Define default behavior
+                expandedIds.contains(widget.id)
+            }
             SectionType.NONE -> {
                 true
             }
@@ -3453,9 +3606,11 @@ class HomeScreenViewModel(
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
+        private val observeWidgetSections: ObserveWidgetSections,
         private val scope: CoroutineScope,
         private val stringResourceProvider : StringResourceProvider,
-        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+        private val setSpaceNotificationMode: SetSpaceNotificationMode
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3516,9 +3671,11 @@ class HomeScreenViewModel(
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
+            observeWidgetSections = observeWidgetSections,
             scope = scope,
             stringResourceProvider = stringResourceProvider,
-            updateObjectTypesOrderIds = updateObjectTypesOrderIds
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds,
+            setSpaceNotificationMode = setSpaceNotificationMode
         ) as T
     }
 
@@ -3643,6 +3800,14 @@ sealed class Command {
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
     data class CreateChatObject(val space: SpaceId) : Command()
+    data object OpenManageSections : Command()
+    
+    sealed class Toast : Command() {
+        data object SpaceMuted : Toast()
+        data object SpaceUnmuted : Toast()
+        data object UnableToChangeNotificationSettings : Toast()
+        data object FailedToChangeNotificationSettings : Toast()
+    }
 }
 
 /**

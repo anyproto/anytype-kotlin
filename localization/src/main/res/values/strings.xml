@@ -89,6 +89,13 @@
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Unread</string>
+    <string name="section_pinned">Pinned</string>
+    <string name="section_objects">Objects</string>
+    <string name="section_recently_edited">Recently edited</string>
+    <string name="section_bin">Bin</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Data management</string>
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
@@ -1472,6 +1479,12 @@
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_mute">Mute</string>
+    <string name="multiplayer_unmute">Unmute</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>

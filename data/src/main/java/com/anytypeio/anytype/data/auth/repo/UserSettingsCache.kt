@@ -3,6 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -75,4 +76,8 @@ interface UserSettingsCache {
     suspend fun setCurrentAppVersion(account: Account, version: String)
     suspend fun getPreviousAppVersion(account: Account): String?
     suspend fun setPreviousAppVersion(account: Account, version: String)
+
+    suspend fun getWidgetSections(space: SpaceId): WidgetSections
+    suspend fun setWidgetSections(space: SpaceId, sections: WidgetSections)
+    fun observeWidgetSections(space: SpaceId): Flow<WidgetSections>
 }

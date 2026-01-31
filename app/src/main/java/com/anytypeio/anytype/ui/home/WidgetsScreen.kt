@@ -298,6 +298,7 @@ fun WidgetsScreen(
                     onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
                     onCreateElement = viewModel::onCreateWidgetElementClicked,
                     onCreateWidget = viewModel::onCreateWidgetClicked,
+                    onCreateNewType = viewModel::onCreateNewTypeClicked,
                     onTypeReordered = viewModel::onObjectTypesGroupReordered
                 )
             }

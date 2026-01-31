@@ -79,6 +79,7 @@ fun LazyListScope.renderWidgetSection(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     onCreateElement: (WidgetView) -> Unit,
     onCreateWidget: () -> Unit,
+    onCreateNewType: () -> Unit = {},
     onTypeReordered: (List<Id>) -> Unit = {}
 ) {
     itemsIndexed(
@@ -562,9 +563,7 @@ fun LazyListScope.renderWidgetSection(
                             // This will trigger the create object flow for this type
                             onWidgetSourceClicked(typeId)
                         },
-                        onCreateNewType = {
-                            onCreateWidget()
-                        },
+                        onCreateNewType = onCreateNewType,
                         onTypeReordered = onTypeReordered
                     )
                 }

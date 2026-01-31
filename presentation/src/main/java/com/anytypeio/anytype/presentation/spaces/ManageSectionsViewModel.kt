@@ -59,12 +59,7 @@ class ManageSectionsViewModel(
                 }
                 .collect { widgetSections ->
                     val items = widgetSections.sections
-                        .filter { config ->
-                            // Filter out UNREAD (always visible, can't be changed)
-                            // and RECENTLY_EDITED (not implemented yet)
-                            config.id != WidgetSectionType.UNREAD && 
-                            config.id != WidgetSectionType.RECENTLY_EDITED
-                        }
+                        .filter { config -> config.isUserConfigurable }
                         .map { config ->
                             SectionItem(
                                 type = config.id,
@@ -104,15 +99,8 @@ class ManageSectionsViewModel(
         val state = _uiState.value
         if (state !is ManageSectionsState.Content) return
 
-        // Ensure Unread stays at top
-        val unread = reorderedSections.find { it.type == WidgetSectionType.UNREAD }
-        val others = reorderedSections.filter { it.type != WidgetSectionType.UNREAD }
-        
-        val finalSections = buildList {
-            if (unread != null) add(unread.copy(order = 0))
-            others.forEachIndexed { index, item ->
-                add(item.copy(order = index + 1))
-            }
+        val finalSections = reorderedSections.mapIndexed { index, item ->
+            item.copy(order = index)
         }
 
         _uiState.value = state.copy(sections = finalSections)
@@ -126,7 +114,8 @@ class ManageSectionsViewModel(
                     WidgetSectionConfig(
                         id = item.type,
                         isVisible = item.isVisible,
-                        order = item.order
+                        order = item.order,
+                        isUserConfigurable = item.type.isUserConfigurable()
                     )
                 }
             )

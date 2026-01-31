@@ -37,7 +37,8 @@ fun SectionConfigProto.toDomain(): WidgetSectionConfig {
     return WidgetSectionConfig(
         id = sectionType,
         isVisible = isVisible,
-        order = order
+        order = order,
+        isUserConfigurable = sectionType.isUserConfigurable()
     )
 }
 

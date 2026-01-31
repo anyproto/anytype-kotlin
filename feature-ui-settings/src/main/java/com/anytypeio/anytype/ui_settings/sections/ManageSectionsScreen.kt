@@ -39,7 +39,6 @@ import com.anytypeio.anytype.localization.R as LocalizationR
 fun ManageSectionsScreen(
     state: ManageSectionsState,
     onSectionVisibilityChanged: (WidgetSectionType, Boolean) -> Unit,
-    onSectionsReordered: (List<SectionItem>) -> Unit,
     onBackPressed: () -> Unit
 ) {
     Column(

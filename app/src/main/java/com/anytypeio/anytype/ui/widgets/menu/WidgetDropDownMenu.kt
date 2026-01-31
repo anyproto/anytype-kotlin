@@ -312,6 +312,10 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                 }
             }
         }
+        SectionType.RECENTLY_EDITED -> {
+            // Recently edited widgets menu behavior - TODO: Define menu items
+            emptyList<WidgetMenuItem>()
+        }
         null -> {
             // No section type means no menu
             emptyList<WidgetMenuItem>()

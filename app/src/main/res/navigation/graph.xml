@@ -223,6 +223,9 @@
             app:popEnterAnim="@anim/slide_in_left"
             app:popExitAnim="@anim/slide_out_right" />
         <action
+            android:id="@+id/action_open_manage_sections"
+            app:destination="@id/manageSectionsScreen" />
+        <action
             android:id="@+id/action_back_on_vault"
             app:destination="@id/vaultScreen"
             app:popUpTo="@+id/main_navigation"
@@ -333,6 +336,11 @@
         android:id="@+id/spaceSettingsScreen"
         android:name="com.anytypeio.anytype.ui.settings.space.SpaceSettingsFragment"
         android:label="SpaceSettingsScreen" />
+
+    <fragment
+        android:id="@+id/manageSectionsScreen"
+        android:name="com.anytypeio.anytype.ui.settings.space.ManageSectionsFragment"
+        android:label="ManageSectionsScreen" />
 
     <dialog
         android:id="@+id/spaceListScreen"

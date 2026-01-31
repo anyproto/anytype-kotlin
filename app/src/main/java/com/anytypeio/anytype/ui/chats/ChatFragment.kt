@@ -328,7 +328,7 @@ class ChatFragment : Fragment() {
                         if (uri != null) {
                             context?.let {
                                 val path = uri.parseImagePath(it)
-                                if (path.isNotEmpty()) {
+                                if (!path.isNullOrEmpty()) {
                                     selectedIcon = ChatObjectIcon.Image(uri = path)
                                 }
                             }

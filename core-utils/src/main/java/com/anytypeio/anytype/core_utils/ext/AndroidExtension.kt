@@ -118,7 +118,7 @@ fun Uri.parsePath(context: Context): String {
     return result ?: throw IllegalStateException("Cold not get real path")
 }
 
-fun Uri.parseImagePath(context: Context): String {
+fun Uri.parseImagePath(context: Context): String? {
     context.contentResolver.query(
         this,
         arrayOf(MediaStore.Images.Media.DATA),
@@ -126,11 +126,17 @@ fun Uri.parseImagePath(context: Context): String {
         null,
         null
     )?.use { cursor ->
-        cursor.moveToFirst()
-        val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
-        return cursor.getString(idx)
-    } ?: this.path ?: throw IllegalStateException("Cold not get real path")
-    throw IllegalStateException("Cold not get real path")
+        if (cursor.moveToFirst()) {
+            val idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA)
+            if (idx != -1) {
+                val path = cursor.getString(idx)
+                if (!path.isNullOrEmpty()) {
+                    return path
+                }
+            }
+        }
+    }
+    return this.path
 }
 
 fun Throwable.timber() = Timber.e("Get error : ${this.message}")

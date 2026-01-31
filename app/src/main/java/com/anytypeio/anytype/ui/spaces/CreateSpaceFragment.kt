@@ -57,7 +57,10 @@ class CreateSpaceFragment : BaseBottomSheetComposeFragment() {
                     contract = ActivityResultContracts.PickVisualMedia(),
                     onResult = { uri ->
                         if (uri != null) {
-                            vm.onImageSelected(url = uri.parseImagePath(context))
+                            val path = uri.parseImagePath(context)
+                            if (path != null) {
+                                vm.onImageSelected(url = path)
+                            }
                         }
                     }
                 )

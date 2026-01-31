@@ -59,7 +59,7 @@ fun HomeScreenMenu(
         DropdownMenuItem(
             text = {
                 MenuItemContent(
-                    icon = CoreR.drawable.ic_settings_24,
+                    icon = CoreR.drawable.ic_space_settings_24,
                     text = stringResource(com.anytypeio.anytype.localization.R.string.space_settings)
                 )
             },

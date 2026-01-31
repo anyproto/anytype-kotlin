@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Не удалось обновить обои. Попробуйте ещё раз.</string>
     <string name="space_settings_error_name">Не удалось обновить название пространства. Попробуйте ещё раз.</string>
     <string name="space_settings_error_icon">Не удалось обновить значок пространства. Попробуйте ещё раз. </string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Непрочитанные</string>
+    <string name="section_pinned">Закреплённые</string>
+    <string name="section_objects">Объекты</string>
+    <string name="section_recently_edited">Недавно обновлено</string>
+    <string name="section_bin">Корзина</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Управление данными</string>
     <string name="deleted_account_danger_zone_msg">Как только вы запросите удаление вашего хранилища, у вас будет 30 дней, чтобы отменить этот запрос. После 30 дней ваши зашифрованные данные хранилища будут навсегда удалены из резервной копии, и вы не сможете войти в Anytype на новых устройствах.</string>
     <string name="danger_zone">Осторожно!</string>
@@ -1278,6 +1285,12 @@
     <string name="multiplayer_request_access">Запросить доступ</string>
     <string name="multiplayer_request_access_desc">Владелец должен одобрить каждый запрос на присоединение</string>
     <string name="multiplayer_qr_code">QR-код</string>
+    <string name="multiplayer_mute">Заглушить</string>
+    <string name="multiplayer_unmute">Включить звук</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Изменить доступ к приглашению?</string>
     <string name="multiplayer_link_will_be_invalidated">Текущая ссылка перестанет работать.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Если вы выключите функцию общего доступа или переключитесь на подтверждение вручную, ваша ссылка будет отключена. Новый будет создан, если вы включите его.</string>

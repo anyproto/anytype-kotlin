@@ -247,14 +247,6 @@ object HomeScreenModule {
         clearLastOpenedSpace = clearLastOpenedSpace
     )
 
-    @JvmStatic
-    @Provides
-    @PerScreen
-    fun provideSetSpaceNotificationMode(
-        repository: BlockRepository,
-        dispatchers: AppCoroutineDispatchers
-    ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
-
     @Module
     interface Declarations {
         @PerScreen

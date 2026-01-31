@@ -130,8 +130,8 @@ class WidgetsScreenFragment : Fragment(),
                             onBackButtonClicked = vm::onBackClicked,
                             onMenuClicked = { isMenuExpanded = true },
                         )
-
-                        // Menu positioned at top-right
+                        
+                        // Menu positioned at top-right, anchored to the menu button
                         Box(
                             modifier = Modifier
                                 .align(Alignment.TopEnd)

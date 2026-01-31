@@ -44,11 +44,16 @@ fun HomeScreenMenu(
     val isOneToOne = spaceUxType == SpaceUxType.ONE_TO_ONE
 
     DropdownMenu(
+        modifier = Modifier.width(254.dp),
         expanded = expanded,
         onDismissRequest = onDismiss,
         containerColor = colorResource(CoreR.color.background_secondary),
         shape = RoundedCornerShape(12.dp),
-        offset = DpOffset(x = (-16).dp, y = 8.dp)
+        tonalElevation = 8.dp,
+        offset = DpOffset(
+            x = (-16).dp,
+            y = 48.dp  // 52dp toolbar height + 8dp spacing
+        )
     ) {
         // Space Settings - always visible
         DropdownMenuItem(
@@ -84,7 +89,11 @@ fun HomeScreenMenu(
         DropdownMenuItem(
             text = {
                 MenuItemContent(
-                    icon = CoreR.drawable.ic_bell_24,
+                    icon = if (isMuted) {
+                        CoreR.drawable.ic_notifications
+                    } else {
+                        CoreR.drawable.ic_notifications_off
+                    },
                     text = stringResource(
                         if (isMuted) {
                             com.anytypeio.anytype.localization.R.string.multiplayer_unmute

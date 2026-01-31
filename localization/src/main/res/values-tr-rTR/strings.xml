@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Duvar kağıdı yüklenemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Okunmamış</string>
+    <string name="section_pinned">Sabitlendi</string>
+    <string name="section_objects">Nesneler</string>
+    <string name="section_recently_edited">Yakın zamanda düzenlenen</string>
+    <string name="section_bin">Çöp kutusu</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Veri yönetimi</string>
     <string name="deleted_account_danger_zone_msg">Kasanın silinmesini talep edersen bu talebi iptal etmek için 30 günün olacaktır. 30 gün sonra şifrelenmiş kasa verilerin yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsın.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
@@ -1270,6 +1277,12 @@
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
     <string name="multiplayer_qr_code">Karekod</string>
+    <string name="multiplayer_mute">Sessize al</string>
+    <string name="multiplayer_unmute">Sesi aç</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Davet bağlantısı erişimini değiştirmek mi istiyorsunuz?</string>
     <string name="multiplayer_link_will_be_invalidated">Mevcut bağlantı çalışmayı durduracak.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Paylaşımı kapatırsanız veya manuel onaylamaya geçerseniz mevcut bağlantınız devre dışı bırakılır. Yeniden etkinleştirirseniz yeni bir bağlantı oluşturulur.</string>

@@ -45,10 +45,10 @@ fun NewSpaceIcon(
         contract = ActivityResultContracts.PickVisualMedia(),
         onResult = { uri ->
             if (uri != null) {
-                runCatching {
-                    val path = uri.parseImagePath(context)
+                val path = uri.parseImagePath(context)
+                if (path != null) {
                     uiEvent(UiEvent.OnSpaceImagePicked(path))
-                }.onFailure {
+                } else {
                     context.toast(context.getString(R.string.error_while_loading_picture))
                 }
             } else {

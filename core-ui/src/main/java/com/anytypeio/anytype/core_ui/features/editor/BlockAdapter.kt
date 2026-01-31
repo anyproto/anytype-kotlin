@@ -1869,6 +1869,13 @@ class BlockAdapter(
         }
     }
 
+    override fun onViewRecycled(holder: BlockViewHolder) {
+        super.onViewRecycled(holder)
+        if (holder is TableBlockHolder) {
+            holder.cleanup()
+        }
+    }
+
     fun updateWithDiffUtil(items: List<BlockView>) {
         if (BuildConfig.DEBUG) {
             Timber.d("----------Blocks dispatched to adapter---------------------")

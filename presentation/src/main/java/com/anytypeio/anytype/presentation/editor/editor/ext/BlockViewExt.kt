@@ -165,8 +165,18 @@ fun List<BlockView>.singleStylingMode(
         is BlockView.Title.Archive -> view.copy(
             mode = BlockView.Mode.READ
         )
+        is BlockView.Title.Video -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Image -> view.copy(
+            mode = BlockView.Mode.READ
+        )
         is BlockView.Description -> view.copy(
             mode = BlockView.Mode.READ
+        )
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.READ,
+            isSelected = isSelected
         )
         else -> view.also {
             check(view !is BlockView.Permission) { "Actual type was: ${view.getViewType()}" }
@@ -320,6 +330,12 @@ fun List<BlockView>.enterSAM(
             mode = BlockView.Mode.READ
         )
         is BlockView.Title.Archive -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Video -> view.copy(
+            mode = BlockView.Mode.READ
+        )
+        is BlockView.Title.Image -> view.copy(
             mode = BlockView.Mode.READ
         )
         is BlockView.Description -> view.copy(
@@ -510,8 +526,16 @@ fun List<BlockView>.updateCursorAndEditMode(
         is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Embed -> view.copy(
+            mode = BlockView.Mode.EDIT,
+            isSelected = false
+        )
         else -> view.also {
-            check(view !is BlockView.Permission) { "Actual type is: ${view.getViewType()}" }
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in updateCursorAndEditMode: ${view.getViewType()}")
+            }
         }
     }
 }
@@ -535,6 +559,8 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Profile -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.READ)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Description -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Code -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Error.File -> view.copy(mode = BlockView.Mode.READ)
@@ -553,7 +579,12 @@ fun List<BlockView>.toReadMode(): List<BlockView> = map { view ->
         is BlockView.Media.Video -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Media.Bookmark -> view.copy(mode = BlockView.Mode.READ)
         is BlockView.Media.Picture -> view.copy(mode = BlockView.Mode.READ)
-        else -> view.also { check(view !is BlockView.Permission) }
+        is BlockView.Embed -> view.copy(mode = BlockView.Mode.READ)
+        else -> view.also {
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in toReadMode: ${view.getViewType()}")
+            }
+        }
     }
 }
 
@@ -606,7 +637,14 @@ fun List<BlockView>.toEditMode(): List<BlockView> = map { view ->
         is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
         is BlockView.Title.Archive -> view.copy(mode = BlockView.Mode.EDIT)
-        else -> view.also { check(view !is BlockView.Permission) }
+        is BlockView.Title.Video -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Title.Image -> view.copy(mode = BlockView.Mode.EDIT)
+        is BlockView.Embed -> view.copy(mode = BlockView.Mode.EDIT, isSelected = false)
+        else -> view.also {
+            if (view is BlockView.Permission) {
+                Timber.e("Unhandled Permission type in toEditMode: ${view.getViewType()}")
+            }
+        }
     }
 }
 

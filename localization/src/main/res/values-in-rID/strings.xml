@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Gagal memperbarui gambar latar. Silakan coba lagi.</string>
     <string name="space_settings_error_name">Gagal memperbarui nama ruang. Silakan coba lagi.</string>
     <string name="space_settings_error_icon">Gagal memperbarui ikon ruang. Silakan coba lagi.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Belum dibaca</string>
+    <string name="section_pinned">Tersemat</string>
+    <string name="section_objects">Objek</string>
+    <string name="section_recently_edited">Baru disunting</string>
+    <string name="section_bin">Bak Sampah</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Manajemen data</string>
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
@@ -1266,6 +1273,12 @@
     <string name="multiplayer_request_access">Minta akses</string>
     <string name="multiplayer_request_access_desc">Pemilik harus menyetujui setiap permintaan bergabung</string>
     <string name="multiplayer_qr_code">Kode QR</string>
+    <string name="multiplayer_mute">Senyapkan</string>
+    <string name="multiplayer_unmute">Lepas senyap</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Ubah akses tautan undangan?</string>
     <string name="multiplayer_link_will_be_invalidated">Tautan ini akan berhenti berfungsi.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Jika kamu mematikan pembagian atau berganti ke persetujuan manual, tautan saat ini akan dinonaktifkan. Tautan yang baru akan dibuat ketika kamu mengaktifkannya kembali.</string>

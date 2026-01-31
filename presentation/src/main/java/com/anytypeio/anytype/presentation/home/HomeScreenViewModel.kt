@@ -24,6 +24,7 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -76,6 +77,8 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -257,7 +260,8 @@ class HomeScreenViewModel(
     private val observeWidgetSections: ObserveWidgetSections,
     private val scope: CoroutineScope,
     private val stringResourceProvider : StringResourceProvider,
-    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -439,6 +443,18 @@ class HomeScreenViewModel(
 
     private val _spaceViewState = MutableStateFlow<SpaceViewState>(SpaceViewState.Init)
     val spaceViewState: StateFlow<SpaceViewState> = _spaceViewState
+
+    // Mute state derived from space notification mode
+    val isMuted: StateFlow<Boolean> = spaceViewSubscriptionContainer
+        .observe(vmParams.spaceId)
+        .map { spaceView ->
+            NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -2420,10 +2436,51 @@ class HomeScreenViewModel(
     fun onMuteClicked() {
         Timber.d("onMuteClicked")
         viewModelScope.launch {
-            // TODO: Implement mute state tracking to toggle between DISABLE and ALL
-            // For now, we'll just set to DISABLE (mute)
-            // To properly implement toggle, we'd need to track current notification state
-            sendToast("Mute/Unmute functionality not yet implemented")
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView == null) {
+                Timber.w("Space view not found for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            val targetSpaceId = spaceView.targetSpaceId
+            if (targetSpaceId == null) {
+                Timber.w("Target space ID is null for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            // Determine current mute state and toggle
+            val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+            val newMode = if (isMuted) {
+                NotificationState.ALL  // Unmute
+            } else {
+                NotificationState.DISABLE  // Mute
+            }
+
+            Timber.d("Toggling notification state: current muted=$isMuted, new mode=$newMode")
+
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = targetSpaceId,
+                    mode = newMode
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully set notification mode to $newMode")
+                    commands.emit(
+                        if (newMode == NotificationState.DISABLE) {
+                            Command.Toast.SpaceMuted
+                        } else {
+                            Command.Toast.SpaceUnmuted
+                        }
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Failed to set notification mode")
+                    commands.emit(Command.Toast.FailedToChangeNotificationSettings)
+                }
+            )
         }
     }
 
@@ -3552,7 +3609,8 @@ class HomeScreenViewModel(
         private val observeWidgetSections: ObserveWidgetSections,
         private val scope: CoroutineScope,
         private val stringResourceProvider : StringResourceProvider,
-        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+        private val setSpaceNotificationMode: SetSpaceNotificationMode
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3616,7 +3674,8 @@ class HomeScreenViewModel(
             observeWidgetSections = observeWidgetSections,
             scope = scope,
             stringResourceProvider = stringResourceProvider,
-            updateObjectTypesOrderIds = updateObjectTypesOrderIds
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds,
+            setSpaceNotificationMode = setSpaceNotificationMode
         ) as T
     }
 
@@ -3742,6 +3801,13 @@ sealed class Command {
     data class CreateNewType(val space: Id) : Command()
     data class CreateChatObject(val space: SpaceId) : Command()
     data object OpenManageSections : Command()
+    
+    sealed class Toast : Command() {
+        data object SpaceMuted : Toast()
+        data object SpaceUnmuted : Toast()
+        data object UnableToChangeNotificationSettings : Toast()
+        data object FailedToChangeNotificationSettings : Toast()
+    }
 }
 
 /**

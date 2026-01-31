@@ -31,6 +31,7 @@ fun HomeScreenMenu(
     expanded: Boolean,
     spaceAccessType: SpaceAccessType,
     spaceUxType: SpaceUxType,
+    isMuted: Boolean,
     onDismiss: () -> Unit,
     onSpaceSettingsClicked: () -> Unit,
     onMembersClicked: () -> Unit,
@@ -80,12 +81,17 @@ fun HomeScreenMenu(
         }
 
         // Mute/Unmute - always visible
-        // TODO: Implement mute state tracking to show correct label
         DropdownMenuItem(
             text = {
                 MenuItemContent(
                     icon = CoreR.drawable.ic_bell_24,
-                    text = stringResource(com.anytypeio.anytype.localization.R.string.multiplayer_mute)
+                    text = stringResource(
+                        if (isMuted) {
+                            com.anytypeio.anytype.localization.R.string.multiplayer_unmute
+                        } else {
+                            com.anytypeio.anytype.localization.R.string.multiplayer_mute
+                        }
+                    )
                 )
             },
             onClick = {

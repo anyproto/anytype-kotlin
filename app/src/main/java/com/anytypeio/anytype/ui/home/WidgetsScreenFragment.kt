@@ -137,10 +137,12 @@ class WidgetsScreenFragment : Fragment(),
                                 .align(Alignment.TopEnd)
                                 .statusBarsPadding()
                         ) {
+                            val isMuted = vm.isMuted.collectAsStateWithLifecycle().value
                             HomeScreenMenu(
                                 expanded = isMenuExpanded,
                                 spaceAccessType = spaceViewState.spaceAccessType,
                                 spaceUxType = spaceViewState.spaceUxType,
+                                isMuted = isMuted,
                                 onDismiss = { isMenuExpanded = false },
                                 onSpaceSettingsClicked = {
                                     vm.onSpaceSettingsClicked(space = SpaceId(space))
@@ -492,6 +494,22 @@ class WidgetsScreenFragment : Fragment(),
                 }.onFailure { e ->
                     Timber.e(e, "Error while opening manage sections screen")
                 }
+            }
+            
+            is Command.Toast.SpaceMuted -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_space_muted))
+            }
+            
+            is Command.Toast.SpaceUnmuted -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_space_unmuted))
+            }
+            
+            is Command.Toast.UnableToChangeNotificationSettings -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_unable_to_change_notification_settings))
+            }
+            
+            is Command.Toast.FailedToChangeNotificationSettings -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_failed_to_change_notification_settings))
             }
         }
     }

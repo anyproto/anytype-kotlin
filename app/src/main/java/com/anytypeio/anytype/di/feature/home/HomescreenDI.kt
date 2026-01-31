@@ -26,6 +26,7 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -246,6 +247,14 @@ object HomeScreenModule {
         clearLastOpenedSpace = clearLastOpenedSpace
     )
 
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideSetSpaceNotificationMode(
+        repository: BlockRepository,
+        dispatchers: AppCoroutineDispatchers
+    ): SetSpaceNotificationMode = SetSpaceNotificationMode(repository, dispatchers)
+
     @Module
     interface Declarations {
         @PerScreen
@@ -318,4 +327,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun stringResProvider() : StringResourceProvider
+    fun setSpaceNotificationMode(): SetSpaceNotificationMode
 }

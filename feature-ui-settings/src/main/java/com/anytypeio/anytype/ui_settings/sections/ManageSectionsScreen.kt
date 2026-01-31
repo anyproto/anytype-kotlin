@@ -11,10 +11,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.material.Icon
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -25,10 +27,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.WidgetSectionType
-import com.anytypeio.anytype.core_ui.foundation.Toolbar
-import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
-import com.anytypeio.anytype.core_ui.views.ButtonSize
-import com.anytypeio.anytype.core_ui.views.ButtonSecondary
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
+import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.presentation.spaces.ManageSectionsState
 import com.anytypeio.anytype.presentation.spaces.SectionItem
 import com.anytypeio.anytype.ui_settings.R
@@ -47,23 +48,30 @@ fun ManageSectionsScreen(
             .background(colorResource(R.color.background_primary))
     ) {
         // Header with title and Done button
-        Row(
+        Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp, vertical = 12.dp),
-            verticalAlignment = Alignment.CenterVertically
+                .statusBarsPadding()
+                .height(48.dp)
         ) {
             Text(
                 text = stringResource(LocalizationR.string.manage_sections_title),
-                style = BodyCalloutRegular,
+                style = HeadlineSubheading,
                 color = colorResource(R.color.text_primary),
-                modifier = Modifier.weight(1f)
+                textAlign = TextAlign.Center,
+                modifier = Modifier.align(Alignment.Center)
             )
             
-            ButtonSecondary(
+            Text(
                 text = stringResource(LocalizationR.string.done),
-                onClick = onBackPressed,
-                size = ButtonSize.Small
+                style = BodyRegular,
+                color = colorResource(R.color.palette_system_amber_100),
+                modifier = Modifier
+                    .align(Alignment.CenterEnd)
+                    .padding(end = 16.dp)
+                    .noRippleThrottledClickable {
+                        onBackPressed()
+                    }
             )
         }
 
@@ -75,7 +83,7 @@ fun ManageSectionsScreen(
                 ) {
                     Text(
                         text = stringResource(LocalizationR.string.loading),
-                        style = BodyCalloutRegular,
+                        style = BodyRegular,
                         color = colorResource(R.color.text_secondary)
                     )
                 }
@@ -87,7 +95,7 @@ fun ManageSectionsScreen(
                 ) {
                     Text(
                         text = stringResource(LocalizationR.string.error_loading_sections),
-                        style = BodyCalloutRegular,
+                        style = BodyRegular,
                         color = colorResource(R.color.text_secondary),
                         textAlign = TextAlign.Center
                     )
@@ -116,45 +124,58 @@ private fun SectionListItem(
     section: SectionItem,
     onVisibilityChanged: (Boolean) -> Unit
 ) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clickable(enabled = section.canToggle) {
-                onVisibilityChanged(!section.isVisible)
-            }
-            .padding(horizontal = 16.dp, vertical = 12.dp),
-        verticalAlignment = Alignment.CenterVertically
+    Box(
+        modifier = Modifier.fillMaxWidth()
     ) {
-        // Checkbox
-        Icon(
-            painter = painterResource(
-                id = if (section.isVisible) {
-                    R.drawable.ic_checkbox_checked
-                } else {
-                    R.drawable.ic_checkbox_unchecked
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable(enabled = section.canToggle) {
+                    onVisibilityChanged(!section.isVisible)
                 }
-            ),
-            contentDescription = null,
-            tint = if (section.isVisible) {
-                colorResource(R.color.palette_system_amber_100)
-            } else {
-                colorResource(R.color.shape_primary)
-            },
-            modifier = Modifier.size(24.dp)
-        )
+                .height(52.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            // Left icon - checkbox or empty space
+            Box(
+                modifier = Modifier.size(24.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                if (section.canToggle) {
+                    Image(
+                        painter = painterResource(
+                            id = if (section.isVisible) {
+                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_checked
+                            } else {
+                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_unchecked
+                            }
+                        ),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
+            }
 
-        Spacer(modifier = Modifier.width(12.dp))
+            Spacer(modifier = Modifier.width(10.dp))
 
-        // Section title
-        Text(
-            text = getSectionTitle(section.type),
-            style = BodyCalloutRegular,
-            color = if (section.canToggle) {
-                colorResource(R.color.text_primary)
-            } else {
-                colorResource(R.color.text_secondary)
-            },
-            modifier = Modifier.weight(1f)
+            // Section title
+            Text(
+                text = getSectionTitle(section.type),
+                style = BodyRegular,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        
+        // Bottom divider
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.BottomCenter),
+            color = colorResource(R.color.shape_primary),
+            thickness = 0.5.dp
         )
     }
 }

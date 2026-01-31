@@ -1653,7 +1653,23 @@ class EditorViewModel(
         val position = views.indexOfFirst { it.id == id }
         if (position > 0) {
             val current = views[position]
-            if (current is BlockView.Text && current.isStyleClearable()) {
+            // Check if block is nested (has a parent other than the root)
+            val parent = blocks.find { it.children.contains(id) }
+            val isNested = parent != null && parent.id != context
+            if (current is BlockView.Text && current.isListBlock && isNested) {
+                // Outdent: move block after its parent
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.Document.Move(
+                            context = context,
+                            target = parent!!.id,
+                            targetContext = context,
+                            blocks = listOf(id),
+                            position = Position.BOTTOM
+                        )
+                    )
+                }
+            } else if (current is BlockView.Text && current.isStyleClearable()) {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
                         Intent.Text.UpdateStyle(
@@ -1694,6 +1710,27 @@ class EditorViewModel(
         marks: List<Content.Text.Mark>
     ) {
         Timber.d("onNonEmptyBlockBackspaceClicked, id:[$id] text:[$text] marks:[$marks]")
+
+        // Check if block is a nested list item - if so, outdent instead of merging
+        val viewIndex = views.indexOfFirst { it.id == id }
+        val currentView = views.getOrNull(viewIndex)
+        val parent = blocks.find { it.children.contains(id) }
+        val isNested = parent != null && parent.id != context
+        if (currentView is BlockView.Text && currentView.isListBlock && isNested) {
+            // Outdent: move block after its parent
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.Move(
+                        context = context,
+                        target = parent!!.id,
+                        targetContext = context,
+                        blocks = listOf(id),
+                        position = Position.BOTTOM
+                    )
+                )
+            }
+            return
+        }
 
         val update = blocks.map { block ->
             if (block.id == id) {

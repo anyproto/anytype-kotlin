@@ -2410,6 +2410,73 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onMembersClicked() {
+        Timber.d("onMembersClicked")
+        viewModelScope.launch {
+            commands.emit(ShareSpace(vmParams.spaceId))
+        }
+    }
+
+    fun onMuteClicked() {
+        Timber.d("onMuteClicked")
+        viewModelScope.launch {
+            // TODO: Implement mute state tracking to toggle between DISABLE and ALL
+            // For now, we'll just set to DISABLE (mute)
+            // To properly implement toggle, we'd need to track current notification state
+            sendToast("Mute/Unmute functionality not yet implemented")
+        }
+    }
+
+    fun onQrCodeClicked() {
+        Timber.d("onQrCodeClicked")
+        viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView != null) {
+                val inviteLink = getSpaceInviteLink
+                    .async(vmParams.spaceId)
+                    .getOrNull()
+                    ?.scheme
+                if (inviteLink != null) {
+                    uiQrCodeState.value = SpaceInvite(
+                        link = inviteLink,
+                        spaceName = spaceView.name.orEmpty(),
+                        icon = spaceView.spaceIcon(urlBuilder)
+                    )
+                } else {
+                    Timber.w("Could not get invite link for QR code")
+                    sendToast("Unable to generate QR code")
+                }
+            }
+        }
+    }
+
+    fun onCopyInviteLinkClicked() {
+        Timber.d("onCopyInviteLinkClicked")
+        viewModelScope.launch {
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.spaceId)
+                .getOrNull()
+                ?.scheme
+            if (inviteLink != null) {
+                val params = CopyInviteLinkToClipboard.Params(inviteLink)
+                copyInviteLinkToClipboard.invoke(params)
+                    .proceed(
+                        failure = {
+                            Timber.e(it, "Failed to copy invite link to clipboard")
+                            sendToast("Failed to copy invite link")
+                        },
+                        success = {
+                            Timber.d("Invite link copied to clipboard: $inviteLink")
+                            sendToast("Invite link copied to clipboard")
+                        }
+                    )
+            } else {
+                Timber.w("Could not get invite link to copy")
+                sendToast("Unable to copy invite link")
+            }
+        }
+    }
+
     fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {

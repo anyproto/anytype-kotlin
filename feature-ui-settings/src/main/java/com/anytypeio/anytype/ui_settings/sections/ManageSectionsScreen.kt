@@ -65,7 +65,7 @@ fun ManageSectionsScreen(
             Text(
                 text = stringResource(LocalizationR.string.done),
                 style = BodyRegular,
-                color = colorResource(R.color.palette_system_amber_100),
+                color = colorResource(R.color.control_accent),
                 modifier = Modifier
                     .align(Alignment.CenterEnd)
                     .padding(end = 16.dp)

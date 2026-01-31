@@ -146,16 +146,16 @@ class WidgetsScreenFragment : Fragment(),
                                     vm.onSpaceSettingsClicked(space = SpaceId(space))
                                 },
                                 onMembersClicked = {
-                                    // TODO: Implement members screen navigation
+                                    vm.onMembersClicked()
                                 },
                                 onMuteClicked = {
-                                    // TODO: Implement mute/unmute functionality
+                                    vm.onMuteClicked()
                                 },
                                 onQrCodeClicked = {
-                                    // TODO: Implement QR code screen
+                                    vm.onQrCodeClicked()
                                 },
                                 onCopyInviteLinkClicked = {
-                                    // TODO: Implement copy invite link
+                                    vm.onCopyInviteLinkClicked()
                                 },
                                 onManageSectionsClicked = {
                                     vm.onManageSectionsClicked()
@@ -196,7 +196,7 @@ class WidgetsScreenFragment : Fragment(),
                 }
             )
         }
-        // QR Code Modal for viewer settings
+        // QR Code Modal
         when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
             is UiSpaceQrCodeState.SpaceInvite -> {
                 QrCodeScreen(
@@ -204,10 +204,12 @@ class WidgetsScreenFragment : Fragment(),
                     link = qrCodeState.link,
                     icon = qrCodeState.icon,
                     onShare = { link ->
-                        vm.onViewerSpaceSettingsUiEvent(
-                            uiEvent = UiEvent.OnShareLinkClicked(link = link),
-                            space = SpaceId(space)
-                        )
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, link)
+                            type = "text/plain"
+                        }
+                        startActivity(Intent.createChooser(intent, null))
                     },
                     onDismiss = { vm.onHideQrCodeScreen() }
                 )

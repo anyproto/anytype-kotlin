@@ -1479,6 +1479,8 @@
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_mute">Mute</string>
+    <string name="multiplayer_unmute">Unmute</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>

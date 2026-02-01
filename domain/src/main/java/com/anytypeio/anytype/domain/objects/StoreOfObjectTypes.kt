@@ -14,6 +14,7 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -22,6 +23,7 @@ import kotlinx.coroutines.sync.withLock
 interface StoreOfObjectTypes {
 
     fun observe(id: Id) : Flow<ObjectWrapper.Type>
+    fun observe() : Flow<List<ObjectWrapper.Type>>
     suspend fun get(id: Id): ObjectWrapper.Type?
     suspend fun getByKey(key: Key): ObjectWrapper.Type?
     suspend fun getAll(): List<ObjectWrapper.Type>
@@ -61,6 +63,10 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
                 .mapNotNull { get(id) }
                 .filter { it.isValid }
         )
+    }
+
+    override fun observe(): Flow<List<ObjectWrapper.Type>> = flow {
+        emitAll(trackChanges().map { getAll() })
     }
 
     override suspend fun get(id: Id): ObjectWrapper.Type? = mutex.withLock {

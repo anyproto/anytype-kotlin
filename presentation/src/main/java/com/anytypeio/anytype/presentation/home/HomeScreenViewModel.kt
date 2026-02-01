@@ -1275,6 +1275,18 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onTypeRowClicked(typeId: Id) {
+        Timber.d("onTypeRowClicked: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.getAll().find { it.id == typeId }
+            if (type != null) {
+                proceedWithNavigation(type.navigation(vmParams.spaceId.id))
+            } else {
+                Timber.w("Type not found for id: $typeId")
+            }
+        }
+    }
+
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return

@@ -293,7 +293,7 @@ fun WidgetsScreen(
                             ObjectTypesGroupWidgetCard(
                                 item = objectTypesGroupWidget,
                                 onTypeClicked = { typeId ->
-                                    viewModel.onWidgetSourceClicked(typeId)
+                                    viewModel.onTypeRowClicked(typeId)
                                 },
                                 onCreateObjectClicked = { typeId ->
                                     // TODO: Implement object creation from type

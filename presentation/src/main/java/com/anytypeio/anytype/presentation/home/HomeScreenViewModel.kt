@@ -1287,6 +1287,24 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onCreateObjectFromTypeRow(typeId: Id) {
+        Timber.d("onCreateObjectFromTypeRow: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.getAll().find { it.id == typeId }
+            if (type != null) {
+                val typeKey = TypeKey(type.uniqueKey)
+                val templateId = type.defaultTemplateId?.takeIf { it.isNotEmpty() }
+                proceedWithCreatingObject(
+                    space = vmParams.spaceId,
+                    type = typeKey,
+                    templateId = templateId
+                )
+            } else {
+                Timber.w("Type not found for id: $typeId")
+            }
+        }
+    }
+
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return

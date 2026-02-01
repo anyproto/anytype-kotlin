@@ -296,8 +296,7 @@ fun WidgetsScreen(
                                     viewModel.onTypeRowClicked(typeId)
                                 },
                                 onCreateObjectClicked = { typeId ->
-                                    // TODO: Implement object creation from type
-                                    // This will be connected to ViewModel in step 9
+                                    viewModel.onCreateObjectFromTypeRow(typeId)
                                 },
                                 onCreateNewTypeClicked = {
                                     viewModel.onCreateNewTypeClicked()

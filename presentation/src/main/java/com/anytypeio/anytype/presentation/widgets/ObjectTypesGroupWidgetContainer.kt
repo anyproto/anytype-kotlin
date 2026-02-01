@@ -55,9 +55,11 @@ class ObjectTypesGroupWidgetContainer(
 
     @OptIn(ExperimentalCoroutinesApi::class)
     override val view: Flow<WidgetView> = isSessionActive.flatMapLatest { isActive ->
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: isSessionActive=$isActive")
         if (isActive) {
             buildViewFlow().onStart {
                 isWidgetCollapsed.take(1).collect { isCollapsed ->
+                    Timber.d("ObjectTypesGroupWidget[${widget.id}]: Initial state - isCollapsed=$isCollapsed")
                     val loadingStateView = WidgetView.ObjectTypesGroup(
                         id = widget.id,
                         types = emptyList(),
@@ -65,20 +67,26 @@ class ObjectTypesGroupWidgetContainer(
                         sectionType = widget.sectionType
                     )
                     if (isCollapsed) {
+                        Timber.d("ObjectTypesGroupWidget[${widget.id}]: Emitting collapsed view")
                         emit(loadingStateView)
                     } else {
-                        emit(onRequestCache() ?: loadingStateView)
+                        val cached = onRequestCache()
+                        Timber.d("ObjectTypesGroupWidget[${widget.id}]: Emitting initial view (cached=${cached != null})")
+                        emit(cached ?: loadingStateView)
                     }
                 }
             }
         } else {
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Session inactive, emitting empty flow")
             emptyFlow()
         }
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun buildViewFlow() = isWidgetCollapsed.flatMapLatest { isCollapsed ->
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: buildViewFlow - isCollapsed=$isCollapsed")
         if (isCollapsed) {
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Widget collapsed, emitting empty view")
             flowOf(
                 WidgetView.ObjectTypesGroup(
                     id = widget.id,
@@ -89,10 +97,12 @@ class ObjectTypesGroupWidgetContainer(
             )
         } else {
             // React to type metadata changes
-            storeOfObjectTypes.trackChanges().flatMapLatest {
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Widget expanded, tracking type changes")
+            storeOfObjectTypes.trackChanges().flatMapLatest { change ->
+                Timber.d("ObjectTypesGroupWidget[${widget.id}]: Type store changed: $change")
                 buildTypesViewWithSubscriptions()
             }.catch { e ->
-                Timber.e(e, "Error building object types group view")
+                Timber.e(e, "ObjectTypesGroupWidget[${widget.id}]: Error building view")
                 emit(
                     WidgetView.ObjectTypesGroup(
                         id = widget.id,
@@ -111,18 +121,22 @@ class ObjectTypesGroupWidgetContainer(
      */
     @OptIn(ExperimentalCoroutinesApi::class)
     private suspend fun buildTypesViewWithSubscriptions(): Flow<WidgetView.ObjectTypesGroup> {
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: buildTypesViewWithSubscriptions started")
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: widget.typeIds = ${widget.typeIds}")
+        
         // Get all types from store (needs to be done in suspend context)
         val allTypes = mutableListOf<ObjectWrapper.Type>()
         val typeIdsList: List<Id> = widget.typeIds
         for (typeId: Id in typeIdsList) {
             val type: ObjectWrapper.Type? = storeOfObjectTypes.get(typeId)
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Looking up typeId=$typeId, found=${type != null}, name=${type?.name}")
             if (type != null) {
                 allTypes.add(type)
             }
         }
 
         if (allTypes.isEmpty()) {
-            Timber.d("ObjectTypesGroupWidget: No types found for typeIds=${widget.typeIds}")
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: No types found for typeIds=${widget.typeIds}")
             return flowOf(
                 WidgetView.ObjectTypesGroup(
                     id = widget.id,
@@ -132,14 +146,19 @@ class ObjectTypesGroupWidgetContainer(
                 )
             )
         }
+        
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: Found ${allTypes.size} types: ${allTypes.map { "${it.name}(${it.id})" }}")
 
         // Create a subscription for each type to track object existence
         // This is efficient: N types (usually 5-20) vs potentially thousands of objects
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: Creating ${allTypes.size} subscriptions")
         val typeSubscriptions: List<Flow<Pair<String, Boolean>>> = allTypes.map { typeObj ->
             val typeId = typeObj.id
+            val subscriptionId = "${widget.id}_type_$typeId"
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Creating subscription $subscriptionId for type ${typeObj.name}")
             storelessSubscriptionContainer.subscribe(
                 StoreSearchParams(
-                    subscription = "${widget.id}_type_$typeId",
+                    subscription = subscriptionId,
                     space = SpaceId(widget.config.space),
                     keys = listOf(Relations.ID), // Only need ID to check existence
                     filters = listOf(
@@ -166,19 +185,27 @@ class ObjectTypesGroupWidgetContainer(
                     )
                 )
             ).map { objects: List<ObjectWrapper.Basic> ->
-                typeId to objects.isNotEmpty()
+                val hasObjects = objects.isNotEmpty()
+                Timber.d("ObjectTypesGroupWidget[${widget.id}]: Subscription $subscriptionId returned ${objects.size} objects, hasObjects=$hasObjects")
+                typeId to hasObjects
             }
         }
 
         // Combine all type subscriptions
+        Timber.d("ObjectTypesGroupWidget[${widget.id}]: Combining ${typeSubscriptions.size} subscription flows")
         return combine(typeSubscriptions) { hasObjectsArray: Array<Pair<String, Boolean>> ->
             val hasObjectsMap: Map<String, Boolean> = hasObjectsArray.toMap()
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: combine() called with hasObjectsMap=$hasObjectsMap")
             
             // Build type rows for types that have objects
             val typeRows = allTypes
-                .filter { typeObj -> hasObjectsMap[typeObj.id] == true }
+                .filter { typeObj -> 
+                    val hasObjects = hasObjectsMap[typeObj.id] == true
+                    Timber.d("ObjectTypesGroupWidget[${widget.id}]: Type ${typeObj.name} (${typeObj.id}) hasObjects=$hasObjects")
+                    hasObjects
+                }
                 .map { typeObj ->
-                    WidgetView.ObjectTypesGroup.TypeRow(
+                    val typeRow = WidgetView.ObjectTypesGroup.TypeRow(
                         id = typeObj.id,
                         icon = typeObj.objectIcon(),
                         name = buildWidgetName(
@@ -186,16 +213,21 @@ class ObjectTypesGroupWidgetContainer(
                             fieldParser = fieldParser
                         )
                     )
+                    Timber.d("ObjectTypesGroupWidget[${widget.id}]: Created TypeRow: id=${typeRow.id}, name=${typeRow.name}")
+                    typeRow
                 }
             
-            Timber.d("ObjectTypesGroupWidget: Built view with ${typeRows.size} type rows (total types: ${allTypes.size}, hasObjectsMap: ${hasObjectsMap})")
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Built view with ${typeRows.size} type rows (total types: ${allTypes.size})")
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Type rows: ${typeRows.map { "${it.name}(${it.id})" }}")
 
-            WidgetView.ObjectTypesGroup(
+            val view = WidgetView.ObjectTypesGroup(
                 id = widget.id,
                 types = typeRows,
                 isExpanded = true,
                 sectionType = widget.sectionType
             )
+            Timber.d("ObjectTypesGroupWidget[${widget.id}]: Emitting view with ${view.types.size} types, isExpanded=${view.isExpanded}")
+            view
         }
     }
 }

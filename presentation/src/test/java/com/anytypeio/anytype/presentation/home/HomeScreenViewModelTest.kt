@@ -62,6 +62,7 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -83,6 +84,7 @@ import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
@@ -2988,6 +2990,12 @@ class HomeScreenViewModelTest {
     @Mock
     private lateinit var userSettingsRepository: UserSettingsRepository
 
+    @Mock
+    private lateinit var observeWidgetSections: ObserveWidgetSections
+
+    @Mock
+    private lateinit var setSpaceNotificationMode: SetSpaceNotificationMode
+
     private fun buildViewModel() = HomeScreenViewModel(
         vmParams = HomeScreenVmParams(spaceId = spaceId),
         interceptEvents = interceptEvents,
@@ -3046,9 +3054,11 @@ class HomeScreenViewModelTest {
         notificationPermissionManager = notificationPermissionManager,
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
         userSettingsRepository = userSettingsRepository,
+        observeWidgetSections = observeWidgetSections,
         scope = GlobalScope,
         stringResourceProvider = stringResourceProvider,
-        updateObjectTypesOrderIds = updateObjectTypesOrderIds
+        updateObjectTypesOrderIds = updateObjectTypesOrderIds,
+        setSpaceNotificationMode = setSpaceNotificationMode
     )
 
     companion object {

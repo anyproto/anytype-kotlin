@@ -272,7 +272,6 @@ fun WidgetsScreen(
                 ) {
                     SpaceObjectTypesSectionHeader(
                         mode = mode,
-                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
                         onSectionClicked = viewModel::onSectionTypesClicked
                     )
                 }

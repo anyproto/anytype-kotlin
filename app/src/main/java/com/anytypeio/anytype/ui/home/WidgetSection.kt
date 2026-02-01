@@ -590,8 +590,7 @@ fun WidgetEditModeButton(
 @Composable
 fun SpaceObjectTypesSectionHeader(
     mode: InteractionMode,
-    onSectionClicked: () -> Unit,
-    onCreateNewTypeClicked: () -> Unit
+    onSectionClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -607,18 +606,6 @@ fun SpaceObjectTypesSectionHeader(
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
-        if (mode !is InteractionMode.ReadOnly) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_default_plus),
-                contentDescription = "Create new type",
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 20.dp, bottom = 12.dp)
-                    .size(18.dp)
-                    .noRippleClickable { onCreateNewTypeClicked() },
-                contentScale = ContentScale.Inside
-            )
-        }
     }
 }
 

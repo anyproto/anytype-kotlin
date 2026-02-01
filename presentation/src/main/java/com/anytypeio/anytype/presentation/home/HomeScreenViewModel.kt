@@ -1645,6 +1645,7 @@ class HomeScreenViewModel(
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
         is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor

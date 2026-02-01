@@ -53,6 +53,7 @@ import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
@@ -525,6 +526,25 @@ fun LazyListScope.renderWidgetSection(
                     onWidgetClicked = { onWidgetSourceClicked(item.id) },
                     onDropDownMenuAction = { action ->
                         onWidgetMenuAction(item.id, action)
+                    }
+                )
+            }
+
+            is WidgetView.ObjectTypesGroup -> {
+                // Note: The card itself is not draggable, only the type rows inside
+                // TODO: Add drag-and-drop support for type rows in step 6
+                ObjectTypesGroupWidgetCard(
+                    item = item,
+                    onTypeClicked = { typeId ->
+                        onWidgetSourceClicked(typeId)
+                    },
+                    onCreateObjectClicked = { typeId ->
+                        // TODO: Handle object creation from + button
+                        // This will be implemented when connecting to ViewModel
+                    },
+                    onCreateNewTypeClicked = {
+                        // TODO: Connect to onCreateNewTypeClicked from ViewModel
+                        // This will be implemented in step 9
                     }
                 )
             }

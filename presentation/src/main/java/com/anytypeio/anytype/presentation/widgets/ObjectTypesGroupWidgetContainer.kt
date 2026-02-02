@@ -14,12 +14,11 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import com.anytypeio.anytype.core_models.Relations
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
-import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 /**
@@ -63,9 +62,11 @@ class ObjectTypesGroupWidgetContainer(
         return combine(
             storeOfObjectTypes.observe(),
             hasInstanceContainer.observe(),
-            spaceViewContainer.observe(spaceId)
-                .map { it.spaceUxType }
-                .distinctUntilChanged()
+            spaceViewContainer.observe(
+                space = spaceId,
+                keys = listOf(Relations.SPACE_UX_TYPE),
+                mapper = { it.spaceUxType }
+            )
         ) { allTypes, typesWithInstances, spaceUxType ->
             // Convert Meta set to map for quick lookup by uniqueKey
             val typesWithInstancesKeys = typesWithInstances.map { it.uniqueKey }.toSet()

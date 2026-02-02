@@ -300,6 +300,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun hasInstanceOfObjectTypeSubscriptionContainer(): com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
     fun dateProvider(): DateProvider
     fun logger(): Logger
     fun spaceManager(): SpaceManager

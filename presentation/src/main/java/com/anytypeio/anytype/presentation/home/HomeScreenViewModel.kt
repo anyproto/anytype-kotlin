@@ -89,6 +89,7 @@ import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -226,6 +227,7 @@ class HomeScreenViewModel(
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
     private val setWidgetActiveView: SetWidgetActiveView,
@@ -3567,6 +3569,7 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
@@ -3605,6 +3608,7 @@ class HomeScreenViewModel(
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
         private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
@@ -3671,6 +3675,7 @@ class HomeScreenViewModel(
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             storeOfRelations = storeOfRelations,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,

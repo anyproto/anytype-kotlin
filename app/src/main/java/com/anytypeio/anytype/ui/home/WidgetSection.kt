@@ -529,24 +529,9 @@ fun LazyListScope.renderWidgetSection(
                     }
                 )
             }
-
             is WidgetView.ObjectTypesGroup -> {
-                // Note: This code path is not used - ObjectTypesGroup is rendered directly in WidgetsScreen.kt
-                // This case exists for exhaustive when expression, but the actual rendering happens elsewhere
-                ObjectTypesGroupWidgetCard(
-                    item = item,
-                    onTypeClicked = { typeId ->
-                        onWidgetSourceClicked(typeId)
-                    },
-                    onCreateObjectClicked = { typeId ->
-                        onCreateElement(item)
-                    },
-                    onCreateNewTypeClicked = {
-                        // This callback is not available in this context
-                    }
-                )
+                // ObjectTypesGroup is rendered directly in WidgetsScreen.kt
             }
-
             is WidgetView.EmptyState -> {
                 if (mode !is InteractionMode.Edit) {
                     EmptyStateWidgetScreen(

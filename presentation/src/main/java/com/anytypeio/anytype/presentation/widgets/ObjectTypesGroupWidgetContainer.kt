@@ -5,7 +5,9 @@ import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -14,8 +16,10 @@ import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import timber.log.Timber
 
 /**
@@ -32,8 +36,9 @@ class ObjectTypesGroupWidgetContainer(
     private val widget: Widget.ObjectTypesGroup,
     private val storeOfObjectTypes: StoreOfObjectTypes,
     private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer,
+    private val spaceId: SpaceId,
     private val fieldParser: FieldParser,
-    private val spaceUxType: SpaceUxType?,
     isSessionActive: Flow<Boolean>
 ) : WidgetContainer {
 
@@ -57,17 +62,21 @@ class ObjectTypesGroupWidgetContainer(
     private fun buildViewFlow(): Flow<WidgetView.ObjectTypesGroup> {
         return combine(
             storeOfObjectTypes.observe(),
-            hasInstanceContainer.observe()
-        ) { allTypes, typesWithInstances ->
+            hasInstanceContainer.observe(),
+            spaceViewContainer.observe(spaceId)
+                .map { it.spaceUxType }
+                .distinctUntilChanged()
+        ) { allTypes, typesWithInstances, spaceUxType ->
             // Convert Meta set to map for quick lookup by uniqueKey
             val typesWithInstancesKeys = typesWithInstances.map { it.uniqueKey }.toSet()
-            buildView(allTypes, typesWithInstancesKeys)
+            buildView(allTypes, typesWithInstancesKeys, spaceUxType)
         }
     }
 
     private fun buildView(
         allTypes: List<ObjectWrapper.Type>,
-        typesWithObjects: Set<String>
+        typesWithObjects: Set<String>,
+        spaceUxType: SpaceUxType?
     ): WidgetView.ObjectTypesGroup {
         // Get system layouts based on space context
         val systemLayoutsForSpace = SupportedLayouts.getSystemLayouts(spaceUxType)

@@ -389,8 +389,9 @@ class WidgetContainerDelegateImpl(
             widget = widget,
             storeOfObjectTypes = storeOfObjectTypes,
             hasInstanceContainer = hasInstanceContainer,
+            spaceViewContainer = spaceViewSubscriptionContainer,
+            spaceId = spaceId,
             fieldParser = fieldParser,
-            spaceUxType = null, // TODO: Pass spaceUxType from space view subscription
             isSessionActive = isSessionActive
         )
     }

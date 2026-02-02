@@ -642,8 +642,8 @@ internal suspend fun mapSpaceTypesToWidgets(
     val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
     // Create single grouped widget for object types
-    // The container (ObjectTypesGroupWidgetContainer) will fetch types from StoreOfObjectTypes
-    // and apply filtering logic (TODO: filter types with objectCount > 0)
+    // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes
+    // and filters types with at least one instance using HasInstanceOfObjectTypeSubscriptionContainer
     return listOf(
         Widget.ObjectTypesGroup(
             id = "object_types_group",

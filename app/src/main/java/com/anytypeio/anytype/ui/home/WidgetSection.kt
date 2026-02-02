@@ -531,20 +531,18 @@ fun LazyListScope.renderWidgetSection(
             }
 
             is WidgetView.ObjectTypesGroup -> {
-                // Note: The card itself is not draggable, only the type rows inside
-                // TODO: Add drag-and-drop support for type rows in step 6
+                // Note: This code path is not used - ObjectTypesGroup is rendered directly in WidgetsScreen.kt
+                // This case exists for exhaustive when expression, but the actual rendering happens elsewhere
                 ObjectTypesGroupWidgetCard(
                     item = item,
                     onTypeClicked = { typeId ->
                         onWidgetSourceClicked(typeId)
                     },
                     onCreateObjectClicked = { typeId ->
-                        // TODO: Handle object creation from + button
-                        // This will be implemented when connecting to ViewModel
+                        onCreateElement(item)
                     },
                     onCreateNewTypeClicked = {
-                        // TODO: Connect to onCreateNewTypeClicked from ViewModel
-                        // This will be implemented in step 9
+                        // This callback is not available in this context
                     }
                 )
             }

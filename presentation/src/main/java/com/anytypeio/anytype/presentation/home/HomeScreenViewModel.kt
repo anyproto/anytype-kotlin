@@ -89,6 +89,7 @@ import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -226,6 +227,7 @@ class HomeScreenViewModel(
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
     private val setWidgetActiveView: SetWidgetActiveView,
@@ -1275,6 +1277,36 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onTypeRowClicked(typeId: Id) {
+        Timber.d("onTypeRowClicked: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            if (type != null) {
+                proceedWithNavigation(type.navigation(vmParams.spaceId.id))
+            } else {
+                Timber.w("Type not found for id: $typeId")
+            }
+        }
+    }
+
+    fun onCreateObjectFromTypeRow(typeId: Id) {
+        Timber.d("onCreateObjectFromTypeRow: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            if (type != null) {
+                val typeKey = TypeKey(type.uniqueKey)
+                val templateId = type.defaultTemplateId?.takeIf { it.isNotEmpty() }
+                proceedWithCreatingObject(
+                    space = vmParams.spaceId,
+                    type = typeKey,
+                    templateId = templateId
+                )
+            } else {
+                Timber.w("Type not found for id: $typeId")
+            }
+        }
+    }
+
     fun onWidgetSourceClicked(widgetId: Id) {
         Timber.d("onWidgetSourceClicked:")
         val widget = currentWidgets?.find { it.id == widgetId } ?: return
@@ -1645,6 +1677,7 @@ class HomeScreenViewModel(
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
         is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -3536,6 +3569,7 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
@@ -3574,6 +3608,7 @@ class HomeScreenViewModel(
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
         private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
@@ -3640,6 +3675,7 @@ class HomeScreenViewModel(
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             storeOfRelations = storeOfRelations,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,

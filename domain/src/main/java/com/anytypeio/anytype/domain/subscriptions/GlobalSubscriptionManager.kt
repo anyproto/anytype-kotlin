@@ -5,6 +5,7 @@ import com.anytypeio.anytype.domain.device.DeviceTokenStoringService
 import com.anytypeio.anytype.domain.device.NetworkConnectionStatus
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.notifications.PushKeyProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionManager
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.search.RelationOptionsSubscriptionManager
@@ -27,6 +28,7 @@ interface GlobalSubscriptionManager {
         private val networkConnectionStatus: NetworkConnectionStatus,
         private val deviceTokenStoringService: DeviceTokenStoringService,
         private val pushKeyProvider: PushKeyProvider,
+        private val hasInstanceOfType: HasInstanceOfObjectTypeSubscriptionManager,
         private val logger: Logger
     ) : GlobalSubscriptionManager {
 
@@ -41,6 +43,7 @@ interface GlobalSubscriptionManager {
             profile.onStart()
             networkConnectionStatus.start()
             deviceTokenStoringService.start()
+            hasInstanceOfType.onStart()
         }
 
         override fun onStop() {
@@ -54,6 +57,7 @@ interface GlobalSubscriptionManager {
             profile.onStop()
             networkConnectionStatus.stop()
             deviceTokenStoringService.stop()
+            hasInstanceOfType.onStop()
         }
     }
 

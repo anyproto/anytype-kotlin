@@ -272,6 +272,45 @@ sealed class WidgetView {
         override val sectionType: SectionType? = null
     ) : WidgetView()
 
+    /**
+     * Grouped widget that displays all object types as rows within a single card container.
+     * Replaces individual type widgets for better performance and visual consistency.
+     * Based on design: https://www.figma.com/design/pQ6LLLxEn5y4Gn7Eei7SDu?node-id=14142-11754
+     * 
+     * Visual structure:
+     * - Single card containing all type rows
+     * - Each row: [icon] [type name] ... [+ button]
+     * - Last item: "New type" button (always visible, non-draggable)
+     * - Card is not expandable/collapsible
+     * 
+     * @property id Unique identifier for this widget (typically "object_types_group")
+     * @property typeRows List of object type rows to display (only types with objects)
+     * @property sectionType Always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id,
+        val typeRows: List<TypeRow>,
+        override val sectionType: SectionType? = SectionType.TYPES
+    ) : WidgetView() {
+        
+        override val canCreateObjectOfType: Boolean = false
+        
+        /**
+         * Represents a single object type row in the grouped widget.
+         * 
+         * @property id The object type ID
+         * @property icon The object type icon
+         * @property name The display name of the type
+         * @property canCreateObjects Whether objects of this type can be created (enables + button)
+         */
+        data class TypeRow(
+            val id: Id,
+            val icon: ObjectIcon,
+            val name: String,
+            val canCreateObjects: Boolean
+        )
+    }
+
     data object EmptyState : WidgetView() {
         override val id: Id get() = "id.widgets.empty.state"
         override val canCreateObjectOfType: Boolean = false

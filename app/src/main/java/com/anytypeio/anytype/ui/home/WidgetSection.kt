@@ -53,6 +53,7 @@ import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
@@ -528,7 +529,9 @@ fun LazyListScope.renderWidgetSection(
                     }
                 )
             }
-
+            is WidgetView.ObjectTypesGroup -> {
+                // ObjectTypesGroup is rendered directly in WidgetsScreen.kt
+            }
             is WidgetView.EmptyState -> {
                 if (mode !is InteractionMode.Edit) {
                     EmptyStateWidgetScreen(
@@ -570,8 +573,7 @@ fun WidgetEditModeButton(
 @Composable
 fun SpaceObjectTypesSectionHeader(
     mode: InteractionMode,
-    onSectionClicked: () -> Unit,
-    onCreateNewTypeClicked: () -> Unit
+    onSectionClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -587,18 +589,6 @@ fun SpaceObjectTypesSectionHeader(
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
-        if (mode !is InteractionMode.ReadOnly) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_default_plus),
-                contentDescription = "Create new type",
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 20.dp, bottom = 12.dp)
-                    .size(18.dp)
-                    .noRippleClickable { onCreateNewTypeClicked() },
-                contentScale = ContentScale.Inside
-            )
-        }
     }
 }
 

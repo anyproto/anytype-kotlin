@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -271,35 +272,33 @@ fun WidgetsScreen(
                 ) {
                     SpaceObjectTypesSectionHeader(
                         mode = mode,
-                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
                         onSectionClicked = viewModel::onSectionTypesClicked
                     )
                 }
             }
             }
 
-            // Type widgets section - only render if section is visible
+            // Type widgets section - render ObjectTypesGroup widget if section is visible
             if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
-                renderWidgetSection(
-                widgets = typesUi,
-                reorderableState = reorderableState,
-                view = view,
-                mode = mode,
-                sectionType = SectionType.TYPES,
-                isOtherSectionDragging = isDraggingPinned.value,
-                onExpand = viewModel::onExpand,
-                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                    viewModel.onDropDownMenuAction(widget, action)
-                },
-                onWidgetElementClicked = viewModel::onWidgetElementClicked,
-                onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
-                onSeeAllClicked = viewModel::onSeeAllClicked,
-                onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
-                onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
-                onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                    onCreateElement = viewModel::onCreateWidgetElementClicked,
-                    onCreateWidget = viewModel::onCreateWidgetClicked
-                )
+                // Get the single ObjectTypesGroup widget (should be only one)
+                val objectTypesGroupWidget = typesUi.firstOrNull() as? WidgetView.ObjectTypesGroup
+                
+                if (objectTypesGroupWidget != null) {
+                    item(key = objectTypesGroupWidget.id) {
+                        ObjectTypesGroupWidgetCard(
+                            item = objectTypesGroupWidget,
+                            onTypeClicked = { typeId ->
+                                viewModel.onTypeRowClicked(typeId)
+                            },
+                            onCreateObjectClicked = { typeId ->
+                                viewModel.onCreateObjectFromTypeRow(typeId)
+                            },
+                            onCreateNewTypeClicked = {
+                                viewModel.onCreateNewTypeClicked()
+                            }
+                        )
+                    }
+                }
             }
 
             // Bin widget - only show if section is visible

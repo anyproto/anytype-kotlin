@@ -9,6 +9,7 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.subscriptions.GlobalSubscription
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.collect
@@ -23,6 +24,7 @@ class ObjectTypesSubscriptionManager (
     private val spaceManager: SpaceManager
 ): GlobalSubscription {
 
+    @OptIn(ExperimentalCoroutinesApi::class)
     val pipeline get() = spaceManager.state().flatMapLatest { state ->
         when(state) {
             is SpaceManager.State.Space.Active -> {

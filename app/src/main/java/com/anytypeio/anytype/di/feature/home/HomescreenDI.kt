@@ -42,6 +42,7 @@ import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.templates.GetTemplates
@@ -300,6 +301,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun hasInstanceOfObjectTypeSubscriptionContainer(): HasInstanceOfObjectTypeSubscriptionContainer
     fun dateProvider(): DateProvider
     fun logger(): Logger
     fun spaceManager(): SpaceManager

@@ -298,6 +298,9 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         }
                         add(WidgetMenuItem.RemoveWidget)
                     }
+                    is WidgetView.ObjectTypesGroup -> {
+                        // Object types group has no menu - interactions are per-row
+                    }
                 }
             }
         }

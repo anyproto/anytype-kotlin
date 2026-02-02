@@ -140,6 +140,27 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
+    /**
+     * Grouped widget containing all object types.
+     * Replaces individual type widgets for better performance and visual consistency.
+     * The actual types data will be fetched by ObjectTypesGroupWidgetContainer.
+     * 
+     * @property id Unique identifier (typically "object_types_group")
+     * @property source Source for this grouped widget
+     * @property config Widget configuration
+     * @property isAutoCreated Whether this widget was auto-created
+     * @property icon Icon for the widget (typically None)
+     * @property sectionType Always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id,
+        override val source: Source,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.TYPES
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -620,9 +641,17 @@ internal suspend fun mapSpaceTypesToWidgets(
     val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
     val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
-    return sortedTypes.map { objectType ->
-        createWidgetViewFromType(objectType, config)
-    }
+    // Create single grouped widget for object types
+    // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes
+    // and filters types with at least one instance using HasInstanceOfObjectTypeSubscriptionContainer
+    return listOf(
+        Widget.ObjectTypesGroup(
+            id = "object_types_group",
+            source = Widget.Source.Other,
+            config = config,
+            isAutoCreated = true
+        )
+    )
 }
 
 /**

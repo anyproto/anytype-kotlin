@@ -34,6 +34,8 @@ import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionManager
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionContainer
 import com.anytypeio.anytype.domain.search.ObjectTypesSubscriptionManager
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
@@ -143,6 +145,34 @@ object SubscriptionsModule {
         spaceManager: SpaceManager
     ): ObjectTypesSubscriptionManager = ObjectTypesSubscriptionManager(
         container = subscription,
+        spaceManager = spaceManager
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun hasInstanceOfObjectTypeSubscriptionContainer(
+        storelessContainer: StorelessSubscriptionContainer,
+        storeOfObjectTypes: StoreOfObjectTypes,
+        dispatchers: AppCoroutineDispatchers,
+        logger: Logger,
+        @Named(DEFAULT_APP_COROUTINE_SCOPE) scope: CoroutineScope
+    ): HasInstanceOfObjectTypeSubscriptionContainer = HasInstanceOfObjectTypeSubscriptionContainer(
+        storelessContainer = storelessContainer,
+        storeOfObjectTypes = storeOfObjectTypes,
+        dispatchers = dispatchers,
+        logger = logger,
+        scope = scope
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun hasInstanceOfObjectTypeSubscriptionManager(
+        container: HasInstanceOfObjectTypeSubscriptionContainer,
+        spaceManager: SpaceManager
+    ): HasInstanceOfObjectTypeSubscriptionManager = HasInstanceOfObjectTypeSubscriptionManager(
+        container = container,
         spaceManager = spaceManager
     )
 
@@ -342,6 +372,7 @@ object SubscriptionsModule {
         networkConnectionStatus: NetworkConnectionStatus,
         deviceTokenStoringService: DeviceTokenStoringService,
         pushKeyProvider: PushKeyProvider,
+        hasInstanceOfType: HasInstanceOfObjectTypeSubscriptionManager,
         logger: Logger
     ): GlobalSubscriptionManager = GlobalSubscriptionManager.Default(
         types = types,
@@ -353,6 +384,7 @@ object SubscriptionsModule {
         networkConnectionStatus = networkConnectionStatus,
         deviceTokenStoringService = deviceTokenStoringService,
         pushKeyProvider = pushKeyProvider,
+        hasInstanceOfType = hasInstanceOfType,
         logger = logger
     )
 

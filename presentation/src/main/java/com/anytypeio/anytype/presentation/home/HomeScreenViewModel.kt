@@ -1278,7 +1278,7 @@ class HomeScreenViewModel(
     fun onTypeRowClicked(typeId: Id) {
         Timber.d("onTypeRowClicked: $typeId")
         viewModelScope.launch {
-            val type = storeOfObjectTypes.getAll().find { it.id == typeId }
+            val type = storeOfObjectTypes.get(typeId)
             if (type != null) {
                 proceedWithNavigation(type.navigation(vmParams.spaceId.id))
             } else {
@@ -1290,7 +1290,7 @@ class HomeScreenViewModel(
     fun onCreateObjectFromTypeRow(typeId: Id) {
         Timber.d("onCreateObjectFromTypeRow: $typeId")
         viewModelScope.launch {
-            val type = storeOfObjectTypes.getAll().find { it.id == typeId }
+            val type = storeOfObjectTypes.get(typeId)
             if (type != null) {
                 val typeKey = TypeKey(type.uniqueKey)
                 val templateId = type.defaultTemplateId?.takeIf { it.isNotEmpty() }

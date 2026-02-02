@@ -285,24 +285,18 @@ fun WidgetsScreen(
                 
                 if (objectTypesGroupWidget != null) {
                     item(key = objectTypesGroupWidget.id) {
-                        ReorderableItem(
-                            enabled = false, // Card itself is not draggable
-                            state = reorderableState,
-                            key = objectTypesGroupWidget.id
-                        ) {
-                            ObjectTypesGroupWidgetCard(
-                                item = objectTypesGroupWidget,
-                                onTypeClicked = { typeId ->
-                                    viewModel.onTypeRowClicked(typeId)
-                                },
-                                onCreateObjectClicked = { typeId ->
-                                    viewModel.onCreateObjectFromTypeRow(typeId)
-                                },
-                                onCreateNewTypeClicked = {
-                                    viewModel.onCreateNewTypeClicked()
-                                }
-                            )
-                        }
+                        ObjectTypesGroupWidgetCard(
+                            item = objectTypesGroupWidget,
+                            onTypeClicked = { typeId ->
+                                viewModel.onTypeRowClicked(typeId)
+                            },
+                            onCreateObjectClicked = { typeId ->
+                                viewModel.onCreateObjectFromTypeRow(typeId)
+                            },
+                            onCreateNewTypeClicked = {
+                                viewModel.onCreateNewTypeClicked()
+                            }
+                        )
                     }
                 }
             }

@@ -17,6 +17,8 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
 
@@ -30,6 +32,34 @@ interface ChatsDetailsSubscriptionContainer {
     fun stop()
     fun observe(): Flow<List<ObjectWrapper.Basic>>
     fun observe(chatId: Id): Flow<ObjectWrapper.Basic>
+    
+    /**
+     * Observes all chats and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the chats list
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        keys: List<String>,
+        mapper: (List<ObjectWrapper.Basic>) -> T
+    ): Flow<T>
+    
+    /**
+     * Observes a specific chat and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param chatId The chat ID to observe
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the chat
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        chatId: Id,
+        keys: List<String>,
+        mapper: (ObjectWrapper.Basic) -> T
+    ): Flow<T>
 
     fun get(): List<ObjectWrapper.Basic>
     fun get(chatId: Id): ObjectWrapper.Basic?
@@ -85,6 +115,25 @@ interface ChatsDetailsSubscriptionContainer {
 
         override fun get(chatId: Id): ObjectWrapper.Basic? {
             return data.value.find { chat -> chat.id == chatId }
+        }
+        
+        override fun <T> observe(
+            keys: List<String>,
+            mapper: (List<ObjectWrapper.Basic>) -> T
+        ): Flow<T> {
+            return observe()
+                .map(mapper)
+                .distinctUntilChanged()
+        }
+        
+        override fun <T> observe(
+            chatId: Id,
+            keys: List<String>,
+            mapper: (ObjectWrapper.Basic) -> T
+        ): Flow<T> {
+            return observe(chatId)
+                .map(mapper)
+                .distinctUntilChanged()
         }
 
         override fun start() {

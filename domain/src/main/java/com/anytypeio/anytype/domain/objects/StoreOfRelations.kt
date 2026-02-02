@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.`object`.amend
 import com.anytypeio.anytype.domain.`object`.unset
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -18,6 +19,20 @@ import kotlinx.coroutines.channels.BufferOverflow
 interface StoreOfRelations {
     val size: Int
     suspend fun observe(): Flow<Map<Id, ObjectWrapper.Relation>>
+    
+    /**
+     * Observes all relations and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the relations map
+     * @return Flow that emits only when the mapped value changes
+     */
+    suspend fun <T> observe(
+        keys: List<String>,
+        mapper: (Map<Id, ObjectWrapper.Relation>) -> T
+    ): Flow<T>
+    
     suspend fun getByKey(key: Key): ObjectWrapper.Relation?
     suspend fun getByKeys(keys: List<Key>): List<ObjectWrapper.Relation>
     suspend fun getById(id: Id): ObjectWrapper.Relation?
@@ -184,6 +199,15 @@ class DefaultStoreOfRelations : StoreOfRelations {
         return trackChanges().map {
             mutex.withLock { store.toMap() }
         }
+    }
+    
+    override suspend fun <T> observe(
+        keys: List<String>,
+        mapper: (Map<Id, ObjectWrapper.Relation>) -> T
+    ): Flow<T> {
+        return observe()
+            .map(mapper)
+            .distinctUntilChanged()
     }
 }
 

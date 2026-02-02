@@ -65,10 +65,10 @@ class ObjectTypesGroupWidgetContainer(
         }
     }
 
-    /**
-     * Extension to convert ObjectWrapper.Type to ObjectWrapper.Basic
-     */
-    private fun ObjectWrapper.Type.toBasic(): ObjectWrapper.Basic = ObjectWrapper.Basic(this.map)
+    private fun buildView(
+        allTypes: List<ObjectWrapper.Type>,
+        typesWithObjects: Set<String>
+    ): WidgetView.ObjectTypesGroup {
         // Get system layouts based on space context
         val systemLayoutsForSpace = SupportedLayouts.getSystemLayouts(spaceUxType)
         val excludedLayouts = systemLayoutsForSpace + SupportedLayouts.dateLayouts + listOf(

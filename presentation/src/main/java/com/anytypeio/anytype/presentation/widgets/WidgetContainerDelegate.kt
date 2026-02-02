@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import kotlinx.coroutines.flow.Flow
@@ -66,6 +67,7 @@ class WidgetContainerDelegateImpl(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val getObject: GetObject,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
@@ -386,8 +388,7 @@ class WidgetContainerDelegateImpl(
         return ObjectTypesGroupWidgetContainer(
             widget = widget,
             storeOfObjectTypes = storeOfObjectTypes,
-            storage = storelessSubscriptionContainer,
-            spaceId = spaceId,
+            hasInstanceContainer = hasInstanceContainer,
             fieldParser = fieldParser,
             spaceUxType = null, // TODO: Pass spaceUxType from space view subscription
             isSessionActive = isSessionActive

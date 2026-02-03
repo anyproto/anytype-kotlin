@@ -37,6 +37,7 @@ enum class SectionType {
     PINNED,
     UNREAD,
     TYPES,
+    RECENTLY_EDITED,
     NONE
 }
 
@@ -137,6 +138,27 @@ sealed class Widget {
         override val isAutoCreated: Boolean = false,
         override val icon: ObjectIcon = ObjectIcon.None,
         override val sectionType: SectionType = SectionType.NONE
+    ) : Widget()
+
+    /**
+     * Grouped widget containing all object types.
+     * Replaces individual type widgets for better performance and visual consistency.
+     * The actual types data will be fetched by ObjectTypesGroupWidgetContainer.
+     * 
+     * @property id Unique identifier (typically "object_types_group")
+     * @property source Source for this grouped widget
+     * @property config Widget configuration
+     * @property isAutoCreated Whether this widget was auto-created
+     * @property icon Icon for the widget (typically None)
+     * @property sectionType Always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id,
+        override val source: Source,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.TYPES
     ) : Widget()
 
     sealed class Source {
@@ -419,38 +441,55 @@ suspend fun buildWidgetSections(
     state: ObjectViewState.Success,
     params: WidgetUiParams,
     urlBuilder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    sectionConfig: com.anytypeio.anytype.core_models.WidgetSections
 ): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
 
-    // Build pinned section
-    val pinnedWidgets = buildPinnedSection(
-        state = state,
-        isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
-        urlBuilder = urlBuilder,
-        storeOfObjectTypes = storeOfObjectTypes
-    )
+    // Build pinned section only if visible
+    val pinnedWidgets = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
+        buildPinnedSection(
+            state = state,
+            isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+    } else {
+        emptyList()
+    }
 
-    // Build type section
-    val typeWidgets = buildTypeSection(
-        state = state,
-        params = params,
-        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
-        storeOfObjectTypes = storeOfObjectTypes,
-        spaceUxType = spaceView.spaceUxType
-    )
+    // Build type section only if visible
+    val typeWidgets = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+        buildTypeSection(
+            state = state,
+            params = params,
+            isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
+            storeOfObjectTypes = storeOfObjectTypes,
+            spaceUxType = spaceView.spaceUxType
+        )
+    } else {
+        emptyList()
+    }
 
-    // Build unread widget (displayed separately at top) - only for data spaces
-    val unreadWidget = buildUnreadWidget(
-        state = state,
-        spaceUxType = spaceView.spaceUxType
-    )
+    // Build unread widget only if visible - only for data spaces
+    val unreadWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
+        buildUnreadWidget(
+            state = state,
+            spaceUxType = spaceView.spaceUxType
+        )
+    } else {
+        null
+    }
 
-    // Build bin widget (displayed separately at bottom)
-    val binWidget = buildBinWidget(
-        state = state,
-        params = params
-    )
+    // Build bin widget only if visible
+    val binWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.BIN)) {
+        buildBinWidget(
+            state = state,
+            params = params
+        )
+    } else {
+        null
+    }
 
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
@@ -602,9 +641,17 @@ internal suspend fun mapSpaceTypesToWidgets(
     val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
     val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
-    return sortedTypes.map { objectType ->
-        createWidgetViewFromType(objectType, config)
-    }
+    // Create single grouped widget for object types
+    // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes
+    // and filters types with at least one instance using HasInstanceOfObjectTypeSubscriptionContainer
+    return listOf(
+        Widget.ObjectTypesGroup(
+            id = "object_types_group",
+            source = Widget.Source.Other,
+            config = config,
+            isAutoCreated = true
+        )
+    )
 }
 
 /**

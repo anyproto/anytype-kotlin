@@ -19,6 +19,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
@@ -29,6 +30,35 @@ interface ActiveSpaceMemberSubscriptionContainer {
     fun stop()
     fun observe() : Flow<Store>
     fun observe(space: SpaceId) : Flow<Store>
+    
+    /**
+     * Observes the active space members store and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the Store
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        keys: List<String>,
+        mapper: (Store) -> T
+    ): Flow<T>
+    
+    /**
+     * Observes a specific space's members and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param space The space to observe
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the Store
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        space: SpaceId,
+        keys: List<String>,
+        mapper: (Store) -> T
+    ): Flow<T>
+    
     fun get() : Store
     fun get(space: SpaceId) : Store
 
@@ -85,6 +115,25 @@ interface ActiveSpaceMemberSubscriptionContainer {
                 curr
             else
                 Store.Empty
+        }
+        
+        override fun <T> observe(
+            keys: List<String>,
+            mapper: (Store) -> T
+        ): Flow<T> {
+            return observe()
+                .map(mapper)
+                .distinctUntilChanged()
+        }
+        
+        override fun <T> observe(
+            space: SpaceId,
+            keys: List<String>,
+            mapper: (Store) -> T
+        ): Flow<T> {
+            return observe(space)
+                .map(mapper)
+                .distinctUntilChanged()
         }
 
         override fun start() {

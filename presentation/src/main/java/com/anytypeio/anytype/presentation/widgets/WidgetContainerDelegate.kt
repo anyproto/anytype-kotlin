@@ -20,6 +20,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import kotlinx.coroutines.flow.Flow
@@ -66,6 +67,7 @@ class WidgetContainerDelegateImpl(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val getObject: GetObject,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
@@ -89,6 +91,7 @@ class WidgetContainerDelegateImpl(
             is Widget.View -> createViewContainer(widget, currentlyDisplayedViews)
             is Widget.AllObjects -> createAllObjectsContainer(widget)
             is Widget.Bin -> createBinContainer(widget)
+            is Widget.ObjectTypesGroup -> createObjectTypesGroupContainer(widget, currentlyDisplayedViews)
         }
     }
 
@@ -377,4 +380,20 @@ class WidgetContainerDelegateImpl(
     private fun createBinContainer(widget: Widget.Bin): WidgetContainer {
         return BinWidgetContainer(widget = widget)
     }
+
+    private fun createObjectTypesGroupContainer(
+        widget: Widget.ObjectTypesGroup,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return ObjectTypesGroupWidgetContainer(
+            widget = widget,
+            storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
+            spaceViewContainer = spaceViewSubscriptionContainer,
+            spaceId = spaceId,
+            fieldParser = fieldParser,
+            isSessionActive = isSessionActive
+        )
+    }
+
 }

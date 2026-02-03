@@ -11,9 +11,11 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes.TrackedEvent
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.emitAll
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.sync.Mutex
@@ -22,6 +24,36 @@ import kotlinx.coroutines.sync.withLock
 interface StoreOfObjectTypes {
 
     fun observe(id: Id) : Flow<ObjectWrapper.Type>
+    fun observe() : Flow<List<ObjectWrapper.Type>>
+    
+    /**
+     * Observes all object types and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the list of types
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        keys: List<String>,
+        mapper: (List<ObjectWrapper.Type>) -> T
+    ): Flow<T>
+    
+    /**
+     * Observes a specific object type and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param id The type ID to observe
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the type
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        id: Id,
+        keys: List<String>,
+        mapper: (ObjectWrapper.Type) -> T
+    ): Flow<T>
+    
     suspend fun get(id: Id): ObjectWrapper.Type?
     suspend fun getByKey(key: Key): ObjectWrapper.Type?
     suspend fun getAll(): List<ObjectWrapper.Type>
@@ -61,6 +93,29 @@ class DefaultStoreOfObjectTypes : StoreOfObjectTypes {
                 .mapNotNull { get(id) }
                 .filter { it.isValid }
         )
+    }
+
+    override fun observe(): Flow<List<ObjectWrapper.Type>> = flow {
+        emitAll(trackChanges().map { getAll() })
+    }
+    
+    override fun <T> observe(
+        keys: List<String>,
+        mapper: (List<ObjectWrapper.Type>) -> T
+    ): Flow<T> {
+        return observe()
+            .map(mapper)
+            .distinctUntilChanged()
+    }
+    
+    override fun <T> observe(
+        id: Id,
+        keys: List<String>,
+        mapper: (ObjectWrapper.Type) -> T
+    ): Flow<T> {
+        return observe(id)
+            .map(mapper)
+            .distinctUntilChanged()
     }
 
     override suspend fun get(id: Id): ObjectWrapper.Type? = mutex.withLock {

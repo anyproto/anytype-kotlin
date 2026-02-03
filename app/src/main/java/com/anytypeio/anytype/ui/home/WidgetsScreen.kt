@@ -39,6 +39,7 @@ import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -60,6 +61,7 @@ fun WidgetsScreen(
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
+    val sectionConfig = viewModel.widgetSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
@@ -187,8 +189,8 @@ fun WidgetsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            // Unread section - shown at top when there are unread chats
-            if (shouldShowUnreadSection) {
+            // Unread section - shown at top when there are unread chats and section is visible
+            if (shouldShowUnreadSection && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
                 item {
                     ReorderableItem(
                         enabled = false,
@@ -202,8 +204,8 @@ fun WidgetsScreen(
                 }
             }
             
-            // Unread widgets - only render when section is expanded and widget exists
-            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
+            // Unread widgets - only render when section is expanded and widget exists and section is visible
+            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
                 item(key = "unread_widget_content") {
                     ReorderableItem(
                         enabled = false,
@@ -222,8 +224,8 @@ fun WidgetsScreen(
                 }
             }
 
-            // Only show pinned section header if there are items or section is collapsed
-            if (shouldShowPinnedHeader) {
+            // Only show pinned section header if there are items or section is collapsed and section is visible
+            if (shouldShowPinnedHeader && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
                 item {
                     ReorderableItem(
                         enabled = false,
@@ -236,9 +238,10 @@ fun WidgetsScreen(
                     }
                 }
             }
-            // Pinned widgets section
-            renderWidgetSection(
-                widgets = pinnedUi,
+            // Pinned widgets section - only render if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
+                renderWidgetSection(
+                    widgets = pinnedUi,
                 reorderableState = reorderableState,
                 view = view,
                 mode = mode,
@@ -254,11 +257,14 @@ fun WidgetsScreen(
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
                 onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                onCreateElement = viewModel::onCreateWidgetElementClicked,
-                onCreateWidget = viewModel::onCreateWidgetClicked
-            )
+                    onCreateElement = viewModel::onCreateWidgetElementClicked,
+                    onCreateWidget = viewModel::onCreateWidgetClicked
+                )
+            }
 
-            item {
+            // Object types section header - only show if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+                item {
                 ReorderableItem(
                     enabled = false,
                     state = reorderableState,
@@ -266,51 +272,55 @@ fun WidgetsScreen(
                 ) {
                     SpaceObjectTypesSectionHeader(
                         mode = mode,
-                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
                         onSectionClicked = viewModel::onSectionTypesClicked
                     )
                 }
             }
+            }
 
-            // Type widgets section
-            renderWidgetSection(
-                widgets = typesUi,
-                reorderableState = reorderableState,
-                view = view,
-                mode = mode,
-                sectionType = SectionType.TYPES,
-                isOtherSectionDragging = isDraggingPinned.value,
-                onExpand = viewModel::onExpand,
-                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                    viewModel.onDropDownMenuAction(widget, action)
-                },
-                onWidgetElementClicked = viewModel::onWidgetElementClicked,
-                onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
-                onSeeAllClicked = viewModel::onSeeAllClicked,
-                onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
-                onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
-                onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                onCreateElement = viewModel::onCreateWidgetElementClicked,
-                onCreateWidget = viewModel::onCreateWidgetClicked
-            )
+            // Type widgets section - render ObjectTypesGroup widget if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+                // Get the single ObjectTypesGroup widget (should be only one)
+                val objectTypesGroupWidget = typesUi.firstOrNull() as? WidgetView.ObjectTypesGroup
+                
+                if (objectTypesGroupWidget != null) {
+                    item(key = objectTypesGroupWidget.id) {
+                        ObjectTypesGroupWidgetCard(
+                            item = objectTypesGroupWidget,
+                            onTypeClicked = { typeId ->
+                                viewModel.onTypeRowClicked(typeId)
+                            },
+                            onCreateObjectClicked = { typeId ->
+                                viewModel.onCreateObjectFromTypeRow(typeId)
+                            },
+                            onCreateNewTypeClicked = {
+                                viewModel.onCreateNewTypeClicked()
+                            }
+                        )
+                    }
+                }
+            }
 
-            binWidget?.let { bin ->
-                item {
-                    if (bin is WidgetView.Bin) {
-                        ReorderableItem(
-                            enabled = false,
-                            state = reorderableState,
-                            key = WIDGET_BIN_ID,
-                        ) {
-                            BinWidgetCard(
-                                item = bin,
-                                onDropDownMenuAction = { action ->
-                                    viewModel.onDropDownMenuAction(bin.id, action)
-                                },
-                                onWidgetSourceClicked = {
-                                    viewModel.onBinWidgetClicked()
-                                }
-                            )
+            // Bin widget - only show if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.BIN)) {
+                binWidget?.let { bin ->
+                    item {
+                        if (bin is WidgetView.Bin) {
+                            ReorderableItem(
+                                enabled = false,
+                                state = reorderableState,
+                                key = WIDGET_BIN_ID,
+                            ) {
+                                BinWidgetCard(
+                                    item = bin,
+                                    onDropDownMenuAction = { action ->
+                                        viewModel.onDropDownMenuAction(bin.id, action)
+                                    },
+                                    onWidgetSourceClicked = {
+                                        viewModel.onBinWidgetClicked()
+                                    }
+                                )
+                            }
                         }
                     }
                 }

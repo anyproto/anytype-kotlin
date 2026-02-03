@@ -17,6 +17,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.mapNotNull
 import kotlinx.coroutines.launch
@@ -31,6 +32,34 @@ interface ParticipantSubscriptionContainer {
     fun stop()
     fun observe(): Flow<List<ObjectWrapper.SpaceMember>>
     fun observe(identity: Id): Flow<ObjectWrapper.SpaceMember>
+    
+    /**
+     * Observes all participants and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the participants list
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        keys: List<String>,
+        mapper: (List<ObjectWrapper.SpaceMember>) -> T
+    ): Flow<T>
+    
+    /**
+     * Observes a specific participant and maps to a property using the provided mapper.
+     * Applies distinctUntilChanged to only emit when the mapped value changes.
+     * 
+     * @param identity The participant identity to observe
+     * @param keys List of relation keys being observed (informational, for documentation)
+     * @param mapper Function to extract the desired property from the participant
+     * @return Flow that emits only when the mapped value changes
+     */
+    fun <T> observe(
+        identity: Id,
+        keys: List<String>,
+        mapper: (ObjectWrapper.SpaceMember) -> T
+    ): Flow<T>
 
     fun get(): List<ObjectWrapper.SpaceMember>
     fun get(identity: Id): ObjectWrapper.SpaceMember?
@@ -86,6 +115,25 @@ interface ParticipantSubscriptionContainer {
 
         override fun get(identity: Id): ObjectWrapper.SpaceMember? {
             return data.value.find { participant -> participant.identity == identity }
+        }
+        
+        override fun <T> observe(
+            keys: List<String>,
+            mapper: (List<ObjectWrapper.SpaceMember>) -> T
+        ): Flow<T> {
+            return observe()
+                .map(mapper)
+                .distinctUntilChanged()
+        }
+        
+        override fun <T> observe(
+            identity: Id,
+            keys: List<String>,
+            mapper: (ObjectWrapper.SpaceMember) -> T
+        ): Flow<T> {
+            return observe(identity)
+                .map(mapper)
+                .distinctUntilChanged()
         }
 
         override fun start() {

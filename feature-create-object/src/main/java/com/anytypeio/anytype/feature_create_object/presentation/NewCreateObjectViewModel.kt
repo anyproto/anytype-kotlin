@@ -2,12 +2,21 @@ package com.anytypeio.anytype.feature_create_object.presentation
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import javax.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import timber.log.Timber
@@ -15,56 +24,101 @@ import timber.log.Timber
 /**
  * ViewModel for managing the create object screen state.
  * Handles fetching object types from the store and filtering them based on search query.
+ * Types are sorted according to user's custom widget order (orderId), with fallback to
+ * space-specific default order, then alphabetical.
  *
  * @param storeOfObjectTypes Store containing all available object types
+ * @param spaceViewContainer Container for observing space view properties
+ * @param vmParams Parameters including the current space ID
  */
 class NewCreateObjectViewModel @Inject constructor(
-    private val storeOfObjectTypes: StoreOfObjectTypes
+    private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val spaceViewContainer: SpaceViewSubscriptionContainer,
+    private val vmParams: VmParams
 ) : ViewModel() {
 
     private val _state = MutableStateFlow(NewCreateObjectState())
     val state: StateFlow<NewCreateObjectState> = _state.asStateFlow()
 
     init {
-        loadObjectTypes()
+        observeObjectTypes()
     }
 
     /**
-     * Loads all object types from the store.
-     * Filters out invalid, deleted, or archived types and sorts them alphabetically.
+     * Observes object types and space type, combining them to produce a sorted list.
+     * The sort order respects user's custom widget ordering via orderId field.
      */
-    private fun loadObjectTypes() {
+    private fun observeObjectTypes() {
         viewModelScope.launch {
             try {
                 _state.update { it.copy(isLoading = true) }
 
-                val types = storeOfObjectTypes.getAll()
-                    .filter { type ->
-                        // Only show valid, non-deleted, non-archived types
-                        type.isValid && type.isDeleted != true && type.isArchived != true
+                combine(
+                    storeOfObjectTypes.observe(),
+                    spaceViewContainer.observe(
+                        space = vmParams.spaceId,
+                        keys = listOf(Relations.SPACE_UX_TYPE),
+                        mapper = { it.spaceUxType }
+                    )
+                ) { allTypes, spaceUxType ->
+                    // Determine if this is a chat space for sorting priority
+                    val isChatSpace = spaceUxType == SpaceUxType.CHAT ||
+                                      spaceUxType == SpaceUxType.ONE_TO_ONE
+
+                    // Get excluded layouts based on space type
+                    val systemLayouts = SupportedLayouts.getSystemLayouts(spaceUxType)
+                    val excludedLayouts = systemLayouts + SupportedLayouts.dateLayouts + listOf(
+                        ObjectType.Layout.OBJECT_TYPE,
+                        ObjectType.Layout.PARTICIPANT
+                    )
+
+                    // Filter valid types
+                    val filteredTypes = allTypes.filter { type ->
+                        type.isValid &&
+                        type.isDeleted != true &&
+                        type.isArchived != true &&
+                        type.uniqueKey != ObjectTypeIds.TEMPLATE &&
+                        !excludedLayouts.contains(type.recommendedLayout)
                     }
-                    .map { type ->
-                        ObjectTypeItem(
-                            typeKey = type.uniqueKey,
-                            name = type.name.orEmpty(),
-                            icon = type.objectIcon()
+
+                    // Sort using user's custom widget order, then map to UI model
+                    filteredTypes
+                        .sortByTypePriority(isChatSpace)
+                        .map { type ->
+                            ObjectTypeItem(
+                                typeKey = type.uniqueKey,
+                                name = type.name.orEmpty(),
+                                icon = type.objectIcon()
+                            )
+                        }
+                }.collect { types ->
+                    _state.update {
+                        it.copy(
+                            objectTypes = types,
+                            filteredObjectTypes = applySearchFilter(types, it.searchQuery),
+                            isLoading = false
                         )
                     }
-                    .sortedBy { it.name }
-
-                _state.update {
-                    it.copy(
-                        objectTypes = types,
-                        filteredObjectTypes = types,
-                        isLoading = false
-                    )
+                    Timber.d("Loaded ${types.size} object types with custom sort order")
                 }
-
-                Timber.d("Loaded ${types.size} object types")
             } catch (e: Exception) {
                 Timber.e(e, "Failed to load object types")
                 _state.update { it.copy(isLoading = false) }
             }
+        }
+    }
+
+    /**
+     * Applies the search filter to the provided list of types.
+     */
+    private fun applySearchFilter(
+        types: List<ObjectTypeItem>,
+        query: String
+    ): List<ObjectTypeItem> {
+        return if (query.isBlank()) {
+            types
+        } else {
+            types.filter { it.name.contains(query, ignoreCase = true) }
         }
     }
 
@@ -76,17 +130,9 @@ class NewCreateObjectViewModel @Inject constructor(
      */
     fun onSearchQueryChanged(query: String) {
         _state.update { currentState ->
-            val filtered = if (query.isBlank()) {
-                currentState.objectTypes
-            } else {
-                currentState.objectTypes.filter { type ->
-                    type.name.contains(query, ignoreCase = true)
-                }
-            }
-
             currentState.copy(
                 searchQuery = query,
-                filteredObjectTypes = filtered
+                filteredObjectTypes = applySearchFilter(currentState.objectTypes, query)
             )
         }
     }
@@ -105,4 +151,12 @@ class NewCreateObjectViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Parameters for the ViewModel.
+     * @param spaceId The current space ID, used to determine space type for sorting
+     */
+    data class VmParams(
+        val spaceId: SpaceId
+    )
 }

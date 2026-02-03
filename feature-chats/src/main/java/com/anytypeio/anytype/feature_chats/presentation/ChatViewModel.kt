@@ -78,6 +78,7 @@ import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
+import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -2390,21 +2391,32 @@ class ChatViewModel @Inject constructor(
     /**
      * Loads quick create types for the attachment menu (DROID-4201).
      * This is called when the attachment menu is triggered.
+     * Types are sorted using user's custom widget order (orderId field),
+     * with fallback to space-specific default order, then alphabetical.
      */
     fun loadQuickCreateTypes() {
         viewModelScope.launch {
             try {
                 val types = storeOfObjectTypes.getAll()
+                // Determine if this is a chat space for sorting priority
+                val spaceUxType = _currentSpaceUxType.value
+                val isChatSpace = spaceUxType == SpaceUxType.CHAT ||
+                                  spaceUxType == SpaceUxType.ONE_TO_ONE
+
                 val quickTypes = types
                     .filter { type ->
                         // Filter to show only common editable types
                         val layout = type.recommendedLayout
-                        layout == ObjectType.Layout.BASIC ||
+                        type.isValid &&
+                        type.isDeleted != true &&
+                        type.isArchived != true &&
+                        (layout == ObjectType.Layout.BASIC ||
                                 layout == ObjectType.Layout.TODO ||
                                 layout == ObjectType.Layout.NOTE ||
                                 layout == ObjectType.Layout.SET ||
-                                layout == ObjectType.Layout.COLLECTION
+                                layout == ObjectType.Layout.COLLECTION)
                     }
+                    .sortByTypePriority(isChatSpace) // Sort by user's custom order
                     .take(3) // Show only first 3 types in quick menu
                     .map { type ->
                         QuickCreateType(
@@ -2414,7 +2426,7 @@ class ChatViewModel @Inject constructor(
                         )
                     }
                 _quickCreateTypes.value = quickTypes
-                Timber.d("DROID-4201 Loaded ${quickTypes.size} quick create types")
+                Timber.d("DROID-4201 Loaded ${quickTypes.size} quick create types with custom sort order")
             } catch (e: Exception) {
                 Timber.e(e, "DROID-4201 Failed to load quick create types")
             }

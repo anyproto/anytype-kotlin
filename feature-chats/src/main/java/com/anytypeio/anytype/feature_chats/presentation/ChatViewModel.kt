@@ -78,7 +78,6 @@ import com.anytypeio.anytype.feature_chats.tools.toNotificationState
 import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
-import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
@@ -176,13 +175,6 @@ class ChatViewModel @Inject constructor(
     private val _chatObjectWrapper = MutableStateFlow<ObjectWrapper.Basic?>(null)
     val currentSpaceUxType = _currentSpaceUxType
     private val dateFormatter = SimpleDateFormat("d MMMM YYYY")
-
-    // Quick create types for attachment menu (DROID-4201)
-    private val _quickCreateTypes = MutableStateFlow<List<QuickCreateType>>(emptyList())
-    val quickCreateTypes = _quickCreateTypes
-
-    // Show all types selector (DROID-4201)
-    val showTypeSelectorSheet = MutableStateFlow(false)
     private val messageRateLimiter = MessageRateLimiter()
 
     val isSyncing = syncStatus.map { status ->
@@ -1186,10 +1178,10 @@ class ChatViewModel @Inject constructor(
                 wrapper = obj
             )
         )
-
+        
         viewModelScope.launch {
             val objectType = obj.type
-
+            
             // Fire ClickScreenChatAttach event
             analytics.sendEvent(
                 eventName = EventsDictionary.chatClickScreenChatAttach,
@@ -1200,7 +1192,7 @@ class ChatViewModel @Inject constructor(
                     }
                 )
             )
-
+            
             // Fire AttachItemChat event
             analytics.sendEvent(
                 eventName = EventsDictionary.chatAttachItemChat,
@@ -1252,7 +1244,7 @@ class ChatViewModel @Inject constructor(
                             )
                         )
                     )
-
+                    
                     // Fire ClickScreenChatAttach event
                     analytics.sendEvent(
                         eventName = EventsDictionary.chatClickScreenChatAttach,
@@ -1263,7 +1255,7 @@ class ChatViewModel @Inject constructor(
                             }
                         )
                     )
-
+                    
                     // Fire AttachItemChat event
                     analytics.sendEvent(
                         eventName = EventsDictionary.chatAttachItemChat,
@@ -1489,8 +1481,6 @@ class ChatViewModel @Inject constructor(
                 )
             )
         }
-        // Load quick create types for the attachment menu (DROID-4201)
-        loadQuickCreateTypes()
     }
 
     fun onAttachmentClicked(msg: ChatView.Message, attachment: ChatView.Message.Attachment) {
@@ -1577,7 +1567,7 @@ class ChatViewModel @Inject constructor(
         } else {
             EventsDictionary.ChatAttachType.PHOTO.value
         }
-
+        
         viewModelScope.launch {
 
             // Fire ClickScreenChatAttach event
@@ -1590,7 +1580,7 @@ class ChatViewModel @Inject constructor(
                     )
                 )
             )
-
+            
             // Fire AttachItemChat event
             analytics.sendEvent(
                 eventName = EventsDictionary.chatAttachItemChat,
@@ -1671,7 +1661,7 @@ class ChatViewModel @Inject constructor(
                 state = ChatView.Message.ChatBoxAttachment.State.Preloading
             )
         }
-
+        
         viewModelScope.launch {
             // Fire ClickScreenChatAttach event
             analytics.sendEvent(
@@ -1683,7 +1673,7 @@ class ChatViewModel @Inject constructor(
                     )
                 )
             )
-
+            
             // Fire AttachItemChat event
             analytics.sendEvent(
                 eventName = EventsDictionary.chatAttachItemChat,
@@ -2342,97 +2332,6 @@ class ChatViewModel @Inject constructor(
         }
     }
 
-    /**
-     * Creates an object of a specific type and attaches it to the chat.
-     * Used by the new attachment menu (DROID-4201) for quick-create functionality.
-     *
-     * @param typeKey The unique key of the object type to create (e.g., "ot-page", "ot-task")
-     * @param typeName The display name of the type (for logging purposes)
-     */
-    fun onCreateObjectOfType(typeKey: String, typeName: String) {
-        Timber.d("DROID-4201 onCreateObjectOfType: typeKey=$typeKey, typeName=$typeName")
-        viewModelScope.launch {
-            createObject.async(
-                params = CreateObject.Param(
-                    space = vmParams.space,
-                    type = com.anytypeio.anytype.core_models.primitives.TypeKey(typeKey)
-                )
-            ).onSuccess { result ->
-                navigation.emit(
-                    result.obj.navigation(
-                        effect = OpenObjectNavigation.SideEffect.AttachToChat(
-                            chat = vmParams.ctx,
-                            space = vmParams.space.id
-                        )
-                    )
-                )
-            }.onFailure {
-                Timber.e(it, "DROID-4201 Error while creating object of type $typeKey")
-            }
-        }
-    }
-
-    /**
-     * Shows the full type selector sheet (DROID-4201).
-     * Called when user taps "See all" in the attachment menu.
-     */
-    fun onSeeAllTypesClicked() {
-        Timber.d("DROID-4201 onSeeAllTypesClicked")
-        showTypeSelectorSheet.value = true
-    }
-
-    /**
-     * Hides the type selector sheet (DROID-4201).
-     */
-    fun onDismissTypeSelector() {
-        showTypeSelectorSheet.value = false
-    }
-
-    /**
-     * Loads quick create types for the attachment menu (DROID-4201).
-     * This is called when the attachment menu is triggered.
-     * Types are sorted using user's custom widget order (orderId field),
-     * with fallback to space-specific default order, then alphabetical.
-     */
-    fun loadQuickCreateTypes() {
-        viewModelScope.launch {
-            try {
-                val types = storeOfObjectTypes.getAll()
-                // Determine if this is a chat space for sorting priority
-                val spaceUxType = _currentSpaceUxType.value
-                val isChatSpace = spaceUxType == SpaceUxType.CHAT ||
-                                  spaceUxType == SpaceUxType.ONE_TO_ONE
-
-                val quickTypes = types
-                    .filter { type ->
-                        // Filter to show only common editable types
-                        val layout = type.recommendedLayout
-                        type.isValid &&
-                        type.isDeleted != true &&
-                        type.isArchived != true &&
-                        (layout == ObjectType.Layout.BASIC ||
-                                layout == ObjectType.Layout.TODO ||
-                                layout == ObjectType.Layout.NOTE ||
-                                layout == ObjectType.Layout.SET ||
-                                layout == ObjectType.Layout.COLLECTION)
-                    }
-                    .sortByTypePriority(isChatSpace) // Sort by user's custom order
-                    .take(3) // Show only first 3 types in quick menu
-                    .map { type ->
-                        QuickCreateType(
-                            typeKey = type.uniqueKey,
-                            name = type.name.orEmpty(),
-                            icon = type.objectIcon()
-                        )
-                    }
-                _quickCreateTypes.value = quickTypes
-                Timber.d("DROID-4201 Loaded ${quickTypes.size} quick create types with custom sort order")
-            } catch (e: Exception) {
-                Timber.e(e, "DROID-4201 Failed to load quick create types")
-            }
-        }
-    }
-
     fun hideError() {
         errorState.value = UiErrorState.Hidden
     }
@@ -2568,16 +2467,6 @@ class ChatViewModel @Inject constructor(
         data class Show(val msg: String) : UiErrorState()
         data object CameraPermissionDenied : UiErrorState()
     }
-
-    /**
-     * Data class representing an object type available for quick creation
-     * in the chat attachment menu (DROID-4201).
-     */
-    data class QuickCreateType(
-        val typeKey: String,
-        val name: String,
-        val icon: ObjectIcon
-    )
 
     sealed class Params {
         abstract val space: Space

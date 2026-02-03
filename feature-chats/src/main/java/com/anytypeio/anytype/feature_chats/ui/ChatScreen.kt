@@ -271,17 +271,7 @@ fun ChatScreenWrapper(
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
             onCreateAndAttachObject = vm::onCreateAndAttachObject,
-            onCameraPermissionDenied = vm::onCameraPermissionDenied,
-            // New parameters for DROID-4201
-            quickCreateTypes = vm.quickCreateTypes.collectAsStateWithLifecycle().value.map { type ->
-                com.anytypeio.anytype.core_ui.menu.ObjectTypeMenuItem(
-                    typeKey = type.typeKey,
-                    name = type.name,
-                    icon = type.icon
-                )
-            },
-            onCreateObjectOfType = vm::onCreateObjectOfType,
-            onSeeAllTypesClicked = vm::onSeeAllTypesClicked
+            onCameraPermissionDenied = vm::onCameraPermissionDenied
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -425,11 +415,7 @@ fun ChatScreen(
     onCreateAndAttachObject: () -> Unit,
     onCameraPermissionDenied: () -> Unit = {},
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
-    spaceUxType: SpaceUxType? = null,
-    // New parameters for DROID-4201
-    quickCreateTypes: List<com.anytypeio.anytype.core_ui.menu.ObjectTypeMenuItem> = emptyList(),
-    onCreateObjectOfType: (typeKey: String, typeName: String) -> Unit = { _, _ -> },
-    onSeeAllTypesClicked: () -> Unit = {}
+    spaceUxType: SpaceUxType? = null
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -928,11 +914,7 @@ fun ChatScreen(
                 onCreateAndAttachObject = onCreateAndAttachObject,
                 onCameraPermissionDenied = onCameraPermissionDenied,
                 onAttachmentMenuTriggered = onAttachmentMenuTriggered,
-                spaceUxType = spaceUxType,
-                // New parameters for DROID-4201
-                quickCreateTypes = quickCreateTypes,
-                onCreateObjectOfType = onCreateObjectOfType,
-                onSeeAllTypesClicked = onSeeAllTypesClicked
+                spaceUxType = spaceUxType
             )
         }
     }

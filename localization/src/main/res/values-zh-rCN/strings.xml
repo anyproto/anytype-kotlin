@@ -2010,6 +2010,18 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">允许</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">照片</string>
+    <string name="attachment_menu_camera">相机</string>
+    <string name="attachment_menu_files">文件</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">查看全部</string>
+    <string name="attachment_menu_search_placeholder">搜索</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">重试</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
     <string name="share_space_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>

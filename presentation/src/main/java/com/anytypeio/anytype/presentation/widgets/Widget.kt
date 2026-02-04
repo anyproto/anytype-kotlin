@@ -214,6 +214,7 @@ sealed class Widget {
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
+            const val OBJECT_TYPES_GROUP_ID = "object_types_group"
             const val SOURCE_OTHER = "source_other"
 
             val SOURCE_KEYS = ObjectSearchConstants.defaultKeys

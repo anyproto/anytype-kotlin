@@ -2056,6 +2056,18 @@
     <string name="open_settings">Открыть настройки</string>
     <string name="allow">Разрешить</string>
     <string name="attachment_image">Изображение вложения</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Фото</string>
+    <string name="attachment_menu_camera">Камера</string>
+    <string name="attachment_menu_files">Files</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Просмотреть все</string>
+    <string name="attachment_menu_search_placeholder">Поиск</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Повторить</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Достигнут лимит для этого пространства. Пожалуйста, обновите ваше членство или обратитесь в службу поддержки.</string>
     <string name="share_space_error_not_shareable">Похоже, доступ к пространству был закрыт. Пожалуйста, убедитесь, что ваши устройства синхронизированы.</string>

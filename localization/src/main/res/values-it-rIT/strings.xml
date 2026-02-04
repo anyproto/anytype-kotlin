@@ -2028,6 +2028,18 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Apri Impostazioni</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Immagine allegata</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Foto</string>
+    <string name="attachment_menu_camera">Fotocamera</string>
+    <string name="attachment_menu_files">File</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Mostra tutto</string>
+    <string name="attachment_menu_search_placeholder">Cerca</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Retry</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limite raggiunto per questo spazio. Aggiorna il tuo abbonamento o contatta il supporto per assistenza.</string>
     <string name="share_space_error_not_shareable">Sembra che lo spazio non sia più condiviso. Assicurati che i tuoi dispositivi siano sincronizzati.</string>

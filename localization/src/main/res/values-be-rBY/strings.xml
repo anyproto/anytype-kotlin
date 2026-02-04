@@ -2053,6 +2053,18 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">Дазволіць</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Файлы</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">Пошук</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Паўтарыць</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Для гэтай прасторы дасягнуты ліміт. Калі ласка, абнавіце сваё членства або звярніцеся ў службу падтрымкі за дапамогай.</string>
     <string name="share_space_error_not_shareable">Падобна, што прастора больш не з\'яўляецца агульнай. Калі ласка, пераканайцеся, што вашыя прылады сінхранізаваныя.</string>

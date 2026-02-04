@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.ui.widgets.types
 
+import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -12,20 +13,26 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.widgets.WidgetView
+import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableScope
 
 /**
  * Widget card that displays all object types as rows within a single grouped container.
@@ -35,16 +42,25 @@ import com.anytypeio.anytype.presentation.widgets.WidgetView
  * - Single card container with rounded corners
  * - Type rows: each with [icon] [name] ... [+ button]
  * - "New type" button at the bottom (non-draggable)
- * - Type rows can be dragged and reordered
+ * - Type rows can be dragged and reordered within the card
  * - Card itself cannot be dragged
+ *
+ * @param typeRows The list of type rows to display (managed externally for drag state)
+ * @param onTypeClicked Callback when a type row is clicked
+ * @param onCreateObjectClicked Callback when the + button is clicked on a type row
+ * @param onCreateNewTypeClicked Callback when the "New type" button is clicked
+ * @param onTypeRowsReordered Callback when drag ends with the new order (fromIndex, toIndex)
  */
 @Composable
 fun ObjectTypesGroupWidgetCard(
-    item: WidgetView.ObjectTypesGroup,
+    typeRows: List<WidgetView.ObjectTypesGroup.TypeRow>,
     onTypeClicked: (String) -> Unit,
     onCreateObjectClicked: (String) -> Unit,
-    onCreateNewTypeClicked: () -> Unit
+    onCreateNewTypeClicked: () -> Unit,
+    onTypeRowsReordered: (fromIndex: Int, toIndex: Int) -> Unit
 ) {
+    val view = LocalView.current
+    
     Box(
         modifier = Modifier
             .fillMaxWidth()
@@ -58,16 +74,32 @@ fun ObjectTypesGroupWidgetCard(
         Column(
             modifier = Modifier.fillMaxWidth()
         ) {
-            // Render type rows
-            item.typeRows.forEach { typeRow ->
-                TypeRowItem(
-                    typeRow = typeRow,
-                    onTypeClicked = onTypeClicked,
-                    onCreateObjectClicked = onCreateObjectClicked
-                )
+            // Reorderable type rows
+            ReorderableColumn(
+                modifier = Modifier.fillMaxWidth(),
+                list = typeRows,
+                onSettle = { fromIndex, toIndex ->
+                    onTypeRowsReordered(fromIndex, toIndex)
+                },
+                onMove = {
+                    ViewCompat.performHapticFeedback(
+                        view,
+                        HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+                    )
+                }
+            ) { index, typeRow, isDragging ->
+                key(typeRow.id) {
+                    DraggableTypeRowContent(
+                        typeRow = typeRow,
+                        isDragging = isDragging,
+                        onTypeClicked = onTypeClicked,
+                        onCreateObjectClicked = onCreateObjectClicked,
+                        view = view
+                    )
+                }
             }
             
-            // "New type" button at the bottom
+            // "New type" button at the bottom (non-draggable)
             NewTypeButton(
                 onClick = onCreateNewTypeClicked
             )
@@ -76,19 +108,34 @@ fun ObjectTypesGroupWidgetCard(
 }
 
 /**
- * Individual type row within the grouped widget.
- * Shows: [icon] [type name] ... [+ button]
+ * Draggable type row content for use within ReorderableItem.
  */
 @Composable
-private fun TypeRowItem(
+private fun ReorderableScope.DraggableTypeRowContent(
     typeRow: WidgetView.ObjectTypesGroup.TypeRow,
+    isDragging: Boolean,
     onTypeClicked: (String) -> Unit,
-    onCreateObjectClicked: (String) -> Unit
+    onCreateObjectClicked: (String) -> Unit,
+    view: View
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .height(52.dp)
+            .longPressDraggableHandle(
+                onDragStarted = {
+                    ViewCompat.performHapticFeedback(
+                        view,
+                        HapticFeedbackConstantsCompat.GESTURE_START
+                    )
+                },
+                onDragStopped = {
+                    ViewCompat.performHapticFeedback(
+                        view,
+                        HapticFeedbackConstantsCompat.GESTURE_END
+                    )
+                }
+            )
             .noRippleClickable { onTypeClicked(typeRow.id) }
             .padding(horizontal = 16.dp),
         verticalAlignment = Alignment.CenterVertically

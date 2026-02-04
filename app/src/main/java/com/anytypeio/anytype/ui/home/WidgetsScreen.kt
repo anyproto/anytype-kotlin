@@ -67,10 +67,33 @@ fun WidgetsScreen(
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
     
     // Extract type rows from the ObjectTypesGroup widget for drag-and-drop management
-    // Same pattern as typesUi in 0.44.9: remember(source) and mutate locally during drag
     val objectTypesGroupWidget = (typeWidgets.firstOrNull() as? WidgetView.ObjectTypesGroup)
     val typeRowsFromVm = objectTypesGroupWidget?.typeRows ?: emptyList()
-    val typeRowsUi = remember(typeRowsFromVm) { typeRowsFromVm.toMutableStateList() }
+    
+    // Pending order tracks local drag state until ViewModel catches up
+    val pendingTypeRowOrder = remember { mutableStateOf<List<String>?>(null) }
+    
+    // Compute actual display list: use pending order if set, otherwise ViewModel order
+    val typeRowsUi = remember(typeRowsFromVm, pendingTypeRowOrder.value) {
+        val pending = pendingTypeRowOrder.value
+        if (pending != null) {
+            // Reorder based on pending order
+            pending.mapNotNull { id -> typeRowsFromVm.find { it.id == id } }.toMutableStateList()
+        } else {
+            typeRowsFromVm.toMutableStateList()
+        }
+    }
+    
+    // Clear pending order when ViewModel catches up (has same order)
+    LaunchedEffect(typeRowsFromVm) {
+        val pending = pendingTypeRowOrder.value
+        if (pending != null) {
+            val vmOrder = typeRowsFromVm.map { it.id }
+            if (vmOrder == pending) {
+                pendingTypeRowOrder.value = null
+            }
+        }
+    }
     
     // Unread section visibility logic
     val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
@@ -292,13 +315,15 @@ fun WidgetsScreen(
                             viewModel.onCreateNewTypeClicked()
                         },
                         onTypeRowsReordered = { fromIndex, toIndex ->
-                            // Mutate local list and notify ViewModel (same pattern as 0.44.9)
+                            // Calculate the new order
                             if (fromIndex != toIndex && fromIndex in typeRowsUi.indices && toIndex in typeRowsUi.indices) {
-                                // Update local UI state
-                                val item = typeRowsUi.removeAt(fromIndex)
-                                typeRowsUi.add(toIndex, item)
+                                val reorderedIds = typeRowsUi.map { it.id }.toMutableList()
+                                val movedId = reorderedIds.removeAt(fromIndex)
+                                reorderedIds.add(toIndex, movedId)
+                                // Set pending order to maintain local state until ViewModel catches up
+                                pendingTypeRowOrder.value = reorderedIds
                                 // Notify ViewModel to persist the new order
-                                viewModel.onTypeRowsReordered(typeRowsUi.map { it.id })
+                                viewModel.onTypeRowsReordered(reorderedIds)
                             }
                         }
                     )

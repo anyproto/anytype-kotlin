@@ -2053,6 +2053,18 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Files</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">Пошук</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Retry</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Досягнута межа для цього простору. Будь ласка, оновіть ваш членство або зверніться до служби підтримки за допомогою.</string>
     <string name="share_space_error_not_shareable">Схоже, що простір більше не спільний. Переконайтеся, що ваші пристрої синхронізовані.</string>

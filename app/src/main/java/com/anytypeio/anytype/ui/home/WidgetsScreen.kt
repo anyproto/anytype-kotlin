@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
@@ -64,7 +65,12 @@ fun WidgetsScreen(
     val sectionConfig = viewModel.widgetSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
-    val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
+    
+    // Extract type rows from the ObjectTypesGroup widget for drag-and-drop management
+    // Same pattern as typesUi in 0.44.9: remember(source) and mutate locally during drag
+    val objectTypesGroupWidget = (typeWidgets.firstOrNull() as? WidgetView.ObjectTypesGroup)
+    val typeRowsFromVm = objectTypesGroupWidget?.typeRows ?: emptyList()
+    val typeRowsUi = remember(typeRowsFromVm) { typeRowsFromVm.toMutableStateList() }
     
     // Unread section visibility logic
     val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
@@ -151,15 +157,8 @@ fun WidgetsScreen(
                     }
                 }
                 SectionType.TYPES -> {
-                    isDraggingTypes.value = true
-                    val f = typesUi.indexOfFirst { it.id == fromId }
-                    val t = typesUi.indexOfFirst { it.id == toId }
-                    if (f != -1 && t != -1 && f != t) {
-                        val item = typesUi.removeAt(f)
-                        typesUi.add(t, item)
-                        viewModel.onTypeWidgetOrderChanged(fromId, toId)
-                        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
-                    }
+                    // Type rows are now handled by ReorderableColumn inside ObjectTypesGroupWidgetCard
+                    // This branch is kept for backward compatibility but should not be triggered
                 }
                 else -> Unit
             }
@@ -278,26 +277,31 @@ fun WidgetsScreen(
             }
             }
 
-            // Type widgets section - render ObjectTypesGroup widget if section is visible
+            // Type widgets section - render ObjectTypesGroup widget with drag-and-drop support
             if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
-                // Get the single ObjectTypesGroup widget (should be only one)
-                val objectTypesGroupWidget = typesUi.firstOrNull() as? WidgetView.ObjectTypesGroup
-                
-                if (objectTypesGroupWidget != null) {
-                    item(key = objectTypesGroupWidget.id) {
-                        ObjectTypesGroupWidgetCard(
-                            item = objectTypesGroupWidget,
-                            onTypeClicked = { typeId ->
-                                viewModel.onTypeRowClicked(typeId)
-                            },
-                            onCreateObjectClicked = { typeId ->
-                                viewModel.onCreateObjectFromTypeRow(typeId)
-                            },
-                            onCreateNewTypeClicked = {
-                                viewModel.onCreateNewTypeClicked()
+            item(key = OBJECT_TYPES_GROUP_ID) {
+                    ObjectTypesGroupWidgetCard(
+                        typeRows = typeRowsUi,
+                        onTypeClicked = { typeId ->
+                            viewModel.onTypeRowClicked(typeId)
+                        },
+                        onCreateObjectClicked = { typeId ->
+                            viewModel.onCreateObjectFromTypeRow(typeId)
+                        },
+                        onCreateNewTypeClicked = {
+                            viewModel.onCreateNewTypeClicked()
+                        },
+                        onTypeRowsReordered = { fromIndex, toIndex ->
+                            // Mutate local list and notify ViewModel (same pattern as 0.44.9)
+                            if (fromIndex != toIndex && fromIndex in typeRowsUi.indices && toIndex in typeRowsUi.indices) {
+                                // Update local UI state
+                                val item = typeRowsUi.removeAt(fromIndex)
+                                typeRowsUi.add(toIndex, item)
+                                // Notify ViewModel to persist the new order
+                                viewModel.onTypeRowsReordered(typeRowsUi.map { it.id })
                             }
-                        )
-                    }
+                        }
+                    )
                 }
             }
 

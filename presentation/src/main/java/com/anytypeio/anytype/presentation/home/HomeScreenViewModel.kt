@@ -3358,6 +3358,41 @@ class HomeScreenViewModel(
     //endregion
 
     //region Type Widget Drag and Drop
+    
+    /**
+     * Called when type rows within the ObjectTypesGroup widget are reordered.
+     * This is the new approach for handling drag-and-drop of type rows in the grouped widget.
+     *
+     * @param reorderedTypeIds The complete list of type IDs in the new order
+     */
+    fun onTypeRowsReordered(reorderedTypeIds: List<Id>) {
+        Timber.d("DROID-4308, onTypeRowsReordered: ${reorderedTypeIds.map { it.takeLast(4) + "..." }}")
+        
+        if (reorderedTypeIds.isEmpty()) {
+            Timber.d("DROID-4308, onTypeRowsReordered: Empty list, ignoring")
+            return
+        }
+        
+        viewModelScope.launch {
+            // Activate event lock before sending to middleware to prevent race conditions
+            activateTypeWidgetEventLock()
+            
+            updateObjectTypesOrderIds.async(
+                UpdateObjectTypesOrderIds.Params(
+                    spaceId = vmParams.spaceId,
+                    orderedIds = reorderedTypeIds
+                )
+            ).fold(
+                onFailure = { error ->
+                    Timber.e(error, "DROID-4308, Failed to reorder type rows: $reorderedTypeIds")
+                },
+                onSuccess = { finalOrder ->
+                    Timber.d("DROID-4308, Successfully reordered type rows with final order: $finalOrder")
+                }
+            )
+        }
+    }
+    
     /**
      * Called when the order of type widgets changes during a drag operation.
      *
@@ -3366,6 +3401,8 @@ class HomeScreenViewModel(
      *
      * @param fromWidgetId The ID of the type widget being dragged from.
      * @param toWidgetId The ID of the type widget being dragged to.
+     * 
+     * @deprecated Use [onTypeRowsReordered] for the new grouped widget approach
      */
     fun onTypeWidgetOrderChanged(fromWidgetId: String?, toWidgetId: String?) {
         Timber.d("DROID-3965, onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")

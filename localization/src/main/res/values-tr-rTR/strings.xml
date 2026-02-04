@@ -2031,13 +2031,13 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="attachment_menu_photos">Fotoğraflar</string>
     <string name="attachment_menu_camera">Kamera</string>
     <string name="attachment_menu_files">Dosyalar</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object">Nesne ekle</string>
     <string name="attachment_menu_see_all">Tümünü gör</string>
     <string name="attachment_menu_search_placeholder">Ara</string>
-    <string name="create_object_empty_state">No object types available</string>
-    <string name="create_object_no_results">No types found</string>
-    <string name="create_object_search_types">Search object types</string>
-    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_empty_state">Kullanılabilir nesne türü yok</string>
+    <string name="create_object_no_results">Tür bulunamadı</string>
+    <string name="create_object_search_types">Nesne türlerini ara</string>
+    <string name="create_object_error">Nesne türleri yüklenemedi</string>
     <string name="create_object_retry">Tekrar dene</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>

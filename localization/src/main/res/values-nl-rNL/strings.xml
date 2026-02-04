@@ -2027,6 +2027,18 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="open_settings">Open instellingen</string>
     <string name="allow">Sta toe</string>
     <string name="attachment_image">Bijlage afbeelding</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Foto\'s</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Bestanden</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Bekijk alle</string>
+    <string name="attachment_menu_search_placeholder">Zoeken</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Probeer opnieuw</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft je lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
     <string name="share_space_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat je apparaten zijn gesynchroniseerd.</string>

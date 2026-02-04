@@ -1,16 +1,10 @@
 package com.anytypeio.anytype.feature_create_object.ui
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.DpOffset
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
-import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.core_ui.menu.StyledDropdownMenu
+import com.anytypeio.anytype.core_ui.menu.StyledDropdownMenuDefaults
 import com.anytypeio.anytype.feature_create_object.presentation.CreateObjectAction
 import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectState
 
@@ -33,21 +27,13 @@ fun CreateObjectPopup(
     state: NewCreateObjectState,
     onAction: (CreateObjectAction) -> Unit,
     modifier: Modifier = Modifier,
-    offset: DpOffset = DpOffset(8.dp, 0.dp)
+    offset: DpOffset = StyledDropdownMenuDefaults.DefaultOffset
 ) {
-    DropdownMenu(
+    StyledDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        modifier = modifier
-            .width(280.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(12.dp)
-            ),
-        offset = offset,
-        shape = RoundedCornerShape(12.dp),
-        containerColor = colorResource(id = R.color.background_secondary),
-        properties = PopupProperties(focusable = false)
+        modifier = modifier,
+        offset = offset
     ) {
         CreateObjectContent(
             state = state,

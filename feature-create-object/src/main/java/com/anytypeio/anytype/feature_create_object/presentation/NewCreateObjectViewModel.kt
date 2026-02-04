@@ -103,9 +103,22 @@ class NewCreateObjectViewModel @Inject constructor(
                 }
             } catch (e: Exception) {
                 Timber.e(e, "Failed to load object types")
-                _state.update { it.copy(isLoading = false) }
+                _state.update {
+                    it.copy(
+                        isLoading = false,
+                        error = e.message ?: "Unknown error"
+                    )
+                }
             }
         }
+    }
+
+    /**
+     * Clears the error state and retries loading object types.
+     */
+    private fun retry() {
+        _state.update { it.copy(error = null) }
+        observeObjectTypes()
     }
 
     /**
@@ -146,6 +159,7 @@ class NewCreateObjectViewModel @Inject constructor(
     fun onAction(action: CreateObjectAction) {
         when (action) {
             is CreateObjectAction.UpdateSearch -> onSearchQueryChanged(action.query)
+            is CreateObjectAction.Retry -> retry()
             // Other actions (media, create object, attach) are handled by the parent component
             else -> { /* No-op */
             }

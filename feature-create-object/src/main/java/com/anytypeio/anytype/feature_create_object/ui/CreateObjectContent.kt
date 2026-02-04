@@ -15,8 +15,11 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Button
+import androidx.compose.material.ButtonDefaults
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.CircularProgressIndicator
@@ -91,6 +94,37 @@ fun CreateObjectContent(
                     }
                 }
 
+                state.error != null -> {
+                    // Error state with retry
+                    Column(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(24.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(
+                            text = stringResource(R.string.create_object_error),
+                            style = BodyRegular,
+                            color = colorResource(id = R.color.text_secondary)
+                        )
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Button(
+                            onClick = { onAction(CreateObjectAction.Retry) },
+                            modifier = Modifier.wrapContentWidth(),
+                            shape = RoundedCornerShape(8.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = colorResource(id = R.color.glyph_selected),
+                                contentColor = colorResource(id = R.color.text_primary)
+                            )
+                        ) {
+                            Text(
+                                text = stringResource(R.string.create_object_retry),
+                                style = BodyRegular
+                            )
+                        }
+                    }
+                }
+
                 state.filteredObjectTypes.isEmpty() -> {
                     // Empty state
                     Box(
@@ -101,9 +135,9 @@ fun CreateObjectContent(
                     ) {
                         Text(
                             text = if (state.searchQuery.isBlank()) {
-                                "No object types available"
+                                stringResource(R.string.create_object_empty_state)
                             } else {
-                                "No types found"
+                                stringResource(R.string.create_object_no_results)
                             },
                             style = BodyRegular,
                             color = colorResource(id = R.color.text_secondary)
@@ -230,7 +264,7 @@ private fun SearchBar(
         // Search icon
         Image(
             painter = painterResource(id = R.drawable.ic_search_18),
-            contentDescription = stringResource(R.string.search),
+            contentDescription = stringResource(R.string.create_object_search_types),
             modifier = Modifier.size(20.dp)
         )
 

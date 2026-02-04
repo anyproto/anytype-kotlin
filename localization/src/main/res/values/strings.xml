@@ -2344,8 +2344,11 @@ Please provide specific details of your needs here.</string>
     <string name="attachment_menu_attach_object">Attach object</string>
     <string name="attachment_menu_see_all">See all</string>
     <string name="attachment_menu_search_placeholder">Search</string>
-    <string name="attachment_menu_no_results">No results for \"%1$s\"</string>
-    <string name="attachment_menu_no_results_hint">Try a different name</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Retry</string>
 
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limit reached for this space. Please upgrade your membership or contact support for assistance.</string>

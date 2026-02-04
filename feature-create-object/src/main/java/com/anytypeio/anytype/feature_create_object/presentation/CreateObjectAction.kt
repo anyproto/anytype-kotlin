@@ -19,4 +19,7 @@ sealed interface CreateObjectAction {
 
     // Search
     data class UpdateSearch(val query: String) : CreateObjectAction
+
+    // Error handling
+    data object Retry : CreateObjectAction
 }

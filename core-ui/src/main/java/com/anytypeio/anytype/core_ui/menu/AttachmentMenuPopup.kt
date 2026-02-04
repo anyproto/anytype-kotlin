@@ -13,9 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,7 +22,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.PopupProperties
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ui.CustomIconColor
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
@@ -71,21 +68,13 @@ fun AttachmentMenuPopup(
     onAction: (AttachmentMenuAction) -> Unit,
     quickCreateTypes: List<ObjectTypeMenuItem> = emptyList(),
     modifier: Modifier = Modifier,
-    offset: DpOffset = DpOffset(8.dp, 0.dp)
+    offset: DpOffset = StyledDropdownMenuDefaults.DefaultOffset
 ) {
-    DropdownMenu(
+    StyledDropdownMenu(
         expanded = expanded,
         onDismissRequest = onDismissRequest,
-        modifier = modifier
-            .width(280.dp)
-            .background(
-                color = colorResource(id = R.color.background_secondary),
-                shape = RoundedCornerShape(12.dp)
-            ),
-        offset = offset,
-        shape = RoundedCornerShape(12.dp),
-        containerColor = colorResource(id = R.color.background_secondary),
-        properties = PopupProperties(focusable = false)
+        modifier = modifier,
+        offset = offset
     ) {
         AttachmentMenuContent(
             onAction = { action ->

@@ -72,7 +72,7 @@
     <string name="space_settings_error_wallpaper">No se ha podido actualizar el fondo de pantalla. Inténtalo de nuevo.</string>
     <string name="space_settings_error_name">No se ha podido actualizar el nombre del espacio. Inténtalo de nuevo.</string>
     <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
-    <string name="manage_sections_title">Manage sections</string>
+    <string name="manage_sections_title">Gestionar secciones</string>
     <string name="section_unread">No leído</string>
     <string name="section_pinned">Anclado</string>
     <string name="section_objects">Objetos</string>

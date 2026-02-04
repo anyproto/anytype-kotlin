@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.feature.CreateBookmarkModule
 import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
+import com.anytypeio.anytype.di.feature.DaggerCreateObjectFeatureComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerDateObjectComponent
@@ -111,6 +112,7 @@ import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
 import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
@@ -362,6 +364,12 @@ class ComponentManager(
 
     val dateObjectComponent = ComponentWithParams { params: DateObjectVmParams  ->
         DaggerDateObjectComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val createObjectFeatureComponent = ComponentWithParams { params: NewCreateObjectViewModel.VmParams ->
+        DaggerCreateObjectFeatureComponent
             .factory()
             .create(params, findComponentDependencies())
     }

@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectFeatureDependencies
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.DateObjectDependencies
@@ -155,7 +156,8 @@ interface MainComponent :
     MySitesDependencies,
     MediaDependencies,
     CreateChatObjectDependencies,
-    SharingDependencies
+    SharingDependencies,
+    CreateObjectFeatureDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -457,4 +459,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SharingDependencies::class)
     abstract fun sharingDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectFeatureDependencies::class)
+    abstract fun provideCreateObjectFeatureDependencies(component: MainComponent): ComponentDependencies
 }

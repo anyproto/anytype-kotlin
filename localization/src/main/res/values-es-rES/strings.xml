@@ -78,7 +78,7 @@
     <string name="section_objects">Objetos</string>
     <string name="section_recently_edited">Editado recientemente</string>
     <string name="section_bin">Papelera</string>
-    <string name="error_loading_sections">Error loading sections</string>
+    <string name="error_loading_sections">Error al cargar las secciones</string>
     <string name="data_management">Gestión de datos</string>
     <string name="deleted_account_danger_zone_msg">Una vez solicitada la eliminación de tu arca, tendrás 30 días para cancelar la solicitud. Pasados 30 días, los datos cifrados de tu arca se eliminarán definitivamente del nodo de respaldo y no podrás iniciar sesión en Anytype desde dispositivos nuevos.</string>
     <string name="danger_zone">¡Zona peligrosa!</string>
@@ -1279,8 +1279,8 @@
     <string name="multiplayer_qr_code">Código QR</string>
     <string name="multiplayer_mute">Silenciar</string>
     <string name="multiplayer_unmute">No silenciar</string>
-    <string name="multiplayer_space_muted">Space muted</string>
-    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_space_muted">Espacio silenciado</string>
+    <string name="multiplayer_space_unmuted">Espacio desilenciado</string>
     <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
     <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">¿Cambiar tipo de acceso del enlace de invitación?</string>

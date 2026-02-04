@@ -2015,6 +2015,18 @@
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">画像</string>
+    <string name="attachment_menu_camera">カメラ</string>
+    <string name="attachment_menu_files">ファイル</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">検索</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">再試行</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
     <string name="share_space_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>

@@ -2,11 +2,10 @@ package com.anytypeio.anytype.di.feature
 
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerModal
-import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
-import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.UpdateDetail
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -24,7 +23,6 @@ import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.ui.primitives.ObjectFieldsFragment
-import com.anytypeio.anytype.ui.relations.ObjectRelationListFragment
 import dagger.BindsInstance
 import dagger.Module
 import dagger.Provides
@@ -42,7 +40,6 @@ interface ObjectRelationListComponent {
         fun build(): ObjectRelationListComponent
     }
 
-    fun inject(fragment: ObjectRelationListFragment)
     fun inject(fragment: ObjectFieldsFragment)
 }
 

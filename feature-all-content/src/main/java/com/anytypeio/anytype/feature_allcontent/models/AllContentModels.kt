@@ -3,27 +3,23 @@ package com.anytypeio.anytype.feature_allcontent.models
 import androidx.compose.runtime.Immutable
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.MarketplaceObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
-import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.Relations.SOURCE_OBJECT
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.DateParser
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
-import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Companion.DEFAULT_INITIAL_TAB
-import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.presentation.objects.MenuSortsItem
 import com.anytypeio.anytype.presentation.objects.ObjectsListSort
-import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.getDescriptionOrSnippet
 import com.anytypeio.anytype.presentation.objects.getProperType
 
@@ -104,33 +100,6 @@ sealed class UiContentItem {
         val createdDate: Long = 0L,
         val isPossibleToDelete: Boolean = false
     ) : UiContentItem()
-
-    data class Type(
-        override val id: Id,
-        val name: String,
-        val icon: ObjectIcon? = null,
-        val sourceObject: Id? = null,
-        val uniqueKey: Key? = null,
-        val readOnly: Boolean = true,
-        val editable: Boolean = true
-    ) : UiContentItem()
-
-    data class Relation(
-        override val id: Id,
-        val name: String,
-        val format: RelationFormat,
-        val sourceObject: Id? = null,
-        val readOnly: Boolean = true,
-        val editable: Boolean = true,
-    ) : UiContentItem()
-
-    data object NewRelation : UiContentItem() {
-        override val id: String = "NewRelation"
-    }
-
-    data object NewType : UiContentItem() {
-        override val id: String = "NewType"
-    }
 
     data object UnlinkedDescription : UiContentItem() {
         override val id: String = "UnlinkedDescription"
@@ -220,48 +189,6 @@ suspend fun ObjectWrapper.Basic.toAllContentItem(
         lastModifiedDate = DateParser.parse(obj.getValue(Relations.LAST_MODIFIED_DATE)) ?: 0L,
         createdDate = DateParser.parse(obj.getValue(Relations.CREATED_DATE)) ?: 0L,
         isPossibleToDelete = isOwnerOrEditor && !isType
-    )
-}
-
-fun List<ObjectWrapper.Type>.toUiContentTypes(
-    urlBuilder: UrlBuilder,
-    isOwnerOrEditor: Boolean
-): List<UiContentItem.Type> {
-    return map { it.toAllContentType(urlBuilder, isOwnerOrEditor) }
-}
-
-fun ObjectWrapper.Type.toAllContentType(
-    urlBuilder: UrlBuilder,
-    isOwnerOrEditor: Boolean
-): UiContentItem.Type {
-    val obj = this
-    return UiContentItem.Type(
-        id = obj.id,
-        name = obj.name.orEmpty(),
-        icon = obj.objectIcon(),
-        sourceObject = obj.map[SOURCE_OBJECT]?.toString(),
-        uniqueKey = obj.uniqueKey,
-        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
-        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
-    )
-}
-
-fun List<ObjectWrapper.Basic>.toUiContentRelations(isOwnerOrEditor: Boolean): List<UiContentItem.Relation> {
-    return map { it.toAllContentRelation(isOwnerOrEditor) }
-}
-
-fun ObjectWrapper.Basic.toAllContentRelation(
-    isOwnerOrEditor: Boolean
-): UiContentItem.Relation {
-    val relation = ObjectWrapper.Relation(map)
-    val obj = this
-    return UiContentItem.Relation(
-        id = relation.id,
-        name = obj.name.orEmpty(),
-        format = relation.format,
-        sourceObject = map[SOURCE_OBJECT]?.toString(),
-        readOnly = obj.restrictions.contains(ObjectRestriction.DELETE) || !isOwnerOrEditor,
-        editable = !obj.restrictions.contains(ObjectRestriction.DETAILS)
     )
 }
 

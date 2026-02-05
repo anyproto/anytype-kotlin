@@ -244,12 +244,6 @@ class RelationCreateFromScratchForObjectFragment : RelationCreateFromScratchBase
                 IS_SET_OR_COLLECTION_KEY to isSetOrCollection
             )
         }
-
-        fun args(ctx: Id, query: String, space: Id) = bundleOf(
-            CTX_KEY to ctx,
-            QUERY_KEY to query,
-            SPACE_KEY to space
-        )
     }
 }
 

@@ -8,12 +8,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -51,7 +49,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.Alignment.Companion.CenterVertically
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
@@ -66,20 +63,16 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.common.bottomBorder
-import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.core_ui.extensions.swapList
 import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
 import com.anytypeio.anytype.core_ui.foundation.DismissBackground
 import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
-import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.PreviewTitle1Medium
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.views.UXBody
@@ -87,7 +80,6 @@ import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
-import com.anytypeio.anytype.feature_allcontent.BuildConfig
 import com.anytypeio.anytype.feature_allcontent.R
 import com.anytypeio.anytype.feature_allcontent.models.AllContentMenuMode
 import com.anytypeio.anytype.feature_allcontent.models.AllContentTab
@@ -98,9 +90,8 @@ import com.anytypeio.anytype.feature_allcontent.models.UiMenuState
 import com.anytypeio.anytype.feature_allcontent.models.UiSnackbarState
 import com.anytypeio.anytype.feature_allcontent.models.UiTabsState
 import com.anytypeio.anytype.feature_allcontent.models.UiTitleState
-import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
-import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.presentation.objects.ObjectsListSort
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -119,8 +110,6 @@ fun AllContentWrapperScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem) -> Unit,
-    onRelationClicked: (UiContentItem) -> Unit,
     onOpenAsObject: (UiContentItem.Item) -> Unit,
     onBinClick: () -> Unit,
     canPaginate: Boolean,
@@ -151,14 +140,11 @@ fun AllContentWrapperScreen(
         onBinClick = onBinClick,
         uiItemsState = uiItemsState,
         uiContentState = uiContentState,
-        onTypeClicked = onTypeClicked,
         onGlobalSearchClicked = onGlobalSearchClicked,
         onAddDocClicked = onAddDocClicked,
         onCreateObjectLongClicked = onCreateObjectLongClicked,
         onBackClicked = onBackClicked,
-        onBackLongClicked = onBackLongClicked,
         moveToBin = moveToBin,
-        onRelationClicked = onRelationClicked,
         uiBottomMenu = uiBottomMenu,
         undoMoveToBin = undoMoveToBin,
         onDismissSnackbar = onDismissSnackbar,
@@ -184,16 +170,13 @@ fun AllContentMainScreen(
     onModeClick: (AllContentMenuMode) -> Unit,
     onSortClick: (ObjectsListSort) -> Unit,
     onItemClicked: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem) -> Unit,
     onOpenAsObject: (UiContentItem.Item) -> Unit,
-    onRelationClicked: (UiContentItem) -> Unit,
     onBinClick: () -> Unit,
     uiContentState: UiContentState,
     onGlobalSearchClicked: () -> Unit,
     onAddDocClicked: () -> Unit,
     onCreateObjectLongClicked: () -> Unit,
     onBackClicked: () -> Unit,
-    onBackLongClicked: () -> Unit,
     moveToBin: (UiContentItem.Item) -> Unit,
     undoMoveToBin: (Id) -> Unit,
     onDismissSnackbar: () -> Unit,
@@ -326,10 +309,8 @@ fun AllContentMainScreen(
                         ContentItems(
                             uiItemsState = uiItemsState,
                             onItemClicked = onItemClicked,
-                            onTypeClicked = onTypeClicked,
                             uiContentState = uiContentState,
                             moveToBin = moveToBin,
-                            onRelationClicked = onRelationClicked,
                             canPaginate = canPaginate,
                             onUpdateLimitSearch = onUpdateLimitSearch,
                             onOpenAsObject = onOpenAsObject
@@ -372,8 +353,6 @@ private fun ContentItems(
     uiItemsState: UiItemsState.Content,
     onItemClicked: (UiContentItem.Item) -> Unit,
     onOpenAsObject: (UiContentItem.Item) -> Unit,
-    onTypeClicked: (UiContentItem) -> Unit,
-    onRelationClicked: (UiContentItem) -> Unit,
     uiContentState: UiContentState,
     canPaginate: Boolean,
     moveToBin: (UiContentItem.Item) -> Unit,
@@ -417,10 +396,6 @@ private fun ContentItems(
                 when (items[index]) {
                     is UiContentItem.Group -> "group"
                     is UiContentItem.Item -> "item"
-                    is UiContentItem.Type -> "type"
-                    is UiContentItem.Relation -> "relation"
-                    UiContentItem.NewRelation -> "new_relation"
-                    UiContentItem.NewType -> "new_type"
                     UiContentItem.UnlinkedDescription -> "unlinked_description"
                 }
             }
@@ -468,50 +443,6 @@ private fun ContentItems(
                             expandedItemId = null
                             onOpenAsObject(it)
                         }
-                    )
-                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-                }
-
-                is UiContentItem.Type -> {
-                    Type(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .bottomBorder()
-                            .animateItem()
-                            .noRippleThrottledClickable {
-                                onTypeClicked(item)
-                            },
-                        item = item
-                    )
-                }
-
-                is UiContentItem.Relation -> {
-                    Relation(
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .bottomBorder()
-                            .animateItem()
-                            .noRippleThrottledClickable {
-                                onRelationClicked(item)
-                            },
-                        item = item
-                    )
-                }
-
-                UiContentItem.NewRelation -> {
-                    AddItem(
-                        modifier = Modifier
-                            .clickable { onRelationClicked(item) },
-                        text = stringResource(id = R.string.all_content_new_relation)
-                    )
-                    Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
-                }
-
-                UiContentItem.NewType -> {
-                    AddItem(
-                        modifier = Modifier
-                            .clickable { onTypeClicked(item) },
-                        text = stringResource(id = R.string.all_content_new_type)
                     )
                     Divider(paddingStart = 16.dp, paddingEnd = 16.dp)
                 }
@@ -634,14 +565,11 @@ fun PreviewMainScreen() {
         onItemClicked = {},
         onBinClick = {},
         uiContentState = UiContentState.Error("Error message"),
-        onTypeClicked = {},
         onGlobalSearchClicked = {},
         onAddDocClicked = {},
         onCreateObjectLongClicked = {},
         onBackClicked = {},
         moveToBin = {},
-        onBackLongClicked = {},
-        onRelationClicked = {},
         uiBottomMenu = NavPanelState.Init,
         uiSnackbarState = UiSnackbarState.Hidden,
         undoMoveToBin = {},
@@ -712,69 +640,6 @@ fun RowScope.Item(
         onDismiss = onDismissMenu,
         onOpenAsObject = onOpenAsObject
     )
-}
-
-@Composable
-private fun Type(
-    modifier: Modifier,
-    item: UiContentItem.Type
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 0.dp, top = 14.dp, end = 14.dp, bottom = 14.dp)
-                .wrapContentSize()
-        ) {
-            //todo delete !!
-            ListWidgetObjectIcon(icon = item.icon!!, modifier = Modifier, iconSize = 24.dp)
-        }
-        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
-
-        Text(
-            text = name,
-            style = PreviewTitle1Medium,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
-}
-
-@Composable
-private fun Relation(
-    modifier: Modifier,
-    item: UiContentItem.Relation
-) {
-    Row(
-        modifier = modifier.fillMaxWidth(),
-        verticalAlignment = CenterVertically
-    ) {
-        Box(
-            modifier = Modifier
-                .padding(start = 0.dp, top = 14.dp, end = 12.dp, bottom = 14.dp)
-                .wrapContentSize()
-        ) {
-            item.format.simpleIcon()?.let {
-                Image(
-                    painter = painterResource(id = it),
-                    contentDescription = "Relation format icon",
-                    modifier = Modifier.size(24.dp)
-                )
-            }
-        }
-        val name = item.name.trim().ifBlank { stringResource(R.string.untitled) }
-
-        Text(
-            text = name,
-            style = PreviewTitle1Medium,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis
-        )
-    }
 }
 
 @Composable

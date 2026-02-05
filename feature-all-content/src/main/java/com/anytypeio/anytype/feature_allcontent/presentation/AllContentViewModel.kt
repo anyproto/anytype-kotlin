@@ -4,9 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.analytics.base.EventsDictionary
-import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenRelation
-import com.anytypeio.anytype.analytics.base.EventsDictionary.libraryScreenType
-import com.anytypeio.anytype.analytics.base.sendEvent
 import com.anytypeio.anytype.core_models.DVSortType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -16,7 +13,6 @@ import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_ui.extensions.simpleIcon
 import com.anytypeio.anytype.domain.all_content.RestoreAllContentState
 import com.anytypeio.anytype.domain.all_content.UpdateAllContentState
 import com.anytypeio.anytype.domain.base.fold
@@ -51,7 +47,6 @@ import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.NavigateToObjectType
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.NavigateToParticipant
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.OpenShareScreen
-import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel.Command.OpenTypeCreation
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeMode
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsAllContentChangeSort
@@ -771,63 +766,6 @@ class AllContentViewModel(
         }
     }
 
-    fun onTypeClicked(item: UiContentItem) {
-        Timber.d("onTypeClicked: $item")
-        when (item) {
-            UiContentItem.NewType -> {
-                viewModelScope.launch {
-                    commands.emit(OpenTypeCreation(space = vmParams.spaceId.id))
-                }
-            }
-            is UiContentItem.Type -> {
-                viewModelScope.launch {
-                    commands.emit(Command.OpenTypeEditing(item))
-                }
-            }
-            else -> {
-                //do nothing
-            }
-        }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = libraryScreenType
-        )
-    }
-
-    fun onRelationClicked(item: UiContentItem) {
-        Timber.d("onRelationClicked: $item")
-        when (item) {
-            UiContentItem.NewRelation -> {
-                viewModelScope.launch {
-                    commands.emit(
-                        Command.OpenRelationCreation(
-                            space = vmParams.spaceId.id
-                        )
-                    )
-                }
-            }
-            is UiContentItem.Relation -> {
-                viewModelScope.launch {
-                    commands.emit(
-                        Command.OpenRelationEditing(
-                            typeName = item.name,
-                            id = item.id,
-                            iconUnicode = item.format.simpleIcon() ?: 0,
-                            readOnly = item.readOnly
-                        )
-                    )
-                }
-            }
-            else -> {
-                //do nothing
-            }
-        }
-        viewModelScope.sendEvent(
-            analytics = analytics,
-            eventName = libraryScreenRelation
-        )
-    }
-
     fun onStart() {
         Timber.d("onStart")
         setupUiStateFlow()
@@ -961,16 +899,7 @@ class AllContentViewModel(
             data class UnexpectedLayout(val layout: String) : SendToast()
             data class ObjectArchived(val name: String) : SendToast()
         }
-        data class OpenTypeEditing(val item: UiContentItem.Type) : Command()
-        data class OpenTypeCreation(val space: Id): Command()
         data class OpenShareScreen(val space: SpaceId): Command()
-        data class OpenRelationEditing(
-            val typeName: String,
-            val id: Id,
-            val iconUnicode: Int,
-            val readOnly: Boolean
-        ) : Command()
-        data class OpenRelationCreation(val space: Id): Command()
         data object OpenGlobalSearch : Command()
         data object ExitToSpaceHome : Command()
         data object Back : Command()

@@ -155,7 +155,6 @@ import com.anytypeio.anytype.ui.alert.AlertUpdateAppFragment
 import com.anytypeio.anytype.ui.base.NavigationFragment
 import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectFragment
-import com.anytypeio.anytype.ui.editor.layout.ObjectLayoutFragment
 import com.anytypeio.anytype.ui.editor.modals.CreateBookmarkFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.modals.SetBlockTextValueFragment
@@ -1155,15 +1154,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                             space = space
                         )
                     )
-                }
-                is Command.OpenObjectLayout -> {
-                    val fr = ObjectLayoutFragment.new(
-                        ctx = command.ctx,
-                        space = space
-                    ).apply {
-                        onDismissListener = { vm.onLayoutDialogDismissed() }
-                    }
-                    fr.showChildFragment()
                 }
                 is Command.OpenFullScreenImage -> {
                     runCatching {
@@ -2257,10 +2247,6 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     override fun onSetIconClicked() {
         vm.onSetObjectIconClicked()
-    }
-
-    override fun onLayoutClicked() {
-        vm.onLayoutClicked()
     }
 
     override fun onTextValueChanged(ctx: Id, text: String, objectId: Id, relationKey: Key) {

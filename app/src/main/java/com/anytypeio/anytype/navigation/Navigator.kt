@@ -8,11 +8,11 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.widgets.collection.Subscription
 import com.anytypeio.anytype.ui.allcontent.AllContentFragment
 import com.anytypeio.anytype.ui.auth.account.DeletedAccountFragment
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.ui.editor.EditorModalFragment
@@ -20,9 +20,8 @@ import com.anytypeio.anytype.ui.home.WidgetsScreenFragment
 import com.anytypeio.anytype.ui.multiplayer.ShareSpaceFragment
 import com.anytypeio.anytype.ui.primitives.CreateTypeFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFieldsFragment
-import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
-import com.anytypeio.anytype.ui.relations.RelationCreateFromScratchForObjectFragment
+import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.RemoteFilesManageFragment
@@ -293,17 +292,6 @@ class Navigator : AppNavigation {
         navController?.navigate(
             resId = R.id.action_open_all_content,
             args = AllContentFragment.args(space)
-        )
-    }
-
-    override fun openRelationCreationScreen(id: Id, name: String, space: Id) {
-        navController?.navigate(
-            resId = R.id.openRelationCreationScreen,
-            args = RelationCreateFromScratchForObjectFragment.args(
-                ctx = id,
-                query = name,
-                space = space
-            )
         )
     }
 

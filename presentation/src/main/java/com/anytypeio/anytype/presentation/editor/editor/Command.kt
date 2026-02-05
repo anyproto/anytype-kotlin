@@ -4,8 +4,8 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_utils.ext.Mimetype
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_utils.ext.Mimetype
 
 sealed class Command {
 
@@ -75,7 +75,6 @@ sealed class Command {
     ) : Command()
 
     data class OpenCoverGallery(val ctx: Id) : Command()
-    data class OpenObjectLayout(val ctx: Id) : Command()
     data class SetObjectIcon(val ctx: Id, val space: Id) : Command()
 
     data object AlertDialog : Command()

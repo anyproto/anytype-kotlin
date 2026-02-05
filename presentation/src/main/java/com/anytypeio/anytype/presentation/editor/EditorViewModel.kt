@@ -3592,16 +3592,6 @@ class EditorViewModel(
         }
     }
 
-    fun onLayoutClicked() {
-        Timber.d("onLayoutClicked, ")
-        dispatch(Command.OpenObjectLayout(context))
-    }
-
-    fun onLayoutDialogDismissed() {
-        Timber.d("onLayoutDialogDismissed, ")
-        proceedWithOpeningObjectMenu()
-    }
-
     fun onAddBookmarkBlockClicked() {
         Timber.d("onAddBookmarkBlockClicked, ")
 

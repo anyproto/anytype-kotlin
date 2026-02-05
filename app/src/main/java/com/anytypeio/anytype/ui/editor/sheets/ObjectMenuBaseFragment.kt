@@ -15,6 +15,7 @@ import com.anytypeio.anytype.analytics.BuildConfig
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_ui.features.objects.ObjectActionAdapter
 import com.anytypeio.anytype.core_ui.layout.SpacingItemDecoration
 import com.anytypeio.anytype.core_ui.reactive.click
@@ -29,8 +30,6 @@ import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreen
-import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreenPreview
-import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.base.navigation
@@ -406,7 +405,6 @@ abstract class ObjectMenuBaseFragment :
         fun onDocRelationsClicked()
         fun onAddCoverClicked()
         fun onSetIconClicked()
-        fun onLayoutClicked()
         fun onUndoRedoClicked()
     }
 }

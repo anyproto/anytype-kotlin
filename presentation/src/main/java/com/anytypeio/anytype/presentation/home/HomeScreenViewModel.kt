@@ -149,6 +149,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
@@ -297,6 +298,7 @@ class HomeScreenViewModel(
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
+    private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
@@ -407,6 +409,23 @@ class HomeScreenViewModel(
                 flowOf(null)
             } else {
                 // Create container for bin widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
+    // Exposed flow for recently edited widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recentlyEditedView: StateFlow<WidgetView?> = recentlyEditedWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for recently edited widget
                 widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
             }
         }
@@ -894,6 +913,7 @@ class HomeScreenViewModel(
                     }
 
                     unreadWidget.value = sections.unreadWidget
+                    recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
@@ -906,6 +926,7 @@ class HomeScreenViewModel(
                     }
 
                     unreadWidget.value = null
+                    recentlyEditedWidget.value = null
                     binWidget.value = null
                 }
             }
@@ -1678,6 +1699,7 @@ class HomeScreenViewModel(
         is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
         is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.RecentlyEdited -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -3269,6 +3291,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionRecentlyEditedClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_RECENTLY_EDITED)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_RECENTLY_EDITED)
+            } else {
+                currentCollapsedSections.plus(SECTION_RECENTLY_EDITED)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
@@ -3277,6 +3314,7 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+            widget.sectionType == SectionType.RECENTLY_EDITED -> collapsedSections.contains(Widget.Source.SECTION_RECENTLY_EDITED)
             else -> false
         }
     }

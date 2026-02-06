@@ -205,6 +205,27 @@ sealed class WidgetView {
         override val canCreateObjectOfType: Boolean = false
     }
 
+    /**
+     * Recently edited widget displaying objects sorted by last modified date.
+     * Simple flat list without configurable layout options.
+     */
+    data class RecentlyEdited(
+        override val id: Id,
+        val icon: ObjectIcon = ObjectIcon.None,
+        val source: Widget.Source,
+        val elements: List<Element>,
+        val isExpanded: Boolean,
+        override val sectionType: SectionType? = SectionType.RECENTLY_EDITED
+    ) : WidgetView() {
+        override val canCreateObjectOfType: Boolean = false
+
+        data class Element(
+            override val objectIcon: ObjectIcon,
+            override val obj: ObjectWrapper.Basic,
+            override val name: Name
+        ) : WidgetView.Element.Regular
+    }
+
     data class ListOfObjects(
         override val id: Id,
         val icon: ObjectIcon,

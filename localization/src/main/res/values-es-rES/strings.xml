@@ -1281,8 +1281,8 @@
     <string name="multiplayer_unmute">No silenciar</string>
     <string name="multiplayer_space_muted">Espacio silenciado</string>
     <string name="multiplayer_space_unmuted">Espacio desilenciado</string>
-    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
-    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
+    <string name="multiplayer_unable_to_change_notification_settings">No se puede cambiar la configuración de las notificaciones</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Error al cambiar la configuración de las notificaciones</string>
     <string name="multiplayer_change_access_title">¿Cambiar tipo de acceso del enlace de invitación?</string>
     <string name="multiplayer_link_will_be_invalidated">El enlace actual dejará de funcionar.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Si dejas de compartir el espacio o cambias a aprobación manual, el enlace actual se desactivará. Si vuelves a compartir el espacio, se creará un enlace nuevo.</string>
@@ -2031,13 +2031,13 @@ En concreto,
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Cámara</string>
     <string name="attachment_menu_files">Archivos</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object">Adjuntar objeto</string>
     <string name="attachment_menu_see_all">Ver todo</string>
     <string name="attachment_menu_search_placeholder">Buscar</string>
-    <string name="create_object_empty_state">No object types available</string>
-    <string name="create_object_no_results">No types found</string>
-    <string name="create_object_search_types">Search object types</string>
-    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_empty_state">No hay tipos de objeto disponibles</string>
+    <string name="create_object_no_results">No se encuentra ningún tipo</string>
+    <string name="create_object_search_types">Buscar tipos de objeto</string>
+    <string name="create_object_error">Error al cargar los tipos de objeto</string>
     <string name="create_object_retry">Reintentar</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>

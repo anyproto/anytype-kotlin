@@ -73,7 +73,7 @@
     <string name="space_settings_error_name">Falha ao atualizar o nome do espaço. Tente novamente.</string>
     <string name="space_settings_error_icon">Falha ao atualizar o ícone de espaço. Tente novamente.</string>
     <string name="manage_sections_title">Gerenciar seções</string>
-    <string name="section_unread">Unread</string>
+    <string name="section_unread">Não lido</string>
     <string name="section_pinned">Fixado</string>
     <string name="section_objects">Objetos</string>
     <string name="section_recently_edited">Editado recentemente</string>
@@ -1289,21 +1289,21 @@
     <string name="multiplayer_change_to_editor_confirmation">Anyone with the link will be able to edit the space content.</string>
     <string name="multiplayer_change_to_viewer_confirmation">Anyone with the link will only be able to view the space content.</string>
     <string name="multiplayer_change_to_request_confirmation">Anyone with the link will need to request access to join the space.</string>
-    <string name="multiplayer_invite_link_copied">Invite link copied to clipboard</string>
-    <string name="link_copied">Link copied to clipboard</string>
+    <string name="multiplayer_invite_link_copied">Link de convite copiado para área de transferência</string>
+    <string name="link_copied">Link copiado para área de transferência</string>
     <string name="remove_from_collection">Unlink from Collection</string>
     <string name="multiplayer_copy_link">Copiar link</string>
-    <string name="multiplayer_make_private">Make Private</string>
+    <string name="multiplayer_make_private">Tornar Privado</string>
     <string name="multiplayer_join_a_space">Juntar-se a um espaço</string>
     <string name="multiplayer_private_comment_for_a_space_owner">Comentário privado para o proprietário do espaço</string>
     <string name="multiplayer_request_to_join_explanation">Quando o dono do espaço aprovar sua solicitação, você se juntará ao espaço com as permissões que o dono determinar.</string>
-    <string name="multiplayer_request_to_join_without_approve_title">Join %1$s</string>
-    <string name="multiplayer_request_to_join_without_approve_desc">You\'ve been invited to join %1$s, created by %2$s</string>
-    <string name="multiplayer_request_to_join_without_approve_button">Join Space</string>
+    <string name="multiplayer_request_to_join_without_approve_title">Entrar em %1$s</string>
+    <string name="multiplayer_request_to_join_without_approve_desc">Você foi convidado para ingressar no espaço %1$s, criado por %2$s</string>
+    <string name="multiplayer_request_to_join_without_approve_button">Entrar no espaço</string>
     <string name="multiplayer_request_to_join_sent_title">Solicitação enviada</string>
     <string name="multiplayer_request_to_join_sent_description">Você será notificado quando o dono do espaço aprovar sua solicitação.</string>
-    <string name="multiplayer_request_to_join_btn_manage_spaces">Manage spaces</string>
-    <string name="multiplayer_request_to_join_loading_text"> Hang tight — we’re setting things up for you. This should only take a moment.</string>
+    <string name="multiplayer_request_to_join_btn_manage_spaces">Gerenciar espaços</string>
+    <string name="multiplayer_request_to_join_loading_text"> Aguente firme — estamos preparando as coisas para você. Isso deve demorar um pouco.</string>
     <string name="multiplayer_space_request_to_join">Solicitar o acesso</string>
     <string name="multiplayer_space_request_to_join_msg">Você foi convidado para se juntar ao espaço %1$s, criado por %2$s. Envie uma solicitação para que o proprietário do espaço permita seu acesso.</string>
     <string name="multiplayer_tap_to_write_request_to_join_comment">Toque para escrever seu comentário</string>
@@ -1408,14 +1408,14 @@
     <string name="multiplayer_cancel_join_request">Cancelar solicitação de adesão</string>
     <string name="multiplayer_cancel_join_request_msg">Você terá que enviar o acesso da solicitação novamente</string>
     <string name="multiplayer_do_not_cancel_join_request">Não cancelar</string>
-    <string name="multiplayer_error_invite_not_found_title">No access to this space</string>
-    <string name="multiplayer_error_invalid_link_title">No access to this space</string>
-    <string name="multiplayer_error_invite_not_found">The link you are using does not seem to work. Please ask the owner to share a new one with you.</string>
+    <string name="multiplayer_error_invite_not_found_title">Sem acesso ao espaço</string>
+    <string name="multiplayer_error_invalid_link_title">Sem acesso ao espaço</string>
+    <string name="multiplayer_error_invite_not_found">O link que você está usando parece não funcionar. Por favor, peça ao proprietário para compartilhar um novo link com você.</string>
     <string name="multiplayer_error_invite_bad_content">O link do convite não pôde ser analisado. Ele pode conter erros no formato ou dados inválidos.</string>
-    <string name="multiplayer_error_space_deleted_title">No access to this space</string>
+    <string name="multiplayer_error_space_deleted_title">Sem acesso ao espaço</string>
     <string name="multiplayer_error_space_is_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
     <string name="multiplayer_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
-    <string name="multiplayer_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="multiplayer_error_not_shareable">Parece que o espaço não está mais compartilhado. Por favor, certifique-se de que seus dispositivos estão sincronizados.</string>
     <string name="multiplayer_error_request_failed">Opa! A solicitação falhou. Por favor, verifique sua conexão com a Internet e tente novamente.</string>
     <string name="multiplayer_invite_link_this_link_does_not_seem_to_work">Este link parece não funcionar</string>
     <string name="multiplayer_invite_link_space_not_found">Este link de convite não é mais válido porque o espaço não foi encontrado.</string>
@@ -1538,16 +1538,16 @@ Especificamente,
 forneça detalhes específicos das suas necessidades aqui.</string>
     <!-- Membership name errors -->
     <string name="membership_name_bad_input">Algo errado com a entrada, tente novamente</string>
-    <string name="membership_name_cache_error">Error on our side, try again later</string>
-    <string name="membership_name_cant_connect">Can not connect, check your internet connection</string>
-    <string name="membership_name_invalid_chars">Name has invalid characters</string>
-    <string name="membership_name_not_logged">You are not logged in! 😵‍💫</string>
-    <string name="membership_name_payment_node_error">Error on our side, try again later</string>
-    <string name="membership_name_tier_features_no_name">Name is not available for this tier</string>
-    <string name="membership_name_tier_not_found">Tier not found, try again later</string>
-    <string name="membership_name_too_long">Name is too long</string>
-    <string name="membership_name_too_short">Name is too short</string>
-    <string name="membership_any_name_not_reserved">This name cannot be reserved</string>
+    <string name="membership_name_cache_error">Erro do nosso lado, tente novamente mais tarde</string>
+    <string name="membership_name_cant_connect">Não foi possível conectar, verifique sua conexão</string>
+    <string name="membership_name_invalid_chars">O nome contém caracteres inválidos</string>
+    <string name="membership_name_not_logged">Você não está logado! 😵‍💫</string>
+    <string name="membership_name_payment_node_error">Erro do nosso lado, tente novamente mais tarde</string>
+    <string name="membership_name_tier_features_no_name">Nome não está disponível para este nível</string>
+    <string name="membership_name_tier_not_found">Nível não encontrado, tente novamente mais tarde</string>
+    <string name="membership_name_too_long">Nome é muito longo</string>
+    <string name="membership_name_too_short">Nome é muito curto</string>
+    <string name="membership_any_name_not_reserved">Este nome não pode ser reservado</string>
     <string name="membership_any_name_null_error">Erro em branco</string>
     <string name="membership_any_name_unknown">Erro desconhecido</string>
     <string name="membership_email_wrong_format">Endereço eletrônico tem um formato errado</string>
@@ -1566,7 +1566,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="notifications_alert_error_internal">Ocorreu um erro interno. Nossa equipe foi notificada.</string>
     <string name="notifications_alert_error_no_objects_to_import">Nenhum item encontrado para importação. Por favor, selecione objetos válidos para importação.</string>
     <string name="notifications_alert_error_import_canceled">O processo de importação foi cancelado pelo usuário.</string>
-    <string name="notifications_alert_error_limit_exceeded">The import limit for rows or properties has been exceeded. Please reduce the amount and try again.</string>
+    <string name="notifications_alert_error_limit_exceeded">O limite de importação para linhas ou propriedades foi excedido. Por favor, reduza a quantidade e tente novamente.</string>
     <string name="notifications_alert_error_file_load">Houve um erro ao carregar o arquivo. Por favor, verifique o arquivo e tente novamente.</string>
     <string name="notifications_alert_error_insufficient_permissions">Você não tem as permissões necessárias para executar esta ação. Por favor, verifique suas permissões e tente novamente.</string>
     <!-- Gallery Experience -->
@@ -1585,7 +1585,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="notifications_prompt_primary_button_text">Habilitar</string>
     <string name="clipboard_panel_create_bookmark_from_clipboard">Criar objeto a partir da área de transferência.</string>
     <string name="error_unexpected_layout">Erro: layout inesperado</string>
-    <string name="error_non_valid_object">Error: object ID is missing</string>
+    <string name="error_non_valid_object">Erro: faltando ID do objeto</string>
     <string name="membership_price_pending">Pendente...</string>
     <string name="per_period">por  %1$s</string>
     <string name="free_for">Livre para %1$s</string>
@@ -1607,8 +1607,8 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="membership_upgrade_title">Atualizar assinatura</string>
     <string name="membership_upgrade_description">Entre em contato conosco para obter armazenamento extra, editores de espaço ou mais espaços compartilhados. A equipe Anytype fornecerá detalhes e condições adaptadas às suas necessidades.</string>
     <string name="membership_upgrade_button">Entrar em contato com a equipe Anytype</string>
-    <string name="membership_space_settings_share_limit">You’ve reached the limit of %1$d shared spaces</string>
-    <string name="membership_space_settings_share_limit_2">Upgrade for more or remove spaces.</string>
+    <string name="membership_space_settings_share_limit">Você atingiu o limite de %1$d espaços compartilhados</string>
+    <string name="membership_space_settings_share_limit_2">Faça upgrade ou remova espaços.</string>
     <plurals name="period_years">
         <item quantity="one">ano</item>
         <item quantity="other">%d anos</item>
@@ -1629,11 +1629,11 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="membership_error_button_text_dismiss">Ok</string>
     <string name="error_login_network_id_mismatch">Incompatibilidade de ID de rede detectada. Verifique sua configuração de rede.</string>
     <string name="error_login_select_vault_error">Erro ao selecionar conta.</string>
-    <string name="error_login_account_deleted_error">This account is deleted. Try using another account or create a new one.</string>
-    <string name="error_login_account_need_update_error">Unable to retrieve account. Please update Anytype to the latest version.</string>
-    <string name="error_wallet_setup">Unable to set up wallet. Please check your device storage and try again.</string>
-    <string name="error_network_error">Network error occurred. Please check your internet connection and try again.</string>
-    <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
+    <string name="error_login_account_deleted_error">Esta conta foi excluída. Tente usar outra conta ou crie uma nova.</string>
+    <string name="error_login_account_need_update_error">Não foi possível recuperar a conta. Por favor, atualize o Anytype para a versão mais recente.</string>
+    <string name="error_wallet_setup">Não foi possível configurar a carteira. Verifique o armazenamento do seu dispositivo e tente novamente.</string>
+    <string name="error_network_error">Ocorreu um erro de rede. Verifique sua conexão com a internet e tente novamente.</string>
+    <string name="error_offline_device">Seu dispositivo parece estar sem rede. Por favor, conecte-se e tente novamente.</string>
     <string name="global_search_related_to">"Relacionado a: "</string>
     <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
     <string name="sort_empty_values_desc">Mostrar valores vazios</string>
@@ -1660,7 +1660,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="sync_status_anytype_network">Rede Anytype</string>
     <string name="sync_status_anytype_end_to_end">Criptografia de ponta a ponta</string>
     <plurals name="sync_status_network_items">
-        <item quantity="one">%1$d item syncing...</item>
+        <item quantity="one">%1$d item sincronizando...</item>
         <item quantity="other">%1$d itens sincronizando...</item>
     </plurals>
     <string name="sync_status_anytype_network_connecting">Conectando rede...</string>
@@ -1675,15 +1675,15 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="version_history_error_get_version">Erro ao obter histórico de versões</string>
     <string name="version_history_error_get_members">Erro ao obter membros</string>
     <string name="new_object">Novo objeto</string>
-    <string name="vault_my_spaces">My Channels</string>
-    <string name="vault_unread_section_title">Unread</string>
+    <string name="vault_my_spaces">Meus Espaços</string>
+    <string name="vault_unread_section_title">Não lido</string>
     <string name="vault_all_section_title">Todos</string>
     <string name="vault_pinned_section_title">Fixado</string>
     <string name="vault_pin_space">Fixar</string>
     <string name="vault_unpin_space">Desafixar</string>
-    <string name="vault_max_pinned_limit_reached">You\'ve reached the limit of %1$d pinned spaces</string>
+    <string name="vault_max_pinned_limit_reached">Você atingiu o limite de %1$d espaços fixados</string>
     <string name="all_content_title_all_content">Todos os Objetos</string>
-    <string name="all_content_title_only_unlinked">Only unlinked</string>
+    <string name="all_content_title_only_unlinked">Apenas desvinculados</string>
     <string name="all_content_title_only_unlinked_description">Unlinked objects that do not have a direct link or backlink with other objects in the graph.</string>
     <string name="all_content_view_bin">View Bin</string>
     <string name="all_content_title_tab_pages">Páginas</string>
@@ -1891,7 +1891,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="profile_qr_share_button">Compartilhar</string>
     <string name="profile_qr_copy_button">Copiar link</string>
     <string name="profile_qr_circular_text">CONNECT ME AT ANYTYPE </string>
-    <string name="profile_qr_link_copied">Link copied to clipboard</string>
+    <string name="profile_qr_link_copied">Link copiado para área de transferência</string>
     <string name="object_type_add_property_screen_title">Add property</string>
     <string name="object_type_add_property_screen_create">Create property \'%1$s\'</string>
     <string name="object_type_add_property_screen_section_types">Properties formats</string>
@@ -2038,7 +2038,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="create_object_retry">Tente novamente</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limite atingido para este espaço. Por favor, atualize seu membro ou entre em contato com o suporte para assistência.</string>
-    <string name="share_space_error_not_shareable">It looks like the space is no longer shared. Please ensure that your devices are synchronized.</string>
+    <string name="share_space_error_not_shareable">Parece que o espaço não está mais compartilhado. Por favor, certifique-se de que seus dispositivos estão sincronizados.</string>
     <string name="share_space_error_request_failed">Opa! A solicitação falhou. Por favor, verifique sua conexão com a Internet e tente novamente.</string>
     <string name="share_space_error_space_deleted">Parece que o espaço foi excluído. Certifique-se de que seus dispositivos estejam sincronizados.</string>
     <string name="share_space_error_generic">An unexpected error occurred: %1$s. Please try again later.</string>
@@ -2064,7 +2064,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="web_publishing_open_in_browser">Open in Browser</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">Fixado</string>
-    <string name="widgets_section_unread">Unread</string>
+    <string name="widgets_section_unread">Não lido</string>
     <string name="widgets_section_object_types">Objetos</string>
     <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Novo</string>

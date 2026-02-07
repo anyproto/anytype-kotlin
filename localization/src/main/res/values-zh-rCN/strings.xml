@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Unread</string>
+    <string name="section_pinned">置顶</string>
+    <string name="section_objects">对象</string>
+    <string name="section_recently_edited">最近编辑的文档</string>
+    <string name="section_bin">回收站</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">数据管理</string>
     <string name="deleted_account_danger_zone_msg">一旦将删除此库的请求发出，您将有 30 天的时间取消此请求。在 30 天后，您的加密库数据将会被永久性地从备份节点移除，您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
@@ -1266,6 +1273,12 @@
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">二维码</string>
+    <string name="multiplayer_mute">Mute</string>
+    <string name="multiplayer_unmute">Unmute</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
@@ -1997,6 +2010,18 @@
     <string name="open_settings">Open Settings</string>
     <string name="allow">允许</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">照片</string>
+    <string name="attachment_menu_camera">相机</string>
+    <string name="attachment_menu_files">文件</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">查看全部</string>
+    <string name="attachment_menu_search_placeholder">搜索</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">重试</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">此空间人数已到达上限。请升级您的会员资格或联系客服以获取帮助。</string>
     <string name="share_space_error_not_shareable">看起来此空间已不再共享。请确保您的设备已经同步。</string>
@@ -2026,7 +2051,7 @@
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">置顶</string>
     <string name="widgets_section_unread">Unread</string>
-    <string name="widgets_section_object_types">对象类型</string>
+    <string name="widgets_section_object_types">对象</string>
     <string name="widgets_menu_new_object_type">新建</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>

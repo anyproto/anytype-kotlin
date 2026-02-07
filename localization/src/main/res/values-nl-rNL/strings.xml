@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Bijwerken van achtergrond is mislukt. Probeer het alsjeblieft opnieuw.</string>
     <string name="space_settings_error_name">Wijzigen van ruimtenaam mislukt. Probeer het alsjeblieft opnieuw.</string>
     <string name="space_settings_error_icon">Bijwerken van ruimtepictogram is mislukt. Probeer het alsjeblieft opnieuw.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Ongelezen</string>
+    <string name="section_pinned">Vastgezet</string>
+    <string name="section_objects">Objecten</string>
+    <string name="section_recently_edited">Onlangs bewerkt</string>
+    <string name="section_bin">Prullenmand</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Gegevensbeheer</string>
     <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
@@ -1270,6 +1277,12 @@
     <string name="multiplayer_request_access">Vraag toegang aan</string>
     <string name="multiplayer_request_access_desc">Eigenaar moet elk deelnameverzoek goedkeuren</string>
     <string name="multiplayer_qr_code">QR-code</string>
+    <string name="multiplayer_mute">Demp</string>
+    <string name="multiplayer_unmute">Demp niet meer</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Wijzig toegang tot uitnodigingslink?</string>
     <string name="multiplayer_link_will_be_invalidated">De huidige koppeling zal niet meer werken.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Als je het delen uitschakelt of overschakelt naar handmatige goedkeuring, wordt jouw bestaande link gedeactiveerd. Er zal een nieuwe worden gemaakt als je deze opnieuw inschakelt.</string>
@@ -2014,6 +2027,18 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="open_settings">Open instellingen</string>
     <string name="allow">Sta toe</string>
     <string name="attachment_image">Bijlage afbeelding</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Foto\'s</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Bestanden</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Bekijk alle</string>
+    <string name="attachment_menu_search_placeholder">Zoeken</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Probeer opnieuw</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limiet bereikt voor deze ruimte. Upgrade alsjeblieft je lidmaatschap of neem contact op met ondersteuning voor hulp.</string>
     <string name="share_space_error_not_shareable">Het lijkt erop dat de ruimte niet meer wordt gedeeld. Zorg er alsjeblieft voor dat je apparaten zijn gesynchroniseerd.</string>
@@ -2043,7 +2068,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="web_publishing_copy_web_link">Kopieer webkoppeling</string>
     <string name="widgets_section_pinned">Vastgezet</string>
     <string name="widgets_section_unread">Ongelezen</string>
-    <string name="widgets_section_object_types">Objecttypes</string>
+    <string name="widgets_section_object_types">Objecten</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>
     <string name="widget_unpin_alert_description">We hebben opnieuw ontworpen hoe widgets werken, en deze widget wordt niet langer ondersteund. Eenmaal verwijderd kan deze widget niet worden hersteld.</string>

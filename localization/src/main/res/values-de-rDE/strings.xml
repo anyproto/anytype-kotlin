@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Fehler beim Aktualisieren des Hintergrundbildes. Bitte erneut versuchen.</string>
     <string name="space_settings_error_name">Fehler beim Aktualisieren des Space-Namens. Bitte erneut versuchen.</string>
     <string name="space_settings_error_icon">Fehler beim Aktualisieren des Space-Symbols. Bitte erneut versuchen.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Ungelesen</string>
+    <string name="section_pinned">Angeheftet</string>
+    <string name="section_objects">Objekte</string>
+    <string name="section_recently_edited">Zuletzt bearbeitet</string>
+    <string name="section_bin">Papierkorb</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Dateiverwaltung</string>
     <string name="deleted_account_danger_zone_msg">Sobald die Löschung deines Tresors angefordert wurde, hast du 30 Tage um diese Anfrage zu widerrufen. Nach 30 Tagen werden deine verschlüsselten Tresor-Daten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="danger_zone">Gefahrenbereich</string>
@@ -1270,6 +1277,12 @@
     <string name="multiplayer_request_access">Zugriff anfragen</string>
     <string name="multiplayer_request_access_desc">Eigentümer muss jede Beitrittsanfrage genehmigen</string>
     <string name="multiplayer_qr_code">QR-Code</string>
+    <string name="multiplayer_mute">Stummschalten</string>
+    <string name="multiplayer_unmute">Stummschaltung aufheben</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Einladungslink-Zugriff ändern?</string>
     <string name="multiplayer_link_will_be_invalidated">Der aktuelle Link wird nicht mehr funktionieren.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Durch Ausschalten von Teilen oder Wechseln zu manueller Genehmigung wird der bestehende Link deaktiviert. Ein neuer wird bei Reaktivierung generiert. </string>
@@ -2014,6 +2027,18 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="open_settings">Einstellungen öffnen</string>
     <string name="allow">Zulassen</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Fotos</string>
+    <string name="attachment_menu_camera">Kamera</string>
+    <string name="attachment_menu_files">Dateien</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Alles ansehen</string>
+    <string name="attachment_menu_search_placeholder">Suchen</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Erneut versuchen</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limit für diesen Space erreicht. Bitte erweitere deine Mitgliedschaft oder kontaktiere den Support für Hilfe.</string>
     <string name="share_space_error_not_shareable">Es sieht so aus, als ob der Space nicht mehr geteilt ist. Bitte stellen Sie sicher, dass Ihre Geräte synchronisiert sind.</string>
@@ -2043,7 +2068,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="web_publishing_copy_web_link">Weblink kopieren</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
-    <string name="widgets_section_object_types">Objekttypen</string>
+    <string name="widgets_section_object_types">Objekte</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>
     <string name="widget_unpin_alert_description">Wir haben die Funktionsweise von Widgets überarbeitet, sodass dieses Widget nicht mehr unterstützt wird. Nach dem Löschen kann dieses Widget nicht wiederhergestellt werden.</string>

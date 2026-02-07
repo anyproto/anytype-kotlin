@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Unread</string>
+    <string name="section_pinned">Pinned</string>
+    <string name="section_objects">Об\'єкти</string>
+    <string name="section_recently_edited">Нещодавно відредаговані</string>
+    <string name="section_bin">Кошик</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Data management</string>
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
@@ -1278,6 +1285,12 @@
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_mute">Mute</string>
+    <string name="multiplayer_unmute">Unmute</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
@@ -2040,6 +2053,18 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">Files</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">Пошук</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Retry</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Досягнута межа для цього простору. Будь ласка, оновіть ваш членство або зверніться до служби підтримки за допомогою.</string>
     <string name="share_space_error_not_shareable">Схоже, що простір більше не спільний. Переконайтеся, що ваші пристрої синхронізовані.</string>
@@ -2069,7 +2094,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">Pinned</string>
     <string name="widgets_section_unread">Unread</string>
-    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_section_object_types">Об\'єкти</string>
     <string name="widgets_menu_new_object_type">Новий</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>

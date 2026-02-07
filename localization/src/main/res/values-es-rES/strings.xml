@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">No se ha podido actualizar el fondo de pantalla. Inténtalo de nuevo.</string>
     <string name="space_settings_error_name">No se ha podido actualizar el nombre del espacio. Inténtalo de nuevo.</string>
     <string name="space_settings_error_icon">No se ha podido actualizar el icono del espacio. Inténtalo de nuevo.</string>
+    <string name="manage_sections_title">Gestionar secciones</string>
+    <string name="section_unread">No leído</string>
+    <string name="section_pinned">Anclado</string>
+    <string name="section_objects">Objetos</string>
+    <string name="section_recently_edited">Editado recientemente</string>
+    <string name="section_bin">Papelera</string>
+    <string name="error_loading_sections">Error al cargar las secciones</string>
     <string name="data_management">Gestión de datos</string>
     <string name="deleted_account_danger_zone_msg">Una vez solicitada la eliminación de tu arca, tendrás 30 días para cancelar la solicitud. Pasados 30 días, los datos cifrados de tu arca se eliminarán definitivamente del nodo de respaldo y no podrás iniciar sesión en Anytype desde dispositivos nuevos.</string>
     <string name="danger_zone">¡Zona peligrosa!</string>
@@ -843,8 +850,8 @@
     <string name="exiting_please_wait">Saliendo. Espera, por favor…</string>
     <string name="loading_please_wait">Cargando. Espera, por favor…</string>
     <string name="embed_content_not_available">Incrustación de %1$s. Este contenido no está disponible en el móvil</string>
-    <string name="embed_is_empty">%1$s embed is empty</string>
-    <string name="embed_opens_externally">%1$s embed. Opens in external app or browser</string>
+    <string name="embed_is_empty">La incrustación de %1$s está vacía.</string>
+    <string name="embed_opens_externally">Incrustación de %1$s. Se abre en una aplicación externa o en el navegador.</string>
     <string name="open">Abrir</string>
     <string name="personal">Por defecto</string>
     <string name="create_space">Crear espacio</string>
@@ -1270,6 +1277,12 @@
     <string name="multiplayer_request_access">Solicitar acceso</string>
     <string name="multiplayer_request_access_desc">El propietario debe aprobar cada solicitud de incorporación.</string>
     <string name="multiplayer_qr_code">Código QR</string>
+    <string name="multiplayer_mute">Silenciar</string>
+    <string name="multiplayer_unmute">No silenciar</string>
+    <string name="multiplayer_space_muted">Espacio silenciado</string>
+    <string name="multiplayer_space_unmuted">Espacio desilenciado</string>
+    <string name="multiplayer_unable_to_change_notification_settings">No se puede cambiar la configuración de las notificaciones</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Error al cambiar la configuración de las notificaciones</string>
     <string name="multiplayer_change_access_title">¿Cambiar tipo de acceso del enlace de invitación?</string>
     <string name="multiplayer_link_will_be_invalidated">El enlace actual dejará de funcionar.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Si dejas de compartir el espacio o cambias a aprobación manual, el enlace actual se desactivará. Si vuelves a compartir el espacio, se creará un enlace nuevo.</string>
@@ -2014,6 +2027,18 @@ En concreto,
     <string name="open_settings">Abrir ajustes</string>
     <string name="allow">Permitir</string>
     <string name="attachment_image">Imagen adjunta</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Fotos</string>
+    <string name="attachment_menu_camera">Cámara</string>
+    <string name="attachment_menu_files">Archivos</string>
+    <string name="attachment_menu_attach_object">Adjuntar objeto</string>
+    <string name="attachment_menu_see_all">Ver todo</string>
+    <string name="attachment_menu_search_placeholder">Buscar</string>
+    <string name="create_object_empty_state">No hay tipos de objeto disponibles</string>
+    <string name="create_object_no_results">No se encuentra ningún tipo</string>
+    <string name="create_object_search_types">Buscar tipos de objeto</string>
+    <string name="create_object_error">Error al cargar los tipos de objeto</string>
+    <string name="create_object_retry">Reintentar</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Has alcanzado el límite de este espacio. Amplía tu suscripción o ponte en contacto con el soporte técnico.</string>
     <string name="share_space_error_not_shareable">Parece que este espacio ya no está compartido. Asegúrate de que tus dispositivos están sincronizados.</string>
@@ -2042,7 +2067,7 @@ En concreto,
     <string name="web_publishing_copy_web_link">Copiar enlace web</string>
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
-    <string name="widgets_section_object_types">Tipos de objeto</string>
+    <string name="widgets_section_object_types">Objetos</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>
     <string name="widget_unpin_alert_description">Hemos rediseñado el funcionamiento de los widgets y este widget ya no es compatible. Una vez desanclado, este widget no se puede restaurar.</string>

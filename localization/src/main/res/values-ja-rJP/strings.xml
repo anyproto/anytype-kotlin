@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">未読</string>
+    <string name="section_pinned">ピン留め</string>
+    <string name="section_objects">オブジェクト</string>
+    <string name="section_recently_edited">最近編集された</string>
+    <string name="section_bin">ゴミ箱</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">データ管理</string>
     <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
@@ -1266,6 +1273,12 @@
     <string name="multiplayer_request_access">参加リクエスト</string>
     <string name="multiplayer_request_access_desc">スペース所有者が参加リクエストを受け取り、承認する必要があります</string>
     <string name="multiplayer_qr_code">QRコード</string>
+    <string name="multiplayer_mute">ミュート</string>
+    <string name="multiplayer_unmute">ミュート解除</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
@@ -2002,6 +2015,18 @@
     <string name="open_settings">設定を開く</string>
     <string name="allow">許可</string>
     <string name="attachment_image">添付画像</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">画像</string>
+    <string name="attachment_menu_camera">カメラ</string>
+    <string name="attachment_menu_files">ファイル</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">検索</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">再試行</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">このスペースの上限に達しました。メンバーシップをアップグレードするか、担当者にお問い合わせください。</string>
     <string name="share_space_error_not_shareable">スペース共有が停止されたようです。デバイスの同期状況をご確認ください。</string>
@@ -2031,7 +2056,7 @@
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">ピン留め</string>
     <string name="widgets_section_unread">未読</string>
-    <string name="widgets_section_object_types">タイプ</string>
+    <string name="widgets_section_object_types">オブジェクト</string>
     <string name="widgets_menu_new_object_type">新規</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>

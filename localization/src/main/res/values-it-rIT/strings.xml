@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Impossibile aggiornare lo sfondo. Riprova.</string>
     <string name="space_settings_error_name">Impossibile aggiornare il nome dello spazio. Riprova.</string>
     <string name="space_settings_error_icon">Impossibile aggiornare l\'icona dello spazio. Riprova.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Non letto</string>
+    <string name="section_pinned">Fissato</string>
+    <string name="section_objects">Oggetti</string>
+    <string name="section_recently_edited">Modificati di recente</string>
+    <string name="section_bin">Cestino</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">Gestione dati</string>
     <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
@@ -1271,6 +1278,12 @@
     <string name="multiplayer_request_access">Richiesta di accesso</string>
     <string name="multiplayer_request_access_desc">Il proprietario deve approvare ogni richiesta di adesione</string>
     <string name="multiplayer_qr_code">Codice QR</string>
+    <string name="multiplayer_mute">Silenzia</string>
+    <string name="multiplayer_unmute">Riattiva</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Modificare l\'accesso al link di invito?</string>
     <string name="multiplayer_link_will_be_invalidated">Il link attuale smetterà di funzionare.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Se si disattiva la condivisione o si passa all\'approvazione manuale, il link esistente viene disattivato. Se lo si riattiva, ne verrà creato uno nuovo.</string>
@@ -2015,6 +2028,18 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Apri Impostazioni</string>
     <string name="allow">Allow</string>
     <string name="attachment_image">Immagine allegata</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Foto</string>
+    <string name="attachment_menu_camera">Fotocamera</string>
+    <string name="attachment_menu_files">File</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">Mostra tutto</string>
+    <string name="attachment_menu_search_placeholder">Cerca</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">Retry</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Limite raggiunto per questo spazio. Aggiorna il tuo abbonamento o contatta il supporto per assistenza.</string>
     <string name="share_space_error_not_shareable">Sembra che lo spazio non sia più condiviso. Assicurati che i tuoi dispositivi siano sincronizzati.</string>
@@ -2044,7 +2069,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_copy_web_link">Copia Collegamento Web</string>
     <string name="widgets_section_pinned">Fissato</string>
     <string name="widgets_section_unread">Non letto</string>
-    <string name="widgets_section_object_types">Tipi di oggetto</string>
+    <string name="widgets_section_object_types">Oggetti</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
     <string name="widgets_menu_delete_object_type">Elimina Tipo Oggetto</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>

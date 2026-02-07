@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Failed to update wallpaper. Please try again.</string>
     <string name="space_settings_error_name">Failed to update space name. Please try again.</string>
     <string name="space_settings_error_icon">Failed to update space icon. Please try again.</string>
+    <string name="manage_sections_title">Manage sections</string>
+    <string name="section_unread">Unread</string>
+    <string name="section_pinned">已釘選</string>
+    <string name="section_objects">物件</string>
+    <string name="section_recently_edited">最近編輯</string>
+    <string name="section_bin">垃圾桶</string>
+    <string name="error_loading_sections">Error loading sections</string>
     <string name="data_management">資料管理</string>
     <string name="deleted_account_danger_zone_msg">一旦您請求刪除您的筆記庫，您有 30 天的時間取消此請求。 30 天後，您的加密筆記庫資料將從備份節點永久刪除，您將無法在新裝置上登入 Anytype。</string>
     <string name="danger_zone">危險區域</string>
@@ -1266,6 +1273,12 @@
     <string name="multiplayer_request_access">Request access</string>
     <string name="multiplayer_request_access_desc">Owner must approve each join request</string>
     <string name="multiplayer_qr_code">QR Code</string>
+    <string name="multiplayer_mute">Mute</string>
+    <string name="multiplayer_unmute">Unmute</string>
+    <string name="multiplayer_space_muted">Space muted</string>
+    <string name="multiplayer_space_unmuted">Space unmuted</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Unable to change notification settings</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Failed to change notification settings</string>
     <string name="multiplayer_change_access_title">Change invite link access?</string>
     <string name="multiplayer_link_will_be_invalidated">The current link will stop working.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">If you turn off sharing or switch to manual approval, your existing link will be deactivated. A new one will be created if you re-enable it.</string>
@@ -2001,6 +2014,18 @@ Please provide specific details of your needs here.</string>
     <string name="open_settings">Open Settings</string>
     <string name="allow">允許</string>
     <string name="attachment_image">Attachment image</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Photos</string>
+    <string name="attachment_menu_camera">Camera</string>
+    <string name="attachment_menu_files">檔案</string>
+    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_see_all">See all</string>
+    <string name="attachment_menu_search_placeholder">搜尋</string>
+    <string name="create_object_empty_state">No object types available</string>
+    <string name="create_object_no_results">No types found</string>
+    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_retry">重試</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">此空間容量已達上限。請升級您的會員資格或聯繫支援部門尋求協助。</string>
     <string name="share_space_error_not_shareable">此空間似乎已不再共享。請確保您的裝置已同步。</string>
@@ -2030,7 +2055,7 @@ Please provide specific details of your needs here.</string>
     <string name="web_publishing_copy_web_link">Copy Web Link</string>
     <string name="widgets_section_pinned">已釘選</string>
     <string name="widgets_section_unread">Unread</string>
-    <string name="widgets_section_object_types">Object types</string>
+    <string name="widgets_section_object_types">物件</string>
     <string name="widgets_menu_new_object_type">新增</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>

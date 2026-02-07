@@ -72,6 +72,13 @@
     <string name="space_settings_error_wallpaper">Duvar kağıdı yüklenemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_name">Alan adı değiştirilemedi. Lütfen tekrar deneyin.</string>
     <string name="space_settings_error_icon">Alan simgesi değiştirilemedi. Lütfen tekrar deneyin.</string>
+    <string name="manage_sections_title">Bölümleri yönet</string>
+    <string name="section_unread">Okunmamış</string>
+    <string name="section_pinned">Sabitlendi</string>
+    <string name="section_objects">Nesneler</string>
+    <string name="section_recently_edited">Yakın zamanda düzenlenen</string>
+    <string name="section_bin">Çöp kutusu</string>
+    <string name="error_loading_sections">Bölümler yüklenirken hata oluştu</string>
     <string name="data_management">Veri yönetimi</string>
     <string name="deleted_account_danger_zone_msg">Kasanın silinmesini talep edersen bu talebi iptal etmek için 30 günün olacaktır. 30 gün sonra şifrelenmiş kasa verilerin yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsın.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
@@ -1270,6 +1277,12 @@
     <string name="multiplayer_request_access">Erişim talebi</string>
     <string name="multiplayer_request_access_desc">Sohbet sahibinin her bir katılım talebini onaylaması gerekir.</string>
     <string name="multiplayer_qr_code">Karekod</string>
+    <string name="multiplayer_mute">Sessize al</string>
+    <string name="multiplayer_unmute">Sesi aç</string>
+    <string name="multiplayer_space_muted">Alan susturuldu</string>
+    <string name="multiplayer_space_unmuted">Alanın sesi açıldı</string>
+    <string name="multiplayer_unable_to_change_notification_settings">Bildirim ayarları değiştirilemiyor</string>
+    <string name="multiplayer_failed_to_change_notification_settings">Bildirim ayarları değiştirilemedi</string>
     <string name="multiplayer_change_access_title">Davet bağlantısı erişimini değiştirmek mi istiyorsunuz?</string>
     <string name="multiplayer_link_will_be_invalidated">Mevcut bağlantı çalışmayı durduracak.</string>
     <string name="multiplayer_link_will_be_invalidated_desc">Paylaşımı kapatırsanız veya manuel onaylamaya geçerseniz mevcut bağlantınız devre dışı bırakılır. Yeniden etkinleştirirseniz yeni bir bağlantı oluşturulur.</string>
@@ -2014,6 +2027,18 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="open_settings">Ayarlar\'ı Aç</string>
     <string name="allow">İzin ver</string>
     <string name="attachment_image">Ekli görüntü</string>
+    <!-- Attachment Menu (DROID-4201) -->
+    <string name="attachment_menu_photos">Fotoğraflar</string>
+    <string name="attachment_menu_camera">Kamera</string>
+    <string name="attachment_menu_files">Dosyalar</string>
+    <string name="attachment_menu_attach_object">Nesne ekle</string>
+    <string name="attachment_menu_see_all">Tümünü gör</string>
+    <string name="attachment_menu_search_placeholder">Ara</string>
+    <string name="create_object_empty_state">Kullanılabilir nesne türü yok</string>
+    <string name="create_object_no_results">Tür bulunamadı</string>
+    <string name="create_object_search_types">Nesne türlerini ara</string>
+    <string name="create_object_error">Nesne türleri yüklenemedi</string>
+    <string name="create_object_retry">Tekrar dene</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Bu alan için sınıra ulaşıldı. Lütfen üyeliğinizi yükseltin veya yardım için destek ekibiyle iletişime geçin.</string>
     <string name="share_space_error_not_shareable">Alan artık paylaşılmıyor gibi görünüyor. Lütfen cihazlarınızın senkronize olduğundan emin olun.</string>
@@ -2043,7 +2068,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="web_publishing_copy_web_link">Web Bağlantısını Kopyala</string>
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
-    <string name="widgets_section_object_types">Nesne türleri</string>
+    <string name="widgets_section_object_types">Nesneler</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
     <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>

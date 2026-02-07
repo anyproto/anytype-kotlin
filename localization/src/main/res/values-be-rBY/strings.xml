@@ -2095,6 +2095,7 @@
     <string name="widgets_section_pinned">Замацавана</string>
     <string name="widgets_section_unread">Unread</string>
     <string name="widgets_section_object_types">Аб\'екты</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новы</string>
     <string name="widgets_menu_delete_object_type">Delete Object Type</string>
     <string name="widget_unpin_alert_description">We\'ve redesigned how widgets work, and this widget is no longer supported. Once unpinned, this widget cannot be restored.</string>

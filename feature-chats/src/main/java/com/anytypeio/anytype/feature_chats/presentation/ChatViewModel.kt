@@ -839,7 +839,8 @@ class ChatViewModel @Inject constructor(
                                         Block.Content.File.Type.VIDEO
                                     else
                                         Block.Content.File.Type.IMAGE,
-                                    preloadFileId = preloadedFileId
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
                                 if (wasCopiedToCache) {
@@ -894,7 +895,8 @@ class ChatViewModel @Inject constructor(
                             createObjectFromUrl.async(
                                 params = CreateObjectFromUrl.Params(
                                     url = attachment.preview.url,
-                                    space = vmParams.space
+                                    space = vmParams.space,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { obj ->
                                 if (obj.isValid) {
@@ -945,7 +947,8 @@ class ChatViewModel @Inject constructor(
                                     space = vmParams.space,
                                     path = path,
                                     type = Block.Content.File.Type.NONE,
-                                    preloadFileId = preloadedFileId
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
                                 copyFileToCacheDirectory.delete(path)
@@ -1866,7 +1869,9 @@ class ChatViewModel @Inject constructor(
                         UploadFile.Params(
                             path = icon.uri,
                             space = vmParams.space,
-                            type = Block.Content.File.Type.IMAGE
+                            type = Block.Content.File.Type.IMAGE,
+                            createdInContext = vmParams.ctx,
+                            createdInContextRef = Relations.ICON_IMAGE
                         )
                     ).onSuccess { file ->
                         setObjectDetails.async(

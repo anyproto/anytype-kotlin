@@ -1203,8 +1203,8 @@ class BlockDataRepository(
 
     override suspend fun getLinkPreview(url: Url): LinkPreview = remote.getLinkPreview(url)
 
-    override suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic = 
-        remote.createObjectFromUrl(space = space, url = url)
+    override suspend fun createObjectFromUrl(space: SpaceId, url: Url, createdInContext: Id?): ObjectWrapper.Basic =
+        remote.createObjectFromUrl(space = space, url = url, createdInContext = createdInContext)
 
     override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState) {
         remote.setSpaceNotificationMode(spaceViewId = spaceViewId, mode = mode)

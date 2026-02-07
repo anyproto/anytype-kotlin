@@ -2,8 +2,8 @@ syntax = "proto3";
 package anytype;
 option go_package = "pb";
 
-import "models.proto";
-import "events.proto";
+import "pkg/lib/pb/model/protos/models.proto";
+import "pb/protos/events.proto";
 import "google/protobuf/struct.proto";
 
 // the element of change tree used to store and internal apply smartBlock history

@@ -1,0 +1,28 @@
+syntax = "proto3";
+package anytype;
+option go_package = "pb";
+
+import "pkg/lib/pb/model/protos/models.proto";
+import "pb/protos/changes.proto";
+
+message SnapshotWithType {
+  anytype.model.SmartBlockType sbType = 1;
+  anytype.Change.Snapshot snapshot = 2;
+}
+
+message Profile {
+  string name = 1;
+  string avatar = 2;
+  string address = 4;
+  string spaceDashboardId = 5;
+  string profileId = 6;
+  string analyticsId = 7;
+  string startingPage = 8; // deprecated
+  repeated WidgetBlock widgets = 9;
+}
+
+message WidgetBlock {
+  model.Block.Content.Widget.Layout layout = 1;
+  string targetObjectId = 2;
+  int32 objectLimit = 3;
+}

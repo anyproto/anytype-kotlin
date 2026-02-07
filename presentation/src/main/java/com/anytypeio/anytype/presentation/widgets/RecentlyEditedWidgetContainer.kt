@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.emptyFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onCompletion
 import kotlinx.coroutines.flow.onStart
 import kotlinx.coroutines.flow.take
 import timber.log.Timber
@@ -88,6 +89,9 @@ class RecentlyEditedWidgetContainer(
 
         return storage.subscribe(params)
             .map { objects -> buildWidgetView(objects) }
+            .onCompletion {
+                storage.unsubscribe(listOf(SUBSCRIPTION_ID))
+            }
             .catch { e ->
                 Timber.e(e, "Error subscribing to recently edited objects")
                 emit(createEmptyView(isCollapsed = false))

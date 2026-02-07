@@ -2097,6 +2097,7 @@
     <string name="widgets_section_pinned">Закреплённые</string>
     <string name="widgets_section_unread">Непрочитанные</string>
     <string name="widgets_section_object_types">Объекты</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Новый</string>
     <string name="widgets_menu_delete_object_type">Удалить тип объекта</string>
     <string name="widget_unpin_alert_description">Мы изменили работу виджетов и этот виджет больше не поддерживается. После удаления этот виджет не может быть восстановлен.</string>

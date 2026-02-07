@@ -2069,6 +2069,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="widgets_section_pinned">Vastgezet</string>
     <string name="widgets_section_unread">Ongelezen</string>
     <string name="widgets_section_object_types">Objecten</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Nieuw</string>
     <string name="widgets_menu_delete_object_type">Verwijder objecttype</string>
     <string name="widget_unpin_alert_description">We hebben opnieuw ontworpen hoe widgets werken, en deze widget wordt niet langer ondersteund. Eenmaal verwijderd kan deze widget niet worden hersteld.</string>

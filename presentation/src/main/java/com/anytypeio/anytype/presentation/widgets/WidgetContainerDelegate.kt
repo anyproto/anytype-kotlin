@@ -85,6 +85,7 @@ class WidgetContainerDelegateImpl(
         return when (widget) {
             is Widget.Chat -> createChatContainer(widget)
             is Widget.UnreadChatList -> createUnreadChatListContainer(widget, currentlyDisplayedViews)
+            is Widget.RecentlyEdited -> createRecentlyEditedContainer(widget, currentlyDisplayedViews)
             is Widget.Link -> createLinkContainer(widget)
             is Widget.Tree -> createTreeContainer(widget, currentlyDisplayedViews)
             is Widget.List -> createListContainer(widget, currentlyDisplayedViews)
@@ -379,6 +380,34 @@ class WidgetContainerDelegateImpl(
 
     private fun createBinContainer(widget: Widget.Bin): WidgetContainer {
         return BinWidgetContainer(widget = widget)
+    }
+
+    private fun createRecentlyEditedContainer(
+        widget: Widget.RecentlyEdited,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return RecentlyEditedWidgetContainer(
+            widget = widget,
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            isWidgetCollapsed = combine(
+                expandedWidgetIds,
+                userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+            ) { expanded, collapsedSecs ->
+                isWidgetCollapsed(widget, expanded, collapsedSecs)
+            },
+            getSpaceView = getSpaceView,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            isSessionActive = isSessionActive,
+            onRequestCache = {
+                currentlyDisplayedViews.find { view ->
+                    view.id == widget.id
+                            && view is WidgetView.RecentlyEdited
+                            && view.source == widget.source
+                } as? WidgetView.RecentlyEdited
+            }
+        )
     }
 
     private fun createObjectTypesGroupContainer(

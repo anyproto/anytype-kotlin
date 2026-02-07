@@ -33,8 +33,10 @@ import com.anytypeio.anytype.presentation.widgets.SectionType
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
@@ -61,6 +63,7 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
+    val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
     val sectionConfig = viewModel.widgetSections.collectAsState().value
 
@@ -124,6 +127,36 @@ fun WidgetsScreen(
     // Show header if: has items OR is collapsed OR was previously shown
     val shouldShowUnreadSection = unreadWidgetView != null && 
         (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
+
+    // Recently Edited section visibility logic
+    val recentlyEditedView = recentlyEditedWidget as? WidgetView.RecentlyEdited
+    val isRecentlyEditedSectionCollapsed = collapsedSections.contains(SECTION_RECENTLY_EDITED)
+    
+    // Track previous collapse state for recently edited section
+    val wasRecentlyEditedCollapsed = remember { mutableStateOf(isRecentlyEditedSectionCollapsed) }
+    val hadRecentlyEditedItems = remember { mutableStateOf(recentlyEditedView?.elements?.isNotEmpty() == true) }
+    
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isRecentlyEditedSectionCollapsed && wasRecentlyEditedCollapsed.value) {
+        hadRecentlyEditedItems.value = true
+    }
+    
+    // Update previous state
+    wasRecentlyEditedCollapsed.value = isRecentlyEditedSectionCollapsed
+    
+    // Set flag when items are present
+    if (recentlyEditedView?.elements?.isNotEmpty() == true) {
+        hadRecentlyEditedItems.value = true
+    }
+    
+    // Reset flag when section is collapsed and has no items
+    if (isRecentlyEditedSectionCollapsed && recentlyEditedView?.elements?.isEmpty() == true) {
+        hadRecentlyEditedItems.value = false
+    }
+    
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowRecentlyEditedSection = recentlyEditedView != null && 
+        (recentlyEditedView.elements.isNotEmpty() || isRecentlyEditedSectionCollapsed || hadRecentlyEditedItems.value)
 
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
@@ -327,6 +360,41 @@ fun WidgetsScreen(
                             }
                         }
                     )
+                }
+            }
+
+            // Recently Edited section - shown between Objects and Bin when section is visible
+            if (shouldShowRecentlyEditedSection && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
+                item {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = SECTION_RECENTLY_EDITED,
+                    ) {
+                        RecentlyEditedSectionHeader(
+                            onSectionClicked = viewModel::onSectionRecentlyEditedClicked
+                        )
+                    }
+                }
+            }
+            
+            // Recently Edited widgets - only render when section is expanded and widget exists and section is visible
+            if (shouldShowRecentlyEditedSection && !isRecentlyEditedSectionCollapsed && recentlyEditedView != null && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
+                item(key = "recently_edited_widget_content") {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = "recently_edited_widget_content",
+                    ) {
+                        RecentlyEditedWidget(
+                            item = recentlyEditedView,
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
+                                viewModel.onWidgetElementClicked(recentlyEditedView.id, obj)
+                            },
+                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                        )
+                    }
                 }
             }
 

@@ -141,6 +141,19 @@ sealed class Widget {
     ) : Widget()
 
     /**
+     * Recently edited widget displaying objects sorted by last modified date.
+     * Visibility controlled by WidgetSectionType.RECENTLY_EDITED.
+     */
+    data class RecentlyEdited(
+        override val id: Id,
+        override val source: Source.Bundled.Recent,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.RECENTLY_EDITED
+    ) : Widget()
+
+    /**
      * Grouped widget containing all object types.
      * Replaces individual type widgets for better performance and visual consistency.
      * The actual types data will be fetched by ObjectTypesGroupWidgetContainer.
@@ -211,9 +224,11 @@ sealed class Widget {
 
         companion object {
             const val WIDGET_BIN_ID = "widget_bin_id"
+            const val WIDGET_RECENTLY_EDITED_ID = "widget_recently_edited_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
+            const val SECTION_RECENTLY_EDITED = "recently_edited_section"
             const val OBJECT_TYPES_GROUP_ID = "object_types_group"
             const val SOURCE_OTHER = "source_other"
 
@@ -428,12 +443,14 @@ data class WidgetUiParams(
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
  * @property unreadWidget The unread chat list widget, displayed separately at the top
+ * @property recentlyEditedWidget The recently edited widget, displayed after objects section
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
     val unreadWidget: Widget.UnreadChatList? = null,
+    val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
 )
 
@@ -492,10 +509,18 @@ suspend fun buildWidgetSections(
         null
     }
 
+    // Build recently edited widget only if visible
+    val recentlyEditedWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
+        buildRecentlyEditedWidget(state = state)
+    } else {
+        null
+    }
+
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
         unreadWidget = unreadWidget,
+        recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
     )
 }
@@ -605,6 +630,20 @@ private fun buildBinWidget(
     } else {
         null
     }
+}
+
+/**
+ * Builds the recently edited widget displaying objects sorted by last modified date.
+ */
+private fun buildRecentlyEditedWidget(
+    state: ObjectViewState.Success
+): Widget.RecentlyEdited {
+    return Widget.RecentlyEdited(
+        id = Widget.Source.WIDGET_RECENTLY_EDITED_ID,
+        source = Widget.Source.Bundled.Recent,
+        config = state.config,
+        icon = ObjectIcon.None
+    )
 }
 
 internal suspend fun mapSpaceTypesToWidgets(

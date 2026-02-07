@@ -301,6 +301,9 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     is WidgetView.ObjectTypesGroup -> {
                         // Object types group has no menu - interactions are per-row
                     }
+                    is WidgetView.RecentlyEdited -> {
+                        // Recently edited has no menu
+                    }
                 }
             }
         }

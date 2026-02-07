@@ -30,15 +30,19 @@ import com.anytypeio.anytype.core_ui.foundation.components.BottomNavigationMenu
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.SectionType
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.OBJECT_TYPES_GROUP_ID
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_BIN_ID
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.WIDGET_RECENTLY_EDITED_ID
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.presentation.widgets.extractWidgetId
 import com.anytypeio.anytype.ui.widgets.types.AddWidgetButton
 import com.anytypeio.anytype.ui.widgets.types.BinWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetElement
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyListState
@@ -59,10 +63,40 @@ fun WidgetsScreen(
     val typeWidgets = viewModel.typeViews.collectAsState().value
     val unreadWidget = viewModel.unreadView.collectAsState().value
     val binWidget = viewModel.binView.collectAsState().value
+    val recentlyEditedWidget = viewModel.recentlyEditedView.collectAsState().value
     val collapsedSections = viewModel.collapsedSections.collectAsState().value
+    val sectionConfig = viewModel.widgetSections.collectAsState().value
 
     val pinnedUi = remember(pinnedWidgets) { pinnedWidgets.toMutableStateList() }
-    val typesUi = remember(typeWidgets) { typeWidgets.toMutableStateList() }
+    
+    // Extract type rows from the ObjectTypesGroup widget for drag-and-drop management
+    val objectTypesGroupWidget = (typeWidgets.firstOrNull() as? WidgetView.ObjectTypesGroup)
+    val typeRowsFromVm = objectTypesGroupWidget?.typeRows ?: emptyList()
+    
+    // Pending order tracks local drag state until ViewModel catches up
+    val pendingTypeRowOrder = remember { mutableStateOf<List<String>?>(null) }
+    
+    // Compute actual display list: use pending order if set, otherwise ViewModel order
+    val typeRowsUi = remember(typeRowsFromVm, pendingTypeRowOrder.value) {
+        val pending = pendingTypeRowOrder.value
+        if (pending != null) {
+            // Reorder based on pending order
+            pending.mapNotNull { id -> typeRowsFromVm.find { it.id == id } }.toMutableStateList()
+        } else {
+            typeRowsFromVm.toMutableStateList()
+        }
+    }
+    
+    // Clear pending order when ViewModel catches up (has same order)
+    LaunchedEffect(typeRowsFromVm) {
+        val pending = pendingTypeRowOrder.value
+        if (pending != null) {
+            val vmOrder = typeRowsFromVm.map { it.id }
+            if (vmOrder == pending) {
+                pendingTypeRowOrder.value = null
+            }
+        }
+    }
     
     // Unread section visibility logic
     val unreadWidgetView = unreadWidget as? WidgetView.UnreadChatList
@@ -93,6 +127,36 @@ fun WidgetsScreen(
     // Show header if: has items OR is collapsed OR was previously shown
     val shouldShowUnreadSection = unreadWidgetView != null && 
         (unreadWidgetView.elements.isNotEmpty() || isUnreadSectionCollapsed || hadUnreadItems.value)
+
+    // Recently Edited section visibility logic
+    val recentlyEditedView = recentlyEditedWidget as? WidgetView.RecentlyEdited
+    val isRecentlyEditedSectionCollapsed = collapsedSections.contains(SECTION_RECENTLY_EDITED)
+    
+    // Track previous collapse state for recently edited section
+    val wasRecentlyEditedCollapsed = remember { mutableStateOf(isRecentlyEditedSectionCollapsed) }
+    val hadRecentlyEditedItems = remember { mutableStateOf(recentlyEditedView?.elements?.isNotEmpty() == true) }
+    
+    // When section becomes expanded, keep the flag true to prevent flicker
+    if (!isRecentlyEditedSectionCollapsed && wasRecentlyEditedCollapsed.value) {
+        hadRecentlyEditedItems.value = true
+    }
+    
+    // Update previous state
+    wasRecentlyEditedCollapsed.value = isRecentlyEditedSectionCollapsed
+    
+    // Set flag when items are present
+    if (recentlyEditedView?.elements?.isNotEmpty() == true) {
+        hadRecentlyEditedItems.value = true
+    }
+    
+    // Reset flag when section is collapsed and has no items
+    if (isRecentlyEditedSectionCollapsed && recentlyEditedView?.elements?.isEmpty() == true) {
+        hadRecentlyEditedItems.value = false
+    }
+    
+    // Show header if: has items OR is collapsed OR was previously shown
+    val shouldShowRecentlyEditedSection = recentlyEditedView != null && 
+        (recentlyEditedView.elements.isNotEmpty() || isRecentlyEditedSectionCollapsed || hadRecentlyEditedItems.value)
 
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
@@ -149,15 +213,8 @@ fun WidgetsScreen(
                     }
                 }
                 SectionType.TYPES -> {
-                    isDraggingTypes.value = true
-                    val f = typesUi.indexOfFirst { it.id == fromId }
-                    val t = typesUi.indexOfFirst { it.id == toId }
-                    if (f != -1 && t != -1 && f != t) {
-                        val item = typesUi.removeAt(f)
-                        typesUi.add(t, item)
-                        viewModel.onTypeWidgetOrderChanged(fromId, toId)
-                        hapticFeedback.performHapticFeedback(ReorderHapticFeedbackType.MOVE)
-                    }
+                    // Type rows are now handled by ReorderableColumn inside ObjectTypesGroupWidgetCard
+                    // This branch is kept for backward compatibility but should not be triggered
                 }
                 else -> Unit
             }
@@ -187,8 +244,8 @@ fun WidgetsScreen(
             modifier = Modifier.fillMaxSize()
         ) {
 
-            // Unread section - shown at top when there are unread chats
-            if (shouldShowUnreadSection) {
+            // Unread section - shown at top when there are unread chats and section is visible
+            if (shouldShowUnreadSection && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
                 item {
                     ReorderableItem(
                         enabled = false,
@@ -202,8 +259,8 @@ fun WidgetsScreen(
                 }
             }
             
-            // Unread widgets - only render when section is expanded and widget exists
-            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null) {
+            // Unread widgets - only render when section is expanded and widget exists and section is visible
+            if (shouldShowUnreadSection && !isUnreadSectionCollapsed && unreadWidgetView != null && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
                 item(key = "unread_widget_content") {
                     ReorderableItem(
                         enabled = false,
@@ -222,8 +279,8 @@ fun WidgetsScreen(
                 }
             }
 
-            // Only show pinned section header if there are items or section is collapsed
-            if (shouldShowPinnedHeader) {
+            // Only show pinned section header if there are items or section is collapsed and section is visible
+            if (shouldShowPinnedHeader && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
                 item {
                     ReorderableItem(
                         enabled = false,
@@ -236,9 +293,10 @@ fun WidgetsScreen(
                     }
                 }
             }
-            // Pinned widgets section
-            renderWidgetSection(
-                widgets = pinnedUi,
+            // Pinned widgets section - only render if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
+                renderWidgetSection(
+                    widgets = pinnedUi,
                 reorderableState = reorderableState,
                 view = view,
                 mode = mode,
@@ -254,11 +312,14 @@ fun WidgetsScreen(
                 onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
                 onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
                 onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                onCreateElement = viewModel::onCreateWidgetElementClicked,
-                onCreateWidget = viewModel::onCreateWidgetClicked
-            )
+                    onCreateElement = viewModel::onCreateWidgetElementClicked,
+                    onCreateWidget = viewModel::onCreateWidgetClicked
+                )
+            }
 
-            item {
+            // Object types section header - only show if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+                item {
                 ReorderableItem(
                     enabled = false,
                     state = reorderableState,
@@ -266,51 +327,97 @@ fun WidgetsScreen(
                 ) {
                     SpaceObjectTypesSectionHeader(
                         mode = mode,
-                        onCreateNewTypeClicked = viewModel::onCreateNewTypeClicked,
                         onSectionClicked = viewModel::onSectionTypesClicked
                     )
                 }
             }
+            }
 
-            // Type widgets section
-            renderWidgetSection(
-                widgets = typesUi,
-                reorderableState = reorderableState,
-                view = view,
-                mode = mode,
-                sectionType = SectionType.TYPES,
-                isOtherSectionDragging = isDraggingPinned.value,
-                onExpand = viewModel::onExpand,
-                onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
-                    viewModel.onDropDownMenuAction(widget, action)
-                },
-                onWidgetElementClicked = viewModel::onWidgetElementClicked,
-                onWidgetSourceClicked = viewModel::onWidgetSourceClicked,
-                onSeeAllClicked = viewModel::onSeeAllClicked,
-                onToggleExpandedWidgetState = viewModel::onToggleWidgetExpandedState,
-                onChangeWidgetView = viewModel::onChangeCurrentWidgetView,
-                onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked,
-                onCreateElement = viewModel::onCreateWidgetElementClicked,
-                onCreateWidget = viewModel::onCreateWidgetClicked
-            )
+            // Type widgets section - render ObjectTypesGroup widget with drag-and-drop support
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+            item(key = OBJECT_TYPES_GROUP_ID) {
+                    ObjectTypesGroupWidgetCard(
+                        typeRows = typeRowsUi,
+                        onTypeClicked = { typeId ->
+                            viewModel.onTypeRowClicked(typeId)
+                        },
+                        onCreateObjectClicked = { typeId ->
+                            viewModel.onCreateObjectFromTypeRow(typeId)
+                        },
+                        onCreateNewTypeClicked = {
+                            viewModel.onCreateNewTypeClicked()
+                        },
+                        onTypeRowsReordered = { fromIndex, toIndex ->
+                            // Calculate the new order
+                            if (fromIndex != toIndex && fromIndex in typeRowsUi.indices && toIndex in typeRowsUi.indices) {
+                                val reorderedIds = typeRowsUi.map { it.id }.toMutableList()
+                                val movedId = reorderedIds.removeAt(fromIndex)
+                                reorderedIds.add(toIndex, movedId)
+                                // Set pending order to maintain local state until ViewModel catches up
+                                pendingTypeRowOrder.value = reorderedIds
+                                // Notify ViewModel to persist the new order
+                                viewModel.onTypeRowsReordered(reorderedIds)
+                            }
+                        }
+                    )
+                }
+            }
 
-            binWidget?.let { bin ->
+            // Recently Edited section - shown between Objects and Bin when section is visible
+            if (shouldShowRecentlyEditedSection && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
                 item {
-                    if (bin is WidgetView.Bin) {
-                        ReorderableItem(
-                            enabled = false,
-                            state = reorderableState,
-                            key = WIDGET_BIN_ID,
-                        ) {
-                            BinWidgetCard(
-                                item = bin,
-                                onDropDownMenuAction = { action ->
-                                    viewModel.onDropDownMenuAction(bin.id, action)
-                                },
-                                onWidgetSourceClicked = {
-                                    viewModel.onBinWidgetClicked()
-                                }
-                            )
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = SECTION_RECENTLY_EDITED,
+                    ) {
+                        RecentlyEditedSectionHeader(
+                            onSectionClicked = viewModel::onSectionRecentlyEditedClicked
+                        )
+                    }
+                }
+            }
+            
+            // Recently Edited widgets - only render when section is expanded and widget exists and section is visible
+            if (shouldShowRecentlyEditedSection && !isRecentlyEditedSectionCollapsed && recentlyEditedView != null && sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
+                item(key = "recently_edited_widget_content") {
+                    ReorderableItem(
+                        enabled = false,
+                        state = reorderableState,
+                        key = "recently_edited_widget_content",
+                    ) {
+                        RecentlyEditedWidget(
+                            item = recentlyEditedView,
+                            mode = mode,
+                            onWidgetObjectClicked = { obj ->
+                                viewModel.onWidgetElementClicked(recentlyEditedView.id, obj)
+                            },
+                            onObjectCheckboxClicked = viewModel::onObjectCheckboxClicked
+                        )
+                    }
+                }
+            }
+
+            // Bin widget - only show if section is visible
+            if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.BIN)) {
+                binWidget?.let { bin ->
+                    item {
+                        if (bin is WidgetView.Bin) {
+                            ReorderableItem(
+                                enabled = false,
+                                state = reorderableState,
+                                key = WIDGET_BIN_ID,
+                            ) {
+                                BinWidgetCard(
+                                    item = bin,
+                                    onDropDownMenuAction = { action ->
+                                        viewModel.onDropDownMenuAction(bin.id, action)
+                                    },
+                                    onWidgetSourceClicked = {
+                                        viewModel.onBinWidgetClicked()
+                                    }
+                                )
+                            }
                         }
                     }
                 }

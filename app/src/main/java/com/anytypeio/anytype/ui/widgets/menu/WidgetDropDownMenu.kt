@@ -298,6 +298,12 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                         }
                         add(WidgetMenuItem.RemoveWidget)
                     }
+                    is WidgetView.ObjectTypesGroup -> {
+                        // Object types group has no menu - interactions are per-row
+                    }
+                    is WidgetView.RecentlyEdited -> {
+                        // Recently edited has no menu
+                    }
                 }
             }
         }
@@ -308,6 +314,10 @@ fun WidgetView.getWidgetMenuItems(): List<WidgetMenuItem> {
                     add(CreateObjectOfType(id))
                 }
             }
+        }
+        SectionType.RECENTLY_EDITED -> {
+            // Recently edited widgets menu behavior - TODO: Define menu items
+            emptyList<WidgetMenuItem>()
         }
         null -> {
             // No section type means no menu

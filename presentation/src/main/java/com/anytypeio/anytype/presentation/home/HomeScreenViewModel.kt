@@ -15,8 +15,8 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.InternalFlags
+import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
@@ -24,24 +24,30 @@ import com.anytypeio.anytype.core_models.ObjectView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.Struct
-import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetLayout
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
 import com.anytypeio.anytype.core_models.ext.canCreateAdditionalChats
 import com.anytypeio.anytype.core_models.ext.process
 import com.anytypeio.anytype.core_models.isDataView
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_models.ui.spaceIcon
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.ext.replace
 import com.anytypeio.anytype.core_utils.ext.withLatestFrom
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -64,7 +70,6 @@ import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.misc.Reducer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -72,6 +77,8 @@ import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
+import com.anytypeio.anytype.domain.notifications.NotificationStateCalculator
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.OpenObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
@@ -82,6 +89,7 @@ import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.spaces.DeleteSpace
@@ -90,10 +98,12 @@ import com.anytypeio.anytype.domain.types.GetPinnedObjectTypes
 import com.anytypeio.anytype.domain.widgets.CreateWidget
 import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.widgets.GetWidgetSession
+import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.BuildConfig
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
@@ -113,11 +123,9 @@ import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.Ex
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenAllContent
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel.Navigation.OpenChat
 import com.anytypeio.anytype.presentation.multiplayer.toSpaceMemberView
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.NavigationViewModel
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.objects.getCreateObjectParams
 import com.anytypeio.anytype.presentation.objects.getTypeForObjectAndTargetTypeForTemplate
 import com.anytypeio.anytype.presentation.objects.isTemplateObject
@@ -127,12 +135,10 @@ import com.anytypeio.anytype.presentation.sets.resolveSetByRelationPrefilledObje
 import com.anytypeio.anytype.presentation.sets.resolveTemplateForDataViewObject
 import com.anytypeio.anytype.presentation.sets.resolveTypeAndActiveViewTemplate
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import com.anytypeio.anytype.presentation.spaces.SpaceTechInfo
 import com.anytypeio.anytype.presentation.spaces.UiEvent
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
-import com.anytypeio.anytype.presentation.spaces.spaceIcon
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -143,6 +149,7 @@ import com.anytypeio.anytype.presentation.widgets.ViewId
 import com.anytypeio.anytype.presentation.widgets.Widget
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_OBJECT_TYPE
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_PINNED
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_UNREAD
 import com.anytypeio.anytype.presentation.widgets.WidgetActiveViewStateHolder
 import com.anytypeio.anytype.presentation.widgets.WidgetConfig
@@ -221,6 +228,7 @@ class HomeScreenViewModel(
     private val getWidgetSession: GetWidgetSession,
     private val saveWidgetSession: SaveWidgetSession,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val objectWatcher: ObjectWatcher,
     private val spaceManager: SpaceManager,
     private val setWidgetActiveView: SetWidgetActiveView,
@@ -252,9 +260,11 @@ class HomeScreenViewModel(
     private val notificationPermissionManager: NotificationPermissionManager,
     private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
     private val userSettingsRepository: UserSettingsRepository,
+    private val observeWidgetSections: ObserveWidgetSections,
     private val scope: CoroutineScope,
     private val stringResourceProvider : StringResourceProvider,
-    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+    private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+    private val setSpaceNotificationMode: SetSpaceNotificationMode
 ) : NavigationViewModel<HomeScreenViewModel.Navigation>(),
     Reducer<ObjectView, Payload>,
     WidgetActiveViewStateHolder by widgetActiveViewStateHolder,
@@ -275,10 +285,20 @@ class HomeScreenViewModel(
     private val objectViewState = MutableStateFlow<ObjectViewState>(ObjectViewState.Idle)
     private val treeWidgetBranchStateHolder = TreeWidgetBranchStateHolder()
 
+    // Widget sections configuration
+    val widgetSections: StateFlow<com.anytypeio.anytype.core_models.WidgetSections> = observeWidgetSections
+        .flow(ObserveWidgetSections.Params(spaceId = vmParams.spaceId))
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = com.anytypeio.anytype.core_models.WidgetSections.default()
+        )
+
     // Separate StateFlows for different widget sections
     private val pinnedWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val typeWidgets = MutableStateFlow<List<Widget>>(emptyList())
     private val unreadWidget = MutableStateFlow<Widget.UnreadChatList?>(null)
+    private val recentlyEditedWidget = MutableStateFlow<Widget.RecentlyEdited?>(null)
     private val binWidget = MutableStateFlow<Widget.Bin?>(null)
 
     // Separate containers for pinned and type widgets
@@ -398,6 +418,23 @@ class HomeScreenViewModel(
             initialValue = null
         )
 
+    // Exposed flow for recently edited widget
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val recentlyEditedView: StateFlow<WidgetView?> = recentlyEditedWidget
+        .flatMapLatest { widget ->
+            if (widget == null) {
+                flowOf(null)
+            } else {
+                // Create container for recently edited widget
+                widgetContainerDelegate.createContainer(widget, emptyList())?.view ?: flowOf(null)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = null
+        )
+
     // Exposed flow for collapsed sections
     val collapsedSections: StateFlow<Set<Id>> = observeCollapsedSectionIds()
         .map { it.toSet() }
@@ -427,6 +464,18 @@ class HomeScreenViewModel(
 
     private val _spaceViewState = MutableStateFlow<SpaceViewState>(SpaceViewState.Init)
     val spaceViewState: StateFlow<SpaceViewState> = _spaceViewState
+
+    // Mute state derived from space notification mode
+    val isMuted: StateFlow<Boolean> = spaceViewSubscriptionContainer
+        .observe(vmParams.spaceId)
+        .map { spaceView ->
+            NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = false
+        )
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private val widgetObjectPipeline = spaceManager
@@ -803,7 +852,13 @@ class HomeScreenViewModel(
                 userPermissions,
                 widgetPreferences,
                 spaceViewSubscriptionContainer.observe(vmParams.spaceId),
-            ) { _, state, userPermission, preferences, spaceView ->
+                widgetSections
+            ) { values ->
+                val state = values[1] as ObjectViewState
+                val userPermission = values[2] as? SpaceMemberPermissions
+                val preferences = values[3] as WidgetPreferences
+                val spaceView = values[4] as ObjectWrapper.SpaceView
+                val sectionConfig = values[5] as com.anytypeio.anytype.core_models.WidgetSections
                 val params = WidgetUiParams(
                     isOwnerOrEditor = userPermission?.isOwnerOrEditor() == true,
                     expandedIds = preferences.expandedWidgetIds.toSet(),
@@ -816,7 +871,8 @@ class HomeScreenViewModel(
                         params = params,
                         urlBuilder = urlBuilder,
                         storeOfObjectTypes = storeOfObjectTypes,
-                        spaceView = spaceView
+                        spaceView = spaceView,
+                        sectionConfig = sectionConfig
                     )
 
                     // Initialize active views for all widgets
@@ -857,6 +913,7 @@ class HomeScreenViewModel(
                     }
 
                     unreadWidget.value = sections.unreadWidget
+                    recentlyEditedWidget.value = sections.recentlyEditedWidget
                     binWidget.value = sections.binWidget
                 } else {
                     pinnedWidgets.value = emptyList()
@@ -869,6 +926,7 @@ class HomeScreenViewModel(
                     }
 
                     unreadWidget.value = null
+                    recentlyEditedWidget.value = null
                     binWidget.value = null
                 }
             }
@@ -1236,6 +1294,36 @@ class HomeScreenViewModel(
                 )
             } else {
                 Timber.w("Failed to open chat from widget: chat not found")
+            }
+        }
+    }
+
+    fun onTypeRowClicked(typeId: Id) {
+        Timber.d("onTypeRowClicked: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            if (type != null) {
+                proceedWithNavigation(type.navigation(vmParams.spaceId.id))
+            } else {
+                Timber.w("Type not found for id: $typeId")
+            }
+        }
+    }
+
+    fun onCreateObjectFromTypeRow(typeId: Id) {
+        Timber.d("onCreateObjectFromTypeRow: $typeId")
+        viewModelScope.launch {
+            val type = storeOfObjectTypes.get(typeId)
+            if (type != null) {
+                val typeKey = TypeKey(type.uniqueKey)
+                val templateId = type.defaultTemplateId?.takeIf { it.isNotEmpty() }
+                proceedWithCreatingObject(
+                    space = vmParams.spaceId,
+                    type = typeKey,
+                    templateId = templateId
+                )
+            } else {
+                Timber.w("Type not found for id: $typeId")
             }
         }
     }
@@ -1610,6 +1698,8 @@ class HomeScreenViewModel(
         is Widget.Chat -> ChangeWidgetType.TYPE_LINK
         is Widget.UnreadChatList -> ChangeWidgetType.TYPE_LINK
         is Widget.Bin -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.ObjectTypesGroup -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
+        is Widget.RecentlyEdited -> ChangeWidgetType.UNDEFINED_LAYOUT_CODE
     }
 
     // TODO move to a separate reducer inject into this VM's constructor
@@ -2384,6 +2474,121 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onManageSectionsClicked() {
+        Timber.d("onManageSectionsClicked")
+        viewModelScope.launch {
+            commands.emit(Command.OpenManageSections)
+        }
+    }
+
+    fun onMembersClicked() {
+        Timber.d("onMembersClicked")
+        viewModelScope.launch {
+            commands.emit(ShareSpace(vmParams.spaceId))
+        }
+    }
+
+    fun onMuteClicked() {
+        Timber.d("onMuteClicked")
+        viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView == null) {
+                Timber.w("Space view not found for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            val targetSpaceId = spaceView.targetSpaceId
+            if (targetSpaceId == null) {
+                Timber.w("Target space ID is null for mute toggle")
+                commands.emit(Command.Toast.UnableToChangeNotificationSettings)
+                return@launch
+            }
+
+            // Determine current mute state and toggle
+            val isMuted = NotificationStateCalculator.calculateSpaceNotificationMutedState(spaceView)
+            val newMode = if (isMuted) {
+                NotificationState.ALL  // Unmute
+            } else {
+                NotificationState.DISABLE  // Mute
+            }
+
+            Timber.d("Toggling notification state: current muted=$isMuted, new mode=$newMode")
+
+            setSpaceNotificationMode.async(
+                SetSpaceNotificationMode.Params(
+                    spaceViewId = targetSpaceId,
+                    mode = newMode
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Successfully set notification mode to $newMode")
+                    commands.emit(
+                        if (newMode == NotificationState.DISABLE) {
+                            Command.Toast.SpaceMuted
+                        } else {
+                            Command.Toast.SpaceUnmuted
+                        }
+                    )
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Failed to set notification mode")
+                    commands.emit(Command.Toast.FailedToChangeNotificationSettings)
+                }
+            )
+        }
+    }
+
+    fun onQrCodeClicked() {
+        Timber.d("onQrCodeClicked")
+        viewModelScope.launch {
+            val spaceView = spaceViewSubscriptionContainer.get(vmParams.spaceId)
+            if (spaceView != null) {
+                val inviteLink = getSpaceInviteLink
+                    .async(vmParams.spaceId)
+                    .getOrNull()
+                    ?.scheme
+                if (inviteLink != null) {
+                    uiQrCodeState.value = SpaceInvite(
+                        link = inviteLink,
+                        spaceName = spaceView.name.orEmpty(),
+                        icon = spaceView.spaceIcon(urlBuilder)
+                    )
+                } else {
+                    Timber.w("Could not get invite link for QR code")
+                    sendToast("Unable to generate QR code")
+                }
+            }
+        }
+    }
+
+    fun onCopyInviteLinkClicked() {
+        Timber.d("onCopyInviteLinkClicked")
+        viewModelScope.launch {
+            val inviteLink = getSpaceInviteLink
+                .async(vmParams.spaceId)
+                .getOrNull()
+                ?.scheme
+            if (inviteLink != null) {
+                val params = CopyInviteLinkToClipboard.Params(inviteLink)
+                copyInviteLinkToClipboard.invoke(params)
+                    .proceed(
+                        failure = {
+                            Timber.e(it, "Failed to copy invite link to clipboard")
+                            sendToast("Failed to copy invite link")
+                        },
+                        success = {
+                            Timber.d("Invite link copied to clipboard: $inviteLink")
+                            sendToast("Invite link copied to clipboard")
+                        }
+                    )
+            } else {
+                Timber.w("Could not get invite link to copy")
+                sendToast("Unable to copy invite link")
+            }
+        }
+    }
+
     fun onViewerSpaceSettingsUiEvent(space: SpaceId, uiEvent: UiEvent) {
         when(uiEvent) {
             is UiEvent.OnQrCodeClicked -> {
@@ -3086,6 +3291,21 @@ class HomeScreenViewModel(
         }
     }
 
+    fun onSectionRecentlyEditedClicked() {
+        viewModelScope.launch {
+            val currentCollapsedSections = userSettingsRepository.getCollapsedSectionIds(vmParams.spaceId).first().toSet()
+            val isCurrentlyCollapsed = currentCollapsedSections.contains(SECTION_RECENTLY_EDITED)
+
+            val newCollapsedSections = if (isCurrentlyCollapsed) {
+                currentCollapsedSections.minus(SECTION_RECENTLY_EDITED)
+            } else {
+                currentCollapsedSections.plus(SECTION_RECENTLY_EDITED)
+            }
+
+            userSettingsRepository.setCollapsedSectionIds(vmParams.spaceId, newCollapsedSections.toList())
+        }
+    }
+
     /**
      * Determines if a widget should be collapsed due to its section being collapsed
      */
@@ -3094,6 +3314,7 @@ class HomeScreenViewModel(
             widget.sectionType == SectionType.PINNED -> collapsedSections.contains(Widget.Source.SECTION_PINNED)
             widget.sectionType == SectionType.UNREAD -> collapsedSections.contains(Widget.Source.SECTION_UNREAD)
             widget.sectionType == SectionType.TYPES -> collapsedSections.contains(Widget.Source.SECTION_OBJECT_TYPE)
+            widget.sectionType == SectionType.RECENTLY_EDITED -> collapsedSections.contains(Widget.Source.SECTION_RECENTLY_EDITED)
             else -> false
         }
     }
@@ -3154,6 +3375,10 @@ class HomeScreenViewModel(
                 // Being in expandedIds means user explicitly expanded it
                 !expandedIds.contains(widget.id)
             }
+            SectionType.RECENTLY_EDITED -> {
+                // Recently edited widgets behavior - TODO: Define default behavior
+                expandedIds.contains(widget.id)
+            }
             SectionType.NONE -> {
                 true
             }
@@ -3171,6 +3396,41 @@ class HomeScreenViewModel(
     //endregion
 
     //region Type Widget Drag and Drop
+    
+    /**
+     * Called when type rows within the ObjectTypesGroup widget are reordered.
+     * This is the new approach for handling drag-and-drop of type rows in the grouped widget.
+     *
+     * @param reorderedTypeIds The complete list of type IDs in the new order
+     */
+    fun onTypeRowsReordered(reorderedTypeIds: List<Id>) {
+        Timber.d("DROID-4308, onTypeRowsReordered: ${reorderedTypeIds.map { it.takeLast(4) + "..." }}")
+        
+        if (reorderedTypeIds.isEmpty()) {
+            Timber.d("DROID-4308, onTypeRowsReordered: Empty list, ignoring")
+            return
+        }
+        
+        viewModelScope.launch {
+            // Activate event lock before sending to middleware to prevent race conditions
+            activateTypeWidgetEventLock()
+            
+            updateObjectTypesOrderIds.async(
+                UpdateObjectTypesOrderIds.Params(
+                    spaceId = vmParams.spaceId,
+                    orderedIds = reorderedTypeIds
+                )
+            ).fold(
+                onFailure = { error ->
+                    Timber.e(error, "DROID-4308, Failed to reorder type rows: $reorderedTypeIds")
+                },
+                onSuccess = { finalOrder ->
+                    Timber.d("DROID-4308, Successfully reordered type rows with final order: $finalOrder")
+                }
+            )
+        }
+    }
+    
     /**
      * Called when the order of type widgets changes during a drag operation.
      *
@@ -3179,6 +3439,8 @@ class HomeScreenViewModel(
      *
      * @param fromWidgetId The ID of the type widget being dragged from.
      * @param toWidgetId The ID of the type widget being dragged to.
+     * 
+     * @deprecated Use [onTypeRowsReordered] for the new grouped widget approach
      */
     fun onTypeWidgetOrderChanged(fromWidgetId: String?, toWidgetId: String?) {
         Timber.d("DROID-3965, onTypeWidgetOrderChanged: from=$fromWidgetId, to=$toWidgetId")
@@ -3382,6 +3644,7 @@ class HomeScreenViewModel(
             objectWatcher = objectWatcher,
             getSpaceView = getSpaceView,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             getObject = getObject,
             coverImageHashProvider = coverImageHashProvider,
             storeOfRelations = storeOfRelations,
@@ -3420,6 +3683,7 @@ class HomeScreenViewModel(
         private val getWidgetSession: GetWidgetSession,
         private val saveWidgetSession: SaveWidgetSession,
         private val storeOfObjectTypes: StoreOfObjectTypes,
+        private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
         private val storeOfRelations: StoreOfRelations,
         private val objectWatcher: ObjectWatcher,
         private val setWidgetActiveView: SetWidgetActiveView,
@@ -3452,9 +3716,11 @@ class HomeScreenViewModel(
         private val notificationPermissionManager: NotificationPermissionManager,
         private val copyInviteLinkToClipboard: CopyInviteLinkToClipboard,
         private val userRepo: UserSettingsRepository,
+        private val observeWidgetSections: ObserveWidgetSections,
         private val scope: CoroutineScope,
         private val stringResourceProvider : StringResourceProvider,
-        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+        private val updateObjectTypesOrderIds: UpdateObjectTypesOrderIds,
+        private val setSpaceNotificationMode: SetSpaceNotificationMode
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T = HomeScreenViewModel(
@@ -3484,6 +3750,7 @@ class HomeScreenViewModel(
             getWidgetSession = getWidgetSession,
             saveWidgetSession = saveWidgetSession,
             storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
             storeOfRelations = storeOfRelations,
             objectWatcher = objectWatcher,
             setWidgetActiveView = setWidgetActiveView,
@@ -3515,9 +3782,11 @@ class HomeScreenViewModel(
             notificationPermissionManager = notificationPermissionManager,
             copyInviteLinkToClipboard = copyInviteLinkToClipboard,
             userSettingsRepository = userRepo,
+            observeWidgetSections = observeWidgetSections,
             scope = scope,
             stringResourceProvider = stringResourceProvider,
-            updateObjectTypesOrderIds = updateObjectTypesOrderIds
+            updateObjectTypesOrderIds = updateObjectTypesOrderIds,
+            setSpaceNotificationMode = setSpaceNotificationMode
         ) as T
     }
 
@@ -3642,6 +3911,14 @@ sealed class Command {
     data class ShareInviteLink(val link: String) : Command()
     data class CreateNewType(val space: Id) : Command()
     data class CreateChatObject(val space: SpaceId) : Command()
+    data object OpenManageSections : Command()
+    
+    sealed class Toast : Command() {
+        data object SpaceMuted : Toast()
+        data object SpaceUnmuted : Toast()
+        data object UnableToChangeNotificationSettings : Toast()
+        data object FailedToChangeNotificationSettings : Toast()
+    }
 }
 
 /**
@@ -3655,23 +3932,6 @@ typealias Widgets = List<Widget>?
  */
 typealias Containers = List<WidgetContainer>?
 
-sealed class OpenObjectNavigation {
-    data class OpenEditor(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None) : OpenObjectNavigation()
-    data class OpenDataView(val target: Id, val space: Id, val effect: SideEffect = SideEffect.None): OpenObjectNavigation()
-    data class UnexpectedLayoutError(val layout: ObjectType.Layout?): OpenObjectNavigation()
-    data object NonValidObject: OpenObjectNavigation()
-    data class OpenChat(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenDateObject(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenParticipant(val target: Id, val space: Id): OpenObjectNavigation()
-    data class OpenType(val target: Id, val space: Id) : OpenObjectNavigation()
-    data class OpenBookmarkUrl(val url: String) : OpenObjectNavigation() // For opening bookmark URLs
-
-    sealed class SideEffect {
-        data object None: SideEffect()
-        data class AttachToChat(val chat: Id, val space: Id): SideEffect()
-    }
-}
-
 fun ObjectWrapper.Type.navigation(
     spaceId: Id,
 ): OpenObjectNavigation {
@@ -3680,106 +3940,6 @@ fun ObjectWrapper.Type.navigation(
         target = id,
         space = spaceId
     )
-}
-
-/**
- * @param [attachmentTarget] optional target, to which the object will be attached
- */
-fun ObjectWrapper.Basic.navigation(
-    effect: OpenObjectNavigation.SideEffect = OpenObjectNavigation.SideEffect.None,
-    openBookmarkAsObject: Boolean = false,
-) : OpenObjectNavigation {
-    if (!isValid) return OpenObjectNavigation.NonValidObject
-    return when (layout) {
-        ObjectType.Layout.BOOKMARK -> {
-            if (openBookmarkAsObject) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                val url = getValue<String>(Relations.SOURCE)
-                if (url.isNullOrEmpty()) {
-                    OpenObjectNavigation.OpenEditor(
-                        target = id,
-                        space = requireNotNull(spaceId),
-                        effect = effect
-                    )
-                } else {
-                    OpenObjectNavigation.OpenBookmarkUrl(url)
-                }
-            }
-        }
-        ObjectType.Layout.BASIC,
-        ObjectType.Layout.NOTE,
-        ObjectType.Layout.TODO -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        in SupportedLayouts.fileLayouts -> {
-            OpenObjectNavigation.OpenEditor(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.PROFILE -> {
-            val identityLink = getValue<Id>(Relations.IDENTITY_PROFILE_LINK)
-            if (identityLink.isNullOrEmpty()) {
-                OpenObjectNavigation.OpenEditor(
-                    target = id,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            } else {
-                OpenObjectNavigation.OpenEditor(
-                    target = identityLink,
-                    space = requireNotNull(spaceId),
-                    effect = effect
-                )
-            }
-        }
-        ObjectType.Layout.SET,
-        ObjectType.Layout.COLLECTION -> {
-            OpenObjectNavigation.OpenDataView(
-                target = id,
-                space = requireNotNull(spaceId),
-                effect = effect
-            )
-        }
-        ObjectType.Layout.CHAT,
-        ObjectType.Layout.CHAT_DERIVED -> {
-            OpenObjectNavigation.OpenChat(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.DATE -> {
-            OpenObjectNavigation.OpenDateObject(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.PARTICIPANT -> {
-            OpenObjectNavigation.OpenParticipant(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        ObjectType.Layout.OBJECT_TYPE -> {
-            OpenObjectNavigation.OpenType(
-                target = id,
-                space = requireNotNull(spaceId)
-            )
-        }
-        else -> {
-            OpenObjectNavigation.UnexpectedLayoutError(layout)
-        }
-    }
 }
 
 data class HomeScreenVmParams(val spaceId: SpaceId)

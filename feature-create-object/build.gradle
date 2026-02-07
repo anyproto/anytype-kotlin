@@ -1,0 +1,58 @@
+plugins {
+    id "com.android.library"
+    id "kotlin-android"
+    alias(libs.plugins.compose.compiler)
+}
+
+android {
+    buildFeatures {
+        compose true
+    }
+
+    namespace 'com.anytypeio.anytype.feature_create_object'
+
+    testOptions {
+        unitTests.returnDefaultValues = true
+    }
+}
+
+dependencies {
+    // Core dependencies
+    implementation project(':domain')
+    implementation project(':core-ui')
+    implementation project(':core-models')
+    implementation project(':core-utils')
+    implementation project(':analytics')
+    implementation project(':localization')
+    implementation project(':presentation')
+
+    // Dependency Injection
+    compileOnly libs.javaxInject
+
+    // Lifecycle
+    implementation libs.lifecycleViewModel
+    implementation libs.lifecycleRuntime
+
+    // Compose
+    implementation libs.compose
+    implementation libs.composeFoundation
+    implementation libs.composeToolingPreview
+    implementation libs.composeMaterial3
+    implementation libs.composeMaterial
+
+    debugImplementation libs.composeTooling
+
+    // Logging
+    implementation libs.timber
+
+    // Testing
+    testImplementation libs.junit
+    testImplementation libs.kotlinTest
+    testImplementation libs.mockitoKotlin
+    testImplementation libs.coroutineTesting
+    testImplementation libs.turbine
+    testImplementation libs.archCoreTesting
+
+    testImplementation project(":test:utils")
+    testImplementation project(":test:core-models-stub")
+}

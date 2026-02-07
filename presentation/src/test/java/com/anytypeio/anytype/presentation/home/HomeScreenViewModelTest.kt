@@ -21,13 +21,17 @@ import com.anytypeio.anytype.core_models.StubObject
 import com.anytypeio.anytype.core_models.StubObjectView
 import com.anytypeio.anytype.core_models.StubSmartBlock
 import com.anytypeio.anytype.core_models.StubWidgetBlock
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.WidgetSession
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
 import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.domain.auth.interactor.ClearLastOpenedObject
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -50,7 +54,7 @@ import com.anytypeio.anytype.domain.library.StoreSearchParams
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.CopyInviteLinkToClipboard
 import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
@@ -66,6 +70,7 @@ import com.anytypeio.anytype.domain.objects.GetDateObjectByTimestamp
 import com.anytypeio.anytype.domain.objects.ObjectWatcher
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
@@ -82,16 +87,19 @@ import com.anytypeio.anytype.domain.widgets.GetWidgetSession
 import com.anytypeio.anytype.domain.widgets.SaveWidgetSession
 import com.anytypeio.anytype.domain.widgets.SetWidgetActiveView
 import com.anytypeio.anytype.domain.widgets.UpdateObjectTypesOrderIds
+import com.anytypeio.anytype.domain.widgets.ObserveWidgetSections
 import com.anytypeio.anytype.domain.widgets.UpdateWidget
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
+import com.anytypeio.anytype.core_models.WidgetSections
+import com.anytypeio.anytype.core_models.WidgetSectionConfig
+import com.anytypeio.anytype.core_models.WidgetSectionType
+import com.anytypeio.anytype.presentation.widgets.Widget.Source.Companion.SECTION_RECENTLY_EDITED
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.MockObjectTypes.objectTypePage
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.DefaultCoroutineTestRule
@@ -132,6 +140,7 @@ import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.any
 import org.mockito.kotlin.doReturn
+import org.mockito.kotlin.eq
 import org.mockito.kotlin.stub
 import org.mockito.kotlin.times
 import org.mockito.kotlin.verify
@@ -218,6 +227,9 @@ class HomeScreenViewModelTest {
 
     @Mock
     lateinit var updateObjectTypesOrderIds: UpdateObjectTypesOrderIds
+
+    @Mock
+    lateinit var hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer
 
     @Mock
     lateinit var objectWatcher: ObjectWatcher
@@ -370,7 +382,7 @@ class HomeScreenViewModelTest {
                 )
             )
         }
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         stubSpaceManager()
         userPermissionProvider = UserPermissionProviderStub()
         stubGetPinnedObjectTypes()
@@ -2987,6 +2999,163 @@ class HomeScreenViewModelTest {
     @Mock
     private lateinit var userSettingsRepository: UserSettingsRepository
 
+    @Mock
+    private lateinit var observeWidgetSections: ObserveWidgetSections
+
+    @Mock
+    private lateinit var setSpaceNotificationMode: SetSpaceNotificationMode
+
+    //region Recently Edited Section Tests
+
+    @Test
+    fun `should toggle recently edited section collapse state when clicked`() = runTest {
+        // SETUP
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = emptyList(),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(smartBlock)
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenWidgetObject(givenObjectView)
+        stubGetWidgetSession()
+        stubSpaceManager()
+        stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+        stubObserveWidgetSections()
+        stubUserSettingsRepoForSectionTests(initialCollapsedSections = emptyList())
+
+        val vm = buildViewModel()
+
+        // TESTING
+        vm.onStart()
+        advanceUntilIdle()
+
+        // Click to collapse
+        vm.onSectionRecentlyEditedClicked()
+        advanceUntilIdle()
+
+        // Verify setCollapsedSectionIds was called with SECTION_RECENTLY_EDITED added
+        verifyBlocking(userSettingsRepository, times(1)) {
+            setCollapsedSectionIds(
+                space = eq(spaceId),
+                sectionIds = eq(listOf(SECTION_RECENTLY_EDITED))
+            )
+        }
+    }
+
+    @Test
+    fun `should expand recently edited section when clicked while collapsed`() = runTest {
+        // SETUP
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = emptyList(),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(smartBlock)
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenWidgetObject(givenObjectView)
+        stubGetWidgetSession()
+        stubSpaceManager()
+        stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+        stubObserveWidgetSections()
+        stubUserSettingsRepoForSectionTests(initialCollapsedSections = listOf(SECTION_RECENTLY_EDITED))
+
+        val vm = buildViewModel()
+
+        // TESTING
+        vm.onStart()
+        advanceUntilIdle()
+
+        // Click to expand
+        vm.onSectionRecentlyEditedClicked()
+        advanceUntilIdle()
+
+        // Verify setCollapsedSectionIds was called with SECTION_RECENTLY_EDITED removed
+        verifyBlocking(userSettingsRepository, times(1)) {
+            setCollapsedSectionIds(
+                space = eq(spaceId),
+                sectionIds = eq(emptyList())
+            )
+        }
+    }
+
+    @Test
+    fun `should emit null for recentlyEditedView when section is not visible`() = runTest {
+        // SETUP
+        val smartBlock = StubSmartBlock(
+            id = WIDGET_OBJECT_ID,
+            children = emptyList(),
+        )
+
+        val givenObjectView = StubObjectView(
+            root = WIDGET_OBJECT_ID,
+            blocks = listOf(smartBlock)
+        )
+
+        stubConfig()
+        stubInterceptEvents(events = emptyFlow())
+        stubOpenWidgetObject(givenObjectView)
+        stubGetWidgetSession()
+        stubSpaceManager()
+        stubUserPermission()
+        stubAnalyticSpaceHelperDelegate()
+        stubUserSettingsRepoForSectionTests(initialCollapsedSections = emptyList())
+        
+        // Widget sections with Recently Edited NOT visible
+        stubObserveWidgetSections(
+            sections = WidgetSections(
+                sections = listOf(
+                    WidgetSectionConfig(WidgetSectionType.UNREAD, isVisible = true, order = 0),
+                    WidgetSectionConfig(WidgetSectionType.PINNED, isVisible = true, order = 1),
+                    WidgetSectionConfig(WidgetSectionType.OBJECTS, isVisible = true, order = 2),
+                    WidgetSectionConfig(WidgetSectionType.RECENTLY_EDITED, isVisible = false, order = 3),
+                    WidgetSectionConfig(WidgetSectionType.BIN, isVisible = true, order = 4)
+                )
+            )
+        )
+
+        val vm = buildViewModel()
+
+        // TESTING
+        vm.onStart()
+        advanceUntilIdle()
+
+        vm.recentlyEditedView.test {
+            val result = awaitItem()
+            assertEquals(null, result)
+        }
+    }
+
+    private fun stubUserSettingsRepoForSectionTests(initialCollapsedSections: List<Id>) {
+        userSettingsRepository.stub {
+            onBlocking { getCollapsedSectionIds(any()) } doReturn flowOf(initialCollapsedSections)
+            onBlocking { setCollapsedSectionIds(any(), any()) } doReturn Unit
+            onBlocking { getExpandedWidgetIds(any()) } doReturn flowOf(emptyList())
+        }
+    }
+
+    //endregion
+
+    private fun stubObserveWidgetSections(
+        sections: WidgetSections = WidgetSections.default()
+    ) {
+        observeWidgetSections.stub {
+            on { flow(any()) } doReturn flowOf(sections)
+        }
+    }
+
     private fun buildViewModel() = HomeScreenViewModel(
         vmParams = HomeScreenVmParams(spaceId = spaceId),
         interceptEvents = interceptEvents,
@@ -3013,6 +3182,7 @@ class HomeScreenViewModelTest {
         getWidgetSession = getWidgetSession,
         saveWidgetSession = saveWidgetSession,
         storeOfObjectTypes = storeOfObjectTypes,
+        hasInstanceContainer = hasInstanceContainer,
         objectWatcher = objectWatcher,
         setWidgetActiveView = setWidgetActiveView,
         spaceManager = spaceManager,
@@ -3045,9 +3215,11 @@ class HomeScreenViewModelTest {
         notificationPermissionManager = notificationPermissionManager,
         copyInviteLinkToClipboard = copyInviteLinkToClipboard,
         userSettingsRepository = userSettingsRepository,
+        observeWidgetSections = observeWidgetSections,
         scope = GlobalScope,
         stringResourceProvider = stringResourceProvider,
-        updateObjectTypesOrderIds = updateObjectTypesOrderIds
+        updateObjectTypesOrderIds = updateObjectTypesOrderIds,
+        setSpaceNotificationMode = setSpaceNotificationMode
     )
 
     companion object {

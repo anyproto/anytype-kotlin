@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_models.ext.shouldShowMemberCount
 import com.anytypeio.anytype.core_models.multiplayer.SpaceAccessType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
+import com.anytypeio.anytype.core_models.ui.SpaceIconView
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.Relations2
@@ -29,7 +30,6 @@ import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
-import com.anytypeio.anytype.presentation.spaces.SpaceIconView
 import timber.log.Timber
 
 @Composable
@@ -38,7 +38,7 @@ fun HomeScreenToolbar(
     spaceViewState: HomeScreenViewModel.SpaceViewState.Success,
     onSpaceIconClicked: () -> Unit,
     onBackButtonClicked: () -> Unit,
-    onSettingsClicked: () -> Unit
+    onMenuClicked: () -> Unit
 ) {
     Box(
         modifier = modifier
@@ -86,7 +86,7 @@ fun HomeScreenToolbar(
                     end = 56.dp
                 )
                 .noRippleClickable {
-                    onSettingsClicked()
+                    onMenuClicked()
                 }
             ,
             maxLines = 1,
@@ -131,7 +131,7 @@ fun HomeScreenToolbar(
                         bottom = 8.dp
                     )
                     .noRippleClickable {
-                        onSettingsClicked()
+                        onMenuClicked()
                     }
             )
         }
@@ -142,13 +142,13 @@ fun HomeScreenToolbar(
                 .width(56.dp)
                 .align(Alignment.CenterEnd)
                 .noRippleClickable {
-                    onSettingsClicked()
+                    onMenuClicked()
                 },
             contentAlignment = Alignment.Center
         ) {
             Image(
-                painter = painterResource(id = R.drawable.ic_vault_settings),
-                contentDescription = "Settings icon",
+                painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_more_32),
+                contentDescription = "Menu icon",
                 modifier = Modifier
             )
         }
@@ -168,6 +168,6 @@ fun HomeScreenToolbarPreview() {
         ),
         onSpaceIconClicked = {},
         onBackButtonClicked = {},
-        onSettingsClicked = {}
+        onMenuClicked = {}
     )
 }

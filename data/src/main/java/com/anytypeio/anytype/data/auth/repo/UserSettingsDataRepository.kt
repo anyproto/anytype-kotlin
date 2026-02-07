@@ -3,6 +3,7 @@ package com.anytypeio.anytype.data.auth.repo
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.GlobalSearchHistory
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.ThemeMode
 import com.anytypeio.anytype.core_models.Wallpaper
 import com.anytypeio.anytype.core_models.WidgetSession
@@ -206,5 +207,17 @@ class UserSettingsDataRepository(private val cache: UserSettingsCache) : UserSet
 
     override suspend fun setPreviousAppVersion(account: Account, version: String) {
         cache.setPreviousAppVersion(account, version)
+    }
+
+    override suspend fun getWidgetSections(space: SpaceId): WidgetSections {
+        return cache.getWidgetSections(space)
+    }
+
+    override suspend fun setWidgetSections(space: SpaceId, sections: WidgetSections) {
+        cache.setWidgetSections(space, sections)
+    }
+
+    override fun observeWidgetSections(space: SpaceId): Flow<WidgetSections> {
+        return cache.observeWidgetSections(space)
     }
 }

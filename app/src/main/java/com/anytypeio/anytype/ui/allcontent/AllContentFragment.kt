@@ -1,7 +1,6 @@
 package com.anytypeio.anytype.ui.allcontent
 
 import android.os.Build
-import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -24,6 +23,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.subscribe
 import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.insets.EDGE_TO_EDGE_MIN_SDK
+import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.ui.BaseComposeFragment
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
@@ -175,43 +175,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     }
                 }
 
-                is AllContentViewModel.Command.OpenTypeEditing -> {
-                    runCatching {
-                        navigation().openObjectType(
-                            objectId = command.item.id,
-                            space = space
-                        )
-                    }.onFailure {
-                        toast("Failed to open type editing screen")
-                        Timber.e(it, "Failed to open type editing screen from all content")
-                    }
-                }
-
-                is AllContentViewModel.Command.OpenTypeCreation -> {
-                    runCatching {
-                        navigation().openCreateObjectTypeScreen(spaceId = command.space)
-                    }.onFailure {
-                        toast("Failed to open type creation screen")
-                        Timber.e(it, "Failed to open type creation screen from all content")
-                    }
-                }
-
-                is AllContentViewModel.Command.OpenRelationCreation -> {
-                    runCatching {
-                        navigation().openRelationCreationScreen(
-                            id = "",
-                            name = "",
-                            space = command.space
-                        )
-                    }.onFailure {
-                        toast("Failed to open property creation screen")
-                        Timber.e(it, "Failed to open property creation screen from all content")
-                    }
-                }
-
-                is AllContentViewModel.Command.OpenRelationEditing -> {
-                    //todo: implement new screen logic
-                }
                 is AllContentViewModel.Command.NavigateToDateObject -> {
                     runCatching {
                         navigation().openDateObject(
@@ -284,7 +247,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                     canPaginate = vm.canPaginate.collectAsStateWithLifecycle().value,
                     onUpdateLimitSearch = vm::updateLimit,
                     uiContentState = vm.uiContentState.collectAsStateWithLifecycle().value,
-                    onTypeClicked = vm::onTypeClicked,
                     onGlobalSearchClicked = vm::onGlobalSearchClicked,
                     onAddDocClicked = vm::onAddDockClicked,
                     onCreateObjectLongClicked = {
@@ -304,7 +266,6 @@ class AllContentFragment : BaseComposeFragment(), ObjectTypeSelectionListener {
                             Timber.e(it, "Error while opening space switcher from all-content screen")
                         }
                     },
-                    onRelationClicked = vm::onRelationClicked,
                     undoMoveToBin = vm::proceedWithUndoMoveToBin,
                     onDismissSnackbar = vm::proceedWithDismissSnackbar,
                     uiBottomMenu = vm.navPanelState.collectAsStateWithLifecycle(NavPanelState.Init).value,

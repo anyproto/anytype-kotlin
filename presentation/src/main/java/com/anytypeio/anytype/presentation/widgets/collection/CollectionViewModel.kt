@@ -15,7 +15,10 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.process
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
+import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_utils.ext.cancel
@@ -32,7 +35,6 @@ import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
 import com.anytypeio.anytype.domain.misc.DateTypeNameProvider
 import com.anytypeio.anytype.domain.misc.Reducer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.OpenObject
@@ -47,8 +49,6 @@ import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendDeletionWarning
 import com.anytypeio.anytype.presentation.extension.sendScreenHomeEvent
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
-import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.NavPanelState
 import com.anytypeio.anytype.presentation.navigation.leftButtonClickAnalytics
@@ -61,7 +61,16 @@ import com.anytypeio.anytype.presentation.search.Subscriptions
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.FavoritesView
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionView.ObjectView
-import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.*
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.Exit
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.LaunchDocument
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.LaunchObjectSet
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenChat
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenDateObject
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenParticipant
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenShareScreen
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenTypeObject
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.OpenUrl
+import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel.Command.ToSpaceHome
 import javax.inject.Inject
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi

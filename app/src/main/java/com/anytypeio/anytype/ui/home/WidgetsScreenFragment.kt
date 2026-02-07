@@ -6,6 +6,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,11 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Scaffold
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -105,6 +111,8 @@ class WidgetsScreenFragment : Fragment(),
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View = content {
+        var isMenuExpanded by remember { mutableStateOf(false) }
+
         Scaffold(
             modifier = Modifier.fillMaxSize(),
             containerColor = Color.Transparent,
@@ -112,15 +120,51 @@ class WidgetsScreenFragment : Fragment(),
             topBar = {
                 val spaceViewState = vm.spaceViewState.collectAsStateWithLifecycle().value
                 if (spaceViewState is HomeScreenViewModel.SpaceViewState.Success) {
-                    HomeScreenToolbar(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .statusBarsPadding(),
-                        spaceViewState = spaceViewState,
-                        onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                        onBackButtonClicked = vm::onBackClicked,
-                        onSettingsClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
-                    )
+                    Box {
+                        HomeScreenToolbar(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .statusBarsPadding(),
+                            spaceViewState = spaceViewState,
+                            onSpaceIconClicked = { vm.onSpaceSettingsClicked(space = SpaceId(space)) },
+                            onBackButtonClicked = vm::onBackClicked,
+                            onMenuClicked = { isMenuExpanded = true },
+                        )
+                        
+                        // Menu positioned at top-right, anchored to the menu button
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .statusBarsPadding()
+                        ) {
+                            val isMuted = vm.isMuted.collectAsStateWithLifecycle().value
+                            HomeScreenMenu(
+                                expanded = isMenuExpanded,
+                                spaceAccessType = spaceViewState.spaceAccessType,
+                                spaceUxType = spaceViewState.spaceUxType,
+                                isMuted = isMuted,
+                                onDismiss = { isMenuExpanded = false },
+                                onSpaceSettingsClicked = {
+                                    vm.onSpaceSettingsClicked(space = SpaceId(space))
+                                },
+                                onMembersClicked = {
+                                    vm.onMembersClicked()
+                                },
+                                onMuteClicked = {
+                                    vm.onMuteClicked()
+                                },
+                                onQrCodeClicked = {
+                                    vm.onQrCodeClicked()
+                                },
+                                onCopyInviteLinkClicked = {
+                                    vm.onCopyInviteLinkClicked()
+                                },
+                                onManageSectionsClicked = {
+                                    vm.onManageSectionsClicked()
+                                }
+                            )
+                        }
+                    }
                 }
             }
         ) { paddingValues ->
@@ -154,7 +198,7 @@ class WidgetsScreenFragment : Fragment(),
                 }
             )
         }
-        // QR Code Modal for viewer settings
+        // QR Code Modal
         when (val qrCodeState = vm.uiQrCodeState.collectAsStateWithLifecycle().value) {
             is UiSpaceQrCodeState.SpaceInvite -> {
                 QrCodeScreen(
@@ -162,10 +206,12 @@ class WidgetsScreenFragment : Fragment(),
                     link = qrCodeState.link,
                     icon = qrCodeState.icon,
                     onShare = { link ->
-                        vm.onViewerSpaceSettingsUiEvent(
-                            uiEvent = UiEvent.OnShareLinkClicked(link = link),
-                            space = SpaceId(space)
-                        )
+                        val intent = Intent().apply {
+                            action = Intent.ACTION_SEND
+                            putExtra(Intent.EXTRA_TEXT, link)
+                            type = "text/plain"
+                        }
+                        startActivity(Intent.createChooser(intent, null))
                     },
                     onDismiss = { vm.onHideQrCodeScreen() }
                 )
@@ -440,6 +486,30 @@ class WidgetsScreenFragment : Fragment(),
             is Command.CreateChatObject -> {
                 val dialog = CreateChatObjectFragment.new(space = command.space.id)
                 dialog.show(childFragmentManager, "create-chat-object-dialog")
+            }
+
+            is Command.OpenManageSections -> {
+                runCatching {
+                    findNavController().navigate(R.id.action_open_manage_sections)
+                }.onFailure { e ->
+                    Timber.e(e, "Error while opening manage sections screen")
+                }
+            }
+            
+            is Command.Toast.SpaceMuted -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_space_muted))
+            }
+            
+            is Command.Toast.SpaceUnmuted -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_space_unmuted))
+            }
+            
+            is Command.Toast.UnableToChangeNotificationSettings -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_unable_to_change_notification_settings))
+            }
+            
+            is Command.Toast.FailedToChangeNotificationSettings -> {
+                toast(getString(com.anytypeio.anytype.localization.R.string.multiplayer_failed_to_change_notification_settings))
             }
         }
     }

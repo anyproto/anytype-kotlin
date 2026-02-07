@@ -7,6 +7,7 @@ import com.anytypeio.anytype.di.feature.AllContentDependencies
 import com.anytypeio.anytype.di.feature.AppPreferencesDependencies
 import com.anytypeio.anytype.di.feature.BacklinkOrAddToObjectDependencies
 import com.anytypeio.anytype.di.feature.CreateBookmarkSubComponent
+import com.anytypeio.anytype.di.feature.CreateObjectFeatureDependencies
 import com.anytypeio.anytype.di.feature.CreateObjectSubComponent
 import com.anytypeio.anytype.di.feature.CreateObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.DateObjectDependencies
@@ -58,6 +59,7 @@ import com.anytypeio.anytype.di.feature.settings.ProfileSubComponent
 import com.anytypeio.anytype.di.feature.settings.SpacesStorageDependencies
 import com.anytypeio.anytype.di.feature.sharing.SharingDependencies
 import com.anytypeio.anytype.di.feature.spaces.CreateSpaceDependencies
+import com.anytypeio.anytype.di.feature.spaces.ManageSectionsDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceListDependencies
 import com.anytypeio.anytype.di.feature.spaces.SpaceSettingsDependencies
 import com.anytypeio.anytype.di.feature.templates.TemplateBlankDependencies
@@ -119,6 +121,7 @@ interface MainComponent :
     CreateSpaceDependencies,
     SpaceListDependencies,
     SpaceSettingsDependencies,
+    ManageSectionsDependencies,
     SelectObjectTypeDependencies,
     SpacesStorageDependencies,
     AppPreferencesDependencies,
@@ -153,7 +156,8 @@ interface MainComponent :
     MySitesDependencies,
     MediaDependencies,
     CreateChatObjectDependencies,
-    SharingDependencies
+    SharingDependencies,
+    CreateObjectFeatureDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -275,6 +279,11 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SpaceSettingsDependencies::class)
     abstract fun provideSpaceSettingsDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(ManageSectionsDependencies::class)
+    abstract fun provideManageSectionsDependencies(component: MainComponent): ComponentDependencies
 
     @Binds
     @IntoMap
@@ -450,4 +459,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(SharingDependencies::class)
     abstract fun sharingDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectFeatureDependencies::class)
+    abstract fun provideCreateObjectFeatureDependencies(component: MainComponent): ComponentDependencies
 }

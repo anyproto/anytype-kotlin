@@ -7,7 +7,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.presentation.editor.cover.CoverColor
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
 sealed class TemplateView {
 

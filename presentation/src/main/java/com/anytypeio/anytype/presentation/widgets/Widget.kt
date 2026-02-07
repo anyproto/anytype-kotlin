@@ -15,13 +15,13 @@ import com.anytypeio.anytype.core_models.ext.asMap
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
 import com.anytypeio.anytype.core_utils.R
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.home.ObjectViewState
-import com.anytypeio.anytype.presentation.mapper.objectIcon
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.canCreateObjectOfType
 import com.anytypeio.anytype.presentation.objects.sortByTypePriority
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -37,6 +37,7 @@ enum class SectionType {
     PINNED,
     UNREAD,
     TYPES,
+    RECENTLY_EDITED,
     NONE
 }
 
@@ -139,6 +140,40 @@ sealed class Widget {
         override val sectionType: SectionType = SectionType.NONE
     ) : Widget()
 
+    /**
+     * Recently edited widget displaying objects sorted by last modified date.
+     * Visibility controlled by WidgetSectionType.RECENTLY_EDITED.
+     */
+    data class RecentlyEdited(
+        override val id: Id,
+        override val source: Source.Bundled.Recent,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.RECENTLY_EDITED
+    ) : Widget()
+
+    /**
+     * Grouped widget containing all object types.
+     * Replaces individual type widgets for better performance and visual consistency.
+     * The actual types data will be fetched by ObjectTypesGroupWidgetContainer.
+     * 
+     * @property id Unique identifier (typically "object_types_group")
+     * @property source Source for this grouped widget
+     * @property config Widget configuration
+     * @property isAutoCreated Whether this widget was auto-created
+     * @property icon Icon for the widget (typically None)
+     * @property sectionType Always SectionType.TYPES
+     */
+    data class ObjectTypesGroup(
+        override val id: Id,
+        override val source: Source,
+        override val config: Config,
+        override val isAutoCreated: Boolean = false,
+        override val icon: ObjectIcon = ObjectIcon.None,
+        override val sectionType: SectionType = SectionType.TYPES
+    ) : Widget()
+
     sealed class Source {
 
         abstract val id: Id
@@ -189,9 +224,12 @@ sealed class Widget {
 
         companion object {
             const val WIDGET_BIN_ID = "widget_bin_id"
+            const val WIDGET_RECENTLY_EDITED_ID = "widget_recently_edited_id"
             const val SECTION_PINNED = "pinned_section"
             const val SECTION_UNREAD = "unread_section"
             const val SECTION_OBJECT_TYPE = "object_type_section"
+            const val SECTION_RECENTLY_EDITED = "recently_edited_section"
+            const val OBJECT_TYPES_GROUP_ID = "object_types_group"
             const val SOURCE_OTHER = "source_other"
 
             val SOURCE_KEYS = ObjectSearchConstants.defaultKeys
@@ -405,12 +443,14 @@ data class WidgetUiParams(
  * @property pinnedWidgets Widgets from the pinned section (user-arranged widgets)
  * @property typeWidgets Widgets from the object type section
  * @property unreadWidget The unread chat list widget, displayed separately at the top
+ * @property recentlyEditedWidget The recently edited widget, displayed after objects section
  * @property binWidget The bin widget, displayed separately at the bottom
  */
 data class WidgetSections(
     val pinnedWidgets: List<Widget>,
     val typeWidgets: List<Widget>,
     val unreadWidget: Widget.UnreadChatList? = null,
+    val recentlyEditedWidget: Widget.RecentlyEdited? = null,
     val binWidget: Widget.Bin? = null
 )
 
@@ -419,43 +459,68 @@ suspend fun buildWidgetSections(
     state: ObjectViewState.Success,
     params: WidgetUiParams,
     urlBuilder: UrlBuilder,
-    storeOfObjectTypes: StoreOfObjectTypes
+    storeOfObjectTypes: StoreOfObjectTypes,
+    sectionConfig: com.anytypeio.anytype.core_models.WidgetSections
 ): WidgetSections {
     val currentCollapsedSections = params.collapsedSections
 
-    // Build pinned section
-    val pinnedWidgets = buildPinnedSection(
-        state = state,
-        isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
-        urlBuilder = urlBuilder,
-        storeOfObjectTypes = storeOfObjectTypes
-    )
+    // Build pinned section only if visible
+    val pinnedWidgets = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.PINNED)) {
+        buildPinnedSection(
+            state = state,
+            isPinnedSectionCollapsed = currentCollapsedSections.contains(SECTION_PINNED),
+            urlBuilder = urlBuilder,
+            storeOfObjectTypes = storeOfObjectTypes
+        )
+    } else {
+        emptyList()
+    }
 
-    // Build type section
-    val typeWidgets = buildTypeSection(
-        state = state,
-        params = params,
-        isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
-        storeOfObjectTypes = storeOfObjectTypes,
-        spaceUxType = spaceView.spaceUxType
-    )
+    // Build type section only if visible
+    val typeWidgets = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.OBJECTS)) {
+        buildTypeSection(
+            state = state,
+            params = params,
+            isObjectTypeSectionCollapsed = currentCollapsedSections.contains(SECTION_OBJECT_TYPE),
+            storeOfObjectTypes = storeOfObjectTypes,
+            spaceUxType = spaceView.spaceUxType
+        )
+    } else {
+        emptyList()
+    }
 
-    // Build unread widget (displayed separately at top) - only for data spaces
-    val unreadWidget = buildUnreadWidget(
-        state = state,
-        spaceUxType = spaceView.spaceUxType
-    )
+    // Build unread widget only if visible - only for data spaces
+    val unreadWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.UNREAD)) {
+        buildUnreadWidget(
+            state = state,
+            spaceUxType = spaceView.spaceUxType
+        )
+    } else {
+        null
+    }
 
-    // Build bin widget (displayed separately at bottom)
-    val binWidget = buildBinWidget(
-        state = state,
-        params = params
-    )
+    // Build bin widget only if visible
+    val binWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.BIN)) {
+        buildBinWidget(
+            state = state,
+            params = params
+        )
+    } else {
+        null
+    }
+
+    // Build recently edited widget only if visible
+    val recentlyEditedWidget = if (sectionConfig.isSectionVisible(com.anytypeio.anytype.core_models.WidgetSectionType.RECENTLY_EDITED)) {
+        buildRecentlyEditedWidget(state = state)
+    } else {
+        null
+    }
 
     return WidgetSections(
         pinnedWidgets = pinnedWidgets,
         typeWidgets = typeWidgets,
         unreadWidget = unreadWidget,
+        recentlyEditedWidget = recentlyEditedWidget,
         binWidget = binWidget
     )
 }
@@ -567,6 +632,20 @@ private fun buildBinWidget(
     }
 }
 
+/**
+ * Builds the recently edited widget displaying objects sorted by last modified date.
+ */
+private fun buildRecentlyEditedWidget(
+    state: ObjectViewState.Success
+): Widget.RecentlyEdited {
+    return Widget.RecentlyEdited(
+        id = Widget.Source.WIDGET_RECENTLY_EDITED_ID,
+        source = Widget.Source.Bundled.Recent,
+        config = state.config,
+        icon = ObjectIcon.None
+    )
+}
+
 internal suspend fun mapSpaceTypesToWidgets(
     isOwnerOrEditor: Boolean,
     config: Config,
@@ -602,9 +681,17 @@ internal suspend fun mapSpaceTypesToWidgets(
     val isChatSpace = spaceUxType == SpaceUxType.CHAT || spaceUxType == SpaceUxType.ONE_TO_ONE
     val sortedTypes = filteredObjectTypes.sortByTypePriority(isChatSpace)
 
-    return sortedTypes.map { objectType ->
-        createWidgetViewFromType(objectType, config)
-    }
+    // Create single grouped widget for object types
+    // The container (ObjectTypesGroupWidgetContainer) fetches types from StoreOfObjectTypes
+    // and filters types with at least one instance using HasInstanceOfObjectTypeSubscriptionContainer
+    return listOf(
+        Widget.ObjectTypesGroup(
+            id = "object_types_group",
+            source = Widget.Source.Other,
+            config = config,
+            isAutoCreated = true
+        )
+    )
 }
 
 /**

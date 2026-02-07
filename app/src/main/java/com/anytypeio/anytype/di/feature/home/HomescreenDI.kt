@@ -3,7 +3,9 @@ package com.anytypeio.anytype.di.feature.home
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.di.main.ConfigModule.DEFAULT_APP_COROUTINE_SCOPE
@@ -23,8 +25,8 @@ import com.anytypeio.anytype.domain.launch.GetDefaultObjectType
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.AppActionManager
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ActiveSpaceMemberSubscriptionContainer
+import com.anytypeio.anytype.domain.notifications.SetSpaceNotificationMode
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
@@ -40,9 +42,11 @@ import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
 import com.anytypeio.anytype.domain.spaces.ClearLastOpenedSpace
 import com.anytypeio.anytype.domain.templates.GetTemplates
+import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.NotificationsChannel
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.other.DefaultSpaceInviteResolver
@@ -52,8 +56,6 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.home.HomeScreenViewModel
 import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.home.Unsubscriber
-import com.anytypeio.anytype.presentation.navigation.DeepLinkToObjectDelegate
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.presentation.spaces.SpaceGradientProvider
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.vault.ExitToVaultDelegate
@@ -299,6 +301,7 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun dispatchers(): AppCoroutineDispatchers
     fun appActionManager(): AppActionManager
     fun storeOfObjectTypes(): StoreOfObjectTypes
+    fun hasInstanceOfObjectTypeSubscriptionContainer(): HasInstanceOfObjectTypeSubscriptionContainer
     fun dateProvider(): DateProvider
     fun logger(): Logger
     fun spaceManager(): SpaceManager
@@ -318,4 +321,5 @@ interface HomeScreenDependencies : ComponentDependencies {
     fun clipboard(): com.anytypeio.anytype.domain.clipboard.Clipboard
     @Named(DEFAULT_APP_COROUTINE_SCOPE) fun scope(): CoroutineScope
     fun stringResProvider() : StringResourceProvider
+    fun setSpaceNotificationMode(): SetSpaceNotificationMode
 }

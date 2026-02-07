@@ -19,7 +19,7 @@
 //import com.anytypeio.anytype.presentation.editor.editor.slash.SlashItem
 //import com.anytypeio.anytype.presentation.editor.editor.slash.SlashRelationView
 //import com.anytypeio.anytype.presentation.editor.editor.slash.SlashWidgetState
-//import com.anytypeio.anytype.presentation.objects.ObjectIcon
+//import com.anytypeio.anytype.core_models.ui.ObjectIcon
 //import com.anytypeio.anytype.presentation.objects.ObjectTypeView
 //import com.anytypeio.anytype.presentation.objects.custom_icon.CustomIconColor
 //import com.anytypeio.anytype.presentation.relations.ObjectRelationView

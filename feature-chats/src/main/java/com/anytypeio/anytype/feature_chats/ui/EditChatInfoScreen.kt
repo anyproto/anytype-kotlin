@@ -48,7 +48,7 @@ import com.anytypeio.anytype.core_ui.views.ButtonSize
 import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Title1
 import com.anytypeio.anytype.feature_chats.R
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.feature_chats.presentation.ChatInfoUpdate
 import com.anytypeio.anytype.feature_chats.presentation.ChatObjectIcon
 

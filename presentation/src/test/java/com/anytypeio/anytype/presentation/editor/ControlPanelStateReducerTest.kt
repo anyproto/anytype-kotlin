@@ -5,7 +5,8 @@ import com.anytypeio.anytype.core_models.StubParagraph
 import com.anytypeio.anytype.core_models.StubTitle
 import com.anytypeio.anytype.core_models.TextStyle
 import com.anytypeio.anytype.domain.config.Gateway
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.presentation.editor.editor.Markup
 import com.anytypeio.anytype.presentation.editor.editor.control.ControlPanelState
 import com.anytypeio.anytype.presentation.editor.editor.styling.StyleToolbarState
@@ -49,7 +50,7 @@ class ControlPanelStateReducerTest {
     @Before
     fun setup() {
         MockitoAnnotations.openMocks(this)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
     }
 
     @Test

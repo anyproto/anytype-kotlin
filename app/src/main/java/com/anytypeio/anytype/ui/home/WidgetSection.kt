@@ -53,6 +53,7 @@ import com.anytypeio.anytype.ui.widgets.types.EmptyStateWidgetScreen
 import com.anytypeio.anytype.ui.widgets.types.GalleryWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.LinkWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.ListWidgetCard
+import com.anytypeio.anytype.ui.widgets.types.ObjectTypesGroupWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.SpaceChatWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.TreeWidgetCard
 import com.anytypeio.anytype.ui.widgets.types.getPrettyName
@@ -88,6 +89,10 @@ fun LazyListScope.renderWidgetSection(
         when (item) {
             is WidgetView.UnreadChatList -> {
                 // Unread chat list widgets are rendered separately in WidgetsScreen
+                // They should not be part of the reorderable widget sections
+            }
+            is WidgetView.RecentlyEdited -> {
+                // Recently edited widgets are rendered separately in WidgetsScreen
                 // They should not be part of the reorderable widget sections
             }
             is WidgetView.Tree -> {
@@ -528,7 +533,9 @@ fun LazyListScope.renderWidgetSection(
                     }
                 )
             }
-
+            is WidgetView.ObjectTypesGroup -> {
+                // ObjectTypesGroup is rendered directly in WidgetsScreen.kt
+            }
             is WidgetView.EmptyState -> {
                 if (mode !is InteractionMode.Edit) {
                     EmptyStateWidgetScreen(
@@ -570,8 +577,7 @@ fun WidgetEditModeButton(
 @Composable
 fun SpaceObjectTypesSectionHeader(
     mode: InteractionMode,
-    onSectionClicked: () -> Unit,
-    onCreateNewTypeClicked: () -> Unit
+    onSectionClicked: () -> Unit
 ) {
     Box(
         modifier = Modifier
@@ -587,18 +593,6 @@ fun SpaceObjectTypesSectionHeader(
             style = Caption1Medium,
             color = colorResource(id = R.color.control_transparent_secondary)
         )
-        if (mode !is InteractionMode.ReadOnly) {
-            Image(
-                painter = painterResource(id = R.drawable.ic_default_plus),
-                contentDescription = "Create new type",
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(end = 20.dp, bottom = 12.dp)
-                    .size(18.dp)
-                    .noRippleClickable { onCreateNewTypeClicked() },
-                contentScale = ContentScale.Inside
-            )
-        }
     }
 }
 
@@ -673,6 +667,65 @@ fun UnreadChatListWidget(
             // No tabs - unread section doesn't have tabs
             if (item.elements.isNotEmpty()) {
                 // Use compact list layout (same as ChatListWidgetCard in compact mode)
+                CompactListWidgetList(
+                    mode = mode,
+                    elements = item.elements,
+                    onWidgetElementClicked = onWidgetObjectClicked,
+                    onObjectCheckboxClicked = onObjectCheckboxClicked
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RecentlyEditedSectionHeader(
+    onSectionClicked: () -> Unit,
+) {
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(52.dp)
+            .noRippleClickable { onSectionClicked() }
+    ) {
+        Text(
+            modifier = Modifier
+                .align(Alignment.BottomStart)
+                .padding(start = 20.dp, bottom = 12.dp),
+            text = stringResource(R.string.widgets_section_recently_edited),
+            style = Caption1Medium,
+            color = colorResource(id = R.color.control_transparent_secondary)
+        )
+    }
+}
+
+/**
+ * Displays the recently edited widget content.
+ * Similar to UnreadChatListWidget - simple flat list of objects.
+ */
+@Composable
+fun RecentlyEditedWidget(
+    item: WidgetView.RecentlyEdited,
+    mode: InteractionMode,
+    onWidgetObjectClicked: (ObjectWrapper.Basic) -> Unit,
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+) {
+    // Wrap in card with rounded background (same as other widgets)
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 20.dp, vertical = 6.dp)
+            .background(
+                shape = RoundedCornerShape(24.dp),
+                color = colorResource(id = R.color.dashboard_card_background)
+            )
+            .clip(RoundedCornerShape(24.dp))
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            if (item.elements.isNotEmpty()) {
+                // Use compact list layout (same as UnreadChatListWidget)
                 CompactListWidgetList(
                     mode = mode,
                     elements = item.elements,

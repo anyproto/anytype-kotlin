@@ -8,14 +8,15 @@ import com.anytypeio.anytype.di.feature.CreateObjectModule
 import com.anytypeio.anytype.di.feature.DaggerAllContentComponent
 import com.anytypeio.anytype.di.feature.DaggerAppPreferencesComponent
 import com.anytypeio.anytype.di.feature.DaggerBacklinkOrAddToObjectComponent
+import com.anytypeio.anytype.di.feature.DaggerCreateObjectFeatureComponent
 import com.anytypeio.anytype.di.feature.DaggerCreateObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerDateObjectComponent
 import com.anytypeio.anytype.di.feature.DaggerEditTypePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerLinkToObjectComponent
-import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
-import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerMediaComponent
+import com.anytypeio.anytype.di.feature.DaggerMoveToComponent
 import com.anytypeio.anytype.di.feature.DaggerMySitesComponent
+import com.anytypeio.anytype.di.feature.DaggerObjectTypeComponent
 import com.anytypeio.anytype.di.feature.DaggerPublishToWebComponent
 import com.anytypeio.anytype.di.feature.DaggerSpacePropertiesComponent
 import com.anytypeio.anytype.di.feature.DaggerSpaceTypesComponent
@@ -33,7 +34,6 @@ import com.anytypeio.anytype.di.feature.ObjectAppearancePreviewLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectAppearanceSettingModule
 import com.anytypeio.anytype.di.feature.ObjectIconPickerBaseModule
 import com.anytypeio.anytype.di.feature.ObjectIconPickerModule
-import com.anytypeio.anytype.di.feature.ObjectLayoutModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModule
 import com.anytypeio.anytype.di.feature.ObjectMenuModuleBase
 import com.anytypeio.anytype.di.feature.ObjectRelationListModule
@@ -56,8 +56,8 @@ import com.anytypeio.anytype.di.feature.ViewerSortModule
 import com.anytypeio.anytype.di.feature.auth.DaggerDeletedAccountComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerChatReactionComponent
-import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
 import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatIconComponent
+import com.anytypeio.anytype.di.feature.chats.DaggerSelectChatReactionComponent
 import com.anytypeio.anytype.di.feature.cover.UnsplashModule
 import com.anytypeio.anytype.di.feature.gallery.DaggerGalleryInstallationComponent
 import com.anytypeio.anytype.di.feature.home.DaggerHomeScreenComponent
@@ -96,6 +96,7 @@ import com.anytypeio.anytype.di.feature.settings.LogoutWarningModule
 import com.anytypeio.anytype.di.feature.settings.ProfileModule
 import com.anytypeio.anytype.di.feature.sharing.DaggerSharingComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerCreateSpaceComponent
+import com.anytypeio.anytype.di.feature.spaces.DaggerManageSectionsComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceListComponent
 import com.anytypeio.anytype.di.feature.spaces.DaggerSpaceSettingsComponent
 import com.anytypeio.anytype.di.feature.templates.DaggerTemplateBlankComponent
@@ -108,14 +109,17 @@ import com.anytypeio.anytype.di.main.MainComponent
 import com.anytypeio.anytype.feature_allcontent.presentation.AllContentViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatReactionViewModel
 import com.anytypeio.anytype.feature_chats.presentation.ChatViewModel
-import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_chats.presentation.SelectChatReactionViewModel
+import com.anytypeio.anytype.feature_create_object.presentation.NewCreateObjectViewModel
 import com.anytypeio.anytype.feature_date.viewmodel.DateObjectVmParams
+import com.anytypeio.anytype.feature_object_type.ui.ObjectTypeVmParams
 import com.anytypeio.anytype.feature_object_type.viewmodel.CreateTypeVmParams
 import com.anytypeio.anytype.feature_properties.add.EditTypePropertiesVmParams
+import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
 import com.anytypeio.anytype.gallery_experience.viewmodel.GalleryInstallationViewModel
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.presentation.history.VersionHistoryViewModel
+import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
 import com.anytypeio.anytype.presentation.linking.LinkToObjectOrWebViewModel
 import com.anytypeio.anytype.presentation.moving.MoveToViewModel
 import com.anytypeio.anytype.presentation.multiplayer.RequestJoinSpaceViewModel
@@ -124,13 +128,10 @@ import com.anytypeio.anytype.presentation.multiplayer.SpaceJoinRequestViewModel
 import com.anytypeio.anytype.presentation.objects.ObjectTypeChangeViewModel
 import com.anytypeio.anytype.presentation.objects.SelectObjectTypeViewModel
 import com.anytypeio.anytype.presentation.profile.ParticipantViewModel
+import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
+import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.presentation.relations.RelationAddViewModelBase
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
-import com.anytypeio.anytype.feature_properties.space.SpacePropertiesViewModel
-import com.anytypeio.anytype.presentation.publishtoweb.MySitesViewModel
-import com.anytypeio.anytype.presentation.home.HomeScreenVmParams
-import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
-import com.anytypeio.anytype.presentation.publishtoweb.PublishToWebViewModel
 import com.anytypeio.anytype.presentation.relations.option.CreateOrEditOptionViewModel
 import com.anytypeio.anytype.presentation.relations.value.`object`.ObjectValueViewModel
 import com.anytypeio.anytype.presentation.relations.value.tagstatus.TagOrStatusValueViewModel
@@ -141,6 +142,7 @@ import com.anytypeio.anytype.presentation.settings.SpacesStorageViewModel
 import com.anytypeio.anytype.presentation.spaces.CreateSpaceViewModel
 import com.anytypeio.anytype.presentation.spaces.SpaceSettingsViewModel
 import com.anytypeio.anytype.presentation.types.SpaceTypesViewModel
+import com.anytypeio.anytype.presentation.widgets.CreateChatObjectViewModel
 import com.anytypeio.anytype.presentation.widgets.collection.CollectionViewModel
 import com.anytypeio.anytype.ui.widgets.collection.DaggerCollectionComponent
 import timber.log.Timber
@@ -260,14 +262,6 @@ class ComponentManager(
             .build()
     }
 
-    val objectLayoutComponent = ComponentWithParams { param: DefaultComponentParam ->
-        editorComponent
-            .get(key = param.ctx, param = param)
-            .objectLayoutComponent()
-            .module(ObjectLayoutModule)
-            .build()
-    }
-
     val objectAppearanceSettingComponent = ComponentWithParams { param: DefaultComponentParam ->
         editorComponent
             .get(key = param.ctx, param = param)
@@ -361,6 +355,12 @@ class ComponentManager(
 
     val dateObjectComponent = ComponentWithParams { params: DateObjectVmParams  ->
         DaggerDateObjectComponent
+            .factory()
+            .create(params, findComponentDependencies())
+    }
+
+    val createObjectFeatureComponent = ComponentWithParams { params: NewCreateObjectViewModel.VmParams ->
+        DaggerCreateObjectFeatureComponent
             .factory()
             .create(params, findComponentDependencies())
     }
@@ -860,6 +860,12 @@ class ComponentManager(
                 vmParams = vmParams,
                 dependencies = findComponentDependencies()
             )
+    }
+
+    val manageSectionsComponent = Component {
+        DaggerManageSectionsComponent
+            .factory()
+            .create(findComponentDependencies())
     }
 
     val selectObjectTypeComponent = ComponentWithParams { params: SelectObjectTypeViewModel.Params ->

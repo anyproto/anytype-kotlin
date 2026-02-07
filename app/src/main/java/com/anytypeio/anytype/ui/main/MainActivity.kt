@@ -18,10 +18,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.ComposeView
-import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
-import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
-import com.anytypeio.anytype.presentation.sharing.SharingCommand
-import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import androidx.compose.ui.platform.ViewCompositionStrategy
 import androidx.core.os.bundleOf
 import androidx.fragment.app.Fragment
@@ -43,34 +39,36 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
+import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.core_models.ui.WallpaperResult
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.extensions.getGradientDrawableResource
+import com.anytypeio.anytype.core_ui.features.sharing.SharingModalSheet
 import com.anytypeio.anytype.core_utils.ext.Mimetype
-import com.anytypeio.anytype.core_utils.ext.parseActionSendMultipleUris
-import com.anytypeio.anytype.core_utils.ext.parseActionSendUri
 import com.anytypeio.anytype.core_utils.ext.showSnackbar
 import com.anytypeio.anytype.core_utils.ext.toast
-import com.anytypeio.anytype.presentation.sharing.SharedContent
-import com.google.android.material.snackbar.Snackbar
 import com.anytypeio.anytype.core_utils.intents.ActivityCustomTabsHelper
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.theme.GetTheme
+import com.anytypeio.anytype.feature_vault.ui.SpacesIntroductionScreen
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
 import com.anytypeio.anytype.navigation.Navigator
 import com.anytypeio.anytype.other.DefaultDeepLinkResolver
-import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.main.MainViewModel
 import com.anytypeio.anytype.presentation.main.MainViewModel.Command
 import com.anytypeio.anytype.presentation.main.MainViewModelFactory
 import com.anytypeio.anytype.presentation.navigation.AppNavigation
 import com.anytypeio.anytype.presentation.notifications.NotificationAction
 import com.anytypeio.anytype.presentation.notifications.NotificationCommand
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperResult
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.presentation.sharing.IntentToSharedContentConverter
+import com.anytypeio.anytype.presentation.sharing.SharedContent
+import com.anytypeio.anytype.presentation.sharing.SharingCommand
+import com.anytypeio.anytype.presentation.sharing.SharingViewModel
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.CreateObjectFragment
@@ -85,8 +83,8 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.ui.vault.SpacesIntroductionScreen
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
+import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
@@ -808,7 +806,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                         val message = getSnackbarMessage(
                             contentType = command.contentType,
                             destinationName = command.destinationName,
-                            spaceName = command.spaceName
+                            spaceName = command.spaceName,
+                            isChat = command.isChat
                         )
                         findViewById<android.view.View>(android.R.id.content)?.showSnackbar(
                             msg = message,
@@ -845,50 +844,61 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     }
 
     /**
+     * Returns the string resource ID for "linked" messages (used when spaceName != null).
+     * Format: "Content linked to 'ObjectName' in 'SpaceName'"
+     */
+    private fun getLinkedStringResId(contentType: SharedContent): Int = when (contentType) {
+        is SharedContent.Text -> R.string.sharing_snackbar_text_linked
+        is SharedContent.Url -> R.string.sharing_snackbar_link_linked
+        is SharedContent.SingleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_linked
+            SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_linked
+            SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_linked
+            SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_linked
+            SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_linked
+        }
+        is SharedContent.MultipleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
+            else -> R.string.sharing_snackbar_files_linked
+        }
+    }
+
+    /**
+     * Returns the string resource ID for "added" messages (used for chat or new object destinations).
+     * Format: "Content added to DestinationName"
+     */
+    private fun getAddedStringResId(contentType: SharedContent): Int = when (contentType) {
+        is SharedContent.Text -> R.string.sharing_snackbar_text_added
+        is SharedContent.Url -> R.string.sharing_snackbar_link_added
+        is SharedContent.SingleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
+            SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
+            SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
+            SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
+            SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
+        }
+        is SharedContent.MultipleMedia -> when (contentType.type) {
+            SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
+            else -> R.string.sharing_snackbar_files_added
+        }
+    }
+
+    /**
      * Returns content-specific Snackbar message based on the shared content type.
-     * If spaceName is provided, uses "linked to" format; otherwise uses "added to" format.
+     * Two message formats:
+     * 1. spaceName != null -> "Content linked to 'ObjectName' in 'SpaceName'"
+     * 2. else (chat or new object) -> "Content added to DestinationName"
      */
     private fun getSnackbarMessage(
         contentType: SharedContent,
         destinationName: String,
-        spaceName: String?
+        spaceName: String?,
+        isChat: Boolean
     ): String {
         return if (spaceName != null) {
-            // Linked to object format: "Content linked to 'ObjectName' in 'SpaceName'"
-            val stringResId = when (contentType) {
-                is SharedContent.Text -> R.string.sharing_snackbar_text_linked
-                is SharedContent.Url -> R.string.sharing_snackbar_link_linked
-                is SharedContent.SingleMedia -> when (contentType.type) {
-                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_linked
-                    SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_linked
-                    SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_linked
-                    SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_linked
-                    SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_linked
-                }
-                is SharedContent.MultipleMedia -> when (contentType.type) {
-                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_linked
-                    else -> R.string.sharing_snackbar_files_linked
-                }
-            }
-            getString(stringResId, destinationName, spaceName)
+            getString(getLinkedStringResId(contentType), destinationName, spaceName)
         } else {
-            // Added to space/chat format: "Content added to 'Name'"
-            val stringResId = when (contentType) {
-                is SharedContent.Text -> R.string.sharing_snackbar_text_added
-                is SharedContent.Url -> R.string.sharing_snackbar_link_added
-                is SharedContent.SingleMedia -> when (contentType.type) {
-                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_image_added
-                    SharedContent.MediaType.VIDEO -> R.string.sharing_snackbar_video_added
-                    SharedContent.MediaType.AUDIO -> R.string.sharing_snackbar_audio_added
-                    SharedContent.MediaType.PDF -> R.string.sharing_snackbar_pdf_added
-                    SharedContent.MediaType.FILE -> R.string.sharing_snackbar_file_added
-                }
-                is SharedContent.MultipleMedia -> when (contentType.type) {
-                    SharedContent.MediaType.IMAGE -> R.string.sharing_snackbar_images_added
-                    else -> R.string.sharing_snackbar_files_added
-                }
-            }
-            getString(stringResId, destinationName)
+            getString(getAddedStringResId(contentType), destinationName)
         }
     }
 

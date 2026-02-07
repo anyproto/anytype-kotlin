@@ -3,15 +3,15 @@ package com.anytypeio.anytype.presentation.widgets
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
-import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.widgets.BundledWidgetSourceIds
+import com.anytypeio.anytype.core_utils.notifications.NotificationPermissionManager
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.chats.ChatPreviewContainer
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.library.StorelessSubscriptionContainer
 import com.anytypeio.anytype.domain.misc.DateProvider
-import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.multiplayer.ParticipantSubscriptionContainer
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
@@ -20,14 +20,13 @@ import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.resources.StringResourceProvider
+import com.anytypeio.anytype.domain.search.HasInstanceOfObjectTypeSubscriptionContainer
 import com.anytypeio.anytype.domain.spaces.GetSpaceView
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
-import com.anytypeio.anytype.presentation.notifications.NotificationPermissionManager
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
-import timber.log.Timber
 
 /**
  * Delegate responsible for transforming Widget models into WidgetContainer instances.
@@ -68,6 +67,7 @@ class WidgetContainerDelegateImpl(
     private val objectWatcher: ObjectWatcher,
     private val getSpaceView: GetSpaceView,
     private val storeOfObjectTypes: StoreOfObjectTypes,
+    private val hasInstanceContainer: HasInstanceOfObjectTypeSubscriptionContainer,
     private val getObject: GetObject,
     private val coverImageHashProvider: CoverImageHashProvider,
     private val storeOfRelations: StoreOfRelations,
@@ -85,12 +85,14 @@ class WidgetContainerDelegateImpl(
         return when (widget) {
             is Widget.Chat -> createChatContainer(widget)
             is Widget.UnreadChatList -> createUnreadChatListContainer(widget, currentlyDisplayedViews)
+            is Widget.RecentlyEdited -> createRecentlyEditedContainer(widget, currentlyDisplayedViews)
             is Widget.Link -> createLinkContainer(widget)
             is Widget.Tree -> createTreeContainer(widget, currentlyDisplayedViews)
             is Widget.List -> createListContainer(widget, currentlyDisplayedViews)
             is Widget.View -> createViewContainer(widget, currentlyDisplayedViews)
             is Widget.AllObjects -> createAllObjectsContainer(widget)
             is Widget.Bin -> createBinContainer(widget)
+            is Widget.ObjectTypesGroup -> createObjectTypesGroupContainer(widget, currentlyDisplayedViews)
         }
     }
 
@@ -379,4 +381,48 @@ class WidgetContainerDelegateImpl(
     private fun createBinContainer(widget: Widget.Bin): WidgetContainer {
         return BinWidgetContainer(widget = widget)
     }
+
+    private fun createRecentlyEditedContainer(
+        widget: Widget.RecentlyEdited,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return RecentlyEditedWidgetContainer(
+            widget = widget,
+            storage = storelessSubscriptionContainer,
+            urlBuilder = urlBuilder,
+            isWidgetCollapsed = combine(
+                expandedWidgetIds,
+                userSettingsRepository.getCollapsedSectionIds(spaceId).map { it.toSet() }
+            ) { expanded, collapsedSecs ->
+                isWidgetCollapsed(widget, expanded, collapsedSecs)
+            },
+            getSpaceView = getSpaceView,
+            fieldParser = fieldParser,
+            storeOfObjectTypes = storeOfObjectTypes,
+            isSessionActive = isSessionActive,
+            onRequestCache = {
+                currentlyDisplayedViews.find { view ->
+                    view.id == widget.id
+                            && view is WidgetView.RecentlyEdited
+                            && view.source == widget.source
+                } as? WidgetView.RecentlyEdited
+            }
+        )
+    }
+
+    private fun createObjectTypesGroupContainer(
+        widget: Widget.ObjectTypesGroup,
+        currentlyDisplayedViews: List<WidgetView>
+    ): WidgetContainer {
+        return ObjectTypesGroupWidgetContainer(
+            widget = widget,
+            storeOfObjectTypes = storeOfObjectTypes,
+            hasInstanceContainer = hasInstanceContainer,
+            spaceViewContainer = spaceViewSubscriptionContainer,
+            spaceId = spaceId,
+            fieldParser = fieldParser,
+            isSessionActive = isSessionActive
+        )
+    }
+
 }

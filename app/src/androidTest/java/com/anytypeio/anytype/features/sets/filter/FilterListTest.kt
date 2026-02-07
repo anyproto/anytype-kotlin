@@ -18,7 +18,8 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.Gateway
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
-import com.anytypeio.anytype.domain.misc.UrlBuilder
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.UrlBuilderImpl
 import com.anytypeio.anytype.domain.objects.DefaultObjectStore
 import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -88,7 +89,7 @@ class FilterListTest {
         MockitoAnnotations.openMocks(this)
         updateDataViewViewer = UpdateDataViewViewer(repo, dispatchers = dispatchers)
         searchObjects = SearchObjects(repo)
-        urlBuilder = UrlBuilder(gateway)
+        urlBuilder = UrlBuilderImpl(gateway)
         TestViewerFilterFragment.testVmFactory = ViewerFilterViewModel.Factory(
             updateDataViewViewer = updateDataViewViewer,
             dispatcher = dispatcher,

@@ -18,7 +18,7 @@ import com.anytypeio.anytype.core_utils.ui.setOnThrottleClickListener
 import com.anytypeio.anytype.presentation.navigation.DefaultObjectView
 import com.anytypeio.anytype.presentation.navigation.DefaultSearchItem
 import com.anytypeio.anytype.presentation.navigation.NewObject
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.search.ObjectSearchSection
 import com.anytypeio.anytype.presentation.widgets.source.BundledWidgetSourceView
 import com.anytypeio.anytype.presentation.widgets.source.SuggestWidgetObjectType

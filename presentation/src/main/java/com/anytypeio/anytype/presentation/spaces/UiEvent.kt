@@ -1,7 +1,7 @@
 package com.anytypeio.anytype.presentation.spaces
 
 import com.anytypeio.anytype.core_models.Id
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 
 sealed class UiEvent {
     data object OnBackPressed : UiEvent()

@@ -3,7 +3,6 @@ package com.anytypeio.anytype.ui_settings.space.new_settings
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -29,14 +28,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import com.anytypeio.anytype.core_models.ui.WallpaperColor
+import com.anytypeio.anytype.core_models.ui.WallpaperView
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.extensions.getWallpaperGradientByCode
 import com.anytypeio.anytype.core_ui.extensions.res
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.Title1
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperColor
-import com.anytypeio.anytype.presentation.wallpaper.WallpaperView
 
 @Composable
 fun WallpaperSelectBottomSheet(

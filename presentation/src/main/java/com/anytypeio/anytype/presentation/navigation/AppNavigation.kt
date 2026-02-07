@@ -70,7 +70,6 @@ interface AppNavigation {
     fun openTemplatesModal(typeId: Id)
 
     fun openAllContent(space: Id)
-    fun openRelationCreationScreen(id: Id, name: String, space: Id)
 
     fun openCreateObjectTypeScreen(spaceId: Id)
 

@@ -35,6 +35,7 @@ message SpacePreference {
   optional WallpaperSetting wallpaperSetting = 7;
   repeated string expandedWidgetIds = 8;
   repeated string collapsedSectionIds = 9;
+  optional SectionSettings sectionSettings = 10;
 }
 
 message GlobalSearchHistoryProto {
@@ -50,4 +51,14 @@ message AllContentSettings {
 message WallpaperSetting {
   int32 type = 1;
   string value = 2;
+}
+
+message SectionSettings {
+  repeated SectionConfigProto sections = 1;
+}
+
+message SectionConfigProto {
+  string sectionType = 1;
+  bool isVisible = 2;
+  int32 order = 3;
 }

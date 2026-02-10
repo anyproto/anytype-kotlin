@@ -717,6 +717,7 @@ message Event {
               15; // Default object type that is chosen for new object created
                   // within the view
           bool wrapContent = 17; // Wrap content in view
+          anytype.model.Block.Content.Dataview.View.ListSize listSize = 18; // List view size setting
         }
 
         message Filter {

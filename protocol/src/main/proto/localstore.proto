@@ -66,4 +66,6 @@ message ObjectStoreChecksums {
     int32 reindexDeletedObjects = 16;
     int32 reindexParticipants = 17;
     int32 reindexChats = 18;
+    int32 reindexFulltextChatMessages = 19;
+    int32 invalidateObjectsIndex = 20;
 }

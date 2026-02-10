@@ -6,9 +6,9 @@ import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectTypeIds
+import com.anytypeio.anytype.core_models.ObjectViewDetails
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
-import com.anytypeio.anytype.core_models.ObjectViewDetails
 
 sealed class ObjectState {
 
@@ -86,6 +86,6 @@ sealed class ObjectState {
 
     companion object {
         const val VIEW_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
-        val VIEW_TYPE_UNSUPPORTED = DVViewerType.BOARD
+        val VIEW_TYPES_UNSUPPORTED = setOf(DVViewerType.BOARD, DVViewerType.GRID)
     }
 }

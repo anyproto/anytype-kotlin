@@ -84,6 +84,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
@@ -3289,10 +3290,26 @@ class ObjectSetViewModel(
 
             ViewersWidgetUi.Action.Plus -> {
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                // Determine default layout based on object type
+                val defaultLayout = when (state) {
+                    is ObjectState.DataView.TypeSet -> {
+                        val setOfValue = state.getSetOfValue(vmParams.ctx)
+                        val typeId = setOfValue.firstOrNull()
+                        val typeWrapper = typeId?.let { state.details.getTypeObject(it) }
+                        val uniqueKey = typeWrapper?.uniqueKey
+                        if (uniqueKey == ObjectTypeIds.IMAGE || uniqueKey == ObjectTypeIds.VIDEO) {
+                            DVViewerType.GALLERY
+                        } else {
+                            DVViewerType.LIST
+                        }
+                    }
+
+                    else -> DVViewerType.LIST
+                }
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = DVViewerType.GRID,
+                    type = defaultLayout,
                     filters = emptyList(),
                     sorts = emptyList()
                 )

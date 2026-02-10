@@ -279,18 +279,9 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             .wrapContentHeight(),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         verticalArrangement = Arrangement.SpaceBetween,
-        maxItemsInEachRow = 3
+        maxItemsInEachRow = 2
     ) {
         val itemModifier = Modifier.weight(1f)
-        LayoutIcon(
-            modifier = itemModifier,
-            uiState = uiState,
-            layoutType = DVViewerType.GRID,
-            imageResource = R.drawable.ic_layout_grid,
-            imageResourceSelected = R.drawable.ic_layout_grid_selected,
-            contentDescription = stringResource(id = R.string.view_grid),
-            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
-        )
         LayoutIcon(
             modifier = itemModifier,
             uiState = uiState,
@@ -308,37 +299,6 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             imageResource = R.drawable.ic_layout_list,
             contentDescription = stringResource(id = R.string.view_list),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier.padding(top = 8.dp),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = stringResource(id = R.string.view_kanban),
-            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
         )
     }
 }

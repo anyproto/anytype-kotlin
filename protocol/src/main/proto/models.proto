@@ -70,6 +70,35 @@ message Search {
         string relationKey = 4; // relation key of the block where the highlight has been found
         google.protobuf.Struct relationDetails = 5; // contains details for dependent object. E.g. relation option or type. todo: rename to dependantDetails
     }
+
+    message Message {
+        message Sort {
+            Key key = 1;
+            Type type = 2;
+
+            enum Key {
+                ORDER_ID = 0;
+                SCORE = 1;
+                CREATED_AT = 2;
+                MODIFIED_AT = 3;
+            }
+
+            enum Type {
+                Asc = 0;
+                Desc = 1;
+            }
+        }
+
+        message Result {
+            string chatId = 1;
+            string messageId = 2;
+            int64 score = 3;
+            string highlight = 4; // truncated text with highlights
+            repeated Range highlightRanges = 5; // ranges of the highlight in the text (using utf-16 runes)
+            ChatMessage message = 6;
+        }
+    }
+
 }
 
 message Block {
@@ -293,7 +322,9 @@ message Block {
                 Toggle = 11;
                 Description = 12; // currently only one block of this style can exists on a page
                 Callout = 13;
-
+                ToggleHeader1 = 14;
+                ToggleHeader2 = 15;
+                ToggleHeader3 = 16;
             }
         }
 
@@ -365,6 +396,7 @@ message Block {
                 string defaultObjectTypeId = 15; // Default object type that is chosen for new object created within the view
                 string endRelationKey = 16; // Group view by this relationKey
                 bool wrapContent = 17; // Wrap content in view
+                ListSize listSize = 18; // List view size setting
 
                 enum Type {
                     Table = 0;
@@ -379,6 +411,11 @@ message Block {
                     Small = 0;
                     Medium = 1;
                     Large = 2;
+                }
+
+                enum ListSize {
+                    Compact = 0;  // Single-line display (default)
+                    Regular = 1;  // Two-line display with description
                 }
             }
 
@@ -1423,6 +1460,14 @@ message MembershipV2 {
         int64 amountCents = 2;
     }
 
+    enum Platform {
+        Unknown = 0;
+        Desktop = 1;
+        MobileIOS = 2;
+        MobileAndroid = 3;
+        Web = 4;
+    }
+
     enum PaymentProvider {
         None = 0;
         Stripe = 1;
@@ -1628,4 +1673,9 @@ enum SyncError {
     SyncErrorIncompatibleVersion = 2;
     SyncErrorNetworkError        = 3;
     SyncErrorOversized           = 4;
+}
+
+enum TemplateNamePrefillType {
+    Empty = 0;
+    FromTemplateName = 1;
 }

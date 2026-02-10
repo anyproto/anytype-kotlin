@@ -84,6 +84,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
@@ -107,7 +108,6 @@ import com.anytypeio.anytype.presentation.relations.ObjectRelationView
 import com.anytypeio.anytype.presentation.relations.ObjectSetConfig.DEFAULT_LIMIT
 import com.anytypeio.anytype.presentation.relations.RelationListViewModel
 import com.anytypeio.anytype.presentation.relations.render
-import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.model.CellView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
@@ -131,17 +131,15 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.withContext
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
@@ -3095,10 +3093,26 @@ class ObjectSetViewModel(
 
             ViewersWidgetUi.Action.Plus -> {
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                // Determine default layout based on object type
+                val defaultLayout = when (state) {
+                    is ObjectState.DataView.TypeSet -> {
+                        val setOfValue = state.getSetOfValue(vmParams.ctx)
+                        val typeId = setOfValue.firstOrNull()
+                        val typeWrapper = typeId?.let { state.details.getTypeObject(it) }
+                        val uniqueKey = typeWrapper?.uniqueKey
+                        if (uniqueKey == ObjectTypeIds.IMAGE || uniqueKey == ObjectTypeIds.VIDEO) {
+                            DVViewerType.GALLERY
+                        } else {
+                            DVViewerType.LIST
+                        }
+                    }
+
+                    else -> DVViewerType.LIST
+                }
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = DVViewerType.GRID,
+                    type = defaultLayout,
                     filters = emptyList(),
                     sorts = emptyList()
                 )

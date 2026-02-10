@@ -285,15 +285,6 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
         LayoutIcon(
             modifier = itemModifier,
             uiState = uiState,
-            layoutType = DVViewerType.GRID,
-            imageResource = R.drawable.ic_layout_grid,
-            imageResourceSelected = R.drawable.ic_layout_grid_selected,
-            contentDescription = stringResource(id = R.string.view_grid),
-            click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.GRID)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier,
-            uiState = uiState,
             layoutType = DVViewerType.GALLERY,
             imageResourceSelected = R.drawable.ic_layout_gallery_selected,
             imageResource = R.drawable.ic_layout_gallery,
@@ -310,35 +301,13 @@ fun LayoutIcons(uiState: ViewerLayoutWidgetUi, action: (ViewerLayoutWidgetUi.Act
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.LIST)) }
         )
         LayoutIcon(
-            modifier = itemModifier.padding(top = 8.dp),
+            modifier = itemModifier,
             uiState = uiState,
             layoutType = DVViewerType.BOARD,
             imageResourceSelected = R.drawable.ic_layout_kanban_selected,
             imageResource = R.drawable.ic_layout_kanban,
             contentDescription = stringResource(id = R.string.view_kanban),
             click = { action(ViewerLayoutWidgetUi.Action.Type(DVViewerType.BOARD)) }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
-        )
-        LayoutIcon(
-            modifier = itemModifier
-                .padding(top = 8.dp)
-                .alpha(0F),
-            uiState = uiState,
-            layoutType = DVViewerType.BOARD,
-            imageResourceSelected = R.drawable.ic_layout_kanban_selected,
-            imageResource = R.drawable.ic_layout_kanban,
-            contentDescription = "",
-            click = { }
         )
     }
 }

@@ -48,6 +48,48 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
+        <LinearLayout
+            android:id="@+id/templateBanner"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center"
+            android:paddingTop="8dp"
+            android:paddingBottom="8dp"
+            android:background="@color/defaultCanvasColor"
+            android:visibility="gone"
+            android:paddingStart="@dimen/dp_32"
+            android:paddingEnd="@dimen/dp_32"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@id/topToolbar"
+            tools:visibility="visible">
+
+            <TextView
+                android:id="@+id/templateBannerPrefix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/template_title_prefix"
+                style="@style/TextView.UXStyle.Body.Callout.Regular"
+                android:textColor="@color/text_secondary" />
+
+            <com.anytypeio.anytype.core_ui.widgets.ObjectIconWidget
+                android:id="@+id/templateBannerIcon"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_marginStart="4dp" />
+
+            <TextView
+                android:id="@+id/templateBannerTypeName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="4dp"
+                style="@style/TextView.UXStyle.Body.Callout.Regular"
+                android:textColor="@color/text_secondary"
+                tools:text="Task" />
+
+        </LinearLayout>
+
         <com.anytypeio.anytype.core_ui.widgets.toolbar.MultiSelectTopToolbarWidget
             android:id="@+id/multiSelectTopToolbar"
             android:layout_width="0dp"

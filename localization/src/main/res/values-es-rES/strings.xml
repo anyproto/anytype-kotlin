@@ -2068,6 +2068,7 @@ En concreto,
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
     <string name="widgets_section_object_types">Objetos</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>
     <string name="widget_unpin_alert_description">Hemos rediseñado el funcionamiento de los widgets y este widget ya no es compatible. Una vez desanclado, este widget no se puede restaurar.</string>

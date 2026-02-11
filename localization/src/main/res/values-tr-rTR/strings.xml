@@ -2069,6 +2069,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="widgets_section_pinned">Sabitlendi</string>
     <string name="widgets_section_unread">Okunmamış</string>
     <string name="widgets_section_object_types">Nesneler</string>
+    <string name="widgets_section_recently_edited">Yakın Zamanda Düzenlenen</string>
     <string name="widgets_menu_new_object_type">Yeni</string>
     <string name="widgets_menu_delete_object_type">Nesne Türünü Sil</string>
     <string name="widget_unpin_alert_description">Bu widget artık desteklenmiyor çünkü widget\'ların çalışma şeklini yeniden tasarladık. Sabitlemesi kaldırıldıktan sonra bu widget geri yüklenemez.</string>

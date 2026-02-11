@@ -2069,6 +2069,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="widgets_section_pinned">Angeheftet</string>
     <string name="widgets_section_unread">Ungelesen</string>
     <string name="widgets_section_object_types">Objekte</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Neu</string>
     <string name="widgets_menu_delete_object_type">Objekttyp löschen</string>
     <string name="widget_unpin_alert_description">Wir haben die Funktionsweise von Widgets überarbeitet, sodass dieses Widget nicht mehr unterstützt wird. Nach dem Löschen kann dieses Widget nicht wiederhergestellt werden.</string>

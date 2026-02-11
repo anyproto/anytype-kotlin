@@ -2018,13 +2018,13 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="attachment_menu_photos">Foto</string>
     <string name="attachment_menu_camera">Kamera</string>
     <string name="attachment_menu_files">Berkas</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object">Lampirkan objek</string>
     <string name="attachment_menu_see_all">Lihat semua</string>
     <string name="attachment_menu_search_placeholder">Telusuri</string>
-    <string name="create_object_empty_state">No object types available</string>
-    <string name="create_object_no_results">No types found</string>
-    <string name="create_object_search_types">Search object types</string>
-    <string name="create_object_error">Failed to load object types</string>
+    <string name="create_object_empty_state">Tidak ada tipe objek tersedia</string>
+    <string name="create_object_no_results">Tidak ditemukan tipe</string>
+    <string name="create_object_search_types">Telusuri tipe objek</string>
+    <string name="create_object_error">Gagal memuat tipe objek</string>
     <string name="create_object_retry">Coba lagi</string>
     <!-- Share Space Errors -->
     <string name="share_space_error_limit_reached">Batas sudah tercapai untuk ruang ini. Harap tingkatkan keanggotaan Anda atau hubungi dukungan untuk mendapatkan bantuan.</string>
@@ -2055,6 +2055,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="widgets_section_pinned">Tersemat</string>
     <string name="widgets_section_unread">Belum dibaca</string>
     <string name="widgets_section_object_types">Objek</string>
+    <string name="widgets_section_recently_edited">Baru Disunting</string>
     <string name="widgets_menu_new_object_type">Baru</string>
     <string name="widgets_menu_delete_object_type">Hapus Tipe Objek</string>
     <string name="widget_unpin_alert_description">Kami telah meredesain konsep gawit, dan gawit ini sudah tidak didukung lagi. Begitu dihapus, gawit ini tidak dapat dikembalikan.</string>

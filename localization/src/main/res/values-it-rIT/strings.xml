@@ -2070,6 +2070,7 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_section_pinned">Fissato</string>
     <string name="widgets_section_unread">Non letto</string>
     <string name="widgets_section_object_types">Oggetti</string>
+    <string name="widgets_section_recently_edited">Recently Edited</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
     <string name="widgets_menu_delete_object_type">Elimina Tipo Oggetto</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>

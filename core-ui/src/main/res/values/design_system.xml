@@ -429,7 +429,7 @@
 
 
     <!-- dimens -->
-    <dimen name="button_xsmall_corner">6dp</dimen>
+    <dimen name="button_xsmall_corner">100dp</dimen>
     <dimen name="button_small_corner">8dp</dimen>
     <dimen name="button_medium_corner">10dp</dimen>
     <dimen name="button_large_corner">12dp</dimen>

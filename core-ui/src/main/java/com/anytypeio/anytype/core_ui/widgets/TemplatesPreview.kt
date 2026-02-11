@@ -53,7 +53,7 @@ fun TypeTemplatesWidgetPreview() {
     val state = TypeTemplatesWidgetUI.Data(
         templates = items,
         showWidget = true,
-        isEditing = true,
+        isEditing = false,
         moreMenuItem = null,
         objectTypes = listOf(
             TemplateObjectTypeView.Search,
@@ -66,7 +66,7 @@ fun TypeTemplatesWidgetPreview() {
         ),
         viewerId = "",
         isPossibleToChangeType = true,
-        isPossibleToChangeTemplate = false
+        isPossibleToChangeTemplate = true
     )
     TypeTemplatesWidget(
         state = state,

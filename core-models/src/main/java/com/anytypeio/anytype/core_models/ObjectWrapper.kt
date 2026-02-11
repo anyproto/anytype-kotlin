@@ -142,6 +142,12 @@ sealed class ObjectWrapper {
         val targetSpaceId: Id? get() = getSingleValue(Relations.TARGET_SPACE_ID)
 
         val backlinks get() = getValues<Id>(Relations.BACKLINKS)
+
+        val templateNamePrefillType: Int?
+            get() = getSingleValue<Double>(Relations.TEMPLATE_NAME_PREFILL_TYPE)?.toInt()
+
+        val isNamePrefillEnabled: Boolean
+            get() = templateNamePrefillType == 1 // FromTemplateName
     }
 
     /**

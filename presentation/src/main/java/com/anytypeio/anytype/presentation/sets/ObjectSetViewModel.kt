@@ -1668,7 +1668,8 @@ class ObjectSetViewModel(
                 showSetObjectNameSheet(
                     objectId = response.objectId,
                     icon = icon,
-                    isIconChangeAllowed = isIconChangeAllowed
+                    isIconChangeAllowed = isIconChangeAllowed,
+                    name = obj.name.orEmpty()
                 )
             }
         }
@@ -3580,13 +3581,14 @@ class ObjectSetViewModel(
         objectId: Id,
         icon: ObjectIcon,
         isIconChangeAllowed: Boolean,
-        targetBlockId: Id? = null
+        targetBlockId: Id? = null,
+        name: String = ""
     ) {
         _setObjectNameState.value = SetObjectNameState(
             isVisible = true,
             targetObjectId = objectId,
             currentIcon = icon,
-            inputText = "",
+            inputText = name,
             isIconChangeAllowed = isIconChangeAllowed,
             targetBlockId = targetBlockId
         )

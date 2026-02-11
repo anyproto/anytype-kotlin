@@ -149,7 +149,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
-                    isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
+                    isTemplateNamePrefillEnabled = false // Notes don't have titles
                 )
 
                 else -> Options.NONE.copy(

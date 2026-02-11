@@ -131,6 +131,7 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -257,6 +258,8 @@ class ObjectSetViewModel(
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
+
+    private val isObjectCreationInProgress = AtomicBoolean(false)
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
@@ -3307,34 +3310,50 @@ class ObjectSetViewModel(
     fun proceedWithDataViewObjectCreate(typeChosenBy: TypeKey? = null, templateId: Id? = null) {
         Timber.d("proceedWithDataViewObjectCreate, typeChosenBy:[$typeChosenBy], templateId:[$templateId]")
 
+        // Skip if already creating an object
+        if (!isObjectCreationInProgress.compareAndSet(false, true)) {
+            Timber.d("proceedWithDataViewObjectCreate: creation already in progress, skipping")
+            return
+        }
+
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
+            isObjectCreationInProgress.set(false)
             toast(NOT_ALLOWED)
             return
         }
 
-        val state = stateReducer.state.value.dataViewState() ?: return
+        val state = stateReducer.state.value.dataViewState()
+        if (state == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
 
         viewModelScope.launch {
-            when (state) {
-                is ObjectState.DataView.Collection -> {
-                    proceedWithAddingObjectToCollection(
-                        typeChosenByUser = typeChosenBy,
-                        templateChosenBy = templateId
-                    )
-                }
-                is ObjectState.DataView.Set -> {
-                    proceedWithCreatingSetObject(
-                        currentState = state,
-                        templateChosenBy = templateId
-                    )
-                }
+            try {
+                when (state) {
+                    is ObjectState.DataView.Collection -> {
+                        proceedWithAddingObjectToCollection(
+                            typeChosenByUser = typeChosenBy,
+                            templateChosenBy = templateId
+                        )
+                    }
 
-                is ObjectState.DataView.TypeSet -> {
-                    proceedWithCreatingObjectTypeSetObject(
-                        currentState = state,
-                        templateChosenBy = templateId
-                    )
+                    is ObjectState.DataView.Set -> {
+                        proceedWithCreatingSetObject(
+                            currentState = state,
+                            templateChosenBy = templateId
+                        )
+                    }
+
+                    is ObjectState.DataView.TypeSet -> {
+                        proceedWithCreatingObjectTypeSetObject(
+                            currentState = state,
+                            templateChosenBy = templateId
+                        )
+                    }
                 }
+            } finally {
+                isObjectCreationInProgress.set(false)
             }
         }
     }

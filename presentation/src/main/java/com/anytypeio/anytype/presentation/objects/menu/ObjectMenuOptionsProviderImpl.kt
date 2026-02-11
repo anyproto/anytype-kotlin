@@ -89,6 +89,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasRelations = false,
                     hasDescriptionShow = !featuredContainsDescription,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = false,
                     isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
@@ -101,6 +102,7 @@ class ObjectMenuOptionsProviderImpl(
                         hasHistory = false,
                         hasDescriptionShow = !featuredContainsDescription,
                         hasObjectLayoutConflict = hasObjectLayoutConflict,
+                        hasTemplateNamePrefill = false,
                         isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                     )
                 }
@@ -114,6 +116,7 @@ class ObjectMenuOptionsProviderImpl(
                         hasHistory = !isLocked && !isReadOnly,
                         hasDescriptionShow = !featuredContainsDescription,
                         hasObjectLayoutConflict = hasObjectLayoutConflict,
+                        hasTemplateNamePrefill = false,
                         isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                     )
                 }
@@ -127,6 +130,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = true,
                     isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
@@ -138,6 +142,7 @@ class ObjectMenuOptionsProviderImpl(
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = true,
                     isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
@@ -149,12 +154,14 @@ class ObjectMenuOptionsProviderImpl(
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
-                    isTemplateNamePrefillEnabled = false // Notes don't have titles
+                    hasTemplateNamePrefill = false, // Notes don't have titles
+                    isTemplateNamePrefillEnabled = false
                 )
 
                 else -> Options.NONE.copy(
                     hasDiagnosticsVisibility = true,
                     hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = false,
                     isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
             }
@@ -163,6 +170,7 @@ class ObjectMenuOptionsProviderImpl(
             Options.NONE.copy(
                 hasDiagnosticsVisibility = true,
                 hasObjectLayoutConflict = hasObjectLayoutConflict,
+                hasTemplateNamePrefill = false,
                 isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
             )
         }

@@ -164,8 +164,8 @@ abstract class ObjectMenuBaseFragment :
         binding.objectDiagnosticsDivider.visibility = objectDiagnosticsVisibility
         binding.objectLayoutConflict.visibility = objectLayoutConflictVisibility
 
-        // Template Name Prefill - only visible for templates
-        if (isTemplate == true) {
+        // Template Name Prefill - only visible for templates with title support
+        if (isTemplate == true && options.hasTemplateNamePrefill) {
             binding.optionTemplateNamePrefill.visibility = View.VISIBLE
             binding.templateNamePrefillDivider.visibility = View.VISIBLE
             binding.optionTemplateNamePrefill.setChecked(options.isTemplateNamePrefillEnabled)

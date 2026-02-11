@@ -49,6 +49,7 @@ class ViewerGridAdapter(
         val horizontalDivider = binding.root.context.drawable(R.drawable.divider_dv_horizontal_2)
 
         binding.rowCellRecycler.apply {
+            itemAnimator = null // Disable animations to prevent "view is not a child" crash during recycling
             adapter = ViewerGridCellsAdapter(
                 onCellClicked = onCellClicked
             )

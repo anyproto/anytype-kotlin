@@ -187,14 +187,19 @@ fun ChatScreenWrapper(
             onClearReplyClicked = vm::onClearReplyClicked,
             onChatBoxMediaPicked = { uris ->
                 vm.onChatBoxMediaPicked(
-                    uris.map {
-                        ChatViewModel.ChatBoxMediaUri(
-                            uri = it.parseImagePath(context = context),
-                            isVideo = isVideo(
-                                uri = it,
-                                context = context
+                    uris.mapNotNull { uri ->
+                        val path = uri.parseImagePath(context = context)
+                        if (path != null) {
+                            ChatViewModel.ChatBoxMediaUri(
+                                uri = path,
+                                isVideo = isVideo(
+                                    uri = uri,
+                                    context = context
+                                )
                             )
-                        )
+                        } else {
+                            null
+                        }
                     }
                 )
             },

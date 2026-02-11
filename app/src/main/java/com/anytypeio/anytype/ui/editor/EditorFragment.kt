@@ -1063,11 +1063,13 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     }
                 }
                 is Command.OpenTextBlockIconPicker -> {
-                    TextBlockIconPickerFragment.new(
-                        context = ctx,
-                        blockId = command.block,
-                        space = space
-                    ).showChildFragment()
+                    if (childFragmentManager.findFragmentByTag(TAG_TEXT_BLOCK_ICON_PICKER) == null) {
+                        TextBlockIconPickerFragment.new(
+                            context = ctx,
+                            blockId = command.block,
+                            space = space
+                        ).showChildFragment(TAG_TEXT_BLOCK_ICON_PICKER)
+                    }
                 }
                 is Command.OpenDocumentEmojiIconPicker -> {
                     hideSoftInput()
@@ -1278,13 +1280,15 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
                     jobs += lifecycleScope.launch {
                         hideSoftInput()
                         delay(DEFAULT_ANIM_DURATION)
-                        val fr = LinkToObjectFragment.new(
-                            target = command.target,
-                            position = command.position,
-                            ignore = vm.context,
-                            space = space
-                        )
-                        fr.showChildFragment()
+                        if (childFragmentManager.findFragmentByTag(TAG_LINK_TO_OBJECT) == null) {
+                            val fr = LinkToObjectFragment.new(
+                                target = command.target,
+                                position = command.position,
+                                ignore = vm.context,
+                                space = space
+                            )
+                            fr.showChildFragment(TAG_LINK_TO_OBJECT)
+                        }
                     }
                 }
                 is Command.AddMentionWidgetTriggerToFocusedBlock -> {
@@ -2428,12 +2432,11 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
     //region Media Picker
     private val pickMedia = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onProceedWithFilePath(path)
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for media file")
-                Timber.e(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.i("No media selected")
@@ -2442,15 +2445,14 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
     private val pickProfileIcon = registerForActivityResult(PickVisualMedia()) { uri ->
         if (uri != null) {
-            try {
-                val path = uri.parseImagePath(requireContext())
+            val path = uri.parseImagePath(requireContext())
+            if (path != null) {
                 vm.onPickedDocImageFromDevice(
                     ctx = ctx,
                     path = path
                 )
-            } catch (e: Exception) {
+            } else {
                 toast("Error while parsing path for media file")
-                Timber.e(e, "Error while parsing path for cover image")
             }
         } else {
             Timber.i("No media selected")
@@ -2504,6 +2506,8 @@ open class EditorFragment : NavigationFragment<FragmentEditorBinding>(R.layout.f
 
         const val TAG_ALERT = "tag.alert"
         const val TAG_LINK = "tag.link"
+        const val TAG_TEXT_BLOCK_ICON_PICKER = "tag.text.block.icon.picker"
+        const val TAG_LINK_TO_OBJECT = "tag.link.to.object"
 
         const val EMPTY_TEXT = ""
         const val DRAG_AND_DROP_LABEL = "Anytype's editor drag-and-drop."

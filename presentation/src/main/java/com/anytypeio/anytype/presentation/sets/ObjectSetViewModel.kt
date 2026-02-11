@@ -2492,6 +2492,9 @@ class ObjectSetViewModel(
             val viewer = getViewer(dataView) ?: return@launch
             val (type, _) = dataView.getActiveViewTypeAndTemplate(vmParams.ctx, viewer, storeOfObjectTypes)
             if (type == null) return@launch
+            if (type.recommendedLayout == ObjectType.Layout.SET || type.recommendedLayout == ObjectType.Layout.COLLECTION) {
+                return@launch
+            }
             typeTemplatesWidgetState.value = createState(viewer)
             selectedTypeFlow.value = type
         }

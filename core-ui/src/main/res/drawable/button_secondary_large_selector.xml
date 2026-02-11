@@ -2,22 +2,21 @@
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <item android:state_enabled="false">
         <shape android:shape="rectangle">
-            <stroke android:color="@color/shape_secondary" android:width="1dp"/>
+            <stroke android:color="@color/shape_transparent_primary" android:width="1dp" />
             <corners android:radius="@dimen/button_large_corner" />
         </shape>
     </item>
     <item android:state_enabled="true" android:state_pressed="false">
         <shape android:shape="rectangle">
-            <stroke android:color="@color/shape_primary" android:width="1dp"/>
+            <stroke android:color="@color/shape_transparent_primary" android:width="1dp" />
             <corners android:radius="@dimen/button_large_corner" />
         </shape>
     </item>
 
     <item android:state_enabled="true" android:state_pressed="true">
         <shape android:shape="rectangle">
-            <stroke android:color="@color/shape_primary" android:width="1dp"/>
             <corners android:radius="@dimen/button_large_corner" />
-            <solid android:color="@color/shape_transparent" />
+            <solid android:color="@color/shape_tertiary" />
         </shape>
     </item>
 </selector>

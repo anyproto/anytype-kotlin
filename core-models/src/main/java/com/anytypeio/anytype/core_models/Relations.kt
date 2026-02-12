@@ -133,6 +133,9 @@ object Relations {
 
     const val ORDER_ID = "orderId"
 
+    const val CREATED_IN_CONTEXT = "createdInContext"
+    const val CREATED_IN_CONTEXT_REF = "createdInContextRef"
+
     val systemRelationKeys = listOf(
         "id",
         "name",

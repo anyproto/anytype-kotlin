@@ -39,7 +39,9 @@ sealed class Command {
         val space: SpaceId,
         val path: String,
         val type: Block.Content.File.Type?,
-        val preloadFileId: Id? = null
+        val preloadFileId: Id? = null,
+        val createdInContext: Id? = null,
+        val createdInContextRef: String? = null
     )
 
     class PreloadFile(

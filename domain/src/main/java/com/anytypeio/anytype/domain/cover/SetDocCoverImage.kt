@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Hash
 import com.anytypeio.anytype.core_models.Payload
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -19,7 +20,9 @@ class SetDocCoverImage(
                     command = Command.UploadFile(
                         path = params.path,
                         type = Block.Content.File.Type.IMAGE,
-                        space = params.space
+                        space = params.space,
+                        createdInContext = params.context,
+                        createdInContextRef = Relations.COVER_ID
                     )
                 )
                 repo.setDocumentCoverImage(

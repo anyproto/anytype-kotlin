@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.objects
 
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -16,12 +17,14 @@ class CreateObjectFromUrl @Inject constructor(
     override suspend fun doWork(params: Params): ObjectWrapper.Basic {
         return repository.createObjectFromUrl(
             space = params.space,
-            url = params.url
+            url = params.url,
+            createdInContext = params.createdInContext
         )
     }
 
     data class Params(
         val space: SpaceId,
-        val url: Url
+        val url: Url,
+        val createdInContext: Id? = null
     )
 }

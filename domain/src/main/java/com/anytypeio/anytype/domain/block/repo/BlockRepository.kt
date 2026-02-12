@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.domain.block.repo
 
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.Command.ObjectTypeConflictingFields
@@ -11,7 +12,6 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -555,7 +555,11 @@ interface BlockRepository {
 
     suspend fun getLinkPreview(url: Url): LinkPreview
 
-    suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
+    suspend fun createObjectFromUrl(
+        space: SpaceId,
+        url: Url,
+        createdInContext: Id? = null
+    ): ObjectWrapper.Basic
 
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
 

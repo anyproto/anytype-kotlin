@@ -43,5 +43,17 @@ interface DeepLinkResolver {
             val identity: Id,
             val metadataKey: String
         ) : Action()
+
+        /**
+         * Deep links triggered by OS home screen widgets.
+         */
+        sealed class OsWidgetDeepLink : Action() {
+            /**
+             * Deep link to open a specific space.
+             */
+            data class DeepLinkToSpace(
+                val space: SpaceId
+            ) : OsWidgetDeepLink()
+        }
     }
 }

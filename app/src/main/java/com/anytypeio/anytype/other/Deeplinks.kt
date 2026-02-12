@@ -30,6 +30,9 @@ const val MAIN_PATH = "main"
 const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
 const val MEMBERSHIP_PATH = "membership"
+const val OS_WIDGET_HOST = "os-widget"
+const val OS_WIDGET_SPACES_LIST = "spaces-list"
+const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
@@ -59,6 +62,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
             deeplink.contains(OBJECT_PATH) -> resolveObjectPath(uri)
             deeplink.contains(MEMBERSHIP_PATH) -> resolveMembershipPath(uri)
+            uri.host == OS_WIDGET_HOST -> resolveOsWidgetDeepLink(uri)
             else -> DeepLinkResolver.Action.Unknown
         }.also {
             Timber.d("Resolving deep link: $deeplink")
@@ -158,6 +162,36 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         return DeepLinkResolver.Action.DeepLinkToMembership(
             tierId = uri.getQueryParameter(TIER_ID_PARAM)
         )
+    }
+
+    /**
+     * Resolves anytype://os-widget/{widget-type}/{action}/{params} deep links.
+     * Used by OS home screen widgets.
+     */
+    private fun resolveOsWidgetDeepLink(uri: Uri): DeepLinkResolver.Action {
+        val widgetType = uri.pathSegments.getOrNull(0)
+        val action = uri.pathSegments.getOrNull(1)
+        return when (widgetType) {
+            OS_WIDGET_SPACES_LIST -> resolveSpacesListWidgetAction(uri, action)
+            else -> DeepLinkResolver.Action.Unknown
+        }
+    }
+
+    private fun resolveSpacesListWidgetAction(
+        uri: Uri,
+        action: String?
+    ): DeepLinkResolver.Action {
+        return when (action) {
+            OS_WIDGET_ACTION_OPEN_SPACE -> {
+                val spaceId = uri.pathSegments.getOrNull(2)
+                if (!spaceId.isNullOrEmpty()) {
+                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(SpaceId(spaceId))
+                } else {
+                    DeepLinkResolver.Action.Unknown
+                }
+            }
+            else -> DeepLinkResolver.Action.Unknown
+        }
     }
 
     private fun parseInvite(uri: Uri): DeepLinkResolver.Action.DeepLinkToObject.Invite? {

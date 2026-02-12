@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.feature_os_widgets.ui
+package com.anytypeio.anytype.feature_os_widgets.model
 
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 

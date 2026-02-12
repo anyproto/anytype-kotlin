@@ -2,8 +2,8 @@ package com.anytypeio.anytype.feature_os_widgets.mapper
 
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
-import com.anytypeio.anytype.feature_os_widgets.ui.OsWidgetSpaceIcon
-import com.anytypeio.anytype.feature_os_widgets.ui.OsWidgetSpaceItem
+import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
+import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpaceEntity
 
 /**

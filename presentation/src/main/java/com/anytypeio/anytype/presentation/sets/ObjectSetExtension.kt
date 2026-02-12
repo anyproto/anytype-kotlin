@@ -406,7 +406,7 @@ private suspend fun mapViewers(
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
             sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
-            filters = viewer.filters.toView(storeOfRelations) { it.relation },
+            filters = viewer.filters.toFilterDisplayNames(storeOfRelations),
             isDefaultObjectTypeEnabled = true
         )
     }

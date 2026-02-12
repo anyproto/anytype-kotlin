@@ -16,5 +16,15 @@ class UnsplashDataRepository(
         query = query,
         limit = limit
     )
-    override fun download(id: Id, space: SpaceId) : Hash = remote.download(id = id, space = space)
+    override fun download(
+        id: Id,
+        space: SpaceId,
+        createdInContext: Id?,
+        createdInContextRef: String?
+    ): Hash = remote.download(
+        id = id,
+        space = space,
+        createdInContext = createdInContext,
+        createdInContextRef = createdInContextRef
+    )
 }

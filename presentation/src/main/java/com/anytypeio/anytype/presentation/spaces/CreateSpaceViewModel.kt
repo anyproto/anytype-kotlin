@@ -194,7 +194,9 @@ class CreateSpaceViewModel(
             UploadFile.Params(
                 path = url,
                 space = Space(spaceId),
-                type = Block.Content.File.Type.IMAGE
+                type = Block.Content.File.Type.IMAGE,
+                createdInContext = spaceId,
+                createdInContextRef = Relations.ICON_IMAGE
             )
         ).fold(
             onSuccess = { file ->

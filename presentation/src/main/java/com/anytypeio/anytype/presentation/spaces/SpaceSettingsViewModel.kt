@@ -877,7 +877,9 @@ class SpaceSettingsViewModel(
                 params = UploadFile.Params(
                     path = path,
                     space = vmParams.space,
-                    type = Block.Content.File.Type.IMAGE
+                    type = Block.Content.File.Type.IMAGE,
+                    createdInContext = vmParams.space.id,
+                    createdInContextRef = Relations.ICON_IMAGE
                 )
             ).fold(
                 onSuccess = { file ->

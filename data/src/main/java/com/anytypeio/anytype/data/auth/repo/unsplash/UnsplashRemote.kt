@@ -7,5 +7,10 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 
 interface UnsplashRemote {
     fun search(query: String, limit: Int) : List<UnsplashImage>
-    fun download(space: SpaceId, id: Id) : Hash
+    fun download(
+        space: SpaceId,
+        id: Id,
+        createdInContext: Id? = null,
+        createdInContextRef: String? = null
+    ): Hash
 }

@@ -2,6 +2,7 @@ package com.anytypeio.anytype.domain.icon
 
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Command
+import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 
 class SetTextBlockImage(
@@ -15,7 +16,9 @@ class SetTextBlockImage(
             command = Command.UploadFile(
                 path = params.path,
                 type = Block.Content.File.Type.IMAGE,
-                space = params.spaceId
+                space = params.spaceId,
+                createdInContext = params.target.context,
+                createdInContextRef = Relations.ICON_IMAGE
             )
         )
         val payload = repo.setTextIcon(

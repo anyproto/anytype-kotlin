@@ -26,8 +26,18 @@ class UnsplashMiddleware @Inject constructor(
         return response.pictures.map { p -> p.core() }
     }
 
-    override fun download(space: SpaceId, id: Id): Hash {
-        val request = Download.Request(pictureId = id, spaceId = space.id).also {
+    override fun download(
+        space: SpaceId,
+        id: Id,
+        createdInContext: Id?,
+        createdInContextRef: String?
+    ): Hash {
+        val request = Download.Request(
+            pictureId = id,
+            spaceId = space.id,
+            createdInContext = createdInContext.orEmpty(),
+            createdInContextRef = createdInContextRef.orEmpty()
+        ).also {
             logger.logRequest(it)
         }
         val response = service.unsplashDownload(request = request).also { logger.logResponse(it) }

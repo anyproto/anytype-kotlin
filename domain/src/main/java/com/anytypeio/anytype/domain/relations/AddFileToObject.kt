@@ -18,7 +18,9 @@ class AddFileToObject(
             command = Command.UploadFile(
                 path = params.path,
                 type = null,
-                space = params.space
+                space = params.space,
+                createdInContext = params.ctx,
+                createdInContextRef = params.relation
             )
         )
         val obj = params.obj

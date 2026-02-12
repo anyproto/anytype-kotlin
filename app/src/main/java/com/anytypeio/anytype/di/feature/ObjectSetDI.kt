@@ -53,6 +53,7 @@ import com.anytypeio.anytype.domain.objects.options.GetOptions
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
@@ -253,7 +254,8 @@ object ObjectSetModule {
         deepLinkResolver: DeepLinkResolver,
         setDataViewProperties: SetDataViewProperties,
         emojiProvider: EmojiProvider,
-        emojiSuggester: EmojiSuggester
+        emojiSuggester: EmojiSuggester,
+        stringResourceProvider: StringResourceProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -300,7 +302,8 @@ object ObjectSetModule {
         removeObjectFromCollection = removeObjectFromCollection,
         setDataViewProperties = setDataViewProperties,
         emojiProvider = emojiProvider,
-        emojiSuggester = emojiSuggester
+        emojiSuggester = emojiSuggester,
+        stringResourceProvider = stringResourceProvider
     )
 
     @JvmStatic

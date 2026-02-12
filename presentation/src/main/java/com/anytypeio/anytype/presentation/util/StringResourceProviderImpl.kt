@@ -132,4 +132,8 @@ class StringResourceProviderImpl @Inject constructor(private val context: Contex
     override fun getMultiplayerApprove(): String {
         return context.getString(LocalizationR.string.multiplayer_approve)
     }
+
+    override fun getAdvancedFilterTitle(): String {
+        return context.getString(LocalizationR.string.advanced_filter_title)
+    }
 }

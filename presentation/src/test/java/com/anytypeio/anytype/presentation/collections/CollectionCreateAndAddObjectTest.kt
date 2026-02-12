@@ -111,7 +111,8 @@ class CollectionCreateAndAddObjectTest: ObjectSetViewModelTestSetup() {
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
-            createBlock = mock()
+            createBlock = mock(),
+            stringResourceProvider = stringResourceProvider
         )
     }
 

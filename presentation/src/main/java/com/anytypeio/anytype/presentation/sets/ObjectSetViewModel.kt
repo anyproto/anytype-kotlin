@@ -1908,7 +1908,8 @@ class ObjectSetViewModel(
                 showSetObjectNameSheet(
                     objectId = obj.id,
                     icon = icon,
-                    isIconChangeAllowed = false
+                    isIconChangeAllowed = false,
+                    name = ""
                 )
             },
             onSuccess = { (blockId, payload) ->
@@ -1920,7 +1921,8 @@ class ObjectSetViewModel(
                     objectId = obj.id,
                     icon = icon,
                     isIconChangeAllowed = false,
-                    targetBlockId = blockId
+                    targetBlockId = blockId,
+                    name = ""
                 )
             }
         )
@@ -3585,7 +3587,7 @@ class ObjectSetViewModel(
         icon: ObjectIcon,
         isIconChangeAllowed: Boolean,
         targetBlockId: Id? = null,
-        name: String = ""
+        name: String
     ) {
         _setObjectNameState.value = SetObjectNameState(
             isVisible = true,
@@ -3593,7 +3595,7 @@ class ObjectSetViewModel(
             currentIcon = icon,
             inputText = name,
             isIconChangeAllowed = isIconChangeAllowed,
-            targetBlockId = targetBlockId
+            targetBlockId = targetBlockId,
         )
     }
 

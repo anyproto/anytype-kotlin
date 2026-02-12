@@ -496,6 +496,7 @@ open class ObjectSetFragment :
                     isVisible = state.isVisible,
                     icon = state.currentIcon,
                     isIconChangeAllowed = state.isIconChangeAllowed,
+                    initialText = state.inputText,
                     onTextChanged = vm::onSetObjectNameChanged,
                     onDismiss = vm::onSetObjectNameDismissed,
                     onIconClicked = vm::onSetObjectNameIconClicked,

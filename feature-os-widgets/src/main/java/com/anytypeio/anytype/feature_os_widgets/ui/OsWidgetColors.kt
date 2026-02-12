@@ -23,6 +23,25 @@ fun SystemColor.toWidgetColor(): Color {
 }
 
 /**
+ * Maps SystemColor to light text color for icon initials.
+ * These are contrasting colors that work well on top of system colors.
+ */
+fun SystemColor.toWidgetLightTextColor(): Color {
+    return when (this) {
+        SystemColor.GRAY -> Color(0xFFD6D5D4)
+        SystemColor.YELLOW -> Color(0xFFFCF6CE)
+        SystemColor.AMBER -> Color(0xFFFEECCE)
+        SystemColor.RED -> Color(0xFFFED6C9)
+        SystemColor.PINK -> Color(0xFFF9CFEB)
+        SystemColor.PURPLE -> Color(0xFFEBD4F3)
+        SystemColor.BLUE -> Color(0xFFD2DAF8)
+        SystemColor.SKY -> Color(0xFFD2EEFA)
+        SystemColor.TEAL -> Color(0xFFC6F2EE)
+        SystemColor.GREEN -> Color(0xFFDAF5B0)
+    }
+}
+
+/**
  * Widget background color (matches background_primary)
  */
 val OsWidgetBackgroundColor = Color(0xFF1F1E1D)
@@ -41,3 +60,8 @@ val OsWidgetTextPrimary = Color(0xFFFFFFFF)
  * Widget text secondary color
  */
 val OsWidgetTextSecondary = Color(0xFFACA9A6)
+
+/**
+ * Corner radius for space icons (matches vault 40dp icon -> 6dp radius)
+ */
+const val SPACE_ICON_CORNER_RADIUS = 6

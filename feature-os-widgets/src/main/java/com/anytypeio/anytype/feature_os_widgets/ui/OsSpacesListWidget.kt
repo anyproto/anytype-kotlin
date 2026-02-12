@@ -12,6 +12,7 @@ import androidx.glance.ImageProvider
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.action.actionStartActivity
+import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.lazy.LazyColumn
 import androidx.glance.appwidget.lazy.items
 import androidx.glance.appwidget.provideContent
@@ -31,6 +32,7 @@ import androidx.glance.text.FontWeight
 import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
+import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.mapper.toDomain
@@ -117,14 +119,18 @@ private fun SpaceRow(space: OsWidgetSpaceItem) {
     Row(
         modifier = GlanceModifier
             .fillMaxWidth()
-            .padding(vertical = 6.dp, horizontal = 4.dp)
+            .padding(vertical = 8.dp, horizontal = 8.dp)
             .clickable(actionStartActivity(intent)),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        SpaceIcon(icon = space.icon, name = space.name)
+        SpaceIcon(
+            icon = space.icon,
+            name = space.name,
+            spaceUxType = space.spaceUxType
+        )
         Spacer(modifier = GlanceModifier.width(12.dp))
         Text(
-            text = space.name,
+            text = space.name.ifEmpty { "Untitled" },
             style = TextStyle(
                 color = ColorProvider(OsWidgetTextPrimary),
                 fontSize = 15.sp,
@@ -137,27 +143,43 @@ private fun SpaceRow(space: OsWidgetSpaceItem) {
 }
 
 @Composable
-private fun SpaceIcon(icon: OsWidgetSpaceIcon, name: String) {
-    val color = when (icon) {
+private fun SpaceIcon(
+    icon: OsWidgetSpaceIcon,
+    name: String,
+    spaceUxType: SpaceUxType
+) {
+    val backgroundColor = when (icon) {
         is OsWidgetSpaceIcon.Image -> icon.color.toWidgetColor()
         is OsWidgetSpaceIcon.Placeholder -> icon.color.toWidgetColor()
     }
 
+    val textColor = when (icon) {
+        is OsWidgetSpaceIcon.Image -> icon.color.toWidgetLightTextColor()
+        is OsWidgetSpaceIcon.Placeholder -> icon.color.toWidgetLightTextColor()
+    }
+
     val initial = name.firstOrNull()?.uppercaseChar()?.toString() ?: "?"
+
+    // Determine corner radius based on space type (chat spaces use circle, data spaces use rounded rect)
+    val cornerRadius = when (spaceUxType) {
+        SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> 20  // Circle for 40dp (half of size)
+        else -> SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
+    }
 
     // For MVP, we use a colored box with initial as placeholder
     // Image loading in Glance requires WorkManager integration, deferred for later
     Box(
         modifier = GlanceModifier
             .size(40.dp)
-            .background(color),
+            .cornerRadius(cornerRadius.dp)
+            .background(backgroundColor),
         contentAlignment = Alignment.Center
     ) {
         Text(
             text = initial,
             style = TextStyle(
-                color = ColorProvider(OsWidgetTextPrimary),
-                fontSize = 18.sp,
+                color = ColorProvider(textColor),
+                fontSize = 20.sp,
                 fontWeight = FontWeight.Bold
             )
         )

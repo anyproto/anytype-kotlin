@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -119,7 +120,8 @@ class VaultViewModel(
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val osWidgetSpacesSync: OsWidgetSpacesSync
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -255,6 +257,18 @@ class VaultViewModel(
                 }
             )
         }
+
+        // Sync spaces to OS home screen widget
+        spaceFlow
+            .onEach { spaces ->
+                try {
+                    osWidgetSpacesSync.sync(spaces)
+                    Timber.d("OS widget spaces synced: ${spaces.size} spaces")
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to sync spaces to OS widget")
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onStart() {

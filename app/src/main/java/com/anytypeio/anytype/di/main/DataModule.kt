@@ -39,6 +39,8 @@ import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
+import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
@@ -272,6 +274,13 @@ object DataModule {
     fun provideUserSettingsRepo(
         cache: UserSettingsCache
     ): UserSettingsRepository = UserSettingsDataRepository(cache)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetSpacesSync(
+        context: Context
+    ): OsWidgetSpacesSync = OsWidgetSpacesSyncImpl(context)
 
     @JvmStatic
     @Provides

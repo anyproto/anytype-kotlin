@@ -835,7 +835,9 @@ class Middleware @Inject constructor(
             type = command.type.toMiddlewareModel(),
             spaceId = command.space.id,
             preloadFileId = command.preloadFileId.orEmpty(),
-            preloadOnly = false
+            preloadOnly = false,
+            createdInContext = command.createdInContext.orEmpty(),
+            createdInContextRef = command.createdInContextRef.orEmpty()
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.fileUpload(request) }
@@ -3210,11 +3212,17 @@ class Middleware @Inject constructor(
     }
 
     @Throws(Exception::class)
-    fun createObjectFromUrl(space: SpaceId, url: Url) : ObjectWrapper.Basic {
+    fun createObjectFromUrl(space: SpaceId, url: Url, createdInContext: Id? = null) : ObjectWrapper.Basic {
+        val details: Map<String, Any?> = if (createdInContext != null) {
+            mapOf(Relations.CREATED_IN_CONTEXT to createdInContext)
+        } else {
+            emptyMap()
+        }
         val request = Rpc.Object.CreateFromUrl.Request(
             url = url,
             spaceId = space.id,
-            objectTypeUniqueKey = ObjectTypeUniqueKeys.BOOKMARK
+            objectTypeUniqueKey = ObjectTypeUniqueKeys.BOOKMARK,
+            details = details
         )
         logRequestIfDebug(request)
         val (response, time) = measureTimedValue { service.objectCreateFromUrl(request) }

@@ -555,7 +555,7 @@ interface BlockRepository {
 
     suspend fun getLinkPreview(url: Url): LinkPreview
 
-    suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic
+    suspend fun createObjectFromUrl(space: SpaceId, url: Url, createdInContext: Id? = null): ObjectWrapper.Basic
 
     suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: NotificationState)
 

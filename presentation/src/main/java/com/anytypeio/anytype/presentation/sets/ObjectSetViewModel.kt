@@ -547,7 +547,9 @@ class ObjectSetViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = vmParams.space
+                space = vmParams.space,
+                createdInContext = vmParams.ctx,
+                createdInContextRef = Relations.COVER_ID
             )
         ).process(
             failure = {
@@ -1633,7 +1635,7 @@ class ObjectSetViewModel(
         val prefilled = viewer.prefillNewObjectDetails(
             storeOfRelations = storeOfRelations,
             dateProvider = dateProvider
-        )
+        ) + mapOf(Relations.CREATED_IN_CONTEXT to vmParams.ctx)
         val type = typeChosenByUser ?: defaultObjectTypeUniqueKey!!
         val createObjectParams = CreateDataViewObject.Params.Collection(
             template = validTemplateId,

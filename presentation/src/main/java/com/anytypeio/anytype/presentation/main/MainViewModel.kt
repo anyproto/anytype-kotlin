@@ -585,9 +585,35 @@ class MainViewModel(
                 )
             }
 
+            is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace -> {
+                Timber.d("Processing OS widget deep link to space: ${deeplink.space}")
+                proceedWithOsWidgetSpaceSwitch(deeplink.space.id)
+            }
+
             else -> {
                 Timber.d("No deep link")
             }
+        }
+    }
+
+    /**
+     * Handles space switch triggered by OS home screen widget.
+     * Simply switches to the target space - the app will show the space home screen.
+     */
+    private suspend fun proceedWithOsWidgetSpaceSwitch(targetSpace: Id) {
+        val currentSpace = spaceManager.get()
+        if (currentSpace != targetSpace) {
+            spaceManager.set(targetSpace)
+                .onSuccess {
+                    Timber.d("Successfully switched to space from OS widget: $targetSpace")
+                    commands.emit(Command.Deeplink.DeepLinkToSpace(space = targetSpace))
+                }
+                .onFailure { e ->
+                    Timber.e(e, "Failed to switch space from OS widget")
+                }
+        } else {
+            Timber.d("Already in target space: $targetSpace")
+            commands.emit(Command.Deeplink.DeepLinkToSpace(space = targetSpace))
         }
     }
 
@@ -807,6 +833,13 @@ class MainViewModel(
             data class InitiateOneToOneChat(
                 val identity: Id,
                 val metadataKey: String
+            ) : Deeplink()
+
+            /**
+             * Deep link from OS home screen widget to open a specific space.
+             */
+            data class DeepLinkToSpace(
+                val space: Id
             ) : Deeplink()
         }
     }

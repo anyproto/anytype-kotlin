@@ -305,6 +305,25 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     )
                                 }
                             }
+                            is Command.Deeplink.DeepLinkToSpace -> {
+                                // Space was already switched by MainViewModel.
+                                // Navigate to home screen to show the new space.
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    // Pop back to home screen if in stack, otherwise navigate
+                                    if (!controller.popBackStack(R.id.homeScreen, false)) {
+                                        controller.navigate(
+                                            R.id.homeScreen,
+                                            null,
+                                            NavOptions.Builder()
+                                                .setPopUpTo(R.id.main_navigation, true)
+                                                .build()
+                                        )
+                                    }
+                                }.onFailure {
+                                    Timber.w(it, "Error while navigation for OS widget space deeplink")
+                                }
+                            }
                         }
                     }
                 }

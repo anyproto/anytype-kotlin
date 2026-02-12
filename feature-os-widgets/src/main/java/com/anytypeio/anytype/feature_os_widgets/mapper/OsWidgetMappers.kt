@@ -11,8 +11,9 @@ import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpaceEntity
  */
 fun OsWidgetSpaceEntity.toDomain(): OsWidgetSpaceItem {
     val color = SystemColor.color(iconColorIndex)
-    val icon = if (iconImageHash != null) {
-        OsWidgetSpaceIcon.Image(hash = iconImageHash, color = color)
+    val imageHash = iconImageHash
+    val icon = if (imageHash != null) {
+        OsWidgetSpaceIcon.Image(hash = imageHash, color = color)
     } else {
         OsWidgetSpaceIcon.Placeholder(color = color, name = name)
     }

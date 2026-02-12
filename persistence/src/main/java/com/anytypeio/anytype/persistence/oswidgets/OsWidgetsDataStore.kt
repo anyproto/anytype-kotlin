@@ -7,6 +7,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
@@ -41,24 +42,20 @@ class OsWidgetsDataStore(private val context: Context) {
     }
 
     /**
-     * Gets the cached spaces list synchronously (for widget updates).
+     * Gets the cached spaces list (suspending, for widget updates).
      */
     suspend fun getSpaces(): List<OsWidgetSpaceEntity> {
-        val preferences = context.osWidgetsDataStore.data
-        var result: List<OsWidgetSpaceEntity> = emptyList()
-        preferences.collect { prefs ->
-            val jsonString = prefs[SPACES_CACHE_KEY]
-            result = if (jsonString != null) {
-                try {
-                    json.decodeFromString<OsWidgetSpacesCache>(jsonString).spaces
-                } catch (e: Exception) {
-                    emptyList()
-                }
-            } else {
+        val prefs = context.osWidgetsDataStore.data.first()
+        val jsonString = prefs[SPACES_CACHE_KEY]
+        return if (jsonString != null) {
+            try {
+                json.decodeFromString<OsWidgetSpacesCache>(jsonString).spaces
+            } catch (e: Exception) {
                 emptyList()
             }
+        } else {
+            emptyList()
         }
-        return result
     }
 
     /**

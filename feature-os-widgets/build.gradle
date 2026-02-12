@@ -46,9 +46,6 @@ dependencies {
     implementation libs.coroutines
     implementation libs.coroutinesAndroid
 
-    // DataStore
-    implementation libs.dataStore
-
     // Image loading
     implementation libs.coilCompose
 

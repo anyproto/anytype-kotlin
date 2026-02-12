@@ -2462,6 +2462,6 @@ Please provide specific details of your needs here.</string>
     <string name="loading_channels">Loading channels</string>
 
     <!-- OS Widgets -->
-    <string name="os_widget_spaces_description">Quick access to your spaces</string>
+    <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
 
 </resources>

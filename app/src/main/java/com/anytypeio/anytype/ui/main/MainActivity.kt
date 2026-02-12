@@ -39,6 +39,7 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -307,17 +308,31 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Deeplink.DeepLinkToSpace -> {
                                 // Space was already switched by MainViewModel.
-                                // Navigate to home screen to show the new space.
+                                // Navigate based on space type: CHAT/ONE_TO_ONE -> chat, DATA -> home
                                 runCatching {
                                     val controller = findNavController(R.id.fragment)
-                                    // Pop back to home screen if in stack, otherwise navigate
-                                    if (!controller.popBackStack(R.id.homeScreen, false)) {
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    
+                                    val shouldNavigateToChat = command.spaceUxType?.shouldNavigateDirectlyToChat == true
+                                            && !command.chatId.isNullOrEmpty()
+                                    
+                                    if (shouldNavigateToChat) {
+                                        // CHAT or ONE_TO_ONE space - go directly to chat
                                         controller.navigate(
-                                            R.id.homeScreen,
-                                            null,
-                                            NavOptions.Builder()
-                                                .setPopUpTo(R.id.main_navigation, true)
-                                                .build()
+                                            R.id.actionOpenChatFromVault,
+                                            ChatFragment.args(
+                                                space = command.space,
+                                                ctx = command.chatId.orEmpty()
+                                            )
+                                        )
+                                    } else {
+                                        // DATA space - go to home/widgets screen
+                                        controller.navigate(
+                                            R.id.actionOpenSpaceFromVault,
+                                            WidgetsScreenFragment.args(
+                                                space = command.space,
+                                                deeplink = null
+                                            )
                                         )
                                     }
                                 }.onFailure {

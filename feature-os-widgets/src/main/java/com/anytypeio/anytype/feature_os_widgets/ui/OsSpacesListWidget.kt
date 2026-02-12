@@ -1,6 +1,8 @@
 package com.anytypeio.anytype.feature_os_widgets.ui
 
 import android.content.Context
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -20,6 +22,7 @@ import androidx.glance.background
 import androidx.glance.layout.Alignment
 import androidx.glance.layout.Box
 import androidx.glance.layout.Column
+import androidx.glance.layout.ContentScale
 import androidx.glance.layout.Row
 import androidx.glance.layout.Spacer
 import androidx.glance.layout.fillMaxSize
@@ -40,6 +43,7 @@ import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import kotlinx.coroutines.flow.first
+import java.io.File
 
 /**
  * Glance App Widget that displays a list of user's spaces.
@@ -107,38 +111,46 @@ private fun SpacesList(spaces: List<OsWidgetSpaceItem>) {
         modifier = GlanceModifier.fillMaxSize()
     ) {
         items(spaces, itemId = { it.spaceId.hashCode().toLong() }) { space ->
-            SpaceRow(space = space)
+            SpaceCard(space = space)
         }
     }
 }
 
 @Composable
-private fun SpaceRow(space: OsWidgetSpaceItem) {
+private fun SpaceCard(space: OsWidgetSpaceItem) {
     val intent = OsWidgetDeepLinks.buildSpaceIntent(space.spaceId)
 
-    Row(
+    Column(
         modifier = GlanceModifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp, horizontal = 8.dp)
-            .clickable(actionStartActivity(intent)),
-        verticalAlignment = Alignment.CenterVertically
+            .padding(bottom = 8.dp)
     ) {
-        SpaceIcon(
-            icon = space.icon,
-            name = space.name,
-            spaceUxType = space.spaceUxType
-        )
-        Spacer(modifier = GlanceModifier.width(12.dp))
-        Text(
-            text = space.name.ifEmpty { "Untitled" },
-            style = TextStyle(
-                color = ColorProvider(OsWidgetTextPrimary),
-                fontSize = 15.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            maxLines = 1,
-            modifier = GlanceModifier.defaultWeight()
-        )
+        Row(
+            modifier = GlanceModifier
+                .fillMaxWidth()
+                .background(OsWidgetSurfaceColor)
+                .cornerRadius(12.dp)
+                .padding(12.dp)
+                .clickable(actionStartActivity(intent)),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            SpaceIcon(
+                icon = space.icon,
+                name = space.name,
+                spaceUxType = space.spaceUxType
+            )
+            Spacer(modifier = GlanceModifier.width(12.dp))
+            Text(
+                text = space.name.ifEmpty { "Untitled" },
+                style = TextStyle(
+                    color = ColorProvider(OsWidgetTextPrimary),
+                    fontSize = 15.sp,
+                    fontWeight = FontWeight.Medium
+                ),
+                maxLines = 1,
+                modifier = GlanceModifier.defaultWeight()
+            )
+        }
     }
 }
 
@@ -166,22 +178,53 @@ private fun SpaceIcon(
         else -> SPACE_ICON_CORNER_RADIUS  // 6dp for data spaces
     }
 
-    // For MVP, we use a colored box with initial as placeholder
-    // Image loading in Glance requires WorkManager integration, deferred for later
-    Box(
-        modifier = GlanceModifier
-            .size(40.dp)
-            .cornerRadius(cornerRadius.dp)
-            .background(backgroundColor),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = initial,
-            style = TextStyle(
-                color = ColorProvider(textColor),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold
-            )
+    // Try to load cached image, fallback to placeholder
+    val bitmap = (icon as? OsWidgetSpaceIcon.Image)?.let { loadCachedBitmap(it.url) }
+
+    if (bitmap != null) {
+        // Show the cached image
+        Image(
+            provider = ImageProvider(bitmap),
+            contentDescription = name,
+            contentScale = ContentScale.Crop,
+            modifier = GlanceModifier
+                .size(40.dp)
+                .cornerRadius(cornerRadius.dp)
         )
+    } else {
+        // Show placeholder with initial
+        Box(
+            modifier = GlanceModifier
+                .size(40.dp)
+                .cornerRadius(cornerRadius.dp)
+                .background(backgroundColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = initial,
+                style = TextStyle(
+                    color = ColorProvider(textColor),
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
+    }
+}
+
+/**
+ * Loads a bitmap from a local file path.
+ * Returns null if file doesn't exist or can't be decoded.
+ */
+private fun loadCachedBitmap(filePath: String): Bitmap? {
+    return try {
+        val file = File(filePath)
+        if (file.exists()) {
+            BitmapFactory.decodeFile(filePath)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
     }
 }

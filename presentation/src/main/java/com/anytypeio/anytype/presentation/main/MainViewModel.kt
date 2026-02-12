@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
@@ -598,22 +599,36 @@ class MainViewModel(
 
     /**
      * Handles space switch triggered by OS home screen widget.
-     * Simply switches to the target space - the app will show the space home screen.
+     * Switches to the target space and emits navigation command based on space type.
      */
     private suspend fun proceedWithOsWidgetSpaceSwitch(targetSpace: Id) {
         val currentSpace = spaceManager.get()
+        
+        suspend fun emitNavigationCommand(config: Config) {
+            val spaceView = spaceViews.get(SpaceId(targetSpace))
+            val spaceUxType = spaceView?.spaceUxType
+            val chatId = config.spaceChatId
+            Timber.d("OS widget navigation: space=$targetSpace, uxType=$spaceUxType, chatId=$chatId")
+            commands.emit(
+                Command.Deeplink.DeepLinkToSpace(
+                    space = targetSpace,
+                    spaceUxType = spaceUxType,
+                    chatId = chatId
+                )
+            )
+        }
+        
         if (currentSpace != targetSpace) {
             spaceManager.set(targetSpace)
-                .onSuccess {
+                .onSuccess { config ->
                     Timber.d("Successfully switched to space from OS widget: $targetSpace")
-                    commands.emit(Command.Deeplink.DeepLinkToSpace(space = targetSpace))
+                    emitNavigationCommand(config)
                 }
                 .onFailure { e ->
                     Timber.e(e, "Failed to switch space from OS widget")
                 }
         } else {
-            Timber.d("Already in target space: $targetSpace")
-            commands.emit(Command.Deeplink.DeepLinkToSpace(space = targetSpace))
+            Timber.d("Already in target space, skipping navigation: $targetSpace")
         }
     }
 
@@ -837,9 +852,12 @@ class MainViewModel(
 
             /**
              * Deep link from OS home screen widget to open a specific space.
+             * Navigation depends on spaceUxType - CHAT/ONE_TO_ONE go to chat, DATA goes to home.
              */
             data class DeepLinkToSpace(
-                val space: Id
+                val space: Id,
+                val spaceUxType: SpaceUxType? = null,
+                val chatId: Id? = null
             ) : Deeplink()
         }
     }

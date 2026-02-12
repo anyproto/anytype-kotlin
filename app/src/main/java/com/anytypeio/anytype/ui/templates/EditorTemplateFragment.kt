@@ -1,11 +1,8 @@
 package com.anytypeio.anytype.ui.templates
 
 import android.os.Bundle
-import android.view.Gravity
 import android.view.View
-import android.view.ViewGroup
 import android.widget.LinearLayout
-import android.widget.TextView
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.core.os.bundleOf
 import androidx.core.view.updateLayoutParams
@@ -32,8 +29,6 @@ class EditorTemplateFragment : EditorFragment() {
     private val targetTypeId get() = arg<Id>(ARG_TARGET_TYPE_ID)
     private val targetTypeKey get() = arg<Id>(ARG_TARGET_TYPE_KEY)
     private val fragmentType get() = argInt(ARG_SCREEN_TYPE)
-
-    private var typeNameView: TextView? = null
 
     override val navigationDestinationId: Int
         get() = when (fragmentType) {
@@ -134,37 +129,25 @@ class EditorTemplateFragment : EditorFragment() {
             if (type != null) {
                 val typeName = type.name.orEmpty()
 
-                val titleContainer = binding.topToolbar.container
-                val iconView = binding.topToolbar.icon
-                val titleView = binding.topToolbar.title
+                // Hide the toolbar title - we'll use the banner instead
+                binding.topToolbar.title.gone()
+                binding.topToolbar.icon.gone()
 
-                // Create type name TextView if not exists
-                if (typeNameView == null) {
-                    typeNameView = TextView(requireContext()).apply {
-                        layoutParams = LinearLayout.LayoutParams(
-                            LinearLayout.LayoutParams.WRAP_CONTENT,
-                            LinearLayout.LayoutParams.MATCH_PARENT
-                        )
-                        gravity = Gravity.CENTER_VERTICAL
-                        setTextAppearance(R.style.TextView_UXStyle_Titles_2_Medium)
-                    }
+                // Show and populate the template banner below the toolbar
+                binding.templateBanner.visible()
+                binding.templateBannerIcon.setIcon(type.objectIcon())
+                binding.templateBannerTypeName.text = typeName
+
+                // Update recycler constraint to be below the banner
+                binding.recycler.updateLayoutParams<ConstraintLayout.LayoutParams> {
+                    topToTop = ConstraintLayout.LayoutParams.UNSET
+                    topToBottom = binding.templateBanner.id
+                    topMargin = 0
                 }
-
-                // Set content
-                titleView.text = getString(R.string.template_title_prefix)
-                iconView.setIcon(type.objectIcon())
-                typeNameView?.text = typeName
-
-                // Reorder: title first, then icon, then type name
-                titleContainer.removeAllViews()
-                titleContainer.addView(titleView)
-                titleContainer.addView(iconView)
-                titleContainer.addView(typeNameView)
-
-                iconView.visible()
             } else {
                 binding.topToolbar.title.text = getString(R.string.templates_menu_edit)
                 binding.topToolbar.icon.gone()
+                binding.templateBanner.gone()
             }
         }
     }

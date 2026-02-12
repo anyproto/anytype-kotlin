@@ -80,6 +80,7 @@ object Relations {
     const val RECOMMENDED_HIDDEN_RELATIONS = "recommendedHiddenRelations"
     const val RECOMMENDED_FILE_RELATIONS = "recommendedFileRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
+    const val TEMPLATE_NAME_PREFILL_TYPE = "templateNamePrefillType"
 
     const val UNIQUE_KEY = "uniqueKey"
 
@@ -194,6 +195,7 @@ object Relations {
         "sourceFilePath",
         "fileSyncStatus",
         "defaultTemplateId",
+        "templateNamePrefillType",
         "uniqueKey",
         "backlinks",
         "profileOwnerIdentity",

@@ -10,6 +10,8 @@ import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
+import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.domain.base.fold
@@ -18,38 +20,36 @@ import com.anytypeio.anytype.domain.collections.AddObjectToCollection
 import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
+import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
 import com.anytypeio.anytype.domain.`object`.DuplicateObject
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.page.AddBackLinkToObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
+import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
+import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
 import com.anytypeio.anytype.domain.templates.CreateTemplateFromObject
 import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.Action
 import com.anytypeio.anytype.presentation.common.Delegator
 import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.editor.Editor
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
-import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.core_models.SupportedLayouts.fileLayouts
-import com.anytypeio.anytype.core_models.SupportedLayouts.systemLayouts
-import com.anytypeio.anytype.domain.multiplayer.GetSpaceInviteLink
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.domain.multiplayer.UserPermissionProvider
-import com.anytypeio.anytype.domain.`object`.GetObject
-import com.anytypeio.anytype.domain.relations.AddToFeaturedRelations
-import com.anytypeio.anytype.domain.relations.DeleteRelationFromObject
-import com.anytypeio.anytype.domain.relations.RemoveFromFeaturedRelations
-import com.anytypeio.anytype.domain.widgets.DeleteWidget
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsCreateTemplateEvent
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsDefaultTemplateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
+import com.anytypeio.anytype.presentation.objects.ObjectAction
 import com.anytypeio.anytype.presentation.objects.getProperType
 import com.anytypeio.anytype.presentation.objects.isTemplatesAllowed
-import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.*
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.ShareDeeplinkToObject
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import com.anytypeio.anytype.presentation.util.downloader.DebugGoroutinesShareDownloader
 import com.anytypeio.anytype.presentation.util.downloader.DebugTreeShareDownloader
@@ -329,6 +329,30 @@ class ObjectMenuViewModel(
     override fun onRelationsClicked() {
         viewModelScope.launch {
             commands.emit(Command.OpenObjectRelations)
+        }
+    }
+
+    override fun onTemplateNamePrefillToggleClicked(ctx: Id, space: Id) {
+        viewModelScope.launch {
+            val currentValue =
+                storage.details.current().getObject(ctx)?.templateNamePrefillType ?: 0
+            val newValue =
+                if (currentValue == 1) NAME_PREFILL_DISABLED else NAME_PREFILL_FROM_TEMPLATE
+
+            setObjectDetails.async(
+                SetObjectDetails.Params(
+                    ctx = ctx,
+                    details = mapOf(Relations.TEMPLATE_NAME_PREFILL_TYPE to newValue.toDouble())
+                )
+            ).fold(
+                onSuccess = { payload ->
+                    dispatcher.send(payload)
+                },
+                onFailure = { error ->
+                    Timber.e(error, "Error updating template name prefill")
+                    _toasts.emit(SOMETHING_WENT_WRONG_MSG)
+                }
+            )
         }
     }
 
@@ -691,3 +715,6 @@ class ObjectMenuViewModel(
         }
     }
 }
+
+private const val NAME_PREFILL_DISABLED = 0
+private const val NAME_PREFILL_FROM_TEMPLATE = 1

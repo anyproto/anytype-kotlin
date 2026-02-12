@@ -33,7 +33,7 @@ object ObjectTypeIds {
     const val DEFAULT_OBJECT_TYPE = PAGE
 
     fun getTypesWithoutTemplates(): List<String> =
-        listOf(BOOKMARK, NOTE).plus(getFileTypes()).plus(getSetTypes())
+        listOf(BOOKMARK).plus(getFileTypes()).plus(getSetTypes())
             .plus(getSystemTypes())
 
     fun getFileTypes(): List<String> = listOf(FILE, IMAGE, AUDIO, VIDEO)

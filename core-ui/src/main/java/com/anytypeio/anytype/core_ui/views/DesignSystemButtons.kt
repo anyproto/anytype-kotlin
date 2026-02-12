@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Configuration
 import android.util.AttributeSet
 import android.view.LayoutInflater
+import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
@@ -38,10 +39,8 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.core_ui.R
-import com.anytypeio.anytype.core_ui.reactive.clicks
 import com.anytypeio.anytype.core_ui.views.animations.DotsLoadingIndicator
 import com.anytypeio.anytype.core_ui.views.animations.FadeAnimationSpecs
-import com.anytypeio.anytype.core_utils.ext.throttleFirst
 
 class ButtonPrimaryXSmall @JvmOverloads constructor(
     context: Context,
@@ -651,21 +650,26 @@ class ButtonPrimarySmallIcon @JvmOverloads constructor(
 
     private lateinit var button: TextView
     private lateinit var icon: ImageView
+    private lateinit var buttonContainer: FrameLayout
+    private lateinit var iconContainer: FrameLayout
 
     init {
         setup(context)
     }
-    
+
     private fun setup(context: Context) {
         LayoutInflater.from(context).inflate(R.layout.ds_button_icon, this, true)
         button = findViewById(R.id.button)
         icon = findViewById(R.id.icon)
+        buttonContainer = findViewById(R.id.buttonContainer)
+        iconContainer = findViewById(R.id.iconContainer)
     }
 
-    fun setButtonText(text: String) {
-        button.text = text
+    fun setOnButtonClickListener(listener: OnClickListener?) {
+        buttonContainer.setOnClickListener(listener)
     }
 
-    fun buttonClicks() = button.clicks().throttleFirst()
-    fun iconClicks() = icon.clicks().throttleFirst()
+    fun setOnIconClickListener(listener: OnClickListener?) {
+        iconContainer.setOnClickListener(listener)
+    }
 }

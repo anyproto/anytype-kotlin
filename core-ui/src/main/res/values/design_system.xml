@@ -272,8 +272,8 @@
         <item name="android:layout_width">match_parent</item>
         <item name="android:gravity">center</item>
         <item name="android:clickable">true</item>
-        <item name="android:paddingTop">12dp</item>
-        <item name="android:paddingBottom">12dp</item>
+        <item name="android:paddingTop">14dp</item>
+        <item name="android:paddingBottom">14dp</item>
     </style>
 
     <style name="Button.Secondary.XSmall" parent="TextView.UXStyle.Captions.1.Regular">
@@ -429,9 +429,9 @@
 
 
     <!-- dimens -->
-    <dimen name="button_xsmall_corner">6dp</dimen>
-    <dimen name="button_small_corner">8dp</dimen>
-    <dimen name="button_medium_corner">10dp</dimen>
-    <dimen name="button_large_corner">12dp</dimen>
+    <dimen name="button_xsmall_corner">100dp</dimen>
+    <dimen name="button_small_corner">16dp</dimen>
+    <dimen name="button_medium_corner">22dp</dimen>
+    <dimen name="button_large_corner">26dp</dimen>
 
 </resources>

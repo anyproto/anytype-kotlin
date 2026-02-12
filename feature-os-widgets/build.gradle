@@ -21,6 +21,8 @@ dependencies {
     implementation project(':domain')
     implementation project(':core-models')
     implementation project(':core-utils')
+    implementation project(':core-ui')
+    implementation project(':persistence')
     implementation project(':localization')
 
     // DI - javax.inject for constructor injection annotations

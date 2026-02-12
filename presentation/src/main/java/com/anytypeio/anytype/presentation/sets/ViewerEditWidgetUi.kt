@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.presentation.sets
 
+import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerRelation
 import com.anytypeio.anytype.core_models.DVViewerType
@@ -7,6 +8,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 
 
 sealed class ViewerEditWidgetUi {
@@ -51,6 +53,31 @@ suspend fun <T> List<T>.toView(
             }
     }
 
+/**
+ * Extension function for filters that properly handles advanced filters.
+ * Advanced filters (with nested filters or AND/OR operators) don't have a relation key lookup,
+ * so they need special handling to be counted in the Edit View modal.
+ *
+ * @param stringResourceProvider provider for localized strings
+ */
+suspend fun List<DVFilter>.toFilterDisplayNames(
+    storeOfRelations: StoreOfRelations,
+    stringResourceProvider: StringResourceProvider
+): List<String> = mapNotNull { filter ->
+    if (filter.isAdvanced()) {
+        // Return a placeholder name for advanced filters so they're counted
+        stringResourceProvider.getAdvancedFilterTitle()
+    } else {
+        val relation = storeOfRelations.getByKey(filter.relation)
+        val isRelationDoneOrName = relation?.key == Relations.DONE || relation?.key == Relations.NAME
+        relation?.name.orEmpty()
+            .takeIf { _ ->
+                relation != null && relation.isValid
+                        && (isRelationDoneOrName || relation.isHidden != true)
+            }
+    }
+}
+
 suspend fun List<DVViewerRelation>.toAppliedRelations(
     isGalleryViewer: Boolean = false,
     storeOfRelations: StoreOfRelations,
@@ -73,7 +100,8 @@ suspend fun List<DVViewerRelation>.toAppliedRelations(
 suspend fun DVViewer.toViewerEditWidgetState(
     storeOfRelations: StoreOfRelations,
     index: Int,
-    session: ObjectSetSession
+    session: ObjectSetSession,
+    stringResourceProvider: StringResourceProvider
 ): ViewerEditWidgetUi {
     val dvViewer = this
     val isActive = dvViewer.isActiveViewer(index, session)
@@ -82,7 +110,7 @@ suspend fun DVViewer.toViewerEditWidgetState(
         id = dvViewer.id,
         name = dvViewer.name,
         sorts = dvViewer.sorts.toView(storeOfRelations) { it.relationKey },
-        filters = dvViewer.filters.toView(storeOfRelations) { it.relation },
+        filters = dvViewer.filters.toFilterDisplayNames(storeOfRelations, stringResourceProvider),
         relations = dvViewer.viewerRelations.filter { it.isVisible }.toAppliedRelations(
             isGalleryViewer = dvViewer.type == DVViewerType.GALLERY,
             storeOfRelations = storeOfRelations,

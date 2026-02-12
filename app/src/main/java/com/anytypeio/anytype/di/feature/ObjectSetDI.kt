@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -254,7 +255,7 @@ object ObjectSetModule {
         setDataViewProperties: SetDataViewProperties,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
-        getDefaultObjectType: GetDefaultObjectType
+        stringResourceProvider: StringResourceProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -301,7 +302,7 @@ object ObjectSetModule {
         setDataViewProperties = setDataViewProperties,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
-        getDefaultObjectType = getDefaultObjectType
+        stringResourceProvider = stringResourceProvider
     )
 
     @JvmStatic

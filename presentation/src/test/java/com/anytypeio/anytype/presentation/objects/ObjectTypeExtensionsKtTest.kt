@@ -50,13 +50,13 @@ class ObjectTypeExtensionsTest {
     }
 
     @Test
-    fun `isTemplateAllowed returns false when type is NOTE`() {
+    fun `isTemplateAllowed returns true when type is NOTE`() {
         val objectType = StubObjectType(
             uniqueKey = ObjectTypeIds.NOTE,
             recommendedLayout = ObjectType.Layout.NOTE.code.toDouble()
         )
         val result = objectType.isTemplatesAllowed()
-        assertFalse(result)
+        assertTrue(result)
     }
 
     @Test

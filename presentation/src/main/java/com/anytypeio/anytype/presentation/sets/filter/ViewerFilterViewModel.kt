@@ -4,7 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.anytypeio.anytype.analytics.base.Analytics
-import com.anytypeio.anytype.core_models.*
+import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.dataview.interactor.UpdateDataViewViewer
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -25,7 +26,11 @@ import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.viewerById
 import com.anytypeio.anytype.presentation.util.Dispatcher
 import kotlinx.coroutines.Job
-import kotlinx.coroutines.flow.*
+import kotlinx.coroutines.flow.MutableSharedFlow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
@@ -86,9 +91,19 @@ class ViewerFilterViewModel(
     fun onFilterClicked(ctx: Id, viewerId: Id, click: FilterClick) {
         when (click) {
             is FilterClick.Remove -> {
+                val filter = _views.value.getOrNull(click.index)
+                if (filter is FilterView.Advanced) {
+                    emitCommand(ViewerFilterCommand.ShowAdvancedFilterMessage)
+                    return
+                }
                 onRemoveFilterClicked(ctx, viewerId, click.index)
             }
             is FilterClick.Value -> {
+                val filter = _views.value.getOrNull(click.index)
+                if (filter is FilterView.Advanced) {
+                    emitCommand(ViewerFilterCommand.ShowAdvancedFilterMessage)
+                    return
+                }
                 onValueClicked(click.index)
             }
         }
@@ -106,6 +121,7 @@ class ViewerFilterViewModel(
 
     private fun setStateInFilterView(filterView: FilterView): FilterView =
         when (filterView) {
+            is FilterView.Advanced -> filterView // Advanced filters don't have edit mode state
             is FilterView.Expression.Text ->
                 filterView.copy(isInEditMode = screenState.value == ScreenState.EDIT)
             is FilterView.Expression.Number ->
@@ -142,6 +158,10 @@ class ViewerFilterViewModel(
 
     private fun proceedToFilterValueScreen(filterIndex: Int) {
         when (val filter = _views.value[filterIndex]) {
+            is FilterView.Advanced -> {
+                // Advanced filters should not reach this point as they're handled earlier
+                emitCommand(ViewerFilterCommand.ShowAdvancedFilterMessage)
+            }
             is FilterView.Expression.Text -> {
                 emitCommand(Modal.UpdateInputValueFilter(filter.relation, filterIndex))
             }

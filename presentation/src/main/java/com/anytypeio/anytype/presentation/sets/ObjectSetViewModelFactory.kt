@@ -29,6 +29,7 @@ import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
 import com.anytypeio.anytype.domain.sets.SetQueryToObjectSet
@@ -93,7 +94,7 @@ class ObjectSetViewModelFactory(
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -143,7 +144,7 @@ class ObjectSetViewModelFactory(
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
-            getDefaultObjectType = getDefaultObjectType
+            stringResourceProvider = stringResourceProvider
         ) as T
     }
 }

@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -208,7 +209,7 @@ class ObjectSetViewModel(
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -421,7 +422,8 @@ class ObjectSetViewModel(
                         viewerEditWidgetState.value = pair.first.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
                             index = pair.second,
-                            session = session
+                            session = session,
+                            stringResourceProvider = stringResourceProvider
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
                             viewer = pair.first,
@@ -827,7 +829,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -891,7 +894,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -966,7 +970,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)

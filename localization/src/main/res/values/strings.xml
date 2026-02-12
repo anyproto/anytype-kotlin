@@ -405,6 +405,8 @@
 
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Paste or type a URL</string>
     <string name="callout">Callout</string>
     <string name="highlight">Highlight</string>

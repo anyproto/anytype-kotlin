@@ -366,7 +366,7 @@ open class ObjectSetViewModelTestSetup {
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
-            getDefaultObjectType = getDefaultObjectType
+            stringResourceProvider = stringResourceProvider
         )
     }
 

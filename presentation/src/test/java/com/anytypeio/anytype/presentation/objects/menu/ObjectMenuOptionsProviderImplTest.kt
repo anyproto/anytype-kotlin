@@ -2,9 +2,8 @@ package com.anytypeio.anytype.presentation.objects.menu
 
 import app.cash.turbine.test
 import com.anytypeio.anytype.core_models.ObjectType
-import com.anytypeio.anytype.core_models.Relations
-import com.anytypeio.anytype.core_models.restrictions.ObjectRestriction
 import com.anytypeio.anytype.core_models.ObjectViewDetails
+import com.anytypeio.anytype.core_models.Relations
 import kotlin.test.assertEquals
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -61,7 +60,9 @@ class ObjectMenuOptionsProviderImplTest {
             hasDiagnosticsVisibility = true,
             hasHistory = true,
             hasDescriptionShow = true,
-            hasObjectLayoutConflict = false
+            hasObjectLayoutConflict = false,
+            hasTemplateNamePrefill = true,
+            isTemplateNamePrefillEnabled = false
         )
 
         assertOptions(
@@ -81,7 +82,11 @@ class ObjectMenuOptionsProviderImplTest {
         )
 
         assertOptions(
-            expected = ObjectMenuOptionsProvider.Options.ALL.copy(hasDiagnosticsVisibility = true)
+            expected = ObjectMenuOptionsProvider.Options.ALL.copy(
+                hasDiagnosticsVisibility = true,
+                hasTemplateNamePrefill = true,
+                isTemplateNamePrefillEnabled = false
+            )
         )
     }
 
@@ -121,7 +126,9 @@ class ObjectMenuOptionsProviderImplTest {
                 hasDiagnosticsVisibility = true,
                 hasHistory = false,
                 hasDescriptionShow = true,
-                hasObjectLayoutConflict = false
+                hasObjectLayoutConflict = false,
+                hasTemplateNamePrefill = true,
+                isTemplateNamePrefillEnabled = false
             )
         )
     }
@@ -147,7 +154,9 @@ class ObjectMenuOptionsProviderImplTest {
                 hasDiagnosticsVisibility = true,
                 hasHistory = false,
                 hasDescriptionShow = false,
-                hasObjectLayoutConflict = false
+                hasObjectLayoutConflict = false,
+                hasTemplateNamePrefill = true,
+                isTemplateNamePrefillEnabled = false
             )
         )
     }

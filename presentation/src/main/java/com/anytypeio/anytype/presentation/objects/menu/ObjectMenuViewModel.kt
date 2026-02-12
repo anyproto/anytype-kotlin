@@ -336,7 +336,8 @@ class ObjectMenuViewModel(
         viewModelScope.launch {
             val currentValue =
                 storage.details.current().getObject(ctx)?.templateNamePrefillType ?: 0
-            val newValue = if (currentValue == 1) 0 else 1
+            val newValue =
+                if (currentValue == 1) NAME_PREFILL_DISABLED else NAME_PREFILL_FROM_TEMPLATE
 
             setObjectDetails.async(
                 SetObjectDetails.Params(
@@ -714,3 +715,6 @@ class ObjectMenuViewModel(
         }
     }
 }
+
+private const val NAME_PREFILL_DISABLED = 0
+private const val NAME_PREFILL_FROM_TEMPLATE = 1

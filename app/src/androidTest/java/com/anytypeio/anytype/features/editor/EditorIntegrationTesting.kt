@@ -10,10 +10,8 @@ import androidx.test.espresso.action.ViewActions.closeSoftKeyboard
 import androidx.test.espresso.action.ViewActions.pressImeActionButton
 import androidx.test.espresso.action.ViewActions.typeText
 import androidx.test.espresso.assertion.ViewAssertions.matches
-import androidx.test.espresso.matcher.ViewMatchers.hasFocus
 import androidx.test.espresso.matcher.ViewMatchers.isDisplayed
 import androidx.test.espresso.matcher.ViewMatchers.withId
-import androidx.test.espresso.matcher.ViewMatchers.withText
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -40,7 +38,13 @@ import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_PARAGRAPH_1
 import com.anytypeio.anytype.mocking.MockUiTests.BLOCK_TOGGLE
 import com.anytypeio.anytype.presentation.MockBlockFactory.paragraph
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.utils.checkIsFocused
+import com.anytypeio.anytype.test_utils.utils.checkIsNotFocused
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.scrollTo
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -67,8 +71,8 @@ class EditorIntegrationTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-//    @get:Rule
-//    val coroutineTestRule = CoroutinesTestRule()
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
     @Before
     override fun setup() {
@@ -80,7 +84,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val blocks = listOf(
             BLOCK_H1,
@@ -113,41 +117,27 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         onView(withId(R.id.recycler)).check(matches(isDisplayed()))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.headerOne))
-            .check(matches(withText(BLOCK_H1.content.asText().text)))
+        val rvMatcher = R.id.recycler.rVMatcher()
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.headerTwo))
-            .check(matches(withText(BLOCK_H2.content.asText().text)))
+        rvMatcher.onItemView(0, R.id.headerOne).checkHasText(BLOCK_H1.content.asText().text)
+        rvMatcher.onItemView(1, R.id.headerTwo).checkHasText(BLOCK_H2.content.asText().text)
+        rvMatcher.onItemView(2, R.id.headerThree).checkHasText(BLOCK_H3.content.asText().text)
+        rvMatcher.onItemView(3, R.id.textContent).checkHasText(BLOCK_PARAGRAPH.content.asText().text)
+        rvMatcher.onItemView(4, R.id.highlightContent).checkHasText(BLOCK_HIGHLIGHT.content.asText().text)
+        rvMatcher.onItemView(5, R.id.bulletedListContent).checkHasText(BLOCK_BULLET.content.asText().text)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(2, R.id.headerThree))
-            .check(matches(withText(BLOCK_H3.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(3, R.id.textContent))
-            .check(matches(withText(BLOCK_PARAGRAPH.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(4, R.id.highlightContent))
-            .check(matches(withText(BLOCK_HIGHLIGHT.content.asText().text)))
-
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(5, R.id.bulletedListContent))
-            .check(matches(withText(BLOCK_BULLET.content.asText().text)))
-//
         R.id.recycler.scrollTo<Numbered>(5)
-//
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.numberedListContent))
-            .check(matches(withText(BLOCK_NUMBERED_1.content.asText().text)))
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(6, R.id.number))
-            .check(matches(withText("1.")))
+        rvMatcher.onItemView(6, R.id.numberedListContent).checkHasText(BLOCK_NUMBERED_1.content.asText().text)
+        rvMatcher.onItemView(6, R.id.number).checkHasText("1.")
 
         R.id.recycler.scrollTo<Toggle>(7)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(7, R.id.toggleContent))
-            .check(matches(withText(BLOCK_TOGGLE.content.asText().text)))
+        rvMatcher.onItemView(7, R.id.toggleContent).checkHasText(BLOCK_TOGGLE.content.asText().text)
 
         R.id.recycler.scrollTo<Checkbox>(8)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(8, R.id.checkboxContent))
-            .check(matches(withText(BLOCK_CHECKBOX.content.asText().text)))
+        rvMatcher.onItemView(8, R.id.checkboxContent).checkHasText(BLOCK_CHECKBOX.content.asText().text)
     }
 
     @Test
@@ -155,7 +145,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val document = listOf(
             Block(
@@ -183,7 +173,8 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         val text = " Add new text at the end"
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, R.id.textContent)
 
         target.apply {
             perform(click())
@@ -195,13 +186,13 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         val expected = BLOCK_PARAGRAPH_1.content.asText().text + text
 
-        target.check(matches(withText(expected)))
+        target.checkHasText(expected)
     }
 
     @Test
     fun shouldClearFocusAfterClickedOnHideKeyboard() {
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val document = listOf(
             Block(
@@ -223,21 +214,22 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, R.id.textContent)
 
         // Focusing
 
-        target.perform(click())
+        target.performClick()
 
         onView(withId(R.id.toolbar)).check(matches((isDisplayed())))
-        target.check(matches((hasFocus())))
+        target.checkIsFocused()
 
         // Unfocusing
 
         onView(withId(R.id.done)).perform(click())
 
         onView(withId(R.id.toolbar)).check(matches(not(isDisplayed())))
-        target.check(matches(not(hasFocus())))
+        target.checkIsNotFocused()
     }
 
     @Test
@@ -245,7 +237,7 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val text = "FooBar"
 
@@ -303,11 +295,12 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent))
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, R.id.textContent)
 
-        target.check(matches(withText(text)))
+        target.checkHasText(text)
 
-        target.perform(click())
+        target.performClick()
 
         Thread.sleep(100)
 
@@ -328,12 +321,10 @@ class EditorIntegrationTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(0, R.id.textContent)).apply {
-            check(matches(withText("Foo")))
-        }
-        onView(withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)).apply {
-            check(matches(withText("Bar")))
-            check(matches(hasFocus()))
+        rvMatcher.onItemView(0, R.id.textContent).checkHasText("Foo")
+        rvMatcher.onItemView(1, R.id.textContent).apply {
+            checkHasText("Bar")
+            checkIsFocused()
         }
 
         // Check cursor position
@@ -669,6 +660,6 @@ class EditorIntegrationTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-//        coroutineTestRule.advanceTime(millis)
+        coroutineTestRule.advanceTime(millis)
     }
 }

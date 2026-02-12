@@ -4,10 +4,7 @@ import android.os.Bundle
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
@@ -25,7 +22,12 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.MockBlockFactory
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
-import com.anytypeio.anytype.test_utils.utils.TestUtils
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.utils.CoroutinesTestRule
+import com.anytypeio.anytype.test_utils.utils.checkIsFocused
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
 import kotlin.test.assertEquals
@@ -42,10 +44,10 @@ class ListBlockTesting : EditorTestSetup() {
     @get:Rule
     val animationsRule = DisableAnimationsRule()
 
-//    @get:Rule
-//    val coroutineTestRule = CoroutinesTestRule()
+    @get:Rule
+    val coroutineTestRule = CoroutinesTestRule()
 
-    val args = bundleOf(EditorFragment.CTX_KEY to root)
+    val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
     @Before
     override fun setup() {
@@ -151,13 +153,10 @@ class ListBlockTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(0, view)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.performClick()
 
         Thread.sleep(100)
 
@@ -177,17 +176,11 @@ class ListBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText(a.content<Block.Content.Text>().text)))
-        }
+        rvMatcher.onItemView(0, view).checkHasText(a.content<Block.Content.Text>().text)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(1, view).apply {
+            checkHasText("")
+            checkIsFocused()
         }
 
         // Check cursor position at block B
@@ -301,13 +294,10 @@ class ListBlockTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, view)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(1, view)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.performClick()
 
         // Press ENTER on empty text block A
 
@@ -319,17 +309,11 @@ class ListBlockTesting : EditorTestSetup() {
 
         verifyBlocking(updateTextStyle, times(1)) { invoke(params) }
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(0, view)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText(a.content<Block.Content.Text>().text)))
-        }
+        rvMatcher.onItemView(0, view).checkHasText(a.content<Block.Content.Text>().text)
 
-        Espresso.onView(
-            TestUtils.withRecyclerView(R.id.recycler).atPositionOnView(1, R.id.textContent)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(1, R.id.textContent).apply {
+            checkHasText("")
+            checkIsFocused()
         }
 
         // Check cursor position at block B
@@ -396,6 +380,6 @@ class ListBlockTesting : EditorTestSetup() {
      * Moves coroutines clock time.
      */
     private fun advance(millis: Long) {
-//        coroutineTestRule.advanceTime(millis)
+        coroutineTestRule.advanceTime(millis)
     }
 }

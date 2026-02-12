@@ -5,10 +5,7 @@ import android.view.KeyEvent
 import androidx.core.os.bundleOf
 import androidx.fragment.app.testing.FragmentScenario
 import androidx.fragment.app.testing.launchFragmentInContainer
-import androidx.test.espresso.Espresso
 import androidx.test.espresso.action.ViewActions
-import androidx.test.espresso.assertion.ViewAssertions
-import androidx.test.espresso.matcher.ViewMatchers
 import androidx.test.ext.junit.runners.AndroidJUnit4
 import androidx.test.filters.LargeTest
 import com.anytypeio.anytype.R
@@ -23,7 +20,11 @@ import com.anytypeio.anytype.features.editor.base.TestEditorFragment
 import com.anytypeio.anytype.presentation.MockBlockContentFactory.StubTextContent
 import com.anytypeio.anytype.presentation.editor.EditorViewModel
 import com.anytypeio.anytype.test_utils.MockDataFactory
-import com.anytypeio.anytype.test_utils.utils.TestUtils.withRecyclerView
+import com.anytypeio.anytype.test_utils.utils.checkHasText
+import com.anytypeio.anytype.test_utils.utils.checkIsFocused
+import com.anytypeio.anytype.test_utils.utils.onItemView
+import com.anytypeio.anytype.test_utils.utils.performClick
+import com.anytypeio.anytype.test_utils.utils.rVMatcher
 import com.anytypeio.anytype.ui.editor.EditorFragment
 import com.anytypeio.anytype.utils.CoroutinesTestRule
 import com.bartoszlipinski.disableanimationsrule.DisableAnimationsRule
@@ -58,7 +59,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.P
 
@@ -72,7 +73,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.H1
 
@@ -86,7 +87,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.H2
 
@@ -100,7 +101,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.H3
 
@@ -114,7 +115,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.QUOTE
 
@@ -128,7 +129,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.CHECKBOX
 
@@ -142,7 +143,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.BULLET
 
@@ -156,7 +157,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.NUMBERED
 
@@ -170,7 +171,7 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // SETUP
 
-        val args = bundleOf(EditorFragment.CTX_KEY to root)
+        val args = bundleOf(EditorFragment.CTX_KEY to root, EditorFragment.SPACE_ID_KEY to defaultSpace)
 
         val style = Block.Content.Text.Style.TOGGLE
 
@@ -256,13 +257,10 @@ class MergeBlockTesting : EditorTestSetup() {
 
         // TESTING
 
-        val target = Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(1, targetViewId)
-        )
+        val rvMatcher = R.id.recycler.rVMatcher()
+        val target = rvMatcher.onItemView(1, targetViewId)
 
-        target.apply {
-            perform(ViewActions.click())
-        }
+        target.performClick()
 
         // Set cursor at the beginning of B
 
@@ -287,11 +285,9 @@ class MergeBlockTesting : EditorTestSetup() {
 
         Thread.sleep(100)
 
-        Espresso.onView(
-            withRecyclerView(R.id.recycler).atPositionOnView(0, targetViewId)
-        ).apply {
-            check(ViewAssertions.matches(ViewMatchers.withText("FooBar")))
-            check(ViewAssertions.matches(ViewMatchers.hasFocus()))
+        rvMatcher.onItemView(0, targetViewId).apply {
+            checkHasText("FooBar")
+            checkIsFocused()
         }
 
         // Check cursor position

@@ -6,7 +6,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.base.ResultInteractor
 import javax.inject.Inject
 
-class GetNetworkMode @Inject constructor(
+open class GetNetworkMode @Inject constructor(
     private val repository: AuthRepository,
     dispatchers: AppCoroutineDispatchers,
 ) : ResultInteractor<Unit, NetworkModeConfig>(dispatchers.io) {

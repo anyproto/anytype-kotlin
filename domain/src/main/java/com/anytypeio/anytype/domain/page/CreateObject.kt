@@ -17,7 +17,7 @@ import javax.inject.Inject
 /**
  * Use case for creating a new object
  */
-class CreateObject @Inject constructor(
+open class CreateObject @Inject constructor(
     private val repo: BlockRepository,
     private val getDefaultObjectType: GetDefaultObjectType,
     dispatchers: AppCoroutineDispatchers

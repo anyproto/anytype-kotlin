@@ -641,7 +641,8 @@ fun MDVFilter.toCoreModels(): DVFilter = DVFilter(
     condition = condition.toCoreModels(),
     quickOption = quickOption.toCoreModels(),
     value = value_,
-    relationFormat = format.format()
+    relationFormat = format.format(),
+    nestedFilters = nestedFilters.map { it.toCoreModels() }
 )
 
 fun MDVFilterCondition.toCoreModels(): DVFilterCondition = when (this) {

@@ -18,4 +18,10 @@ sealed class ViewerFilterCommand {
             val filterIndex: Int
         ) : Modal()
     }
+
+    /**
+     * Command to show a message indicating that the filter is advanced
+     * and can only be edited on Desktop.
+     */
+    data object ShowAdvancedFilterMessage : ViewerFilterCommand()
 }

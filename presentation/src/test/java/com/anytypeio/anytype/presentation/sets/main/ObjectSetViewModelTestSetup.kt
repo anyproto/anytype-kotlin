@@ -365,7 +365,8 @@ open class ObjectSetViewModelTestSetup {
             setDataViewProperties = setDataViewProperties,
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
-            createBlock = createBlock
+            createBlock = createBlock,
+            stringResourceProvider = stringResourceProvider
         )
     }
 

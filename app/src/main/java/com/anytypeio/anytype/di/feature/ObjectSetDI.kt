@@ -56,6 +56,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.relations.AddFileToObject
 import com.anytypeio.anytype.domain.relations.AddRelationToObject
 import com.anytypeio.anytype.domain.relations.DeleteRelationFromDataView
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.CancelSearchSubscription
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SubscriptionEventChannel
@@ -76,11 +77,11 @@ import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.objects.LockedStateProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.DataViewObjectValueProvider
+import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.DATA_VIEW_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationProvider.Companion.INTRINSIC_PROVIDER_TYPE
 import com.anytypeio.anytype.presentation.relations.providers.ObjectValueProvider
-import com.anytypeio.anytype.presentation.relations.providers.ObjectRelationListProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionObjectValueProvider
 import com.anytypeio.anytype.presentation.relations.providers.SetOrCollectionRelationProvider
 import com.anytypeio.anytype.presentation.sets.ObjectSetDatabase
@@ -97,8 +98,8 @@ import com.anytypeio.anytype.presentation.sets.viewer.DefaultViewerDelegate
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerDelegate
 import com.anytypeio.anytype.presentation.templates.ObjectTypeTemplatesContainer
 import com.anytypeio.anytype.presentation.util.CopyFileToCacheDirectory
-import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.presentation.util.Dispatcher
+import com.anytypeio.anytype.presentation.util.defaultCopyFileToCacheDirectory
 import com.anytypeio.anytype.providers.DefaultCoverImageHashProvider
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import dagger.Binds
@@ -253,7 +254,8 @@ object ObjectSetModule {
         deepLinkResolver: DeepLinkResolver,
         setDataViewProperties: SetDataViewProperties,
         emojiProvider: EmojiProvider,
-        emojiSuggester: EmojiSuggester
+        emojiSuggester: EmojiSuggester,
+        stringResourceProvider: StringResourceProvider
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -300,7 +302,8 @@ object ObjectSetModule {
         removeObjectFromCollection = removeObjectFromCollection,
         setDataViewProperties = setDataViewProperties,
         emojiProvider = emojiProvider,
-        emojiSuggester = emojiSuggester
+        emojiSuggester = emojiSuggester,
+        stringResourceProvider = stringResourceProvider
     )
 
     @JvmStatic

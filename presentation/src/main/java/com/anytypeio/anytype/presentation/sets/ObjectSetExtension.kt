@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -350,14 +351,20 @@ fun ObjectWrapper.Basic.toTemplateView(
     )
 }
 
-suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession, storeOfRelations: StoreOfRelations): List<ViewerView> {
+suspend fun ObjectState.DataView.toViewersView(
+    ctx: Id,
+    session: ObjectSetSession,
+    storeOfRelations: StoreOfRelations,
+    stringResourceProvider: StringResourceProvider
+): List<ViewerView> {
     val viewers = dataViewContent.viewers
     return when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
             session = session,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            stringResourceProvider = stringResourceProvider
         )
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
@@ -366,14 +373,16 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                     defaultObjectType = { it.defaultObjectType },
                     viewers = viewers,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 )
             } else {
                 mapViewers(
                     defaultObjectType = { setOfValue.firstOrNull() },
                     viewers = viewers,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 )
             }
         }
@@ -384,7 +393,8 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                 defaultObjectType = { setOfValue.firstOrNull() },
                 viewers = viewers,
                 session = session,
-                storeOfRelations = storeOfRelations
+                storeOfRelations = storeOfRelations,
+                stringResourceProvider = stringResourceProvider
             )
         }
     }
@@ -394,7 +404,8 @@ private suspend fun mapViewers(
     defaultObjectType: (DVViewer) -> Id?,
     viewers: List<DVViewer>,
     session: ObjectSetSession,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    stringResourceProvider: StringResourceProvider
 ): List<ViewerView> {
     return viewers.mapIndexed { index, viewer ->
         ViewerView(
@@ -406,7 +417,7 @@ private suspend fun mapViewers(
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
             sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
-            filters = viewer.filters.toView(storeOfRelations) { it.relation },
+            filters = viewer.filters.toFilterDisplayNames(storeOfRelations, stringResourceProvider),
             isDefaultObjectTypeEnabled = true
         )
     }

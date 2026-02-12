@@ -19,9 +19,10 @@ data class OsWidgetSpaceEntity(
     val name: String,
 
     /**
-     * The image hash for custom icon, null if using placeholder.
+     * The full image URL for custom icon, null if using placeholder.
+     * Built from hash using UrlBuilder during sync.
      */
-    val iconImageHash: String? = null,
+    val iconImageUrl: String? = null,
 
     /**
      * The SystemColor index (0-9) for icon gradient/background.

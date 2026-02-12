@@ -11,9 +11,9 @@ import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpaceEntity
  */
 fun OsWidgetSpaceEntity.toDomain(): OsWidgetSpaceItem {
     val color = SystemColor.color(iconColorIndex)
-    val imageHash = iconImageHash
-    val icon = if (imageHash != null) {
-        OsWidgetSpaceIcon.Image(hash = imageHash, color = color)
+    val imageUrl = iconImageUrl
+    val icon = if (imageUrl != null) {
+        OsWidgetSpaceIcon.Image(url = imageUrl, color = color)
     } else {
         OsWidgetSpaceIcon.Placeholder(color = color, name = name)
     }
@@ -30,15 +30,15 @@ fun OsWidgetSpaceEntity.toDomain(): OsWidgetSpaceItem {
  * Maps domain/UI model to persistence entity.
  */
 fun OsWidgetSpaceItem.toEntity(): OsWidgetSpaceEntity {
-    val (imageHash, colorIndex) = when (icon) {
-        is OsWidgetSpaceIcon.Image -> icon.hash to icon.color.index
+    val (imageUrl, colorIndex) = when (icon) {
+        is OsWidgetSpaceIcon.Image -> icon.url to icon.color.index
         is OsWidgetSpaceIcon.Placeholder -> null to icon.color.index
     }
 
     return OsWidgetSpaceEntity(
         spaceId = spaceId,
         name = name,
-        iconImageHash = imageHash,
+        iconImageUrl = imageUrl,
         iconColorIndex = colorIndex,
         spaceUxType = spaceUxType.ordinal
     )

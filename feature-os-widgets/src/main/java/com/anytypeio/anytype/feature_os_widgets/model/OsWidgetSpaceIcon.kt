@@ -10,11 +10,11 @@ sealed class OsWidgetSpaceIcon {
 
     /**
      * Space has a custom image icon.
-     * @param hash The image hash to build URL via UrlBuilder
+     * @param url The full image URL (built from hash during sync)
      * @param color Fallback/background color
      */
     data class Image(
-        val hash: String,
+        val url: String,
         val color: SystemColor
     ) : OsWidgetSpaceIcon()
 

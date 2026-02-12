@@ -28,7 +28,6 @@ import com.anytypeio.anytype.core_models.primitives.Space
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.text.splitByMarks
 import com.anytypeio.anytype.core_utils.common.DefaultFileInfo
-import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.domain.auth.interactor.GetAccount
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -56,19 +55,20 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.`object`.SetObjectDetails
 import com.anytypeio.anytype.domain.objects.CreateObjectFromUrl
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
-import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CreateObject
+import com.anytypeio.anytype.domain.spaces.SetSpaceDetails
 import com.anytypeio.anytype.feature_chats.BuildConfig
 import com.anytypeio.anytype.feature_chats.tools.ClearChatsTempFolder
 import com.anytypeio.anytype.feature_chats.tools.LinkDetector
 import com.anytypeio.anytype.feature_chats.tools.syncStatus
 import com.anytypeio.anytype.feature_chats.tools.toNotificationSetting
 import com.anytypeio.anytype.feature_chats.tools.toNotificationState
+import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
+import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.home.OpenObjectNavigation
 import com.anytypeio.anytype.presentation.home.navigation
 import com.anytypeio.anytype.presentation.mapper.objectIcon
@@ -835,7 +835,8 @@ class ChatViewModel @Inject constructor(
                                         Block.Content.File.Type.VIDEO
                                     else
                                         Block.Content.File.Type.IMAGE,
-                                    preloadFileId = preloadedFileId
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
                                 if (wasCopiedToCache) {
@@ -890,7 +891,8 @@ class ChatViewModel @Inject constructor(
                             createObjectFromUrl.async(
                                 params = CreateObjectFromUrl.Params(
                                     url = attachment.preview.url,
-                                    space = vmParams.space
+                                    space = vmParams.space,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { obj ->
                                 if (obj.isValid) {
@@ -941,7 +943,8 @@ class ChatViewModel @Inject constructor(
                                     space = vmParams.space,
                                     path = path,
                                     type = Block.Content.File.Type.NONE,
-                                    preloadFileId = preloadedFileId
+                                    preloadFileId = preloadedFileId,
+                                    createdInContext = vmParams.ctx
                                 )
                             ).onSuccess { file ->
                                 copyFileToCacheDirectory.delete(path)
@@ -1862,7 +1865,9 @@ class ChatViewModel @Inject constructor(
                         UploadFile.Params(
                             path = icon.uri,
                             space = vmParams.space,
-                            type = Block.Content.File.Type.IMAGE
+                            type = Block.Content.File.Type.IMAGE,
+                            createdInContext = vmParams.ctx,
+                            createdInContextRef = Relations.ICON_IMAGE
                         )
                     ).onSuccess { file ->
                         setObjectDetails.async(

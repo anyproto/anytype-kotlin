@@ -549,7 +549,9 @@ class EditorViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = vmParams.space
+                space = vmParams.space,
+                createdInContext = vmParams.ctx,
+                createdInContextRef = Relations.COVER_ID
             )
         ).process(
             failure = {

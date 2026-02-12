@@ -1033,7 +1033,8 @@ class SharingViewModel(
                 uploadMediaFile(
                     uri = content.uri,
                     type = content.type,
-                    spaceId = spaceId
+                    spaceId = spaceId,
+                    createdInContext = chatId
                 ) { fileId ->
                     val attachment = createMediaAttachment(fileId, content.type)
                     sendChatMessage(chatId, commentText, listOf(attachment))
@@ -1046,7 +1047,12 @@ class SharingViewModel(
                 batches.forEachIndexed { index, batch ->
                     val attachments = mutableListOf<Chat.Message.Attachment>()
                     batch.forEach { uri ->
-                        uploadMediaFile(uri, content.type, spaceId) { fileId ->
+                        uploadMediaFile(
+                            uri = uri,
+                            type = content.type,
+                            spaceId = spaceId,
+                            createdInContext = chatId
+                        ) { fileId ->
                             attachments.add(createMediaAttachment(fileId, content.type))
                         }
                     }
@@ -1088,7 +1094,8 @@ class SharingViewModel(
     private suspend fun createBookmarkForChat(url: String, spaceId: SpaceId, chatId: String) {
         val params = CreateObjectFromUrl.Params(
             url = url,
-            space = spaceId
+            space = spaceId,
+            createdInContext = chatId
         )
         return createObjectFromUrl.async(params).fold(
             onSuccess = { obj ->
@@ -1115,6 +1122,7 @@ class SharingViewModel(
         uri: String,
         type: SharedContent.MediaType,
         spaceId: SpaceId,
+        createdInContext: Id? = null,
         onSuccess: suspend (Id) -> Unit
     ) {
         val path = try {
@@ -1141,7 +1149,8 @@ class SharingViewModel(
             UploadFile.Params(
                 space = spaceId,
                 path = path,
-                type = fileType
+                type = fileType,
+                createdInContext = createdInContext
             )
         ).fold(
             onSuccess = { file -> onSuccess(file.id) },

@@ -26,6 +26,6 @@
         android:gravity="center"
         android:stateListAnimator="@null"
         android:text="12"
-        android:textColor="@color/button_text" />
+        android:textColor="@color/text_white" />
 
 </merge>

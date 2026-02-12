@@ -32,16 +32,48 @@
                 android:layout_height="match_parent"
                 android:orientation="vertical">
 
-                <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
-                    android:id="@+id/optionIcon"
+                <com.anytypeio.anytype.core_ui.widgets.ObjectMenuDescriptionItem
+                    android:id="@+id/optionDescription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="12dp"
                     android:background="@drawable/default_ripple"
+                    app:icon="@drawable/ic_obj_settings_description_24"
+                    app:title="@string/description" />
+
+                <View
+                    android:id="@+id/descriptionDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/shape_primary" />
+
+                <com.anytypeio.anytype.core_ui.widgets.ObjectMenuTemplateNamePrefillItem
+                    android:id="@+id/optionTemplateNamePrefill"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/default_ripple"
+                    android:visibility="gone"
+                    tools:visibility="visible" />
+
+                <View
+                    android:id="@+id/templateNamePrefillDivider"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="@color/shape_primary"
+                    android:visibility="gone" />
+
+                <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
+                    android:id="@+id/optionIcon"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:background="@drawable/default_ripple"
                     app:icon="@drawable/ic_obj_settings_icon_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/dragger"
                     app:title="@string/icon" />
 
                 <View
@@ -50,10 +82,7 @@
                     android:layout_height="0.5dp"
                     android:layout_marginStart="20dp"
                     android:layout_marginEnd="20dp"
-                    android:background="@color/shape_primary"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/optionIcon" />
+                    android:background="@color/shape_primary" />
 
                 <com.anytypeio.anytype.core_ui.widgets.ObjectMenuItemWidget
                     android:id="@+id/optionCover"
@@ -67,26 +96,6 @@
 
                 <View
                     android:id="@+id/coverDivider"
-                    android:layout_width="match_parent"
-                    android:layout_height="0.5dp"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginEnd="20dp"
-                    android:background="@color/shape_primary" />
-
-                <com.anytypeio.anytype.core_ui.widgets.ObjectMenuDescriptionItem
-                    android:id="@+id/optionDescription"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:background="@drawable/default_ripple"
-                    app:icon="@drawable/ic_obj_settings_description_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/coverDivider"
-                    app:title="@string/description" />
-
-                <View
-                    android:id="@+id/descriptionDivider"
                     android:layout_width="match_parent"
                     android:layout_height="0.5dp"
                     android:layout_marginStart="20dp"
@@ -134,9 +143,6 @@
                     android:layout_marginTop="8dp"
                     android:background="@drawable/default_ripple"
                     app:icon="@drawable/ic_obj_settings_history_24"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/relationsDivider"
                     app:title="@string/history" />
 
                 <View

@@ -107,6 +107,7 @@ abstract class ObjectMenuViewModelBase(
     abstract fun onDescriptionClicked(ctx: Id, space: Id)
     abstract fun onRelationsClicked()
     abstract fun onResetToDefaultLayout(ctx: Id, space: Id)
+    abstract fun onTemplateNamePrefillToggleClicked(ctx: Id, space: Id)
 
     val showLayoutConflictScreen = MutableStateFlow(false)
 

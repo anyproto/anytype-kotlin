@@ -1,33 +1,57 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="wrap_content"
-    android:layout_height="28dp"
-    android:background="@drawable/button_primary_xsmall_selector"
-    android:orientation="horizontal">
+    android:layout_height="56dp"
+    android:layout_gravity="center_vertical">
 
-    <TextView
-        android:id="@+id/button"
-        style="@style/TextView.UXStyle.Captions.1.Medium"
+    <LinearLayout
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="28dp"
         android:layout_gravity="center_vertical"
-        android:paddingStart="10dp"
-        android:paddingEnd="10dp"
-        android:text="New"
-        android:textColor="@color/text_color_button_primary_selector" />
+        android:background="@drawable/button_primary_xsmall_selector"
+        android:orientation="horizontal">
 
-    <View
-        android:id="@+id/divider"
-        android:layout_width="1dp"
-        android:layout_height="match_parent"
-        android:background="@color/ds_button_icon_divider" />
+        <FrameLayout
+            android:id="@+id/buttonContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true">
 
-    <ImageView
-        android:id="@+id/icon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:padding="5dp"
-        android:src="@drawable/ic_arrow_down_18" />
+            <TextView
+                android:id="@+id/button"
+                style="@style/TextView.UXStyle.Captions.1.Medium"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp"
+                android:text="New"
+                android:textColor="@color/text_color_button_primary_selector" />
+        </FrameLayout>
 
-</LinearLayout>
+        <View
+            android:id="@+id/divider"
+            android:layout_width="1dp"
+            android:layout_height="match_parent"
+            android:background="@color/ds_button_icon_divider" />
+
+        <FrameLayout
+            android:id="@+id/iconContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:clickable="true"
+            android:focusable="true">
+
+            <ImageView
+                android:id="@+id/icon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:padding="5dp"
+                android:src="@drawable/ic_arrow_down_18" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+</FrameLayout>

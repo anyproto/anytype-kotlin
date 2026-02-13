@@ -87,49 +87,37 @@ class OsWidgetIconCache(private val context: Context) {
                 if (!exists()) mkdirs()
             }
             val file = File(shortcutDir, "${prefix}_${widgetId}$FILE_EXTENSION")
-            Timber.tag(TAG).d("Caching shortcut icon for widget $widgetId from URL: $url")
             
             val connection = URL(url).openConnection().apply {
                 connectTimeout = TIMEOUT_MS
                 readTimeout = TIMEOUT_MS
             }
             
-            // Log HTTP response details
-            val httpConnection = connection as? java.net.HttpURLConnection
-            val responseCode = httpConnection?.responseCode ?: -1
-            val contentType = connection.contentType
-            val contentLength = connection.contentLength
-            Timber.tag(TAG).d("HTTP response: code=$responseCode, contentType=$contentType, contentLength=$contentLength")
-            
             connection.getInputStream().use { input ->
                 val bytes = input.readBytes()
-                Timber.tag(TAG).d("Read ${bytes.size} bytes for widget $widgetId")
                 
                 // Check if it's an SVG file
                 val isSvg = bytes.size > 4 && String(bytes.take(100).toByteArray()).contains("<svg")
                 
                 val bitmap = if (isSvg) {
-                    Timber.tag(TAG).d("Detected SVG format, converting to bitmap")
                     decodeSvgToBitmap(bytes, ICON_SIZE)
                 } else {
                     BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
                 }
                 
                 if (bitmap != null) {
-                    Timber.tag(TAG).d("Bitmap decoded: ${bitmap.width}x${bitmap.height}")
                     FileOutputStream(file).use { output ->
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                     }
                     bitmap.recycle()
-                    Timber.tag(TAG).d("Successfully cached shortcut icon to ${file.absolutePath}")
                     file.absolutePath
                 } else {
-                    Timber.tag(TAG).w("Failed to decode bitmap for shortcut widget $widgetId (isSvg=$isSvg, size=${bytes.size})")
+                    Timber.tag(TAG).w("Failed to decode bitmap for widget $widgetId")
                     null
                 }
             }
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to cache shortcut icon for widget $widgetId from $url")
+            Timber.tag(TAG).e(e, "Failed to cache shortcut icon for widget $widgetId")
             null
         }
     }
@@ -208,11 +196,9 @@ class OsWidgetIconCache(private val context: Context) {
             canvas.scale(scale, scale)
             
             svg.renderToCanvas(canvas)
-            
-            Timber.tag(TAG).d("SVG rendered: svgSize=${actualWidth}x${actualHeight}, scale=$scale, targetSize=$size")
             bitmap
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "Failed to decode SVG to bitmap")
+            Timber.tag(TAG).e(e, "Failed to decode SVG")
             null
         }
     }

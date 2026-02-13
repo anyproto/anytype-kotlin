@@ -366,23 +366,17 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
 
     private fun completeConfiguration(obj: ObjectWrapper.Basic) {
         val space = selectedSpace ?: return
-        
-        Timber.d("completeConfiguration: appWidgetId=$appWidgetId, objectId=${obj.id}, name=${obj.name}, iconImage=${obj.iconImage}, iconEmoji=${obj.iconEmoji}, iconName=${obj.iconName}")
-        
         lifecycleScope.launch {
             try {
                 // Cache the icon image if available
                 val iconCache = OsWidgetIconCache(applicationContext)
                 val cachedIconPath = obj.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
                     val iconUrl = urlBuilder.thumbnail(iconHash)
-                    Timber.d("completeConfiguration: caching icon from URL=$iconUrl")
-                    val path = iconCache.cacheShortcutIcon(
+                    iconCache.cacheShortcutIcon(
                         url = iconUrl,
                         widgetId = appWidgetId,
                         prefix = OsWidgetIconCache.PREFIX_OBJECT
                     )
-                    Timber.d("completeConfiguration: cached icon path=$path")
-                    path
                 }
 
                 val config = OsWidgetObjectShortcutEntity(
@@ -398,12 +392,9 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                     objectLayout = obj.layout?.code,
                     cachedIconPath = cachedIconPath
                 )
-                Timber.d("completeConfiguration: saving config=$config")
 
                 OsWidgetsDataStore(applicationContext).saveObjectShortcutConfig(config)
-                Timber.d("completeConfiguration: config saved, updating widget...")
                 OsObjectShortcutWidgetUpdater.update(applicationContext, appWidgetId)
-                Timber.d("completeConfiguration: widget update triggered")
 
                 setResult(
                     Activity.RESULT_OK,

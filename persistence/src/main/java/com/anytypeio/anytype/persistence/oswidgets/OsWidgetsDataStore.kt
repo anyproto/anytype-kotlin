@@ -243,13 +243,11 @@ class OsWidgetsDataStore(private val context: Context) {
      * Saves an Object Shortcut widget configuration.
      */
     suspend fun saveObjectShortcutConfig(config: OsWidgetObjectShortcutEntity) {
-        Timber.tag(TAG).d("saveObjectShortcutConfig: saving config for widgetId=${config.appWidgetId}")
         dataStore.edit { preferences ->
             val cache = preferences[OBJECT_SHORTCUT_CONFIGS_KEY]?.let { jsonString ->
                 try {
                     osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
                 } catch (e: Exception) {
-                    Timber.tag(TAG).w(e, "saveObjectShortcutConfig: failed to decode existing cache")
                     OsWidgetObjectShortcutCache()
                 }
             } ?: OsWidgetObjectShortcutCache()
@@ -257,30 +255,20 @@ class OsWidgetsDataStore(private val context: Context) {
             val updatedConfigs = cache.configs.toMutableMap().apply {
                 put(config.appWidgetId, config)
             }
-            val encoded = osWidgetsJson.encodeToString(OsWidgetObjectShortcutCache(updatedConfigs))
-            Timber.tag(TAG).d("saveObjectShortcutConfig: encoded ${updatedConfigs.size} configs")
-            preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = encoded
+            preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                OsWidgetObjectShortcutCache(updatedConfigs)
+            )
         }
-        Timber.tag(TAG).d("saveObjectShortcutConfig: config saved successfully")
     }
 
     /**
      * Gets an Object Shortcut widget configuration by appWidgetId.
      */
     suspend fun getObjectShortcutConfig(appWidgetId: Int): OsWidgetObjectShortcutEntity? {
-        Timber.tag(TAG).d("getObjectShortcutConfig: fetching config for widgetId=$appWidgetId")
-        val jsonString = dataStore.data.first()[OBJECT_SHORTCUT_CONFIGS_KEY]
-        if (jsonString == null) {
-            Timber.tag(TAG).d("getObjectShortcutConfig: no configs key found in datastore")
-            return null
-        }
+        val jsonString = dataStore.data.first()[OBJECT_SHORTCUT_CONFIGS_KEY] ?: return null
         return try {
-            val cache = osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
-            val config = cache.configs[appWidgetId]
-            Timber.tag(TAG).d("getObjectShortcutConfig: found ${cache.configs.size} configs, config for $appWidgetId = ${config != null}")
-            config
+            osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString).configs[appWidgetId]
         } catch (e: Exception) {
-            Timber.tag(TAG).e(e, "getObjectShortcutConfig: failed to decode cache")
             null
         }
     }

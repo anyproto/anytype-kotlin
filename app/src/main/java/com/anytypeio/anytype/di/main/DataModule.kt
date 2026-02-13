@@ -21,8 +21,8 @@ import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.AppStateService
-import com.anytypeio.anytype.device.BuildProvider
-import com.anytypeio.anytype.device.DefaultBuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository

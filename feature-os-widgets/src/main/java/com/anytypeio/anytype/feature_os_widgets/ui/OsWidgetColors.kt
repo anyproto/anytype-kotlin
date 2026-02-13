@@ -75,3 +75,16 @@ val OsWidgetIconPlaceholderColor = Color(0xFF3D3C3B)
  * Corner radius for space icons (matches vault 40dp icon -> 6dp radius)
  */
 const val SPACE_ICON_CORNER_RADIUS = 6
+
+// Icon colors for custom type icons (matching CustomIconColor values)
+// These match the palette_system_* colors from core-ui
+val OsWidgetIconGray = Color(0xFF928F8E)      // glyph_active
+val OsWidgetIconYellow = Color(0xFFE5D044)    // palette_system_yellow
+val OsWidgetIconAmber = Color(0xFFF19611)     // palette_system_amber_100
+val OsWidgetIconRed = Color(0xFFF55522)       // palette_system_red
+val OsWidgetIconPink = Color(0xFFE51284)      // palette_system_pink
+val OsWidgetIconPurple = Color(0xFFAB50CC)    // palette_system_purple
+val OsWidgetIconBlue = Color(0xFF3E58EB)      // palette_system_blue
+val OsWidgetIconSky = Color(0xFF2AA7EE)       // palette_system_sky
+val OsWidgetIconTeal = Color(0xFF0FC8BA)      // palette_system_teal
+val OsWidgetIconGreen = Color(0xFF5DD400)     // palette_system_green

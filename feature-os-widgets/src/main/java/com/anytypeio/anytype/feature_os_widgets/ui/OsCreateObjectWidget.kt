@@ -153,8 +153,8 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity) {
         verticalAlignment = Alignment.CenterVertically,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Type emoji or placeholder
-        TypeIcon(emoji = config.typeIconEmoji, typeName = config.typeName)
+        // Type icon (emoji or placeholder)
+        TypeIcon(config = config)
         
         Spacer(modifier = GlanceModifier.height(8.dp))
         
@@ -197,7 +197,10 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity) {
 }
 
 @Composable
-private fun TypeIcon(emoji: String?, typeName: String) {
+private fun TypeIcon(config: OsWidgetCreateObjectEntity) {
+    val emoji = config.typeIconEmoji
+    val hasCustomIcon = !config.typeIconName.isNullOrEmpty()
+    
     if (!emoji.isNullOrEmpty()) {
         // Show emoji
         Text(
@@ -206,9 +209,30 @@ private fun TypeIcon(emoji: String?, typeName: String) {
                 fontSize = 32.sp
             )
         )
+    } else if (hasCustomIcon) {
+        // Custom icon type - show colored placeholder
+        // The icon color is based on iconOption (1-10 maps to colors)
+        val iconColor = getIconColor(config.typeIconOption)
+        val initial = config.typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
+        Box(
+            modifier = GlanceModifier
+                .size(48.dp)
+                .cornerRadius(8.dp)
+                .background(OsWidgetIconPlaceholderColor),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = initial,
+                style = TextStyle(
+                    color = ColorProvider(iconColor),
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            )
+        }
     } else {
-        // Show placeholder with initial
-        val initial = typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
+        // Fallback placeholder
+        val initial = config.typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
         Box(
             modifier = GlanceModifier
                 .size(48.dp)
@@ -225,5 +249,25 @@ private fun TypeIcon(emoji: String?, typeName: String) {
                 )
             )
         }
+    }
+}
+
+/**
+ * Maps icon option to a color for the widget.
+ * Icon option values: 1=Gray, 2=Yellow, 3=Amber, 4=Red, 5=Pink, 6=Purple, 7=Blue, 8=Sky, 9=Teal, 10=Green
+ */
+private fun getIconColor(iconOption: Int?): androidx.compose.ui.graphics.Color {
+    return when (iconOption) {
+        1 -> OsWidgetIconGray
+        2 -> OsWidgetIconYellow
+        3 -> OsWidgetIconAmber
+        4 -> OsWidgetIconRed
+        5 -> OsWidgetIconPink
+        6 -> OsWidgetIconPurple
+        7 -> OsWidgetIconBlue
+        8 -> OsWidgetIconSky
+        9 -> OsWidgetIconTeal
+        10 -> OsWidgetIconGreen
+        else -> OsWidgetIconGray // Default
     }
 }

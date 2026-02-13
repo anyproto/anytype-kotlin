@@ -137,6 +137,8 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
             typeKey = objType.uniqueKey.orEmpty(),
             typeName = objType.name.orEmpty(),
             typeIconEmoji = objType.iconEmoji,
+            typeIconName = objType.iconName,
+            typeIconOption = objType.iconOption?.toInt(),
             spaceName = space.name.orEmpty()
         )
         completeConfiguration(config)

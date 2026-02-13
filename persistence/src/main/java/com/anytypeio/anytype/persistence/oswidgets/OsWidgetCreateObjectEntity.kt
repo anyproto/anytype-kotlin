@@ -29,9 +29,20 @@ data class OsWidgetCreateObjectEntity(
     val typeName: String,
 
     /**
-     * The emoji icon for the object type, null if using default.
+     * The emoji icon for the object type, null if not an emoji type.
      */
     val typeIconEmoji: String? = null,
+
+    /**
+     * The custom icon name for the object type (e.g., "extension-puzzle").
+     * Used for non-emoji type icons.
+     */
+    val typeIconName: String? = null,
+
+    /**
+     * The icon color option (0-9) for custom icons.
+     */
+    val typeIconOption: Int? = null,
 
     /**
      * The display name of the space.

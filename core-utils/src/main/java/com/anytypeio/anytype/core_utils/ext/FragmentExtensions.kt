@@ -80,9 +80,9 @@ fun Fragment.startMarketPageOrWeb() {
 }
 
 inline fun <reified T> Fragment.withParentSafe(action: T.() -> Unit) {
-    if (parentFragment is T) {
-        (parentFragment as T).action()
-    } else {
-        Timber.w("Invalid parent fragment: fragment is not ${T::class.java}")
+    when {
+        parentFragment is T -> (parentFragment as T).action()
+        activity is T -> (activity as T).action()
+        else -> Timber.w("Invalid parent: neither parentFragment nor activity is ${T::class.java}")
     }
 }

@@ -18,6 +18,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
+import timber.log.Timber
 
 class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.fragment_create_object) {
 
@@ -28,12 +29,16 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
     private val mType get() = arg<Key>(TYPE_KEY)
 
     override fun onStart() {
+        Timber.d("CreateObjectFragment: onStart, mType=$mType")
         jobs += lifecycleScope.subscribe(vm.createObjectStatus) { state ->
+            Timber.d("CreateObjectFragment: received state=$state")
             when (state) {
                 is CreateObjectViewModel.State.Error -> {
+                    Timber.e("CreateObjectFragment: error - ${state.msg}")
                     activity?.toast(state.msg)
                 }
                 is CreateObjectViewModel.State.Success -> {
+                    Timber.d("CreateObjectFragment: success - id=${state.id}, layout=${state.layout}, space=${state.space}")
                     val navOptions = NavOptions.Builder()
                         .setPopUpTo(R.id.createObjectFragment, true)
                         .build()
@@ -59,11 +64,13 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
                     }
                 }
                 is CreateObjectViewModel.State.Exit -> {
+                    Timber.d("CreateObjectFragment: exit state received")
                     findNavController().popBackStack()
                 }
             }
         }
         super.onStart()
+        Timber.d("CreateObjectFragment: calling vm.onStart with mType=$mType")
         vm.onStart(mType)
     }
 

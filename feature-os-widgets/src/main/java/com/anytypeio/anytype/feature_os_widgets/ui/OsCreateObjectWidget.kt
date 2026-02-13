@@ -32,7 +32,10 @@ import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import kotlinx.coroutines.delay
 import timber.log.Timber
+
+private const val TAG = "OsCreateObjectWidget"
 
 /**
  * Glance App Widget that provides a quick-create button for a specific object type.
@@ -40,29 +43,56 @@ import timber.log.Timber
  */
 class OsCreateObjectWidget : GlanceAppWidget() {
 
+    companion object {
+        // Retry configuration for handling race condition with config activity.
+        // User needs time to: select space (~1-2s) + select type (~1-2s).
+        // Total wait time: 10 retries * 500ms = 5 seconds.
+        private const val MAX_RETRIES = 10
+        private const val RETRY_DELAY_MS = 500L
+    }
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        Timber.d("OsCreateObjectWidget: provideGlance START for glanceId=$id")
         try {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-            Timber.d("OsCreateObjectWidget: getting config for appWidgetId=$appWidgetId")
-            val config = dataStore.getCreateObjectConfig(appWidgetId)
-            Timber.d("OsCreateObjectWidget: provideGlance for appWidgetId=$appWidgetId, config=$config")
+
+            // Retry logic to handle race condition where config might not be persisted yet
+            val config = getConfigWithRetry(dataStore, appWidgetId)
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config, appWidgetId = appWidgetId)
+                    WidgetContent(config = config)
                 }
             }
         } catch (e: Exception) {
-            Timber.e(e, "OsCreateObjectWidget: provideGlance FAILED")
+            Timber.tag(TAG).e(e, "provideGlance failed")
         }
+    }
+
+    /**
+     * Attempts to get the widget configuration with retries.
+     * 
+     * This handles the race condition where provideGlance might be called
+     * before the config activity has finished persisting the configuration.
+     */
+    private suspend fun getConfigWithRetry(
+        dataStore: OsWidgetsDataStore,
+        appWidgetId: Int
+    ): OsWidgetCreateObjectEntity? {
+        repeat(MAX_RETRIES) { attempt ->
+            dataStore.getCreateObjectConfig(appWidgetId)?.let { return it }
+            if (attempt < MAX_RETRIES - 1) {
+                delay(RETRY_DELAY_MS)
+            }
+        }
+        Timber.tag(TAG).d("Config not found for widget $appWidgetId after $MAX_RETRIES attempts")
+        return null
     }
 }
 
 @Composable
-private fun WidgetContent(config: OsWidgetCreateObjectEntity?, appWidgetId: Int) {
+private fun WidgetContent(config: OsWidgetCreateObjectEntity?) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -72,7 +102,7 @@ private fun WidgetContent(config: OsWidgetCreateObjectEntity?, appWidgetId: Int)
         if (config == null) {
             NotConfiguredState()
         } else {
-            CreateObjectCard(config = config, appWidgetId = appWidgetId)
+            CreateObjectCard(config = config)
         }
     }
 }
@@ -104,9 +134,10 @@ private fun NotConfiguredState() {
 }
 
 @Composable
-private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, appWidgetId: Int) {
+private fun CreateObjectCard(config: OsWidgetCreateObjectEntity) {
+    val deepLink = OsWidgetDeepLinks.buildCreateObjectDeepLink(config.appWidgetId)
     val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId)
-    Timber.d("OsCreateObjectWidget: CreateObjectCard intent data=${intent.data}")
+    Timber.tag(TAG).d("CreateObjectCard: appWidgetId=${config.appWidgetId}, spaceId=${config.spaceId}, typeKey=${config.typeKey}, deepLink=$deepLink")
 
     Column(
         modifier = GlanceModifier

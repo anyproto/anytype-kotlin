@@ -343,19 +343,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                             }
                             is Command.Deeplink.DeepLinkToCreateObject -> {
                                 // Load config and delegate to ViewModel for space switch
+                                Timber.d("Command.Deeplink.DeepLinkToCreateObject received: appWidgetId=${command.appWidgetId}")
                                 lifecycleScope.launch {
                                     proceedWithCreateObjectFromWidget(command.appWidgetId)
                                 }
                             }
                             is Command.Deeplink.OpenCreateObjectFromOsWidget -> {
                                 // Navigate to CreateObjectFragment (space already switched)
+                                Timber.d("Command.Deeplink.OpenCreateObjectFromOsWidget received: typeKey=${command.typeKey}")
                                 runCatching {
+                                    Timber.d("Navigating to CreateObjectFragment with typeKey=${command.typeKey}")
                                     findNavController(R.id.fragment).navigate(
                                         R.id.action_global_createObjectFragment,
                                         bundleOf(
                                             CreateObjectFragment.TYPE_KEY to command.typeKey
                                         )
                                     )
+                                    Timber.d("Navigation to CreateObjectFragment successful")
                                 }.onFailure {
                                     Timber.e(it, "Error navigating to CreateObjectFragment from OS widget")
                                     toast("Failed to create object")
@@ -539,22 +543,24 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
      * Loads widget config and delegates to ViewModel for space switching and object creation.
      */
     private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int) {
+        Timber.d("proceedWithCreateObjectFromWidget: appWidgetId=$appWidgetId")
         runCatching {
             val dataStore = OsWidgetsDataStore(applicationContext)
+            Timber.d("proceedWithCreateObjectFromWidget: loading config from dataStore")
             val config = dataStore.getCreateObjectConfig(appWidgetId)
             
             if (config == null) {
-                Timber.w("Widget config not found for appWidgetId: $appWidgetId")
+                Timber.w("proceedWithCreateObjectFromWidget: config not found for appWidgetId=$appWidgetId")
                 toast("Widget not configured")
                 return
             }
             
-            Timber.d("Create object from widget: space=${config.spaceId}, type=${config.typeKey}")
+            Timber.d("proceedWithCreateObjectFromWidget: config loaded - spaceId=${config.spaceId}, typeKey=${config.typeKey}, typeName=${config.typeName}, spaceName=${config.spaceName}")
             
             // Delegate to ViewModel which will switch space and emit create command
             vm.onCreateObjectFromWidget(config.spaceId, config.typeKey)
         }.onFailure {
-            Timber.e(it, "Error creating object from widget")
+            Timber.e(it, "proceedWithCreateObjectFromWidget: error creating object from widget")
             toast("Failed to create object")
         }
     }

@@ -37,17 +37,23 @@ class CreateObjectViewModel(
     }
 
     private fun onCreatePage(type: Key) {
+        Timber.d("CreateObjectViewModel: onCreatePage starting, type=$type")
         jobs += viewModelScope.launch {
+            Timber.d("CreateObjectViewModel: awaiting account start")
             awaitAccountStart
                 .awaitStart()
                 .flatMapLatest {
+                    Timber.d("CreateObjectViewModel: account started, getting space state")
                     spaceManager.state()
                 }
                 .filter { state ->
-                    state is SpaceManager.State.Space.Active || state is SpaceManager.State.NoSpace
+                    val shouldProceed = state is SpaceManager.State.Space.Active || state is SpaceManager.State.NoSpace
+                    Timber.d("CreateObjectViewModel: space state=$state, shouldProceed=$shouldProceed")
+                    shouldProceed
                 }
                 .take(1)
                 .collect { config ->
+                    Timber.d("CreateObjectViewModel: proceeding with object creation, state=$config")
                     proceedWithObjectCreation(type, config)
                 }
         }
@@ -57,14 +63,16 @@ class CreateObjectViewModel(
         type: Key,
         state: SpaceManager.State
     ) {
-        Timber.d("CreateObjectViewModel: proceedWithObjectCreation, type:$type, state:$state")
+        Timber.d("CreateObjectViewModel: proceedWithObjectCreation, type=$type, state=$state")
         when(state) {
             is SpaceManager.State.Space.Active -> {
+                Timber.d("CreateObjectViewModel: space is active, creating object with typeKey=$type in space=${state.config.space}")
                 val params = CreateObjectByTypeAndTemplate.Param(
                     typeKey = TypeKey(type),
                     space = SpaceId(state.config.space),
                     keys = ObjectSearchConstants.defaultKeysObjectType
                 )
+                Timber.d("CreateObjectViewModel: calling createObject.async with params=$params")
                 createObject.async(params).fold(
                     onFailure = { e ->
                         Timber.e(e, "Error while creating a new object with type:$type")
@@ -72,12 +80,15 @@ class CreateObjectViewModel(
                         createObjectStatus.emit(State.Exit)
                     },
                     onSuccess = { result ->
+                        Timber.d("CreateObjectViewModel: createObject result=$result")
                         when (result) {
                             CreateObjectByTypeAndTemplate.Result.ObjectTypeNotFound -> {
+                                Timber.w("CreateObjectViewModel: object type not found for type=$type")
                                 createObjectStatus.emit(State.Error("Object type not found"))
                                 createObjectStatus.emit(State.Exit)
                             }
                             is CreateObjectByTypeAndTemplate.Result.Success -> {
+                                Timber.d("CreateObjectViewModel: object created successfully, objectId=${result.objectId}, layout=${result.obj.layout}, spaceId=${result.obj.spaceId}")
                                 createObjectStatus.emit(
                                     State.Success(
                                         id = result.objectId,

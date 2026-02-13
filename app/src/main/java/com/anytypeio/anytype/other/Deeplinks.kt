@@ -62,12 +62,14 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             defaultInviteRegex.containsMatchIn(deeplink) -> DeepLinkResolver.Action.Invite(deeplink)
             customInviteRegex.containsMatchIn(deeplink) ->  DeepLinkResolver.Action.Invite(deeplink)
             defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
+            // Check OS widget host BEFORE generic path checks to avoid false matches
+            // (e.g., "create-object" contains "object" which would match OBJECT_PATH)
+            uri.host == OS_WIDGET_HOST -> resolveOsWidgetDeepLink(uri)
             deeplink.contains(OBJECT_PATH) -> resolveObjectPath(uri)
             deeplink.contains(MEMBERSHIP_PATH) -> resolveMembershipPath(uri)
-            uri.host == OS_WIDGET_HOST -> resolveOsWidgetDeepLink(uri)
             else -> DeepLinkResolver.Action.Unknown
         }.also {
-            Timber.d("Resolving deep link: $deeplink")
+            Timber.d("Resolving deep link: $deeplink, result: $it")
         }
     }
 
@@ -201,16 +203,22 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         uri: Uri,
         action: String?
     ): DeepLinkResolver.Action {
+        Timber.d("resolveCreateObjectWidgetAction: uri=$uri, action=$action")
         return when (action) {
             OS_WIDGET_ACTION_CREATE -> {
                 val appWidgetId = uri.pathSegments.getOrNull(2)?.toIntOrNull()
+                Timber.d("resolveCreateObjectWidgetAction: parsed appWidgetId=$appWidgetId")
                 if (appWidgetId != null) {
                     DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject(appWidgetId)
                 } else {
+                    Timber.w("resolveCreateObjectWidgetAction: failed to parse appWidgetId from uri=$uri")
                     DeepLinkResolver.Action.Unknown
                 }
             }
-            else -> DeepLinkResolver.Action.Unknown
+            else -> {
+                Timber.w("resolveCreateObjectWidgetAction: unknown action=$action")
+                DeepLinkResolver.Action.Unknown
+            }
         }
     }
 

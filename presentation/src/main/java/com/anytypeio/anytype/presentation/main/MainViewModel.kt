@@ -363,21 +363,25 @@ class MainViewModel(
      * Switches to the target space first, then emits command to create object.
      */
     fun onCreateObjectFromWidget(spaceId: String, typeKey: String) {
-        Timber.d("onCreateObjectFromWidget: space=$spaceId, type=$typeKey")
+        Timber.d("onCreateObjectFromWidget: space=$spaceId, typeKey=$typeKey")
         viewModelScope.launch {
             val currentSpace = spaceManager.get()
+            val spaceState = spaceManager.getState()
+            Timber.d("onCreateObjectFromWidget: currentSpace=$currentSpace, spaceState=$spaceState")
             if (currentSpace != spaceId) {
+                Timber.d("onCreateObjectFromWidget: switching from $currentSpace to $spaceId")
                 spaceManager.set(spaceId)
-                    .onSuccess {
-                        Timber.d("Switched to space $spaceId, emitting create command")
+                    .onSuccess { config ->
+                        Timber.d("onCreateObjectFromWidget: switched to space $spaceId successfully, config=$config")
+                        Timber.d("onCreateObjectFromWidget: emitting OpenCreateObjectFromOsWidget with typeKey=$typeKey")
                         commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
                     }
                     .onFailure { e ->
-                        Timber.e(e, "Failed to switch space for widget object creation")
+                        Timber.e(e, "onCreateObjectFromWidget: failed to switch space to $spaceId")
                         toasts.emit("Failed to switch space")
                     }
             } else {
-                Timber.d("Already in space $spaceId, emitting create command")
+                Timber.d("onCreateObjectFromWidget: already in space $spaceId, emitting create command")
                 commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
             }
         }

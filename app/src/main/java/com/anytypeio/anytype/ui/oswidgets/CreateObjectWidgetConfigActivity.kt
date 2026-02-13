@@ -65,7 +65,6 @@ import com.anytypeio.anytype.feature_os_widgets.ui.OsCreateObjectWidgetUpdater
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import androidx.lifecycle.lifecycleScope
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -133,41 +132,21 @@ class CreateObjectWidgetConfigActivity : ComponentActivity() {
     private fun completeConfiguration(config: OsWidgetCreateObjectEntity) {
         lifecycleScope.launch {
             try {
-                Timber.d("CreateObjectWidget: Saving config for appWidgetId=$appWidgetId, config=$config")
-                
-                // Save the configuration (use applicationContext for DataStore consistency)
-                val dataStore = OsWidgetsDataStore(applicationContext)
-                dataStore.saveCreateObjectConfig(config)
-                
-                // Verify save was successful
-                val savedConfig = dataStore.getCreateObjectConfig(appWidgetId)
-                Timber.d("CreateObjectWidget: Verified saved config: $savedConfig")
-                
-                // Explicitly update the widget now that config is saved
-                Timber.d("CreateObjectWidget: About to call updateWidget for appWidgetId=$appWidgetId")
-                try {
-                    OsCreateObjectWidgetUpdater.updateWidget(
-                        applicationContext,
-                        appWidgetId
-                    )
-                    Timber.d("CreateObjectWidget: Widget update triggered")
-                } catch (e: Exception) {
-                    Timber.e(e, "CreateObjectWidget: Failed to update widget")
-                }
+                // Save the configuration
+                OsWidgetsDataStore(applicationContext).saveCreateObjectConfig(config)
 
-                // Set the result and finish
-                val resultIntent = Intent().apply {
-                    putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
-                }
-                setResult(Activity.RESULT_OK, resultIntent)
+                // Trigger widget update so it picks up the saved config
+                OsCreateObjectWidgetUpdater.update(applicationContext, appWidgetId)
+
+                // Return success and finish
+                setResult(
+                    Activity.RESULT_OK,
+                    Intent().putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetId)
+                )
                 finish()
             } catch (e: Exception) {
-                Timber.e(e, "CreateObjectWidget: Error saving config")
-                Toast.makeText(
-                    this@CreateObjectWidgetConfigActivity,
-                    "Error: ${e.message}",
-                    Toast.LENGTH_LONG
-                ).show()
+                Timber.e(e, "Error saving widget config")
+                Toast.makeText(this@CreateObjectWidgetConfigActivity, "Error: ${e.message}", Toast.LENGTH_LONG).show()
             }
         }
     }

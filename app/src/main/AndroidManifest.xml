@@ -203,7 +203,7 @@
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetReceiver"
             android:exported="true"
-            android:label="@string/os_widget_spaces_description">
+            android:label="@string/os_widget_spaces_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -216,7 +216,7 @@
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsCreateObjectWidgetReceiver"
             android:exported="true"
-            android:label="@string/os_widget_create_object_description">
+            android:label="@string/os_widget_create_object_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -239,7 +239,7 @@
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpaceShortcutWidgetReceiver"
             android:exported="true"
-            android:label="@string/os_widget_space_shortcut_description">
+            android:label="@string/os_widget_space_shortcut_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>
@@ -262,7 +262,7 @@
         <receiver
             android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsObjectShortcutWidgetReceiver"
             android:exported="true"
-            android:label="@string/os_widget_object_shortcut_description">
+            android:label="@string/os_widget_object_shortcut_title">
             <intent-filter>
                 <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
             </intent-filter>

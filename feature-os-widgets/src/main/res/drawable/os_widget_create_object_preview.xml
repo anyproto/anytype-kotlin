@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="120dp"
+    android:height="120dp"
+    android:viewportWidth="120"
+    android:viewportHeight="120">
+    <!-- Background -->
+    <path
+        android:pathData="M16,0 L104,0 Q120,0 120,16 L120,104 Q120,120 104,120 L16,120 Q0,120 0,104 L0,16 Q0,0 16,0 Z"
+        android:fillColor="#1F1E1D"/>
+    <!-- Yellow circle -->
+    <path
+        android:pathData="M60,60 m-32,0 a32,32 0,1 1,64 0 a32,32 0,1 1,-64 0"
+        android:fillColor="#FFC940"/>
+    <!-- Plus sign -->
+    <path
+        android:pathData="M58,45 L62,45 L62,58 L75,58 L75,62 L62,62 L62,75 L58,75 L58,62 L45,62 L45,58 L58,58 Z"
+        android:fillColor="#1F1E1D"/>
+</vector>

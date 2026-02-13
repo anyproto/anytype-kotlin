@@ -73,11 +73,68 @@ class OsWidgetIconCache(private val context: Context) {
     }
 
     /**
+     * Downloads an image from the given URL and caches it for a shortcut widget.
+     * @param url The HTTP URL to download from (middleware server URL)
+     * @param widgetId The widget ID used as filename (ensures uniqueness per widget)
+     * @param prefix A prefix to distinguish space vs object shortcuts
+     * @return Local file path if successful, null otherwise
+     */
+    suspend fun cacheShortcutIcon(url: String, widgetId: Int, prefix: String): String? = withContext(Dispatchers.IO) {
+        try {
+            val shortcutDir = File(context.filesDir, SHORTCUT_ICONS_DIR).apply {
+                if (!exists()) mkdirs()
+            }
+            val file = File(shortcutDir, "${prefix}_${widgetId}$FILE_EXTENSION")
+            Timber.tag(TAG).d("Caching shortcut icon for widget $widgetId to ${file.absolutePath}")
+            
+            val connection = URL(url).openConnection().apply {
+                connectTimeout = TIMEOUT_MS
+                readTimeout = TIMEOUT_MS
+            }
+            
+            connection.getInputStream().use { input ->
+                val bitmap = BitmapFactory.decodeStream(input)
+                if (bitmap != null) {
+                    FileOutputStream(file).use { output ->
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
+                    }
+                    bitmap.recycle()
+                    Timber.tag(TAG).d("Successfully cached shortcut icon to ${file.absolutePath}")
+                    file.absolutePath
+                } else {
+                    Timber.tag(TAG).w("Failed to decode bitmap for shortcut widget $widgetId")
+                    null
+                }
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to cache shortcut icon for widget $widgetId from $url")
+            null
+        }
+    }
+
+    /**
+     * Removes cached icon for a shortcut widget.
+     */
+    fun removeShortcutIcon(widgetId: Int, prefix: String) {
+        try {
+            val shortcutDir = File(context.filesDir, SHORTCUT_ICONS_DIR)
+            val file = File(shortcutDir, "${prefix}_${widgetId}$FILE_EXTENSION")
+            if (file.exists()) {
+                file.delete()
+                Timber.tag(TAG).d("Removed shortcut icon for widget $widgetId")
+            }
+        } catch (e: Exception) {
+            Timber.tag(TAG).w(e, "Failed to remove shortcut icon for widget $widgetId")
+        }
+    }
+
+    /**
      * Clears all cached icons.
      */
     fun clearAll() {
         try {
             cacheDir.listFiles()?.forEach { it.delete() }
+            File(context.filesDir, SHORTCUT_ICONS_DIR).listFiles()?.forEach { it.delete() }
             Timber.tag(TAG).d("Cleared all OS widget icon cache")
         } catch (e: Exception) {
             Timber.tag(TAG).w(e, "Failed to clear OS widget icon cache")
@@ -104,7 +161,11 @@ class OsWidgetIconCache(private val context: Context) {
     companion object {
         private const val TAG = "OsWidget"
         private const val ICONS_DIR = "os_widget_icons"
+        private const val SHORTCUT_ICONS_DIR = "os_widget_shortcut_icons"
         private const val FILE_EXTENSION = ".png"
         private const val TIMEOUT_MS = 5000
+        
+        const val PREFIX_SPACE = "space"
+        const val PREFIX_OBJECT = "object"
     }
 }

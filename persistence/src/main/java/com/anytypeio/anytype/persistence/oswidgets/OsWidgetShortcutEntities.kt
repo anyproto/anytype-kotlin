@@ -31,7 +31,13 @@ data class OsWidgetSpaceShortcutEntity(
     /**
      * The space icon color option (0-9).
      */
-    val spaceIconOption: Int? = null
+    val spaceIconOption: Int? = null,
+
+    /**
+     * Local cached path for the icon image.
+     * Only available after the image has been downloaded and cached.
+     */
+    val cachedIconPath: String? = null
 )
 
 /**
@@ -96,7 +102,13 @@ data class OsWidgetObjectShortcutEntity(
     /**
      * The object layout code (for determining icon style).
      */
-    val objectLayout: Int? = null
+    val objectLayout: Int? = null,
+
+    /**
+     * Local cached path for the object icon image.
+     * Only available after the image has been downloaded and cached.
+     */
+    val cachedIconPath: String? = null
 )
 
 /**

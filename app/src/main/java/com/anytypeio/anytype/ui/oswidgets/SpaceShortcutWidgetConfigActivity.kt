@@ -52,6 +52,7 @@ import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.ui.OsSpaceShortcutWidgetUpdater
+import com.anytypeio.anytype.persistence.oswidgets.OsWidgetIconCache
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpaceShortcutEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import kotlinx.coroutines.launch
@@ -116,12 +117,24 @@ class SpaceShortcutWidgetConfigActivity : AppCompatActivity() {
     private fun completeConfiguration(space: ObjectWrapper.SpaceView) {
         lifecycleScope.launch {
             try {
+                // Cache the icon image if available
+                val iconCache = OsWidgetIconCache(applicationContext)
+                val cachedIconPath = space.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
+                    val iconUrl = urlBuilder.thumbnail(iconHash)
+                    iconCache.cacheShortcutIcon(
+                        url = iconUrl,
+                        widgetId = appWidgetId,
+                        prefix = OsWidgetIconCache.PREFIX_SPACE
+                    )
+                }
+
                 val config = OsWidgetSpaceShortcutEntity(
                     appWidgetId = appWidgetId,
                     spaceId = space.targetSpaceId.orEmpty(),
                     spaceName = space.name.orEmpty(),
                     spaceIconImage = space.iconImage,
-                    spaceIconOption = space.iconOption?.toInt()
+                    spaceIconOption = space.iconOption?.toInt(),
+                    cachedIconPath = cachedIconPath
                 )
 
                 // Save the configuration

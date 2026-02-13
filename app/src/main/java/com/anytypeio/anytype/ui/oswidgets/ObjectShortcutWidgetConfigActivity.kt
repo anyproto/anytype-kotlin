@@ -81,6 +81,7 @@ import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_os_widgets.ui.OsObjectShortcutWidgetUpdater
+import com.anytypeio.anytype.persistence.oswidgets.OsWidgetIconCache
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetObjectShortcutEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
@@ -276,6 +277,17 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
         
         lifecycleScope.launch {
             try {
+                // Cache the icon image if available
+                val iconCache = OsWidgetIconCache(applicationContext)
+                val cachedIconPath = obj.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
+                    val iconUrl = urlBuilder.thumbnail(iconHash)
+                    iconCache.cacheShortcutIcon(
+                        url = iconUrl,
+                        widgetId = appWidgetId,
+                        prefix = OsWidgetIconCache.PREFIX_OBJECT
+                    )
+                }
+
                 val config = OsWidgetObjectShortcutEntity(
                     appWidgetId = appWidgetId,
                     spaceId = space.targetSpaceId.orEmpty(),
@@ -284,7 +296,8 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                     objectName = obj.name.orEmpty(),
                     objectIconEmoji = obj.iconEmoji,
                     objectIconImage = obj.iconImage,
-                    objectLayout = obj.layout?.code
+                    objectLayout = obj.layout?.code,
+                    cachedIconPath = cachedIconPath
                 )
 
                 OsWidgetsDataStore(applicationContext).saveObjectShortcutConfig(config)

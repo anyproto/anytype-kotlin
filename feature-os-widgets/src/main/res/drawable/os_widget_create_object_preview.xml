@@ -10,10 +10,10 @@
         android:fillColor="#1F1E1D"/>
     <!-- Yellow circle -->
     <path
-        android:pathData="M60,60 m-32,0 a32,32 0,1 1,64 0 a32,32 0,1 1,-64 0"
+        android:pathData="M60,60 m-24,0 a24,24 0,1 1,48 0 a24,24 0,1 1,-48 0"
         android:fillColor="#FFC940"/>
     <!-- Plus sign -->
     <path
-        android:pathData="M58,45 L62,45 L62,58 L75,58 L75,62 L62,62 L62,75 L58,75 L58,62 L45,62 L45,58 L58,58 Z"
+        android:pathData="M58,48 L62,48 L62,58 L72,58 L72,62 L62,62 L62,72 L58,72 L58,62 L48,62 L48,58 L58,58 Z"
         android:fillColor="#1F1E1D"/>
 </vector>

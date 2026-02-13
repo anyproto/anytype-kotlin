@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.flow.flowOf
@@ -80,7 +81,8 @@ object VaultViewModelFabric {
             on { getAccountId() }.thenReturn(null)
         },
         createSpace: CreateSpace = mock(),
-        deepLinkResolver: DeepLinkResolver = mock()
+        deepLinkResolver: DeepLinkResolver = mock(),
+        osWidgetSpacesSync: OsWidgetSpacesSync = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -112,6 +114,7 @@ object VaultViewModelFabric {
         searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = createSpace,
         deepLinkResolver = deepLinkResolver,
-        configStorage = configStorage
+        configStorage = configStorage,
+        osWidgetSpacesSync = osWidgetSpacesSync
     )
 }

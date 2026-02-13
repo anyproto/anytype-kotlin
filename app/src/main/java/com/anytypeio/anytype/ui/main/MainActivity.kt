@@ -85,7 +85,7 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject

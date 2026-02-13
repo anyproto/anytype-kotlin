@@ -35,8 +35,8 @@ import androidx.glance.unit.ColorProvider
 import androidx.compose.ui.unit.DpSize
 import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetObjectShortcutEntity
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetObjectShortcutEntity
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import timber.log.Timber

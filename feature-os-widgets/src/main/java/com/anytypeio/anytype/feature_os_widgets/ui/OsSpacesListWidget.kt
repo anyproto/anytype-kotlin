@@ -41,7 +41,7 @@ import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.mapper.toDomain
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.flow.first
 import java.io.File
 

@@ -41,7 +41,7 @@ import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpacesSyncImpl
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware

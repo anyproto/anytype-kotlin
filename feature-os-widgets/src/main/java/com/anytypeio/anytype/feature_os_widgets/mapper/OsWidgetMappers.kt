@@ -4,7 +4,7 @@ import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetSpaceEntity
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceEntity
 
 /**
  * Maps persistence entity to domain/UI model.

@@ -4,7 +4,7 @@ import android.content.Context
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
 import com.anytypeio.anytype.feature_os_widgets.ui.OsCreateObjectWidget
-import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
 

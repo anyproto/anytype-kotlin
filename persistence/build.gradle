@@ -12,15 +12,13 @@ dependencies {
     implementation project(':core-models')
     implementation project(':device')
     implementation project(':domain')
+    implementation project(':feature-os-widgets')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid
     implementation libs.gson
     implementation libs.lifecycleLiveData
     implementation libs.kotlinxSerializationJson
-
-    // SVG support for widget icon caching
-    implementation 'com.caverock:androidsvg-aar:1.4'
 
     implementation libs.room
     implementation libs.roomKtx

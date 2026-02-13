@@ -282,7 +282,10 @@ object DataModule {
     fun provideOsWidgetSpacesSync(
         context: Context,
         urlBuilder: UrlBuilder
-    ): OsWidgetSpacesSync = OsWidgetSpacesSyncImpl(context, urlBuilder)
+    ): OsWidgetSpacesSync = OsWidgetSpacesSyncWithUpdate(
+        delegate = OsWidgetSpacesSyncImpl(context, urlBuilder),
+        context = context
+    )
 
     @JvmStatic
     @Provides

@@ -51,7 +51,8 @@ private const val TAG = "OsObjectShortcutWidget"
 class OsObjectShortcutWidget : GlanceAppWidget() {
 
     companion object {
-        private const val MAX_RETRIES = 10
+        // Give user up to 30 seconds to configure the widget
+        private const val MAX_RETRIES = 60
         private const val RETRY_DELAY_MS = 500L
         private val SMALL_SIZE = DpSize(57.dp, 57.dp)
         private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)
@@ -66,8 +67,10 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
+            Timber.tag(TAG).d("provideGlance: appWidgetId=$appWidgetId, glanceId=$id")
 
             val config = getConfigWithRetry(dataStore, appWidgetId)
+            Timber.tag(TAG).d("provideGlance: config=${config?.let { "objectId=${it.objectId}, name=${it.objectName}, cachedIcon=${it.cachedIconPath}" } ?: "null"}")
 
             provideContent {
                 GlanceTheme {
@@ -85,13 +88,18 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
         dataStore: OsWidgetsDataStore,
         appWidgetId: Int
     ): OsWidgetObjectShortcutEntity? {
+        Timber.tag(TAG).d("getConfigWithRetry: appWidgetId=$appWidgetId, starting retries...")
         repeat(MAX_RETRIES) { attempt ->
-            dataStore.getObjectShortcutConfig(appWidgetId)?.let { return it }
+            val config = dataStore.getObjectShortcutConfig(appWidgetId)
+            if (config != null) {
+                Timber.tag(TAG).d("getConfigWithRetry: found config on attempt ${attempt + 1}")
+                return config
+            }
             if (attempt < MAX_RETRIES - 1) {
                 delay(RETRY_DELAY_MS)
             }
         }
-        Timber.tag(TAG).d("Config not found for widget $appWidgetId after $MAX_RETRIES attempts")
+        Timber.tag(TAG).w("Config not found for widget $appWidgetId after $MAX_RETRIES attempts")
         return null
     }
 }
@@ -254,11 +262,19 @@ private fun loadCachedBitmap(filePath: String): Bitmap? {
     return try {
         val file = File(filePath)
         if (file.exists()) {
-            BitmapFactory.decodeFile(filePath)
+            val bitmap = BitmapFactory.decodeFile(filePath)
+            if (bitmap == null) {
+                Timber.tag(TAG).w("loadCachedBitmap: file exists but decoding returned null: $filePath")
+            } else {
+                Timber.tag(TAG).d("loadCachedBitmap: successfully decoded bitmap from $filePath")
+            }
+            bitmap
         } else {
+            Timber.tag(TAG).w("loadCachedBitmap: file does not exist: $filePath")
             null
         }
     } catch (e: Exception) {
+        Timber.tag(TAG).e(e, "loadCachedBitmap: error loading bitmap from $filePath")
         null
     }
 }

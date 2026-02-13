@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -17,8 +18,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -28,8 +31,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
-import androidx.compose.material.TextField
-import androidx.compose.material.TextFieldDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,8 +46,8 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -60,6 +61,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVSortType
+import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
@@ -67,16 +69,24 @@ import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.core_models.ext.mapToObjectWrapperType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.SpaceIconView
+import com.anytypeio.anytype.core_ui.foundation.Divider
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
+import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyRegular
+import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Relations3
+import com.anytypeio.anytype.core_ui.views.Title1
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
+import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
@@ -111,11 +121,21 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
 
     // UI State
     private var screenState by mutableStateOf<ScreenState>(ScreenState.SpaceSelection)
-    private var objects by mutableStateOf<List<ObjectWrapper.Basic>>(emptyList())
+    private var objectItems by mutableStateOf<List<ObjectItemView>>(emptyList())
     private var isLoading by mutableStateOf(false)
     private var searchQuery by mutableStateOf("")
 
     private var searchJob: Job? = null
+    private var typesMap: Map<Id, ObjectWrapper.Type> = emptyMap()
+
+    /**
+     * UI model for object list items
+     */
+    data class ObjectItemView(
+        val obj: ObjectWrapper.Basic,
+        val icon: ObjectIcon,
+        val typeName: String
+    )
 
     sealed class ScreenState {
         data object SpaceSelection : ScreenState()
@@ -151,7 +171,11 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                                     onSpaceSelected = { space ->
                                         selectedSpace = space
                                         screenState = ScreenState.ObjectSelection
-                                        searchObjectsInSpace(space.targetSpaceId.orEmpty(), "")
+                                        searchObjectsInSpace(
+                                            spaceId = space.targetSpaceId.orEmpty(),
+                                            query = "",
+                                            fetchTypes = true
+                                        )
                                     },
                                     onCancel = { finish() }
                                 )
@@ -159,24 +183,27 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                             ScreenState.ObjectSelection -> {
                                 ObjectSelectionScreen(
                                     spaceName = selectedSpace?.name.orEmpty(),
-                                    objects = objects,
+                                    objectItems = objectItems,
                                     isLoading = isLoading,
                                     searchQuery = searchQuery,
-                                    urlBuilder = urlBuilder,
                                     onSearchQueryChanged = { query ->
                                         searchQuery = query
                                         searchObjectsInSpace(
                                             selectedSpace?.targetSpaceId.orEmpty(),
-                                            query
+                                            query,
+                                            fetchTypes = false
                                         )
                                     },
-                                    onObjectSelected = { obj ->
-                                        completeConfiguration(obj)
+                                    onObjectSelected = { item ->
+                                        completeConfiguration(item.obj)
                                     },
                                     onBack = {
-                                        screenState = ScreenState.SpaceSelection
-                                        objects = emptyList()
+                                        searchJob?.cancel()
+                                        selectedSpace = null
+                                        objectItems = emptyList()
+                                        typesMap = emptyMap()
                                         searchQuery = ""
+                                        screenState = ScreenState.SpaceSelection
                                     }
                                 )
                             }
@@ -187,13 +214,18 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
         )
     }
 
-    private fun searchObjectsInSpace(spaceId: String, query: String) {
+    private fun searchObjectsInSpace(spaceId: String, query: String, fetchTypes: Boolean) {
         searchJob?.cancel()
         searchJob = lifecycleScope.launch {
             isLoading = true
             delay(300) // Debounce
 
             try {
+                // Fetch types once when entering the space
+                if (fetchTypes) {
+                    typesMap = fetchObjectTypesForSpace(SpaceId(spaceId))
+                }
+
                 val filters = buildList {
                     // Exclude deleted
                     add(DVFilter(
@@ -257,23 +289,85 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                 result.process(
                     failure = { error ->
                         Timber.e(error, "Error searching objects")
-                        objects = emptyList()
+                        objectItems = emptyList()
                     },
                     success = { foundObjects ->
-                        objects = foundObjects
+                        objectItems = foundObjects.map { obj ->
+                            val typeId = obj.type.firstOrNull()
+                            val objType = typeId?.let { typesMap[it] }
+                            ObjectItemView(
+                                obj = obj,
+                                icon = obj.objectIcon(builder = urlBuilder, objType = objType),
+                                typeName = objType?.name.orEmpty()
+                            )
+                        }
                     }
                 )
             } catch (e: Exception) {
                 Timber.e(e, "Error searching objects")
-                objects = emptyList()
+                objectItems = emptyList()
             } finally {
                 isLoading = false
             }
         }
     }
 
+    /**
+     * Fetches all object types from the given space.
+     */
+    private suspend fun fetchObjectTypesForSpace(spaceId: SpaceId): Map<Id, ObjectWrapper.Type> {
+        val filters = buildList {
+            add(DVFilter(
+                relation = Relations.IS_DELETED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            ))
+            add(DVFilter(
+                relation = Relations.IS_ARCHIVED,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = true
+            ))
+            add(DVFilter(
+                relation = Relations.TYPE_UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EQUAL,
+                value = ObjectTypeUniqueKeys.TEMPLATE
+            ))
+            add(DVFilter(
+                relation = Relations.LAYOUT,
+                condition = DVFilterCondition.EQUAL,
+                value = ObjectType.Layout.OBJECT_TYPE.code.toDouble()
+            ))
+            add(DVFilter(
+                relation = Relations.UNIQUE_KEY,
+                condition = DVFilterCondition.NOT_EMPTY
+            ))
+        }
+
+        val params = SearchObjects.Params(
+            space = spaceId,
+            filters = filters,
+            sorts = emptyList(),
+            keys = ObjectSearchConstants.defaultKeysObjectType,
+            limit = 0
+        )
+
+        return try {
+            val results = searchObjects(params).getOrNull() ?: emptyList()
+            results.mapNotNull { obj ->
+                obj.map.mapToObjectWrapperType()?.let { type ->
+                    type.id to type
+                }
+            }.toMap()
+        } catch (e: Exception) {
+            Timber.e(e, "Error fetching object types for space")
+            emptyMap()
+        }
+    }
+
     private fun completeConfiguration(obj: ObjectWrapper.Basic) {
         val space = selectedSpace ?: return
+        
+        Timber.d("completeConfiguration: appWidgetId=$appWidgetId, objectId=${obj.id}, name=${obj.name}, iconImage=${obj.iconImage}, iconEmoji=${obj.iconEmoji}, iconName=${obj.iconName}")
         
         lifecycleScope.launch {
             try {
@@ -281,11 +375,14 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                 val iconCache = OsWidgetIconCache(applicationContext)
                 val cachedIconPath = obj.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
                     val iconUrl = urlBuilder.thumbnail(iconHash)
-                    iconCache.cacheShortcutIcon(
+                    Timber.d("completeConfiguration: caching icon from URL=$iconUrl")
+                    val path = iconCache.cacheShortcutIcon(
                         url = iconUrl,
                         widgetId = appWidgetId,
                         prefix = OsWidgetIconCache.PREFIX_OBJECT
                     )
+                    Timber.d("completeConfiguration: cached icon path=$path")
+                    path
                 }
 
                 val config = OsWidgetObjectShortcutEntity(
@@ -296,12 +393,17 @@ class ObjectShortcutWidgetConfigActivity : AppCompatActivity() {
                     objectName = obj.name.orEmpty(),
                     objectIconEmoji = obj.iconEmoji,
                     objectIconImage = obj.iconImage,
+                    objectIconName = obj.iconName,
+                    objectIconOption = obj.iconOption?.toInt(),
                     objectLayout = obj.layout?.code,
                     cachedIconPath = cachedIconPath
                 )
+                Timber.d("completeConfiguration: saving config=$config")
 
                 OsWidgetsDataStore(applicationContext).saveObjectShortcutConfig(config)
+                Timber.d("completeConfiguration: config saved, updating widget...")
                 OsObjectShortcutWidgetUpdater.update(applicationContext, appWidgetId)
+                Timber.d("completeConfiguration: widget update triggered")
 
                 setResult(
                     Activity.RESULT_OK,
@@ -441,106 +543,109 @@ private fun SpaceGridItem(
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun ObjectSelectionScreen(
     spaceName: String,
-    objects: List<ObjectWrapper.Basic>,
+    objectItems: List<ObjectShortcutWidgetConfigActivity.ObjectItemView>,
     isLoading: Boolean,
     searchQuery: String,
-    urlBuilder: UrlBuilder,
     onSearchQueryChanged: (String) -> Unit,
-    onObjectSelected: (ObjectWrapper.Basic) -> Unit,
+    onObjectSelected: (ObjectShortcutWidgetConfigActivity.ObjectItemView) -> Unit,
     onBack: () -> Unit
 ) {
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = stringResource(R.string.select_objects),
-                        style = BodyBold,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(
-                            painter = painterResource(id = R.drawable.ic_back_24),
-                            contentDescription = "Back",
-                            tint = colorResource(id = R.color.glyph_active)
-                        )
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = colorResource(id = R.color.background_primary)
-                )
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(color = colorResource(id = R.color.background_primary))
+            .statusBarsPadding()
+    ) {
+        // Header with back button and space name
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 8.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                modifier = Modifier
+                    .size(48.dp)
+                    .noRippleThrottledClickable { onBack() },
+                contentScale = ContentScale.Inside,
+                painter = painterResource(R.drawable.ic_back_24),
+                contentDescription = "Back",
             )
-        },
-        containerColor = colorResource(id = R.color.background_primary)
-    ) { paddingValues ->
-        Column(
+
+            Text(
+                modifier = Modifier
+                    .weight(1f)
+                    .align(Alignment.CenterVertically),
+                text = spaceName.ifEmpty { stringResource(R.string.untitled) },
+                style = Title1,
+                color = colorResource(id = R.color.text_primary),
+                textAlign = TextAlign.Center,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            // Spacer to balance the back button
+            Spacer(modifier = Modifier.size(48.dp))
+        }
+
+        // Search bar
+        SearchField(
+            horizontalPadding = 20.dp,
+            query = searchQuery,
+            onQueryChanged = onSearchQueryChanged,
+            enabled = true,
+            onFocused = {}
+        )
+
+        Spacer(modifier = Modifier.height(22.dp))
+
+        // Object list
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
+                .navigationBarsPadding()
         ) {
-            // Search field
-            TextField(
-                value = searchQuery,
-                onValueChange = onSearchQueryChanged,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp, vertical = 8.dp),
-                placeholder = {
-                    Text(
-                        text = stringResource(R.string.search),
-                        color = colorResource(id = R.color.text_tertiary)
+            if (isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = colorResource(id = R.color.palette_system_amber_50)
+                )
+            } else if (objectItems.isEmpty()) {
+                // Empty state
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(32.dp)
+                        .align(Alignment.Center),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_doc_search),
+                        contentDescription = null,
+                        modifier = Modifier.size(48.dp)
                     )
-                },
-                colors = TextFieldDefaults.textFieldColors(
-                    backgroundColor = colorResource(id = R.color.shape_tertiary),
-                    textColor = colorResource(id = R.color.text_primary),
-                    cursorColor = colorResource(id = R.color.palette_system_amber_50),
-                    focusedIndicatorColor = Color.Transparent,
-                    unfocusedIndicatorColor = Color.Transparent
-                ),
-                shape = RoundedCornerShape(10.dp),
-                singleLine = true
-            )
-
-            // Space name indicator
-            Text(
-                text = spaceName,
-                style = Relations3,
-                color = colorResource(id = R.color.text_secondary),
-                modifier = Modifier.padding(horizontal = 20.dp, vertical = 8.dp)
-            )
-
-            // Object list
-            Box(modifier = Modifier.fillMaxSize()) {
-                if (isLoading) {
-                    CircularProgressIndicator(
-                        modifier = Modifier.align(Alignment.Center),
-                        color = colorResource(id = R.color.palette_system_amber_50)
-                    )
-                } else if (objects.isEmpty()) {
+                    Spacer(modifier = Modifier.height(12.dp))
                     Text(
                         text = stringResource(R.string.nothing_found),
+                        style = BodyRegular,
                         color = colorResource(id = R.color.text_secondary),
-                        modifier = Modifier.align(Alignment.Center)
+                        textAlign = TextAlign.Center
                     )
-                } else {
-                    LazyColumn(
-                        contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp),
-                        verticalArrangement = Arrangement.spacedBy(4.dp)
-                    ) {
-                        items(items = objects, key = { it.id }) { obj ->
-                            ObjectListItem(
-                                obj = obj,
-                                urlBuilder = urlBuilder,
-                                onClick = { onObjectSelected(obj) }
-                            )
-                        }
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize()
+                ) {
+                    items(items = objectItems, key = { it.obj.id }) { item ->
+                        ObjectListItem(
+                            item = item,
+                            onClick = { onObjectSelected(item) }
+                        )
+                        Divider()
                     }
                 }
             }
@@ -550,39 +655,46 @@ private fun ObjectSelectionScreen(
 
 @Composable
 private fun ObjectListItem(
-    obj: ObjectWrapper.Basic,
-    urlBuilder: UrlBuilder,
+    item: ObjectShortcutWidgetConfigActivity.ObjectItemView,
     onClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .clip(RoundedCornerShape(8.dp))
             .clickable(onClick = onClick)
-            .background(colorResource(id = R.color.shape_tertiary))
-            .padding(horizontal = 16.dp, vertical = 12.dp),
+            .padding(horizontal = 20.dp, vertical = 12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Object icon
-        val icon = obj.toObjectIcon(urlBuilder)
+        // Object icon (48dp like sharing extension)
         ListWidgetObjectIcon(
-            icon = icon,
-            modifier = Modifier.size(24.dp),
-            iconSize = 24.dp,
-            iconWithoutBackgroundMaxSize = 24.dp
+            icon = item.icon,
+            modifier = Modifier.size(48.dp),
+            iconSize = 48.dp
         )
 
         Spacer(modifier = Modifier.width(12.dp))
 
-        // Object name
-        Text(
-            text = obj.name.orEmpty().ifEmpty { stringResource(R.string.untitled) },
-            style = BodyRegular,
-            color = colorResource(id = R.color.text_primary),
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
+        // Object name and type
+        Column(
             modifier = Modifier.weight(1f)
-        )
+        ) {
+            Text(
+                text = item.obj.name.orEmpty().ifEmpty { stringResource(R.string.untitled) },
+                style = Title2,
+                color = colorResource(id = R.color.text_primary),
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+            if (item.typeName.isNotEmpty()) {
+                Text(
+                    text = item.typeName,
+                    style = Caption1Regular,
+                    color = colorResource(id = R.color.text_secondary),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
     }
 }
 
@@ -600,10 +712,3 @@ private fun ObjectWrapper.SpaceView.toSpaceIconView(urlBuilder: UrlBuilder): Spa
     }
 }
 
-private fun ObjectWrapper.Basic.toObjectIcon(urlBuilder: UrlBuilder): ObjectIcon {
-    return when {
-        !iconEmoji.isNullOrEmpty() -> ObjectIcon.Basic.Emoji(unicode = iconEmoji!!)
-        !iconImage.isNullOrEmpty() -> ObjectIcon.Basic.Image(hash = urlBuilder.thumbnail(iconImage!!))
-        else -> ObjectIcon.Basic.Emoji(unicode = "")
-    }
-}

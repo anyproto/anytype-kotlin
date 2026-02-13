@@ -19,6 +19,9 @@ dependencies {
     implementation libs.lifecycleLiveData
     implementation libs.kotlinxSerializationJson
 
+    // SVG support for widget icon caching
+    implementation 'com.caverock:androidsvg-aar:1.4'
+
     implementation libs.room
     implementation libs.roomKtx
     implementation libs.dataStore

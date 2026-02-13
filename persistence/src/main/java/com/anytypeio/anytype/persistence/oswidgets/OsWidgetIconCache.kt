@@ -3,6 +3,8 @@ package com.anytypeio.anytype.persistence.oswidgets
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import com.caverock.androidsvg.SVG
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
@@ -85,16 +87,36 @@ class OsWidgetIconCache(private val context: Context) {
                 if (!exists()) mkdirs()
             }
             val file = File(shortcutDir, "${prefix}_${widgetId}$FILE_EXTENSION")
-            Timber.tag(TAG).d("Caching shortcut icon for widget $widgetId to ${file.absolutePath}")
+            Timber.tag(TAG).d("Caching shortcut icon for widget $widgetId from URL: $url")
             
             val connection = URL(url).openConnection().apply {
                 connectTimeout = TIMEOUT_MS
                 readTimeout = TIMEOUT_MS
             }
             
+            // Log HTTP response details
+            val httpConnection = connection as? java.net.HttpURLConnection
+            val responseCode = httpConnection?.responseCode ?: -1
+            val contentType = connection.contentType
+            val contentLength = connection.contentLength
+            Timber.tag(TAG).d("HTTP response: code=$responseCode, contentType=$contentType, contentLength=$contentLength")
+            
             connection.getInputStream().use { input ->
-                val bitmap = BitmapFactory.decodeStream(input)
+                val bytes = input.readBytes()
+                Timber.tag(TAG).d("Read ${bytes.size} bytes for widget $widgetId")
+                
+                // Check if it's an SVG file
+                val isSvg = bytes.size > 4 && String(bytes.take(100).toByteArray()).contains("<svg")
+                
+                val bitmap = if (isSvg) {
+                    Timber.tag(TAG).d("Detected SVG format, converting to bitmap")
+                    decodeSvgToBitmap(bytes, ICON_SIZE)
+                } else {
+                    BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+                }
+                
                 if (bitmap != null) {
+                    Timber.tag(TAG).d("Bitmap decoded: ${bitmap.width}x${bitmap.height}")
                     FileOutputStream(file).use { output ->
                         bitmap.compress(Bitmap.CompressFormat.PNG, 100, output)
                     }
@@ -102,7 +124,7 @@ class OsWidgetIconCache(private val context: Context) {
                     Timber.tag(TAG).d("Successfully cached shortcut icon to ${file.absolutePath}")
                     file.absolutePath
                 } else {
-                    Timber.tag(TAG).w("Failed to decode bitmap for shortcut widget $widgetId")
+                    Timber.tag(TAG).w("Failed to decode bitmap for shortcut widget $widgetId (isSvg=$isSvg, size=${bytes.size})")
                     null
                 }
             }
@@ -158,12 +180,50 @@ class OsWidgetIconCache(private val context: Context) {
         }
     }
 
+    /**
+     * Decodes SVG bytes to a Bitmap.
+     */
+    private fun decodeSvgToBitmap(bytes: ByteArray, size: Int): Bitmap? {
+        return try {
+            val svg = SVG.getFromString(String(bytes))
+            val bitmap = Bitmap.createBitmap(size, size, Bitmap.Config.ARGB_8888)
+            val canvas = Canvas(bitmap)
+            
+            // Get the intrinsic size of the SVG
+            val svgWidth = svg.documentWidth
+            val svgHeight = svg.documentHeight
+            
+            // If SVG has no intrinsic size, use viewBox or default
+            val actualWidth = if (svgWidth > 0) svgWidth else svg.documentViewBox?.width() ?: size.toFloat()
+            val actualHeight = if (svgHeight > 0) svgHeight else svg.documentViewBox?.height() ?: size.toFloat()
+            
+            // Calculate scale to fit the target size
+            val scale = minOf(size / actualWidth, size / actualHeight)
+            
+            // Center the SVG in the canvas
+            val translateX = (size - actualWidth * scale) / 2f
+            val translateY = (size - actualHeight * scale) / 2f
+            
+            canvas.translate(translateX, translateY)
+            canvas.scale(scale, scale)
+            
+            svg.renderToCanvas(canvas)
+            
+            Timber.tag(TAG).d("SVG rendered: svgSize=${actualWidth}x${actualHeight}, scale=$scale, targetSize=$size")
+            bitmap
+        } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "Failed to decode SVG to bitmap")
+            null
+        }
+    }
+
     companion object {
         private const val TAG = "OsWidget"
         private const val ICONS_DIR = "os_widget_icons"
         private const val SHORTCUT_ICONS_DIR = "os_widget_shortcut_icons"
         private const val FILE_EXTENSION = ".png"
         private const val TIMEOUT_MS = 5000
+        private const val ICON_SIZE = 128 // Size in pixels for cached icons
         
         const val PREFIX_SPACE = "space"
         const val PREFIX_OBJECT = "object"

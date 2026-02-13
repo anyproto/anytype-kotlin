@@ -261,10 +261,9 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
                 val objectId = uri.pathSegments.getOrNull(2)
                 val spaceId = uri.getQueryParameter(SPACE_ID_PARAM)
                 if (!objectId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
-                    DeepLinkResolver.Action.DeepLinkToObject(
+                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToObject(
                         obj = objectId,
-                        space = SpaceId(spaceId),
-                        invite = null
+                        space = SpaceId(spaceId)
                     )
                 } else {
                     DeepLinkResolver.Action.Unknown

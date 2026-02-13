@@ -61,6 +61,14 @@ interface DeepLinkResolver {
             data class DeepLinkToCreateObject(
                 val appWidgetId: Int
             ) : OsWidgetDeepLink()
+
+            /**
+             * Deep link to open a specific object from an OS widget.
+             */
+            data class DeepLinkToObject(
+                val obj: Id,
+                val space: SpaceId
+            ) : OsWidgetDeepLink()
         }
     }
 }

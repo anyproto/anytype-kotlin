@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 /**
  * Top-level DataStore delegate - MUST be at file level for proper singleton behavior.
@@ -242,11 +243,13 @@ class OsWidgetsDataStore(private val context: Context) {
      * Saves an Object Shortcut widget configuration.
      */
     suspend fun saveObjectShortcutConfig(config: OsWidgetObjectShortcutEntity) {
+        Timber.tag(TAG).d("saveObjectShortcutConfig: saving config for widgetId=${config.appWidgetId}")
         dataStore.edit { preferences ->
             val cache = preferences[OBJECT_SHORTCUT_CONFIGS_KEY]?.let { jsonString ->
                 try {
                     osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
                 } catch (e: Exception) {
+                    Timber.tag(TAG).w(e, "saveObjectShortcutConfig: failed to decode existing cache")
                     OsWidgetObjectShortcutCache()
                 }
             } ?: OsWidgetObjectShortcutCache()
@@ -254,20 +257,30 @@ class OsWidgetsDataStore(private val context: Context) {
             val updatedConfigs = cache.configs.toMutableMap().apply {
                 put(config.appWidgetId, config)
             }
-            preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
-                OsWidgetObjectShortcutCache(updatedConfigs)
-            )
+            val encoded = osWidgetsJson.encodeToString(OsWidgetObjectShortcutCache(updatedConfigs))
+            Timber.tag(TAG).d("saveObjectShortcutConfig: encoded ${updatedConfigs.size} configs")
+            preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = encoded
         }
+        Timber.tag(TAG).d("saveObjectShortcutConfig: config saved successfully")
     }
 
     /**
      * Gets an Object Shortcut widget configuration by appWidgetId.
      */
     suspend fun getObjectShortcutConfig(appWidgetId: Int): OsWidgetObjectShortcutEntity? {
-        val jsonString = dataStore.data.first()[OBJECT_SHORTCUT_CONFIGS_KEY] ?: return null
+        Timber.tag(TAG).d("getObjectShortcutConfig: fetching config for widgetId=$appWidgetId")
+        val jsonString = dataStore.data.first()[OBJECT_SHORTCUT_CONFIGS_KEY]
+        if (jsonString == null) {
+            Timber.tag(TAG).d("getObjectShortcutConfig: no configs key found in datastore")
+            return null
+        }
         return try {
-            osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString).configs[appWidgetId]
+            val cache = osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
+            val config = cache.configs[appWidgetId]
+            Timber.tag(TAG).d("getObjectShortcutConfig: found ${cache.configs.size} configs, config for $appWidgetId = ${config != null}")
+            config
         } catch (e: Exception) {
+            Timber.tag(TAG).e(e, "getObjectShortcutConfig: failed to decode cache")
             null
         }
     }
@@ -294,6 +307,7 @@ class OsWidgetsDataStore(private val context: Context) {
     }
 
     companion object {
+        private const val TAG = "OsWidgetsDataStore"
         private val SPACES_CACHE_KEY = stringPreferencesKey("spaces_cache")
         private val CREATE_OBJECT_CONFIGS_KEY = stringPreferencesKey("create_object_configs")
         private val SPACE_SHORTCUT_CONFIGS_KEY = stringPreferencesKey("space_shortcut_configs")

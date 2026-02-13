@@ -341,6 +341,33 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     Timber.w(it, "Error while navigation for OS widget space deeplink")
                                 }
                             }
+                            is Command.Deeplink.DeepLinkToObjectFromWidget -> {
+                                // Space was already switched by MainViewModel.
+                                // Navigate to the space home first, then open the object.
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    
+                                    // Navigate to space home
+                                    controller.navigate(
+                                        R.id.actionOpenSpaceFromVault,
+                                        WidgetsScreenFragment.args(
+                                            space = command.space,
+                                            deeplink = null
+                                        )
+                                    )
+                                    // Then navigate to the object
+                                    controller.navigate(
+                                        R.id.objectNavigation,
+                                        args = EditorFragment.args(
+                                            ctx = command.obj,
+                                            space = command.space
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.w(it, "Error while navigation for OS widget object deeplink")
+                                }
+                            }
                             is Command.Deeplink.DeepLinkToCreateObject -> {
                                 // Load config and delegate to ViewModel for space switch
                                 Timber.d("Command.Deeplink.DeepLinkToCreateObject received: appWidgetId=${command.appWidgetId}")

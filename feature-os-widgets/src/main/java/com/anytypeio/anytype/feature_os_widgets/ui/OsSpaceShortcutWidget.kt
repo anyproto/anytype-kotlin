@@ -51,7 +51,8 @@ private const val TAG = "OsSpaceShortcutWidget"
 class OsSpaceShortcutWidget : GlanceAppWidget() {
 
     companion object {
-        private const val MAX_RETRIES = 10
+        // Give user up to 30 seconds to configure the widget
+        private const val MAX_RETRIES = 60
         private const val RETRY_DELAY_MS = 500L
         private val SMALL_SIZE = DpSize(57.dp, 57.dp)
         private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)

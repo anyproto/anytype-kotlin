@@ -46,9 +46,8 @@ class OsCreateObjectWidget : GlanceAppWidget() {
 
     companion object {
         // Retry configuration for handling race condition with config activity.
-        // User needs time to: select space (~1-2s) + select type (~1-2s).
-        // Total wait time: 10 retries * 500ms = 5 seconds.
-        private const val MAX_RETRIES = 10
+        // Give user up to 30 seconds to configure the widget.
+        private const val MAX_RETRIES = 60
         private const val RETRY_DELAY_MS = 500L
     }
 

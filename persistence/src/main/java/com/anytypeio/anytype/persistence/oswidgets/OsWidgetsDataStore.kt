@@ -80,11 +80,104 @@ class OsWidgetsDataStore(private val context: Context) {
         }
     }
 
+    // ==================== Create Object Widget Config ====================
+
+    /**
+     * Saves a Create Object widget configuration.
+     */
+    suspend fun saveCreateObjectConfig(config: OsWidgetCreateObjectEntity) {
+        context.osWidgetsDataStore.edit { preferences ->
+            val jsonString = preferences[CREATE_OBJECT_CONFIGS_KEY]
+            val cache = if (jsonString != null) {
+                try {
+                    json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
+                } catch (e: Exception) {
+                    OsWidgetCreateObjectCache()
+                }
+            } else {
+                OsWidgetCreateObjectCache()
+            }
+            val updatedConfigs = cache.configs.toMutableMap()
+            updatedConfigs[config.appWidgetId] = config
+            preferences[CREATE_OBJECT_CONFIGS_KEY] = json.encodeToString(
+                OsWidgetCreateObjectCache(updatedConfigs)
+            )
+        }
+    }
+
+    /**
+     * Gets a Create Object widget configuration by appWidgetId.
+     */
+    suspend fun getCreateObjectConfig(appWidgetId: Int): OsWidgetCreateObjectEntity? {
+        val prefs = context.osWidgetsDataStore.data.first()
+        val jsonString = prefs[CREATE_OBJECT_CONFIGS_KEY]
+        return if (jsonString != null) {
+            try {
+                json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
+                    .configs[appWidgetId]
+            } catch (e: Exception) {
+                null
+            }
+        } else {
+            null
+        }
+    }
+
+    /**
+     * Observes a Create Object widget configuration by appWidgetId.
+     */
+    fun observeCreateObjectConfig(appWidgetId: Int): Flow<OsWidgetCreateObjectEntity?> {
+        return context.osWidgetsDataStore.data.map { preferences ->
+            val jsonString = preferences[CREATE_OBJECT_CONFIGS_KEY]
+            if (jsonString != null) {
+                try {
+                    json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
+                        .configs[appWidgetId]
+                } catch (e: Exception) {
+                    null
+                }
+            } else {
+                null
+            }
+        }
+    }
+
+    /**
+     * Deletes a Create Object widget configuration.
+     */
+    suspend fun deleteCreateObjectConfig(appWidgetId: Int) {
+        context.osWidgetsDataStore.edit { preferences ->
+            val jsonString = preferences[CREATE_OBJECT_CONFIGS_KEY]
+            if (jsonString != null) {
+                try {
+                    val cache = json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
+                    val updatedConfigs = cache.configs.toMutableMap()
+                    updatedConfigs.remove(appWidgetId)
+                    preferences[CREATE_OBJECT_CONFIGS_KEY] = json.encodeToString(
+                        OsWidgetCreateObjectCache(updatedConfigs)
+                    )
+                } catch (e: Exception) {
+                    // Ignore decode errors
+                }
+            }
+        }
+    }
+
+    /**
+     * Clears all Create Object widget configurations (e.g., on logout).
+     */
+    suspend fun clearCreateObjectConfigs() {
+        context.osWidgetsDataStore.edit { preferences ->
+            preferences.remove(CREATE_OBJECT_CONFIGS_KEY)
+        }
+    }
+
     companion object {
         private val Context.osWidgetsDataStore: DataStore<Preferences> by preferencesDataStore(
             name = "os_widgets_data_store"
         )
 
         private val SPACES_CACHE_KEY = stringPreferencesKey("spaces_cache")
+        private val CREATE_OBJECT_CONFIGS_KEY = stringPreferencesKey("create_object_configs")
     }
 }

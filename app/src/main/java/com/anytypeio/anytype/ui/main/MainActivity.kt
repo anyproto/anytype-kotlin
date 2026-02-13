@@ -55,6 +55,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.feature_vault.ui.SpacesIntroductionScreen
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
@@ -84,6 +85,7 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -339,6 +341,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     Timber.w(it, "Error while navigation for OS widget space deeplink")
                                 }
                             }
+                            is Command.Deeplink.DeepLinkToCreateObject -> {
+                                // Load config and handle object creation
+                                lifecycleScope.launch {
+                                    proceedWithCreateObjectFromWidget(command.appWidgetId)
+                                }
+                            }
                         }
                     }
                 }
@@ -506,6 +514,38 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                     toast("Failed to open URL")
                 }
             }
+        }
+    }
+
+    /**
+     * Handles object creation from OS home screen widget.
+     * Loads widget config and triggers space navigation via deep link.
+     * For MVP: navigates to the space home screen. Object creation will be triggered manually.
+     */
+    private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int) {
+        runCatching {
+            val dataStore = OsWidgetsDataStore(this@MainActivity)
+            val config = dataStore.getCreateObjectConfig(appWidgetId)
+            
+            if (config == null) {
+                Timber.w("Widget config not found for appWidgetId: $appWidgetId")
+                toast("Widget not configured")
+                return
+            }
+            
+            Timber.d("Create object from widget: space=${config.spaceId}, type=${config.typeKey}")
+            
+            // Use the existing space deep link mechanism which handles space switching
+            val spaceDeepLink = DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(
+                space = SpaceId(config.spaceId)
+            )
+            vm.handleNewDeepLink(spaceDeepLink)
+            
+            // Show a hint to the user
+            toast("Tap + to create ${config.typeName}")
+        }.onFailure {
+            Timber.e(it, "Error creating object from widget")
+            toast("Failed to open space")
         }
     }
 

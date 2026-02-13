@@ -43,6 +43,7 @@ import com.anytypeio.anytype.di.feature.notifications.NotificationDependencies
 import com.anytypeio.anytype.di.feature.notifications.PushContentDependencies
 import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
+import com.anytypeio.anytype.di.feature.oswidgets.CreateObjectWidgetConfigDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
 import com.anytypeio.anytype.di.feature.onboarding.signup.OnboardingMnemonicDependencies
@@ -157,7 +158,8 @@ interface MainComponent :
     MediaDependencies,
     CreateChatObjectDependencies,
     SharingDependencies,
-    CreateObjectFeatureDependencies
+    CreateObjectFeatureDependencies,
+    CreateObjectWidgetConfigDependencies
 {
 
     fun inject(app: AndroidApplication)
@@ -464,4 +466,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(CreateObjectFeatureDependencies::class)
     abstract fun provideCreateObjectFeatureDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(CreateObjectWidgetConfigDependencies::class)
+    abstract fun provideCreateObjectWidgetConfigDependencies(component: MainComponent): ComponentDependencies
 }

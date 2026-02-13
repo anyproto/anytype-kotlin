@@ -201,7 +201,7 @@
 
         <!-- OS Widget: Spaces List -->
         <receiver
-android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetReceiver"
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetReceiver"
             android:exported="true"
             android:label="@string/os_widget_spaces_description">
             <intent-filter>
@@ -211,6 +211,29 @@ android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetRe
                 android:name="android.appwidget.provider"
                 android:resource="@xml/os_spaces_widget_info" />
         </receiver>
+
+        <!-- OS Widget: Create Object -->
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsCreateObjectWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_create_object_description">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_create_object_widget_info" />
+        </receiver>
+
+        <!-- OS Widget: Create Object Configuration Activity -->
+        <activity
+            android:name=".ui.oswidgets.CreateObjectWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

@@ -2463,5 +2463,6 @@ Please provide specific details of your needs here.</string>
 
     <!-- OS Widgets -->
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
+    <string name="os_widget_create_object_description">Quick create an object of your chosen type</string>
 
 </resources>

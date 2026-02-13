@@ -32,7 +32,9 @@ const val IMPORT_PATH = "import"
 const val MEMBERSHIP_PATH = "membership"
 const val OS_WIDGET_HOST = "os-widget"
 const val OS_WIDGET_SPACES_LIST = "spaces-list"
+const val OS_WIDGET_CREATE_OBJECT = "create-object"
 const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
+const val OS_WIDGET_ACTION_CREATE = "create"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
@@ -173,6 +175,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         val action = uri.pathSegments.getOrNull(1)
         return when (widgetType) {
             OS_WIDGET_SPACES_LIST -> resolveSpacesListWidgetAction(uri, action)
+            OS_WIDGET_CREATE_OBJECT -> resolveCreateObjectWidgetAction(uri, action)
             else -> DeepLinkResolver.Action.Unknown
         }
     }
@@ -186,6 +189,23 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
                 val spaceId = uri.pathSegments.getOrNull(2)
                 if (!spaceId.isNullOrEmpty()) {
                     DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(SpaceId(spaceId))
+                } else {
+                    DeepLinkResolver.Action.Unknown
+                }
+            }
+            else -> DeepLinkResolver.Action.Unknown
+        }
+    }
+
+    private fun resolveCreateObjectWidgetAction(
+        uri: Uri,
+        action: String?
+    ): DeepLinkResolver.Action {
+        return when (action) {
+            OS_WIDGET_ACTION_CREATE -> {
+                val appWidgetId = uri.pathSegments.getOrNull(2)?.toIntOrNull()
+                if (appWidgetId != null) {
+                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject(appWidgetId)
                 } else {
                     DeepLinkResolver.Action.Unknown
                 }

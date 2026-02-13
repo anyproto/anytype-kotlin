@@ -62,6 +62,16 @@ val OsWidgetTextPrimary = Color(0xFFFFFFFF)
 val OsWidgetTextSecondary = Color(0xFFACA9A6)
 
 /**
+ * Widget text tertiary color (more muted)
+ */
+val OsWidgetTextTertiary = Color(0xFF6B6966)
+
+/**
+ * Widget icon placeholder background color
+ */
+val OsWidgetIconPlaceholderColor = Color(0xFF3D3C3B)
+
+/**
  * Corner radius for space icons (matches vault 40dp icon -> 6dp radius)
  */
 const val SPACE_ICON_CORNER_RADIUS = 6

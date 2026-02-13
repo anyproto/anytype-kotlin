@@ -591,6 +591,15 @@ class MainViewModel(
                 proceedWithOsWidgetSpaceSwitch(deeplink.space.id)
             }
 
+            is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject -> {
+                Timber.d("Processing OS widget deep link to create object: appWidgetId=${deeplink.appWidgetId}")
+                commands.emit(
+                    Command.Deeplink.DeepLinkToCreateObject(
+                        appWidgetId = deeplink.appWidgetId
+                    )
+                )
+            }
+
             else -> {
                 Timber.d("No deep link")
             }
@@ -858,6 +867,14 @@ class MainViewModel(
                 val space: Id,
                 val spaceUxType: SpaceUxType? = null,
                 val chatId: Id? = null
+            ) : Deeplink()
+
+            /**
+             * Deep link from OS home screen widget to create an object.
+             * MainActivity will load the widget config and create the object.
+             */
+            data class DeepLinkToCreateObject(
+                val appWidgetId: Int
             ) : Deeplink()
         }
     }

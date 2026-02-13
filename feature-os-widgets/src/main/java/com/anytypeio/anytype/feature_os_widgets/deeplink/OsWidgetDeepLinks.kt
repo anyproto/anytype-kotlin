@@ -13,9 +13,11 @@ object OsWidgetDeepLinks {
 
     // Widget types
     private const val WIDGET_SPACES_LIST = "spaces-list"
+    private const val WIDGET_CREATE_OBJECT = "create-object"
 
     // Actions
     private const val ACTION_OPEN_SPACE = "open-space"
+    private const val ACTION_CREATE = "create"
 
     /**
      * Creates a deep link URI to open a specific space from the spaces list widget.
@@ -37,6 +39,30 @@ object OsWidgetDeepLinks {
     fun buildSpaceIntent(spaceId: String): Intent {
         return Intent(Intent.ACTION_VIEW).apply {
             data = buildSpaceDeepLink(spaceId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+    }
+
+    /**
+     * Creates a deep link URI to create an object using a configured widget.
+     * Format: anytype://os-widget/create-object/create/{appWidgetId}
+     */
+    fun buildCreateObjectDeepLink(appWidgetId: Int): Uri {
+        return Uri.Builder()
+            .scheme(SCHEME)
+            .authority(HOST)
+            .appendPath(WIDGET_CREATE_OBJECT)
+            .appendPath(ACTION_CREATE)
+            .appendPath(appWidgetId.toString())
+            .build()
+    }
+
+    /**
+     * Creates an intent to create an object via deep link.
+     */
+    fun buildCreateObjectIntent(appWidgetId: Int): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = buildCreateObjectDeepLink(appWidgetId)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
     }

@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
+import timber.log.Timber
 
 /**
  * DataStore-based cache for OS widget spaces data.
@@ -86,12 +87,16 @@ class OsWidgetsDataStore(private val context: Context) {
      * Saves a Create Object widget configuration.
      */
     suspend fun saveCreateObjectConfig(config: OsWidgetCreateObjectEntity) {
+        Timber.d("OsWidgetsDataStore: saveCreateObjectConfig called for appWidgetId=${config.appWidgetId}")
+        Timber.d("OsWidgetsDataStore: context=$context, contextClass=${context.javaClass.name}")
         context.osWidgetsDataStore.edit { preferences ->
             val jsonString = preferences[CREATE_OBJECT_CONFIGS_KEY]
+            Timber.d("OsWidgetsDataStore: existing jsonString=$jsonString")
             val cache = if (jsonString != null) {
                 try {
                     json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
                 } catch (e: Exception) {
+                    Timber.e(e, "OsWidgetsDataStore: Failed to decode existing cache")
                     OsWidgetCreateObjectCache()
                 }
             } else {
@@ -99,26 +104,34 @@ class OsWidgetsDataStore(private val context: Context) {
             }
             val updatedConfigs = cache.configs.toMutableMap()
             updatedConfigs[config.appWidgetId] = config
-            preferences[CREATE_OBJECT_CONFIGS_KEY] = json.encodeToString(
-                OsWidgetCreateObjectCache(updatedConfigs)
-            )
+            val newJson = json.encodeToString(OsWidgetCreateObjectCache(updatedConfigs))
+            Timber.d("OsWidgetsDataStore: saving newJson=$newJson")
+            preferences[CREATE_OBJECT_CONFIGS_KEY] = newJson
         }
+        Timber.d("OsWidgetsDataStore: saveCreateObjectConfig completed")
     }
 
     /**
      * Gets a Create Object widget configuration by appWidgetId.
      */
     suspend fun getCreateObjectConfig(appWidgetId: Int): OsWidgetCreateObjectEntity? {
+        Timber.d("OsWidgetsDataStore: getCreateObjectConfig called for appWidgetId=$appWidgetId")
+        Timber.d("OsWidgetsDataStore: context=$context, contextClass=${context.javaClass.name}")
         val prefs = context.osWidgetsDataStore.data.first()
         val jsonString = prefs[CREATE_OBJECT_CONFIGS_KEY]
+        Timber.d("OsWidgetsDataStore: read jsonString=$jsonString")
         return if (jsonString != null) {
             try {
-                json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
-                    .configs[appWidgetId]
+                val cache = json.decodeFromString<OsWidgetCreateObjectCache>(jsonString)
+                val config = cache.configs[appWidgetId]
+                Timber.d("OsWidgetsDataStore: found config=$config for appWidgetId=$appWidgetId")
+                config
             } catch (e: Exception) {
+                Timber.e(e, "OsWidgetsDataStore: Failed to decode cache")
                 null
             }
         } else {
+            Timber.d("OsWidgetsDataStore: no data found")
             null
         }
     }

@@ -359,6 +359,31 @@ class MainViewModel(
     }
 
     /**
+     * Called from MainActivity to switch space and create object from OS widget.
+     * Switches to the target space first, then emits command to create object.
+     */
+    fun onCreateObjectFromWidget(spaceId: String, typeKey: String) {
+        Timber.d("onCreateObjectFromWidget: space=$spaceId, type=$typeKey")
+        viewModelScope.launch {
+            val currentSpace = spaceManager.get()
+            if (currentSpace != spaceId) {
+                spaceManager.set(spaceId)
+                    .onSuccess {
+                        Timber.d("Switched to space $spaceId, emitting create command")
+                        commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                    }
+                    .onFailure { e ->
+                        Timber.e(e, "Failed to switch space for widget object creation")
+                        toasts.emit("Failed to switch space")
+                    }
+            } else {
+                Timber.d("Already in space $spaceId, emitting create command")
+                commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+            }
+        }
+    }
+
+    /**
      * Single entry point for all share intents.
      * Shows the sharing modal sheet with the given intent.
      *
@@ -871,10 +896,18 @@ class MainViewModel(
 
             /**
              * Deep link from OS home screen widget to create an object.
-             * MainActivity will load the widget config and create the object.
+             * MainActivity will load the widget config and call onCreateObjectFromWidget.
              */
             data class DeepLinkToCreateObject(
                 val appWidgetId: Int
+            ) : Deeplink()
+
+            /**
+             * Command to navigate to CreateObjectFragment after space is switched.
+             * Emitted by onCreateObjectFromWidget after successful space switch.
+             */
+            data class OpenCreateObjectFromOsWidget(
+                val typeKey: String
             ) : Deeplink()
         }
     }

@@ -342,9 +342,23 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 }
                             }
                             is Command.Deeplink.DeepLinkToCreateObject -> {
-                                // Load config and handle object creation
+                                // Load config and delegate to ViewModel for space switch
                                 lifecycleScope.launch {
                                     proceedWithCreateObjectFromWidget(command.appWidgetId)
+                                }
+                            }
+                            is Command.Deeplink.OpenCreateObjectFromOsWidget -> {
+                                // Navigate to CreateObjectFragment (space already switched)
+                                runCatching {
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.action_global_createObjectFragment,
+                                        bundleOf(
+                                            CreateObjectFragment.TYPE_KEY to command.typeKey
+                                        )
+                                    )
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to CreateObjectFragment from OS widget")
+                                    toast("Failed to create object")
                                 }
                             }
                         }
@@ -353,13 +367,16 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             }
         }
         if (savedInstanceState == null) {
-            Timber.d("onSaveInstanceStateNull")
+            Timber.d("onCreate: action=${intent.action}, data=${intent.data}")
             when (intent.action) {
                 Intent.ACTION_VIEW -> {
                     intent.data?.let { uri ->
                         val data = uri.toString()
+                        Timber.d("onCreate ACTION_VIEW: uri=$uri, isDeepLink=${DefaultDeepLinkResolver.isDeepLink(data)}")
                         if (DefaultDeepLinkResolver.isDeepLink(data)) {
-                            vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                            val resolved = DefaultDeepLinkResolver.resolve(data)
+                            Timber.d("onCreate: resolved deeplink=$resolved")
+                            vm.handleNewDeepLink(resolved)
                         }
                     }
                 }
@@ -519,12 +536,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     /**
      * Handles object creation from OS home screen widget.
-     * Loads widget config and triggers space navigation via deep link.
-     * For MVP: navigates to the space home screen. Object creation will be triggered manually.
+     * Loads widget config and delegates to ViewModel for space switching and object creation.
      */
     private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int) {
         runCatching {
-            val dataStore = OsWidgetsDataStore(this@MainActivity)
+            val dataStore = OsWidgetsDataStore(applicationContext)
             val config = dataStore.getCreateObjectConfig(appWidgetId)
             
             if (config == null) {
@@ -535,17 +551,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             
             Timber.d("Create object from widget: space=${config.spaceId}, type=${config.typeKey}")
             
-            // Use the existing space deep link mechanism which handles space switching
-            val spaceDeepLink = DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(
-                space = SpaceId(config.spaceId)
-            )
-            vm.handleNewDeepLink(spaceDeepLink)
-            
-            // Show a hint to the user
-            toast("Tap + to create ${config.typeName}")
+            // Delegate to ViewModel which will switch space and emit create command
+            vm.onCreateObjectFromWidget(config.spaceId, config.typeKey)
         }.onFailure {
             Timber.e(it, "Error creating object from widget")
-            toast("Failed to open space")
+            toast("Failed to create object")
         }
     }
 
@@ -564,12 +574,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (BuildConfig.DEBUG) {
-            Timber.d("on NewIntent: $intent")
-        }
+        Timber.d("onNewIntent: action=${intent.action}, data=${intent.data}")
         when(intent.action) {
             Intent.ACTION_VIEW -> {
                 intent.data?.let { uri ->
+                    Timber.d("onNewIntent ACTION_VIEW: uri=$uri")
                     val data = uri.toString()
                     if (DefaultDeepLinkResolver.isDeepLink(data)) {
                         vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import timber.log.Timber
 
 /**
  * Glance App Widget that provides a quick-create button for a specific object type.
@@ -40,14 +41,22 @@ import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 class OsCreateObjectWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val dataStore = OsWidgetsDataStore(context)
-        val appWidgetId = GlanceAppWidgetManager(context).getAppWidgetId(id)
-        val config = dataStore.getCreateObjectConfig(appWidgetId)
+        Timber.d("OsCreateObjectWidget: provideGlance START for glanceId=$id")
+        try {
+            val appContext = context.applicationContext
+            val dataStore = OsWidgetsDataStore(appContext)
+            val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
+            Timber.d("OsCreateObjectWidget: getting config for appWidgetId=$appWidgetId")
+            val config = dataStore.getCreateObjectConfig(appWidgetId)
+            Timber.d("OsCreateObjectWidget: provideGlance for appWidgetId=$appWidgetId, config=$config")
 
-        provideContent {
-            GlanceTheme {
-                WidgetContent(config = config, appWidgetId = appWidgetId)
+            provideContent {
+                GlanceTheme {
+                    WidgetContent(config = config, appWidgetId = appWidgetId)
+                }
             }
+        } catch (e: Exception) {
+            Timber.e(e, "OsCreateObjectWidget: provideGlance FAILED")
         }
     }
 }
@@ -97,6 +106,7 @@ private fun NotConfiguredState() {
 @Composable
 private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, appWidgetId: Int) {
     val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId)
+    Timber.d("OsCreateObjectWidget: CreateObjectCard intent data=${intent.data}")
 
     Column(
         modifier = GlanceModifier

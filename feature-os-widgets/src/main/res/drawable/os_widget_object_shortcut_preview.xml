@@ -11,7 +11,7 @@
     <!-- Document rounded rect -->
     <path
         android:pathData="M22,16 L58,16 Q64,16 64,22 L64,58 Q64,64 58,64 L22,64 Q16,64 16,58 L16,22 Q16,16 22,16 Z"
-        android:fillColor="#ABB4C4"/>
+        android:fillColor="#FFFFFF"/>
     <!-- Document lines -->
     <path
         android:pathData="M24,30 L56,30"

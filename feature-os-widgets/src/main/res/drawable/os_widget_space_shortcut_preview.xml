@@ -8,16 +8,16 @@
     <path
         android:pathData="M12,0 L68,0 Q80,0 80,12 L80,68 Q80,80 68,80 L12,80 Q0,80 0,68 L0,12 Q0,0 12,0 Z"
         android:fillColor="#1F1E1D"/>
-    <!-- Anytype logo: circle -->
+    <!-- Anytype logo: circle (bottom-left) -->
     <path
-        android:pathData="M32,46 m-7,0 a7,7 0,1 1,14 0 a7,7 0,1 1,-14 0"
+        android:pathData="M32,52 m-8,0 a8,8 0,1 1,16 0 a8,8 0,1 1,-16 0"
         android:fillColor="#FFFFFF"/>
-    <!-- Anytype logo: vertical bar -->
+    <!-- Anytype logo: vertical bar (right) -->
     <path
-        android:pathData="M44,28 L52,28 L52,52 L44,52 Z"
+        android:pathData="M48,34 Q48,32 50,32 L54,32 Q56,32 56,34 L56,52 Q56,54 54,54 L50,54 Q48,54 48,52 Z"
         android:fillColor="#FFFFFF"/>
-    <!-- Anytype logo: horizontal bar -->
+    <!-- Anytype logo: horizontal bar (top) -->
     <path
-        android:pathData="M28,20 L48,20 L48,28 L28,28 Z"
+        android:pathData="M30,26 Q30,24 32,24 L46,24 Q48,24 48,26 L48,30 Q48,32 46,32 L32,32 Q30,32 30,30 Z"
         android:fillColor="#FFFFFF"/>
 </vector>

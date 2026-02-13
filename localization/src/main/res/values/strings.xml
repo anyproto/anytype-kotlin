@@ -2464,6 +2464,9 @@ Please provide specific details of your needs here.</string>
     <!-- OS Widgets -->
     <string name="os_widget_spaces_description">Quick access to your pinned spaces</string>
     <string name="os_widget_create_object_description">Quick create an object of your chosen type</string>
+    <string name="os_widget_space_shortcut_description">Quick shortcut to open a space</string>
+    <string name="os_widget_object_shortcut_description">Quick shortcut to open an object</string>
+    <string name="os_widget_not_configured">Tap to configure</string>
     <string name="no_spaces_available">No spaces available</string>
 
 </resources>

@@ -234,6 +234,52 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <!-- OS Widget: Space Shortcut -->
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpaceShortcutWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_space_shortcut_description">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_space_shortcut_widget_info" />
+        </receiver>
+
+        <!-- OS Widget: Space Shortcut Configuration Activity -->
+        <activity
+            android:name=".ui.oswidgets.SpaceShortcutWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <!-- OS Widget: Object Shortcut -->
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsObjectShortcutWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_object_shortcut_description">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_object_shortcut_widget_info" />
+        </receiver>
+
+        <!-- OS Widget: Object Shortcut Configuration Activity -->
+        <activity
+            android:name=".ui.oswidgets.ObjectShortcutWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

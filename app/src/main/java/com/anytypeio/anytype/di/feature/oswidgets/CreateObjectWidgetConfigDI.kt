@@ -5,6 +5,7 @@ import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.ui.oswidgets.CreateObjectWidgetConfigActivity
+import com.anytypeio.anytype.ui.oswidgets.SpaceShortcutWidgetConfigActivity
 import dagger.Component
 
 @Component(
@@ -14,6 +15,7 @@ import dagger.Component
 interface CreateObjectWidgetConfigComponent {
 
     fun inject(activity: CreateObjectWidgetConfigActivity)
+    fun inject(activity: SpaceShortcutWidgetConfigActivity)
 
     @Component.Factory
     interface Factory {

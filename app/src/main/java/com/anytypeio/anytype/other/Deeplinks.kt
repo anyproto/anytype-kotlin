@@ -33,7 +33,10 @@ const val MEMBERSHIP_PATH = "membership"
 const val OS_WIDGET_HOST = "os-widget"
 const val OS_WIDGET_SPACES_LIST = "spaces-list"
 const val OS_WIDGET_CREATE_OBJECT = "create-object"
+const val OS_WIDGET_SPACE_SHORTCUT = "space-shortcut"
+const val OS_WIDGET_OBJECT_SHORTCUT = "object-shortcut"
 const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
+const val OS_WIDGET_ACTION_OPEN = "open"
 const val OS_WIDGET_ACTION_CREATE = "create"
 
 const val TYPE_PARAM = "type"
@@ -178,6 +181,8 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         return when (widgetType) {
             OS_WIDGET_SPACES_LIST -> resolveSpacesListWidgetAction(uri, action)
             OS_WIDGET_CREATE_OBJECT -> resolveCreateObjectWidgetAction(uri, action)
+            OS_WIDGET_SPACE_SHORTCUT -> resolveSpaceShortcutWidgetAction(uri, action)
+            OS_WIDGET_OBJECT_SHORTCUT -> resolveObjectShortcutWidgetAction(uri, action)
             else -> DeepLinkResolver.Action.Unknown
         }
     }
@@ -219,6 +224,53 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
                 Timber.w("resolveCreateObjectWidgetAction: unknown action=$action")
                 DeepLinkResolver.Action.Unknown
             }
+        }
+    }
+
+    /**
+     * Resolves space shortcut widget deep links.
+     * Format: anytype://os-widget/space-shortcut/open/{spaceId}
+     */
+    private fun resolveSpaceShortcutWidgetAction(
+        uri: Uri,
+        action: String?
+    ): DeepLinkResolver.Action {
+        return when (action) {
+            OS_WIDGET_ACTION_OPEN -> {
+                val spaceId = uri.pathSegments.getOrNull(2)
+                if (!spaceId.isNullOrEmpty()) {
+                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(SpaceId(spaceId))
+                } else {
+                    DeepLinkResolver.Action.Unknown
+                }
+            }
+            else -> DeepLinkResolver.Action.Unknown
+        }
+    }
+
+    /**
+     * Resolves object shortcut widget deep links.
+     * Format: anytype://os-widget/object-shortcut/open/{objectId}?spaceId={spaceId}
+     */
+    private fun resolveObjectShortcutWidgetAction(
+        uri: Uri,
+        action: String?
+    ): DeepLinkResolver.Action {
+        return when (action) {
+            OS_WIDGET_ACTION_OPEN -> {
+                val objectId = uri.pathSegments.getOrNull(2)
+                val spaceId = uri.getQueryParameter(SPACE_ID_PARAM)
+                if (!objectId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
+                    DeepLinkResolver.Action.DeepLinkToObject(
+                        obj = objectId,
+                        space = SpaceId(spaceId),
+                        invite = null
+                    )
+                } else {
+                    DeepLinkResolver.Action.Unknown
+                }
+            }
+            else -> DeepLinkResolver.Action.Unknown
         }
     }
 

@@ -179,8 +179,124 @@ class OsWidgetsDataStore(private val context: Context) {
         }
     }
 
+    // ==================== Space Shortcut Widget Config ====================
+
+    /**
+     * Saves a Space Shortcut widget configuration.
+     */
+    suspend fun saveSpaceShortcutConfig(config: OsWidgetSpaceShortcutEntity) {
+        dataStore.edit { preferences ->
+            val cache = preferences[SPACE_SHORTCUT_CONFIGS_KEY]?.let { jsonString ->
+                try {
+                    osWidgetsJson.decodeFromString<OsWidgetSpaceShortcutCache>(jsonString)
+                } catch (e: Exception) {
+                    OsWidgetSpaceShortcutCache()
+                }
+            } ?: OsWidgetSpaceShortcutCache()
+
+            val updatedConfigs = cache.configs.toMutableMap().apply {
+                put(config.appWidgetId, config)
+            }
+            preferences[SPACE_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                OsWidgetSpaceShortcutCache(updatedConfigs)
+            )
+        }
+    }
+
+    /**
+     * Gets a Space Shortcut widget configuration by appWidgetId.
+     */
+    suspend fun getSpaceShortcutConfig(appWidgetId: Int): OsWidgetSpaceShortcutEntity? {
+        val jsonString = dataStore.data.first()[SPACE_SHORTCUT_CONFIGS_KEY] ?: return null
+        return try {
+            osWidgetsJson.decodeFromString<OsWidgetSpaceShortcutCache>(jsonString).configs[appWidgetId]
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Deletes a Space Shortcut widget configuration.
+     */
+    suspend fun deleteSpaceShortcutConfig(appWidgetId: Int) {
+        dataStore.edit { preferences ->
+            val jsonString = preferences[SPACE_SHORTCUT_CONFIGS_KEY]
+            if (jsonString != null) {
+                try {
+                    val cache = osWidgetsJson.decodeFromString<OsWidgetSpaceShortcutCache>(jsonString)
+                    val updatedConfigs = cache.configs.toMutableMap()
+                    updatedConfigs.remove(appWidgetId)
+                    preferences[SPACE_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                        OsWidgetSpaceShortcutCache(updatedConfigs)
+                    )
+                } catch (e: Exception) {
+                    // Ignore decode errors
+                }
+            }
+        }
+    }
+
+    // ==================== Object Shortcut Widget Config ====================
+
+    /**
+     * Saves an Object Shortcut widget configuration.
+     */
+    suspend fun saveObjectShortcutConfig(config: OsWidgetObjectShortcutEntity) {
+        dataStore.edit { preferences ->
+            val cache = preferences[OBJECT_SHORTCUT_CONFIGS_KEY]?.let { jsonString ->
+                try {
+                    osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
+                } catch (e: Exception) {
+                    OsWidgetObjectShortcutCache()
+                }
+            } ?: OsWidgetObjectShortcutCache()
+
+            val updatedConfigs = cache.configs.toMutableMap().apply {
+                put(config.appWidgetId, config)
+            }
+            preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                OsWidgetObjectShortcutCache(updatedConfigs)
+            )
+        }
+    }
+
+    /**
+     * Gets an Object Shortcut widget configuration by appWidgetId.
+     */
+    suspend fun getObjectShortcutConfig(appWidgetId: Int): OsWidgetObjectShortcutEntity? {
+        val jsonString = dataStore.data.first()[OBJECT_SHORTCUT_CONFIGS_KEY] ?: return null
+        return try {
+            osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString).configs[appWidgetId]
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Deletes an Object Shortcut widget configuration.
+     */
+    suspend fun deleteObjectShortcutConfig(appWidgetId: Int) {
+        dataStore.edit { preferences ->
+            val jsonString = preferences[OBJECT_SHORTCUT_CONFIGS_KEY]
+            if (jsonString != null) {
+                try {
+                    val cache = osWidgetsJson.decodeFromString<OsWidgetObjectShortcutCache>(jsonString)
+                    val updatedConfigs = cache.configs.toMutableMap()
+                    updatedConfigs.remove(appWidgetId)
+                    preferences[OBJECT_SHORTCUT_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                        OsWidgetObjectShortcutCache(updatedConfigs)
+                    )
+                } catch (e: Exception) {
+                    // Ignore decode errors
+                }
+            }
+        }
+    }
+
     companion object {
         private val SPACES_CACHE_KEY = stringPreferencesKey("spaces_cache")
         private val CREATE_OBJECT_CONFIGS_KEY = stringPreferencesKey("create_object_configs")
+        private val SPACE_SHORTCUT_CONFIGS_KEY = stringPreferencesKey("space_shortcut_configs")
+        private val OBJECT_SHORTCUT_CONFIGS_KEY = stringPreferencesKey("object_shortcut_configs")
     }
 }

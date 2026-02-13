@@ -14,10 +14,16 @@ object OsWidgetDeepLinks {
     // Widget types
     private const val WIDGET_SPACES_LIST = "spaces-list"
     private const val WIDGET_CREATE_OBJECT = "create-object"
+    private const val WIDGET_SPACE_SHORTCUT = "space-shortcut"
+    private const val WIDGET_OBJECT_SHORTCUT = "object-shortcut"
 
     // Actions
     private const val ACTION_OPEN_SPACE = "open-space"
+    private const val ACTION_OPEN = "open"
     private const val ACTION_CREATE = "create"
+
+    // Query params
+    private const val PARAM_SPACE_ID = "spaceId"
 
     /**
      * Creates a deep link URI to open a specific space from the spaces list widget.
@@ -63,6 +69,59 @@ object OsWidgetDeepLinks {
     fun buildCreateObjectIntent(appWidgetId: Int): Intent {
         return Intent(Intent.ACTION_VIEW).apply {
             data = buildCreateObjectDeepLink(appWidgetId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+    }
+
+    // ==================== Space Shortcut Widget ====================
+
+    /**
+     * Creates a deep link URI to open a space from a space shortcut widget.
+     * Format: anytype://os-widget/space-shortcut/open/{spaceId}
+     */
+    fun buildSpaceShortcutDeepLink(spaceId: String): Uri {
+        return Uri.Builder()
+            .scheme(SCHEME)
+            .authority(HOST)
+            .appendPath(WIDGET_SPACE_SHORTCUT)
+            .appendPath(ACTION_OPEN)
+            .appendPath(spaceId)
+            .build()
+    }
+
+    /**
+     * Creates an intent to open a space from a space shortcut widget.
+     */
+    fun buildSpaceShortcutIntent(spaceId: String): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = buildSpaceShortcutDeepLink(spaceId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+    }
+
+    // ==================== Object Shortcut Widget ====================
+
+    /**
+     * Creates a deep link URI to open an object from an object shortcut widget.
+     * Format: anytype://os-widget/object-shortcut/open/{objectId}?spaceId={spaceId}
+     */
+    fun buildObjectShortcutDeepLink(objectId: String, spaceId: String): Uri {
+        return Uri.Builder()
+            .scheme(SCHEME)
+            .authority(HOST)
+            .appendPath(WIDGET_OBJECT_SHORTCUT)
+            .appendPath(ACTION_OPEN)
+            .appendPath(objectId)
+            .appendQueryParameter(PARAM_SPACE_ID, spaceId)
+            .build()
+    }
+
+    /**
+     * Creates an intent to open an object from an object shortcut widget.
+     */
+    fun buildObjectShortcutIntent(objectId: String, spaceId: String): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = buildObjectShortcutDeepLink(objectId, spaceId)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
     }

@@ -32,6 +32,7 @@ import com.anytypeio.anytype.feature_os_widgets.R
 import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
+import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.delay
 import timber.log.Timber
 
@@ -65,6 +66,9 @@ class OsCreateObjectWidget : GlanceAppWidget() {
                     WidgetContent(config = config)
                 }
             }
+        } catch (e: CancellationException) {
+            // Rethrow cancellation exceptions to allow proper coroutine cancellation
+            throw e
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "provideGlance failed")
         }

@@ -3,10 +3,12 @@ package com.anytypeio.anytype.ui.oswidgets
 import android.app.Activity
 import android.appwidget.AppWidgetManager
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -21,6 +23,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
@@ -51,9 +56,12 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.SystemColor
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.di.common.componentManager
@@ -65,9 +73,11 @@ import com.anytypeio.anytype.feature_os_widgets.ui.OsCreateObjectWidgetUpdater
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.persistence.oswidgets.OsWidgetsDataStore
 import androidx.lifecycle.lifecycleScope
+import coil3.compose.AsyncImage
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import timber.log.Timber
+import java.io.File
 import javax.inject.Inject
 
 /**
@@ -87,6 +97,9 @@ class CreateObjectWidgetConfigActivity : ComponentActivity() {
 
     @Inject
     lateinit var configStorage: ConfigStorage
+
+    @Inject
+    lateinit var urlBuilder: UrlBuilder
 
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
@@ -117,6 +130,7 @@ class CreateObjectWidgetConfigActivity : ComponentActivity() {
                     blockRepository = blockRepository,
                     dispatchers = dispatchers,
                     configStorage = configStorage,
+                    urlBuilder = urlBuilder,
                     appWidgetId = appWidgetId,
                     onConfigComplete = { config ->
                         completeConfiguration(config)
@@ -185,6 +199,7 @@ private fun ConfigScreen(
     blockRepository: BlockRepository,
     dispatchers: AppCoroutineDispatchers,
     configStorage: ConfigStorage,
+    urlBuilder: UrlBuilder,
     appWidgetId: Int,
     onConfigComplete: (OsWidgetCreateObjectEntity) -> Unit,
     onCancel: () -> Unit
@@ -233,6 +248,7 @@ private fun ConfigScreen(
                 ConfigStep.SelectSpace -> {
                     SpaceSelectionScreen(
                         spaceViews = spaceViews,
+                        urlBuilder = urlBuilder,
                         onSpaceSelected = { space ->
                             currentStep = ConfigStep.SelectType(space)
                         }
@@ -266,14 +282,15 @@ private fun ConfigScreen(
 @Composable
 private fun SpaceSelectionScreen(
     spaceViews: SpaceViewSubscriptionContainer,
+    urlBuilder: UrlBuilder,
     onSpaceSelected: (ObjectWrapper.SpaceView) -> Unit
 ) {
     val spaces = remember { spaceViews.get() }
     
-    // Filter to only show active spaces, pinned first
+    // Filter to only show active data spaces (exclude chat spaces), pinned first
     val sortedSpaces = remember(spaces) {
         spaces
-            .filter { it.isActive }
+            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
     }
 
@@ -296,6 +313,7 @@ private fun SpaceSelectionScreen(
             items(sortedSpaces) { space ->
                 SpaceItem(
                     space = space,
+                    urlBuilder = urlBuilder,
                     onClick = { onSpaceSelected(space) }
                 )
                 Spacer(modifier = Modifier.height(8.dp))
@@ -307,8 +325,20 @@ private fun SpaceSelectionScreen(
 @Composable
 private fun SpaceItem(
     space: ObjectWrapper.SpaceView,
+    urlBuilder: UrlBuilder,
     onClick: () -> Unit
 ) {
+    val iconColor = space.iconOption
+        ?.toInt()
+        ?.let { SystemColor.color(it) }
+        ?: SystemColor.SKY
+    
+    val backgroundColor = iconColor.toComposeColor()
+    val textColor = iconColor.toComposeLightTextColor()
+    val imageUrl = space.iconImage?.takeIf { it.isNotEmpty() }?.let { urlBuilder.medium(it) }
+    val isChat = space.spaceUxType == SpaceUxType.CHAT || space.spaceUxType == SpaceUxType.ONE_TO_ONE
+    val iconShape = if (isChat) CircleShape else RoundedCornerShape(6.dp)
+    
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -318,20 +348,31 @@ private fun SpaceItem(
             .padding(12.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        // Space icon placeholder
-        Box(
-            modifier = Modifier
-                .size(40.dp)
-                .clip(RoundedCornerShape(6.dp))
-                .background(Color(0xFF3D3C3B)),
-            contentAlignment = Alignment.Center
-        ) {
-            Text(
-                text = space.name?.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
-                color = Color.White,
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
+        // Space icon with proper color/image
+        if (imageUrl != null) {
+            AsyncImage(
+                model = imageUrl,
+                contentDescription = space.name,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(iconShape)
             )
+        } else {
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(iconShape)
+                    .background(backgroundColor),
+                contentAlignment = Alignment.Center
+            ) {
+                Text(
+                    text = space.name?.firstOrNull()?.uppercaseChar()?.toString() ?: "?",
+                    color = textColor,
+                    fontSize = 20.sp,
+                    fontWeight = FontWeight.Bold
+                )
+            }
         }
 
         Spacer(modifier = Modifier.width(12.dp))
@@ -395,7 +436,8 @@ private fun TypeSelectionScreen(
                             Relations.RECOMMENDED_LAYOUT,
                             Relations.IS_ARCHIVED,
                             Relations.IS_DELETED,
-                            Relations.IS_HIDDEN
+                            Relations.IS_HIDDEN,
+                            Relations.IS_HIDDEN_DISCOVERY
                         ),
                         filters = listOf(
                             DVFilter(
@@ -417,6 +459,20 @@ private fun TypeSelectionScreen(
                                 relation = Relations.IS_HIDDEN,
                                 condition = DVFilterCondition.NOT_EQUAL,
                                 value = true
+                            ),
+                            DVFilter(
+                                relation = Relations.IS_HIDDEN_DISCOVERY,
+                                condition = DVFilterCondition.NOT_EQUAL,
+                                value = true
+                            ),
+                            DVFilter(
+                                relation = Relations.UNIQUE_KEY,
+                                condition = DVFilterCondition.NOT_EMPTY
+                            ),
+                            DVFilter(
+                                relation = Relations.UNIQUE_KEY,
+                                condition = DVFilterCondition.NOT_EQUAL,
+                                value = ObjectTypeUniqueKeys.TEMPLATE
                             ),
                             DVFilter(
                                 relation = Relations.RECOMMENDED_LAYOUT,
@@ -530,5 +586,41 @@ private fun TypeItem(
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.weight(1f)
         )
+    }
+}
+
+/**
+ * Maps SystemColor to Compose Color for widget config UI.
+ */
+private fun SystemColor.toComposeColor(): Color {
+    return when (this) {
+        SystemColor.GRAY -> Color(0xFF928F8E)
+        SystemColor.YELLOW -> Color(0xFFE5D044)
+        SystemColor.AMBER -> Color(0xFFF19611)
+        SystemColor.RED -> Color(0xFFF55522)
+        SystemColor.PINK -> Color(0xFFE51284)
+        SystemColor.PURPLE -> Color(0xFFAB50CC)
+        SystemColor.BLUE -> Color(0xFF3E58EB)
+        SystemColor.SKY -> Color(0xFF2AA7EE)
+        SystemColor.TEAL -> Color(0xFF0FC8BA)
+        SystemColor.GREEN -> Color(0xFF5DD400)
+    }
+}
+
+/**
+ * Maps SystemColor to light text color for icon initials.
+ */
+private fun SystemColor.toComposeLightTextColor(): Color {
+    return when (this) {
+        SystemColor.GRAY -> Color(0xFFD6D5D4)
+        SystemColor.YELLOW -> Color(0xFFFCF6CE)
+        SystemColor.AMBER -> Color(0xFFFEECCE)
+        SystemColor.RED -> Color(0xFFFED6C9)
+        SystemColor.PINK -> Color(0xFFF9CFEB)
+        SystemColor.PURPLE -> Color(0xFFEBD4F3)
+        SystemColor.BLUE -> Color(0xFFD2DAF8)
+        SystemColor.SKY -> Color(0xFFD2EEFA)
+        SystemColor.TEAL -> Color(0xFFC6F2EE)
+        SystemColor.GREEN -> Color(0xFFDAF5B0)
     }
 }

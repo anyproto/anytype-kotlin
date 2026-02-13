@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.di.feature.oswidgets
 
+import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
@@ -28,4 +29,5 @@ interface CreateObjectWidgetConfigDependencies : ComponentDependencies {
     fun blockRepository(): BlockRepository
     fun appCoroutineDispatchers(): AppCoroutineDispatchers
     fun configStorage(): ConfigStorage
+    fun urlBuilder(): UrlBuilder
 }

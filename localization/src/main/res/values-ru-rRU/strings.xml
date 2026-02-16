@@ -2060,7 +2060,7 @@
     <string name="attachment_menu_photos">Фото</string>
     <string name="attachment_menu_camera">Камера</string>
     <string name="attachment_menu_files">Files</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object"></string>
     <string name="attachment_menu_see_all">Просмотреть все</string>
     <string name="attachment_menu_search_placeholder">Поиск</string>
     <string name="create_object_empty_state">No object types available</string>

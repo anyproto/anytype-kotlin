@@ -20,6 +20,7 @@ android {
 dependencies {
     // Project modules
     implementation project(':domain')
+    implementation project(':presentation')
     implementation project(':core-models')
     implementation project(':core-utils')
     implementation project(':core-ui')

@@ -20,7 +20,6 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
@@ -39,25 +38,15 @@ import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.Relations3
 import com.anytypeio.anytype.core_ui.widgets.objectIcon.SpaceIconView
-import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SpaceSelectionScreen(
-    spaceViews: SpaceViewSubscriptionContainer,
+    spaces: List<ObjectWrapper.SpaceView>,
     urlBuilder: UrlBuilder,
     onSpaceSelected: (ObjectWrapper.SpaceView) -> Unit,
     onCancel: () -> Unit
 ) {
-    val spaces = remember { spaceViews.get() }
-
-    // Filter to only show active data spaces (exclude chat spaces), pinned first
-    val sortedSpaces = remember(spaces) {
-        spaces
-            .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
-            .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
-    }
-
     Scaffold(
         topBar = {
             TopAppBar(
@@ -89,7 +78,7 @@ fun SpaceSelectionScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            if (sortedSpaces.isEmpty()) {
+            if (spaces.isEmpty()) {
                 Box(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
@@ -107,7 +96,7 @@ fun SpaceSelectionScreen(
                     modifier = Modifier.fillMaxSize()
                 ) {
                     items(
-                        items = sortedSpaces,
+                        items = spaces,
                         key = { it.id }
                     ) { space ->
                         SpaceGridItem(

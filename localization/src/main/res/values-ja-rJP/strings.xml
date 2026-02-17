@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">削除申請は、30日以内であれば取り消すことが可能です。30日経過後、保管庫のデータはバックアップノードから完全に消去され、新しいデバイスでAnytypeにログインすることができなくなります。</string>
     <string name="danger_zone">危険な操作</string>
     <string name="snackbar_template_add">タイプに追加されました</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">メンバーシップ</string>
     <string name="multi_select_turn_into">変換</string>
     <string name="multi_select_move_to">移動</string>
@@ -350,6 +351,8 @@
     <string name="hint_add_description">説明を追加</string>
     <string name="dv_filter_checkbox_checked">チェック済み</string>
     <string name="dv_filter_checkbox_not_checked">未チェック</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">URLを貼り付け、または入力</string>
     <string name="callout">コールアウト</string>
     <string name="highlight">引用文</string>

@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Após solicitar a exclusão do seu vault, você terá 30 dias para cancelar esta solicitação. Após 30 dias, os dados criptografados do vault serão removidos permanentemente do nosso nó de backup e você não conseguirá acessar o Anytype em novos dispositivos.</string>
     <string name="danger_zone">Zona de perigo</string>
     <string name="snackbar_template_add">O novo modelo foi adicionado ao tipo</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Associação</string>
     <string name="multi_select_turn_into">Transformar em</string>
     <string name="multi_select_move_to">Mover para</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Adicionar uma descrição</string>
     <string name="dv_filter_checkbox_checked">marcado</string>
     <string name="dv_filter_checkbox_not_checked">não marcado</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Colar ou digitar um URL</string>
     <string name="callout">Chamada</string>
     <string name="highlight">Destaque</string>

@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Как только вы запросите удаление вашего хранилища, у вас будет 30 дней, чтобы отменить этот запрос. После 30 дней ваши зашифрованные данные хранилища будут навсегда удалены из резервной копии, и вы не сможете войти в Anytype на новых устройствах.</string>
     <string name="danger_zone">Осторожно!</string>
     <string name="snackbar_template_add">Новый шаблон добавлен к типу</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Членство</string>
     <string name="multi_select_turn_into">Превратить в</string>
     <string name="multi_select_move_to">Переместить в</string>
@@ -353,6 +354,8 @@
     <string name="hint_add_description">Добавить описание</string>
     <string name="dv_filter_checkbox_checked">отмечен</string>
     <string name="dv_filter_checkbox_not_checked">не отмечено</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Вставить или ввести URL</string>
     <string name="callout">Врезка</string>
     <string name="highlight">Выделить</string>

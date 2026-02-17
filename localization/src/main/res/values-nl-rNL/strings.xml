@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Zodra je een verzoek hebt ingediend om jouw kluis te verwijderen, heb je 30 dagen om dit verzoek te annuleren. Na 30 dagen worden jouw versleutelde kluisgegevens permanent verwijderd uit de back-up node, je kunt dan niet meer inloggen in Anytype op nieuwe apparaten.</string>
     <string name="danger_zone">Gevarenzone</string>
     <string name="snackbar_template_add">Nieuw sjabloon is toegevoegd aan het type</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Lidmaatschap</string>
     <string name="multi_select_turn_into">Verander in</string>
     <string name="multi_select_move_to">Verplaats naar</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Voeg een beschrijving toe</string>
     <string name="dv_filter_checkbox_checked">aangevinkt</string>
     <string name="dv_filter_checkbox_not_checked"> niet aangevinkt</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Plak of type een URL</string>
     <string name="callout">Toelichting</string>
     <string name="highlight">Markeer</string>

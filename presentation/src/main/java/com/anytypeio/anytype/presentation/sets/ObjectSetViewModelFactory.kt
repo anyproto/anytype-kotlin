@@ -94,7 +94,8 @@ class ObjectSetViewModelFactory(
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -144,7 +145,8 @@ class ObjectSetViewModelFactory(
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = createBlock,
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            getDefaultObjectType = getDefaultObjectType
         ) as T
     }
 }

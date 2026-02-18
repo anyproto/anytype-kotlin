@@ -209,7 +209,8 @@ class ObjectSetViewModel(
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
-    private val stringResourceProvider: StringResourceProvider
+    private val stringResourceProvider: StringResourceProvider,
+    private val getDefaultObjectType: GetDefaultObjectType
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -2568,7 +2569,7 @@ class ObjectSetViewModel(
             // If type is null due to deleted type, use space default
             val effectiveType = type ?: getSpaceDefaultType()
             if (effectiveType == null) return@launch
-if (type.recommendedLayout == ObjectType.Layout.SET || type.recommendedLayout == ObjectType.Layout.COLLECTION) {
+if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.recommendedLayout == ObjectType.Layout.COLLECTION) {
                 return@launch
             }
             typeTemplatesWidgetState.value = createState(viewer)

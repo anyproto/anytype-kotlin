@@ -255,7 +255,8 @@ object ObjectSetModule {
         setDataViewProperties: SetDataViewProperties,
         emojiProvider: EmojiProvider,
         emojiSuggester: EmojiSuggester,
-        stringResourceProvider: StringResourceProvider
+        stringResourceProvider: StringResourceProvider,
+        getDefaultObjectType: GetDefaultObjectType
     ): ObjectSetViewModelFactory = ObjectSetViewModelFactory(
         params = params,
         openObjectSet = openObjectSet,
@@ -302,7 +303,8 @@ object ObjectSetModule {
         setDataViewProperties = setDataViewProperties,
         emojiProvider = emojiProvider,
         emojiSuggester = emojiSuggester,
-        stringResourceProvider = stringResourceProvider
+        stringResourceProvider = stringResourceProvider,
+        getDefaultObjectType = getDefaultObjectType
     )
 
     @JvmStatic

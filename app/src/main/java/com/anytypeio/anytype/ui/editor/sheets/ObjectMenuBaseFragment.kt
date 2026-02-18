@@ -30,7 +30,6 @@ import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreen
-import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.base.navigation

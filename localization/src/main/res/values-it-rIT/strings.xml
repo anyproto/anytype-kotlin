@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Una volta che hai richiesto l\'eliminazione della tua cassaforte, hai 30 giorni per annullare questa richiesta. Dopo 30 giorni, i dati della tua cassaforte crittografata verranno rimossi in modo permanente dal nodo di backup e non sarai più in grado di accedere a Anytype su nuovi dispositivi.</string>
     <string name="danger_zone">Zona di pericolo</string>
     <string name="snackbar_template_add">Nuovo modello è stato aggiunto al tipo</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Membership</string>
     <string name="multi_select_turn_into">Trasforma in</string>
     <string name="multi_select_move_to">Sposta in</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Aggiungi una descrizione</string>
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Incolla o digita un URL</string>
     <string name="callout">Richiamo</string>
     <string name="highlight">Evidenzia</string>
@@ -2070,7 +2073,7 @@ Please provide specific details of your needs here.</string>
     <string name="widgets_section_pinned">Fissato</string>
     <string name="widgets_section_unread">Non letto</string>
     <string name="widgets_section_object_types">Oggetti</string>
-    <string name="widgets_section_recently_edited">Recently Edited</string>
+    <string name="widgets_section_recently_edited">Modificato di recente</string>
     <string name="widgets_menu_new_object_type">Nuovo</string>
     <string name="widgets_menu_delete_object_type">Elimina Tipo Oggetto</string>
     <string name="widget_unpin_alert_description">Abbiamo riprogettato il funzionamento dei widget e questo widget non è più supportato. Una volta sganciato, questo widget non può essere ripristinato.</string>

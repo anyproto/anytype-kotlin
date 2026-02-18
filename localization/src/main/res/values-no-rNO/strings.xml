@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Fareområde</string>
     <string name="snackbar_template_add">Ny mal ble lagt til typen</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Medlemskap</string>
     <string name="multi_select_turn_into">Endre til</string>
     <string name="multi_select_move_to">Flytt til</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Legg til en beskrivelse</string>
     <string name="dv_filter_checkbox_checked">merket av</string>
     <string name="dv_filter_checkbox_not_checked">ikke merket av</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Lim inn eller skriv en URL</string>
     <string name="callout">Utrop</string>
     <string name="highlight">Uthev</string>

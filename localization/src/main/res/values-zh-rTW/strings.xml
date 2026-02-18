@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">一旦您請求刪除您的筆記庫，您有 30 天的時間取消此請求。 30 天後，您的加密筆記庫資料將從備份節點永久刪除，您將無法在新裝置上登入 Anytype。</string>
     <string name="danger_zone">危險區域</string>
     <string name="snackbar_template_add">新範本已新增至類型</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">會員</string>
     <string name="multi_select_turn_into">轉換成</string>
     <string name="multi_select_move_to">移動至</string>
@@ -350,6 +351,8 @@
     <string name="hint_add_description">新增描述</string>
     <string name="dv_filter_checkbox_checked">已勾選</string>
     <string name="dv_filter_checkbox_not_checked">未勾選 </string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">貼上或輸入 URL</string>
     <string name="callout">引用區塊</string>
     <string name="highlight">螢光筆</string>

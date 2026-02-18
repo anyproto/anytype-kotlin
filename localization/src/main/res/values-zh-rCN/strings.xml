@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">一旦将删除此库的请求发出，您将有 30 天的时间取消此请求。在 30 天后，您的加密库数据将会被永久性地从备份节点移除，您将无法在新设备上登录 Anytype。</string>
     <string name="danger_zone">危险操作区域</string>
     <string name="snackbar_template_add">新模板已添加到类型</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">会员</string>
     <string name="multi_select_turn_into">转换为</string>
     <string name="multi_select_move_to">移至</string>
@@ -350,6 +351,8 @@
     <string name="hint_add_description">添加描述</string>
     <string name="dv_filter_checkbox_checked">已勾选</string>
     <string name="dv_filter_checkbox_not_checked">未勾选</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">粘贴或输入 URL 网址</string>
     <string name="callout">标注</string>
     <string name="highlight">高亮</string>

@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Sobald die Löschung deines Tresors angefordert wurde, hast du 30 Tage um diese Anfrage zu widerrufen. Nach 30 Tagen werden deine verschlüsselten Tresor-Daten dauerhaft aus dem Backup-Knoten entfernt. Du kannst dich danach nicht auf neuen Geräten bei Anytype anmelden.</string>
     <string name="danger_zone">Gefahrenbereich</string>
     <string name="snackbar_template_add">Neue Vorlage wurde zum Typ hinzugefügt</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Mitgliedschaft</string>
     <string name="multi_select_turn_into">Umwandeln in</string>
     <string name="multi_select_move_to">Verschieben nach</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Beschreibung hinzufügen</string>
     <string name="dv_filter_checkbox_checked">Ausgewählt</string>
     <string name="dv_filter_checkbox_not_checked">Nicht ausgewählt</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">URL einfügen oder eingeben</string>
     <string name="callout">Textbox</string>
     <string name="highlight">Hervorhebung</string>

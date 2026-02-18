@@ -7,6 +7,9 @@ test_debug_all:
 distribute_debug:
 	./gradlew bundleDebug appDistributionUploadDebug -Pversion.useDatedVersionName=true
 
+distribute_debug_with_postfix:
+	./gradlew bundleDebug appDistributionUploadDebug -Pversion.useDatedVersionName=true -Pversion.versionPostfix=$(POSTFIX)
+
 pr_check: compile_android_test_sources test_debug_all
 
 enable_analytics_for_debug:

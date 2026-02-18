@@ -37,7 +37,7 @@ import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsResolveObjectConflict
 import com.anytypeio.anytype.presentation.objects.ObjectAction
-import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.*
+import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase.Command.ShareDeeplinkToObject
 import com.anytypeio.anytype.presentation.sets.dataViewState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.util.Dispatcher
@@ -247,6 +247,10 @@ class ObjectSetMenuViewModel(
                 commands.emit(Command.OpenSetRelations)
             }
         }
+    }
+
+    override fun onTemplateNamePrefillToggleClicked(ctx: Id, space: Id) {
+        // Not applicable for Sets/Collections - they cannot be templates
     }
 
     override fun buildActions(

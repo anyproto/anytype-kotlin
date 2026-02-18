@@ -3,6 +3,7 @@ package com.anytypeio.anytype.core_ui.features.dataview.modals
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterAdvancedBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterCheckboxBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterDateBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterNumberBinding
@@ -12,6 +13,7 @@ import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTagBinding
 import com.anytypeio.anytype.core_ui.databinding.ItemDvViewerFilterTextBinding
 import com.anytypeio.anytype.presentation.sets.filter.FilterClick
 import com.anytypeio.anytype.presentation.sets.model.FilterView
+import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_ADVANCED
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_CHECKBOX
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_DATE
 import com.anytypeio.anytype.presentation.sets.model.FilterView.Companion.HOLDER_EMAIL
@@ -177,6 +179,21 @@ class FilterByAdapter(
                     }
                 }
             }
+
+            HOLDER_ADVANCED -> {
+                FilterAdvancedViewHolder(
+                    ItemDvViewerFilterAdvancedBinding.inflate(
+                        inflater, parent, false
+                    )
+                ).apply {
+                    itemView.setOnClickListener {
+                        val pos = bindingAdapterPosition
+                        if (pos != RecyclerView.NO_POSITION) {
+                            click(FilterClick.Value(pos))
+                        }
+                    }
+                }
+            }
             else -> throw IllegalStateException("Unexpected view type: $viewType")
         }
     }
@@ -204,12 +221,16 @@ class FilterByAdapter(
             is FilterCheckboxViewHolder -> {
                 holder.bind(items[position] as FilterView.Expression.Checkbox)
             }
+            is FilterAdvancedViewHolder -> {
+                holder.bind(items[position] as FilterView.Advanced)
+            }
         }
     }
 
     override fun getItemCount(): Int = items.size
 
     override fun getItemViewType(position: Int): Int = when (items[position]) {
+        is FilterView.Advanced -> HOLDER_ADVANCED
         is FilterView.Expression.Text -> HOLDER_TEXT
         is FilterView.Expression.Number -> HOLDER_NUMBER
         is FilterView.Expression.Date -> HOLDER_DATE

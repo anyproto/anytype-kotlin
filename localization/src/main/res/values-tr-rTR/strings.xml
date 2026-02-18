@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Kasanın silinmesini talep edersen bu talebi iptal etmek için 30 günün olacaktır. 30 gün sonra şifrelenmiş kasa verilerin yedekleme düğümünden kalıcı olarak silinir ve yeni cihazlarda Anytype oturumu açamazsın.</string>
     <string name="danger_zone">Tehlikeli bölge</string>
     <string name="snackbar_template_add">Bu türe yeni bir şablon eklendi</string>
+    <string name="template_name_prefill_title">Önceden doldurulmuş isim</string>
     <string name="settings_membership">Üyelik</string>
     <string name="multi_select_turn_into">Şuna dönüştür</string>
     <string name="multi_select_move_to">Şuraya taşı</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Açıklama ekle</string>
     <string name="dv_filter_checkbox_checked">kontrol edildi</string>
     <string name="dv_filter_checkbox_not_checked">kontrol edilmedi</string>
+    <string name="advanced_filter_title">Gelişmiş filtre</string>
+    <string name="advanced_filter_description">Düzenleme masaüstünde kullanılabilir</string>
     <string name="paste_or_type_a_url">Bir URL yazın veya yapıştırın</string>
     <string name="callout">Belirteç</string>
     <string name="highlight">Vurgula</string>

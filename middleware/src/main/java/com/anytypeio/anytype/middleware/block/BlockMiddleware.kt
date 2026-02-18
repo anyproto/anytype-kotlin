@@ -1,5 +1,6 @@
 package com.anytypeio.anytype.middleware.block
 
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.CBTextStyle
 import com.anytypeio.anytype.core_models.Command
@@ -12,7 +13,6 @@ import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.DVViewer
 import com.anytypeio.anytype.core_models.DVViewerType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Event
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
@@ -1180,8 +1180,16 @@ class BlockMiddleware(
         return middleware.getLinkPreview(url)
     }
 
-    override suspend fun createObjectFromUrl(space: SpaceId, url: Url): ObjectWrapper.Basic {
-        return middleware.createObjectFromUrl(space = space, url = url)
+    override suspend fun createObjectFromUrl(
+        space: SpaceId,
+        url: Url,
+        createdInContext: Id?
+    ): ObjectWrapper.Basic {
+        return middleware.createObjectFromUrl(
+            space = space,
+            url = url,
+            createdInContext = createdInContext
+        )
     }
 
     override suspend fun setSpaceNotificationMode(spaceViewId: Id, mode: com.anytypeio.anytype.core_models.chats.NotificationState) {

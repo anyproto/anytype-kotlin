@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Пасля запыту на выдаленне сховішча ў вас ёсць 30 дзён, каб адмяніць яго. Па заканчэнні 30 дзён вашыя зашыфраваныя даныя сховішча будуць назаўжды выдалены з вузла рэзервовага капіравання, і вы не зможаце ўвайсці ў Anytype на новых прыладах.</string>
     <string name="danger_zone">Небяспечная зона</string>
     <string name="snackbar_template_add">Новы шаблон быў дададзены да тыпу</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Членства</string>
     <string name="multi_select_turn_into">Ператварыць у</string>
     <string name="multi_select_move_to">Перамясціць у</string>
@@ -353,6 +354,8 @@
     <string name="hint_add_description">Дадаць апісанне</string>
     <string name="dv_filter_checkbox_checked">пазначана</string>
     <string name="dv_filter_checkbox_not_checked">не пазначана</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Устаўце або ўвядзіце URL</string>
     <string name="callout">Зноска</string>
     <string name="highlight">Цытата</string>

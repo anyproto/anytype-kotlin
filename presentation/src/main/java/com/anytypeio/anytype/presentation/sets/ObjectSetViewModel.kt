@@ -66,6 +66,7 @@ import com.anytypeio.anytype.domain.objects.getTypeOfObject
 import com.anytypeio.anytype.domain.page.CloseObject
 import com.anytypeio.anytype.domain.page.CreateObject
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.DataViewState
 import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
 import com.anytypeio.anytype.domain.sets.OpenObjectSet
@@ -84,6 +85,7 @@ import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
 import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.getObject
+import com.anytypeio.anytype.presentation.extension.getTypeObject
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
@@ -131,6 +133,7 @@ import com.anytypeio.anytype.presentation.widgets.enterEditing
 import com.anytypeio.anytype.presentation.widgets.exitEditing
 import com.anytypeio.anytype.presentation.widgets.hideMoreMenu
 import com.anytypeio.anytype.presentation.widgets.showMoreMenu
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.channels.Channel
@@ -206,7 +209,7 @@ class ObjectSetViewModel(
     private val setDataViewProperties: SetDataViewProperties,
     private val emojiProvider: EmojiProvider,
     private val emojiSuggester: EmojiSuggester,
-    private val getDefaultObjectType: GetDefaultObjectType
+    private val stringResourceProvider: StringResourceProvider
 ) : ViewModel(), SupportNavigation<EventWrapper<AppNavigation.Command>>,
     ViewerDelegate by viewerDelegate,
     AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate
@@ -257,6 +260,8 @@ class ObjectSetViewModel(
 
     @Deprecated("could be deleted")
     val isLoading = MutableStateFlow(false)
+
+    private val isObjectCreationInProgress = AtomicBoolean(false)
 
     private val selectedTypeFlow: MutableStateFlow<ObjectWrapper.Type?> = MutableStateFlow(null)
 
@@ -417,7 +422,8 @@ class ObjectSetViewModel(
                         viewerEditWidgetState.value = pair.first.toViewerEditWidgetState(
                             storeOfRelations = storeOfRelations,
                             index = pair.second,
-                            session = session
+                            session = session,
+                            stringResourceProvider = stringResourceProvider
                         )
                         viewerLayoutWidgetState.value = viewerLayoutWidgetState.value.updateState(
                             viewer = pair.first,
@@ -547,7 +553,9 @@ class ObjectSetViewModel(
         downloadUnsplashImage(
             DownloadUnsplashImage.Params(
                 picture = action.img,
-                space = vmParams.space
+                space = vmParams.space,
+                createdInContext = vmParams.ctx,
+                createdInContextRef = Relations.COVER_ID
             )
         ).process(
             failure = {
@@ -823,7 +831,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -887,7 +896,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -962,7 +972,8 @@ class ObjectSetViewModel(
                 _dvViews.value = objectState.dataViewState()?.toViewersView(
                     ctx = vmParams.ctx,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 ) ?: emptyList()
                 val relations = objectState.dataViewContent.relationLinks.mapNotNull {
                     storeOfRelations.getByKey(it.key)
@@ -1707,7 +1718,8 @@ class ObjectSetViewModel(
                 showSetObjectNameSheet(
                     objectId = response.objectId,
                     icon = icon,
-                    isIconChangeAllowed = isIconChangeAllowed
+                    isIconChangeAllowed = isIconChangeAllowed,
+                    name = obj.name.orEmpty()
                 )
             }
         }
@@ -1946,7 +1958,8 @@ class ObjectSetViewModel(
                 showSetObjectNameSheet(
                     objectId = obj.id,
                     icon = icon,
-                    isIconChangeAllowed = false
+                    isIconChangeAllowed = false,
+                    name = ""
                 )
             },
             onSuccess = { (blockId, payload) ->
@@ -1958,7 +1971,8 @@ class ObjectSetViewModel(
                     objectId = obj.id,
                     icon = icon,
                     isIconChangeAllowed = false,
-                    targetBlockId = blockId
+                    targetBlockId = blockId,
+                    name = ""
                 )
             }
         )
@@ -2554,7 +2568,9 @@ class ObjectSetViewModel(
             // If type is null due to deleted type, use space default
             val effectiveType = type ?: getSpaceDefaultType()
             if (effectiveType == null) return@launch
-
+if (type.recommendedLayout == ObjectType.Layout.SET || type.recommendedLayout == ObjectType.Layout.COLLECTION) {
+                return@launch
+            }
             typeTemplatesWidgetState.value = createState(viewer)
             selectedTypeFlow.value = effectiveType
         }
@@ -3289,10 +3305,26 @@ class ObjectSetViewModel(
 
             ViewersWidgetUi.Action.Plus -> {
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
+                // Determine default layout based on object type
+                val defaultLayout = when (state) {
+                    is ObjectState.DataView.TypeSet -> {
+                        val setOfValue = state.getSetOfValue(vmParams.ctx)
+                        val typeId = setOfValue.firstOrNull()
+                        val typeWrapper = typeId?.let { state.details.getTypeObject(it) }
+                        val uniqueKey = typeWrapper?.uniqueKey
+                        if (uniqueKey == ObjectTypeIds.IMAGE || uniqueKey == ObjectTypeIds.VIDEO) {
+                            DVViewerType.GALLERY
+                        } else {
+                            DVViewerType.LIST
+                        }
+                    }
+
+                    else -> DVViewerType.LIST
+                }
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = DVViewerType.GRID,
+                    type = defaultLayout,
                     filters = emptyList(),
                     sorts = emptyList()
                 )
@@ -3487,34 +3519,50 @@ class ObjectSetViewModel(
     fun proceedWithDataViewObjectCreate(typeChosenBy: TypeKey? = null, templateId: Id? = null) {
         Timber.d("proceedWithDataViewObjectCreate, typeChosenBy:[$typeChosenBy], templateId:[$templateId]")
 
+        // Skip if already creating an object
+        if (!isObjectCreationInProgress.compareAndSet(false, true)) {
+            Timber.d("proceedWithDataViewObjectCreate: creation already in progress, skipping")
+            return
+        }
+
         if (isRestrictionPresent(DataViewRestriction.CREATE_OBJECT)) {
+            isObjectCreationInProgress.set(false)
             toast(NOT_ALLOWED)
             return
         }
 
-        val state = stateReducer.state.value.dataViewState() ?: return
+        val state = stateReducer.state.value.dataViewState()
+        if (state == null) {
+            isObjectCreationInProgress.set(false)
+            return
+        }
 
         viewModelScope.launch {
-            when (state) {
-                is ObjectState.DataView.Collection -> {
-                    proceedWithAddingObjectToCollection(
-                        typeChosenByUser = typeChosenBy,
-                        templateChosenBy = templateId
-                    )
-                }
-                is ObjectState.DataView.Set -> {
-                    proceedWithCreatingSetObject(
-                        currentState = state,
-                        templateChosenBy = templateId
-                    )
-                }
+            try {
+                when (state) {
+                    is ObjectState.DataView.Collection -> {
+                        proceedWithAddingObjectToCollection(
+                            typeChosenByUser = typeChosenBy,
+                            templateChosenBy = templateId
+                        )
+                    }
 
-                is ObjectState.DataView.TypeSet -> {
-                    proceedWithCreatingObjectTypeSetObject(
-                        currentState = state,
-                        templateChosenBy = templateId
-                    )
+                    is ObjectState.DataView.Set -> {
+                        proceedWithCreatingSetObject(
+                            currentState = state,
+                            templateChosenBy = templateId
+                        )
+                    }
+
+                    is ObjectState.DataView.TypeSet -> {
+                        proceedWithCreatingObjectTypeSetObject(
+                            currentState = state,
+                            templateChosenBy = templateId
+                        )
+                    }
                 }
+            } finally {
+                isObjectCreationInProgress.set(false)
             }
         }
     }
@@ -3741,15 +3789,16 @@ class ObjectSetViewModel(
         objectId: Id,
         icon: ObjectIcon,
         isIconChangeAllowed: Boolean,
-        targetBlockId: Id? = null
+        targetBlockId: Id? = null,
+        name: String
     ) {
         _setObjectNameState.value = SetObjectNameState(
             isVisible = true,
             targetObjectId = objectId,
             currentIcon = icon,
-            inputText = "",
+            inputText = name,
             isIconChangeAllowed = isIconChangeAllowed,
-            targetBlockId = targetBlockId
+            targetBlockId = targetBlockId,
         )
     }
 

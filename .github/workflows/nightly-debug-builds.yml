@@ -2,6 +2,12 @@ on:
   schedule:
     - cron: '30 23 * * 1,2,3,4,5'
   workflow_dispatch:
+    inputs:
+      version_postfix:
+        description: 'Custom postfix to append to version name (e.g., "feature-xyz" → 1.2.3-18.02.26-feature-xyz)'
+        required: false
+        default: ''
+        type: string
 name: Distribute nightly debug build
 jobs:
   setup-android:
@@ -31,7 +37,12 @@ jobs:
             ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY_FIREBASE_DISTRIBUTION }}
 
       - name: Distribute debug build
-        run: make distribute_debug
+        run: |
+          if [ -n "${{ github.event.inputs.version_postfix }}" ]; then
+            make distribute_debug_with_postfix POSTFIX="${{ github.event.inputs.version_postfix }}"
+          else
+            make distribute_debug
+          fi
 
       - name: Clean secrets
         if: always()

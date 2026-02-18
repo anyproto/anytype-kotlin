@@ -54,7 +54,6 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_ui.extensions.setEmojiOrNull
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridAdapter
 import com.anytypeio.anytype.core_ui.features.dataview.ViewerGridHeaderAdapter
@@ -123,9 +122,9 @@ import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
 import com.anytypeio.anytype.ui.objects.BaseObjectTypeChangeFragment
 import com.anytypeio.anytype.ui.objects.creation.ObjectTypeSelectionFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.CollectionAddObjectTypeFragment
+import com.anytypeio.anytype.ui.objects.types.pickers.CollectionObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.DataViewSelectSourceFragment
 import com.anytypeio.anytype.ui.objects.types.pickers.EmptyDataViewSelectSourceFragment
-import com.anytypeio.anytype.ui.objects.types.pickers.CollectionObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.ObjectTypeSelectionListener
 import com.anytypeio.anytype.ui.objects.types.pickers.OnDataViewSelectSourceAction
 import com.anytypeio.anytype.ui.relations.RelationDateValueFragment
@@ -276,10 +275,11 @@ open class ObjectSetFragment :
         topToolbarTitle.alpha = 0f
         binding.root.setTransitionListener(transitionListener)
 
+        addNewButton.setOnClickListener { vm.proceedWithDataViewObjectCreate() }
+        addNewIconButton.setOnButtonClickListener { vm.proceedWithDataViewObjectCreate() }
+        addNewIconButton.setOnIconClickListener { vm.onNewButtonIconClicked() }
+
         with(lifecycleScope) {
-            subscribe(addNewButton.clicks().throttleFirst()) { vm.proceedWithDataViewObjectCreate() }
-            subscribe(addNewIconButton.buttonClicks()) { vm.proceedWithDataViewObjectCreate() }
-            subscribe(addNewIconButton.iconClicks()) { vm.onNewButtonIconClicked() }
             subscribe(dataViewInfo.clicks().throttleFirst()) { type ->
                 when (type) {
                     DataViewInfo.TYPE.COLLECTION_NO_ITEMS -> vm.proceedWithDataViewObjectCreate()
@@ -496,6 +496,7 @@ open class ObjectSetFragment :
                     isVisible = state.isVisible,
                     icon = state.currentIcon,
                     isIconChangeAllowed = state.isIconChangeAllowed,
+                    initialText = state.inputText,
                     onTextChanged = vm::onSetObjectNameChanged,
                     onDismiss = vm::onSetObjectNameDismissed,
                     onIconClicked = vm::onSetObjectNameIconClicked,

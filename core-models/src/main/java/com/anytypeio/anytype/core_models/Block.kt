@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.core_models
 
-import com.anytypeio.anytype.core_models.Block.Content.Text.Mark
 import com.anytypeio.anytype.core_models.Block.Content.Text.Style
 import com.anytypeio.anytype.core_models.ext.typeOf
 
@@ -351,8 +350,16 @@ data class Block(
                 val operator: Operator = Operator.NO,
                 val condition: Condition,
                 val quickOption: QuickOption = QuickOption.EXACT_DATE,
-                val value: Any? = null
+                val value: Any? = null,
+                val nestedFilters: List<Filter> = emptyList()
             ) {
+                /**
+                 * A filter is considered "advanced" if it uses AND/OR operators
+                 * or contains nested filters. Advanced filters can only be edited on Desktop.
+                 */
+                fun isAdvanced(): Boolean =
+                    operator != Operator.NO || nestedFilters.isNotEmpty()
+
                 enum class Operator { AND, OR, NO }
                 enum class Condition {
                     EQUAL, NOT_EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL,

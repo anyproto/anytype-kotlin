@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Una vez solicitada la eliminación de tu arca, tendrás 30 días para cancelar la solicitud. Pasados 30 días, los datos cifrados de tu arca se eliminarán definitivamente del nodo de respaldo y no podrás iniciar sesión en Anytype desde dispositivos nuevos.</string>
     <string name="danger_zone">¡Zona peligrosa!</string>
     <string name="snackbar_template_add">Se ha añadido una nueva plantilla al tipo</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Suscripción</string>
     <string name="multi_select_turn_into">Convertir en</string>
     <string name="multi_select_move_to">Mover a</string>
@@ -351,6 +352,8 @@
     <string name="hint_add_description">Añadir una descripción</string>
     <string name="dv_filter_checkbox_checked">marcado</string>
     <string name="dv_filter_checkbox_not_checked">sin marcar</string>
+    <string name="advanced_filter_title">Filtro avanzado</string>
+    <string name="advanced_filter_description">Se puede modificar en la versión de escritorio</string>
     <string name="paste_or_type_a_url">Pega o escribe una URL</string>
     <string name="callout">Globo</string>
     <string name="highlight">Resaltar</string>
@@ -2068,7 +2071,7 @@ En concreto,
     <string name="widgets_section_pinned">Anclado</string>
     <string name="widgets_section_unread">No leído</string>
     <string name="widgets_section_object_types">Objetos</string>
-    <string name="widgets_section_recently_edited">Recently Edited</string>
+    <string name="widgets_section_recently_edited">Editado recientemente</string>
     <string name="widgets_menu_new_object_type">Nuevo</string>
     <string name="widgets_menu_delete_object_type">Eliminar tipo de objeto</string>
     <string name="widget_unpin_alert_description">Hemos rediseñado el funcionamiento de los widgets y este widget ya no es compatible. Una vez desanclado, este widget no se puede restaurar.</string>

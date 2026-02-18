@@ -9,6 +9,19 @@ import com.anytypeio.anytype.core_utils.ui.ViewType
 
 sealed class FilterView : ViewType {
 
+    /**
+     * Represents an advanced filter that can only be viewed on mobile (read-only).
+     * Advanced filters use AND/OR operators or contain nested filter groups.
+     * They can only be edited on Desktop.
+     */
+    data class Advanced(
+        val id: Id,
+        val operator: Viewer.FilterOperator,
+        val nestedFilterCount: Int
+    ) : FilterView(), ViewType {
+        override fun getViewType(): Int = HOLDER_ADVANCED
+    }
+
     sealed class Expression : FilterView() {
         abstract val id: Id
         abstract val relation: Key
@@ -190,5 +203,6 @@ sealed class FilterView : ViewType {
         const val HOLDER_TAG = 9
         const val HOLDER_OBJECT = 10
         const val HOLDER_CHECKBOX = 12
+        const val HOLDER_ADVANCED = 13
     }
 }

@@ -63,11 +63,14 @@ ext.getBuildVersionName = {
     def versionMinor = getProperty('version.versionMinor').toInteger()
     def versionPatch = getProperty('version.versionPatch').toInteger()
     def isDatedVersionNameEnabled = findProperty('version.useDatedVersionName')?.toBoolean() ?: false
+    def customPostfix = findProperty('version.versionPostfix') ?: ''
     if (isDatedVersionNameEnabled) {
         def date = getCurrentDate()
-        return "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
+        def baseName = "${versionMajor}.${versionMinor}.${versionPatch}-${date}"
+        return customPostfix ? "${baseName}-${customPostfix}" : baseName
     } else {
-        return "${versionMajor}.${versionMinor}.${versionPatch}-beta"
+        def baseName = "${versionMajor}.${versionMinor}.${versionPatch}-beta"
+        return customPostfix ? "${baseName}-${customPostfix}" : baseName
     }
 }
 

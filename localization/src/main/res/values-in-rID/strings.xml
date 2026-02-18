@@ -83,6 +83,7 @@
     <string name="deleted_account_danger_zone_msg">Begitu kamu meminta brankasmu dihapus, kamu punya waktu 30 hari untuk membatalkan permintaan ini. Setelah 30 hari, data brankas terenkripsimu akan dihapus secara permanen dari simpul cadangan, dan kamu tidak akan bisa masuk ke Anytype di perangkat baru.</string>
     <string name="danger_zone">Hapus akun (Hati-hati!)</string>
     <string name="snackbar_template_add">Templat baru ditambahkan ke tipe ini</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Langganan</string>
     <string name="multi_select_turn_into">Ubah menjadi</string>
     <string name="multi_select_move_to">Pindahkan ke</string>
@@ -350,6 +351,8 @@
     <string name="hint_add_description">Tambahkan deskripsi</string>
     <string name="dv_filter_checkbox_checked">dicentang</string>
     <string name="dv_filter_checkbox_not_checked">tak dicentang</string>
+    <string name="advanced_filter_title">Penyaring lanjutan</string>
+    <string name="advanced_filter_description">Penyuntingan tersedia di versi Desktop</string>
     <string name="paste_or_type_a_url">Tempel atau ketik URL</string>
     <string name="callout">Berbingkai</string>
     <string name="highlight">Menyorot</string>

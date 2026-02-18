@@ -631,19 +631,19 @@ private fun ColumnScope.TemplateHeaderTask(item: TemplateView.Template) {
     TemplateItemCoverColor(item = item)
     TemplateItemCoverImage(item = item)
     TemplateItemCoverGradient(item = item)
-    Spacer(modifier = Modifier.height(12.dp))
+    Spacer(modifier = Modifier.height(28.dp))
     TemplateItemTodoTitle(text = item.name)
+    Spacer(modifier = Modifier.height(12.dp))
 }
 
 @Composable
 private fun TemplateItemIconOrImage(
     item: TemplateView.Template,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier.padding(start = 16.dp)
 ) {
     item.image?.let {
         Box(
             modifier = modifier
-                .padding(start = 16.dp)
                 .size(40.dp)
                 .background(
                     color = colorResource(id = R.color.shape_tertiary),
@@ -667,7 +667,6 @@ private fun TemplateItemIconOrImage(
     item.emoji?.let {
         Box(
             modifier = modifier
-                .padding(start = 16.dp)
                 .size(40.dp)
                 .background(
                     color = colorResource(id = R.color.text_tertiary),

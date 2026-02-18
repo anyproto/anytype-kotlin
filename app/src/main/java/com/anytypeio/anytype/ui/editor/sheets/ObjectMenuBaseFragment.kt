@@ -30,6 +30,7 @@ import com.anytypeio.anytype.core_utils.ui.proceed
 import com.anytypeio.anytype.core_utils.ui.showActionableSnackBar
 import com.anytypeio.anytype.databinding.FragmentObjectMenuBinding
 import com.anytypeio.anytype.feature_object_type.ui.conflict.ConflictScreen
+import com.anytypeio.anytype.presentation.objects.ObjectIcon
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuOptionsProvider
 import com.anytypeio.anytype.presentation.objects.menu.ObjectMenuViewModelBase
 import com.anytypeio.anytype.ui.base.navigation
@@ -110,6 +111,9 @@ abstract class ObjectMenuBaseFragment :
         click(binding.publishToWeb) { vm.onPublishToWebClicked(ctx = ctx, space = space) }
         click(binding.debugGoroutines) { vm.onDiagnosticsGoroutinesClicked(ctx = ctx) }
         click(binding.objectLayoutConflict) { vm.onShowConflictScreen(objectId = ctx, space = space) }
+        binding.optionTemplateNamePrefill.setOnCheckedChangeListener {
+            vm.onTemplateNamePrefillToggleClicked(ctx = ctx, space = space)
+        }
 
         proceed(vm.actions) { actionAdapter.submitList(it) }
         proceed(vm.toasts) { toast(it) }
@@ -160,6 +164,16 @@ abstract class ObjectMenuBaseFragment :
         binding.objectDiagnostics.visibility = objectDiagnosticsVisibility
         binding.objectDiagnosticsDivider.visibility = objectDiagnosticsVisibility
         binding.objectLayoutConflict.visibility = objectLayoutConflictVisibility
+
+        // Template Name Prefill - only visible for templates with title support
+        if (isTemplate == true && options.hasTemplateNamePrefill) {
+            binding.optionTemplateNamePrefill.visibility = View.VISIBLE
+            binding.templateNamePrefillDivider.visibility = View.VISIBLE
+            binding.optionTemplateNamePrefill.setChecked(options.isTemplateNamePrefillEnabled)
+        } else {
+            binding.optionTemplateNamePrefill.visibility = View.GONE
+            binding.templateNamePrefillDivider.visibility = View.GONE
+        }
     }
 
     private fun execute(command: ObjectMenuViewModelBase.Command) {

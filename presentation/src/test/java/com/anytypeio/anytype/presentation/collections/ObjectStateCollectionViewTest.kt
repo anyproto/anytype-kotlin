@@ -6,11 +6,11 @@ import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeIds
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.StubObject
+import com.anytypeio.anytype.core_models.SupportedLayouts
+import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.core_models.primitives.TypeKey
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestriction
 import com.anytypeio.anytype.core_models.restrictions.DataViewRestrictions
-import com.anytypeio.anytype.core_models.SupportedLayouts
-import com.anytypeio.anytype.core_models.getSingleValue
 import com.anytypeio.anytype.presentation.sets.DataViewViewState
 import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
 import com.anytypeio.anytype.presentation.sets.SetOrCollectionHeaderState
@@ -356,15 +356,16 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
 
             //assertIs<DataViewViewState.Collection.NoItems>(viewerFlow.awaitItem())
             assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also { dataViewState ->
-                val rows = (dataViewState.viewer as Viewer.GridView).rows
-                assertEquals(5, rows.size)
+                // Grid is deprecated on mobile - renders as ListView
+                val items = (dataViewState.viewer as Viewer.ListView).items
+                assertEquals(5, items.size)
 
                 // SHOULD BE SORTED 1, 2, 4, 3, 5
-                assertEquals(mockObjectCollection.obj1.id, rows[0].id)
-                assertEquals(mockObjectCollection.obj2.id, rows[1].id)
-                assertEquals(mockObjectCollection.obj4.id, rows[2].id)
-                assertEquals(mockObjectCollection.obj3.id, rows[3].id)
-                assertEquals(mockObjectCollection.obj5.id, rows[4].id)
+                assertEquals(mockObjectCollection.obj1.id, items[0].objectId)
+                assertEquals(mockObjectCollection.obj2.id, items[1].objectId)
+                assertEquals(mockObjectCollection.obj4.id, items[2].objectId)
+                assertEquals(mockObjectCollection.obj3.id, items[3].objectId)
+                assertEquals(mockObjectCollection.obj5.id, items[4].objectId)
             }
             stateFlow.cancelAndIgnoreRemainingEvents()
             viewerFlow.cancelAndIgnoreRemainingEvents()
@@ -414,15 +415,16 @@ class ObjectStateCollectionViewTest : ObjectSetViewModelTestSetup() {
             assertIs<DataViewViewState.Init>(viewerFlow.awaitItem())
 
             assertIs<DataViewViewState.Collection.Default>(viewerFlow.awaitItem()).also { dataViewState ->
-                val rows = (dataViewState.viewer as Viewer.GridView).rows
-                assertEquals(5, rows.size)
+                // Grid is deprecated on mobile - renders as ListView
+                val items = (dataViewState.viewer as Viewer.ListView).items
+                assertEquals(5, items.size)
 
-                // SHOULD BE SORTED 1, 2, 4, 3, 5
-                assertEquals(mockObjectCollection.obj1.id, rows[0].id)
-                assertEquals(mockObjectCollection.obj2.id, rows[1].id)
-                assertEquals(mockObjectCollection.obj3.id, rows[2].id)
-                assertEquals(mockObjectCollection.obj4.id, rows[3].id)
-                assertEquals(mockObjectCollection.obj5.id, rows[4].id)
+                // SHOULD BE SORTED 1, 2, 3, 4, 5 (no custom order applied)
+                assertEquals(mockObjectCollection.obj1.id, items[0].objectId)
+                assertEquals(mockObjectCollection.obj2.id, items[1].objectId)
+                assertEquals(mockObjectCollection.obj3.id, items[2].objectId)
+                assertEquals(mockObjectCollection.obj4.id, items[3].objectId)
+                assertEquals(mockObjectCollection.obj5.id, items[4].objectId)
             }
             stateFlow.cancelAndIgnoreRemainingEvents()
             viewerFlow.cancelAndIgnoreRemainingEvents()

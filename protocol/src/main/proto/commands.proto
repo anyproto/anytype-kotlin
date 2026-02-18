@@ -550,6 +550,25 @@ message Rpc {
                 }
             }
         }
+
+        message DeleteCorruptedBackup {
+            message Request {
+                string backupPath = 1;
+            }
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
         message SetOrder {
             message Request {
                 string spaceViewId = 1;
@@ -588,6 +607,33 @@ message Rpc {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+        message ChangeOwnership {
+            message Request {
+                string spaceId = 1;
+                string newOwnerIdentity = 2;
+                model.ParticipantPermissions oldOwnerPermissions = 3;
+            }
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+
+                        NO_SUCH_SPACE = 101;
+                        SPACE_IS_DELETED = 102;
+                        REQUEST_FAILED = 103;
+                        PARTICIPANT_NOT_FOUND = 105;
+                        INCORRECT_PERMISSIONS = 106;
                     }
                 }
             }
@@ -1410,6 +1456,7 @@ message Rpc {
             message Response {
                 Error error = 1;
                 model.Account.Info info = 2;
+                repeated string corruptedBackupPaths = 3; // backup paths for corrupted space storage
                 message Error {
                     Code code = 1;
                     string description = 2;
@@ -3962,6 +4009,8 @@ message Rpc {
                 anytype.model.ImageKind imageKind = 9;
                 bool preloadOnly = 10; // if true, only async preload the file without creating object
                 string preloadFileId = 11; // if set, reuse already preloaded file with this id. May block if async preload operation is not finished yet
+                string createdInContext = 12; // Object ID where the file was initially created
+                string createdInContextRef = 13; // Block ID where the file was initially created
             }
 
             message Response {
@@ -4028,6 +4077,7 @@ message Rpc {
                 string contextId = 1;
                 string dropTargetId = 2; // id of the simple block to insert considering position
                 anytype.model.Block.Position position = 3;  // position relatively to the dropTargetId simple block
+                anytype.model.Block.Content.File.Style style = 5;
                 repeated string localFilePaths = 4;
             }
             message Response {
@@ -4168,6 +4218,25 @@ message Rpc {
                     Code code = 1;
                     string description = 2;
 
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
+                    }
+                }
+            }
+        }
+
+        message AutoDownloadSetLimit {
+            message Request {
+                // 0 = no limit, >0 = max file size in mebibytes
+                int64 sizeLimitMebibytes = 1;
+            }
+            message Response {
+                Error error = 1;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
                     enum Code {
                         NULL = 0;
                         UNKNOWN_ERROR = 1;
@@ -4377,6 +4446,8 @@ message Rpc {
                 string pictureId = 1;
                 string spaceId = 2;
                 anytype.model.ImageKind imageKind = 3;
+                string createdInContext = 4; // Object ID where the file was initially created
+                string createdInContextRef = 5; // Block ID where the file was initially created
             }
 
             message Response {
@@ -8406,6 +8477,34 @@ message Rpc {
                 }
             }
         }
+
+        message SubscribeToUpdates {
+            message Request {
+                string email = 1;
+                anytype.model.MembershipV2.Platform platform = 2;
+                // if false - unsubscribe
+                bool subscribe = 3;
+                // additional data
+                string context = 4;
+            }
+
+            message Response {
+                Error error = 1;
+
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2; 
+                        CAN_NOT_CONNECT = 3;
+                        PLATFORM_NOT_SUPPORTED = 4;        
+                    }
+                }
+            }
+        }
     }
 
     message NameService {
@@ -8966,6 +9065,31 @@ message Rpc {
                         UNKNOWN_ERROR = 1;
                         BAD_INPUT = 2;
                         // ...
+                    }
+                }
+            }
+        }
+
+        message Search {
+            message Request {
+                string spaceId = 1;
+                string chatId = 2;
+                repeated anytype.model.Search.Message.Sort sorts = 3;
+                string fullText = 4;
+                int32 offset = 5;
+                int32 limit = 6;
+            }
+
+            message Response {
+                Error error = 1;
+                repeated model.Search.Message.Result results = 2;
+                message Error {
+                    Code code = 1;
+                    string description = 2;
+                    enum Code {
+                        NULL = 0;
+                        UNKNOWN_ERROR = 1;
+                        BAD_INPUT = 2;
                     }
                 }
             }

@@ -255,13 +255,14 @@ abstract class TestObjectSetSetup {
     @Mock
     lateinit var fieldParser: FieldParser
 
+    private val stringResourceProvider: StringResourceProvider =
+        mock(StringResourceProvider::class.java)
+
     private val dateProvider = DateProviderImpl(
         defaultZoneId = ZoneId.systemDefault(),
         localeProvider = localeProvider,
         appDefaultDateFormatProvider = AppDefaultDateFormatProviderImpl(localeProvider),
-        stringResourceProvider = mock(
-            StringResourceProvider::class.java
-        )
+        stringResourceProvider = stringResourceProvider
     )
 
     open fun setup() {
@@ -354,7 +355,7 @@ abstract class TestObjectSetSetup {
             createBlock = mock(),
             emojiProvider = mock(),
             emojiSuggester = mock(),
-            getDefaultObjectType = getDefaultObjectType
+            stringResourceProvider = stringResourceProvider
         )
 
         Mockito.`when`(localeProvider.locale()).thenReturn(Locale.getDefault())

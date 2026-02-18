@@ -80,6 +80,7 @@ object Relations {
     const val RECOMMENDED_HIDDEN_RELATIONS = "recommendedHiddenRelations"
     const val RECOMMENDED_FILE_RELATIONS = "recommendedFileRelations"
     const val DEFAULT_TEMPLATE_ID = "defaultTemplateId"
+    const val TEMPLATE_NAME_PREFILL_TYPE = "templateNamePrefillType"
 
     const val UNIQUE_KEY = "uniqueKey"
 
@@ -131,6 +132,9 @@ object Relations {
     const val PUSH_NOTIFICATION_FORCE_MENTION_IDS = "spacePushNotificationForceMentionIds"
 
     const val ORDER_ID = "orderId"
+
+    const val CREATED_IN_CONTEXT = "createdInContext"
+    const val CREATED_IN_CONTEXT_REF = "createdInContextRef"
 
     val systemRelationKeys = listOf(
         "id",
@@ -194,6 +198,7 @@ object Relations {
         "sourceFilePath",
         "fileSyncStatus",
         "defaultTemplateId",
+        "templateNamePrefillType",
         "uniqueKey",
         "backlinks",
         "profileOwnerIdentity",

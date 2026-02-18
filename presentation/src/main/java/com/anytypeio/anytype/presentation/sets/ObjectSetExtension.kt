@@ -34,6 +34,7 @@ import com.anytypeio.anytype.core_utils.ext.mapInPlace
 import com.anytypeio.anytype.core_utils.ext.moveAfterIndexInLine
 import com.anytypeio.anytype.core_utils.ext.moveOnTop
 import com.anytypeio.anytype.domain.misc.DateProvider
+import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -48,7 +49,7 @@ import com.anytypeio.anytype.presentation.sets.model.SimpleRelationView
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
 import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_DEFAULT_OBJECT_TYPE
-import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPE_UNSUPPORTED
+import com.anytypeio.anytype.presentation.sets.state.ObjectState.Companion.VIEW_TYPES_UNSUPPORTED
 import com.anytypeio.anytype.presentation.sets.viewer.ViewerView
 import com.anytypeio.anytype.presentation.templates.TemplateView
 import timber.log.Timber
@@ -350,14 +351,20 @@ fun ObjectWrapper.Basic.toTemplateView(
     )
 }
 
-suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSession, storeOfRelations: StoreOfRelations): List<ViewerView> {
+suspend fun ObjectState.DataView.toViewersView(
+    ctx: Id,
+    session: ObjectSetSession,
+    storeOfRelations: StoreOfRelations,
+    stringResourceProvider: StringResourceProvider
+): List<ViewerView> {
     val viewers = dataViewContent.viewers
     return when (this) {
         is ObjectState.DataView.Collection -> mapViewers(
             defaultObjectType = { it.defaultObjectType },
             viewers = viewers,
             session = session,
-            storeOfRelations = storeOfRelations
+            storeOfRelations = storeOfRelations,
+            stringResourceProvider = stringResourceProvider
         )
         is ObjectState.DataView.Set -> {
             val setOfValue = getSetOfValue(ctx)
@@ -366,14 +373,16 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                     defaultObjectType = { it.defaultObjectType },
                     viewers = viewers,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 )
             } else {
                 mapViewers(
                     defaultObjectType = { setOfValue.firstOrNull() },
                     viewers = viewers,
                     session = session,
-                    storeOfRelations = storeOfRelations
+                    storeOfRelations = storeOfRelations,
+                    stringResourceProvider = stringResourceProvider
                 )
             }
         }
@@ -384,7 +393,8 @@ suspend fun ObjectState.DataView.toViewersView(ctx: Id, session: ObjectSetSessio
                 defaultObjectType = { setOfValue.firstOrNull() },
                 viewers = viewers,
                 session = session,
-                storeOfRelations = storeOfRelations
+                storeOfRelations = storeOfRelations,
+                stringResourceProvider = stringResourceProvider
             )
         }
     }
@@ -394,19 +404,20 @@ private suspend fun mapViewers(
     defaultObjectType: (DVViewer) -> Id?,
     viewers: List<DVViewer>,
     session: ObjectSetSession,
-    storeOfRelations: StoreOfRelations
+    storeOfRelations: StoreOfRelations,
+    stringResourceProvider: StringResourceProvider
 ): List<ViewerView> {
     return viewers.mapIndexed { index, viewer ->
         ViewerView(
             id = viewer.id,
             name = viewer.name,
             type = viewer.type,
-            isUnsupported = viewer.type == VIEW_TYPE_UNSUPPORTED,
+            isUnsupported = viewer.type in VIEW_TYPES_UNSUPPORTED,
             isActive = viewer.isActiveViewer(index, session),
             defaultObjectType = defaultObjectType.invoke(viewer),
             relations = viewer.viewerRelations.toView(storeOfRelations) { it.key },
             sorts = viewer.sorts.toView(storeOfRelations) { it.relationKey },
-            filters = viewer.filters.toView(storeOfRelations) { it.relation },
+            filters = viewer.filters.toFilterDisplayNames(storeOfRelations, stringResourceProvider),
             isDefaultObjectTypeEnabled = true
         )
     }

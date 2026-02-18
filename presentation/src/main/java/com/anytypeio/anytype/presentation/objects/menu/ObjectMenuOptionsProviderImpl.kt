@@ -42,18 +42,29 @@ class ObjectMenuOptionsProviderImpl(
 
     private fun observeHasObjectLayoutConflict(): Flow<Boolean> = hasObjectLayoutConflict
 
+    private fun observeTemplateNamePrefillEnabled(ctx: Id): Flow<Boolean> =
+        objectViewDetailsFlow
+            .filter { details ->
+                details.details.containsKey(ctx)
+            }
+            .map { details ->
+                details.getObject(ctx)?.isNamePrefillEnabled ?: false
+            }
+
     override fun provide(ctx: Id, isLocked: Boolean, isReadOnly: Boolean): Flow<Options> {
         return combine(
             observeLayout(ctx),
             observeFeatureFieldsContainsDescription(ctx),
-            observeHasObjectLayoutConflict()
-        ) { layout, featuredContainsDescription, hasObjectLayoutConflict ->
+            observeHasObjectLayoutConflict(),
+            observeTemplateNamePrefillEnabled(ctx)
+        ) { layout, featuredContainsDescription, hasObjectLayoutConflict, isTemplateNamePrefillEnabled ->
             createOptions(
                 layout = layout,
                 isLocked = isLocked,
                 isReadOnly = isReadOnly,
                 featuredContainsDescription = featuredContainsDescription,
-                hasObjectLayoutConflict = hasObjectLayoutConflict
+                hasObjectLayoutConflict = hasObjectLayoutConflict,
+                isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
             )
         }
     }
@@ -63,7 +74,8 @@ class ObjectMenuOptionsProviderImpl(
         isLocked: Boolean,
         isReadOnly: Boolean,
         featuredContainsDescription: Boolean,
-        hasObjectLayoutConflict: Boolean
+        hasObjectLayoutConflict: Boolean,
+        isTemplateNamePrefillEnabled: Boolean
     ): Options {
         val hasIcon = !isLocked && !isReadOnly
         val hasCover = !isLocked && !isReadOnly
@@ -76,7 +88,9 @@ class ObjectMenuOptionsProviderImpl(
                     hasHistory = false,
                     hasRelations = false,
                     hasDescriptionShow = !featuredContainsDescription,
-                    hasObjectLayoutConflict = hasObjectLayoutConflict
+                    hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = false,
+                    isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
                 in SupportedLayouts.systemLayouts -> Options.NONE
@@ -87,7 +101,9 @@ class ObjectMenuOptionsProviderImpl(
                         hasDiagnosticsVisibility = true,
                         hasHistory = false,
                         hasDescriptionShow = !featuredContainsDescription,
-                        hasObjectLayoutConflict = hasObjectLayoutConflict
+                        hasObjectLayoutConflict = hasObjectLayoutConflict,
+                        hasTemplateNamePrefill = false,
+                        isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                     )
                 }
 
@@ -99,7 +115,9 @@ class ObjectMenuOptionsProviderImpl(
                         hasDiagnosticsVisibility = true,
                         hasHistory = !isLocked && !isReadOnly,
                         hasDescriptionShow = !featuredContainsDescription,
-                        hasObjectLayoutConflict = hasObjectLayoutConflict
+                        hasObjectLayoutConflict = hasObjectLayoutConflict,
+                        hasTemplateNamePrefill = false,
+                        isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                     )
                 }
 
@@ -111,7 +129,9 @@ class ObjectMenuOptionsProviderImpl(
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
-                    hasObjectLayoutConflict = hasObjectLayoutConflict
+                    hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = true,
+                    isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
                 ObjectType.Layout.TODO -> Options(
@@ -121,7 +141,9 @@ class ObjectMenuOptionsProviderImpl(
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
-                    hasObjectLayoutConflict = hasObjectLayoutConflict
+                    hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = true,
+                    isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
 
                 ObjectType.Layout.NOTE -> Options(
@@ -131,19 +153,25 @@ class ObjectMenuOptionsProviderImpl(
                     hasDiagnosticsVisibility = true,
                     hasHistory = !isLocked && !isReadOnly,
                     hasDescriptionShow = !featuredContainsDescription,
-                    hasObjectLayoutConflict = hasObjectLayoutConflict
+                    hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = false, // Notes don't have titles
+                    isTemplateNamePrefillEnabled = false
                 )
 
                 else -> Options.NONE.copy(
                     hasDiagnosticsVisibility = true,
-                    hasObjectLayoutConflict = hasObjectLayoutConflict
+                    hasObjectLayoutConflict = hasObjectLayoutConflict,
+                    hasTemplateNamePrefill = false,
+                    isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
                 )
             }
         } else {
             // unknown layout
             Options.NONE.copy(
                 hasDiagnosticsVisibility = true,
-                hasObjectLayoutConflict = hasObjectLayoutConflict
+                hasObjectLayoutConflict = hasObjectLayoutConflict,
+                hasTemplateNamePrefill = false,
+                isTemplateNamePrefillEnabled = isTemplateNamePrefillEnabled
             )
         }
         return options

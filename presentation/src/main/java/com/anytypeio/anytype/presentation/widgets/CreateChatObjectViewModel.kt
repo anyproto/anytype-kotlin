@@ -105,7 +105,9 @@ class CreateChatObjectViewModel(
             UploadFile.Params(
                 path = url,
                 space = Space(vmParams.space.id),
-                type = Block.Content.File.Type.IMAGE
+                type = Block.Content.File.Type.IMAGE,
+                createdInContext = objectId,
+                createdInContextRef = Relations.ICON_IMAGE
             )
         ).fold(
             onSuccess = { file ->

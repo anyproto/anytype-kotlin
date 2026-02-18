@@ -40,10 +40,10 @@ import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextRange
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
-import kotlinx.coroutines.delay
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
@@ -59,6 +59,7 @@ fun SetObjectNameBottomSheet(
     isVisible: Boolean,
     icon: ObjectIcon,
     isIconChangeAllowed: Boolean,
+    initialText: String = "",
     onTextChanged: (String) -> Unit,
     onDismiss: () -> Unit,
     onIconClicked: () -> Unit,
@@ -69,7 +70,9 @@ fun SetObjectNameBottomSheet(
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
     val focusRequester = remember { FocusRequester() }
     val keyboardController = LocalSoftwareKeyboardController.current
-    var textFieldValue by remember { mutableStateOf(TextFieldValue("")) }
+    var textFieldValue by remember(initialText) {
+        mutableStateOf(TextFieldValue(initialText, TextRange(initialText.length)))
+    }
 
     LaunchedEffect(isVisible) {
         if (!isVisible) return@LaunchedEffect

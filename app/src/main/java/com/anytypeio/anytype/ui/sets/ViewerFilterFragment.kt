@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.gone
 import com.anytypeio.anytype.core_utils.ext.invisible
 import com.anytypeio.anytype.core_utils.ext.subscribe
+import com.anytypeio.anytype.core_utils.ext.toast
 import com.anytypeio.anytype.core_utils.ext.visible
 import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetFragment
 import com.anytypeio.anytype.databinding.FragmentFilterBinding
@@ -151,6 +152,9 @@ open class ViewerFilterFragment : BaseBottomSheetFragment<FragmentFilterBinding>
                     viewer = viewer
                 )
                 fr.showChildFragment(fr.javaClass.canonicalName)
+            }
+            is ViewerFilterCommand.ShowAdvancedFilterMessage -> {
+                toast(getString(R.string.advanced_filter_description))
             }
         }
     }

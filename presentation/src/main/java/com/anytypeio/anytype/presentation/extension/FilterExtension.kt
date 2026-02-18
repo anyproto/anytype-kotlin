@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.extension
 
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
+import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -64,21 +65,35 @@ suspend fun List<DVFilter>.toView(
     urlBuilder: UrlBuilder,
     fieldParser: FieldParser,
     storeOfObjectTypes: StoreOfObjectTypes
-): List<FilterView.Expression> = mapNotNull { filter ->
-    val relation = storeOfRelations.getByKey(filter.relation)
-    if (relation != null) {
-        filter.toView(
-            relation = relation,
-            isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
-            urlBuilder = urlBuilder,
-            store = storeOfObjects,
-            fieldParser = fieldParser,
-            storeOfObjectTypes = storeOfObjectTypes
+): List<FilterView> = mapNotNull { filter ->
+    if (filter.isAdvanced()) {
+        FilterView.Advanced(
+            id = filter.id,
+            operator = filter.operator.toView(),
+            nestedFilterCount = filter.nestedFilters.size
         )
     } else {
-        Timber.w("Could not found relation: ${filter.relation} for filter: $filter")
-        null
+        val relation = storeOfRelations.getByKey(filter.relation)
+        if (relation != null) {
+            filter.toView(
+                relation = relation,
+                isInEditMode = screenState == ViewerFilterViewModel.ScreenState.EDIT,
+                urlBuilder = urlBuilder,
+                store = storeOfObjects,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
+            )
+        } else {
+            Timber.w("Could not found relation: ${filter.relation} for filter: $filter")
+            null
+        }
     }
+}
+
+fun DVFilterOperator.toView(): Viewer.FilterOperator = when (this) {
+    DVFilterOperator.AND -> Viewer.FilterOperator.And
+    DVFilterOperator.OR -> Viewer.FilterOperator.Or
+    DVFilterOperator.NO -> Viewer.FilterOperator.No
 }
 
 suspend fun List<DVSort>.toView(

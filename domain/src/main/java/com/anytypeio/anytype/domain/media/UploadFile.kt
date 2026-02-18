@@ -20,7 +20,9 @@ class UploadFile @Inject constructor(
             path = params.path,
             type = params.type,
             space = params.space,
-            preloadFileId = params.preloadFileId
+            preloadFileId = params.preloadFileId,
+            createdInContext = params.createdInContext,
+            createdInContextRef = params.createdInContextRef
         )
     )
 
@@ -28,6 +30,8 @@ class UploadFile @Inject constructor(
         val path: String,
         val space: SpaceId,
         val type: Block.Content.File.Type = Block.Content.File.Type.FILE,
-        val preloadFileId: Id? = null
+        val preloadFileId: Id? = null,
+        val createdInContext: Id? = null,
+        val createdInContextRef: String? = null
     )
 }

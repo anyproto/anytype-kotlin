@@ -12,7 +12,9 @@ interface ObjectMenuOptionsProvider {
         val hasDiagnosticsVisibility: Boolean,
         val hasHistory: Boolean,
         val hasDescriptionShow: Boolean,
-        val hasObjectLayoutConflict: Boolean
+        val hasObjectLayoutConflict: Boolean,
+        val hasTemplateNamePrefill: Boolean = false,
+        val isTemplateNamePrefillEnabled: Boolean = false
     ) {
         companion object {
             val ALL = Options(
@@ -22,7 +24,9 @@ interface ObjectMenuOptionsProvider {
                 hasDiagnosticsVisibility = true,
                 hasHistory = true,
                 hasDescriptionShow = true,
-                hasObjectLayoutConflict = false
+                hasObjectLayoutConflict = false,
+                hasTemplateNamePrefill = false,
+                isTemplateNamePrefillEnabled = false
             )
             val NONE = Options(
                 hasIcon = false,
@@ -31,7 +35,9 @@ interface ObjectMenuOptionsProvider {
                 hasDiagnosticsVisibility = false,
                 hasHistory = false,
                 hasDescriptionShow = false,
-                hasObjectLayoutConflict = false
+                hasObjectLayoutConflict = false,
+                hasTemplateNamePrefill = false,
+                isTemplateNamePrefillEnabled = false
             )
         }
     }

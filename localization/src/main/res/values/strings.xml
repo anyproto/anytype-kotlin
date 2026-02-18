@@ -100,6 +100,7 @@
     <string name="deleted_account_danger_zone_msg">Once you request your vault to be deleted, you have 30 days to cancel this request. After 30 days, your encrypted vault data is permanently removed from the backup node, you won\'t be able to sign into Anytype on new devices.</string>
     <string name="danger_zone">Danger zone</string>
     <string name="snackbar_template_add">New template was added to the type</string>
+    <string name="template_name_prefill_title">Pre-fill name</string>
     <string name="settings_membership">Membership</string>
 
     <string name="default_text_placeholder" translatable="false">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</string>
@@ -404,6 +405,8 @@
 
     <string name="dv_filter_checkbox_checked">checked</string>
     <string name="dv_filter_checkbox_not_checked">not checked</string>
+    <string name="advanced_filter_title">Advanced filter</string>
+    <string name="advanced_filter_description">Editing is available on Desktop</string>
     <string name="paste_or_type_a_url">Paste or type a URL</string>
     <string name="callout">Callout</string>
     <string name="highlight">Highlight</string>

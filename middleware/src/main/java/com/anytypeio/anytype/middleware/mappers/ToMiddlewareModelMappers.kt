@@ -4,25 +4,25 @@ import anytype.Rpc
 import anytype.model.InternalFlag
 import anytype.model.Range
 import anytype.model.RelationFormat
+import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.Block
 import com.anytypeio.anytype.core_models.BlockSplitMode
 import com.anytypeio.anytype.core_models.Command
 import com.anytypeio.anytype.core_models.DVSortEmptyType
 import com.anytypeio.anytype.core_models.DeviceNetworkType
-import com.anytypeio.anytype.core_models.AppState
 import com.anytypeio.anytype.core_models.InternalFlags
 import com.anytypeio.anytype.core_models.NetworkMode
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.Relation
+import com.anytypeio.anytype.core_models.SpaceCreationUseCase
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
 import com.anytypeio.anytype.core_models.multiplayer.InviteType
 import com.anytypeio.anytype.core_models.multiplayer.SpaceMemberPermissions
-import com.anytypeio.anytype.core_models.SpaceCreationUseCase
-import com.anytypeio.anytype.core_models.chats.NotificationState
 
 
 // ---------------------- BLOCKS ------------------------
@@ -401,7 +401,8 @@ fun Block.Content.DataView.Filter.toMiddlewareModel(): MDVFilter =
         condition = condition.toMiddlewareModel(),
         quickOption = quickOption.toMiddlewareModel(),
         value_ = value.validate(),
-        format = relationFormat?.toMiddlewareModel() ?: RelationFormat.longtext
+        format = relationFormat?.toMiddlewareModel() ?: RelationFormat.longtext,
+        nestedFilters = nestedFilters.map { it.toMiddlewareModel() }
     )
 
 fun Any?.validate() : Any? {

@@ -1,0 +1,23 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Circle outline -->
+    <path
+        android:pathData="M12,12m-10.25,0a10.25,10.25 0,1 1,20.5 0a10.25,10.25 0,1 1,-20.5 0"
+        android:strokeWidth="1.5"
+        android:fillColor="@color/transparent_black"
+        android:strokeColor="@color/palette_system_pink" />
+    <!-- Letter A -->
+    <path
+        android:pathData="M12,6L8,16h1.5l0.8,-2h3.4l0.8,2h1.5L12,6zM10.8,12.5L12,9.2l1.2,3.3h-2.4z"
+        android:fillColor="@color/palette_system_pink" />
+    <!-- Underline -->
+    <path
+        android:pathData="M8,17.5h8"
+        android:strokeWidth="1.5"
+        android:fillColor="@color/transparent_black"
+        android:strokeColor="@color/palette_system_pink"
+        android:strokeLineCap="round" />
+</vector>

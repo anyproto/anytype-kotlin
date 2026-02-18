@@ -195,7 +195,8 @@ class ObjectShortcutWidgetConfigViewModel(
                             ObjectType.Layout.PDF.code.toDouble(),
                             ObjectType.Layout.AUDIO.code.toDouble(),
                             ObjectType.Layout.VIDEO.code.toDouble(),
-                            ObjectType.Layout.CHAT_DERIVED.code.toDouble()
+                            ObjectType.Layout.CHAT_DERIVED.code.toDouble(),
+                            ObjectType.Layout.OBJECT_TYPE.code.toDouble()
                         )
                     ))
                 }

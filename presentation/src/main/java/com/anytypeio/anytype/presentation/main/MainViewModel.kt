@@ -680,39 +680,41 @@ class MainViewModel(
 
     /**
      * Handles object open triggered by OS home screen widget.
-     * Switches to the target space if needed, then navigates to the object.
+     * Fetches the object to determine proper navigation, switches space if needed, then navigates.
      */
     private suspend fun proceedWithOsWidgetObjectOpen(objectId: Id, targetSpace: Id) {
-        val currentSpace = spaceManager.get()
+        Timber.d("OS widget object open: obj=$objectId, space=$targetSpace")
         
-        suspend fun emitNavigationCommand(config: Config) {
-            val spaceView = spaceViews.get(SpaceId(targetSpace))
-            val spaceUxType = spaceView?.spaceUxType
-            val chatId = config.spaceChatId
-            Timber.d("OS widget object navigation: space=$targetSpace, obj=$objectId, uxType=$spaceUxType")
-            commands.emit(
-                Command.Deeplink.DeepLinkToObjectFromWidget(
-                    space = targetSpace,
-                    obj = objectId,
-                    spaceUxType = spaceUxType,
-                    chatId = chatId
+        // Use the delegate to fetch the object and switch space if needed
+        val result = deepLinkToObjectDelegate.onDeepLinkToObject(
+            obj = objectId,
+            space = SpaceId(targetSpace),
+            switchSpaceIfObjectFound = true
+        )
+        
+        when (result) {
+            is DeepLinkToObjectDelegate.Result.Success -> {
+                val navigation = result.obj.navigation()
+                Timber.d("OS widget object navigation determined: $navigation")
+                commands.emit(
+                    Command.Deeplink.DeepLinkToObjectFromWidget(
+                        space = targetSpace,
+                        obj = objectId,
+                        navigation = navigation
+                    )
                 )
-            )
-        }
-        
-        if (currentSpace != targetSpace) {
-            spaceManager.set(targetSpace)
-                .onSuccess { config ->
-                    Timber.d("Successfully switched to space from OS widget for object: $targetSpace")
-                    emitNavigationCommand(config)
-                }
-                .onFailure { e ->
-                    Timber.e(e, "Failed to switch space from OS widget for object")
-                }
-        } else {
-            Timber.d("Already in target space, navigating to object: $objectId")
-            spaceManager.getConfig()?.let { config ->
-                emitNavigationCommand(config)
+            }
+            is DeepLinkToObjectDelegate.Result.Error.ObjectNotFound -> {
+                Timber.w("OS widget: Object not found: $objectId")
+                toasts.emit("Object not found")
+            }
+            is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded -> {
+                Timber.w("OS widget: Permission needed to access object: $objectId")
+                toasts.emit("Permission needed")
+            }
+            is DeepLinkToObjectDelegate.Result.Error.CouldNotOpenSpace -> {
+                Timber.w("OS widget: Could not open space: $targetSpace")
+                toasts.emit("Could not open space")
             }
         }
     }
@@ -952,8 +954,7 @@ class MainViewModel(
             data class DeepLinkToObjectFromWidget(
                 val space: Id,
                 val obj: Id,
-                val spaceUxType: SpaceUxType? = null,
-                val chatId: Id? = null
+                val navigation: OpenObjectNavigation
             ) : Deeplink()
 
             /**

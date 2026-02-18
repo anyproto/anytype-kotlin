@@ -356,14 +356,8 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                             deeplink = null
                                         )
                                     )
-                                    // Then navigate to the object
-                                    controller.navigate(
-                                        R.id.objectNavigation,
-                                        args = EditorFragment.args(
-                                            ctx = command.obj,
-                                            space = command.space
-                                        )
-                                    )
+                                    // Then navigate to the object based on its layout
+                                    proceedWithOpenObjectNavigation(command.navigation)
                                 }.onFailure {
                                     Timber.w(it, "Error while navigation for OS widget object deeplink")
                                 }

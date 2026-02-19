@@ -126,7 +126,7 @@ fun BoxScope.SelectDestinationObjectScreen(
             onFocused = {}
         )
 
-        Spacer(modifier = Modifier.height(22.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
         // Object list
         LazyColumn(

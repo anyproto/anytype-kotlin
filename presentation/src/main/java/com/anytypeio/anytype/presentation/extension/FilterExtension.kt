@@ -4,6 +4,7 @@ import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.domain.misc.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -66,8 +67,8 @@ fun DVFilter.isSupportedForSubscription(): Boolean {
         null -> false
         is String -> v.isNotEmpty()
         is List<*> -> v.isNotEmpty()
-        is Double -> !(quickOption == DVFilterQuickOption.EXACT_DATE && v == 0.0)
-        is Long -> !(quickOption == DVFilterQuickOption.EXACT_DATE && v == 0L)
+        is Double -> !(relationFormat == RelationFormat.DATE && quickOption == DVFilterQuickOption.EXACT_DATE && v == 0.0)
+        is Long -> !(relationFormat == RelationFormat.DATE && quickOption == DVFilterQuickOption.EXACT_DATE && v == 0L)
         else -> true
     }
 }

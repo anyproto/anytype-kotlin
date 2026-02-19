@@ -3,6 +3,7 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.StubFilter
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -84,9 +85,10 @@ class FilterSubscriptionSupportTest {
     // region isSupportedForSubscription — Date (Double) values
 
     @Test
-    fun `zero Double with EXACT_DATE is unsupported`() {
+    fun `zero Double with DATE format and EXACT_DATE is unsupported`() {
         val filter = StubFilter(
             condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.EXACT_DATE,
             value = 0.0
         )
@@ -94,9 +96,10 @@ class FilterSubscriptionSupportTest {
     }
 
     @Test
-    fun `non-zero Double with EXACT_DATE is supported`() {
+    fun `non-zero Double with DATE format and EXACT_DATE is supported`() {
         val filter = StubFilter(
             condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.EXACT_DATE,
             value = 1700000000.0
         )
@@ -104,9 +107,10 @@ class FilterSubscriptionSupportTest {
     }
 
     @Test
-    fun `zero Double with non-EXACT_DATE quick option is supported`() {
+    fun `zero Double with DATE format and non-EXACT_DATE quick option is supported`() {
         val filter = StubFilter(
             condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.TODAY,
             value = 0.0
         )
@@ -118,9 +122,10 @@ class FilterSubscriptionSupportTest {
     // region isSupportedForSubscription — Date (Long) values
 
     @Test
-    fun `zero Long with EXACT_DATE is unsupported`() {
+    fun `zero Long with DATE format and EXACT_DATE is unsupported`() {
         val filter = StubFilter(
             condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.EXACT_DATE,
             value = 0L
         )
@@ -128,11 +133,36 @@ class FilterSubscriptionSupportTest {
     }
 
     @Test
-    fun `non-zero Long with EXACT_DATE is supported`() {
+    fun `non-zero Long with DATE format and EXACT_DATE is supported`() {
         val filter = StubFilter(
             condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.EXACT_DATE,
             value = 1700000000L
+        )
+        assertTrue(filter.isSupportedForSubscription())
+    }
+
+    // endregion
+
+    // region isSupportedForSubscription — Number values (non-DATE format)
+
+    @Test
+    fun `zero Double with NUMBER format is supported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.NUMBER,
+            value = 0.0
+        )
+        assertTrue(filter.isSupportedForSubscription())
+    }
+
+    @Test
+    fun `zero Long with NUMBER format is supported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.NUMBER,
+            value = 0L
         )
         assertTrue(filter.isSupportedForSubscription())
     }

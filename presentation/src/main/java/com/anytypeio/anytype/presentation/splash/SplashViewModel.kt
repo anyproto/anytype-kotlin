@@ -17,6 +17,7 @@ import com.anytypeio.anytype.core_models.exceptions.NeedToUpdateApplicationExcep
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.primitives.TypeKey
+import com.anytypeio.anytype.core_models.restrictions.SpaceStatus
 import com.anytypeio.anytype.domain.auth.interactor.CheckAuthorizationStatus
 import com.anytypeio.anytype.domain.auth.interactor.GetLastOpenedObject
 import com.anytypeio.anytype.domain.auth.interactor.LaunchAccount
@@ -77,6 +78,10 @@ class SplashViewModel(
     val commands = MutableSharedFlow<Command>(replay = 0)
 
     private var migrationRetryCount: Int = 0
+
+    // Investigation timing - track elapsed time from ViewModel init
+    private val splashStartTime = System.currentTimeMillis()
+    private fun elapsed(): Long = System.currentTimeMillis() - splashStartTime
 
     init {
         Timber.i("SplashViewModel, init")
@@ -255,7 +260,8 @@ class SplashViewModel(
                         }
                         is CreateObjectByTypeAndTemplate.Result.Success -> {
                             val target = result.objectId
-                            val view = awaitActiveSpaceView(space)
+                            val spaceViewResult = awaitActiveSpaceView(space)
+                            val view = spaceViewResult.view
                             if (view != null) {
                                 val chatId = resolveChatID(
                                     space = space,
@@ -270,6 +276,9 @@ class SplashViewModel(
                                     )
                                 )
                             } else {
+                                if (spaceViewResult.lastLocalStatus == SpaceStatus.LOADING) {
+                                    commands.emit(Command.Toast("Space local status is still LOADING, proceeding to Vault"))
+                                }
                                 proceedWithVaultNavigation()
                             }
                         }
@@ -326,20 +335,49 @@ class SplashViewModel(
     }
 
     //region NAVIGATION
-    private suspend fun awaitActiveSpaceView(space: SpaceId) = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
-        spaceViews
-            .observe(space)
-            .onEach { view ->
-                Timber.i(
-                    "Observing space view for ${space.id}, isActive: ${view.isActive}, spaceUxType: ${view.spaceUxType}, chat: ${view.chatId}"
-                )
-            }
-            .filter { view -> view.isActive }
-            .take(1)
-            .catch {
-                Timber.w(it, "Error while observing space view for ${space.id}")
-            }
-            .firstOrNull()
+
+    private data class SpaceViewResult(
+        val view: ObjectWrapper.SpaceView?,
+        val lastLocalStatus: SpaceStatus?,
+        val lastAccountStatus: SpaceStatus?
+    )
+
+    private suspend fun awaitActiveSpaceView(space: SpaceId): SpaceViewResult {
+        var lastLocalStatus: SpaceStatus? = null
+        var lastAccountStatus: SpaceStatus? = null
+
+        val view = withTimeoutOrNull(SPACE_LOADING_TIMEOUT) {
+            val startTime = System.currentTimeMillis()
+            spaceViews
+                .observe(space)
+                .onEach { view ->
+                    lastLocalStatus = view.spaceLocalStatus
+                    lastAccountStatus = view.spaceAccountStatus
+                    val elapsed = System.currentTimeMillis() - startTime
+                    Timber.i(
+                        "SPACE_STATUS_INVESTIGATION: elapsed=${elapsed}ms, " +
+                        "space=${space.id}, " +
+                        "spaceLocalStatus=${view.spaceLocalStatus}, " +
+                        "spaceAccountStatus=${view.spaceAccountStatus}, " +
+                        "isAccountActive=${view.isAccountActive}, " +
+                        "isActive=${view.isActive}, " +
+                        "spaceUxType=${view.spaceUxType}, " +
+                        "chat=${view.chatId}"
+                    )
+                }
+                .filter { view -> view.isAccountActive }
+                .take(1)
+                .catch {
+                    Timber.w(it, "Error while observing space view for ${space.id}")
+                }
+                .firstOrNull()
+        }
+
+        return SpaceViewResult(
+            view = view,
+            lastLocalStatus = lastLocalStatus,
+            lastAccountStatus = lastAccountStatus
+        )
     }
 
     private suspend fun emitNavigationForObject(
@@ -388,23 +426,25 @@ class SplashViewModel(
     }
 
     private fun proceedWithNavigation() {
-        Timber.i("proceedWithNavigation, get getLastOpenedObject")
+        Timber.i("SPLASH_FLOW: [${elapsed()}ms] proceedWithNavigation called")
         viewModelScope.launch {
             val space = getLastOpenedSpace.async(Unit).getOrNull()
+            Timber.i("SPLASH_FLOW: [${elapsed()}ms] getLastOpenedSpace result: ${space?.id ?: "NULL"}")
             if (space == null) {
-                Timber.w("No space found for last opened object navigation")
+                Timber.w("SPLASH_FLOW: [${elapsed()}ms] No saved space, going to vault navigation")
                 proceedWithVaultNavigation()
                 return@launch
             }
             val params = GetLastOpenedObject.Params(space = space)
+            Timber.i("SPLASH_FLOW: [${elapsed()}ms] Getting last opened object for space: ${space.id}")
             getLastOpenedObject(params = params).process(
                 success = { response ->
-                    Timber.i("Last opened object response: ${response.javaClass.name}")
+                    Timber.i("SPLASH_FLOW: [${elapsed()}ms] Last opened object response: ${response.javaClass.simpleName}")
                     when (response) {
                         is GetLastOpenedObject.Response.Success -> {
                             val obj = response.obj
                             if (!SupportedLayouts.lastOpenObjectLayouts.contains(obj.layout)) {
-                                Timber.i("Last opened object layout not supported: ${obj.layout}")
+                                Timber.i("SPLASH_FLOW: [${elapsed()}ms] Layout not supported: ${obj.layout}")
                                 proceedWithVaultNavigation()
                                 return@process
                             }
@@ -412,7 +452,10 @@ class SplashViewModel(
                             val id = obj.id
                             val space = requireNotNull(obj.spaceId)
 
-                            val view = awaitActiveSpaceView(SpaceId(space))
+                            Timber.i("SPLASH_FLOW: [${elapsed()}ms] Awaiting active space view for: $space")
+                            val result = awaitActiveSpaceView(SpaceId(space))
+                            val view = result.view
+                            Timber.i("SPLASH_FLOW: [${elapsed()}ms] awaitActiveSpaceView returned: ${view != null}")
                             if (view != null) {
                                 val chat = when(view.spaceUxType) {
                                     SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
@@ -425,6 +468,7 @@ class SplashViewModel(
                                         null
                                     }
                                 }
+                                Timber.i("SPLASH_FLOW: [${elapsed()}ms] Navigating to object: $id, layout: ${obj.layout}")
                                 emitNavigationForObject(
                                     id = id,
                                     space = space,
@@ -432,15 +476,21 @@ class SplashViewModel(
                                     chatId = chat
                                 )
                             } else {
-                                Timber.w("Space view not ready or timeout while restoring last opened object. Navigating to vault.")
+                                Timber.w("SPLASH_FLOW: [${elapsed()}ms] Space view timeout, going to vault")
+                                if (result.lastLocalStatus == SpaceStatus.LOADING) {
+                                    commands.emit(Command.Toast("Space local status is still LOADING, proceeding to Vault"))
+                                }
                                 proceedWithVaultNavigation()
                             }
                         }
-                        else -> proceedWithVaultNavigation()
+                        else -> {
+                            Timber.i("SPLASH_FLOW: [${elapsed()}ms] No last opened object, going to vault")
+                            proceedWithVaultNavigation()
+                        }
                     }
                 },
                 failure = {
-                    Timber.e(it, "Error while getting last opened object")
+                    Timber.e(it, "SPLASH_FLOW: [${elapsed()}ms] Error getting last opened object")
                     proceedWithVaultNavigation()
                 }
             )
@@ -448,24 +498,35 @@ class SplashViewModel(
     }
 
     private suspend fun proceedWithVaultNavigation(deeplink: String? = null) {
-        Timber.d("proceedWithVaultNavigation deep link: $deeplink")
+        Timber.d("SPLASH_FLOW: [${elapsed()}ms] proceedWithVaultNavigation, deeplink=$deeplink")
 
         // For one-to-one chat deeplinks, always navigate to Vault
         // where the proper handling logic exists in VaultViewModel
         if (deeplink != null) {
             val action = deepLinkResolver.resolve(deeplink)
             if (action is DeepLinkResolver.Action.InitiateOneToOneChat) {
-                Timber.d("One-to-one chat deeplink detected, navigating to Vault")
+                Timber.d("SPLASH_FLOW: [${elapsed()}ms] One-to-one chat deeplink, navigating to Vault")
                 commands.emit(Command.NavigateToVault(deeplink))
                 return
             }
         }
 
         val space = getLastOpenedSpace.async(Unit).getOrNull()
+        Timber.i("SPLASH_FLOW: [${elapsed()}ms] getLastOpenedSpace in vault nav: ${space?.id ?: "NULL"}")
+
         if (space != null) {
-            val view = awaitActiveSpaceView(SpaceId(space.id))
+            Timber.i("SPLASH_FLOW: [${elapsed()}ms] Space found (${space.id}), calling awaitActiveSpaceView")
+            val result = awaitActiveSpaceView(SpaceId(space.id))
+            val view = result.view
+            Timber.i(
+                "SPLASH_FLOW: [${elapsed()}ms] awaitActiveSpaceView returned: ${
+                    if (view != null) "SpaceView(localStatus=${view.spaceLocalStatus}, accountStatus=${view.spaceAccountStatus})"
+                    else "NULL/TIMEOUT"
+                }"
+            )
+
             if (view != null) {
-                Timber.i("Space view loaded: $view")
+                Timber.i("SPLASH_FLOW: [${elapsed()}ms] Space view loaded, uxType=${view.spaceUxType}")
                 when(view.spaceUxType) {
                     SpaceUxType.CHAT, SpaceUxType.ONE_TO_ONE -> {
                         val chat = resolveChatID(
@@ -473,6 +534,7 @@ class SplashViewModel(
                             spaceView = view
                         )
                         if (chat != null) {
+                            Timber.i("SPLASH_FLOW: [${elapsed()}ms] Navigating to Chat: $chat")
                             commands.emit(
                                 Command.NavigateToChat(
                                     space = space.id,
@@ -481,7 +543,7 @@ class SplashViewModel(
                                 )
                             )
                         } else {
-                            Timber.w("Could not resolve chat ID for chat spaces")
+                            Timber.w("SPLASH_FLOW: [${elapsed()}ms] No chat ID, navigating to Widgets")
                             commands.emit(
                                 Command.NavigateToWidgets(
                                     space = space.id,
@@ -491,6 +553,7 @@ class SplashViewModel(
                         }
                     }
                     else -> {
+                        Timber.i("SPLASH_FLOW: [${elapsed()}ms] Navigating to Widgets for space: ${space.id}")
                         commands.emit(
                             Command.NavigateToWidgets(
                                 space = space.id,
@@ -500,11 +563,14 @@ class SplashViewModel(
                     }
                 }
             } else {
-                Timber.w("Timeout while waiting for active space view. Navigating to vault.")
+                Timber.w("SPLASH_FLOW: [${elapsed()}ms] Timeout waiting for space view, navigating to Vault")
+                if (result.lastLocalStatus == SpaceStatus.LOADING) {
+                    commands.emit(Command.Toast("Space local status is still LOADING, proceeding to Vault"))
+                }
                 commands.emit(Command.NavigateToVault(deeplink))
             }
         } else {
-            Timber.w("No space found or space manager state is NoSpace. Navigating to vault.")
+            Timber.w("SPLASH_FLOW: [${elapsed()}ms] No space found, navigating directly to Vault")
             commands.emit(Command.NavigateToVault(deeplink))
         }
     }

@@ -86,6 +86,6 @@ sealed class ObjectState {
 
     companion object {
         const val VIEW_DEFAULT_OBJECT_TYPE = ObjectTypeIds.PAGE
-        val VIEW_TYPES_UNSUPPORTED = setOf(DVViewerType.BOARD, DVViewerType.GRID)
+        val VIEW_TYPES_UNSUPPORTED = setOf(DVViewerType.BOARD)
     }
 }

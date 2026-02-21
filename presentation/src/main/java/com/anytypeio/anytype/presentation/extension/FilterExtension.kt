@@ -3,6 +3,8 @@ package com.anytypeio.anytype.presentation.extension
 import com.anytypeio.anytype.core_models.DVFilter
 import com.anytypeio.anytype.core_models.DVFilterCondition
 import com.anytypeio.anytype.core_models.DVFilterOperator
+import com.anytypeio.anytype.core_models.DVFilterQuickOption
+import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.DVSort
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.domain.objects.ObjectStore
@@ -48,8 +50,41 @@ fun FilterValue?.getTextValue(): String? = when (this) {
 fun DVFilterCondition.isValueRequired(): Boolean = when (this) {
     DVFilterCondition.EMPTY,
     DVFilterCondition.NOT_EMPTY,
-    DVFilterCondition.NONE -> false
+    DVFilterCondition.NONE,
+    DVFilterCondition.EXISTS -> false
     else -> true
+}
+
+/**
+ * Determines whether this filter has a meaningful value and should be included
+ * in middleware subscriptions. Filters without valid values (e.g., disabled filters
+ * created on Desktop with no value set) are excluded to prevent the middleware
+ * from filtering out all objects.
+ */
+fun DVFilter.isSupportedForSubscription(): Boolean {
+    if (!condition.isValueRequired()) return true
+    return when (val v = value) {
+        null -> false
+        is String -> v.isNotEmpty()
+        is List<*> -> v.isNotEmpty()
+        is Double -> !(relationFormat == RelationFormat.DATE && quickOption == DVFilterQuickOption.EXACT_DATE && v == 0.0)
+        is Long -> !(relationFormat == RelationFormat.DATE && quickOption == DVFilterQuickOption.EXACT_DATE && v == 0L)
+        else -> true
+    }
+}
+
+/**
+ * Removes filters that have no meaningful value from the list before sending
+ * to middleware subscriptions. Advanced (nested) filters are cleaned recursively;
+ * if all nested children are removed, the parent is removed too.
+ */
+fun List<DVFilter>.removeUnsupportedFilters(): List<DVFilter> = mapNotNull { filter ->
+    if (filter.isAdvanced()) {
+        val cleaned = filter.nestedFilters.removeUnsupportedFilters()
+        if (cleaned.isEmpty()) null else filter.copy(nestedFilters = cleaned)
+    } else {
+        if (filter.isSupportedForSubscription()) filter else null
+    }
 }
 
 fun List<CreateFilterView>.checkboxFilterValue(): Boolean? {

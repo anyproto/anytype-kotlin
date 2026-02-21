@@ -29,6 +29,7 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.relations.cover
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import com.anytypeio.anytype.presentation.sets.subscription.updateWithRelationFormat
+import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Gallery
 import com.anytypeio.anytype.presentation.widgets.WidgetView.Name.Default
@@ -390,7 +391,7 @@ class DataViewListWidgetContainer(
                     // DataView details, so we must always fetch the latest Property Format from Store.
                     // This is critical for DATE and OBJECT relation types to get correct subscription results.
                     filters = buildList {
-                        addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
+                        addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations)?.removeUnsupportedFilters().orEmpty())
                         addAll(ObjectSearchConstants.defaultDataViewFilters())
                     },
                     limit = subscriptionLimit,
@@ -417,7 +418,7 @@ class DataViewListWidgetContainer(
                         // DataView details, so we must always fetch the latest Property Format from Store.
                         // This is critical for DATE and OBJECT relation types to get correct subscription results.
                         filters = buildList {
-                            addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations).orEmpty())
+                            addAll(targetView?.filters?.updateFormatForSubscription(storeOfRelations)?.removeUnsupportedFilters().orEmpty())
                             addAll(ObjectSearchConstants.defaultDataViewFilters())
                         },
                         limit = subscriptionLimit,

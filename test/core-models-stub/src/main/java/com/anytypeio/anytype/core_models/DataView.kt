@@ -88,7 +88,8 @@ fun StubFilter(
     operator: DVFilterOperator = DVFilterOperator.NO,
     condition: DVFilterCondition = DVFilterCondition.EQUAL,
     quickOption: DVFilterQuickOption = DVFilterQuickOption.EXACT_DATE,
-    value: Any? = null
+    value: Any? = null,
+    nestedFilters: List<DVFilter> = emptyList()
 ): DVFilter = DVFilter(
     id = id,
     relation = relationKey,
@@ -96,7 +97,8 @@ fun StubFilter(
     operator = operator,
     condition = condition,
     quickOption = quickOption,
-    value = value
+    value = value,
+    nestedFilters = nestedFilters
 )
 
 fun StubSpaceView(

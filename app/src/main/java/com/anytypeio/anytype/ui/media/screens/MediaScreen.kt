@@ -740,15 +740,19 @@ private fun AudioPlayer(
                     DotScrubberSlider(
                         value = currentPosition.toFloat(),
                         onValueChange = {
-                            userSeeking = true
                             currentPosition = it.toInt()
                             videoViewRef.value?.seekTo(currentPosition)
-                            userSeeking = false
                         },
                         valueRange = 0f..videoDuration.coerceAtLeast(1).toFloat(),
                         modifier = Modifier
                             .weight(1f)
-                            .padding(horizontal = 8.dp)
+                            .padding(horizontal = 8.dp),
+                        onDragStart = {
+                            userSeeking = true
+                        },
+                        onDragEnd = {
+                            userSeeking = false
+                        }
                     )
                     Text(
                         text = formatMillis(videoDuration),

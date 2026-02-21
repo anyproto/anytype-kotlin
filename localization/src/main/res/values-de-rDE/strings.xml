@@ -1892,7 +1892,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="space_settings_save_button">Speichern</string>
     <string name="space_settings_join_space_by_qr_title">Beitreten</string>
     <string name="profile_qr_code_title">Connect with me</string>
-    <string name="profile_qr_code_title_with_name">Connect with %1$s</string>
+    <string name="profile_qr_code_title_with_name">Mit %1$s verbinden</string>
     <string name="profile_qr_code_button">Mein QR-Code</string>
     <string name="profile_qr_share_button">Teilen</string>
     <string name="profile_qr_copy_button">Link kopieren</string>
@@ -2015,7 +2015,7 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="notification_settings_state_disabled">Deaktiviert</string>
     <string name="notification_settings_state_enabled">Aktiviert</string>
     <string name="content_desc_muted">Stumm geschaltet</string>
-    <string name="content_desc_pending_sync">Pending sync</string>
+    <string name="content_desc_pending_sync">Ausstehende Synchronisation </string>
     <string name="failed_to_load_image">Bild konnte nicht geladen werden</string>
     <!-- Vault Screen - Join via QR -->
     <string name="vault_join_via_qr">Über QR-Code beitreten</string>
@@ -2034,12 +2034,12 @@ Bitte mache hier genaue Angaben zu deinen Bedarf.</string>
     <string name="attachment_menu_photos">Fotos</string>
     <string name="attachment_menu_camera">Kamera</string>
     <string name="attachment_menu_files">Dateien</string>
-    <string name="attachment_menu_attach_object">Attach object</string>
+    <string name="attachment_menu_attach_object">Objekt anhängen</string>
     <string name="attachment_menu_see_all">Alles ansehen</string>
     <string name="attachment_menu_search_placeholder">Suchen</string>
-    <string name="create_object_empty_state">No object types available</string>
-    <string name="create_object_no_results">No types found</string>
-    <string name="create_object_search_types">Search object types</string>
+    <string name="create_object_empty_state">Keine Objekttypen verfügbar</string>
+    <string name="create_object_no_results">Keine Typen gefunden</string>
+    <string name="create_object_search_types">Objekttypen suchen</string>
     <string name="create_object_error">Failed to load object types</string>
     <string name="create_object_retry">Erneut versuchen</string>
     <!-- Share Space Errors -->

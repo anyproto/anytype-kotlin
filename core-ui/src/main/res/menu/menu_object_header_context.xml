@@ -1,6 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
+        android:id="@+id/open_in_browser"
+        android:title="@string/open_in_browser"
+        android:visible="false" />
+    <item
+        android:id="@+id/open_file"
+        android:title="@string/open_file"
+        android:visible="false" />
+    <item
         android:id="@+id/open_as_object"
         android:title="@string/all_content_item_menu_open" />
     <item

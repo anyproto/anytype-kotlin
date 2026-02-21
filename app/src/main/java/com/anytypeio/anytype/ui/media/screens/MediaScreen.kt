@@ -864,28 +864,31 @@ fun DotScrubberSlider(
                 awaitEachGesture {
                     val down = awaitFirstDown(requireUnconsumed = false)
                     down.consume()
-                    // Seek immediately on touch down
-                    val ratio = (down.position.x / size.width).coerceIn(0f, 1f)
-                    val newValue =
-                        (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
-                            .coerceIn(valueRange)
                     onDragStart()
-                    onValueChange(newValue)
-                    // Track drag until pointer up
-                    do {
-                        val event = awaitPointerEvent()
-                        val change = event.changes.firstOrNull() ?: break
-                        if (change.pressed) {
-                            change.consume()
-                            val x = change.position.x.coerceIn(0f, size.width.toFloat())
-                            val dragRatio = x / size.width
-                            val dragValue =
-                                (valueRange.start + dragRatio * (valueRange.endInclusive - valueRange.start))
-                                    .coerceIn(valueRange)
-                            onValueChange(dragValue)
-                        }
-                    } while (event.changes.any { it.pressed })
-                    onDragEnd()
+                    try {
+                        // Seek immediately on touch down
+                        val ratio = (down.position.x / size.width).coerceIn(0f, 1f)
+                        val newValue =
+                            (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
+                                .coerceIn(valueRange)
+                        onValueChange(newValue)
+                        // Track drag until pointer up
+                        do {
+                            val event = awaitPointerEvent()
+                            val change = event.changes.firstOrNull() ?: break
+                            if (change.pressed) {
+                                change.consume()
+                                val x = change.position.x.coerceIn(0f, size.width.toFloat())
+                                val dragRatio = x / size.width
+                                val dragValue =
+                                    (valueRange.start + dragRatio * (valueRange.endInclusive - valueRange.start))
+                                        .coerceIn(valueRange)
+                                onValueChange(dragValue)
+                            }
+                        } while (event.changes.any { it.pressed })
+                    } finally {
+                        onDragEnd()
+                    }
                 }
             }
     ) {

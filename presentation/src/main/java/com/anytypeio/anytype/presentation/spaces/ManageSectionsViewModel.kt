@@ -58,15 +58,14 @@ class ManageSectionsViewModel(
                     _uiState.value = ManageSectionsState.Error
                 }
                 .collect { widgetSections ->
-                    val items = widgetSections.sections
-                        .filter { config -> config.isUserConfigurable }
+                    val items = widgetSections.withDefaults().sections
                         .map { config ->
                             SectionItem(
                                 type = config.id,
                                 isVisible = config.isVisible,
                                 order = config.order,
-                                canReorder = true,
-                                canToggle = true
+                                canReorder = false,
+                                canToggle = config.isUserConfigurable
                             )
                         }
                         .sortedBy { it.order }

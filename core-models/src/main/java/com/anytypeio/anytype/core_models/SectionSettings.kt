@@ -16,11 +16,10 @@ enum class WidgetSectionType {
 
     /**
      * Determines if this section type can be configured by the user
-     * UNREAD: Always visible, can't be changed
-     * RECENTLY_EDITED: Not implemented yet, hidden from settings
+     * UNREAD: Always visible, can't be toggled
      */
     fun isUserConfigurable(): Boolean {
-        return this != UNREAD && this != RECENTLY_EDITED
+        return this != UNREAD
     }
 }
 
@@ -67,6 +66,25 @@ data class WidgetSections(
                 }
             )
         }
+    }
+
+    /**
+     * Ensures all known [WidgetSectionType] entries are present.
+     * Missing types are inserted at their default position from [WidgetSectionType.DEFAULT_ORDER].
+     */
+    fun withDefaults(): WidgetSections {
+        val existingTypes = sections.map { it.id }.toSet()
+        val missing = WidgetSectionType.DEFAULT_ORDER
+            .filter { it !in existingTypes }
+        if (missing.isEmpty()) return this
+        val defaultIndex = WidgetSectionType.DEFAULT_ORDER
+            .withIndex()
+            .associate { (index, type) -> type to index }
+        val merged = (sections + missing.map { type ->
+            WidgetSectionConfig.default(type, defaultIndex.getValue(type))
+        }).sortedBy { defaultIndex[it.id] ?: it.order }
+            .mapIndexed { index, config -> config.copy(order = index) }
+        return copy(sections = merged)
     }
 
     /**

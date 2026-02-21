@@ -32,7 +32,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.presentation.home.InteractionMode
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -95,7 +95,7 @@ fun SpaceChatWidgetCard(
             modifier = Modifier
                 .weight(1f)
                 .padding(start = 8.dp, end = 16.dp),
-            style = HeadlineSubheading,
+            style = BodySemiBold,
             color = colorResource(id = R.color.text_primary),
         )
 

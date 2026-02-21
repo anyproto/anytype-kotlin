@@ -23,7 +23,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.ui.CustomIconColor
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
@@ -68,7 +68,7 @@ fun LinkWidgetCard(
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
-                style = HeadlineSubheading,
+                style = BodySemiBold,
                 color = colorResource(id = R.color.text_primary),
             )
 

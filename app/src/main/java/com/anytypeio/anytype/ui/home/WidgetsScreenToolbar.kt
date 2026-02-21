@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -59,7 +60,8 @@ fun HomeScreenToolbar(
             Image(
                 painter = painterResource(R.drawable.ic_default_top_back),
                 contentDescription = "Back button",
-                modifier = Modifier
+                modifier = Modifier,
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
             )
         }
 
@@ -123,7 +125,7 @@ fun HomeScreenToolbar(
             Text(
                 text = text,
                 style = Relations2,
-                color = colorResource(R.color.control_transparent_secondary),
+                color = colorResource(R.color.text_transparent_secondary),
                 modifier = Modifier
                     .align(Alignment.BottomStart)
                     .padding(
@@ -149,7 +151,8 @@ fun HomeScreenToolbar(
             Image(
                 painter = painterResource(id = com.anytypeio.anytype.core_ui.R.drawable.ic_more_32),
                 contentDescription = "Menu icon",
-                modifier = Modifier
+                modifier = Modifier,
+                colorFilter = ColorFilter.tint(colorResource(R.color.control_transparent_secondary))
             )
         }
     }

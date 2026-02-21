@@ -32,7 +32,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.gestures.ReorderableItemModifier
-import com.anytypeio.anytype.core_ui.views.Caption1Medium
+import com.anytypeio.anytype.core_ui.views.Title2
 import com.anytypeio.anytype.core_ui.views.UXBody
 import com.anytypeio.anytype.core_ui.widgets.dv.DefaultDragAndDropModifier
 import com.anytypeio.anytype.presentation.home.InteractionMode
@@ -251,8 +251,7 @@ fun LazyListScope.renderWidgetSection(
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
-                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly,
-                        cornerRadius = if (item.isCompact && item.tabs.isNotEmpty()) 16.dp else 24.dp
+                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
                     DataViewListWidgetCard(
@@ -373,8 +372,7 @@ fun LazyListScope.renderWidgetSection(
                             isCardMenuExpanded.value = !isCardMenuExpanded.value
                         },
                         dragModifier = if (isReorderEnabled) DefaultDragAndDropModifier(view, {}) else null,
-                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly,
-                        cornerRadius = if (item.isCompact && item.tabs.isNotEmpty()) 16.dp else 24.dp
+                        shouldEnableLongClick = menuItems.isNotEmpty() && mode !is InteractionMode.ReadOnly
                     )
 
                     ChatListWidgetCard(
@@ -590,8 +588,8 @@ fun SpaceObjectTypesSectionHeader(
                 .align(Alignment.BottomStart)
                 .padding(start = 20.dp, bottom = 12.dp),
             text = stringResource(R.string.widgets_section_object_types),
-            style = Caption1Medium,
-            color = colorResource(id = R.color.control_transparent_secondary)
+            style = Title2,
+            color = colorResource(id = R.color.text_transparent_secondary)
         )
     }
 }
@@ -611,8 +609,8 @@ fun UnreadSectionHeader(
                 .align(Alignment.BottomStart)
                 .padding(start = 20.dp, bottom = 12.dp),
             text = stringResource(R.string.widgets_section_unread),
-            style = Caption1Medium,
-            color = colorResource(id = R.color.control_transparent_secondary)
+            style = Title2,
+            color = colorResource(id = R.color.text_transparent_secondary)
         )
     }
 }
@@ -632,8 +630,8 @@ fun PinnedSectionHeader(
                 .align(Alignment.BottomStart)
                 .padding(start = 20.dp, bottom = 12.dp),
             text = stringResource(R.string.widgets_section_pinned),
-            style = Caption1Medium,
-            color = colorResource(id = R.color.control_transparent_secondary)
+            style = Title2,
+            color = colorResource(id = R.color.text_transparent_secondary)
         )
     }
 }
@@ -693,8 +691,8 @@ fun RecentlyEditedSectionHeader(
                 .align(Alignment.BottomStart)
                 .padding(start = 20.dp, bottom = 12.dp),
             text = stringResource(R.string.widgets_section_recently_edited),
-            style = Caption1Medium,
-            color = colorResource(id = R.color.control_transparent_secondary)
+            style = Title2,
+            color = colorResource(id = R.color.text_transparent_secondary)
         )
     }
 }

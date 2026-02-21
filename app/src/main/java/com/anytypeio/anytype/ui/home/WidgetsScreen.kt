@@ -158,6 +158,11 @@ fun WidgetsScreen(
     val shouldShowRecentlyEditedSection = recentlyEditedView != null && 
         (recentlyEditedView.elements.isNotEmpty() || isRecentlyEditedSectionCollapsed || hadRecentlyEditedItems.value)
 
+    // Determine if counters should be hidden in other sections
+    // When Unread section is expanded with items, counters should not be displayed elsewhere
+    val hideCountersInOtherSections = !isUnreadSectionCollapsed
+            && unreadWidgetView?.elements?.isNotEmpty() == true
+
     // Determine if pinned section should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
 
@@ -302,6 +307,7 @@ fun WidgetsScreen(
                 mode = mode,
                 sectionType = SectionType.PINNED,
                 isOtherSectionDragging = isDraggingTypes.value,
+                hideCounters = hideCountersInOtherSections,
                 onExpand = viewModel::onExpand,
                 onWidgetMenuAction = { widget: Id, action: DropDownMenuAction ->
                     viewModel.onDropDownMenuAction(widget, action)

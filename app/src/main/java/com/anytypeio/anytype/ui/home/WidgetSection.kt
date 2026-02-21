@@ -69,6 +69,7 @@ fun LazyListScope.renderWidgetSection(
     mode: InteractionMode,
     sectionType: SectionType,
     isOtherSectionDragging: Boolean = false,
+    hideCounters: Boolean = false,
     onExpand: (TreePath) -> Unit,
     onWidgetMenuAction: (WidgetId, DropDownMenuAction) -> Unit,
     onWidgetElementClicked: (WidgetId, ObjectWrapper.Basic) -> Unit,
@@ -209,7 +210,8 @@ fun LazyListScope.renderWidgetSection(
                         },
                         onObjectCheckboxClicked = onObjectCheckboxClicked,
                         menuItems = menuItems,
-                        isCardMenuExpanded = isCardMenuExpanded
+                        isCardMenuExpanded = isCardMenuExpanded,
+                        hideCounters = hideCounters
                     )
                 }
             }
@@ -270,7 +272,8 @@ fun LazyListScope.renderWidgetSection(
                         onObjectCheckboxClicked = onObjectCheckboxClicked,
                         onCreateElement = onCreateElement,
                         menuItems = menuItems,
-                        isCardMenuExpanded = isCardMenuExpanded
+                        isCardMenuExpanded = isCardMenuExpanded,
+                        hideCounters = hideCounters
                     )
                 }
             }
@@ -391,7 +394,8 @@ fun LazyListScope.renderWidgetSection(
                         onObjectCheckboxClicked = onObjectCheckboxClicked,
                         onCreateElement = onCreateElement,
                         menuItems = menuItems,
-                        isCardMenuExpanded = isCardMenuExpanded
+                        isCardMenuExpanded = isCardMenuExpanded,
+                        hideCounters = hideCounters
                     )
                 }
             }
@@ -451,7 +455,8 @@ fun LazyListScope.renderWidgetSection(
                         onObjectCheckboxClicked = onObjectCheckboxClicked,
                         onCreateElement = onCreateElement,
                         menuItems = menuItems,
-                        isCardMenuExpanded = isCardMenuExpanded
+                        isCardMenuExpanded = isCardMenuExpanded,
+                        hideCounters = hideCounters
                     )
                 }
             }

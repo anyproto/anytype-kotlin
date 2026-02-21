@@ -39,7 +39,8 @@ fun LinkWidgetCard(
     onObjectCheckboxClicked: (Id, Boolean) -> Unit,
     menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hideCounters: Boolean = false
 ) {
     Box(modifier = modifier) {
 
@@ -73,11 +74,13 @@ fun LinkWidgetCard(
             )
 
             // Display chat counter badges with notification-aware colors
-            ChatCounterBadges(
-                counter = item.counter,
-                notificationState = item.notificationState,
-                modifier = Modifier
-            )
+            if (!hideCounters) {
+                ChatCounterBadges(
+                    counter = item.counter,
+                    notificationState = item.notificationState,
+                    modifier = Modifier
+                )
+            }
         }
         WidgetLongClickMenu(
             menuItems = menuItems,

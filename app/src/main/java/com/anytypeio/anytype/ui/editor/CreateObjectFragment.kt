@@ -16,6 +16,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseFragment
 import com.anytypeio.anytype.databinding.FragmentCreateObjectBinding
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.presentation.objects.CreateObjectViewModel
+import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import javax.inject.Inject
 
@@ -38,24 +39,37 @@ class CreateObjectFragment : BaseFragment<FragmentCreateObjectBinding>(R.layout.
                         .setPopUpTo(R.id.createObjectFragment, true)
                         .build()
                     val layout = state.layout
-                    if (layout == ObjectType.Layout.COLLECTION || layout == ObjectType.Layout.SET) {
-                        findNavController().navigate(
-                            R.id.dataViewNavigation,
-                            ObjectSetFragment.args(
-                                ctx = state.id,
-                                space = state.space
-                            ),
-                            navOptions
-                        )
-                    } else {
-                        findNavController().navigate(
-                            R.id.objectNavigation,
-                            EditorFragment.args(
-                                ctx = state.id,
-                                space = state.space
-                            ),
-                            navOptions
-                        )
+                    when (layout) {
+                        ObjectType.Layout.COLLECTION, ObjectType.Layout.SET -> {
+                            findNavController().navigate(
+                                R.id.dataViewNavigation,
+                                ObjectSetFragment.args(
+                                    ctx = state.id,
+                                    space = state.space
+                                ),
+                                navOptions
+                            )
+                        }
+                        ObjectType.Layout.CHAT, ObjectType.Layout.CHAT_DERIVED -> {
+                            findNavController().navigate(
+                                R.id.chatScreen,
+                                ChatFragment.args(
+                                    ctx = state.id,
+                                    space = state.space
+                                ),
+                                navOptions
+                            )
+                        }
+                        else -> {
+                            findNavController().navigate(
+                                R.id.objectNavigation,
+                                EditorFragment.args(
+                                    ctx = state.id,
+                                    space = state.space
+                                ),
+                                navOptions
+                            )
+                        }
                     }
                 }
                 is CreateObjectViewModel.State.Exit -> {

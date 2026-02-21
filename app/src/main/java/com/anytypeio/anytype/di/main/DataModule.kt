@@ -21,8 +21,8 @@ import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.AppStateService
-import com.anytypeio.anytype.device.BuildProvider
-import com.anytypeio.anytype.device.DefaultBuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -39,6 +39,9 @@ import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
@@ -272,6 +275,17 @@ object DataModule {
     fun provideUserSettingsRepo(
         cache: UserSettingsCache
     ): UserSettingsRepository = UserSettingsDataRepository(cache)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetSpacesSync(
+        context: Context,
+        urlBuilder: UrlBuilder
+    ): OsWidgetSpacesSync = OsWidgetSpacesSyncWithUpdate(
+        delegate = OsWidgetSpacesSyncImpl(context, urlBuilder),
+        context = context
+    )
 
     @JvmStatic
     @Provides

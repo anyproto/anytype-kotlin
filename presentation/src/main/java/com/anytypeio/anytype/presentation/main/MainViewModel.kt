@@ -11,6 +11,7 @@ import com.anytypeio.anytype.analytics.props.Props
 import com.anytypeio.anytype.analytics.props.UserProperty
 import com.anytypeio.anytype.core_models.Account
 import com.anytypeio.anytype.core_models.AccountStatus
+import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Notification
 import com.anytypeio.anytype.core_models.NotificationPayload
@@ -358,6 +359,35 @@ class MainViewModel(
     }
 
     /**
+     * Called from MainActivity to switch space and create object from OS widget.
+     * Switches to the target space first, then emits command to create object.
+     */
+    fun onCreateObjectFromWidget(spaceId: String, typeKey: String) {
+        Timber.d("onCreateObjectFromWidget: space=$spaceId, typeKey=$typeKey")
+        viewModelScope.launch {
+            val currentSpace = spaceManager.get()
+            val spaceState = spaceManager.getState()
+            Timber.d("onCreateObjectFromWidget: currentSpace=$currentSpace, spaceState=$spaceState")
+            if (currentSpace != spaceId) {
+                Timber.d("onCreateObjectFromWidget: switching from $currentSpace to $spaceId")
+                spaceManager.set(spaceId)
+                    .onSuccess { config ->
+                        Timber.d("onCreateObjectFromWidget: switched to space $spaceId successfully, config=$config")
+                        Timber.d("onCreateObjectFromWidget: emitting OpenCreateObjectFromOsWidget with typeKey=$typeKey")
+                        commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+                    }
+                    .onFailure { e ->
+                        Timber.e(e, "onCreateObjectFromWidget: failed to switch space to $spaceId")
+                        toasts.emit("Failed to switch space")
+                    }
+            } else {
+                Timber.d("onCreateObjectFromWidget: already in space $spaceId, emitting create command")
+                commands.emit(Command.Deeplink.OpenCreateObjectFromOsWidget(typeKey = typeKey))
+            }
+        }
+    }
+
+    /**
      * Single entry point for all share intents.
      * Shows the sharing modal sheet with the given intent.
      *
@@ -585,8 +615,106 @@ class MainViewModel(
                 )
             }
 
+            is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace -> {
+                Timber.d("Processing OS widget deep link to space: ${deeplink.space}")
+                proceedWithOsWidgetSpaceSwitch(deeplink.space.id)
+            }
+
+            is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject -> {
+                Timber.d("Processing OS widget deep link to create object: appWidgetId=${deeplink.appWidgetId}")
+                commands.emit(
+                    Command.Deeplink.DeepLinkToCreateObject(
+                        appWidgetId = deeplink.appWidgetId
+                    )
+                )
+            }
+
+            is DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToObject -> {
+                Timber.d("Processing OS widget deep link to object: obj=${deeplink.obj}, space=${deeplink.space}")
+                proceedWithOsWidgetObjectOpen(deeplink.obj, deeplink.space.id)
+            }
+
             else -> {
                 Timber.d("No deep link")
+            }
+        }
+    }
+
+    /**
+     * Handles space switch triggered by OS home screen widget.
+     * Switches to the target space and emits navigation command based on space type.
+     */
+    private suspend fun proceedWithOsWidgetSpaceSwitch(targetSpace: Id) {
+        val currentSpace = spaceManager.get()
+        
+        suspend fun emitNavigationCommand(config: Config) {
+            val spaceView = spaceViews.get(SpaceId(targetSpace))
+            val spaceUxType = spaceView?.spaceUxType
+            val chatId = config.spaceChatId
+            Timber.d("OS widget navigation: space=$targetSpace, uxType=$spaceUxType, chatId=$chatId")
+            commands.emit(
+                Command.Deeplink.DeepLinkToSpace(
+                    space = targetSpace,
+                    spaceUxType = spaceUxType,
+                    chatId = chatId
+                )
+            )
+        }
+        
+        if (currentSpace != targetSpace) {
+            spaceManager.set(targetSpace)
+                .onSuccess { config ->
+                    Timber.d("Successfully switched to space from OS widget: $targetSpace")
+                    emitNavigationCommand(config)
+                }
+                .onFailure { e ->
+                    Timber.e(e, "Failed to switch space from OS widget")
+                }
+        } else {
+            Timber.d("Already in target space, emitting navigation: $targetSpace")
+            spaceManager.getConfig()?.let { config ->
+                emitNavigationCommand(config)
+            }
+        }
+    }
+
+    /**
+     * Handles object open triggered by OS home screen widget.
+     * Fetches the object to determine proper navigation, switches space if needed, then navigates.
+     */
+    private suspend fun proceedWithOsWidgetObjectOpen(objectId: Id, targetSpace: Id) {
+        Timber.d("OS widget object open: obj=$objectId, space=$targetSpace")
+        
+        // Use the delegate to fetch the object and switch space if needed
+        val result = deepLinkToObjectDelegate.onDeepLinkToObject(
+            obj = objectId,
+            space = SpaceId(targetSpace),
+            switchSpaceIfObjectFound = true
+        )
+        
+        when (result) {
+            is DeepLinkToObjectDelegate.Result.Success -> {
+                val navigation = result.obj.navigation()
+                Timber.d("OS widget object navigation determined: $navigation")
+                commands.emit(
+                    Command.Deeplink.DeepLinkToObjectFromWidget(
+                        space = targetSpace,
+                        obj = objectId,
+                        navigation = navigation
+                    )
+                )
+            }
+            is DeepLinkToObjectDelegate.Result.Error.ObjectNotFound -> {
+                Timber.w("OS widget: Object not found: $objectId")
+                toasts.emit("Object not found")
+            }
+            is DeepLinkToObjectDelegate.Result.Error.PermissionNeeded -> {
+                Timber.w("OS widget: Permission needed to access object: $objectId")
+                toasts.emit("Permission needed")
+            }
+            is DeepLinkToObjectDelegate.Result.Error.CouldNotOpenSpace -> {
+                Timber.w("OS widget: Could not open space: $targetSpace")
+                toasts.emit("Could not open space")
             }
         }
     }
@@ -807,6 +935,42 @@ class MainViewModel(
             data class InitiateOneToOneChat(
                 val identity: Id,
                 val metadataKey: String
+            ) : Deeplink()
+
+            /**
+             * Deep link from OS home screen widget to open a specific space.
+             * Navigation depends on spaceUxType - CHAT/ONE_TO_ONE go to chat, DATA goes to home.
+             */
+            data class DeepLinkToSpace(
+                val space: Id,
+                val spaceUxType: SpaceUxType? = null,
+                val chatId: Id? = null
+            ) : Deeplink()
+
+            /**
+             * Deep link from OS home screen widget to open a specific object.
+             * Switches to the target space and navigates to the object.
+             */
+            data class DeepLinkToObjectFromWidget(
+                val space: Id,
+                val obj: Id,
+                val navigation: OpenObjectNavigation
+            ) : Deeplink()
+
+            /**
+             * Deep link from OS home screen widget to create an object.
+             * MainActivity will load the widget config and call onCreateObjectFromWidget.
+             */
+            data class DeepLinkToCreateObject(
+                val appWidgetId: Int
+            ) : Deeplink()
+
+            /**
+             * Command to navigate to CreateObjectFragment after space is switched.
+             * Emitted by onCreateObjectFromWidget after successful space switch.
+             */
+            data class OpenCreateObjectFromOsWidget(
+                val typeKey: String
             ) : Deeplink()
         }
     }

@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<appwidget-provider xmlns:android="http://schemas.android.com/apk/res/android"
+    android:minWidth="57dp"
+    android:minHeight="57dp"
+    android:minResizeWidth="57dp"
+    android:minResizeHeight="57dp"
+    android:maxResizeWidth="180dp"
+    android:maxResizeHeight="180dp"
+    android:targetCellWidth="1"
+    android:targetCellHeight="1"
+    android:resizeMode="horizontal|vertical"
+    android:widgetCategory="home_screen"
+    android:initialLayout="@layout/os_widget_loading"
+    android:previewImage="@drawable/os_widget_space_shortcut_preview"
+    android:description="@string/os_widget_space_shortcut_description"
+    android:configure="com.anytypeio.anytype.ui.oswidgets.SpaceShortcutWidgetConfigActivity"
+    android:updatePeriodMillis="86400000" />

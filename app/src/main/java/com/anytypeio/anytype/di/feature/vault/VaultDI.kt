@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.feature_vault.presentation.VaultViewModelFactory
@@ -151,4 +152,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun participantSubscriptionContainer(): ParticipantSubscriptionContainer
     fun deepLinkResolver(): DeepLinkResolver
     fun configStorage(): ConfigStorage
+    fun osWidgetSpacesSync(): OsWidgetSpacesSync
 }

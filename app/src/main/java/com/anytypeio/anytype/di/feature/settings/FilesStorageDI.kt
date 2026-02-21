@@ -3,7 +3,7 @@ package com.anytypeio.anytype.di.feature.settings
 import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_utils.di.scope.PerScreen
-import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
 import com.anytypeio.anytype.di.common.ComponentDependencies
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository

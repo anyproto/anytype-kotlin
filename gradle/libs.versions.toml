@@ -67,6 +67,7 @@ firebaseBomVersion = "33.13.0"
 
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
+glanceVersion = "1.1.1"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -153,6 +154,7 @@ disableAnimation = { module = "com.bartoszlipinski:disable-animations-rule", ver
 navigationTesting = { module = "androidx.navigation:navigation-testing", version.ref = "navigationVersion" }
 room = { module = "androidx.room:room-runtime", version.ref = "roomVersion" }
 dataStore = { module = "androidx.datastore:datastore", version.ref = "dataStoreVersion" }
+dataStorePreferences = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStoreVersion" }
 roomKtx = { module = "androidx.room:room-ktx", version.ref = "roomVersion" }
 annotations = { module = "androidx.room:room-compiler", version.ref = "roomVersion" }
 roomTesting = { module = "androidx.room:room-testing", version.ref = "roomVersion" }
@@ -167,6 +169,9 @@ firebaseBom = { module = "com.google.firebase:firebase-bom", version.ref = "fire
 firebaseMessaging = { module = "com.google.firebase:firebase-messaging"}
 customTabs = { module = "androidx.browser:browser", version.ref = "customTabsVersion" }
 anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2" }
+glance = { module = "androidx.glance:glance", version.ref = "glanceVersion" }
+glanceAppWidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceVersion" }
+glanceMaterial3 = { module = "androidx.glance:glance-material3", version.ref = "glanceVersion" }
 
 [bundles]
 

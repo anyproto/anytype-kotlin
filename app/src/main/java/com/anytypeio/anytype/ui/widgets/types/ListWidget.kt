@@ -45,7 +45,8 @@ fun ListWidgetCard(
     onCreateElement: (WidgetView) -> Unit = {},
     menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hideCounters: Boolean = false
 ) {
     Box(modifier = modifier) {
         Column(
@@ -69,7 +70,8 @@ fun ListWidgetCard(
                         mode = mode,
                         elements = item.elements,
                         onWidgetElementClicked = onWidgetObjectClicked,
-                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                        onObjectCheckboxClicked = onObjectCheckboxClicked,
+                        hideCounters = hideCounters
                     )
                 } else {
                     item.elements.forEachIndexed { idx, element ->
@@ -80,8 +82,13 @@ fun ListWidgetCard(
                             mode = mode,
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
-                            counter = (element as? WidgetView.ListOfObjects.Element.Chat)?.counter,
-                            notificationState = (element as? WidgetView.ListOfObjects.Element.Chat)?.chatNotificationState
+                            counter = (element as? WidgetView.Element.Chat)?.counter,
+                            notificationState = when (element) {
+                                is WidgetView.ListOfObjects.Element.Chat -> element.chatNotificationState
+                                is WidgetView.SetOfObjects.Element.Chat -> element.chatNotificationState
+                                else -> null
+                            },
+                            hideCounters = hideCounters
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -148,7 +155,8 @@ fun CompactListWidgetList(
     mode: InteractionMode,
     elements: List<WidgetView.Element>,
     onWidgetElementClicked: (ObjectWrapper.Basic) -> Unit,
-    onObjectCheckboxClicked: (Id, Boolean) -> Unit
+    onObjectCheckboxClicked: (Id, Boolean) -> Unit,
+    hideCounters: Boolean = false
 ) {
     elements.forEachIndexed { idx, element ->
         Column {
@@ -185,10 +193,15 @@ fun CompactListWidgetList(
                 )
 
                 // Display chat counter badges with notification-aware colors
-                if (element is WidgetView.Element.Chat) {
+                if (!hideCounters && element is WidgetView.Element.Chat) {
+                    val notificationState = when (element) {
+                        is WidgetView.ListOfObjects.Element.Chat -> element.chatNotificationState
+                        is WidgetView.SetOfObjects.Element.Chat -> element.chatNotificationState
+                        else -> null
+                    }
                     ChatCounterBadges(
                         counter = element.counter,
-                        notificationState = (element as? WidgetView.ListOfObjects.Element.Chat)?.chatNotificationState
+                        notificationState = notificationState
                     )
                 }
             }

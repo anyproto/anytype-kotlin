@@ -112,8 +112,8 @@ fun HomeScreenMenu(
         // Divider after mute
         Divider(paddingStart = 0.dp, paddingEnd = 0.dp, height = 8.dp)
 
-        // QR Code - only for shared spaces
-        if (isSharedSpace) {
+        // QR Code - only for shared spaces, hidden for 1-1 chats
+        if (isSharedSpace && !isOneToOne) {
             DropdownMenuItem(
                 text = {
                 MenuItemContent(
@@ -128,8 +128,8 @@ fun HomeScreenMenu(
             )
         }
 
-        // Copy Invite Link - only for shared spaces
-        if (isSharedSpace) {
+        // Copy Invite Link - only for shared spaces, hidden for 1-1 chats
+        if (isSharedSpace && !isOneToOne) {
             DropdownMenuItem(
                 text = {
                 MenuItemContent(

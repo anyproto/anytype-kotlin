@@ -11,7 +11,8 @@ import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitEachGesture
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -845,7 +846,7 @@ fun DotScrubberSlider(
     modifier: Modifier = Modifier,
     valueRange: ClosedFloatingPointRange<Float> = 0f..1f,
     trackHeight: Dp = 4.dp,
-    dotRadius: Dp = 6.dp,
+    dotRadius: Dp = 8.dp,
     onDragStart: () -> Unit = {},
     onDragEnd: () -> Unit = {}
 ) {
@@ -859,41 +860,33 @@ fun DotScrubberSlider(
         modifier = modifier
             .height(48.dp)
             .fillMaxWidth()
-            .pointerInput(Unit) {
-                detectTapGestures { offset ->
-                    // Handle tap/click at specific point
-                    val ratio = offset.x / size.width
+            .pointerInput(valueRange) {
+                awaitEachGesture {
+                    val down = awaitFirstDown(requireUnconsumed = false)
+                    down.consume()
+                    // Seek immediately on touch down
+                    val ratio = (down.position.x / size.width).coerceIn(0f, 1f)
                     val newValue =
                         (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
                             .coerceIn(valueRange)
+                    onDragStart()
                     onValueChange(newValue)
+                    // Track drag until pointer up
+                    do {
+                        val event = awaitPointerEvent()
+                        val change = event.changes.firstOrNull() ?: break
+                        if (change.pressed) {
+                            change.consume()
+                            val x = change.position.x.coerceIn(0f, size.width.toFloat())
+                            val dragRatio = x / size.width
+                            val dragValue =
+                                (valueRange.start + dragRatio * (valueRange.endInclusive - valueRange.start))
+                                    .coerceIn(valueRange)
+                            onValueChange(dragValue)
+                        }
+                    } while (event.changes.any { it.pressed })
+                    onDragEnd()
                 }
-            }
-            .pointerInput(Unit) {
-                detectDragGestures(
-                    onDragStart = { offset ->
-                        onDragStart()
-                        val ratio = offset.x / size.width
-                        val newValue =
-                            (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
-                                .coerceIn(valueRange)
-                        onValueChange(newValue)
-                    },
-                    onDrag = { change, _ ->
-                        val x = change.position.x.coerceIn(0f, size.width.toFloat())
-                        val ratio = x / size.width
-                        val newValue =
-                            (valueRange.start + ratio * (valueRange.endInclusive - valueRange.start))
-                                .coerceIn(valueRange)
-                        onValueChange(newValue)
-                    },
-                    onDragEnd = {
-                        onDragEnd()
-                    },
-                    onDragCancel = {
-                        onDragEnd()
-                    }
-                )
             }
     ) {
         sliderWidth = constraints.maxWidth.toFloat()

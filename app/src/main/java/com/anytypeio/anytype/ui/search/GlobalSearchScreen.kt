@@ -89,6 +89,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -583,8 +584,13 @@ private fun GlobalSearchItem(
                             isMenuExpanded = false
                         }
                     ) {
-                        Text(text = stringResource(R.string.open_in_browser))
+                        Text(
+                            text = stringResource(R.string.open_in_browser),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
                     }
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 }
                 if (isFile) {
                     DropdownMenuItem(
@@ -593,8 +599,13 @@ private fun GlobalSearchItem(
                             isMenuExpanded = false
                         }
                     ) {
-                        Text(text = stringResource(R.string.open_file))
+                        Text(
+                            text = stringResource(R.string.open_file),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
                     }
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 }
                 if (isBookmark || isFile) {
                     DropdownMenuItem(
@@ -603,7 +614,14 @@ private fun GlobalSearchItem(
                             isMenuExpanded = false
                         }
                     ) {
-                        Text(text = stringResource(R.string.open_object))
+                        Text(
+                            text = stringResource(R.string.open_object),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                    if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     }
                 }
                 if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
@@ -613,7 +631,11 @@ private fun GlobalSearchItem(
                             isMenuExpanded = false
                         }
                     ) {
-                        Text(text = stringResource(R.string.global_search_show_related_objects))
+                        Text(
+                            text = stringResource(R.string.global_search_show_related_objects),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
                     }
                 }
             }

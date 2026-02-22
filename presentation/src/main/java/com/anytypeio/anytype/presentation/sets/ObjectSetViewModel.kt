@@ -86,6 +86,7 @@ import com.anytypeio.anytype.presentation.editor.model.TextUpdate
 import com.anytypeio.anytype.presentation.extension.ObjectStateAnalyticsEvent
 import com.anytypeio.anytype.presentation.extension.getObject
 import com.anytypeio.anytype.presentation.extension.getTypeObject
+import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
 import com.anytypeio.anytype.presentation.extension.logEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsObjectCreateEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsRelationEvent
@@ -1321,7 +1322,8 @@ class ObjectSetViewModel(
                 ObjectSetCommand.Modal.ShowObjectHeaderContextMenu(
                     objectId = objectId,
                     canMoveToBin = canMoveToBin,
-                    isCollection = canRemoveFromCollection
+                    isCollection = canRemoveFromCollection,
+                    layout = obj?.layout
                 )
             )
         }
@@ -1417,6 +1419,71 @@ class ObjectSetViewModel(
                     toast("Error removing from collection. Please try again.")
                 }
             )
+        }
+    }
+
+    /**
+     * Opens the bookmark's source URL in the browser.
+     */
+    fun onOpenBookmarkInBrowser(targetId: Id) {
+        Timber.d("onOpenBookmarkInBrowser, id:[$targetId]")
+        viewModelScope.launch {
+            val obj = objectStore.get(targetId)
+            if (obj != null) {
+                val url = obj.getSingleValue<String>(Relations.SOURCE)
+                if (!url.isNullOrBlank()) {
+                    dispatch(ObjectSetCommand.Browse(url))
+                } else {
+                    toast("Bookmark URL not found.")
+                }
+            } else {
+                toast("Object not found. Please try again later.")
+            }
+        }
+    }
+
+    /**
+     * Opens the file object using the appropriate handler (media player for video/audio,
+     * browser for other file types).
+     */
+    fun onOpenFile(targetId: Id) {
+        Timber.d("onOpenFile, id:[$targetId]")
+        viewModelScope.launch {
+            val obj = objectStore.get(targetId)
+            if (obj == null) {
+                toast("Object not found. Please try again later.")
+                return@launch
+            }
+            val layout = obj.layout
+            val name = fieldParser.getObjectName(obj)
+            when (layout) {
+                ObjectType.Layout.VIDEO -> dispatch(
+                    ObjectSetCommand.PlayMedia(
+                        targetObjectId = targetId,
+                        name = name,
+                        isVideo = true
+                    )
+                )
+                ObjectType.Layout.AUDIO -> dispatch(
+                    ObjectSetCommand.PlayMedia(
+                        targetObjectId = targetId,
+                        name = name,
+                        isVideo = false
+                    )
+                )
+                else -> {
+                    if (layout != null) {
+                        val url = urlBuilder.getUrlBasedOnFileLayout(targetId, layout)
+                        if (url != null) {
+                            dispatch(ObjectSetCommand.Browse(url))
+                        } else {
+                            toast("Cannot open file")
+                        }
+                    } else {
+                        toast("Cannot open file")
+                    }
+                }
+            }
         }
     }
 

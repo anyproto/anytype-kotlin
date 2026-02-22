@@ -2,6 +2,7 @@ package com.anytypeio.anytype.presentation.sets
 
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 
 sealed class ObjectSetCommand {
 
@@ -110,7 +111,8 @@ sealed class ObjectSetCommand {
         data class ShowObjectHeaderContextMenu(
             val objectId: Id,
             val canMoveToBin: Boolean,
-            val isCollection: Boolean
+            val isCollection: Boolean,
+            val layout: ObjectType.Layout? = null
         ) : Modal()
     }
 
@@ -124,6 +126,12 @@ sealed class ObjectSetCommand {
     data object ShowOnlyAccessError : ObjectSetCommand()
 
     data class Browse(val url: String) : ObjectSetCommand()
+
+    data class PlayMedia(
+        val targetObjectId: Id,
+        val name: String,
+        val isVideo: Boolean
+    ) : ObjectSetCommand()
 
     data class CopyLinkToClipboard(val link: String) : ObjectSetCommand()
 

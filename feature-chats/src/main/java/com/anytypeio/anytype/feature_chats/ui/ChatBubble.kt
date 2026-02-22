@@ -61,6 +61,8 @@ import coil3.compose.AsyncImage
 import coil3.request.ImageRequest
 import coil3.request.crossfade
 import com.anytypeio.anytype.core_models.Id
+import com.anytypeio.anytype.core_models.ObjectType
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_ui.foundation.AlertConfig
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_SECONDARY
 import com.anytypeio.anytype.core_ui.foundation.BUTTON_WARNING
@@ -104,7 +106,10 @@ fun Bubble(
     onViewChatReaction: (String) -> Unit,
     onMentionClicked: (Id) -> Unit,
     isReadOnly: Boolean = false,
-    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {}
+    onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit = {},
+    onOpenAttachmentInBrowser: () -> Unit = {},
+    onOpenAttachmentFile: () -> Unit = {},
+    onOpenAttachmentAsObject: () -> Unit = {}
 ) {
 
     val haptic = LocalHapticFeedback.current
@@ -342,6 +347,16 @@ fun Bubble(
                     surface = colorResource(id = R.color.background_secondary)
                 )
             ) {
+                val hasBookmark = attachments.any {
+                    it is ChatView.Message.Attachment.Bookmark
+                }
+                val hasFileAttachment = attachments.any {
+                    it is ChatView.Message.Attachment.Image ||
+                    it is ChatView.Message.Attachment.Video ||
+                    it is ChatView.Message.Attachment.Gallery ||
+                    (it is ChatView.Message.Attachment.Link &&
+                        SupportedLayouts.isFileLayout(it.wrapper?.layout))
+                }
                 DropdownMenu(
                     offset = DpOffset(0.dp, 8.dp),
                     expanded = showDropdownMenu,
@@ -350,6 +365,54 @@ fun Bubble(
                     },
                     properties = PopupProperties(focusable = false)
                 ) {
+                    if (hasBookmark) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_in_browser),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentInBrowser()
+                                showDropdownMenu = false
+                            }
+                        )
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    }
+                    if (hasFileAttachment) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_file),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentFile()
+                                showDropdownMenu = false
+                            }
+                        )
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    }
+                    if (hasBookmark || hasFileAttachment) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_object),
+                                    color = colorResource(id = R.color.text_primary),
+                                    modifier = Modifier.padding(end = 64.dp)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentAsObject()
+                                showDropdownMenu = false
+                            }
+                        )
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    }
                     if (!isMaxReactionCountReached && !isReadOnly) {
                         DropdownMenuItem(
                             text = {

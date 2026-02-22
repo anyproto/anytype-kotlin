@@ -14,6 +14,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.LinkPreview
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectTypeUniqueKeys
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.SyncStatus
@@ -1559,6 +1560,82 @@ class ChatViewModel @Inject constructor(
                         Timber.w("Wrapper is not found in attachment")
                     }
                 }
+            }
+        }
+    }
+
+    fun onOpenAttachmentInBrowser(msg: ChatView.Message) {
+        Timber.d("onOpenAttachmentInBrowser, msg: ${msg.id}")
+        viewModelScope.launch {
+            val url = msg.attachments.firstNotNullOfOrNull { attachment ->
+                when (attachment) {
+                    is ChatView.Message.Attachment.Bookmark -> attachment.url
+                    is ChatView.Message.Attachment.Link -> {
+                        val wrapper = attachment.wrapper
+                        if (wrapper?.layout == ObjectType.Layout.BOOKMARK) {
+                            ObjectWrapper.Bookmark(wrapper.map).source
+                        } else null
+                    }
+                    else -> null
+                }
+            }
+            if (!url.isNullOrBlank()) {
+                commands.emit(ViewModelCommand.Browse(url))
+            }
+        }
+    }
+
+    fun onOpenAttachmentFile(msg: ChatView.Message) {
+        Timber.d("onOpenAttachmentFile, msg: ${msg.id}")
+        viewModelScope.launch {
+            val firstFileAttachment = msg.attachments.firstOrNull { a ->
+                a is ChatView.Message.Attachment.Image ||
+                a is ChatView.Message.Attachment.Video ||
+                a is ChatView.Message.Attachment.Gallery ||
+                (a is ChatView.Message.Attachment.Link &&
+                    SupportedLayouts.isFileLayout(a.wrapper?.layout))
+            }
+            when (firstFileAttachment) {
+                is ChatView.Message.Attachment.Image -> {
+                    onAttachmentClicked(msg, firstFileAttachment)
+                }
+                is ChatView.Message.Attachment.Video -> {
+                    onAttachmentClicked(msg, firstFileAttachment)
+                }
+                is ChatView.Message.Attachment.Gallery -> {
+                    val firstImage = firstFileAttachment.images.firstOrNull()
+                    if (firstImage != null) {
+                        onAttachmentClicked(msg, firstImage)
+                    }
+                }
+                is ChatView.Message.Attachment.Link -> {
+                    onAttachmentClicked(msg, firstFileAttachment)
+                }
+                else -> {}
+            }
+        }
+    }
+
+    fun onOpenAttachmentAsObject(msg: ChatView.Message) {
+        Timber.d("onOpenAttachmentAsObject, msg: ${msg.id}")
+        viewModelScope.launch {
+            val targetId = msg.attachments.firstNotNullOfOrNull { attachment ->
+                when (attachment) {
+                    is ChatView.Message.Attachment.Bookmark -> attachment.id
+                    is ChatView.Message.Attachment.Link -> attachment.obj
+                    is ChatView.Message.Attachment.Image -> attachment.obj
+                    is ChatView.Message.Attachment.Video -> attachment.obj
+                    is ChatView.Message.Attachment.Gallery ->
+                        attachment.images.firstOrNull()?.obj
+                }
+            }
+            if (targetId != null) {
+                navigation.emit(
+                    OpenObjectNavigation.OpenEditor(
+                        target = targetId,
+                        space = vmParams.space.id
+                    )
+                )
             }
         }
     }

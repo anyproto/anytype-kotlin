@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.Relation.Format.TAG
 import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -46,6 +47,7 @@ import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
@@ -92,6 +94,7 @@ class GlobalSearchViewModel @Inject constructor(
     private val mode = MutableStateFlow<Mode>(Mode.Default)
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
+    val commands = MutableSharedFlow<SearchCommand>()
 
     private val _state: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Init())
     val state = _state.asStateFlow()
@@ -381,6 +384,63 @@ class GlobalSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Opens the bookmark/file object as an Anytype object (bypassing default URL/file open).
+     */
+    fun onOpenObjectAsObject(item: GlobalSearchItemView) {
+        Timber.d("onOpenObjectAsObject, item: ${item.id}")
+        viewModelScope.launch {
+            navigation.emit(
+                item.obj.navigation(openBookmarkAsObject = true)
+            )
+        }
+    }
+
+    /**
+     * Opens the bookmark's source URL in the browser.
+     */
+    fun onOpenInBrowser(item: GlobalSearchItemView) {
+        Timber.d("onOpenInBrowser, item: ${item.id}")
+        viewModelScope.launch {
+            val url = item.obj.getSingleValue<String>(Relations.SOURCE)
+            if (!url.isNullOrBlank()) {
+                navigation.emit(OpenObjectNavigation.OpenBookmarkUrl(url))
+            }
+        }
+    }
+
+    /**
+     * Opens the file object in the appropriate system viewer.
+     */
+    fun onOpenFile(item: GlobalSearchItemView) {
+        Timber.d("onOpenFile, item: ${item.id}")
+        viewModelScope.launch {
+            val layout = item.layout
+            when (layout) {
+                ObjectType.Layout.VIDEO -> commands.emit(
+                    SearchCommand.PlayMedia(
+                        targetObjectId = item.id,
+                        name = item.title,
+                        isVideo = true
+                    )
+                )
+                ObjectType.Layout.AUDIO -> commands.emit(
+                    SearchCommand.PlayMedia(
+                        targetObjectId = item.id,
+                        name = item.title,
+                        isVideo = false
+                    )
+                )
+                else -> {
+                    val url = urlBuilder.getUrlBasedOnFileLayout(item.id, layout)
+                    if (url != null) {
+                        commands.emit(SearchCommand.Browse(url))
+                    }
+                }
+            }
+        }
+    }
+
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
@@ -495,6 +555,15 @@ class GlobalSearchViewModel @Inject constructor(
         fun isEmptyState() : Boolean {
             return this !is Init && !this.isLoading && views.isEmpty()
         }
+    }
+
+    sealed class SearchCommand {
+        data class Browse(val url: String) : SearchCommand()
+        data class PlayMedia(
+            val targetObjectId: Id,
+            val name: String,
+            val isVideo: Boolean
+        ) : SearchCommand()
     }
 
     companion object {

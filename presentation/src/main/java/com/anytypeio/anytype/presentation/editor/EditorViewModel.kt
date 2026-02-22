@@ -1927,6 +1927,8 @@ class EditorViewModel(
             excludedActions.add(ActionItemType.Divider)
             excludedActions.add(ActionItemType.DividerExtended)
             excludedActions.add(ActionItemType.OpenObject)
+            excludedActions.add(ActionItemType.OpenLink)
+            excludedActions.add(ActionItemType.OpenFile)
         }
 
         var needSortByDownloads = false
@@ -1943,12 +1945,12 @@ class EditorViewModel(
                                 if (obj != null) {
                                     val isReady = content.state == Content.Bookmark.State.DONE
                                     val isActive = obj.isArchived != true && obj.isDeleted != true
-                                    val idx = targetActions.indexOf(ActionItemType.OpenObject)
-                                    if (idx == NO_POSITION && isReady && isActive) {
-                                        targetActions.add(
-                                            OPEN_OBJECT_POSITION,
-                                            ActionItemType.OpenObject
+                                    if (isReady && isActive) {
+                                        targetActions.addIfNotExists(
+                                            ActionItemType.OpenLink,
+                                            OPEN_OBJECT_POSITION
                                         )
+                                        targetActions.addIfNotExists(ActionItemType.OpenObject)
                                     }
                                 }
                             }
@@ -1961,6 +1963,7 @@ class EditorViewModel(
                         needSortByDownloads = true
                         if (content.state == Content.File.State.DONE) {
                             targetActions.addIfNotExists(ActionItemType.Download)
+                            targetActions.addIfNotExists(ActionItemType.OpenFile)
                             targetActions.addIfNotExists(ActionItemType.OpenObject)
                         } else {
                             excludedActions.add(ActionItemType.Download)
@@ -6192,6 +6195,12 @@ class EditorViewModel(
                 proceedWithOpeningTargetForCurrentSelection()
                 onSendBlockActionAnalyticsEvent(EventsDictionary.BlockAction.openObject)
             }
+            ActionItemType.OpenLink -> {
+                proceedWithOpeningBookmarkLinkForCurrentSelection()
+            }
+            ActionItemType.OpenFile -> {
+                proceedWithOpeningFileForCurrentSelection()
+            }
             else -> {
                 sendToast("TODO")
             }
@@ -6237,6 +6246,37 @@ class EditorViewModel(
             }
         } else {
             sendToast("No blocks were selected. Please, try again.")
+        }
+    }
+
+    private fun proceedWithOpeningBookmarkLinkForCurrentSelection() {
+        val selected = blocks.firstOrNull { currentSelection().contains(it.id) }
+        proceedWithExitingMultiSelectMode()
+        if (selected != null) {
+            val content = selected.content
+            if (content is Content.Bookmark) {
+                val target = content.targetObjectId
+                if (target != null) {
+                    val obj = orchestrator.stores.details.current().getBookmarkObject(target)
+                    val source = obj?.source
+                    if (!source.isNullOrBlank()) {
+                        dispatch(Command.Browse(source))
+                    } else {
+                        sendToast("Source is missing for this bookmark")
+                    }
+                } else {
+                    sendToast("This bookmark doesn't have a source.")
+                }
+            }
+        }
+    }
+
+    private fun proceedWithOpeningFileForCurrentSelection() {
+        val selected = blocks.firstOrNull { currentSelection().contains(it.id) }
+        val blockId = selected?.id
+        proceedWithExitingMultiSelectMode()
+        if (blockId != null) {
+            onFileBlockClicked(blockId)
         }
     }
 

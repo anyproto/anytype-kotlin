@@ -276,7 +276,10 @@ fun ChatScreenWrapper(
             },
             onRequestVideoPlayer = onRequestVideoPlayer,
             onCreateAndAttachObject = vm::onCreateAndAttachObject,
-            onCameraPermissionDenied = vm::onCameraPermissionDenied
+            onCameraPermissionDenied = vm::onCameraPermissionDenied,
+            onOpenAttachmentInBrowser = vm::onOpenAttachmentInBrowser,
+            onOpenAttachmentFile = vm::onOpenAttachmentFile,
+            onOpenAttachmentAsObject = vm::onOpenAttachmentAsObject
         )
         LaunchedEffect(Unit) {
             vm.uXCommands.collect { command ->
@@ -420,7 +423,10 @@ fun ChatScreen(
     onCreateAndAttachObject: () -> Unit,
     onCameraPermissionDenied: () -> Unit = {},
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
-    spaceUxType: SpaceUxType? = null
+    spaceUxType: SpaceUxType? = null,
+    onOpenAttachmentInBrowser: (ChatView.Message) -> Unit = {},
+    onOpenAttachmentFile: (ChatView.Message) -> Unit = {},
+    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {}
 ) {
 
     Timber.d("DROID-2966 Render called with state, number of messages: ${messages.size}")
@@ -664,7 +670,10 @@ fun ChatScreen(
                 onHighlightMessage = triggerHighlight,
                 onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered,
                 inviteLinkAccessLevel = inviteLinkAccessLevel,
-                spaceUxType = spaceUxType
+                spaceUxType = spaceUxType,
+                onOpenAttachmentInBrowser = onOpenAttachmentInBrowser,
+                onOpenAttachmentFile = onOpenAttachmentFile,
+                onOpenAttachmentAsObject = onOpenAttachmentAsObject
             )
 
             GoToMentionButton(

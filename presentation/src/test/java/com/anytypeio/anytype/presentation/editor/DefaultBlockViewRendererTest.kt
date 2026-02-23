@@ -5939,4 +5939,125 @@ class DefaultBlockViewRendererTest {
 
         assertEquals(expected = emptyList<BlockView>(), actual = result)
     }
+
+    // region Embed text truncation (DROID-4372)
+
+    @Test
+    fun `should truncate excalidraw embed text to non-empty marker`() {
+
+        val largeJson = "{ \"elements\": [" + "x".repeat(100_000) + "] }"
+
+        val embed = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Embed(
+                text = largeJson,
+                processor = Block.Content.Embed.Processor.EXCALIDRAW
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = StubSmartBlock(children = listOf(embed.id))
+
+        val blocks = listOf(page, embed)
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = ObjectViewDetails.EMPTY
+            )
+        }
+
+        val embedView = result.filterIsInstance<BlockView.Embed>().first()
+        assertEquals(expected = "\u200B", actual = embedView.text)
+        assertEquals(expected = "Excalidraw", actual = embedView.processor)
+    }
+
+    @Test
+    fun `should use empty string for empty excalidraw embed`() {
+
+        val embed = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Embed(
+                text = "",
+                processor = Block.Content.Embed.Processor.EXCALIDRAW
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = StubSmartBlock(children = listOf(embed.id))
+
+        val blocks = listOf(page, embed)
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = ObjectViewDetails.EMPTY
+            )
+        }
+
+        val embedView = result.filterIsInstance<BlockView.Embed>().first()
+        assertEquals(expected = "", actual = embedView.text)
+    }
+
+    @Test
+    fun `should keep full text for youtube embed`() {
+
+        val youtubeUrl = "https://www.youtube.com/watch?v=dQw4w9WgXcQ"
+
+        val embed = Block(
+            id = MockDataFactory.randomUuid(),
+            children = emptyList(),
+            content = Block.Content.Embed(
+                text = youtubeUrl,
+                processor = Block.Content.Embed.Processor.YOUTUBE
+            ),
+            fields = Block.Fields.empty()
+        )
+
+        val page = StubSmartBlock(children = listOf(embed.id))
+
+        val blocks = listOf(page, embed)
+        val map = blocks.asMap()
+
+        wrapper = BlockViewRenderWrapper(
+            blocks = map,
+            renderer = renderer
+        )
+
+        val result = runBlocking {
+            wrapper.render(
+                root = page,
+                anchor = page.id,
+                focus = Editor.Focus.empty(),
+                indent = 0,
+                details = ObjectViewDetails.EMPTY
+            )
+        }
+
+        val embedView = result.filterIsInstance<BlockView.Embed>().first()
+        assertEquals(expected = youtubeUrl, actual = embedView.text)
+        assertEquals(expected = "YouTube", actual = embedView.processor)
+    }
+
+    // endregion
 }

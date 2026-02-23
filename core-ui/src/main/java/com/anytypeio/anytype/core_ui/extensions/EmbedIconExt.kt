@@ -2,29 +2,23 @@ package com.anytypeio.anytype.core_ui.extensions
 
 import androidx.annotation.DrawableRes
 import com.anytypeio.anytype.core_ui.R
+import com.anytypeio.anytype.presentation.editor.editor.ext.isTextNeededOnMobile
+import com.anytypeio.anytype.presentation.editor.editor.ext.toDisplayName
+import com.anytypeio.anytype.core_models.Block
 
 /**
  * Determines if an embed can be opened in an external app or browser.
+ *
+ * Delegates to [Block.Content.Embed.Processor.isTextNeededOnMobile] which is
+ * the single source of truth for this categorization. The display-name-based
+ * lookup here is kept for convenience in the UI layer (which works with
+ * [BlockView.Embed.processor] strings).
  */
 fun String.canOpenEmbedExternally(): Boolean {
-    return when (this) {
-        // Video platforms
-        "YouTube", "Vimeo", "Bilibili" -> true
-        // Social media
-        "Twitter", "Facebook", "Instagram", "Reddit", "Telegram" -> true
-        // Audio platforms
-        "SoundCloud", "Spotify" -> true
-        // Maps
-        "Google Maps", "OpenStreetMap" -> true
-        // Design/collaboration tools
-        "Miro", "Figma", "Sketchfab" -> true
-        // Diagram/code tools that don't open externally on mobile
-        "Mermaid", "Chart", "Excalidraw", "Kroki", "Graphviz",
-        "CodePen", "GitHub Gist", "Draw.io" -> false
-        // Images
-        "Image" -> false
-        else -> false
+    val processor = Block.Content.Embed.Processor.entries.firstOrNull {
+        it.toDisplayName() == this
     }
+    return processor?.isTextNeededOnMobile() ?: false
 }
 
 /**

@@ -494,6 +494,7 @@
     <string name="reload_object_content">重新加载对象内容</string>
     <string name="open_link">打开链接</string>
     <string name="open_file">打开文件</string>
+    <string name="open_in_browser">Open in Browser</string>
     <string name="copy_email">拷贝电子邮件</string>
     <string name="copy_phone_number">拷贝电话号码</string>
     <string name="send_email">发送电子邮件</string>
@@ -1628,6 +1629,7 @@
     <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"与之相关的："</string>
     <string name="global_search_no_related_objects_found">没有找到相关对象</string>
+    <string name="global_search_show_related_objects">显示相关对象</string>
     <string name="sort_empty_values_desc">显示空白值</string>
     <string name="sort_empty_values_bottom">在底部</string>
     <string name="sort_empty_values_top">在顶部</string>

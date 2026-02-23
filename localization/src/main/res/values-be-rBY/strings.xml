@@ -497,6 +497,7 @@
     <string name="reload_object_content">Перазагрузіць змесціва аб\'екта</string>
     <string name="open_link">Адкрыць спасылку</string>
     <string name="open_file">Open file</string>
+    <string name="open_in_browser">Open in Browser</string>
     <string name="copy_email">Капіяваць эл. пошту</string>
     <string name="copy_phone_number">Капіяваць нумар тэлефона</string>
     <string name="send_email">Адаслаць ліст</string>
@@ -1662,6 +1663,7 @@
     <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Звязана з: "</string>
     <string name="global_search_no_related_objects_found">Звязаных аб\'ектаў не знойдзена</string>
+    <string name="global_search_show_related_objects">Паказаць звязаныя аб\'екты</string>
     <string name="sort_empty_values_desc">Паказаць пустыя значэнні</string>
     <string name="sort_empty_values_bottom">Знізу</string>
     <string name="sort_empty_values_top">Зверху</string>

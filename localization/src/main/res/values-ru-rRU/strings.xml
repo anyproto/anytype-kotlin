@@ -497,6 +497,7 @@
     <string name="reload_object_content">Перезагрузить содержимое объекта</string>
     <string name="open_link">Открыть ссылку</string>
     <string name="open_file">Открыть файл</string>
+    <string name="open_in_browser">Открыть в браузере</string>
     <string name="copy_email">Скопировать адрес электронной почты</string>
     <string name="copy_phone_number">Copy phone numbler</string>
     <string name="send_email">Отправить электронное письмо</string>
@@ -1665,6 +1666,7 @@
     <string name="error_offline_device">Кажется, Ваше устройство не в сети. Проверьте подключение и повторите попытку.</string>
     <string name="global_search_related_to">"Относится к: "</string>
     <string name="global_search_no_related_objects_found">Связанных объектов не найдено</string>
+    <string name="global_search_show_related_objects">Показать связанные проекты</string>
     <string name="sort_empty_values_desc">Показать пустые значения</string>
     <string name="sort_empty_values_bottom">Снизу</string>
     <string name="sort_empty_values_top">Наверху</string>

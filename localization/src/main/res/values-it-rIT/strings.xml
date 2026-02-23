@@ -495,6 +495,7 @@
     <string name="reload_object_content">Ricarica contenuto dell\'oggetto</string>
     <string name="open_link">Apri collegamento</string>
     <string name="open_file">Apri file</string>
+    <string name="open_in_browser">Apri nel Browser</string>
     <string name="copy_email">Copia email</string>
     <string name="copy_phone_number">Copia numero di telefono</string>
     <string name="send_email">Invia email</string>
@@ -1643,6 +1644,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_offline_device">Il dispositivo sembra essere offline. Si prega di connettersi a Internet e riprovare.</string>
     <string name="global_search_related_to">"Correlato a: "</string>
     <string name="global_search_no_related_objects_found">Nessun oggetto correlato trovato</string>
+    <string name="global_search_show_related_objects">Mostra oggetti correlati</string>
     <string name="sort_empty_values_desc">Mostra valori vuoti</string>
     <string name="sort_empty_values_bottom">In basso</string>
     <string name="sort_empty_values_top">In alto</string>

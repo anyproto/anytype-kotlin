@@ -494,6 +494,7 @@
     <string name="reload_object_content">オブジェクト内容を再読み込み</string>
     <string name="open_link">リンクを開く</string>
     <string name="open_file">ファイルを開く</string>
+    <string name="open_in_browser">Open in Browser</string>
     <string name="copy_email">メールアドレスをコピー</string>
     <string name="copy_phone_number">電話番号をコピー</string>
     <string name="send_email">メールを送信</string>
@@ -1633,6 +1634,7 @@
     <string name="error_offline_device">デバイスがオフラインのようです。インターネット接続を確認して、もう一度お試しください。</string>
     <string name="global_search_related_to">"関連："</string>
     <string name="global_search_no_related_objects_found">関連するオブジェクトが見つかりません</string>
+    <string name="global_search_show_related_objects">関連するオブジェクトを表示</string>
     <string name="sort_empty_values_desc">未入力の値を表示</string>
     <string name="sort_empty_values_bottom">下に表示</string>
     <string name="sort_empty_values_top">上に表示</string>

@@ -494,6 +494,7 @@
     <string name="reload_object_content">Muat ulang konten objek</string>
     <string name="open_link">Buka tautan</string>
     <string name="open_file">Buka berkas</string>
+    <string name="open_in_browser">Buka di Peramban</string>
     <string name="copy_email">Salin email</string>
     <string name="copy_phone_number">Salin nomor telepon</string>
     <string name="send_email">Kirim email</string>
@@ -1632,6 +1633,7 @@ Harap berikan detail spesifik kebutuhan Anda di sini.</string>
     <string name="error_offline_device">Perangkatmu sepertinya di luar jaringan. Silakan sambung ulang kembali ke internet lalu coba lagi.</string>
     <string name="global_search_related_to">"Terkait dengan: "</string>
     <string name="global_search_no_related_objects_found">Tidak ada objek terkait ditemukan</string>
+    <string name="global_search_show_related_objects">Tampilkan objek terkait</string>
     <string name="sort_empty_values_desc">Tampilkan nilai kosong</string>
     <string name="sort_empty_values_bottom">Di bawah</string>
     <string name="sort_empty_values_top">Di atas</string>

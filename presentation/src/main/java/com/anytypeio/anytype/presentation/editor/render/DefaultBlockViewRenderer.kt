@@ -22,6 +22,7 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.presentation.editor.Editor
 import com.anytypeio.anytype.presentation.editor.cover.CoverImageHashProvider
 import com.anytypeio.anytype.presentation.editor.editor.ext.getTextAndMarks
+import com.anytypeio.anytype.presentation.editor.editor.ext.isTextNeededOnMobile
 import com.anytypeio.anytype.presentation.editor.editor.ext.toDisplayName
 import com.anytypeio.anytype.presentation.editor.editor.model.Alignment
 import com.anytypeio.anytype.presentation.editor.editor.model.BlockView
@@ -1943,7 +1944,14 @@ class DefaultBlockViewRenderer @Inject constructor(
     ) = BlockView.Embed(
         id = block.id,
         indent = indent,
-        text = content.text,
+        text = if (content.processor.isTextNeededOnMobile()) {
+            content.text
+        } else {
+            // For processors not usable on mobile (Excalidraw, Mermaid, etc.),
+            // avoid carrying potentially huge data blobs through DiffUtil/equals.
+            // Preserve empty vs non-empty distinction for the placeholder UI.
+            if (content.text.isBlank()) "" else EMBED_NON_EMPTY_MARKER
+        },
         processor = content.processor.toDisplayName(),
         background = block.parseThemeBackgroundColor(),
         isSelected = checkIfSelected(
@@ -2169,6 +2177,15 @@ class DefaultBlockViewRenderer @Inject constructor(
         is EditorMode.Styling.Multi -> mode.targets.contains(block.id)
         is EditorMode.Select -> selection.contains(block.id)
         else -> false
+    }
+
+    companion object {
+        /**
+         * Short marker used in [BlockView.Embed.text] for processors whose full text
+         * is not needed on mobile. Preserves the non-empty state so the placeholder UI
+         * can distinguish "embed is empty" from "content not available on mobile".
+         */
+        private const val EMBED_NON_EMPTY_MARKER = "\u200B"
     }
 
     private fun setCursor(

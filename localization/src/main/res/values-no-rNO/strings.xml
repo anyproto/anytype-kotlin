@@ -495,6 +495,7 @@
     <string name="reload_object_content">Last objektinnhold på nytt</string>
     <string name="open_link">Åpne lenke</string>
     <string name="open_file">Open file</string>
+    <string name="open_in_browser">Open in Browser</string>
     <string name="copy_email">Kopier e-post</string>
     <string name="copy_phone_number">Kopier telefonnummer</string>
     <string name="send_email">Send e-post</string>
@@ -1642,6 +1643,7 @@ Please provide specific details of your needs here.</string>
     <string name="error_offline_device">Your device appears to be offline. Please connect to the internet and try again.</string>
     <string name="global_search_related_to">"Related to: "</string>
     <string name="global_search_no_related_objects_found">No related objects found</string>
+    <string name="global_search_show_related_objects">Show related objects</string>
     <string name="sort_empty_values_desc">Show empty values</string>
     <string name="sort_empty_values_bottom">On bottom</string>
     <string name="sort_empty_values_top">On top</string>

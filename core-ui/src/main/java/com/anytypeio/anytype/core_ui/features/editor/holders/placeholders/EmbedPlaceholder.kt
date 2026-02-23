@@ -50,6 +50,10 @@ class EmbedPlaceholder(
         timber.log.Timber.d("EmbedPlaceholder: bind called with isSelected=${item.isSelected} for id=${item.id}")
         select(item.isSelected)
 
+        // Note: for processors not usable on mobile (Excalidraw, Mermaid, etc.),
+        // item.text may be a short non-empty marker instead of the original content,
+        // to avoid expensive main-thread string operations on large data blobs.
+        // The empty vs non-empty distinction is preserved for the UI logic below.
         val trimmedText = item.text.trim()
         val canOpen = item.processor.canOpenEmbedExternally() && trimmedText.isNotEmpty()
 

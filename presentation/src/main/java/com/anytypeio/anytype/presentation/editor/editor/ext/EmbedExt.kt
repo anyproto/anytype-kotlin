@@ -33,10 +33,15 @@ fun Block.Content.Embed.Processor.toDisplayName(): String {
 
 /**
  * Whether the embed's full text content is needed on mobile.
+ *
  * Processors that can open externally need the text (it's a URL).
  * Others (Excalidraw, Mermaid, etc.) store large data blobs that are
  * never displayed or used on mobile, so we can drop them to avoid
  * expensive main-thread string operations (DiffUtil, equals, trim).
+ *
+ * This is the single source of truth for this categorization.
+ * [com.anytypeio.anytype.core_ui.extensions.canOpenEmbedExternally]
+ * delegates to this function so the logic is not duplicated.
  */
 fun Block.Content.Embed.Processor.isTextNeededOnMobile(): Boolean {
     return when (this) {

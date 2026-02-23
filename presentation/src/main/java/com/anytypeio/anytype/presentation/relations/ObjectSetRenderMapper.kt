@@ -76,24 +76,14 @@ suspend fun DVViewer.render(
 ): Viewer {
     return when (type) {
         DVViewerType.GRID -> {
-            // Grid is deprecated on mobile - fallback to List rendering
-            val vmap = viewerRelations.associateBy { it.key }
-            val visibleRelations = dataViewRelations.filter { relation ->
-                val vr = vmap[relation.key]
-                vr?.isVisible ?: false
-            }
-            Viewer.ListView(
-                id = id,
-                items = buildListViews(
-                    objects = objects,
-                    relations = visibleRelations,
-                    urlBuilder = builder,
-                    store = store,
-                    objectOrderIds = objectOrderIds,
-                    fieldParser = fieldParser,
-                    storeOfObjectTypes = storeOfObjectTypes
-                ),
-                title = name
+            buildGridView(
+                dataViewRelations = dataViewRelations,
+                objects = objects,
+                builder = builder,
+                store = store,
+                objectOrderIds = objectOrderIds,
+                fieldParser = fieldParser,
+                storeOfObjectTypes = storeOfObjectTypes
             )
         }
         DVViewerType.GALLERY -> {

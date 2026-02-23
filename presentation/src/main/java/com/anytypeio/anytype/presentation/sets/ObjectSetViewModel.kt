@@ -3373,26 +3373,10 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
 
             ViewersWidgetUi.Action.Plus -> {
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-                // Determine default layout based on object type
-                val defaultLayout = when (state) {
-                    is ObjectState.DataView.TypeSet -> {
-                        val setOfValue = state.getSetOfValue(vmParams.ctx)
-                        val typeId = setOfValue.firstOrNull()
-                        val typeWrapper = typeId?.let { state.details.getTypeObject(it) }
-                        val uniqueKey = typeWrapper?.uniqueKey
-                        if (uniqueKey == ObjectTypeIds.IMAGE || uniqueKey == ObjectTypeIds.VIDEO) {
-                            DVViewerType.GALLERY
-                        } else {
-                            DVViewerType.LIST
-                        }
-                    }
-
-                    else -> DVViewerType.LIST
-                }
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = defaultLayout,
+                    type = DVViewerType.GRID,
                     filters = emptyList(),
                     sorts = emptyList()
                 )

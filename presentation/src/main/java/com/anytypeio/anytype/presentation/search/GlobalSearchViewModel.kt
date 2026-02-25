@@ -35,11 +35,16 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
-import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -48,6 +53,9 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
@@ -85,9 +93,12 @@ class GlobalSearchViewModel @Inject constructor(
     private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
     private val fieldParser: FieldParser,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val setObjectListIsFavorite: SetObjectListIsFavorite,
     private val setObjectListIsArchived: SetObjectListIsArchived,
-    private val deepLinkResolver: DeepLinkResolver
+    private val deepLinkResolver: DeepLinkResolver,
+    private val createWidget: CreateWidget,
+    private val spaceManager: SpaceManager,
+    private val getObject: GetObject,
+    private val payloadDelegator: PayloadDelegator
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -448,22 +459,48 @@ class GlobalSearchViewModel @Inject constructor(
     }
 
     /**
-     * Pins (favorites) the object.
+     * Pins (creates a widget for) the object.
      */
     fun onPinObject(item: GlobalSearchItemView) {
         Timber.d("onPinObject, item: ${item.id}")
         viewModelScope.launch {
-            setObjectListIsFavorite.async(
-                SetObjectListIsFavorite.Params(
-                    objectIds = listOf(item.id),
-                    isFavorite = true
+            val config = spaceManager.getConfig()
+            if (config == null) {
+                Timber.e("Cannot pin object: space config is missing")
+                return@launch
+            }
+
+            var target: Id? = null
+            getObject.async(
+                GetObject.Params(
+                    target = config.widgets,
+                    space = SpaceId(config.space),
+                    saveAsLastOpened = false
                 )
-            ).fold(
-                onSuccess = {
-                    Timber.d("Object pinned successfully: ${item.id}")
+            ).onSuccess { objectView ->
+                objectView.blocks.find { it.content is Block.Content.Widget }?.let {
+                    target = it.id
+                }
+            }
+
+            val params = CreateWidget.Params(
+                ctx = config.widgets,
+                source = item.id,
+                type = when {
+                    item.layout.isDataView() -> WidgetLayout.VIEW
+                    item.layout == ObjectType.Layout.PARTICIPANT -> WidgetLayout.LINK
+                    else -> WidgetLayout.TREE
+                },
+                position = Position.TOP,
+                target = target
+            )
+            createWidget.async(params).fold(
+                onSuccess = { payload ->
+                    payloadDelegator.dispatch(payload)
+                    Timber.d("Widget created for object: ${item.id}")
                 },
                 onFailure = { e ->
-                    Timber.e(e, "Error while pinning object")
+                    Timber.e(e, "Error while creating widget")
                 }
             )
         }
@@ -552,9 +589,12 @@ class GlobalSearchViewModel @Inject constructor(
         private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
         private val fieldParser: FieldParser,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val setObjectListIsFavorite: SetObjectListIsFavorite,
         private val setObjectListIsArchived: SetObjectListIsArchived,
-        private val deepLinkResolver: DeepLinkResolver
+        private val deepLinkResolver: DeepLinkResolver,
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager,
+        private val getObject: GetObject,
+        private val payloadDelegator: PayloadDelegator
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -570,9 +610,12 @@ class GlobalSearchViewModel @Inject constructor(
                 updateGlobalSearchHistory = updateGlobalSearchHistory,
                 fieldParser = fieldParser,
                 spaceViews = spaceViews,
-                setObjectListIsFavorite = setObjectListIsFavorite,
                 setObjectListIsArchived = setObjectListIsArchived,
-                deepLinkResolver = deepLinkResolver
+                deepLinkResolver = deepLinkResolver,
+                createWidget = createWidget,
+                spaceManager = spaceManager,
+                getObject = getObject,
+                payloadDelegator = payloadDelegator
             ) as T
         }
     }

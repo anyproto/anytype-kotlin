@@ -164,8 +164,9 @@ fun WidgetsScreen(
     val hideCountersInOtherSections = !isUnreadSectionCollapsed
             && unreadWidgetView?.elements?.isNotEmpty() == true
 
-    // Determine if pinned section should be visible
+    // Determine if sections should be visible
     val isPinnedSectionCollapsed = collapsedSections.contains(SECTION_PINNED)
+    val isObjectsSectionCollapsed = collapsedSections.contains(SECTION_OBJECT_TYPE)
 
     // Track previous collapse state to detect expand transitions
     val wasCollapsed = remember { mutableStateOf(isPinnedSectionCollapsed) }
@@ -305,8 +306,8 @@ fun WidgetsScreen(
                                 }
                             }
                         }
-                        // Pinned widgets
-                        renderWidgetSection(
+                        // Pinned widgets (hidden when section is collapsed)
+                        if (!isPinnedSectionCollapsed) renderWidgetSection(
                             widgets = pinnedUi,
                             reorderableState = reorderableState,
                             view = view,
@@ -343,29 +344,31 @@ fun WidgetsScreen(
                                 )
                             }
                         }
-                        // Type widgets
-                        item(key = OBJECT_TYPES_GROUP_ID) {
-                            ObjectTypesGroupWidgetCard(
-                                typeRows = typeRowsUi,
-                                onTypeClicked = { typeId ->
-                                    viewModel.onTypeRowClicked(typeId)
-                                },
-                                onCreateObjectClicked = { typeId ->
-                                    viewModel.onCreateObjectFromTypeRow(typeId)
-                                },
-                                onCreateNewTypeClicked = {
-                                    viewModel.onCreateNewTypeClicked()
-                                },
-                                onTypeRowsReordered = { fromIndex, toIndex ->
-                                    if (fromIndex != toIndex && fromIndex in typeRowsUi.indices && toIndex in typeRowsUi.indices) {
-                                        val reorderedIds = typeRowsUi.map { it.id }.toMutableList()
-                                        val movedId = reorderedIds.removeAt(fromIndex)
-                                        reorderedIds.add(toIndex, movedId)
-                                        pendingTypeRowOrder.value = reorderedIds
-                                        viewModel.onTypeRowsReordered(reorderedIds)
+                        // Type widgets (hidden when section is collapsed)
+                        if (!isObjectsSectionCollapsed) {
+                            item(key = OBJECT_TYPES_GROUP_ID) {
+                                ObjectTypesGroupWidgetCard(
+                                    typeRows = typeRowsUi,
+                                    onTypeClicked = { typeId ->
+                                        viewModel.onTypeRowClicked(typeId)
+                                    },
+                                    onCreateObjectClicked = { typeId ->
+                                        viewModel.onCreateObjectFromTypeRow(typeId)
+                                    },
+                                    onCreateNewTypeClicked = {
+                                        viewModel.onCreateNewTypeClicked()
+                                    },
+                                    onTypeRowsReordered = { fromIndex, toIndex ->
+                                        if (fromIndex != toIndex && fromIndex in typeRowsUi.indices && toIndex in typeRowsUi.indices) {
+                                            val reorderedIds = typeRowsUi.map { it.id }.toMutableList()
+                                            val movedId = reorderedIds.removeAt(fromIndex)
+                                            reorderedIds.add(toIndex, movedId)
+                                            pendingTypeRowOrder.value = reorderedIds
+                                            viewModel.onTypeRowsReordered(reorderedIds)
+                                        }
                                     }
-                                }
-                            )
+                                )
+                            }
                         }
                     }
 

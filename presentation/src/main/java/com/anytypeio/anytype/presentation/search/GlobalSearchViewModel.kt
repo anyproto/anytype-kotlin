@@ -37,7 +37,10 @@ import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.dashboard.interactor.SetObjectListIsFavorite
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -81,7 +84,10 @@ class GlobalSearchViewModel @Inject constructor(
     private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
     private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val setObjectListIsFavorite: SetObjectListIsFavorite,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val deepLinkResolver: DeepLinkResolver
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -441,6 +447,64 @@ class GlobalSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Pins (favorites) the object.
+     */
+    fun onPinObject(item: GlobalSearchItemView) {
+        Timber.d("onPinObject, item: ${item.id}")
+        viewModelScope.launch {
+            setObjectListIsFavorite.async(
+                SetObjectListIsFavorite.Params(
+                    objectIds = listOf(item.id),
+                    isFavorite = true
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Object pinned successfully: ${item.id}")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while pinning object")
+                }
+            )
+        }
+    }
+
+    /**
+     * Copies the object's deep link to clipboard.
+     */
+    fun onCopyLink(item: GlobalSearchItemView) {
+        Timber.d("onCopyLink, item: ${item.id}")
+        viewModelScope.launch {
+            val link = deepLinkResolver.createObjectDeepLink(
+                obj = item.id,
+                space = vmParams.space
+            )
+            commands.emit(SearchCommand.CopyLinkToClipboard(link = link))
+        }
+    }
+
+    /**
+     * Moves the object to bin (archives it).
+     */
+    fun onMoveToBin(item: GlobalSearchItemView) {
+        Timber.d("onMoveToBin, item: ${item.id}")
+        viewModelScope.launch {
+            setObjectListIsArchived.async(
+                SetObjectListIsArchived.Params(
+                    targets = listOf(item.id),
+                    isArchived = true
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Object moved to bin: ${item.id}")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while moving object to bin")
+                }
+            )
+        }
+    }
+
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
@@ -487,7 +551,10 @@ class GlobalSearchViewModel @Inject constructor(
         private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
         private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
         private val fieldParser: FieldParser,
-        private val spaceViews: SpaceViewSubscriptionContainer
+        private val spaceViews: SpaceViewSubscriptionContainer,
+        private val setObjectListIsFavorite: SetObjectListIsFavorite,
+        private val setObjectListIsArchived: SetObjectListIsArchived,
+        private val deepLinkResolver: DeepLinkResolver
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -502,7 +569,10 @@ class GlobalSearchViewModel @Inject constructor(
                 restoreGlobalSearchHistory = restoreGlobalSearchHistory,
                 updateGlobalSearchHistory = updateGlobalSearchHistory,
                 fieldParser = fieldParser,
-                spaceViews = spaceViews
+                spaceViews = spaceViews,
+                setObjectListIsFavorite = setObjectListIsFavorite,
+                setObjectListIsArchived = setObjectListIsArchived,
+                deepLinkResolver = deepLinkResolver
             ) as T
         }
     }
@@ -564,6 +634,7 @@ class GlobalSearchViewModel @Inject constructor(
             val name: String,
             val isVideo: Boolean
         ) : SearchCommand()
+        data class CopyLinkToClipboard(val link: String) : SearchCommand()
     }
 
     companion object {

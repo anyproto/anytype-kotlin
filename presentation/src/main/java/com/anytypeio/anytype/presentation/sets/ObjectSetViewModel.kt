@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
@@ -2221,6 +2222,42 @@ class ObjectSetViewModel(
             if (!url.isNullOrBlank()) {
                 dispatch(ObjectSetCommand.Browse(url))
                 return
+            }
+        }
+        // If the object is a file, open it in the system previewer/player
+        if (SupportedLayouts.isFileLayout(obj.layout)) {
+            val layout = obj.layout
+            val name = fieldParser.getObjectName(obj)
+            when (layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        ObjectSetCommand.PlayMedia(
+                            targetObjectId = obj.id,
+                            name = name,
+                            isVideo = true
+                        )
+                    )
+                    return
+                }
+                ObjectType.Layout.AUDIO -> {
+                    dispatch(
+                        ObjectSetCommand.PlayMedia(
+                            targetObjectId = obj.id,
+                            name = name,
+                            isVideo = false
+                        )
+                    )
+                    return
+                }
+                else -> {
+                    if (layout != null) {
+                        val url = urlBuilder.getUrlBasedOnFileLayout(obj.id, layout)
+                        if (url != null) {
+                            dispatch(ObjectSetCommand.Browse(url))
+                            return
+                        }
+                    }
+                }
             }
         }
         if (obj.id == vmParams.ctx) {

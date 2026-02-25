@@ -64,7 +64,7 @@ class ManageSectionsViewModel(
                                 type = config.id,
                                 isVisible = config.isVisible,
                                 order = config.order,
-                                canReorder = false,
+                                canReorder = true,
                                 canToggle = config.isUserConfigurable
                             )
                         }

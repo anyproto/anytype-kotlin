@@ -42,6 +42,9 @@ class ManageSectionsFragment : Fragment() {
             onSectionVisibilityChanged = { sectionType, isVisible ->
                 vm.onSectionVisibilityChanged(sectionType, isVisible)
             },
+            onSectionsReordered = { reorderedSections ->
+                vm.onSectionsReordered(reorderedSections)
+            },
             onBackPressed = {
                 vm.onBackPressed()
             }

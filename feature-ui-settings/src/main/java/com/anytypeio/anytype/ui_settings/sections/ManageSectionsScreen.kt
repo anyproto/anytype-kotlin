@@ -1,5 +1,7 @@
 package com.anytypeio.anytype.ui_settings.sections
 
+import android.view.View
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -11,21 +13,24 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -34,11 +39,14 @@ import com.anytypeio.anytype.presentation.spaces.ManageSectionsState
 import com.anytypeio.anytype.presentation.spaces.SectionItem
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.localization.R as LocalizationR
+import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableScope
 
 @Composable
 fun ManageSectionsScreen(
     state: ManageSectionsState,
     onSectionVisibilityChanged: (WidgetSectionType, Boolean) -> Unit,
+    onSectionsReordered: (List<SectionItem>) -> Unit,
     onBackPressed: () -> Unit
 ) {
     Column(
@@ -101,16 +109,39 @@ fun ManageSectionsScreen(
                 }
             }
             is ManageSectionsState.Content -> {
-                LazyColumn(
-                    modifier = Modifier.fillMaxSize()
+                val view = LocalView.current
+                Column(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .verticalScroll(rememberScrollState())
                 ) {
-                    items(state.sections) { section ->
-                        SectionListItem(
-                            section = section,
-                            onVisibilityChanged = { isVisible ->
-                                onSectionVisibilityChanged(section.type, isVisible)
+                    ReorderableColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        list = state.sections,
+                        onSettle = { fromIndex, toIndex ->
+                            if (fromIndex != toIndex) {
+                                val reordered = state.sections.toMutableList()
+                                val item = reordered.removeAt(fromIndex)
+                                reordered.add(toIndex, item)
+                                onSectionsReordered(reordered)
                             }
-                        )
+                        },
+                        onMove = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+                            )
+                        }
+                    ) { index, section, isDragging ->
+                        key(section.type) {
+                            DraggableSectionListItem(
+                                section = section,
+                                onVisibilityChanged = { isVisible ->
+                                    onSectionVisibilityChanged(section.type, isVisible)
+                                },
+                                view = view
+                            )
+                        }
                     }
                 }
             }
@@ -119,9 +150,10 @@ fun ManageSectionsScreen(
 }
 
 @Composable
-private fun SectionListItem(
+private fun ReorderableScope.DraggableSectionListItem(
     section: SectionItem,
-    onVisibilityChanged: (Boolean) -> Unit
+    onVisibilityChanged: (Boolean) -> Unit,
+    view: View
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -129,6 +161,20 @@ private fun SectionListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
+                .longPressDraggableHandle(
+                    onDragStarted = {
+                        ViewCompat.performHapticFeedback(
+                            view,
+                            HapticFeedbackConstantsCompat.GESTURE_START
+                        )
+                    },
+                    onDragStopped = {
+                        ViewCompat.performHapticFeedback(
+                            view,
+                            HapticFeedbackConstantsCompat.GESTURE_END
+                        )
+                    }
+                )
                 .clickable(enabled = section.canToggle) {
                     onVisibilityChanged(!section.isVisible)
                 }
@@ -165,6 +211,17 @@ private fun SectionListItem(
                 color = colorResource(R.color.text_primary),
                 modifier = Modifier.weight(1f)
             )
+
+            // Drag handle icon
+            if (section.canReorder) {
+                Image(
+                    painter = painterResource(
+                        id = com.anytypeio.anytype.core_ui.R.drawable.ic_drag_handle_dots
+                    ),
+                    contentDescription = null,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
         }
         
         // Bottom divider

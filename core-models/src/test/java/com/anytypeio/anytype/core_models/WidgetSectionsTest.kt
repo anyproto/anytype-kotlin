@@ -204,6 +204,25 @@ class WidgetSectionsTest {
         }
     }
 
+    @Test
+    fun `withDefaults preserves user-defined order for existing sections`() {
+        // User moved BIN to position 0
+        val sections = WidgetSections(
+            sections = listOf(
+                WidgetSectionConfig(id = WidgetSectionType.BIN, isVisible = true, order = 0),
+                WidgetSectionConfig(id = WidgetSectionType.PINNED, isVisible = true, order = 1),
+                WidgetSectionConfig(id = WidgetSectionType.OBJECTS, isVisible = true, order = 2)
+            )
+        )
+
+        val result = sections.withDefaults()
+
+        // BIN should stay before PINNED (user's order), not reset to default index 4
+        val binOrder = result.sections.find { it.id == WidgetSectionType.BIN }!!.order
+        val pinnedOrder = result.sections.find { it.id == WidgetSectionType.PINNED }!!.order
+        assertTrue(binOrder < pinnedOrder, "BIN should remain before PINNED after withDefaults")
+    }
+
     // ========================================
     // Tests for WidgetSectionType
     // ========================================

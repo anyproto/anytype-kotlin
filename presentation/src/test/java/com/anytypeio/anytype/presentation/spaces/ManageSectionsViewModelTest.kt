@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.presentation.spaces
 
-import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.Config
 import com.anytypeio.anytype.core_models.StubConfig
 import com.anytypeio.anytype.core_models.WidgetSectionConfig
@@ -41,9 +40,6 @@ class ManageSectionsViewModelTest {
     @Mock
     lateinit var userSettingsRepository: UserSettingsRepository
 
-    @Mock
-    lateinit var analytics: Analytics
-
     private val testConfig = StubConfig()
     private val testSpaceId = SpaceId(testConfig.space)
 
@@ -73,8 +69,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -84,19 +79,20 @@ class ManageSectionsViewModelTest {
     }
 
     @Test
-    fun `initial load sets canReorder true for all sections`() = runTest {
+    fun `initial load sets canReorder true for configurable sections and false for UNREAD`() = runTest {
         stubDefaults()
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
         val state = vm.uiState.value
         assertIs<ManageSectionsState.Content>(state)
-        state.sections.forEach { section ->
+        val unread = state.sections.find { it.type == WidgetSectionType.UNREAD }!!
+        assertFalse(unread.canReorder, "UNREAD should have canReorder=false")
+        state.sections.filter { it.type != WidgetSectionType.UNREAD }.forEach { section ->
             assertTrue(section.canReorder, "${section.type} should have canReorder=true")
         }
     }
@@ -107,8 +103,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -123,8 +118,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -150,8 +144,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -171,8 +164,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -196,8 +188,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -218,8 +209,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -246,8 +236,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -268,8 +257,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -296,8 +284,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -315,8 +302,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 
@@ -336,8 +322,7 @@ class ManageSectionsViewModelTest {
 
         val vm = ManageSectionsViewModel(
             spaceManager = spaceManager,
-            userSettingsRepository = userSettingsRepository,
-            analytics = analytics
+            userSettingsRepository = userSettingsRepository
         )
         advanceUntilIdle()
 

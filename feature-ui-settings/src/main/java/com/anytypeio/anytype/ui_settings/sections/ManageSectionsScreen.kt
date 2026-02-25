@@ -4,19 +4,16 @@ import android.view.View
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
@@ -110,20 +107,23 @@ fun ManageSectionsScreen(
             }
             is ManageSectionsState.Content -> {
                 val view = LocalView.current
+                val fixedSections = state.sections.filter { !it.canReorder }
+                val reorderableSections = state.sections.filter { it.canReorder }
                 Column(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .verticalScroll(rememberScrollState())
+                    modifier = Modifier.fillMaxSize()
                 ) {
+                    fixedSections.forEach { section ->
+                        FixedSectionListItem(section = section)
+                    }
                     ReorderableColumn(
                         modifier = Modifier.fillMaxWidth(),
-                        list = state.sections,
+                        list = reorderableSections,
                         onSettle = { fromIndex, toIndex ->
                             if (fromIndex != toIndex) {
-                                val reordered = state.sections.toMutableList()
+                                val reordered = reorderableSections.toMutableList()
                                 val item = reordered.removeAt(fromIndex)
                                 reordered.add(toIndex, item)
-                                onSectionsReordered(reordered)
+                                onSectionsReordered(fixedSections + reordered)
                             }
                         },
                         onMove = {
@@ -146,6 +146,38 @@ fun ManageSectionsScreen(
                 }
             }
         }
+    }
+}
+
+@Composable
+private fun FixedSectionListItem(
+    section: SectionItem
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(52.dp)
+                .padding(horizontal = 16.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = getSectionTitle(section.type),
+                style = BodyRegular,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.weight(1f)
+            )
+        }
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.BottomCenter),
+            color = colorResource(R.color.shape_primary),
+            thickness = 0.5.dp
+        )
     }
 }
 
@@ -180,31 +212,21 @@ private fun ReorderableScope.DraggableSectionListItem(
                 }
                 .height(52.dp)
                 .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left icon - checkbox or empty space
-            Box(
-                modifier = Modifier.size(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (section.canToggle) {
-                    Image(
-                        painter = painterResource(
-                            id = if (section.isVisible) {
-                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_checked
-                            } else {
-                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_unchecked
-                            }
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
+            Image(
+                painter = painterResource(
+                    id = if (section.isVisible) {
+                        com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_checked
+                    } else {
+                        com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_unchecked
+                    }
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
 
-            Spacer(modifier = Modifier.width(10.dp))
-
-            // Section title
             Text(
                 text = getSectionTitle(section.type),
                 style = BodyRegular,
@@ -212,19 +234,14 @@ private fun ReorderableScope.DraggableSectionListItem(
                 modifier = Modifier.weight(1f)
             )
 
-            // Drag handle icon
-            if (section.canReorder) {
-                Image(
-                    painter = painterResource(
-                        id = com.anytypeio.anytype.core_ui.R.drawable.ic_drag_handle_dots
-                    ),
-                    contentDescription = null,
-                    modifier = Modifier.size(24.dp)
-                )
-            }
+            Image(
+                painter = painterResource(
+                    id = com.anytypeio.anytype.core_ui.R.drawable.ic_section_dragger
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
         }
-        
-        // Bottom divider
         Divider(
             modifier = Modifier
                 .fillMaxWidth()

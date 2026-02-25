@@ -3,12 +3,10 @@ package com.anytypeio.anytype.presentation.spaces
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
-import com.anytypeio.anytype.analytics.base.Analytics
 import com.anytypeio.anytype.core_models.WidgetSectionConfig
 import com.anytypeio.anytype.core_models.WidgetSections
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
-import com.anytypeio.anytype.domain.base.fold
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.common.BaseViewModel
@@ -18,13 +16,14 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import timber.log.Timber
 
 class ManageSectionsViewModel(
     private val spaceManager: SpaceManager,
-    private val userSettingsRepository: UserSettingsRepository,
-    private val analytics: Analytics
+    private val userSettingsRepository: UserSettingsRepository
 ) : BaseViewModel() {
 
     private val _uiState = MutableStateFlow<ManageSectionsState>(ManageSectionsState.Loading)
@@ -36,6 +35,7 @@ class ManageSectionsViewModel(
         loadSections()
     }
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     private fun loadSections() {
         viewModelScope.launch {
             spaceManager.observe()
@@ -43,33 +43,28 @@ class ManageSectionsViewModel(
                     Timber.e(e, "Error observing current space")
                     _uiState.value = ManageSectionsState.Error
                 }
-                .collect { config ->
+                .flatMapLatest { config ->
                     val spaceId = SpaceId(config.space)
-                    loadSectionsForSpace(spaceId)
+                    userSettingsRepository.observeWidgetSections(spaceId)
+                        .map { widgetSections -> spaceId to widgetSections }
                 }
-        }
-    }
-
-    private fun loadSectionsForSpace(spaceId: SpaceId) {
-        viewModelScope.launch {
-            userSettingsRepository.observeWidgetSections(spaceId)
                 .catch { e ->
                     Timber.e(e, "Error loading widget sections")
                     _uiState.value = ManageSectionsState.Error
                 }
-                .collect { widgetSections ->
+                .collect { (spaceId, widgetSections) ->
                     val items = widgetSections.withDefaults().sections
                         .map { config ->
                             SectionItem(
                                 type = config.id,
                                 isVisible = config.isVisible,
                                 order = config.order,
-                                canReorder = true,
+                                canReorder = config.isUserConfigurable,
                                 canToggle = config.isUserConfigurable
                             )
                         }
                         .sortedBy { it.order }
-                    
+
                     _uiState.value = ManageSectionsState.Content(
                         sections = items,
                         spaceId = spaceId
@@ -108,18 +103,21 @@ class ManageSectionsViewModel(
 
     private fun saveSections(spaceId: SpaceId, sections: List<SectionItem>) {
         viewModelScope.launch {
-            val widgetSections = WidgetSections(
-                sections = sections.map { item ->
-                    WidgetSectionConfig(
-                        id = item.type,
-                        isVisible = item.isVisible,
-                        order = item.order,
-                        isUserConfigurable = item.type.isUserConfigurable()
-                    )
-                }
-            )
-            
-            userSettingsRepository.setWidgetSections(spaceId, widgetSections)
+            try {
+                val widgetSections = WidgetSections(
+                    sections = sections.map { item ->
+                        WidgetSectionConfig(
+                            id = item.type,
+                            isVisible = item.isVisible,
+                            order = item.order,
+                            isUserConfigurable = item.type.isUserConfigurable()
+                        )
+                    }
+                )
+                userSettingsRepository.setWidgetSections(spaceId, widgetSections)
+            } catch (e: Exception) {
+                Timber.e(e, "Error saving widget sections")
+            }
         }
     }
 
@@ -135,15 +133,13 @@ class ManageSectionsViewModel(
 
     class Factory @Inject constructor(
         private val spaceManager: SpaceManager,
-        private val userSettingsRepository: UserSettingsRepository,
-        private val analytics: Analytics
+        private val userSettingsRepository: UserSettingsRepository
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
             return ManageSectionsViewModel(
                 spaceManager = spaceManager,
-                userSettingsRepository = userSettingsRepository,
-                analytics = analytics
+                userSettingsRepository = userSettingsRepository
             ) as T
         }
     }

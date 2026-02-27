@@ -145,9 +145,9 @@
     <string name="kanban_view">Kanban Ansicht</string>
     <string name="properties">Eigenschaften</string>
     <string name="sort">Sortierung</string>
-    <string name="sort_empty_state">Keine Sorten hier. Sie können einige hinzufügen</string>
-    <string name="filter_empty_state">Keine Filter hier. Sie können einige hinzufügen.</string>
-    <string name="relation_status_value_empty_state">Keine verwandten Optionen hier. Sie können einige hinzufügen</string>
+    <string name="sort_empty_state">Keine Sortierungen. Du kannst welche hinzufügen</string>
+    <string name="filter_empty_state">Keine Filter gesetzt. Du kannst welche hinzufügen</string>
+    <string name="relation_status_value_empty_state">Keine zugehörigen Optionen. Du kannst welche hinzufügen</string>
     <string name="filter_by">Filter nach</string>
     <string name="filter">Filter</string>
     <string name="modal_view">Ansicht</string>
@@ -207,7 +207,7 @@
     <string name="archive">Archiv</string>
     <string name="add_block_option_icon">Add block option icon</string>
     <string name="bookmark_error_menu_button">Bookmark error menu button</string>
-    <string name="bookmark_error">Es ist etwas schiefgelaufen, versuchen Sie es noch einmal</string>
+    <string name="bookmark_error">Etwas ist schiefgelaufen. Erneut versuchen</string>
     <string name="deleted_type">Gelöschter Typ</string>
     <string name="deleted_type_in_set">Typ: Gelöscht</string>
     <string name="menu_item_bold">Fett</string>
@@ -297,7 +297,7 @@
     <string name="sync_status_toast_synced_local">Nur lokal</string>
     <string name="sync_status_toast_synced_self_hosted">Im selbst gehosteten Netzwerk gesichert</string>
     <string name="sync_status_toast_failed">Synchronisierung fehlgeschlagen, versuche es erneut</string>
-    <string name="sync_status_toast_incompatible">Version veraltet. Bitte aktualisieren Sie Anytype</string>
+    <string name="sync_status_toast_incompatible">Version veraltet. Bitte aktualisiere Anytype</string>
     <string name="relation_format_description">Beschreibung</string>
     <string name="relation_format_title">Titel</string>
     <string name="relation_format_number">Nummer</string>
@@ -551,7 +551,7 @@
     <string name="random">Zufällig</string>
     <string name="choose">Wähle</string>
     <string name="attributes">Attribut</string>
-    <string name="file_delete_alert_title">Möchten Sie die Dateien wirklich unwiderruflich löschen?</string>
+    <string name="file_delete_alert_title">Bist du sicher, dass du die Dateien unwiderruflich löschen möchtest?</string>
     <string name="file_delete_alert_subtitle">Diese Aktion kann nicht rückgängig gemacht werden.</string>
     <string name="file_delete_cancel">Abbrechen</string>
     <string name="file_delete_delete">Löschen</string>
@@ -1431,7 +1431,7 @@
     <string name="payments_card_text_1">Erschaffe die Vision mit</string>
     <string name="payments_card_description_1">Als geschätztes Mitglied zählt deine Stimme! Nimm an exklusiven Veranstaltungen teil, gestalte strategische Entscheidungen und beeinflusse unseren Entwicklungsplan.</string>
     <string name="payments_card_text_2">Mitgliedsvorteile freischalten</string>
-    <string name="payments_card_description_2">Mitglieder genießen größeren Backup-Speicherplatz, größere Synchronisierungs-Limits, Einladungen für mehrere Gäste zum zusammenarbeiten in gemeinsamen Spaces und eine einzigartige Identität in dem Anytype Netzwerk.</string>
+    <string name="payments_card_description_2">Mitglieder profitieren von höheren Speicher- &amp; Synchronisierungslimits für Backups, Einladungen für mehrere Gäste zur Zusammenarbeit in gemeinsamen Space und einer einzigartigen ID im Anytype-Netzwerk.</string>
     <string name="payments_card_text_3">Digitale Unabhängigkeit unterstützen</string>
     <string name="payments_card_description_3">Mit deinem Beitrag unterstützt du unser unabhängiges Team und befürwortest unsere Vision︎ eines nutzergeführten, sicheren und gemeinschaftlichen digitalen Netzwerks.</string>
     <string name="payments_card_text_4">In Konnektivität investieren</string>

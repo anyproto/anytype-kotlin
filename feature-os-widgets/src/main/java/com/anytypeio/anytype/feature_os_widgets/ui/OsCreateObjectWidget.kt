@@ -2,6 +2,7 @@ package com.anytypeio.anytype.feature_os_widgets.ui
 
 import android.content.Context
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.glance.GlanceId
@@ -9,9 +10,11 @@ import androidx.glance.GlanceModifier
 import androidx.glance.GlanceTheme
 import androidx.glance.Image
 import androidx.glance.ImageProvider
+import androidx.glance.LocalSize
 import androidx.glance.action.clickable
 import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetManager
+import androidx.glance.appwidget.SizeMode
 import androidx.glance.appwidget.action.actionStartActivity
 import androidx.glance.appwidget.cornerRadius
 import androidx.glance.appwidget.provideContent
@@ -49,7 +52,13 @@ class OsCreateObjectWidget : GlanceAppWidget() {
         // Give user up to 30 seconds to configure the widget.
         private const val MAX_RETRIES = 60
         private const val RETRY_DELAY_MS = 500L
+        private val SMALL_SIZE = DpSize(57.dp, 57.dp)
+        private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)
     }
+
+    override val sizeMode = SizeMode.Responsive(
+        setOf(SMALL_SIZE, MEDIUM_SIZE)
+    )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         try {
@@ -62,7 +71,7 @@ class OsCreateObjectWidget : GlanceAppWidget() {
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config)
+                    WidgetContent(config = config, size = LocalSize.current)
                 }
             }
         } catch (e: CancellationException) {
@@ -95,128 +104,186 @@ class OsCreateObjectWidget : GlanceAppWidget() {
 }
 
 @Composable
-private fun WidgetContent(config: OsWidgetCreateObjectEntity?) {
+private fun WidgetContent(config: OsWidgetCreateObjectEntity?, size: DpSize) {
+    val isSmall = size.width < 100.dp
+
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
             .background(OsWidgetBackgroundColor)
-            .padding(8.dp)
+            .padding(if (isSmall) 4.dp else 8.dp)
     ) {
         if (config == null) {
-            NotConfiguredState()
+            NotConfiguredState(isSmall = isSmall)
         } else {
-            CreateObjectCard(config = config)
+            CreateObjectCard(config = config, size = size)
         }
     }
 }
 
 @Composable
-private fun NotConfiguredState() {
+private fun NotConfiguredState(isSmall: Boolean) {
     Box(
         modifier = GlanceModifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Column(
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
+        if (isSmall) {
             Image(
                 provider = ImageProvider(R.drawable.ic_anytype_logo_widget),
                 contentDescription = null,
-                modifier = GlanceModifier.size(48.dp)
+                modifier = GlanceModifier.size(32.dp)
             )
-            Spacer(modifier = GlanceModifier.height(12.dp))
-            Text(
-                text = "Widget not configured",
-                style = TextStyle(
-                    color = ColorProvider(OsWidgetTextSecondary),
-                    fontSize = 14.sp
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    provider = ImageProvider(R.drawable.ic_anytype_logo_widget),
+                    contentDescription = null,
+                    modifier = GlanceModifier.size(48.dp)
                 )
-            )
+                Spacer(modifier = GlanceModifier.height(12.dp))
+                Text(
+                    text = "Widget not configured",
+                    style = TextStyle(
+                        color = ColorProvider(OsWidgetTextSecondary),
+                        fontSize = 14.sp
+                    )
+                )
+            }
         }
     }
 }
 
 @Composable
-private fun CreateObjectCard(config: OsWidgetCreateObjectEntity) {
+private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
     val deepLink = OsWidgetDeepLinks.buildCreateObjectDeepLink(config.appWidgetId)
     val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId)
     Timber.tag(TAG).d("CreateObjectCard: appWidgetId=${config.appWidgetId}, spaceId=${config.spaceId}, typeKey=${config.typeKey}, deepLink=$deepLink")
 
-    Column(
+    val isSmall = size.width < 100.dp
+    // Adaptive sizes based on widget dimensions
+    val iconSize = (size.width.value * 0.35f).coerceIn(24f, 48f).dp
+    val emojiFontSize = (iconSize.value * 0.65f).coerceIn(16f, 32f).sp
+    val initialFontSize = (iconSize.value * 0.5f).coerceIn(12f, 24f).sp
+    val nameFontSize = (size.width.value * 0.12f).coerceIn(11f, 14f).sp
+    val padding = (size.width.value * 0.08f).coerceIn(4f, 12f).dp
+    val cornerRadius = if (isSmall) 8.dp else 12.dp
+
+    Box(
         modifier = GlanceModifier
             .fillMaxSize()
             .background(OsWidgetSurfaceColor)
-            .cornerRadius(12.dp)
-            .padding(12.dp)
+            .cornerRadius(cornerRadius)
             .clickable(actionStartActivity(intent)),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalAlignment = Alignment.CenterHorizontally
+        contentAlignment = Alignment.Center
     ) {
-        // Type icon (emoji or placeholder)
-        TypeIcon(config = config)
-        
-        Spacer(modifier = GlanceModifier.height(8.dp))
-        
-        // Type name
-        Text(
-            text = config.typeName.ifEmpty { "Object" },
-            style = TextStyle(
-                color = ColorProvider(OsWidgetTextPrimary),
-                fontSize = 14.sp,
-                fontWeight = FontWeight.Medium
-            ),
-            maxLines = 1
-        )
-        
-        Spacer(modifier = GlanceModifier.height(4.dp))
-        
-        // Space name (secondary)
-        if (config.spaceName.isNotEmpty()) {
-            Text(
-                text = config.spaceName,
-                style = TextStyle(
-                    color = ColorProvider(OsWidgetTextSecondary),
-                    fontSize = 12.sp
-                ),
-                maxLines = 1
-            )
+        if (isSmall) {
+            // Compact layout - icon + type name
+            Column(
+                modifier = GlanceModifier.padding(padding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TypeIcon(
+                    config = config,
+                    iconSize = iconSize,
+                    emojiFontSize = emojiFontSize,
+                    initialFontSize = initialFontSize
+                )
+                Spacer(modifier = GlanceModifier.height(4.dp))
+                Text(
+                    text = config.typeName.ifEmpty { "Object" },
+                    style = TextStyle(
+                        color = ColorProvider(OsWidgetTextPrimary),
+                        fontSize = nameFontSize,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    maxLines = 1
+                )
+            }
+        } else {
+            // Full layout
+            Column(
+                modifier = GlanceModifier.padding(padding),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                TypeIcon(
+                    config = config,
+                    iconSize = iconSize,
+                    emojiFontSize = emojiFontSize,
+                    initialFontSize = initialFontSize
+                )
+
+                Spacer(modifier = GlanceModifier.height(6.dp))
+
+                // Type name
+                Text(
+                    text = config.typeName.ifEmpty { "Object" },
+                    style = TextStyle(
+                        color = ColorProvider(OsWidgetTextPrimary),
+                        fontSize = nameFontSize,
+                        fontWeight = FontWeight.Medium
+                    ),
+                    maxLines = 1
+                )
+
+                // Space name (secondary)
+                if (config.spaceName.isNotEmpty()) {
+                    Spacer(modifier = GlanceModifier.height(4.dp))
+                    Text(
+                        text = config.spaceName,
+                        style = TextStyle(
+                            color = ColorProvider(OsWidgetTextSecondary),
+                            fontSize = 12.sp
+                        ),
+                        maxLines = 1
+                    )
+                }
+
+                Spacer(modifier = GlanceModifier.height(6.dp))
+
+                // Create action hint
+                Text(
+                    text = "Tap to create",
+                    style = TextStyle(
+                        color = ColorProvider(OsWidgetTextTertiary),
+                        fontSize = 11.sp
+                    )
+                )
+            }
         }
-        
-        Spacer(modifier = GlanceModifier.height(8.dp))
-        
-        // Create action hint
-        Text(
-            text = "Tap to create",
-            style = TextStyle(
-                color = ColorProvider(OsWidgetTextTertiary),
-                fontSize = 11.sp
-            )
-        )
     }
 }
 
 @Composable
-private fun TypeIcon(config: OsWidgetCreateObjectEntity) {
+private fun TypeIcon(
+    config: OsWidgetCreateObjectEntity,
+    iconSize: androidx.compose.ui.unit.Dp,
+    emojiFontSize: androidx.compose.ui.unit.TextUnit,
+    initialFontSize: androidx.compose.ui.unit.TextUnit
+) {
     val emoji = config.typeIconEmoji
     val hasCustomIcon = !config.typeIconName.isNullOrEmpty()
-    
+    val iconCornerRadius = (iconSize.value * 0.16f).coerceIn(4f, 8f).dp
+
     if (!emoji.isNullOrEmpty()) {
         // Show emoji
         Text(
             text = emoji,
             style = TextStyle(
-                fontSize = 32.sp
+                fontSize = emojiFontSize
             )
         )
     } else if (hasCustomIcon) {
         // Custom icon type - show colored placeholder
-        // The icon color is based on iconOption (1-10 maps to colors)
         val iconColor = getIconColor(config.typeIconOption)
         val initial = config.typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
         Box(
             modifier = GlanceModifier
-                .size(48.dp)
-                .cornerRadius(8.dp)
+                .size(iconSize)
+                .cornerRadius(iconCornerRadius)
                 .background(OsWidgetIconPlaceholderColor),
             contentAlignment = Alignment.Center
         ) {
@@ -224,7 +291,7 @@ private fun TypeIcon(config: OsWidgetCreateObjectEntity) {
                 text = initial,
                 style = TextStyle(
                     color = ColorProvider(iconColor),
-                    fontSize = 24.sp,
+                    fontSize = initialFontSize,
                     fontWeight = FontWeight.Bold
                 )
             )
@@ -234,8 +301,8 @@ private fun TypeIcon(config: OsWidgetCreateObjectEntity) {
         val initial = config.typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
         Box(
             modifier = GlanceModifier
-                .size(48.dp)
-                .cornerRadius(8.dp)
+                .size(iconSize)
+                .cornerRadius(iconCornerRadius)
                 .background(OsWidgetIconPlaceholderColor),
             contentAlignment = Alignment.Center
         ) {
@@ -243,7 +310,7 @@ private fun TypeIcon(config: OsWidgetCreateObjectEntity) {
                 text = initial,
                 style = TextStyle(
                     color = ColorProvider(OsWidgetTextPrimary),
-                    fontSize = 24.sp,
+                    fontSize = initialFontSize,
                     fontWeight = FontWeight.Bold
                 )
             )

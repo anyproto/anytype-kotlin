@@ -112,3 +112,10 @@
 -dontwarn org.openjsse.javax.net.ssl.SSLParameters
 -dontwarn org.openjsse.javax.net.ssl.SSLSocket
 -dontwarn org.openjsse.net.ssl.OpenJSSE
+
+##---------------Begin: proguard configuration for Dagger ComponentDependencies ----------
+# Prevent R8 from merging ComponentDependencies interfaces into their implementor.
+# These interfaces are used as map keys via @ComponentDependenciesKey; merging them
+# collapses distinct Class<?> keys into one, causing ImmutableMap duplicate-key crashes.
+-keep,allowobfuscation interface * extends com.anytypeio.anytype.di.common.ComponentDependencies
+##---------------End: proguard configuration for Dagger ComponentDependencies ----------

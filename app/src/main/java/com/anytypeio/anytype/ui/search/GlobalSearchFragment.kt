@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -76,6 +77,9 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                     onOpenObjectAsObject = vm::onOpenObjectAsObject,
                     onOpenInBrowser = vm::onOpenInBrowser,
                     onOpenFile = vm::onOpenFile,
+                    onPinObject = vm::onPinObject,
+                    onCopyLink = vm::onCopyLink,
+                    onMoveToBin = vm::onMoveToBin,
                 )
             }
             LaunchedEffect(Unit) {
@@ -103,6 +107,13 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                             }.onFailure {
                                 Timber.e(it, "Error while launching media player")
                             }
+                        }
+                        is GlobalSearchViewModel.SearchCommand.CopyLinkToClipboard -> {
+                            requireContext().copyPlainTextToClipboard(
+                                plainText = command.link,
+                                label = "Object link",
+                                successToast = getString(R.string.link_copied)
+                            )
                         }
                     }
                 }

@@ -763,8 +763,8 @@
     <string name="delete_irrevocably">Diese Objekte werden endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
     <string name="delete_irrevocably_one_object">Dieses Objekt wird endgültig gelöscht. Du kannst diese Aktion nicht rückgängig machen.</string>
     <!-- Object Type Deletion Confirmation -->
-    <string name="move_type_to_bin_title">Move \"%s\" to Bin?</string>
-    <string name="move_type_to_bin_description">Some objects use this type. Select the ones you also want to delete. Objects you don\'t select will remain but lose their type.</string>
+    <string name="move_type_to_bin_title">\"%s\" in den Papierkorb verschieben?</string>
+    <string name="move_type_to_bin_description">Dieser Typ wird von einigen Objekten verwendet. Wählen Sie alles was Sie löschen möchten. Nicht ausgewählte Objekt bleiben bestehen, verlieren aber ihren zugeordneten Typ.</string>
     <string name="move_type_to_bin_no_objects">There are no objects of this type</string>
     <string name="move_type_to_bin_select_all">Alles auswählen</string>
     <string name="move_type_to_bin_to_bin">In den Papierkorb verschieben</string>

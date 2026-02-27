@@ -265,7 +265,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE
         )
 
         stubCheckAuthStatus(response)
@@ -320,7 +320,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE,
             chatId = chatId,
             spaceUxType = SpaceUxType.CHAT
         )
@@ -373,7 +373,7 @@ class SplashViewModelTest {
         val spaceView = StubSpaceView(
             targetSpaceId = space,
             spaceLocalStatus = SpaceStatus.OK,
-            spaceAccountStatus = SpaceStatus.OK,
+            spaceAccountStatus = SpaceStatus.SPACE_ACTIVE,
             chatId = chatId,
             spaceUxType = SpaceUxType.DATA
         )
@@ -401,6 +401,56 @@ class SplashViewModelTest {
             // Act
             vm.onDeepLinkLaunch(deeplink)
 
+            val first = awaitItem()
+            assertEquals(
+                expected = SplashViewModel.Command.NavigateToWidgets(
+                    space = space,
+                    deeplink = deeplink
+                ),
+                actual = first
+            )
+        }
+    }
+
+    @Test
+    fun `should navigate when space account status is UNKNOWN`() = runTest {
+        // GIVEN
+        val deeplink = "test-deeplink"
+        val status = AuthStatus.AUTHORIZED
+        val response = Resultat.Success(Pair(status, Account(id = "id")))
+
+        val space = defaultSpaceConfig.space
+
+        val spaceView = StubSpaceView(
+            targetSpaceId = space,
+            spaceLocalStatus = SpaceStatus.LOADING,  // Still loading locally
+            spaceAccountStatus = SpaceStatus.UNKNOWN  // Account status not yet determined
+        )
+
+        stubCheckAuthStatus(response)
+        stubLaunchWallet()
+        stubLaunchAccount()
+        stubGetLastOpenedObject()
+
+        getLastOpenedSpace.stub {
+            onBlocking { async(Unit) } doReturn Resultat.Success(SpaceId(space))
+        }
+
+        initViewModel()
+
+        // WHEN
+        spaceManager.stub {
+            on { observe() } doReturn flowOf(defaultSpaceConfig)
+        }
+        spaceViewSubscriptionContainer.stub {
+            on { observe(SpaceId(defaultSpaceConfig.space)) } doReturn flowOf(spaceView)
+        }
+
+        vm.commands.test {
+            // Act
+            vm.onDeepLinkLaunch(deeplink)
+
+            // THEN - navigation proceeds without waiting for OK status
             val first = awaitItem()
             assertEquals(
                 expected = SplashViewModel.Command.NavigateToWidgets(

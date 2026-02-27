@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="80dp"
+    android:height="80dp"
+    android:viewportWidth="80"
+    android:viewportHeight="80">
+    <!-- Background -->
+    <path
+        android:pathData="M12,0 L68,0 Q80,0 80,12 L80,68 Q80,80 68,80 L12,80 Q0,80 0,68 L0,12 Q0,0 12,0 Z"
+        android:fillColor="#1F1E1D"/>
+    <!-- Document rounded rect -->
+    <path
+        android:pathData="M26,22 L54,22 Q58,22 58,26 L58,54 Q58,58 54,58 L26,58 Q22,58 22,54 L22,26 Q22,22 26,22 Z"
+        android:fillColor="#FFFFFF"/>
+    <!-- Document lines -->
+    <path
+        android:pathData="M28,32 L52,32"
+        android:strokeColor="#1F1E1D"
+        android:strokeWidth="2.5"/>
+    <path
+        android:pathData="M28,40 L46,40"
+        android:strokeColor="#1F1E1D"
+        android:strokeWidth="2.5"/>
+    <path
+        android:pathData="M28,48 L50,48"
+        android:strokeColor="#1F1E1D"
+        android:strokeWidth="2.5"/>
+</vector>

@@ -32,6 +32,8 @@ import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
 import com.anytypeio.anytype.persistence.model.toDomain
 import com.anytypeio.anytype.persistence.model.toProto
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetIconCache
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
@@ -342,6 +344,10 @@ class DefaultUserSettingsCache(
         context.spacePrefsStore.updateData {
             SpacePreferences(emptyMap())
         }
+
+        // Clearing OS widget cache (both DataStore and icon files)
+        OsWidgetsDataStore(context).clear()
+        OsWidgetIconCache(context).clearAll()
     }
 
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {

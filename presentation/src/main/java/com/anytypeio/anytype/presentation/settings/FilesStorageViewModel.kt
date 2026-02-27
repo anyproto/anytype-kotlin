@@ -13,7 +13,7 @@ import com.anytypeio.anytype.core_utils.ext.cancel
 import com.anytypeio.anytype.core_utils.ext.msg
 import com.anytypeio.anytype.core_utils.ext.readableFileSize
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
-import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
 import com.anytypeio.anytype.domain.account.DeleteAccount
 import com.anytypeio.anytype.domain.base.BaseUseCase
 import com.anytypeio.anytype.domain.base.Interactor

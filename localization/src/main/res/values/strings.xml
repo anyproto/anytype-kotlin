@@ -2466,4 +2466,16 @@ Please provide specific details of your needs here.</string>
     <string name="you_dont_have_any_spaces_yet">You don\'t have any spaces yet</string>
     <string name="loading_channels">Loading channels</string>
 
+    <!-- OS Widgets -->
+    <string name="os_widget_spaces_title">Spaces</string>
+    <string name="os_widget_spaces_description">Quick access to your spaces</string>
+    <string name="os_widget_create_object_title">New Object</string>
+    <string name="os_widget_create_object_description">Create object of chosen type</string>
+    <string name="os_widget_space_shortcut_title">Space Shortcut</string>
+    <string name="os_widget_space_shortcut_description">Open a space directly</string>
+    <string name="os_widget_object_shortcut_title">Object Shortcut</string>
+    <string name="os_widget_object_shortcut_description">Open an object directly</string>
+    <string name="os_widget_not_configured">Tap to configure</string>
+    <string name="no_spaces_available">No spaces available</string>
+
 </resources>

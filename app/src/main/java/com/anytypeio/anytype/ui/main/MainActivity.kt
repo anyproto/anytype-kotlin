@@ -39,6 +39,7 @@ import com.anytypeio.anytype.app.AnytypeNotificationService.Companion.NOTIFICATI
 import com.anytypeio.anytype.app.DefaultAppActionManager
 import com.anytypeio.anytype.core_models.Relations
 import com.anytypeio.anytype.core_models.ThemeMode
+import com.anytypeio.anytype.core_models.ext.shouldNavigateDirectlyToChat
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.core_models.primitives.SpaceId
@@ -54,6 +55,7 @@ import com.anytypeio.anytype.core_utils.tools.FeatureToggles
 import com.anytypeio.anytype.device.AnytypePushService
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.domain.base.BaseUseCase
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.theme.GetTheme
 import com.anytypeio.anytype.feature_vault.ui.SpacesIntroductionScreen
 import com.anytypeio.anytype.middleware.discovery.MDNSProvider
@@ -83,6 +85,7 @@ import com.anytypeio.anytype.ui.payments.MembershipFragment
 import com.anytypeio.anytype.ui.primitives.ObjectTypeFragment
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.ui_settings.appearance.ThemeApplicator
 import com.google.android.material.snackbar.Snackbar
 import javax.inject.Inject
@@ -305,19 +308,100 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                     )
                                 }
                             }
+                            is Command.Deeplink.DeepLinkToSpace -> {
+                                // Space was already switched by MainViewModel.
+                                // Navigate based on space type: CHAT/ONE_TO_ONE -> chat, DATA -> home
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    
+                                    val shouldNavigateToChat = command.spaceUxType?.shouldNavigateDirectlyToChat == true
+                                            && !command.chatId.isNullOrEmpty()
+                                    
+                                    if (shouldNavigateToChat) {
+                                        // CHAT or ONE_TO_ONE space - go directly to chat
+                                        controller.navigate(
+                                            R.id.actionOpenChatFromVault,
+                                            ChatFragment.args(
+                                                space = command.space,
+                                                ctx = command.chatId.orEmpty()
+                                            )
+                                        )
+                                    } else {
+                                        // DATA space - go to home/widgets screen
+                                        controller.navigate(
+                                            R.id.actionOpenSpaceFromVault,
+                                            WidgetsScreenFragment.args(
+                                                space = command.space,
+                                                deeplink = null
+                                            )
+                                        )
+                                    }
+                                }.onFailure {
+                                    Timber.w(it, "Error while navigation for OS widget space deeplink")
+                                }
+                            }
+                            is Command.Deeplink.DeepLinkToObjectFromWidget -> {
+                                // Space was already switched by MainViewModel.
+                                // Navigate to the space home first, then open the object.
+                                runCatching {
+                                    val controller = findNavController(R.id.fragment)
+                                    controller.popBackStack(R.id.vaultScreen, false)
+                                    
+                                    // Navigate to space home
+                                    controller.navigate(
+                                        R.id.actionOpenSpaceFromVault,
+                                        WidgetsScreenFragment.args(
+                                            space = command.space,
+                                            deeplink = null
+                                        )
+                                    )
+                                    // Then navigate to the object based on its layout
+                                    proceedWithOpenObjectNavigation(command.navigation)
+                                }.onFailure {
+                                    Timber.w(it, "Error while navigation for OS widget object deeplink")
+                                }
+                            }
+                            is Command.Deeplink.DeepLinkToCreateObject -> {
+                                // Load config and delegate to ViewModel for space switch
+                                Timber.d("Command.Deeplink.DeepLinkToCreateObject received: appWidgetId=${command.appWidgetId}")
+                                lifecycleScope.launch {
+                                    proceedWithCreateObjectFromWidget(command.appWidgetId)
+                                }
+                            }
+                            is Command.Deeplink.OpenCreateObjectFromOsWidget -> {
+                                // Navigate to CreateObjectFragment (space already switched)
+                                Timber.d("Command.Deeplink.OpenCreateObjectFromOsWidget received: typeKey=${command.typeKey}")
+                                runCatching {
+                                    Timber.d("Navigating to CreateObjectFragment with typeKey=${command.typeKey}")
+                                    findNavController(R.id.fragment).navigate(
+                                        R.id.action_global_createObjectFragment,
+                                        bundleOf(
+                                            CreateObjectFragment.TYPE_KEY to command.typeKey
+                                        )
+                                    )
+                                    Timber.d("Navigation to CreateObjectFragment successful")
+                                }.onFailure {
+                                    Timber.e(it, "Error navigating to CreateObjectFragment from OS widget")
+                                    toast("Failed to create object")
+                                }
+                            }
                         }
                     }
                 }
             }
         }
         if (savedInstanceState == null) {
-            Timber.d("onSaveInstanceStateNull")
+            Timber.d("onCreate: action=${intent.action}, data=${intent.data}")
             when (intent.action) {
                 Intent.ACTION_VIEW -> {
                     intent.data?.let { uri ->
                         val data = uri.toString()
+                        Timber.d("onCreate ACTION_VIEW: uri=$uri, isDeepLink=${DefaultDeepLinkResolver.isDeepLink(data)}")
                         if (DefaultDeepLinkResolver.isDeepLink(data)) {
-                            vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))
+                            val resolved = DefaultDeepLinkResolver.resolve(data)
+                            Timber.d("onCreate: resolved deeplink=$resolved")
+                            vm.handleNewDeepLink(resolved)
                         }
                     }
                 }
@@ -475,6 +559,33 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
         }
     }
 
+    /**
+     * Handles object creation from OS home screen widget.
+     * Loads widget config and delegates to ViewModel for space switching and object creation.
+     */
+    private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int) {
+        Timber.d("proceedWithCreateObjectFromWidget: appWidgetId=$appWidgetId")
+        runCatching {
+            val dataStore = OsWidgetsDataStore(applicationContext)
+            Timber.d("proceedWithCreateObjectFromWidget: loading config from dataStore")
+            val config = dataStore.getCreateObjectConfig(appWidgetId)
+            
+            if (config == null) {
+                Timber.w("proceedWithCreateObjectFromWidget: config not found for appWidgetId=$appWidgetId")
+                toast("Widget not configured")
+                return
+            }
+            
+            Timber.d("proceedWithCreateObjectFromWidget: config loaded - spaceId=${config.spaceId}, typeKey=${config.typeKey}, typeName=${config.typeName}, spaceName=${config.spaceName}")
+            
+            // Delegate to ViewModel which will switch space and emit create command
+            vm.onCreateObjectFromWidget(config.spaceId, config.typeKey)
+        }.onFailure {
+            Timber.e(it, "proceedWithCreateObjectFromWidget: error creating object from widget")
+            toast("Failed to create object")
+        }
+    }
+
     private fun setupTheme() {
         runBlocking {
             getTheme(BaseUseCase.None).proceed(
@@ -490,12 +601,11 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
-        if (BuildConfig.DEBUG) {
-            Timber.d("on NewIntent: $intent")
-        }
+        Timber.d("onNewIntent: action=${intent.action}, data=${intent.data}")
         when(intent.action) {
             Intent.ACTION_VIEW -> {
                 intent.data?.let { uri ->
+                    Timber.d("onNewIntent ACTION_VIEW: uri=$uri")
                     val data = uri.toString()
                     if (DefaultDeepLinkResolver.isDeepLink(data)) {
                         vm.handleNewDeepLink(DefaultDeepLinkResolver.resolve(data))

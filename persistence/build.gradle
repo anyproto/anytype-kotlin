@@ -12,6 +12,7 @@ dependencies {
     implementation project(':core-models')
     implementation project(':device')
     implementation project(':domain')
+    implementation project(':feature-os-widgets')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid
@@ -22,6 +23,7 @@ dependencies {
     implementation libs.room
     implementation libs.roomKtx
     implementation libs.dataStore
+    implementation libs.dataStorePreferences
 
     ksp libs.annotations
 

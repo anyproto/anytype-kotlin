@@ -59,9 +59,11 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -69,6 +71,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.debounce
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filterIsInstance
 import kotlinx.coroutines.flow.launchIn
@@ -87,7 +90,7 @@ private data class UnreadCounts(
     val unreadMentions: Int
 )
 
-@OptIn(ExperimentalCoroutinesApi::class)
+@OptIn(ExperimentalCoroutinesApi::class, FlowPreview::class)
 class VaultViewModel(
     private val spaceViewSubscriptionContainer: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
@@ -119,7 +122,8 @@ class VaultViewModel(
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val osWidgetSpacesSync: OsWidgetSpacesSync
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -255,6 +259,19 @@ class VaultViewModel(
                 }
             )
         }
+
+        // Sync spaces to OS home screen widget (debounced to avoid excessive updates)
+        spaceFlow
+            .debounce(OS_WIDGET_SYNC_DEBOUNCE_MS)
+            .onEach { spaces ->
+                try {
+                    osWidgetSpacesSync.sync(spaces)
+                    Timber.d("OS widget spaces synced: ${spaces.size} spaces")
+                } catch (e: Exception) {
+                    Timber.w(e, "Failed to sync spaces to OS widget")
+                }
+            }
+            .launchIn(viewModelScope)
     }
 
     fun onStart() {
@@ -1422,4 +1439,8 @@ class VaultViewModel(
         )
     }
     //endregion
+
+    companion object {
+        private const val OS_WIDGET_SYNC_DEBOUNCE_MS = 2000L
+    }
 }

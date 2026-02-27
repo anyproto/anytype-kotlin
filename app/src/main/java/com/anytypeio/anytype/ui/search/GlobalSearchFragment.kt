@@ -18,6 +18,7 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.misc.OpenObjectNavigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.isKeyboardVisible
+import com.anytypeio.anytype.core_utils.clipboard.copyPlainTextToClipboard
 import com.anytypeio.anytype.core_utils.ext.argString
 import com.anytypeio.anytype.core_utils.ext.setupBottomSheetBehavior
 import com.anytypeio.anytype.core_utils.ext.toast
@@ -29,6 +30,7 @@ import com.anytypeio.anytype.ui.base.navigation
 import com.anytypeio.anytype.ui.chats.ChatFragment
 import com.anytypeio.anytype.ui.date.DateObjectFragment
 import com.anytypeio.anytype.ui.editor.EditorFragment
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.profile.ParticipantFragment
 import com.anytypeio.anytype.ui.sets.ObjectSetFragment
 import com.anytypeio.anytype.ui.settings.typography
@@ -72,7 +74,49 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                     },
                     onShowRelatedClicked = vm::onShowRelatedClicked,
                     onClearRelatedClicked = vm::onClearRelatedObjectClicked,
+                    onOpenObjectAsObject = vm::onOpenObjectAsObject,
+                    onOpenInBrowser = vm::onOpenInBrowser,
+                    onOpenFile = vm::onOpenFile,
+                    onPinObject = vm::onPinObject,
+                    onCopyLink = vm::onCopyLink,
+                    onMoveToBin = vm::onMoveToBin,
                 )
+            }
+            LaunchedEffect(Unit) {
+                vm.commands.collect { command ->
+                    when (command) {
+                        is GlobalSearchViewModel.SearchCommand.Browse -> {
+                            try {
+                                ActivityCustomTabsHelper.openUrl(
+                                    activity = requireActivity(),
+                                    url = command.url
+                                )
+                            } catch (e: Throwable) {
+                                Timber.e(e, "Error opening URL: ${command.url}")
+                            }
+                        }
+                        is GlobalSearchViewModel.SearchCommand.PlayMedia -> {
+                            runCatching {
+                                MediaActivity.start(
+                                    context = requireContext(),
+                                    mediaType = if (command.isVideo) MediaActivity.TYPE_VIDEO else MediaActivity.TYPE_AUDIO,
+                                    obj = command.targetObjectId,
+                                    name = command.name,
+                                    space = space
+                                )
+                            }.onFailure {
+                                Timber.e(it, "Error while launching media player")
+                            }
+                        }
+                        is GlobalSearchViewModel.SearchCommand.CopyLinkToClipboard -> {
+                            requireContext().copyPlainTextToClipboard(
+                                plainText = command.link,
+                                label = "Object link",
+                                successToast = getString(R.string.link_copied)
+                            )
+                        }
+                    }
+                }
             }
             LaunchedEffect(Unit) {
                 vm.navigation.collect { nav ->

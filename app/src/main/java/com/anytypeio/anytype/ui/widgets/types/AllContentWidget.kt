@@ -17,7 +17,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.presentation.widgets.DropDownMenuAction
 import com.anytypeio.anytype.presentation.widgets.WidgetView
 import com.anytypeio.anytype.ui.widgets.menu.WidgetLongClickMenu
@@ -52,7 +52,7 @@ fun AllContentWidgetCard(
                 modifier = Modifier
                     .align(Alignment.CenterStart)
                     .padding(start = 44.dp, end = 16.dp),
-                style = HeadlineSubheading,
+                style = BodySemiBold,
                 color = colorResource(id = R.color.text_primary),
             )
         }

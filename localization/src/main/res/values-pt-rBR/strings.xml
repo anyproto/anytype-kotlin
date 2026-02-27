@@ -495,6 +495,7 @@
     <string name="reload_object_content">Recarregar conteúdo do objeto</string>
     <string name="open_link">Abrir link</string>
     <string name="open_file">Abrir arquivo</string>
+    <string name="open_in_browser">Open in Browser</string>
     <string name="copy_email">Copiar e-mail</string>
     <string name="copy_phone_number">Copiar número de telefone</string>
     <string name="send_email">Enviar email</string>
@@ -1639,6 +1640,7 @@ forneça detalhes específicos das suas necessidades aqui.</string>
     <string name="error_offline_device">Seu dispositivo parece estar sem rede. Por favor, conecte-se e tente novamente.</string>
     <string name="global_search_related_to">"Relacionado a: "</string>
     <string name="global_search_no_related_objects_found">Nenhum objeto relacionado encontrado</string>
+    <string name="global_search_show_related_objects">Exibir objetos relacionados</string>
     <string name="sort_empty_values_desc">Mostrar valores vazios</string>
     <string name="sort_empty_values_bottom">Na parte inferior</string>
     <string name="sort_empty_values_top">No topo</string>

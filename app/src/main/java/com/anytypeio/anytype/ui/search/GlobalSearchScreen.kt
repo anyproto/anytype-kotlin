@@ -76,6 +76,7 @@ import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_ui.extensions.dark
@@ -88,6 +89,7 @@ import com.anytypeio.anytype.core_ui.views.BodyCalloutMedium
 import com.anytypeio.anytype.core_ui.views.BodyCalloutRegular
 import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
@@ -107,6 +109,12 @@ fun GlobalSearchScreen(
     onObjectClicked: (GlobalSearchItemView) -> Unit,
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit = {},
     onClearRelatedClicked: () -> Unit = {},
+    onOpenObjectAsObject: (GlobalSearchItemView) -> Unit = {},
+    onOpenInBrowser: (GlobalSearchItemView) -> Unit = {},
+    onOpenFile: (GlobalSearchItemView) -> Unit = {},
+    onPinObject: (GlobalSearchItemView) -> Unit = {},
+    onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusOnStart: Boolean = true
 ) {
 
@@ -309,6 +317,12 @@ fun GlobalSearchScreen(
                             query = TextFieldValue()
                         }
                     },
+                    onOpenObjectAsObject = onOpenObjectAsObject,
+                    onOpenInBrowser = onOpenInBrowser,
+                    onOpenFile = onOpenFile,
+                    onPinObject = onPinObject,
+                    onCopyLink = onCopyLink,
+                    onMoveToBin = onMoveToBin,
                     focusManager = focus
                 )
                 if (idx != state.views.lastIndex) {
@@ -427,6 +441,12 @@ private fun GlobalSearchItem(
     globalSearchItemView: GlobalSearchItemView,
     onObjectClicked: (GlobalSearchItemView) -> Unit,
     onShowRelatedClicked: (GlobalSearchItemView) -> Unit,
+    onOpenObjectAsObject: (GlobalSearchItemView) -> Unit = {},
+    onOpenInBrowser: (GlobalSearchItemView) -> Unit = {},
+    onOpenFile: (GlobalSearchItemView) -> Unit = {},
+    onPinObject: (GlobalSearchItemView) -> Unit = {},
+    onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusManager: FocusManager,
     modifier: Modifier = Modifier
 ) {
@@ -441,13 +461,11 @@ private fun GlobalSearchItem(
                     onObjectClicked(globalSearchItemView)
                 },
                 onLongClick = {
-                    if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
-                        haptic.performHapticFeedback(HapticFeedbackType.LongPress)
-                        focusManager.clearFocus(true)
-                        scope.launch {
-                            delay(AVOID_DROPDOWN_FLICKERING_DELAY)
-                            isMenuExpanded = true
-                        }
+                    haptic.performHapticFeedback(HapticFeedbackType.LongPress)
+                    focusManager.clearFocus(true)
+                    scope.launch {
+                        delay(AVOID_DROPDOWN_FLICKERING_DELAY)
+                        isMenuExpanded = true
                     }
                 },
                 enabled = true
@@ -555,7 +573,12 @@ private fun GlobalSearchItem(
         MaterialTheme(
             typography = typography,
             shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
+            )
         ) {
+            val isBookmark = globalSearchItemView.layout == ObjectType.Layout.BOOKMARK
+            val isFile = SupportedLayouts.isFileLayout(globalSearchItemView.layout)
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = {
@@ -566,12 +589,101 @@ private fun GlobalSearchItem(
                     y = 8.dp
                 )
             ) {
+                if (isBookmark) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onOpenInBrowser(globalSearchItemView)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.open_in_browser),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                }
+                if (isFile) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onOpenFile(globalSearchItemView)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.open_file),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                }
                 DropdownMenuItem(
                     onClick = {
-                        onShowRelatedClicked(globalSearchItemView)
+                        onOpenObjectAsObject(globalSearchItemView)
+                        isMenuExpanded = false
                     }
                 ) {
-                    Text(text = "Show related objects")
+                    Text(
+                        text = stringResource(R.string.open_object),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onPinObject(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.favourite),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onCopyLink(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.copy_link),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onMoveToBin(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.move_to_bin),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    DropdownMenuItem(
+                        onClick = {
+                            onShowRelatedClicked(globalSearchItemView)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.global_search_show_related_objects),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                    }
                 }
             }
         }

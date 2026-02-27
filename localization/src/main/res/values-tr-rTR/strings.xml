@@ -495,6 +495,7 @@
     <string name="reload_object_content">Nesne içeriğini yeniden yükle</string>
     <string name="open_link">Bağlantıyı aç</string>
     <string name="open_file">Dosya aç</string>
+    <string name="open_in_browser">Tarayıcıda Aç</string>
     <string name="copy_email">E-postayı kopyala</string>
     <string name="copy_phone_number">Telefon numarasını kopyala</string>
     <string name="send_email">E-posta gönder</string>
@@ -1642,6 +1643,7 @@ Lütfen ihtiyaçlarınızla ilgili özel ayrıntıları burada belirtin.</string
     <string name="error_offline_device">Cihazınız çevrimdışı görünüyor. Lütfen bağlantınızı kontrol edin ve tekrar deneyin.</string>
     <string name="global_search_related_to">"Şununla ilgili: "</string>
     <string name="global_search_no_related_objects_found">İlgili nesne bulunamadı</string>
+    <string name="global_search_show_related_objects">İlgili nesneleri göster</string>
     <string name="sort_empty_values_desc">Boş değerleri göster</string>
     <string name="sort_empty_values_bottom">En altta</string>
     <string name="sort_empty_values_top">En yukarıda</string>

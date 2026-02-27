@@ -57,6 +57,9 @@ fun Messages(
     isReadOnly: Boolean = false,
     onRequestVideoPlayer: (ChatView.Message.Attachment.Video) -> Unit,
     highlightedMessageId: Id?,
+    onOpenAttachmentInBrowser: (ChatView.Message) -> Unit = {},
+    onOpenAttachmentFile: (ChatView.Message) -> Unit = {},
+    onOpenAttachmentAsObject: (ChatView.Message) -> Unit = {},
     inviteLinkAccessLevel: SpaceInviteLinkAccessLevel = SpaceInviteLinkAccessLevel.LinkDisabled(),
     spaceUxType: SpaceUxType? = null
 ) {
@@ -173,7 +176,10 @@ fun Messages(
                         onMentionClicked = onMentionClicked,
                         isReadOnly = isReadOnly,
                         onRequestVideoPlayer = onRequestVideoPlayer,
-                        onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered
+                        onDeleteMessageWarningTriggered = onDeleteMessageWarningTriggered,
+                        onOpenAttachmentInBrowser = { onOpenAttachmentInBrowser(msg) },
+                        onOpenAttachmentFile = { onOpenAttachmentFile(msg) },
+                        onOpenAttachmentAsObject = { onOpenAttachmentAsObject(msg) }
                     )
                 }
                 if (idx == messages.lastIndex) {

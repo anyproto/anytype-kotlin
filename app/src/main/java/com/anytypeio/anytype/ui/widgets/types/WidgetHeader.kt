@@ -33,7 +33,7 @@ import androidx.compose.ui.unit.dp
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.HeadlineSubheading
+import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 
@@ -67,7 +67,7 @@ fun WidgetHeader(
 
         Text(
             text = title.ifEmpty { stringResource(id = R.string.untitled) },
-            style = HeadlineSubheading,
+            style = BodySemiBold,
             color = colorResource(id = R.color.text_primary),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,

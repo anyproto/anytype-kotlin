@@ -15,6 +15,7 @@ import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.defaultDa
 import com.anytypeio.anytype.presentation.sets.filterOutDeletedAndMissingObjects
 import com.anytypeio.anytype.presentation.sets.getSetOfValue
 import com.anytypeio.anytype.presentation.sets.state.ObjectState
+import com.anytypeio.anytype.presentation.extension.removeUnsupportedFilters
 import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import com.anytypeio.anytype.presentation.sets.viewerByIdOrFirst
 import kotlinx.coroutines.flow.Flow
@@ -77,7 +78,7 @@ class DefaultDataViewSubscription(
             return emptyFlow()
         }
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -136,7 +137,7 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }
@@ -193,7 +194,7 @@ class DefaultDataViewSubscription(
         }
 
         val filters = buildList {
-            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations))
+            addAll(activeViewer.filters.updateFormatForSubscription(storeOfRelations).removeUnsupportedFilters())
             addAll(defaultDataViewFilters())
         }
         val dataViewLinksKeys = state.dataViewContent.relationLinks.map { it.key }

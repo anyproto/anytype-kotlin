@@ -50,6 +50,7 @@ import coil3.load
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.Key
+import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.multiplayer.SpaceSyncAndP2PStatusState
@@ -116,6 +117,7 @@ import com.anytypeio.anytype.presentation.sets.ViewersWidgetUi
 import com.anytypeio.anytype.presentation.sets.isVisible
 import com.anytypeio.anytype.presentation.sets.model.Viewer
 import com.anytypeio.anytype.ui.base.NavigationFragment
+import com.anytypeio.anytype.ui.media.MediaActivity
 import com.anytypeio.anytype.ui.editor.cover.SelectCoverObjectSetFragment
 import com.anytypeio.anytype.ui.editor.modals.IconPickerFragmentBase
 import com.anytypeio.anytype.ui.editor.sheets.ObjectMenuBaseFragment
@@ -1354,7 +1356,8 @@ open class ObjectSetFragment :
                         objectId = command.objectId,
                         anchor = anchor,
                         showMoveToBin = command.canMoveToBin,
-                        showRemoveFromCollection = command.isCollection
+                        showRemoveFromCollection = command.isCollection,
+                        layout = command.layout
                     )
                 }
             }
@@ -1372,6 +1375,19 @@ open class ObjectSetFragment :
                     activity = requireActivity(),
                     url = command.url
                 )
+            }
+            is ObjectSetCommand.PlayMedia -> {
+                runCatching {
+                    MediaActivity.start(
+                        context = requireContext(),
+                        mediaType = if (command.isVideo) MediaActivity.TYPE_VIDEO else MediaActivity.TYPE_AUDIO,
+                        obj = command.targetObjectId,
+                        name = command.name,
+                        space = space
+                    )
+                }.onFailure {
+                    Timber.e(it, "Error while launching media player")
+                }
             }
             is ObjectSetCommand.CopyLinkToClipboard -> {
                 requireContext().copyPlainTextToClipboard(
@@ -1644,7 +1660,8 @@ open class ObjectSetFragment :
         objectId: Id,
         anchor: View,
         showMoveToBin: Boolean,
-        showRemoveFromCollection: Boolean
+        showRemoveFromCollection: Boolean,
+        layout: ObjectType.Layout? = null
     ) {
         val themeWrapper = ContextThemeWrapper(context, R.style.DefaultPopupMenuStyle)
         val popup = ObjectHeaderContextMenu(
@@ -1652,6 +1669,7 @@ open class ObjectSetFragment :
             view = anchor,
             showMoveToBin = showMoveToBin,
             showRemoveFromCollection = showRemoveFromCollection,
+            layout = layout,
             onOpenAsObjectClicked = {
                 vm.onOpenAsObject(objectId)
             },
@@ -1663,6 +1681,12 @@ open class ObjectSetFragment :
             },
             onRemoveFromCollectionClicked = {
                 vm.onRemoveFromCollection(objectId)
+            },
+            onOpenInBrowserClicked = {
+                vm.onOpenBookmarkInBrowser(objectId)
+            },
+            onOpenFileClicked = {
+                vm.onOpenFile(objectId)
             }
         )
         popup.show()

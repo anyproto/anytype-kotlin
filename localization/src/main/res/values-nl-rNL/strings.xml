@@ -495,6 +495,7 @@
     <string name="reload_object_content">Objectinhoud opnieuw laden</string>
     <string name="open_link">Open link</string>
     <string name="open_file">Bestand openen</string>
+    <string name="open_in_browser">Open in browser</string>
     <string name="copy_email">Kopieer e-mailadres</string>
     <string name="copy_phone_number">Telefoonnummer kopiëren</string>
     <string name="send_email">Verstuur e-mail</string>
@@ -1642,6 +1643,7 @@ Geef alsjeblieft specifieke details van jouw wensen hier aan. </string>
     <string name="error_offline_device">Jouw apparaat lijkt offline te zijn. Maak alsjeblieft verbinding met het internet en probeer het opnieuw.</string>
     <string name="global_search_related_to">"Gerelateerd aan: "</string>
     <string name="global_search_no_related_objects_found">Geen gerelateerde objecten gevonden</string>
+    <string name="global_search_show_related_objects">Toon verwante objecten</string>
     <string name="sort_empty_values_desc">Toon lege waarden</string>
     <string name="sort_empty_values_bottom">Onderaan</string>
     <string name="sort_empty_values_top">Bovenaan</string>

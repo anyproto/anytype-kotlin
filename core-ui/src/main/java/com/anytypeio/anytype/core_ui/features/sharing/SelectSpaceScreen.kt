@@ -53,7 +53,7 @@ import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import com.anytypeio.anytype.core_models.SystemColor
 import com.anytypeio.anytype.core_ui.R
 import com.anytypeio.anytype.core_ui.common.DefaultPreviews
-import com.anytypeio.anytype.core_ui.foundation.DefaultSearchBar
+import com.anytypeio.anytype.core_ui.widgets.SearchField
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
 import com.anytypeio.anytype.core_ui.views.BodyBold
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -116,13 +116,12 @@ fun SelectSpaceScreen(
             .fillMaxSize()
     ) {
         // Search bar - always visible
-        DefaultSearchBar(
-            value = searchQuery,
+        SearchField(
+            horizontalPadding = 20.dp,
+            query = searchQuery,
             onQueryChanged = onSearchQueryChanged,
-            hint = R.string.search,
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            enabled = true,
+            onFocused = {}
         )
 
         // Space Grid - shows ALL spaces, scrollable

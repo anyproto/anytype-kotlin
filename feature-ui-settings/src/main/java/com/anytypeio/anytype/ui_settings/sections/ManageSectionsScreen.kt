@@ -1,31 +1,33 @@
 package com.anytypeio.anytype.ui_settings.sections
 
+import android.view.View
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.key
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.core.view.HapticFeedbackConstantsCompat
+import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.core_models.WidgetSectionType
 import com.anytypeio.anytype.core_ui.foundation.noRippleThrottledClickable
 import com.anytypeio.anytype.core_ui.views.BodyRegular
@@ -34,11 +36,14 @@ import com.anytypeio.anytype.presentation.spaces.ManageSectionsState
 import com.anytypeio.anytype.presentation.spaces.SectionItem
 import com.anytypeio.anytype.ui_settings.R
 import com.anytypeio.anytype.localization.R as LocalizationR
+import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableScope
 
 @Composable
 fun ManageSectionsScreen(
     state: ManageSectionsState,
     onSectionVisibilityChanged: (WidgetSectionType, Boolean) -> Unit,
+    onSectionsReordered: (List<SectionItem>) -> Unit,
     onBackPressed: () -> Unit
 ) {
     Column(
@@ -101,16 +106,42 @@ fun ManageSectionsScreen(
                 }
             }
             is ManageSectionsState.Content -> {
-                LazyColumn(
+                val view = LocalView.current
+                val fixedSections = state.sections.filter { !it.canReorder }
+                val reorderableSections = state.sections.filter { it.canReorder }
+                Column(
                     modifier = Modifier.fillMaxSize()
                 ) {
-                    items(state.sections) { section ->
-                        SectionListItem(
-                            section = section,
-                            onVisibilityChanged = { isVisible ->
-                                onSectionVisibilityChanged(section.type, isVisible)
+                    fixedSections.forEach { section ->
+                        FixedSectionListItem(section = section)
+                    }
+                    ReorderableColumn(
+                        modifier = Modifier.fillMaxWidth(),
+                        list = reorderableSections,
+                        onSettle = { fromIndex, toIndex ->
+                            if (fromIndex != toIndex) {
+                                val reordered = reorderableSections.toMutableList()
+                                val item = reordered.removeAt(fromIndex)
+                                reordered.add(toIndex, item)
+                                onSectionsReordered(fixedSections + reordered)
                             }
-                        )
+                        },
+                        onMove = {
+                            ViewCompat.performHapticFeedback(
+                                view,
+                                HapticFeedbackConstantsCompat.SEGMENT_FREQUENT_TICK
+                            )
+                        }
+                    ) { index, section, isDragging ->
+                        key(section.type) {
+                            DraggableSectionListItem(
+                                section = section,
+                                onVisibilityChanged = { isVisible ->
+                                    onSectionVisibilityChanged(section.type, isVisible)
+                                },
+                                view = view
+                            )
+                        }
                     }
                 }
             }
@@ -119,9 +150,8 @@ fun ManageSectionsScreen(
 }
 
 @Composable
-private fun SectionListItem(
-    section: SectionItem,
-    onVisibilityChanged: (Boolean) -> Unit
+private fun FixedSectionListItem(
+    section: SectionItem
 ) {
     Box(
         modifier = Modifier.fillMaxWidth()
@@ -129,36 +159,10 @@ private fun SectionListItem(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable(enabled = section.canToggle) {
-                    onVisibilityChanged(!section.isVisible)
-                }
                 .height(52.dp)
                 .padding(horizontal = 16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Left icon - checkbox or empty space
-            Box(
-                modifier = Modifier.size(24.dp),
-                contentAlignment = Alignment.Center
-            ) {
-                if (section.canToggle) {
-                    Image(
-                        painter = painterResource(
-                            id = if (section.isVisible) {
-                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_checked
-                            } else {
-                                com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_unchecked
-                            }
-                        ),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
-                }
-            }
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            // Section title
             Text(
                 text = getSectionTitle(section.type),
                 style = BodyRegular,
@@ -166,8 +170,78 @@ private fun SectionListItem(
                 modifier = Modifier.weight(1f)
             )
         }
-        
-        // Bottom divider
+        Divider(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .align(Alignment.BottomCenter),
+            color = colorResource(R.color.shape_primary),
+            thickness = 0.5.dp
+        )
+    }
+}
+
+@Composable
+private fun ReorderableScope.DraggableSectionListItem(
+    section: SectionItem,
+    onVisibilityChanged: (Boolean) -> Unit,
+    view: View
+) {
+    Box(
+        modifier = Modifier.fillMaxWidth()
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .longPressDraggableHandle(
+                    onDragStarted = {
+                        ViewCompat.performHapticFeedback(
+                            view,
+                            HapticFeedbackConstantsCompat.GESTURE_START
+                        )
+                    },
+                    onDragStopped = {
+                        ViewCompat.performHapticFeedback(
+                            view,
+                            HapticFeedbackConstantsCompat.GESTURE_END
+                        )
+                    }
+                )
+                .clickable(enabled = section.canToggle) {
+                    onVisibilityChanged(!section.isVisible)
+                }
+                .height(52.dp)
+                .padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Image(
+                painter = painterResource(
+                    id = if (section.isVisible) {
+                        com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_checked
+                    } else {
+                        com.anytypeio.anytype.core_ui.R.drawable.ic_checkbox_unchecked
+                    }
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+
+            Text(
+                text = getSectionTitle(section.type),
+                style = BodyRegular,
+                color = colorResource(R.color.text_primary),
+                modifier = Modifier.weight(1f)
+            )
+
+            Image(
+                painter = painterResource(
+                    id = com.anytypeio.anytype.core_ui.R.drawable.ic_section_dragger
+                ),
+                contentDescription = null,
+                modifier = Modifier.size(24.dp)
+            )
+        }
         Divider(
             modifier = Modifier
                 .fillMaxWidth()

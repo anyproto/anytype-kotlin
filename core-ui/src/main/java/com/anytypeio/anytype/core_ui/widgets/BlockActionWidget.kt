@@ -89,6 +89,14 @@ class BlockActionWidget @JvmOverloads constructor(
                         title.setText(R.string.open_object)
                         icon.setImageResource(R.drawable.ic_action_open_object)
                     }
+                    ActionItemType.OpenLink -> {
+                        title.setText(R.string.open_link)
+                        icon.setImageResource(R.drawable.ic_action_open_object)
+                    }
+                    ActionItemType.OpenFile -> {
+                        title.setText(R.string.open_file)
+                        icon.setImageResource(R.drawable.ic_action_open_object)
+                    }
                     else -> {
                         title.text = action::class.simpleName
                     }

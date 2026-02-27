@@ -47,9 +47,12 @@ class EmbedPlaceholder(
     }
 
     fun bind(item: BlockView.Embed, clicked: (ListenerType) -> Unit) {
-        timber.log.Timber.d("EmbedPlaceholder: bind called with isSelected=${item.isSelected} for id=${item.id}")
         select(item.isSelected)
 
+        // Note: for processors not usable on mobile (Excalidraw, Mermaid, etc.),
+        // item.text may be a short non-empty marker instead of the original content,
+        // to avoid expensive main-thread string operations on large data blobs.
+        // The empty vs non-empty distinction is preserved for the UI logic below.
         val trimmedText = item.text.trim()
         val canOpen = item.processor.canOpenEmbedExternally() && trimmedText.isNotEmpty()
 
@@ -93,17 +96,14 @@ class EmbedPlaceholder(
         item: BlockView.Embed,
         clicked: (ListenerType) -> Unit
     ) {
-        timber.log.Timber.d("EmbedPlaceholder: processChangePayload called for id=${item.id}, payloads=${payloads.map { it.javaClass.simpleName }}")
         payloads.forEach { payload ->
             if (payload.isSelectionChanged) {
-                timber.log.Timber.d("EmbedPlaceholder: Selection changed detected, setting isSelected=${item.isSelected}")
                 select(item.isSelected)
             }
         }
     }
 
     private fun select(isSelected: Boolean) {
-        timber.log.Timber.d("EmbedPlaceholder: select called with isSelected=$isSelected")
         card.isSelected = isSelected
         // Force refresh the selectors
         card.refreshDrawableState()

@@ -26,6 +26,7 @@ import com.anytypeio.anytype.core_models.Relation.Format.TAG
 import com.anytypeio.anytype.core_models.Relation.Format.UNDEFINED
 import com.anytypeio.anytype.core_models.Relation.Format.URL
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.ThemeColor
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.ext.EMPTY_STRING_VALUE
@@ -34,9 +35,17 @@ import com.anytypeio.anytype.core_models.misc.navigation
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.ObjectIcon
 import com.anytypeio.anytype.core_models.ui.objectIcon
+import com.anytypeio.anytype.core_models.Block
+import com.anytypeio.anytype.core_models.Position
+import com.anytypeio.anytype.core_models.WidgetLayout
+import com.anytypeio.anytype.core_models.isDataView
 import com.anytypeio.anytype.domain.base.Resultat
 import com.anytypeio.anytype.domain.base.fold
+import com.anytypeio.anytype.domain.base.onSuccess
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
+import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.objects.getTypeOfObject
@@ -44,8 +53,12 @@ import com.anytypeio.anytype.domain.primitives.FieldParser
 import com.anytypeio.anytype.domain.search.RestoreGlobalSearchHistory
 import com.anytypeio.anytype.domain.search.SearchWithMeta
 import com.anytypeio.anytype.domain.search.UpdateGlobalSearchHistory
+import com.anytypeio.anytype.domain.widgets.CreateWidget
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
 import com.anytypeio.anytype.presentation.common.BaseViewModel
+import com.anytypeio.anytype.presentation.extension.getUrlBasedOnFileLayout
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchBacklinksEvent
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsSearchResultEvent
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants.filterObjectsByIds
@@ -79,7 +92,13 @@ class GlobalSearchViewModel @Inject constructor(
     private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
     private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
     private val fieldParser: FieldParser,
-    private val spaceViews: SpaceViewSubscriptionContainer
+    private val spaceViews: SpaceViewSubscriptionContainer,
+    private val setObjectListIsArchived: SetObjectListIsArchived,
+    private val deepLinkResolver: DeepLinkResolver,
+    private val createWidget: CreateWidget,
+    private val spaceManager: SpaceManager,
+    private val getObject: GetObject,
+    private val payloadDelegator: PayloadDelegator
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -92,6 +111,7 @@ class GlobalSearchViewModel @Inject constructor(
     private val mode = MutableStateFlow<Mode>(Mode.Default)
 
     val navigation = MutableSharedFlow<OpenObjectNavigation>()
+    val commands = MutableSharedFlow<SearchCommand>()
 
     private val _state: MutableStateFlow<ViewState> = MutableStateFlow(ViewState.Init())
     val state = _state.asStateFlow()
@@ -381,6 +401,147 @@ class GlobalSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Opens the bookmark/file object as an Anytype object (bypassing default URL/file open).
+     */
+    fun onOpenObjectAsObject(item: GlobalSearchItemView) {
+        Timber.d("onOpenObjectAsObject, item: ${item.id}")
+        viewModelScope.launch {
+            navigation.emit(
+                item.obj.navigation(openBookmarkAsObject = true)
+            )
+        }
+    }
+
+    /**
+     * Opens the bookmark's source URL in the browser.
+     */
+    fun onOpenInBrowser(item: GlobalSearchItemView) {
+        Timber.d("onOpenInBrowser, item: ${item.id}")
+        viewModelScope.launch {
+            val url = item.obj.getSingleValue<String>(Relations.SOURCE)
+            if (!url.isNullOrBlank()) {
+                navigation.emit(OpenObjectNavigation.OpenBookmarkUrl(url))
+            }
+        }
+    }
+
+    /**
+     * Opens the file object in the appropriate system viewer.
+     */
+    fun onOpenFile(item: GlobalSearchItemView) {
+        Timber.d("onOpenFile, item: ${item.id}")
+        viewModelScope.launch {
+            val layout = item.layout
+            when (layout) {
+                ObjectType.Layout.VIDEO -> commands.emit(
+                    SearchCommand.PlayMedia(
+                        targetObjectId = item.id,
+                        name = item.title,
+                        isVideo = true
+                    )
+                )
+                ObjectType.Layout.AUDIO -> commands.emit(
+                    SearchCommand.PlayMedia(
+                        targetObjectId = item.id,
+                        name = item.title,
+                        isVideo = false
+                    )
+                )
+                else -> {
+                    val url = urlBuilder.getUrlBasedOnFileLayout(item.id, layout)
+                    if (url != null) {
+                        commands.emit(SearchCommand.Browse(url))
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Pins (creates a widget for) the object.
+     */
+    fun onPinObject(item: GlobalSearchItemView) {
+        Timber.d("onPinObject, item: ${item.id}")
+        viewModelScope.launch {
+            val config = spaceManager.getConfig()
+            if (config == null) {
+                Timber.e("Cannot pin object: space config is missing")
+                return@launch
+            }
+
+            var target: Id? = null
+            getObject.async(
+                GetObject.Params(
+                    target = config.widgets,
+                    space = SpaceId(config.space),
+                    saveAsLastOpened = false
+                )
+            ).onSuccess { objectView ->
+                objectView.blocks.find { it.content is Block.Content.Widget }?.let {
+                    target = it.id
+                }
+            }
+
+            val params = CreateWidget.Params(
+                ctx = config.widgets,
+                source = item.id,
+                type = when {
+                    item.layout.isDataView() -> WidgetLayout.VIEW
+                    item.layout == ObjectType.Layout.PARTICIPANT -> WidgetLayout.LINK
+                    else -> WidgetLayout.TREE
+                },
+                position = Position.TOP,
+                target = target
+            )
+            createWidget.async(params).fold(
+                onSuccess = { payload ->
+                    payloadDelegator.dispatch(payload)
+                    Timber.d("Widget created for object: ${item.id}")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while creating widget")
+                }
+            )
+        }
+    }
+
+    /**
+     * Copies the object's deep link to clipboard.
+     */
+    fun onCopyLink(item: GlobalSearchItemView) {
+        Timber.d("onCopyLink, item: ${item.id}")
+        viewModelScope.launch {
+            val link = deepLinkResolver.createObjectDeepLink(
+                obj = item.id,
+                space = vmParams.space
+            )
+            commands.emit(SearchCommand.CopyLinkToClipboard(link = link))
+        }
+    }
+
+    /**
+     * Moves the object to bin (archives it).
+     */
+    fun onMoveToBin(item: GlobalSearchItemView) {
+        Timber.d("onMoveToBin, item: ${item.id}")
+        viewModelScope.launch {
+            setObjectListIsArchived.async(
+                SetObjectListIsArchived.Params(
+                    targets = listOf(item.id),
+                    isArchived = true
+                )
+            ).fold(
+                onSuccess = {
+                    Timber.d("Object moved to bin: ${item.id}")
+                },
+                onFailure = { e ->
+                    Timber.e(e, "Error while moving object to bin")
+                }
+            )
+        }
+    }
+
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
@@ -427,7 +588,13 @@ class GlobalSearchViewModel @Inject constructor(
         private val restoreGlobalSearchHistory: RestoreGlobalSearchHistory,
         private val updateGlobalSearchHistory: UpdateGlobalSearchHistory,
         private val fieldParser: FieldParser,
-        private val spaceViews: SpaceViewSubscriptionContainer
+        private val spaceViews: SpaceViewSubscriptionContainer,
+        private val setObjectListIsArchived: SetObjectListIsArchived,
+        private val deepLinkResolver: DeepLinkResolver,
+        private val createWidget: CreateWidget,
+        private val spaceManager: SpaceManager,
+        private val getObject: GetObject,
+        private val payloadDelegator: PayloadDelegator
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -442,7 +609,13 @@ class GlobalSearchViewModel @Inject constructor(
                 restoreGlobalSearchHistory = restoreGlobalSearchHistory,
                 updateGlobalSearchHistory = updateGlobalSearchHistory,
                 fieldParser = fieldParser,
-                spaceViews = spaceViews
+                spaceViews = spaceViews,
+                setObjectListIsArchived = setObjectListIsArchived,
+                deepLinkResolver = deepLinkResolver,
+                createWidget = createWidget,
+                spaceManager = spaceManager,
+                getObject = getObject,
+                payloadDelegator = payloadDelegator
             ) as T
         }
     }
@@ -495,6 +668,16 @@ class GlobalSearchViewModel @Inject constructor(
         fun isEmptyState() : Boolean {
             return this !is Init && !this.isLoading && views.isEmpty()
         }
+    }
+
+    sealed class SearchCommand {
+        data class Browse(val url: String) : SearchCommand()
+        data class PlayMedia(
+            val targetObjectId: Id,
+            val name: String,
+            val isVideo: Boolean
+        ) : SearchCommand()
+        data class CopyLinkToClipboard(val link: String) : SearchCommand()
     }
 
     companion object {

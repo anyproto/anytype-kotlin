@@ -81,7 +81,8 @@ fun DataViewListWidgetCard(
     onCreateElement: (WidgetView) -> Unit = {},
     menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hideCounters: Boolean = false
 ) {
     Box(modifier = modifier) {
         Column(
@@ -112,7 +113,8 @@ fun DataViewListWidgetCard(
                         mode = mode,
                         elements = item.elements,
                         onWidgetElementClicked = onWidgetObjectClicked,
-                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                        onObjectCheckboxClicked = onObjectCheckboxClicked,
+                        hideCounters = hideCounters
                     )
                 } else {
                     item.elements.forEachIndexed { idx, element ->
@@ -124,7 +126,8 @@ fun DataViewListWidgetCard(
                             onObjectCheckboxClicked = onObjectCheckboxClicked,
                             name = element.getPrettyName(),
                             counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
-                            notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState
+                            notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState,
+                            hideCounters = hideCounters
                         )
                         if (idx != item.elements.lastIndex) {
                             Divider(
@@ -173,7 +176,8 @@ fun ChatListWidgetCard(
     onCreateElement: (WidgetView) -> Unit = {},
     menuItems: List<WidgetMenuItem> = emptyList(),
     isCardMenuExpanded: MutableState<Boolean> = mutableStateOf(false),
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    hideCounters: Boolean = false
 ) {
     // For now, both Compact and Preview display modes use the same rendering
     // In the future, when displayMode is Preview, we can render a different UI with message previews
@@ -208,7 +212,8 @@ fun ChatListWidgetCard(
                         mode = mode,
                         elements = item.elements,
                         onWidgetElementClicked = onWidgetObjectClicked,
-                        onObjectCheckboxClicked = onObjectCheckboxClicked
+                        onObjectCheckboxClicked = onObjectCheckboxClicked,
+                        hideCounters = hideCounters
                     )
                 } else {
                     item.elements.forEachIndexed { idx, element ->
@@ -222,8 +227,8 @@ fun ChatListWidgetCard(
                                 messageText = element.messageText,
                                 messageTime = element.messageTime,
                                 attachmentPreviews = element.attachmentPreviews,
-                                unreadMessageCount = element.counter?.unreadMessageCount ?: 0,
-                                unreadMentionCount = element.counter?.unreadMentionCount ?: 0,
+                                unreadMessageCount = if (hideCounters) 0 else (element.counter?.unreadMessageCount ?: 0),
+                                unreadMentionCount = if (hideCounters) 0 else (element.counter?.unreadMentionCount ?: 0),
                                 chatNotificationState = element.chatNotificationState,
                                 onClick = { onWidgetObjectClicked(element.obj) }
                             )
@@ -244,7 +249,8 @@ fun ChatListWidgetCard(
                                 onObjectCheckboxClicked = onObjectCheckboxClicked,
                                 name = element.getPrettyName(),
                                 counter = (element as? WidgetView.SetOfObjects.Element.Chat)?.counter,
-                                notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState
+                                notificationState = (element as? WidgetView.SetOfObjects.Element.Chat)?.chatNotificationState,
+                                hideCounters = hideCounters
                             )
                             if (idx != item.elements.lastIndex) {
                                 Divider(
@@ -447,7 +453,8 @@ fun ListWidgetElement(
     obj: ObjectWrapper.Basic,
     name: String,
     counter: WidgetView.ChatCounter? = null,
-    notificationState: com.anytypeio.anytype.core_models.chats.NotificationState? = null
+    notificationState: com.anytypeio.anytype.core_models.chats.NotificationState? = null,
+    hideCounters: Boolean = false
 ) {
     Box(
         modifier = Modifier
@@ -511,11 +518,13 @@ fun ListWidgetElement(
         }
 
         // Display chat counter badges with notification-aware colors
-        ChatCounterBadges(
-            counter = counter,
-            notificationState = notificationState,
-            modifier = Modifier.align(Alignment.CenterEnd)
-        )
+        if (!hideCounters) {
+            ChatCounterBadges(
+                counter = counter,
+                notificationState = notificationState,
+                modifier = Modifier.align(Alignment.CenterEnd)
+            )
+        }
     }
 }
 

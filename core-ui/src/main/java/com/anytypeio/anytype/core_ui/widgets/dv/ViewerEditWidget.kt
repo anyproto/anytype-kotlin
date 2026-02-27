@@ -185,8 +185,9 @@ fun ViewerEditWidgetContent(
 
             val layoutValue = when (state.layout) {
                 DVViewerType.LIST -> stringResource(id = R.string.view_list)
+                DVViewerType.GRID -> stringResource(id = R.string.view_grid)
                 DVViewerType.GALLERY -> stringResource(id = R.string.view_gallery)
-                DVViewerType.GRID, DVViewerType.BOARD -> stringResource(id = R.string.unsupported)
+                DVViewerType.BOARD -> stringResource(id = R.string.view_kanban)
                 else -> stringResource(id = R.string.none)
             }
             ColumnItem(

@@ -1380,6 +1380,59 @@ class EditorViewModel(
     fun onTextBlockTextChanged(view: BlockView.Text) {
         Timber.d("onTextBlockTextChanged, view:[$view]")
 
+        // Check for indent trigger: list block starting with 2+ spaces
+        if (view.isListBlock && view.text.startsWith("  ")) {
+            val viewIndex = views.indexOfFirst { it.id == view.id }
+            if (viewIndex > 0) {
+                // Find the nearest previous list block at the SAME indent level
+                // This ensures we only indent by one level at a time
+                val currentIndent = view.indent
+                val targetView = views.subList(0, viewIndex)
+                    .asReversed()
+                    .filterIsInstance<BlockView.Text>()
+                    .firstOrNull { it.isListBlock && it.indent == currentIndent }
+
+                if (targetView != null) {
+                    // Strip leading spaces from text
+                    val trimmedText = view.text.trimStart()
+
+                    // Update local block store with trimmed text
+                    val blockUpdate = blocks.map { block ->
+                        if (block.id == view.id) {
+                            block.copy(
+                                content = block.content<Content.Text>().copy(text = trimmedText)
+                            )
+                        } else {
+                            block
+                        }
+                    }
+                    orchestrator.stores.document.update(blockUpdate)
+
+                    // Indent: move block inside the target (same-level previous block)
+                    viewModelScope.launch {
+                        orchestrator.proxies.intents.send(
+                            Intent.Document.Move(
+                                context = context,
+                                target = targetView.id,
+                                targetContext = context,
+                                blocks = listOf(view.id),
+                                position = Position.INNER
+                            )
+                        )
+                        orchestrator.proxies.intents.send(
+                            Intent.Text.UpdateText(
+                                context = context,
+                                target = view.id,
+                                text = trimmedText,
+                                marks = view.marks.map { it.mark() }
+                            )
+                        )
+                    }
+                    return
+                }
+            }
+        }
+
         val update = TextUpdate.Pattern(
             target = view.id,
             text = view.text,
@@ -1655,7 +1708,23 @@ class EditorViewModel(
         val position = views.indexOfFirst { it.id == id }
         if (position > 0) {
             val current = views[position]
-            if (current is BlockView.Text && current.isStyleClearable()) {
+            // Check if block is nested (has a parent other than the root)
+            val parent = blocks.find { it.children.contains(id) }
+            val isNested = parent != null && parent.id != context
+            if (current is BlockView.Text && current.isListBlock && isNested) {
+                // Outdent: move block after its parent
+                viewModelScope.launch {
+                    orchestrator.proxies.intents.send(
+                        Intent.Document.Move(
+                            context = context,
+                            target = parent!!.id,
+                            targetContext = context,
+                            blocks = listOf(id),
+                            position = Position.BOTTOM
+                        )
+                    )
+                }
+            } else if (current is BlockView.Text && current.isStyleClearable()) {
                 viewModelScope.launch {
                     orchestrator.proxies.intents.send(
                         Intent.Text.UpdateStyle(
@@ -1696,6 +1765,27 @@ class EditorViewModel(
         marks: List<Content.Text.Mark>
     ) {
         Timber.d("onNonEmptyBlockBackspaceClicked, id:[$id] text:[$text] marks:[$marks]")
+
+        // Check if block is a nested list item - if so, outdent instead of merging
+        val viewIndex = views.indexOfFirst { it.id == id }
+        val currentView = views.getOrNull(viewIndex)
+        val parent = blocks.find { it.children.contains(id) }
+        val isNested = parent != null && parent.id != context
+        if (currentView is BlockView.Text && currentView.isListBlock && isNested) {
+            // Outdent: move block after its parent
+            viewModelScope.launch {
+                orchestrator.proxies.intents.send(
+                    Intent.Document.Move(
+                        context = context,
+                        target = parent!!.id,
+                        targetContext = context,
+                        blocks = listOf(id),
+                        position = Position.BOTTOM
+                    )
+                )
+            }
+            return
+        }
 
         val update = blocks.map { block ->
             if (block.id == id) {

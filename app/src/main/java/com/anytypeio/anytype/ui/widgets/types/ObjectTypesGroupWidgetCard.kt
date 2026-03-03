@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.Divider
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.key
@@ -27,7 +28,6 @@ import androidx.core.view.HapticFeedbackConstantsCompat
 import androidx.core.view.ViewCompat
 import com.anytypeio.anytype.R
 import com.anytypeio.anytype.core_ui.foundation.noRippleClickable
-import com.anytypeio.anytype.core_ui.views.BodyRegular
 import com.anytypeio.anytype.core_ui.views.BodySemiBold
 import com.anytypeio.anytype.core_ui.widgets.ListWidgetObjectIcon
 import com.anytypeio.anytype.presentation.widgets.WidgetView
@@ -92,6 +92,7 @@ fun ObjectTypesGroupWidgetCard(
                     DraggableTypeRowContent(
                         typeRow = typeRow,
                         isDragging = isDragging,
+                        showDivider = index < typeRows.lastIndex,
                         onTypeClicked = onTypeClicked,
                         onCreateObjectClicked = onCreateObjectClicked,
                         view = view
@@ -114,10 +115,12 @@ fun ObjectTypesGroupWidgetCard(
 private fun ReorderableScope.DraggableTypeRowContent(
     typeRow: WidgetView.ObjectTypesGroup.TypeRow,
     isDragging: Boolean,
+    showDivider: Boolean,
     onTypeClicked: (String) -> Unit,
     onCreateObjectClicked: (String) -> Unit,
     view: View
 ) {
+    Column {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -168,6 +171,14 @@ private fun ReorderableScope.DraggableTypeRowContent(
             )
         }
     }
+    if (showDivider) {
+        Divider(
+            thickness = 0.5.dp,
+            modifier = Modifier.padding(horizontal = 16.dp),
+            color = colorResource(id = R.color.widget_divider)
+        )
+    }
+    }
 }
 
 /**
@@ -197,10 +208,10 @@ private fun NewTypeButton(
         
         // "New type" text
         Text(
-            text = stringResource(id = R.string.create_new_object_type),
+            text = stringResource(id = R.string.type_creation_new_type),
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
-            style = BodyRegular,
+            style = BodySemiBold,
             color = colorResource(id = R.color.text_secondary)
         )
     }

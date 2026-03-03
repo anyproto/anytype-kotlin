@@ -13,12 +13,14 @@ class SetMembershipEmail @Inject constructor(
 
     override suspend fun doWork(params: Params) {
         if (params.isFromOnboarding) {
+            // Onboarding path always subscribes to newsletter;
+            // params.subscribeToNewsletter is intentionally ignored here.
             repo.membershipSubscribeToUpdates(params.email)
         } else {
             val command = Command.Membership.GetVerificationEmail(
                 email = params.email,
                 subscribeToNewsletter = params.subscribeToNewsletter,
-                isFromOnboarding = false
+                isFromOnboarding = params.isFromOnboarding
             )
             repo.membershipGetVerificationEmail(command)
         }

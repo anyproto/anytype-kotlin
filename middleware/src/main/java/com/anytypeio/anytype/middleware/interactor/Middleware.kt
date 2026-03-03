@@ -2833,6 +2833,18 @@ class Middleware @Inject constructor(
     }
 
     @Throws
+    fun membershipSubscribeToUpdates(email: String) {
+        val request = Rpc.MembershipV2.SubscribeToUpdates.Request(
+            email = email,
+            platform = anytype.model.MembershipV2.Platform.MobileAndroid,
+            subscribe = true
+        )
+        logRequestIfDebug(request)
+        val (response, time) = measureTimedValue { service.membershipSubscribeToUpdates(request) }
+        logResponseIfDebug(response, time)
+    }
+
+    @Throws
     fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         val request = Rpc.Membership.VerifyEmailCode.Request(
             code = command.code

@@ -1042,6 +1042,10 @@ class BlockMiddleware(
         middleware.membershipGetVerificationEmail(command)
     }
 
+    override suspend fun membershipSubscribeToUpdates(email: String) {
+        middleware.membershipSubscribeToUpdates(email)
+    }
+
     override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         middleware.membershipVerifyEmailCode(command)
     }

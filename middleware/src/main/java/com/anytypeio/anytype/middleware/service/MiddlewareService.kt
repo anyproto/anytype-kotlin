@@ -623,6 +623,8 @@ interface MiddlewareService {
 
     @Throws(Exception::class)
     fun membershipGetTiers(request: Rpc.Membership.GetTiers.Request): Rpc.Membership.GetTiers.Response
+
+    fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response
     //endregion
 
     //region VERSION HISTORY

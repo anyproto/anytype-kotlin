@@ -160,7 +160,8 @@ private fun FixedSectionListItem(
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .padding(start = 36.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(

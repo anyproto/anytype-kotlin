@@ -55,7 +55,8 @@ fun DotsLoadingIndicator(
         ButtonSize.Medium,
         ButtonSize.MediumSecondary -> 6.dp to 6.dp
         ButtonSize.Large,
-        ButtonSize.LargeSecondary -> 6.dp to 6.dp
+        ButtonSize.LargeSecondary,
+        ButtonSize.LargeRound -> 6.dp to 6.dp
     }
     val state = rememberLoadingIndicatorState(animating, animationSpecs)
     Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {

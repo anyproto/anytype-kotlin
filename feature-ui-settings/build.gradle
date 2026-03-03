@@ -39,6 +39,7 @@ dependencies {
     implementation libs.activityCompose
 
     implementation libs.coilCompose
+    implementation libs.composeReorderable
 
     debugImplementation libs.composeTooling
 

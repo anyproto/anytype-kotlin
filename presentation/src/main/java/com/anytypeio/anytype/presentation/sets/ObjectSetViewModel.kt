@@ -23,6 +23,7 @@ import com.anytypeio.anytype.core_models.Payload
 import com.anytypeio.anytype.core_models.Position
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.Relations
+import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_models.SupportedLayouts.getCreateObjectLayouts
 import com.anytypeio.anytype.core_models.TimeInMillis
 import com.anytypeio.anytype.core_models.isDataView
@@ -2223,6 +2224,42 @@ class ObjectSetViewModel(
                 return
             }
         }
+        // If the object is a file, open it in the system previewer/player
+        if (SupportedLayouts.isFileLayout(obj.layout)) {
+            val layout = obj.layout
+            val name = fieldParser.getObjectName(obj)
+            when (layout) {
+                ObjectType.Layout.VIDEO -> {
+                    dispatch(
+                        ObjectSetCommand.PlayMedia(
+                            targetObjectId = obj.id,
+                            name = name,
+                            isVideo = true
+                        )
+                    )
+                    return
+                }
+                ObjectType.Layout.AUDIO -> {
+                    dispatch(
+                        ObjectSetCommand.PlayMedia(
+                            targetObjectId = obj.id,
+                            name = name,
+                            isVideo = false
+                        )
+                    )
+                    return
+                }
+                else -> {
+                    if (layout != null) {
+                        val url = urlBuilder.getUrlBasedOnFileLayout(obj.id, layout)
+                        if (url != null) {
+                            dispatch(ObjectSetCommand.Browse(url))
+                            return
+                        }
+                    }
+                }
+            }
+        }
         if (obj.id == vmParams.ctx) {
             toast("You are already here")
             Timber.d("proceedWithNavigation, target == vmParams.ctx")
@@ -3373,26 +3410,10 @@ if (effectiveType.recommendedLayout == ObjectType.Layout.SET || effectiveType.re
 
             ViewersWidgetUi.Action.Plus -> {
                 val activeView = state.viewerByIdOrFirst(session.currentViewerId.value) ?: return
-                // Determine default layout based on object type
-                val defaultLayout = when (state) {
-                    is ObjectState.DataView.TypeSet -> {
-                        val setOfValue = state.getSetOfValue(vmParams.ctx)
-                        val typeId = setOfValue.firstOrNull()
-                        val typeWrapper = typeId?.let { state.details.getTypeObject(it) }
-                        val uniqueKey = typeWrapper?.uniqueKey
-                        if (uniqueKey == ObjectTypeIds.IMAGE || uniqueKey == ObjectTypeIds.VIDEO) {
-                            DVViewerType.GALLERY
-                        } else {
-                            DVViewerType.LIST
-                        }
-                    }
-
-                    else -> DVViewerType.LIST
-                }
                 val newView = activeView.copy(
                     id = "",
                     name = "",
-                    type = defaultLayout,
+                    type = DVViewerType.GRID,
                     filters = emptyList(),
                     sorts = emptyList()
                 )

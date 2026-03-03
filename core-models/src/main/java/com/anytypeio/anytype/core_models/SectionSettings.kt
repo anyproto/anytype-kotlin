@@ -80,10 +80,14 @@ data class WidgetSections(
         val defaultIndex = WidgetSectionType.DEFAULT_ORDER
             .withIndex()
             .associate { (index, type) -> type to index }
-        val merged = (sections + missing.map { type ->
-            WidgetSectionConfig.default(type, defaultIndex.getValue(type))
-        }).sortedBy { defaultIndex[it.id] ?: it.order }
-            .mapIndexed { index, config -> config.copy(order = index) }
+        // Keep existing sections in their current (user-defined) order.
+        // Insert each missing section at its default position, clamped to list size.
+        val result = sections.sortedBy { it.order }.toMutableList()
+        for (type in missing) {
+            val insertAt = (defaultIndex.getValue(type)).coerceAtMost(result.size)
+            result.add(insertAt, WidgetSectionConfig.default(type, insertAt))
+        }
+        val merged = result.mapIndexed { index, config -> config.copy(order = index) }
         return copy(sections = merged)
     }
 

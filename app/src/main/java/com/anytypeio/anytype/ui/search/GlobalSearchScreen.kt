@@ -112,6 +112,9 @@ fun GlobalSearchScreen(
     onOpenObjectAsObject: (GlobalSearchItemView) -> Unit = {},
     onOpenInBrowser: (GlobalSearchItemView) -> Unit = {},
     onOpenFile: (GlobalSearchItemView) -> Unit = {},
+    onPinObject: (GlobalSearchItemView) -> Unit = {},
+    onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusOnStart: Boolean = true
 ) {
 
@@ -317,6 +320,9 @@ fun GlobalSearchScreen(
                     onOpenObjectAsObject = onOpenObjectAsObject,
                     onOpenInBrowser = onOpenInBrowser,
                     onOpenFile = onOpenFile,
+                    onPinObject = onPinObject,
+                    onCopyLink = onCopyLink,
+                    onMoveToBin = onMoveToBin,
                     focusManager = focus
                 )
                 if (idx != state.views.lastIndex) {
@@ -438,6 +444,9 @@ private fun GlobalSearchItem(
     onOpenObjectAsObject: (GlobalSearchItemView) -> Unit = {},
     onOpenInBrowser: (GlobalSearchItemView) -> Unit = {},
     onOpenFile: (GlobalSearchItemView) -> Unit = {},
+    onPinObject: (GlobalSearchItemView) -> Unit = {},
+    onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusManager: FocusManager,
     modifier: Modifier = Modifier
 ) {
@@ -564,6 +573,9 @@ private fun GlobalSearchItem(
         MaterialTheme(
             typography = typography,
             shapes = MaterialTheme.shapes.copy(medium = RoundedCornerShape(16.dp)),
+            colors = MaterialTheme.colors.copy(
+                surface = colorResource(id = R.color.background_secondary)
+            )
         ) {
             val isBookmark = globalSearchItemView.layout == ObjectType.Layout.BOOKMARK
             val isFile = SupportedLayouts.isFileLayout(globalSearchItemView.layout)
@@ -607,24 +619,59 @@ private fun GlobalSearchItem(
                     }
                     Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 }
-                if (isBookmark || isFile) {
-                    DropdownMenuItem(
-                        onClick = {
-                            onOpenObjectAsObject(globalSearchItemView)
-                            isMenuExpanded = false
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.open_object),
-                            style = PreviewTitle1Regular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
+                DropdownMenuItem(
+                    onClick = {
+                        onOpenObjectAsObject(globalSearchItemView)
+                        isMenuExpanded = false
                     }
-                    if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                ) {
+                    Text(
+                        text = stringResource(R.string.open_object),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onPinObject(globalSearchItemView)
+                        isMenuExpanded = false
                     }
+                ) {
+                    Text(
+                        text = stringResource(R.string.favourite),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onCopyLink(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.copy_link),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                }
+                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onMoveToBin(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.move_to_bin),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
                 }
                 if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
+                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     DropdownMenuItem(
                         onClick = {
                             onShowRelatedClicked(globalSearchItemView)

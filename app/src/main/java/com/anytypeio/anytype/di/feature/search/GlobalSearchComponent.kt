@@ -8,12 +8,15 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelationOptions
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
 import com.anytypeio.anytype.domain.primitives.FieldParser
+import com.anytypeio.anytype.domain.workspace.SpaceManager
 import com.anytypeio.anytype.presentation.analytics.AnalyticSpaceHelperDelegate
+import com.anytypeio.anytype.presentation.common.PayloadDelegator
 import com.anytypeio.anytype.presentation.search.GlobalSearchViewModel
 import com.anytypeio.anytype.ui.search.GlobalSearchFragment
 import dagger.Binds
@@ -64,4 +67,7 @@ interface GlobalSearchDependencies : ComponentDependencies {
     fun fieldParser(): FieldParser
     fun spaceViews(): SpaceViewSubscriptionContainer
     fun storeOfRelationOptions(): StoreOfRelationOptions
+    fun deepLinkResolver(): DeepLinkResolver
+    fun spaceManager(): SpaceManager
+    fun payloadDelegator(): PayloadDelegator
 }

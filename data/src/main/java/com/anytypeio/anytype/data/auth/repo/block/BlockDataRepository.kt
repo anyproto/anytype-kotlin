@@ -1079,6 +1079,10 @@ class BlockDataRepository(
         remote.membershipGetVerificationEmail(command)
     }
 
+    override suspend fun membershipSubscribeToUpdates(email: String) {
+        remote.membershipSubscribeToUpdates(email)
+    }
+
     override suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode) {
         remote.membershipVerifyEmailCode(command)
     }

@@ -79,6 +79,7 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                     onOpenFile = vm::onOpenFile,
                     onPinObject = vm::onPinObject,
                     onCopyLink = vm::onCopyLink,
+                    onDuplicateObject = vm::onDuplicateObject,
                     onMoveToBin = vm::onMoveToBin,
                 )
             }

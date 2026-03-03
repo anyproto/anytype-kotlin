@@ -45,6 +45,7 @@ import com.anytypeio.anytype.domain.base.onSuccess
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.objects.SetObjectListIsArchived
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
 import com.anytypeio.anytype.domain.objects.StoreOfRelations
@@ -98,7 +99,8 @@ class GlobalSearchViewModel @Inject constructor(
     private val createWidget: CreateWidget,
     private val spaceManager: SpaceManager,
     private val getObject: GetObject,
-    private val payloadDelegator: PayloadDelegator
+    private val payloadDelegator: PayloadDelegator,
+    private val duplicateObject: DuplicateObject
 ) : BaseViewModel(), AnalyticSpaceHelperDelegate by analyticSpaceHelperDelegate {
 
     private val userInput = MutableStateFlow("")
@@ -542,6 +544,23 @@ class GlobalSearchViewModel @Inject constructor(
         }
     }
 
+    /**
+     * Duplicates the object.
+     */
+    fun onDuplicateObject(item: GlobalSearchItemView) {
+        Timber.d("onDuplicateObject, item: ${item.id}")
+        viewModelScope.launch {
+            duplicateObject.invoke(item.id).process(
+                failure = { e ->
+                    Timber.e(e, "Error while duplicating object")
+                },
+                success = { newId ->
+                    Timber.d("Object duplicated: ${item.id} -> $newId")
+                }
+            )
+        }
+    }
+
     fun onShowRelatedClicked(globalSearchItemView: GlobalSearchItemView) {
         viewModelScope.launch {
             userInput.value = EMPTY_STRING_VALUE
@@ -594,7 +613,8 @@ class GlobalSearchViewModel @Inject constructor(
         private val createWidget: CreateWidget,
         private val spaceManager: SpaceManager,
         private val getObject: GetObject,
-        private val payloadDelegator: PayloadDelegator
+        private val payloadDelegator: PayloadDelegator,
+        private val duplicateObject: DuplicateObject
     ) : ViewModelProvider.Factory {
         @Suppress("UNCHECKED_CAST")
         override fun <T : ViewModel> create(modelClass: Class<T>): T {
@@ -615,7 +635,8 @@ class GlobalSearchViewModel @Inject constructor(
                 createWidget = createWidget,
                 spaceManager = spaceManager,
                 getObject = getObject,
-                payloadDelegator = payloadDelegator
+                payloadDelegator = payloadDelegator,
+                duplicateObject = duplicateObject
             ) as T
         }
     }

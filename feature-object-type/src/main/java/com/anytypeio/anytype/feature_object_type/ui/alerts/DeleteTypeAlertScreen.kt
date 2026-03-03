@@ -278,7 +278,7 @@ private fun ActionButtons(
         ButtonWarning(
             text = stringResource(R.string.move_type_to_bin_to_bin),
             onClick = onMoveClick,
-            size = ButtonSize.Large,
+            size = ButtonSize.LargeRound,
             modifier = Modifier.fillMaxWidth()
         )
 
@@ -287,7 +287,7 @@ private fun ActionButtons(
         ButtonSecondary(
             text = stringResource(R.string.cancel),
             onClick = onCancelClick,
-            size = ButtonSize.Large,
+            size = ButtonSize.LargeRound,
             modifier = Modifier.fillMaxWidth()
         )
     }

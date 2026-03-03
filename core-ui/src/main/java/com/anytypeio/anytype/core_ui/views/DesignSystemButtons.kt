@@ -568,6 +568,11 @@ enum class ButtonSize(
         cornerSize = 12.dp,
         contentPadding = PaddingValues(0.dp, 13.52.dp, 0.dp, 12.dp),
         textStyle = ButtonRegular
+    ),
+    LargeRound(
+        cornerSize = 26.dp,
+        contentPadding = PaddingValues(0.dp, 14.dp, 0.dp, 14.dp),
+        textStyle = ButtonMedium
     )
 
 }
@@ -637,6 +642,34 @@ fun MyWarningButton() {
         onClick = {},
         size = ButtonSize.Large,
         text = "Log out",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+fun MyWarningButtonLargeRound() {
+    ButtonWarning(
+        onClick = {},
+        size = ButtonSize.LargeRound,
+        text = "Move to Bin",
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 16.dp, end = 16.dp)
+    )
+}
+
+@Composable
+@Preview(backgroundColor = 0xFFFFFFFF, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_NO, name = "Light Mode")
+@Preview(backgroundColor = 0x000000, showBackground = true, uiMode = Configuration.UI_MODE_NIGHT_YES, name = "Dark Mode")
+fun MySecondaryButtonLargeRound() {
+    ButtonSecondary(
+        onClick = {},
+        size = ButtonSize.LargeRound,
+        text = "Cancel",
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 16.dp, end = 16.dp)

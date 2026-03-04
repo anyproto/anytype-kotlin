@@ -24,6 +24,7 @@ import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -365,61 +366,21 @@ fun Bubble(
                     },
                     properties = PopupProperties(focusable = false)
                 ) {
-                    if (hasBookmark) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.open_in_browser),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
-                                )
-                            },
-                            onClick = {
-                                onOpenAttachmentInBrowser()
-                                showDropdownMenu = false
-                            }
-                        )
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    }
-                    if (hasFileAttachment) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.open_file),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
-                                )
-                            },
-                            onClick = {
-                                onOpenAttachmentFile()
-                                showDropdownMenu = false
-                            }
-                        )
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    }
-                    if (hasBookmark || hasFileAttachment) {
-                        DropdownMenuItem(
-                            text = {
-                                Text(
-                                    text = stringResource(R.string.open_object),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
-                                )
-                            },
-                            onClick = {
-                                onOpenAttachmentAsObject()
-                                showDropdownMenu = false
-                            }
-                        )
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    }
+                    // Group 1: Add Reaction, Reply
                     if (!isMaxReactionCountReached && !isReadOnly) {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = stringResource(R.string.chats_add_reaction),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_mood),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
                                 )
                             },
                             onClick = {
@@ -427,15 +388,21 @@ fun Bubble(
                                 showDropdownMenu = false
                             }
                         )
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                     }
                     if (!isReadOnly) {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = stringResource(R.string.chats_reply),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_reply),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
                                 )
                             },
                             onClick = {
@@ -444,14 +411,103 @@ fun Bubble(
                             }
                         )
                     }
-                    if (content.msg.isNotEmpty()) {
+                    // Group 2: Open in Browser, Open File, Open Object
+                    if (!isReadOnly && (hasBookmark || hasFileAttachment)) {
                         Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    }
+                    if (hasBookmark) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_in_browser),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_language),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentInBrowser()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
+                    if (hasFileAttachment) {
+                        val hasImageAttachment = attachments.any {
+                            it is ChatView.Message.Attachment.Image ||
+                            it is ChatView.Message.Attachment.Gallery
+                        }
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_file),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(
+                                        id = if (hasImageAttachment)
+                                            R.drawable.ic_dropdown_menu_image
+                                        else
+                                            R.drawable.ic_dropdown_menu_draft
+                                    ),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentFile()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
+                    if (hasBookmark || hasFileAttachment) {
+                        DropdownMenuItem(
+                            text = {
+                                Text(
+                                    text = stringResource(R.string.open_object),
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            onClick = {
+                                onOpenAttachmentAsObject()
+                                showDropdownMenu = false
+                            }
+                        )
+                    }
+                    // Group 3: Copy Text, Edit, Delete
+                    if ((content.msg.isNotEmpty() || isUserAuthor) && (!isReadOnly || hasBookmark || hasFileAttachment)) {
+                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                    }
+                    if (content.msg.isNotEmpty()) {
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = stringResource(R.string.copy_plain_text),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
                                 )
                             },
                             onClick = {
@@ -461,13 +517,19 @@ fun Bubble(
                         )
                     }
                     if (isUserAuthor) {
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = stringResource(R.string.edit),
-                                    color = colorResource(id = R.color.text_primary),
-                                    modifier = Modifier.padding(end = 64.dp)
+                                    color = colorResource(id = R.color.text_primary)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_edit),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.text_primary)
                                 )
                             },
                             onClick = {
@@ -477,13 +539,19 @@ fun Bubble(
                         )
                     }
                     if (isUserAuthor) {
-                        Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                         DropdownMenuItem(
                             text = {
                                 Text(
                                     text = stringResource(id = R.string.delete),
-                                    color = colorResource(id = R.color.palette_system_red),
-                                    modifier = Modifier.padding(end = 64.dp)
+                                    color = colorResource(id = R.color.palette_system_red)
+                                )
+                            },
+                            trailingIcon = {
+                                Icon(
+                                    painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                                    contentDescription = null,
+                                    modifier = Modifier.size(24.dp),
+                                    tint = colorResource(id = R.color.palette_system_red)
                                 )
                             },
                             onClick = {

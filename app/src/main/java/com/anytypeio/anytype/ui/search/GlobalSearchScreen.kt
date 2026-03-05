@@ -639,23 +639,25 @@ private fun GlobalSearchItem(
                         )
                     }
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        onOpenObjectAsObject(globalSearchItemView)
-                        isMenuExpanded = false
+                if (isBookmark || isFile) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onOpenObjectAsObject(globalSearchItemView)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.open_object),
+                            modifier = Modifier.weight(1f),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                ) {
-                    Text(
-                        text = stringResource(R.string.open_object),
-                        modifier = Modifier.weight(1f),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
-                        contentDescription = null,
-                        modifier = Modifier.size(24.dp)
-                    )
                 }
                 // Group 2: Pin + Copy Link
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)

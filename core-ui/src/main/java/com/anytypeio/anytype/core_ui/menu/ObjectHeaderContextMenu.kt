@@ -9,6 +9,7 @@ import androidx.core.content.ContextCompat
 import com.anytypeio.anytype.core_models.ObjectType
 import com.anytypeio.anytype.core_models.SupportedLayouts
 import com.anytypeio.anytype.core_ui.R
+import timber.log.Timber
 
 class ObjectHeaderContextMenu(
     context: Context,
@@ -48,7 +49,10 @@ class ObjectHeaderContextMenu(
                 R.id.copy_link -> onCopyLinkClicked()
                 R.id.move_to_bin -> onMoveToBinClicked()
                 R.id.remove_from_collection -> onRemoveFromCollectionClicked()
-                else -> throw IllegalStateException("Unexpected menu item: $item")
+                else -> {
+                    Timber.e("Unexpected menu item: $item")
+                    return@setOnMenuItemClickListener false
+                }
             }
             true
         }

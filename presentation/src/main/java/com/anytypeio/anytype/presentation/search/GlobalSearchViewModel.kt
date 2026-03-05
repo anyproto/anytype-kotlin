@@ -373,11 +373,7 @@ class GlobalSearchViewModel @Inject constructor(
         }
 
 
-    init {
-        Timber.i("GlobalSearchViewModel, init")
-    }
-
-    fun onQueryChanged(query: String) {
+    fun onQueryChanged
         userInput.value = query
     }
 
@@ -424,6 +420,9 @@ class GlobalSearchViewModel @Inject constructor(
             val url = item.obj.getSingleValue<String>(Relations.SOURCE)
             if (!url.isNullOrBlank()) {
                 navigation.emit(OpenObjectNavigation.OpenBookmarkUrl(url))
+            } else {
+                Timber.w("onOpenInBrowser: source URL is missing for item: ${item.id}")
+                sendToast("Couldn't open URL: no source found")
             }
         }
     }
@@ -454,6 +453,9 @@ class GlobalSearchViewModel @Inject constructor(
                     val url = urlBuilder.getUrlBasedOnFileLayout(item.id, layout)
                     if (url != null) {
                         commands.emit(SearchCommand.Browse(url))
+                    } else {
+                        Timber.w("onOpenFile: could not resolve URL for item: ${item.id}, layout: $layout")
+                        sendToast("Couldn't open file: URL not available")
                     }
                 }
             }
@@ -500,9 +502,11 @@ class GlobalSearchViewModel @Inject constructor(
                 onSuccess = { payload ->
                     payloadDelegator.dispatch(payload)
                     Timber.d("Widget created for object: ${item.id}")
+                    sendToast("Widget created")
                 },
                 onFailure = { e ->
                     Timber.e(e, "Error while creating widget")
+                    sendToast("Error while creating widget")
                 }
             )
         }
@@ -536,6 +540,7 @@ class GlobalSearchViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     Timber.d("Object moved to bin: ${item.id}")
+                    sendToast("Object moved to bin.")
                 },
                 onFailure = { e ->
                     Timber.e(e, "Error while moving object to bin")

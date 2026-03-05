@@ -84,6 +84,9 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                 )
             }
             LaunchedEffect(Unit) {
+                vm.toasts.collect { msg -> toast(msg) }
+            }
+            LaunchedEffect(Unit) {
                 vm.commands.collect { command ->
                     when (command) {
                         is GlobalSearchViewModel.SearchCommand.Browse -> {

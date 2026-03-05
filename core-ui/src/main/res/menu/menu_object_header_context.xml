@@ -2,22 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/open_in_browser"
+        android:icon="@drawable/ic_dropdown_menu_language"
         android:title="@string/open_in_browser"
         android:visible="false" />
     <item
         android:id="@+id/open_file"
+        android:icon="@drawable/ic_dropdown_menu_draft"
         android:title="@string/open_file"
         android:visible="false" />
     <item
         android:id="@+id/open_as_object"
+        android:icon="@drawable/ic_dropdown_menu_open_in_full"
         android:title="@string/all_content_item_menu_open" />
     <item
         android:id="@+id/copy_link"
+        android:icon="@drawable/ic_dropdown_menu_link"
         android:title="@string/copy_link" />
     <item
         android:id="@+id/move_to_bin"
+        android:icon="@drawable/ic_dropdown_menu_delete"
         android:title="@string/object_type_fields_menu_move_to_bin" />
     <item
         android:id="@+id/remove_from_collection"
+        android:icon="@drawable/ic_dropdown_menu_delete"
         android:title="@string/remove_from_collection" />
 </menu>

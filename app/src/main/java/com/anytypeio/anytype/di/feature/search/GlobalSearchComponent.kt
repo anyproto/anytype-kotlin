@@ -8,6 +8,7 @@ import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
 import com.anytypeio.anytype.domain.config.UserSettingsRepository
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.`object`.DuplicateObject
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.objects.StoreOfObjectTypes
@@ -23,6 +24,7 @@ import dagger.Binds
 import dagger.BindsInstance
 import dagger.Component
 import dagger.Module
+import dagger.Provides
 
 @Component(
     dependencies = [GlobalSearchDependencies::class],
@@ -47,6 +49,14 @@ interface GlobalSearchComponent {
 
 @Module
 object GlobalSearchModule {
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDuplicateObject(
+        repo: BlockRepository
+    ): DuplicateObject = DuplicateObject(repo = repo)
+
     @Module
     interface Declarations {
         @Binds

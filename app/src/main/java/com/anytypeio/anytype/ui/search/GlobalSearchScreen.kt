@@ -114,6 +114,7 @@ fun GlobalSearchScreen(
     onOpenFile: (GlobalSearchItemView) -> Unit = {},
     onPinObject: (GlobalSearchItemView) -> Unit = {},
     onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onDuplicateObject: (GlobalSearchItemView) -> Unit = {},
     onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusOnStart: Boolean = true
 ) {
@@ -322,6 +323,7 @@ fun GlobalSearchScreen(
                     onOpenFile = onOpenFile,
                     onPinObject = onPinObject,
                     onCopyLink = onCopyLink,
+                    onDuplicateObject = onDuplicateObject,
                     onMoveToBin = onMoveToBin,
                     focusManager = focus
                 )
@@ -446,6 +448,7 @@ private fun GlobalSearchItem(
     onOpenFile: (GlobalSearchItemView) -> Unit = {},
     onPinObject: (GlobalSearchItemView) -> Unit = {},
     onCopyLink: (GlobalSearchItemView) -> Unit = {},
+    onDuplicateObject: (GlobalSearchItemView) -> Unit = {},
     onMoveToBin: (GlobalSearchItemView) -> Unit = {},
     focusManager: FocusManager,
     modifier: Modifier = Modifier
@@ -579,6 +582,7 @@ private fun GlobalSearchItem(
         ) {
             val isBookmark = globalSearchItemView.layout == ObjectType.Layout.BOOKMARK
             val isFile = SupportedLayouts.isFileLayout(globalSearchItemView.layout)
+            val isImageLayout = globalSearchItemView.layout == ObjectType.Layout.IMAGE
             DropdownMenu(
                 expanded = isMenuExpanded,
                 onDismissRequest = {
@@ -589,6 +593,7 @@ private fun GlobalSearchItem(
                     y = 8.dp
                 )
             ) {
+                // Group 1: Open in Browser / Open File + Open Object
                 if (isBookmark) {
                     DropdownMenuItem(
                         onClick = {
@@ -598,11 +603,16 @@ private fun GlobalSearchItem(
                     ) {
                         Text(
                             text = stringResource(R.string.open_in_browser),
+                            modifier = Modifier.weight(1f),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_language),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 }
                 if (isFile) {
                     DropdownMenuItem(
@@ -613,24 +623,43 @@ private fun GlobalSearchItem(
                     ) {
                         Text(
                             text = stringResource(R.string.open_file),
+                            modifier = Modifier.weight(1f),
                             style = PreviewTitle1Regular,
                             color = colorResource(id = R.color.text_primary)
                         )
+                        Image(
+                            painter = painterResource(
+                                id = if (isImageLayout)
+                                    R.drawable.ic_dropdown_menu_image
+                                else
+                                    R.drawable.ic_dropdown_menu_draft
+                            ),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 }
-                DropdownMenuItem(
-                    onClick = {
-                        onOpenObjectAsObject(globalSearchItemView)
-                        isMenuExpanded = false
+                if (isBookmark || isFile) {
+                    DropdownMenuItem(
+                        onClick = {
+                            onOpenObjectAsObject(globalSearchItemView)
+                            isMenuExpanded = false
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(R.string.open_object),
+                            modifier = Modifier.weight(1f),
+                            style = PreviewTitle1Regular,
+                            color = colorResource(id = R.color.text_primary)
+                        )
+                        Image(
+                            painter = painterResource(id = R.drawable.ic_dropdown_menu_open_in_full),
+                            contentDescription = null,
+                            modifier = Modifier.size(24.dp)
+                        )
                     }
-                ) {
-                    Text(
-                        text = stringResource(R.string.open_object),
-                        style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
-                    )
                 }
+                // Group 2: Pin + Copy Link
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     onClick = {
@@ -640,11 +669,16 @@ private fun GlobalSearchItem(
                 ) {
                     Text(
                         text = stringResource(R.string.favourite),
+                        modifier = Modifier.weight(1f),
                         style = PreviewTitle1Regular,
                         color = colorResource(id = R.color.text_primary)
                     )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_keep),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
-                Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
                 DropdownMenuItem(
                     onClick = {
                         onCopyLink(globalSearchItemView)
@@ -653,11 +687,36 @@ private fun GlobalSearchItem(
                 ) {
                     Text(
                         text = stringResource(R.string.copy_link),
+                        modifier = Modifier.weight(1f),
                         style = PreviewTitle1Regular,
                         color = colorResource(id = R.color.text_primary)
                     )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_link),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
+                // Group 3: Duplicate + Move to Bin
                 Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
+                DropdownMenuItem(
+                    onClick = {
+                        onDuplicateObject(globalSearchItemView)
+                        isMenuExpanded = false
+                    }
+                ) {
+                    Text(
+                        text = stringResource(R.string.duplicate),
+                        modifier = Modifier.weight(1f),
+                        style = PreviewTitle1Regular,
+                        color = colorResource(id = R.color.text_primary)
+                    )
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_content_copy),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
+                }
                 DropdownMenuItem(
                     onClick = {
                         onMoveToBin(globalSearchItemView)
@@ -666,24 +725,15 @@ private fun GlobalSearchItem(
                 ) {
                     Text(
                         text = stringResource(R.string.move_to_bin),
+                        modifier = Modifier.weight(1f),
                         style = PreviewTitle1Regular,
-                        color = colorResource(id = R.color.text_primary)
+                        color = colorResource(id = R.color.palette_system_red)
                     )
-                }
-                if (globalSearchItemView.links.isNotEmpty() || globalSearchItemView.backlinks.isNotEmpty()) {
-                    Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
-                    DropdownMenuItem(
-                        onClick = {
-                            onShowRelatedClicked(globalSearchItemView)
-                            isMenuExpanded = false
-                        }
-                    ) {
-                        Text(
-                            text = stringResource(R.string.global_search_show_related_objects),
-                            style = PreviewTitle1Regular,
-                            color = colorResource(id = R.color.text_primary)
-                        )
-                    }
+                    Image(
+                        painter = painterResource(id = R.drawable.ic_dropdown_menu_delete),
+                        contentDescription = null,
+                        modifier = Modifier.size(24.dp)
+                    )
                 }
             }
         }

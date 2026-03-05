@@ -73,6 +73,7 @@ import com.anytypeio.anytype.core_ui.views.Caption1Medium
 import com.anytypeio.anytype.core_ui.views.Caption1Regular
 import com.anytypeio.anytype.core_ui.views.Caption2Regular
 import com.anytypeio.anytype.core_ui.views.ContentMiscChat
+import com.anytypeio.anytype.core_ui.views.PreviewTitle1Regular
 import com.anytypeio.anytype.core_ui.views.fontIBM
 import com.anytypeio.anytype.core_utils.const.DateConst.TIME_H24
 import com.anytypeio.anytype.core_utils.ext.formatTimeInMillis
@@ -372,6 +373,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.chats_add_reaction),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -394,6 +396,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.chats_reply),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -420,6 +423,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.open_in_browser),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -446,6 +450,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.open_file),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -473,6 +478,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.open_object),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -499,6 +505,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.copy_plain_text),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -521,6 +528,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(R.string.edit),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.text_primary)
                                 )
                             },
@@ -543,6 +551,7 @@ fun Bubble(
                             text = {
                                 Text(
                                     text = stringResource(id = R.string.delete),
+                                    style = PreviewTitle1Regular,
                                     color = colorResource(id = R.color.palette_system_red)
                                 )
                             },

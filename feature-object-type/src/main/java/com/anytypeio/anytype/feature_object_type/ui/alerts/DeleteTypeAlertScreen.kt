@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ModalBottomSheet
@@ -25,6 +26,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.platform.rememberNestedScrollInteropConnection
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -64,6 +67,9 @@ fun DeleteTypeAlertScreen(
     )
 
     ModalBottomSheet(
+        modifier = Modifier
+            .padding(top = 60.dp)
+            .fillMaxWidth(),
         dragHandle = {
             Column {
                 Spacer(modifier = Modifier.height(6.dp))
@@ -140,10 +146,13 @@ private fun DeleteTypeAlertContent(
             Divider(paddingStart = 0.dp, paddingEnd = 0.dp)
 
             // Objects list
+            val lazyListState = rememberLazyListState()
             LazyColumn(
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(1f, fill = false)
+                    .nestedScroll(rememberNestedScrollInteropConnection()),
+                state = lazyListState
             ) {
                 items(
                     items = state.objects,

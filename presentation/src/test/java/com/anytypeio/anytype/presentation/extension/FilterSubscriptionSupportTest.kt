@@ -48,6 +48,28 @@ class FilterSubscriptionSupportTest {
         assertFalse(filter.isSupportedForSubscription())
     }
 
+    @Test
+    fun `null value with DATE format and non-EXACT_DATE quick option is supported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.TODAY,
+            value = null
+        )
+        assertTrue(filter.isSupportedForSubscription())
+    }
+
+    @Test
+    fun `null value with DATE format and EXACT_DATE quick option is unsupported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.EXACT_DATE,
+            value = null
+        )
+        assertFalse(filter.isSupportedForSubscription())
+    }
+
     // endregion
 
     // region isSupportedForSubscription — String values

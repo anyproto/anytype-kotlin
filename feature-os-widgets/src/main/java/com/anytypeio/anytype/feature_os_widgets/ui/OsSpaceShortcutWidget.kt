@@ -38,7 +38,6 @@ import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceShortcutEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.io.File
 
@@ -51,9 +50,6 @@ private const val TAG = "OsSpaceShortcutWidget"
 class OsSpaceShortcutWidget : GlanceAppWidget() {
 
     companion object {
-        // Give user up to 30 seconds to configure the widget
-        private const val MAX_RETRIES = 60
-        private const val RETRY_DELAY_MS = 500L
         private val SMALL_SIZE = DpSize(57.dp, 57.dp)
         private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)
     }
@@ -68,7 +64,9 @@ class OsSpaceShortcutWidget : GlanceAppWidget() {
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
 
-            val config = getConfigWithRetry(dataStore, appWidgetId)
+            val config = loadWidgetConfigWithRetry {
+                dataStore.getSpaceShortcutConfig(appWidgetId)
+            }
 
             provideContent {
                 GlanceTheme {
@@ -82,19 +80,6 @@ class OsSpaceShortcutWidget : GlanceAppWidget() {
         }
     }
 
-    private suspend fun getConfigWithRetry(
-        dataStore: OsWidgetsDataStore,
-        appWidgetId: Int
-    ): OsWidgetSpaceShortcutEntity? {
-        repeat(MAX_RETRIES) { attempt ->
-            dataStore.getSpaceShortcutConfig(appWidgetId)?.let { return it }
-            if (attempt < MAX_RETRIES - 1) {
-                delay(RETRY_DELAY_MS)
-            }
-        }
-        Timber.tag(TAG).d("Config not found for widget $appWidgetId after $MAX_RETRIES attempts")
-        return null
-    }
 }
 
 @Composable

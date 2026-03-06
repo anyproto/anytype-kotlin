@@ -63,7 +63,9 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-            val config = dataStore.getObjectShortcutConfig(appWidgetId)
+            val config = loadWidgetConfigWithRetry {
+                dataStore.getObjectShortcutConfig(appWidgetId)
+            }
             val objectFallback = appContext.getString(R.string.object_1)
 
             provideContent {

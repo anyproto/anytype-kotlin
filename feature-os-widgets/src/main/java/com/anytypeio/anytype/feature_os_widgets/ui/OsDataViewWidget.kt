@@ -39,7 +39,6 @@ import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewEnti
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewItemEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
 private const val TAG = "OsDataViewWidget"
@@ -48,18 +47,14 @@ private const val TAG = "OsDataViewWidget"
  * Glance App Widget that displays items from a Set or Collection's data view.
  */
 class OsDataViewWidget : GlanceAppWidget() {
-
-    companion object {
-        private const val MAX_RETRIES = 60
-        private const val RETRY_DELAY_MS = 500L
-    }
-
     override suspend fun provideGlance(context: Context, id: GlanceId) {
         try {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-            val config = getConfigWithRetry(dataStore, appWidgetId)
+            val config = loadWidgetConfigWithRetry {
+                dataStore.getDataViewConfig(appWidgetId)
+            }
 
             provideContent {
                 GlanceTheme {
@@ -73,18 +68,6 @@ class OsDataViewWidget : GlanceAppWidget() {
         }
     }
 
-    private suspend fun getConfigWithRetry(
-        dataStore: OsWidgetsDataStore,
-        appWidgetId: Int
-    ): OsWidgetDataViewEntity? {
-        repeat(MAX_RETRIES) { attempt ->
-            dataStore.getDataViewConfig(appWidgetId)?.let { return it }
-            if (attempt < MAX_RETRIES - 1) {
-                delay(RETRY_DELAY_MS)
-            }
-        }
-        return null
-    }
 }
 
 @Composable

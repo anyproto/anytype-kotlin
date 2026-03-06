@@ -60,7 +60,9 @@ class OsCreateObjectWidget : GlanceAppWidget() {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-            val config = dataStore.getCreateObjectConfig(appWidgetId)
+            val config = loadWidgetConfigWithRetry {
+                dataStore.getCreateObjectConfig(appWidgetId)
+            }
             val strings = CreateObjectWidgetStrings(
                 notConfigured = appContext.getString(R.string.os_widget_not_configured),
                 objectFallback = appContext.getString(R.string.object_1),

@@ -86,11 +86,15 @@ class OsWidgetsDataStore(private val context: Context) {
     }
 
     /**
-     * Clears the cached spaces (e.g., on logout).
+     * Clears all widget-related cached data (e.g., on logout).
      */
     suspend fun clear() {
         dataStore.edit { preferences ->
             preferences.remove(SPACES_CACHE_KEY)
+            preferences.remove(CREATE_OBJECT_CONFIGS_KEY)
+            preferences.remove(SPACE_SHORTCUT_CONFIGS_KEY)
+            preferences.remove(OBJECT_SHORTCUT_CONFIGS_KEY)
+            preferences.remove(DATA_VIEW_CONFIGS_KEY)
         }
     }
 

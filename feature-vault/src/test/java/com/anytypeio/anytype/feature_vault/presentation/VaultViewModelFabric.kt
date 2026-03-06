@@ -30,6 +30,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -82,7 +83,8 @@ object VaultViewModelFabric {
         },
         createSpace: CreateSpace = mock(),
         deepLinkResolver: DeepLinkResolver = mock(),
-        osWidgetSpacesSync: OsWidgetSpacesSync = mock()
+        osWidgetSpacesSync: OsWidgetSpacesSync = mock(),
+        osWidgetDataViewSync: OsWidgetDataViewSync = mock()
     ): VaultViewModel = VaultViewModel(
         spaceViewSubscriptionContainer = spaceViewSubscriptionContainer,
         urlBuilder = urlBuilder,
@@ -115,6 +117,7 @@ object VaultViewModelFabric {
         createSpace = createSpace,
         deepLinkResolver = deepLinkResolver,
         configStorage = configStorage,
-        osWidgetSpacesSync = osWidgetSpacesSync
+        osWidgetSpacesSync = osWidgetSpacesSync,
+        osWidgetDataViewSync = osWidgetDataViewSync
     )
 }

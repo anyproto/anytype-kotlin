@@ -1,3 +1,27 @@
+package com.anytypeio.anytype.presentation.collections
+
+import android.util.Log
+import com.anytypeio.anytype.core_models.StubConfig
+import com.anytypeio.anytype.core_models.primitives.SpaceId
+import com.anytypeio.anytype.domain.base.AppCoroutineDispatchers
+import com.anytypeio.anytype.domain.dataview.interactor.CreateDataViewObject
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfObjectTypes
+import com.anytypeio.anytype.domain.search.DataViewSubscriptionContainer
+import com.anytypeio.anytype.domain.workspace.SpaceManager
+import com.anytypeio.anytype.presentation.sets.ObjectSetViewModel
+import com.anytypeio.anytype.presentation.sets.main.ObjectSetViewModelTestSetup
+import com.anytypeio.anytype.presentation.sets.subscription.DefaultDataViewSubscription
+import net.lachlanmckee.timberjunit.TimberTestRule
+import org.junit.After
+import org.junit.Before
+import org.junit.Rule
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.mock
+
+class CollectionCreateAndAddObjectTest : ObjectSetViewModelTestSetup() {
+
+    private lateinit var viewModel: ObjectSetViewModel
+    private lateinit var mockObjectCollection: MockCollection
 
     @get:Rule
     val timberTestRule: TimberTestRule = TimberTestRule.builder()
@@ -69,7 +93,6 @@
             viewerDelegate = viewerDelegate,
             spaceManager = spaceManager,
             createTemplate = createTemplate,
-            getObjectTypes = getObjectTypes,
             dateProvider = dateProvider,
             vmParams = ObjectSetViewModel.Params(
                 ctx = root,
@@ -86,7 +109,8 @@
             emojiProvider = emojiProvider,
             emojiSuggester = emojiSuggester,
             createBlock = mock(),
-            stringResourceProvider = stringResourceProvider
+            stringResourceProvider = stringResourceProvider,
+            getDefaultObjectType = getDefaultObjectType
         )
     }
 

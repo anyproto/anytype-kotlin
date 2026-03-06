@@ -92,18 +92,19 @@ class SpaceShortcutWidgetConfigViewModel(
         private val context: Context,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder
-    ) : ViewModelProvider.Factory {
-        
-        var appWidgetId: Int = -1
-
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            return SpaceShortcutWidgetConfigViewModel(
-                appWidgetId = appWidgetId,
-                context = context,
-                spaceViews = spaceViews,
-                urlBuilder = urlBuilder
-            ) as T
+    ) {
+        fun create(appWidgetId: Int): ViewModelProvider.Factory {
+            return object : ViewModelProvider.Factory {
+                @Suppress("UNCHECKED_CAST")
+                override fun <T : ViewModel> create(modelClass: Class<T>): T {
+                    return SpaceShortcutWidgetConfigViewModel(
+                        appWidgetId = appWidgetId,
+                        context = context,
+                        spaceViews = spaceViews,
+                        urlBuilder = urlBuilder
+                    ) as T
+                }
+            }
         }
     }
 }

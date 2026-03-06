@@ -5,11 +5,11 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.lifecycle.ViewModelProvider
 import androidx.compose.ui.platform.ComposeView
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
@@ -33,7 +33,7 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
     @Inject
     lateinit var urlBuilder: UrlBuilder
 
-    private val vm by viewModels<CreateObjectWidgetConfigViewModel> { factory }
+    private lateinit var vm: CreateObjectWidgetConfigViewModel
 
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
@@ -56,7 +56,7 @@ class CreateObjectWidgetConfigActivity : AppCompatActivity(), ObjectTypeSelectio
 
         // Inject dependencies
         componentManager().createObjectWidgetConfigComponent.get().inject(this)
-        factory.appWidgetId = appWidgetId
+        vm = ViewModelProvider(this, factory.create(appWidgetId))[CreateObjectWidgetConfigViewModel::class.java]
 
         // Set up content with space selection screen
         setContentView(

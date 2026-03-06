@@ -57,7 +57,7 @@ dependencies {
     implementation libs.kotlinxSerializationJson
 
     // SVG support for widget icon caching
-    implementation 'com.caverock:androidsvg-aar:1.4'
+    implementation libs.androidSvg
 
     implementation libs.timber
 

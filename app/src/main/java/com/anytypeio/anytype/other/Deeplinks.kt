@@ -6,6 +6,7 @@ import com.anytypeio.anytype.core_models.Url
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.domain.misc.DeepLinkResolver
 import com.anytypeio.anytype.domain.multiplayer.SpaceInviteResolver
+import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import timber.log.Timber
 
 const val DEEP_LINK_PATTERN = "anytype://"
@@ -30,16 +31,6 @@ const val MAIN_PATH = "main"
 const val OBJECT_PATH = "object"
 const val IMPORT_PATH = "import"
 const val MEMBERSHIP_PATH = "membership"
-const val OS_WIDGET_HOST = "os-widget"
-const val OS_WIDGET_SPACES_LIST = "spaces-list"
-const val OS_WIDGET_CREATE_OBJECT = "create-object"
-const val OS_WIDGET_SPACE_SHORTCUT = "space-shortcut"
-const val OS_WIDGET_OBJECT_SHORTCUT = "object-shortcut"
-const val OS_WIDGET_DATA_VIEW = "data-view"
-const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
-const val OS_WIDGET_ACTION_OPEN = "open"
-const val OS_WIDGET_ACTION_CREATE = "create"
-const val OS_WIDGET_TOKEN_PARAM = "token"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
@@ -69,7 +60,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             defaultLinkToObjectRegex.containsMatchIn(deeplink) -> resolveDeepLinkToObject(uri)
             // Check OS widget host BEFORE generic path checks to avoid false matches
             // (e.g., "create-object" contains "object" which would match OBJECT_PATH)
-            uri.host == OS_WIDGET_HOST -> resolveOsWidgetDeepLink(uri)
+            uri.host == OsWidgetDeepLinks.HOST -> resolveOsWidgetDeepLink(uri)
             deeplink.contains(OBJECT_PATH) -> resolveObjectPath(uri)
             deeplink.contains(MEMBERSHIP_PATH) -> resolveMembershipPath(uri)
             else -> DeepLinkResolver.Action.Unknown
@@ -181,11 +172,11 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         val widgetType = uri.pathSegments.getOrNull(0)
         val action = uri.pathSegments.getOrNull(1)
         return when (widgetType) {
-            OS_WIDGET_SPACES_LIST -> resolveSpacesListWidgetAction(uri, action)
-            OS_WIDGET_CREATE_OBJECT -> resolveCreateObjectWidgetAction(uri, action)
-            OS_WIDGET_SPACE_SHORTCUT -> resolveSpaceShortcutWidgetAction(uri, action)
-            OS_WIDGET_OBJECT_SHORTCUT -> resolveObjectShortcutWidgetAction(uri, action)
-            OS_WIDGET_DATA_VIEW -> resolveObjectShortcutWidgetAction(uri, action)
+            OsWidgetDeepLinks.WIDGET_SPACES_LIST -> resolveSpacesListWidgetAction(uri, action)
+            OsWidgetDeepLinks.WIDGET_CREATE_OBJECT -> resolveCreateObjectWidgetAction(uri, action)
+            OsWidgetDeepLinks.WIDGET_SPACE_SHORTCUT -> resolveSpaceShortcutWidgetAction(uri, action)
+            OsWidgetDeepLinks.WIDGET_OBJECT_SHORTCUT -> resolveObjectShortcutWidgetAction(uri, action)
+            OsWidgetDeepLinks.WIDGET_DATA_VIEW -> resolveDataViewWidgetAction(uri, action)
             else -> DeepLinkResolver.Action.Unknown
         }
     }
@@ -195,7 +186,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         action: String?
     ): DeepLinkResolver.Action {
         return when (action) {
-            OS_WIDGET_ACTION_OPEN_SPACE -> {
+            OsWidgetDeepLinks.ACTION_OPEN_SPACE -> {
                 val spaceId = uri.pathSegments.getOrNull(2)
                 if (!spaceId.isNullOrEmpty()) {
                     DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(SpaceId(spaceId))
@@ -213,11 +204,11 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
     ): DeepLinkResolver.Action {
         Timber.d("resolveCreateObjectWidgetAction: uri=$uri, action=$action")
         return when (action) {
-            OS_WIDGET_ACTION_CREATE -> {
+            OsWidgetDeepLinks.ACTION_CREATE -> {
                 // Require both widget id and token.
                 // Token is validated later in MainActivity against persisted widget config.
                 val appWidgetId = uri.pathSegments.getOrNull(2)?.toIntOrNull()
-                val token = uri.getQueryParameter(OS_WIDGET_TOKEN_PARAM)
+                val token = uri.getQueryParameter(OsWidgetDeepLinks.PARAM_TOKEN)
                 Timber.d("resolveCreateObjectWidgetAction: parsed appWidgetId=$appWidgetId")
                 if (appWidgetId != null && !token.isNullOrEmpty()) {
                     DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject(
@@ -245,7 +236,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         action: String?
     ): DeepLinkResolver.Action {
         return when (action) {
-            OS_WIDGET_ACTION_OPEN -> {
+            OsWidgetDeepLinks.ACTION_OPEN -> {
                 val spaceId = uri.pathSegments.getOrNull(2)
                 if (!spaceId.isNullOrEmpty()) {
                     DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToSpace(SpaceId(spaceId))
@@ -266,7 +257,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         action: String?
     ): DeepLinkResolver.Action {
         return when (action) {
-            OS_WIDGET_ACTION_OPEN -> {
+            OsWidgetDeepLinks.ACTION_OPEN -> {
                 val objectId = uri.pathSegments.getOrNull(2)
                 val spaceId = uri.getQueryParameter(SPACE_ID_PARAM)
                 if (!objectId.isNullOrEmpty() && !spaceId.isNullOrEmpty()) {
@@ -280,6 +271,17 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             }
             else -> DeepLinkResolver.Action.Unknown
         }
+    }
+
+    /**
+     * Resolves data-view widget deep links.
+     * Currently shares URI shape with object-shortcut open links.
+     */
+    private fun resolveDataViewWidgetAction(
+        uri: Uri,
+        action: String?
+    ): DeepLinkResolver.Action {
+        return resolveObjectShortcutWidgetAction(uri, action)
     }
 
     private fun parseInvite(uri: Uri): DeepLinkResolver.Action.DeepLinkToObject.Invite? {

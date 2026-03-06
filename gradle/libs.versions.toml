@@ -68,6 +68,7 @@ firebaseBomVersion = "33.13.0"
 composeQrCodeVersion = '1.0.1'
 fragmentComposeVersion = "1.8.6"
 glanceVersion = "1.1.1"
+androidSvgVersion = "1.4"
 
 [libraries]
 middleware = { module = "io.anyproto:anytype-heart-android", version.ref = "middlewareVersion" }
@@ -172,6 +173,7 @@ anyCrypto = { module = "com.github.anyproto:any-crypto-kotlin", version = "1.0.2
 glance = { module = "androidx.glance:glance", version.ref = "glanceVersion" }
 glanceAppWidget = { module = "androidx.glance:glance-appwidget", version.ref = "glanceVersion" }
 glanceMaterial3 = { module = "androidx.glance:glance-material3", version.ref = "glanceVersion" }
+androidSvg = { module = "com.caverock:androidsvg-aar", version.ref = "androidSvgVersion" }
 
 [bundles]
 

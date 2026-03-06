@@ -5,12 +5,12 @@ import android.appwidget.AppWidgetManager
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.platform.ComposeView
+import androidx.lifecycle.ViewModelProvider
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.di.common.componentManager
 import com.anytypeio.anytype.feature_os_widgets.presentation.SpaceShortcutWidgetConfigViewModel
@@ -30,7 +30,7 @@ class SpaceShortcutWidgetConfigActivity : AppCompatActivity() {
     @Inject
     lateinit var urlBuilder: UrlBuilder
 
-    private val vm by viewModels<SpaceShortcutWidgetConfigViewModel> { factory }
+    private lateinit var vm: SpaceShortcutWidgetConfigViewModel
 
     private var appWidgetId = AppWidgetManager.INVALID_APPWIDGET_ID
 
@@ -53,7 +53,7 @@ class SpaceShortcutWidgetConfigActivity : AppCompatActivity() {
 
         // Inject dependencies
         componentManager().createObjectWidgetConfigComponent.get().inject(this)
-        factory.appWidgetId = appWidgetId
+        vm = ViewModelProvider(this, factory.create(appWidgetId))[SpaceShortcutWidgetConfigViewModel::class.java]
 
         // Set up content with space selection screen
         setContentView(

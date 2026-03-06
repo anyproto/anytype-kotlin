@@ -8,23 +8,24 @@ import android.net.Uri
  */
 object OsWidgetDeepLinks {
 
-    private const val SCHEME = "anytype"
-    private const val HOST = "os-widget"
+    const val SCHEME = "anytype"
+    const val HOST = "os-widget"
 
     // Widget types
-    private const val WIDGET_SPACES_LIST = "spaces-list"
-    private const val WIDGET_CREATE_OBJECT = "create-object"
-    private const val WIDGET_SPACE_SHORTCUT = "space-shortcut"
-    private const val WIDGET_OBJECT_SHORTCUT = "object-shortcut"
+    const val WIDGET_SPACES_LIST = "spaces-list"
+    const val WIDGET_CREATE_OBJECT = "create-object"
+    const val WIDGET_SPACE_SHORTCUT = "space-shortcut"
+    const val WIDGET_OBJECT_SHORTCUT = "object-shortcut"
+    const val WIDGET_DATA_VIEW = "data-view"
 
     // Actions
-    private const val ACTION_OPEN_SPACE = "open-space"
-    private const val ACTION_OPEN = "open"
-    private const val ACTION_CREATE = "create"
+    const val ACTION_OPEN_SPACE = "open-space"
+    const val ACTION_OPEN = "open"
+    const val ACTION_CREATE = "create"
 
     // Query params
-    private const val PARAM_SPACE_ID = "spaceId"
-    private const val PARAM_TOKEN = "token"
+    const val PARAM_SPACE_ID = "spaceId"
+    const val PARAM_TOKEN = "token"
 
     /**
      * Creates a deep link URI to open a specific space from the spaces list widget.
@@ -108,8 +109,6 @@ object OsWidgetDeepLinks {
     }
 
     // ==================== Data View Widget ====================
-
-    private const val WIDGET_DATA_VIEW = "data-view"
 
     /**
      * Creates a deep link URI to open a data view item.

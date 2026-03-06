@@ -79,8 +79,12 @@ class GlobalSearchFragment : BaseBottomSheetComposeFragment() {
                     onOpenFile = vm::onOpenFile,
                     onPinObject = vm::onPinObject,
                     onCopyLink = vm::onCopyLink,
+                    onDuplicateObject = vm::onDuplicateObject,
                     onMoveToBin = vm::onMoveToBin,
                 )
+            }
+            LaunchedEffect(Unit) {
+                vm.toasts.collect { msg -> toast(msg) }
             }
             LaunchedEffect(Unit) {
                 vm.commands.collect { command ->

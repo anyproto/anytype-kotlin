@@ -507,6 +507,7 @@ interface BlockRepository {
     suspend fun membershipFinalize(command: Command.Membership.Finalize)
     suspend fun membershipGetVerificationEmailStatus(): EmailVerificationStatus
     suspend fun membershipGetVerificationEmail(command: Command.Membership.GetVerificationEmail)
+    suspend fun membershipSubscribeToUpdates(email: String)
     suspend fun membershipVerifyEmailCode(command: Command.Membership.VerifyEmailCode)
     suspend fun membershipGetTiers(command: Command.Membership.GetTiers): List<MembershipTierData>
 

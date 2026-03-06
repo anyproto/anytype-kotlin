@@ -162,6 +162,7 @@ class VaultFragment : BaseComposeFragment() {
 
             if (vm.showChooseSpaceType.collectAsStateWithLifecycle().value) {
                 ChooseSpaceTypeScreen(
+                    showChats = true,
                     onCreateChatClicked = {
                         vm.onCreateChatClicked()
                     },

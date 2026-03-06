@@ -2424,6 +2424,19 @@ class MiddlewareServiceImplementation @Inject constructor(
         }
     }
 
+    override fun membershipSubscribeToUpdates(request: Rpc.MembershipV2.SubscribeToUpdates.Request): Rpc.MembershipV2.SubscribeToUpdates.Response {
+        val encoded = Service.membershipV2SubscribeToUpdates(
+            Rpc.MembershipV2.SubscribeToUpdates.Request.ADAPTER.encode(request)
+        )
+        val response = Rpc.MembershipV2.SubscribeToUpdates.Response.ADAPTER.decode(encoded)
+        val error = response.error
+        if (error != null && error.code != Rpc.MembershipV2.SubscribeToUpdates.Response.Error.Code.NULL) {
+            throw Exception(error.description)
+        } else {
+            return response
+        }
+    }
+
     override fun getVersions(request: Rpc.History.GetVersions.Request): Rpc.History.GetVersions.Response {
         val encoded = Service.historyGetVersions(
             Rpc.History.GetVersions.Request.ADAPTER.encode(request)

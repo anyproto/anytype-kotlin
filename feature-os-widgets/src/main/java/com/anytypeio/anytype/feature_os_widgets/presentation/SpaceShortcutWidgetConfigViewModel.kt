@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_os_widgets.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -8,10 +7,7 @@ import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetIconCache
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceShortcutEntity
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
-import com.anytypeio.anytype.feature_os_widgets.ui.OsSpaceShortcutWidgetUpdater
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,9 +20,11 @@ import javax.inject.Inject
 
 class SpaceShortcutWidgetConfigViewModel(
     private val appWidgetId: Int,
-    private val context: Context,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val configStore: SpaceShortcutWidgetConfigStore,
+    private val iconCache: SpaceShortcutIconCache,
+    private val widgetUpdater: SpaceShortcutWidgetUpdater
 ) : ViewModel() {
 
     private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
@@ -50,14 +48,9 @@ class SpaceShortcutWidgetConfigViewModel(
         viewModelScope.launch {
             try {
                 // Cache the icon image if available
-                val iconCache = OsWidgetIconCache(context)
                 val cachedIconPath = space.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
                     val iconUrl = urlBuilder.thumbnail(iconHash)
-                    iconCache.cacheShortcutIcon(
-                        url = iconUrl,
-                        widgetId = appWidgetId,
-                        prefix = OsWidgetIconCache.PREFIX_SPACE
-                    )
+                    iconCache.cacheForWidget(iconUrl, appWidgetId)
                 }
 
                 val config = OsWidgetSpaceShortcutEntity(
@@ -70,10 +63,10 @@ class SpaceShortcutWidgetConfigViewModel(
                 )
 
                 // Save the configuration
-                OsWidgetsDataStore(context).saveSpaceShortcutConfig(config)
+                configStore.save(config)
 
                 // Trigger widget update so it picks up the saved config
-                OsSpaceShortcutWidgetUpdater.update(context, appWidgetId)
+                widgetUpdater.update(appWidgetId)
 
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
@@ -89,9 +82,11 @@ class SpaceShortcutWidgetConfigViewModel(
     }
 
     class Factory @Inject constructor(
-        private val context: Context,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val configStore: SpaceShortcutWidgetConfigStore,
+        private val iconCache: SpaceShortcutIconCache,
+        private val widgetUpdater: SpaceShortcutWidgetUpdater
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -99,9 +94,11 @@ class SpaceShortcutWidgetConfigViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return SpaceShortcutWidgetConfigViewModel(
                         appWidgetId = appWidgetId,
-                        context = context,
                         spaceViews = spaceViews,
-                        urlBuilder = urlBuilder
+                        urlBuilder = urlBuilder,
+                        configStore = configStore,
+                        iconCache = iconCache,
+                        widgetUpdater = widgetUpdater
                     ) as T
                 }
             }

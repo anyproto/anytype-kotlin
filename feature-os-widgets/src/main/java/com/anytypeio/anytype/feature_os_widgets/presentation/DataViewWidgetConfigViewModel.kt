@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_os_widgets.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -25,9 +24,7 @@ import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_os_widgets.persistence.DataViewItemsFetcher
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewEntity
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.feature_os_widgets.persistence.fetchObjectTypesForSpace
-import com.anytypeio.anytype.feature_os_widgets.ui.OsDataViewWidgetUpdater
 import com.anytypeio.anytype.feature_os_widgets.ui.config.ObjectItemView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.Job
@@ -44,13 +41,13 @@ import javax.inject.Inject
 
 class DataViewWidgetConfigViewModel(
     private val appWidgetId: Int,
-    private val context: Context,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
     private val searchObjects: SearchObjects,
     private val getObject: GetObject,
-    private val dataStore: OsWidgetsDataStore,
-    private val itemsFetcher: DataViewItemsFetcher
+    private val dataStore: DataViewWidgetConfigStore,
+    private val itemsFetcher: DataViewItemsFetcher,
+    private val widgetUpdater: DataViewWidgetUpdater
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow<ScreenState>(ScreenState.SpaceSelection)
@@ -151,8 +148,8 @@ class DataViewWidgetConfigViewModel(
                     viewerName = viewer.name,
                     items = items
                 )
-                dataStore.saveDataViewConfig(config)
-                OsDataViewWidgetUpdater.update(context, appWidgetId)
+                dataStore.save(config)
+                widgetUpdater.update(appWidgetId)
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
                 Timber.e(e, "Error saving data view widget config")
@@ -330,13 +327,13 @@ class DataViewWidgetConfigViewModel(
     }
 
     class Factory @Inject constructor(
-        private val context: Context,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
         private val searchObjects: SearchObjects,
         private val getObject: GetObject,
-        private val dataStore: OsWidgetsDataStore,
-        private val itemsFetcher: DataViewItemsFetcher
+        private val dataStore: DataViewWidgetConfigStore,
+        private val itemsFetcher: DataViewItemsFetcher,
+        private val widgetUpdater: DataViewWidgetUpdater
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -344,13 +341,13 @@ class DataViewWidgetConfigViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return DataViewWidgetConfigViewModel(
                         appWidgetId = appWidgetId,
-                        context = context,
                         spaceViews = spaceViews,
                         urlBuilder = urlBuilder,
                         searchObjects = searchObjects,
                         getObject = getObject,
                         dataStore = dataStore,
-                        itemsFetcher = itemsFetcher
+                        itemsFetcher = itemsFetcher,
+                        widgetUpdater = widgetUpdater
                     ) as T
                 }
             }

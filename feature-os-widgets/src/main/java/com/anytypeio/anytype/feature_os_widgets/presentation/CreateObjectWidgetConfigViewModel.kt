@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_os_widgets.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -9,8 +8,6 @@ import com.anytypeio.anytype.core_models.UrlBuilder
 import com.anytypeio.anytype.core_models.multiplayer.SpaceUxType
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
-import com.anytypeio.anytype.feature_os_widgets.ui.OsCreateObjectWidgetUpdater
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -24,9 +21,10 @@ import javax.inject.Inject
 
 class CreateObjectWidgetConfigViewModel(
     private val appWidgetId: Int,
-    private val context: Context,
     private val spaceViews: SpaceViewSubscriptionContainer,
-    private val urlBuilder: UrlBuilder
+    private val urlBuilder: UrlBuilder,
+    private val configStore: CreateObjectWidgetConfigStore,
+    private val widgetUpdater: CreateObjectWidgetUpdater
 ) : ViewModel() {
 
     private val _spaces = MutableStateFlow<List<ObjectWrapper.SpaceView>>(emptyList())
@@ -80,10 +78,10 @@ class CreateObjectWidgetConfigViewModel(
         viewModelScope.launch {
             try {
                 // Save the configuration
-                OsWidgetsDataStore(context).saveCreateObjectConfig(config)
+                configStore.save(config)
 
                 // Trigger widget update so it picks up the saved config
-                OsCreateObjectWidgetUpdater.update(context, appWidgetId)
+                widgetUpdater.update(appWidgetId)
 
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
@@ -100,9 +98,10 @@ class CreateObjectWidgetConfigViewModel(
     }
 
     class Factory @Inject constructor(
-        private val context: Context,
         private val spaceViews: SpaceViewSubscriptionContainer,
-        private val urlBuilder: UrlBuilder
+        private val urlBuilder: UrlBuilder,
+        private val configStore: CreateObjectWidgetConfigStore,
+        private val widgetUpdater: CreateObjectWidgetUpdater
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -110,9 +109,10 @@ class CreateObjectWidgetConfigViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return CreateObjectWidgetConfigViewModel(
                         appWidgetId = appWidgetId,
-                        context = context,
                         spaceViews = spaceViews,
-                        urlBuilder = urlBuilder
+                        urlBuilder = urlBuilder,
+                        configStore = configStore,
+                        widgetUpdater = widgetUpdater
                     ) as T
                 }
             }

@@ -1,6 +1,5 @@
 package com.anytypeio.anytype.feature_os_widgets.presentation
 
-import android.content.Context
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
@@ -20,11 +19,8 @@ import com.anytypeio.anytype.core_models.primitives.SpaceId
 import com.anytypeio.anytype.core_models.ui.objectIcon
 import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.search.SearchObjects
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetIconCache
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetObjectShortcutEntity
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.feature_os_widgets.persistence.fetchObjectTypesForSpace
-import com.anytypeio.anytype.feature_os_widgets.ui.OsObjectShortcutWidgetUpdater
 import com.anytypeio.anytype.feature_os_widgets.ui.config.ObjectItemView
 import com.anytypeio.anytype.presentation.search.ObjectSearchConstants
 import kotlinx.coroutines.Job
@@ -41,10 +37,12 @@ import javax.inject.Inject
 
 class ObjectShortcutWidgetConfigViewModel(
     private val appWidgetId: Int,
-    private val context: Context,
     private val spaceViews: SpaceViewSubscriptionContainer,
     private val urlBuilder: UrlBuilder,
-    private val searchObjects: SearchObjects
+    private val searchObjects: SearchObjects,
+    private val configStore: ObjectShortcutWidgetConfigStore,
+    private val iconCache: ObjectShortcutIconCache,
+    private val widgetUpdater: ObjectShortcutWidgetUpdater
 ) : ViewModel() {
 
     private val _screenState = MutableStateFlow<ScreenState>(ScreenState.SpaceSelection)
@@ -103,14 +101,9 @@ class ObjectShortcutWidgetConfigViewModel(
         viewModelScope.launch {
             try {
                 // Cache the icon image if available
-                val iconCache = OsWidgetIconCache(context)
                 val cachedIconPath = item.obj.iconImage?.takeIf { it.isNotEmpty() }?.let { iconHash ->
                     val iconUrl = urlBuilder.thumbnail(iconHash)
-                    iconCache.cacheShortcutIcon(
-                        url = iconUrl,
-                        widgetId = appWidgetId,
-                        prefix = OsWidgetIconCache.PREFIX_OBJECT
-                    )
+                    iconCache.cacheForWidget(iconUrl, appWidgetId)
                 }
 
                 val config = OsWidgetObjectShortcutEntity(
@@ -127,8 +120,8 @@ class ObjectShortcutWidgetConfigViewModel(
                     cachedIconPath = cachedIconPath
                 )
 
-                OsWidgetsDataStore(context).saveObjectShortcutConfig(config)
-                OsObjectShortcutWidgetUpdater.update(context, appWidgetId)
+                configStore.save(config)
+                widgetUpdater.update(appWidgetId)
 
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
@@ -260,10 +253,12 @@ class ObjectShortcutWidgetConfigViewModel(
     }
 
     class Factory @Inject constructor(
-        private val context: Context,
         private val spaceViews: SpaceViewSubscriptionContainer,
         private val urlBuilder: UrlBuilder,
-        private val searchObjects: SearchObjects
+        private val searchObjects: SearchObjects,
+        private val configStore: ObjectShortcutWidgetConfigStore,
+        private val iconCache: ObjectShortcutIconCache,
+        private val widgetUpdater: ObjectShortcutWidgetUpdater
     ) {
         fun create(appWidgetId: Int): ViewModelProvider.Factory {
             return object : ViewModelProvider.Factory {
@@ -271,10 +266,12 @@ class ObjectShortcutWidgetConfigViewModel(
                 override fun <T : ViewModel> create(modelClass: Class<T>): T {
                     return ObjectShortcutWidgetConfigViewModel(
                         appWidgetId = appWidgetId,
-                        context = context,
                         spaceViews = spaceViews,
                         urlBuilder = urlBuilder,
-                        searchObjects = searchObjects
+                        searchObjects = searchObjects,
+                        configStore = configStore,
+                        iconCache = iconCache,
+                        widgetUpdater = widgetUpdater
                     ) as T
                 }
             }

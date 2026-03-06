@@ -11,8 +11,12 @@ import com.anytypeio.anytype.domain.multiplayer.SpaceViewSubscriptionContainer
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
 import com.anytypeio.anytype.feature_os_widgets.persistence.DataViewItemsFetcher
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
+import com.anytypeio.anytype.feature_os_widgets.presentation.DataViewWidgetConfigStore
+import com.anytypeio.anytype.feature_os_widgets.presentation.DataViewWidgetUpdater
 import com.anytypeio.anytype.feature_os_widgets.presentation.DataViewWidgetConfigViewModel
+import com.anytypeio.anytype.feature_os_widgets.ui.OsDataViewWidgetUpdater
 import com.anytypeio.anytype.ui.oswidgets.DataViewWidgetConfigActivity
 import dagger.Component
 import dagger.Module
@@ -39,7 +43,25 @@ object DataViewWidgetConfigModule {
     @JvmStatic
     @Provides
     @PerScreen
-    fun provideDataStore(context: Context): OsWidgetsDataStore = OsWidgetsDataStore(context)
+    fun provideDataStore(context: Context): DataViewWidgetConfigStore {
+        val appContext = context.applicationContext
+        val dataStore = OsWidgetsDataStore(appContext)
+        return object : DataViewWidgetConfigStore {
+            override suspend fun save(config: OsWidgetDataViewEntity) {
+                dataStore.saveDataViewConfig(config)
+            }
+        }
+    }
+
+    @JvmStatic
+    @Provides
+    @PerScreen
+    fun provideDataViewWidgetUpdater(context: Context): DataViewWidgetUpdater {
+        val appContext = context.applicationContext
+        return DataViewWidgetUpdater { appWidgetId ->
+            OsDataViewWidgetUpdater.update(appContext, appWidgetId)
+        }
+    }
 
     @JvmStatic
     @Provides
@@ -58,21 +80,21 @@ object DataViewWidgetConfigModule {
     @Provides
     @PerScreen
     fun provideDataViewWidgetViewModelFactory(
-        context: Context,
         spaceViews: SpaceViewSubscriptionContainer,
         urlBuilder: UrlBuilder,
         searchObjects: SearchObjects,
         getObject: GetObject,
-        dataStore: OsWidgetsDataStore,
-        itemsFetcher: DataViewItemsFetcher
+        dataStore: DataViewWidgetConfigStore,
+        itemsFetcher: DataViewItemsFetcher,
+        widgetUpdater: DataViewWidgetUpdater
     ): DataViewWidgetConfigViewModel.Factory = DataViewWidgetConfigViewModel.Factory(
-        context = context,
         spaceViews = spaceViews,
         urlBuilder = urlBuilder,
         searchObjects = searchObjects,
         getObject = getObject,
         dataStore = dataStore,
-        itemsFetcher = itemsFetcher
+        itemsFetcher = itemsFetcher,
+        widgetUpdater = widgetUpdater
     )
 }
 

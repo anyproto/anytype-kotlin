@@ -38,7 +38,6 @@ import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetObjectShortcutEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import timber.log.Timber
 import java.io.File
 
@@ -51,9 +50,6 @@ private const val TAG = "OsObjectShortcutWidget"
 class OsObjectShortcutWidget : GlanceAppWidget() {
 
     companion object {
-        // Give user up to 30 seconds to configure the widget
-        private const val MAX_RETRIES = 60
-        private const val RETRY_DELAY_MS = 500L
         private val SMALL_SIZE = DpSize(57.dp, 57.dp)
         private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)
     }
@@ -67,11 +63,16 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-            val config = getConfigWithRetry(dataStore, appWidgetId)
+            val config = dataStore.getObjectShortcutConfig(appWidgetId)
+            val objectFallback = appContext.getString(R.string.object_1)
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config, size = androidx.glance.LocalSize.current)
+                    WidgetContent(
+                        config = config,
+                        size = androidx.glance.LocalSize.current,
+                        objectFallback = objectFallback
+                    )
                 }
             }
         } catch (e: CancellationException) {
@@ -81,22 +82,10 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
         }
     }
 
-    private suspend fun getConfigWithRetry(
-        dataStore: OsWidgetsDataStore,
-        appWidgetId: Int
-    ): OsWidgetObjectShortcutEntity? {
-        repeat(MAX_RETRIES) { attempt ->
-            dataStore.getObjectShortcutConfig(appWidgetId)?.let { return it }
-            if (attempt < MAX_RETRIES - 1) {
-                delay(RETRY_DELAY_MS)
-            }
-        }
-        return null
-    }
 }
 
 @Composable
-private fun WidgetContent(config: OsWidgetObjectShortcutEntity?, size: DpSize) {
+private fun WidgetContent(config: OsWidgetObjectShortcutEntity?, size: DpSize, objectFallback: String) {
     val isSmall = size.width < 100.dp
     
     Box(
@@ -108,7 +97,7 @@ private fun WidgetContent(config: OsWidgetObjectShortcutEntity?, size: DpSize) {
         if (config == null) {
             NotConfiguredState(isSmall = isSmall)
         } else {
-            ObjectShortcutCard(config = config, size = size)
+            ObjectShortcutCard(config = config, size = size, objectFallback = objectFallback)
         }
     }
 }
@@ -128,7 +117,11 @@ private fun NotConfiguredState(isSmall: Boolean) {
 }
 
 @Composable
-private fun ObjectShortcutCard(config: OsWidgetObjectShortcutEntity, size: DpSize) {
+private fun ObjectShortcutCard(
+    config: OsWidgetObjectShortcutEntity,
+    size: DpSize,
+    objectFallback: String
+) {
     val intent = OsWidgetDeepLinks.buildObjectShortcutIntent(config.objectId, config.spaceId)
     val isSmall = size.width < 100.dp
     
@@ -159,7 +152,7 @@ private fun ObjectShortcutCard(config: OsWidgetObjectShortcutEntity, size: DpSiz
                 ObjectIcon(config = config, size = iconSize)
                 Spacer(modifier = GlanceModifier.height(6.dp))
                 Text(
-                    text = config.objectName.ifEmpty { "Object" },
+                    text = config.objectName.ifEmpty { objectFallback },
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextPrimary),
                         fontSize = nameFontSize,

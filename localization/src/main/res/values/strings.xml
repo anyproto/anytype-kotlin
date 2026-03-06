@@ -2476,6 +2476,8 @@ Please provide specific details of your needs here.</string>
     <string name="os_widget_object_shortcut_title">Object Shortcut</string>
     <string name="os_widget_object_shortcut_description">Open an object directly</string>
     <string name="os_widget_not_configured">Tap to configure</string>
+    <string name="os_widget_tap_to_create">Tap to create</string>
+    <string name="os_widget_open_app_to_see_spaces">Open Anytype to see spaces</string>
     <string name="no_spaces_available">No spaces available</string>
     <string name="select_view">Select view</string>
     <string name="os_widget_data_view_title">Data View</string>

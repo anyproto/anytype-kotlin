@@ -52,19 +52,24 @@ import java.io.File
 class OsSpacesListWidget : GlanceAppWidget() {
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
-        val dataStore = OsWidgetsDataStore(context)
+        val appContext = context.applicationContext
+        val dataStore = OsWidgetsDataStore(appContext)
         val spaces = dataStore.observeSpaces().first().toDomain()
+        val strings = SpacesListWidgetStrings(
+            emptyState = appContext.getString(R.string.os_widget_open_app_to_see_spaces),
+            untitled = appContext.getString(R.string.untitled)
+        )
 
         provideContent {
             GlanceTheme {
-                WidgetContent(spaces = spaces)
+                WidgetContent(spaces = spaces, strings = strings)
             }
         }
     }
 }
 
 @Composable
-private fun WidgetContent(spaces: List<OsWidgetSpaceItem>) {
+private fun WidgetContent(spaces: List<OsWidgetSpaceItem>, strings: SpacesListWidgetStrings) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -72,15 +77,15 @@ private fun WidgetContent(spaces: List<OsWidgetSpaceItem>) {
             .padding(8.dp)
     ) {
         if (spaces.isEmpty()) {
-            EmptyState()
+            EmptyState(emptyStateText = strings.emptyState)
         } else {
-            SpacesList(spaces = spaces)
+            SpacesList(spaces = spaces, untitledFallback = strings.untitled)
         }
     }
 }
 
 @Composable
-private fun EmptyState() {
+private fun EmptyState(emptyStateText: String) {
     Box(
         modifier = GlanceModifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -95,7 +100,7 @@ private fun EmptyState() {
             )
             Spacer(modifier = GlanceModifier.height(12.dp))
             Text(
-                text = "Open Anytype to see spaces",
+                text = emptyStateText,
                 style = TextStyle(
                 color = ColorProvider(OsWidgetTextSecondary),
                     fontSize = 14.sp
@@ -106,18 +111,18 @@ private fun EmptyState() {
 }
 
 @Composable
-private fun SpacesList(spaces: List<OsWidgetSpaceItem>) {
+private fun SpacesList(spaces: List<OsWidgetSpaceItem>, untitledFallback: String) {
     LazyColumn(
         modifier = GlanceModifier.fillMaxSize()
     ) {
         items(spaces, itemId = { it.spaceId.hashCode().toLong() }) { space ->
-            SpaceCard(space = space)
+            SpaceCard(space = space, untitledFallback = untitledFallback)
         }
     }
 }
 
 @Composable
-private fun SpaceCard(space: OsWidgetSpaceItem) {
+private fun SpaceCard(space: OsWidgetSpaceItem, untitledFallback: String) {
     val intent = OsWidgetDeepLinks.buildSpaceIntent(space.spaceId)
 
     Column(
@@ -141,7 +146,7 @@ private fun SpaceCard(space: OsWidgetSpaceItem) {
             )
             Spacer(modifier = GlanceModifier.width(12.dp))
             Text(
-                text = space.name.ifEmpty { "Untitled" },
+                text = space.name.ifEmpty { untitledFallback },
                 style = TextStyle(
                     color = ColorProvider(OsWidgetTextPrimary),
                     fontSize = 15.sp,
@@ -153,6 +158,11 @@ private fun SpaceCard(space: OsWidgetSpaceItem) {
         }
     }
 }
+
+private data class SpacesListWidgetStrings(
+    val emptyState: String,
+    val untitled: String
+)
 
 @Composable
 private fun SpaceIcon(

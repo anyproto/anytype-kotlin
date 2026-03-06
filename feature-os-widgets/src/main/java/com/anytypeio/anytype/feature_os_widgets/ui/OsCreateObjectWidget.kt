@@ -36,7 +36,6 @@ import com.anytypeio.anytype.feature_os_widgets.deeplink.OsWidgetDeepLinks
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetCreateObjectEntity
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
-import kotlinx.coroutines.delay
 import timber.log.Timber
 
 private const val TAG = "OsCreateObjectWidget"
@@ -48,10 +47,6 @@ private const val TAG = "OsCreateObjectWidget"
 class OsCreateObjectWidget : GlanceAppWidget() {
 
     companion object {
-        // Retry configuration for handling race condition with config activity.
-        // Give user up to 30 seconds to configure the widget.
-        private const val MAX_RETRIES = 60
-        private const val RETRY_DELAY_MS = 500L
         private val SMALL_SIZE = DpSize(57.dp, 57.dp)
         private val MEDIUM_SIZE = DpSize(110.dp, 110.dp)
     }
@@ -65,13 +60,16 @@ class OsCreateObjectWidget : GlanceAppWidget() {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
-
-            // Retry logic to handle race condition where config might not be persisted yet
-            val config = getConfigWithRetry(dataStore, appWidgetId)
+            val config = dataStore.getCreateObjectConfig(appWidgetId)
+            val strings = CreateObjectWidgetStrings(
+                notConfigured = appContext.getString(R.string.os_widget_not_configured),
+                objectFallback = appContext.getString(R.string.object_1),
+                tapToCreate = appContext.getString(R.string.os_widget_tap_to_create)
+            )
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config, size = LocalSize.current)
+                    WidgetContent(config = config, size = LocalSize.current, strings = strings)
                 }
             }
         } catch (e: CancellationException) {
@@ -82,29 +80,14 @@ class OsCreateObjectWidget : GlanceAppWidget() {
         }
     }
 
-    /**
-     * Attempts to get the widget configuration with retries.
-     * 
-     * This handles the race condition where provideGlance might be called
-     * before the config activity has finished persisting the configuration.
-     */
-    private suspend fun getConfigWithRetry(
-        dataStore: OsWidgetsDataStore,
-        appWidgetId: Int
-    ): OsWidgetCreateObjectEntity? {
-        repeat(MAX_RETRIES) { attempt ->
-            dataStore.getCreateObjectConfig(appWidgetId)?.let { return it }
-            if (attempt < MAX_RETRIES - 1) {
-                delay(RETRY_DELAY_MS)
-            }
-        }
-        Timber.tag(TAG).d("Config not found for widget $appWidgetId after $MAX_RETRIES attempts")
-        return null
-    }
 }
 
 @Composable
-private fun WidgetContent(config: OsWidgetCreateObjectEntity?, size: DpSize) {
+private fun WidgetContent(
+    config: OsWidgetCreateObjectEntity?,
+    size: DpSize,
+    strings: CreateObjectWidgetStrings
+) {
     val isSmall = size.width < 100.dp
 
     Box(
@@ -114,15 +97,15 @@ private fun WidgetContent(config: OsWidgetCreateObjectEntity?, size: DpSize) {
             .padding(if (isSmall) 4.dp else 8.dp)
     ) {
         if (config == null) {
-            NotConfiguredState(isSmall = isSmall)
+            NotConfiguredState(isSmall = isSmall, notConfiguredText = strings.notConfigured)
         } else {
-            CreateObjectCard(config = config, size = size)
+            CreateObjectCard(config = config, size = size, strings = strings)
         }
     }
 }
 
 @Composable
-private fun NotConfiguredState(isSmall: Boolean) {
+private fun NotConfiguredState(isSmall: Boolean, notConfiguredText: String) {
     Box(
         modifier = GlanceModifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -144,7 +127,7 @@ private fun NotConfiguredState(isSmall: Boolean) {
                 )
                 Spacer(modifier = GlanceModifier.height(12.dp))
                 Text(
-                    text = "Widget not configured",
+                    text = notConfiguredText,
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextSecondary),
                         fontSize = 14.sp
@@ -156,7 +139,11 @@ private fun NotConfiguredState(isSmall: Boolean) {
 }
 
 @Composable
-private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
+private fun CreateObjectCard(
+    config: OsWidgetCreateObjectEntity,
+    size: DpSize,
+    strings: CreateObjectWidgetStrings
+) {
     val deepLink = OsWidgetDeepLinks.buildCreateObjectDeepLink(config.appWidgetId, config.deepLinkToken)
     val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId, config.deepLinkToken)
     Timber.tag(TAG).d("CreateObjectCard: appWidgetId=${config.appWidgetId}, spaceId=${config.spaceId}, typeKey=${config.typeKey}, deepLink=$deepLink")
@@ -193,7 +180,7 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
                 )
                 Spacer(modifier = GlanceModifier.height(4.dp))
                 Text(
-                    text = config.typeName.ifEmpty { "Object" },
+                    text = config.typeName.ifEmpty { strings.objectFallback },
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextPrimary),
                         fontSize = nameFontSize,
@@ -220,7 +207,7 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
 
                 // Type name
                 Text(
-                    text = config.typeName.ifEmpty { "Object" },
+                    text = config.typeName.ifEmpty { strings.objectFallback },
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextPrimary),
                         fontSize = nameFontSize,
@@ -246,7 +233,7 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
 
                 // Create action hint
                 Text(
-                    text = "Tap to create",
+                    text = strings.tapToCreate,
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextTertiary),
                         fontSize = 11.sp
@@ -256,6 +243,12 @@ private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
         }
     }
 }
+
+private data class CreateObjectWidgetStrings(
+    val notConfigured: String,
+    val objectFallback: String,
+    val tapToCreate: String
+)
 
 @Composable
 private fun TypeIcon(

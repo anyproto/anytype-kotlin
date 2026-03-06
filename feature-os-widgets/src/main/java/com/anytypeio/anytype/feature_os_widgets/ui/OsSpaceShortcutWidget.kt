@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.feature_os_widgets.ui
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +37,6 @@ import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpaceShortcu
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
 import timber.log.Timber
-import java.io.File
 
 private const val TAG = "OsSpaceShortcutWidget"
 
@@ -67,10 +64,17 @@ class OsSpaceShortcutWidget : GlanceAppWidget() {
             val config = loadWidgetConfigWithRetry {
                 dataStore.getSpaceShortcutConfig(appWidgetId)
             }
+            val strings = SpaceShortcutWidgetStrings(
+                spaceFallback = appContext.getString(R.string.space)
+            )
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config, size = androidx.glance.LocalSize.current)
+                    WidgetContent(
+                        config = config,
+                        size = androidx.glance.LocalSize.current,
+                        strings = strings
+                    )
                 }
             }
         } catch (e: CancellationException) {
@@ -82,8 +86,16 @@ class OsSpaceShortcutWidget : GlanceAppWidget() {
 
 }
 
+private data class SpaceShortcutWidgetStrings(
+    val spaceFallback: String
+)
+
 @Composable
-private fun WidgetContent(config: OsWidgetSpaceShortcutEntity?, size: DpSize) {
+private fun WidgetContent(
+    config: OsWidgetSpaceShortcutEntity?,
+    size: DpSize,
+    strings: SpaceShortcutWidgetStrings
+) {
     val isSmall = size.width < 100.dp
     
     Box(
@@ -95,7 +107,7 @@ private fun WidgetContent(config: OsWidgetSpaceShortcutEntity?, size: DpSize) {
         if (config == null) {
             NotConfiguredState(isSmall = isSmall)
         } else {
-            SpaceShortcutCard(config = config, size = size)
+            SpaceShortcutCard(config = config, size = size, strings = strings)
         }
     }
 }
@@ -115,7 +127,11 @@ private fun NotConfiguredState(isSmall: Boolean) {
 }
 
 @Composable
-private fun SpaceShortcutCard(config: OsWidgetSpaceShortcutEntity, size: DpSize) {
+private fun SpaceShortcutCard(
+    config: OsWidgetSpaceShortcutEntity,
+    size: DpSize,
+    strings: SpaceShortcutWidgetStrings
+) {
     val intent = OsWidgetDeepLinks.buildSpaceShortcutIntent(config.spaceId)
     val isSmall = size.width < 100.dp
     
@@ -146,7 +162,7 @@ private fun SpaceShortcutCard(config: OsWidgetSpaceShortcutEntity, size: DpSize)
                 SpaceIcon(config = config, size = iconSize)
                 Spacer(modifier = GlanceModifier.height(6.dp))
                 Text(
-                    text = config.spaceName.ifEmpty { "Space" },
+                    text = config.spaceName.ifEmpty { strings.spaceFallback },
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextPrimary),
                         fontSize = nameFontSize,
@@ -161,15 +177,18 @@ private fun SpaceShortcutCard(config: OsWidgetSpaceShortcutEntity, size: DpSize)
 
 @Composable
 private fun SpaceIcon(config: OsWidgetSpaceShortcutEntity, size: androidx.compose.ui.unit.Dp = 48.dp) {
-    val iconColor = getSpaceIconColor(config.spaceIconOption)
+    val iconColor = getWidgetIconColor(
+        iconOption = config.spaceIconOption,
+        defaultColor = OsWidgetIconSky
+    )
     val initial = config.spaceName.firstOrNull()?.uppercaseChar()?.toString() ?: "S"
-    val bitmap = config.cachedIconPath?.let { loadCachedBitmap(it) }
+    val imageProvider = config.cachedIconPath?.let(::loadCachedImageProvider)
     val fontSize = (size.value * 0.5f).coerceIn(16f, 28f).sp
 
-    if (bitmap != null) {
+    if (imageProvider != null) {
         // Show cached image
         Image(
-            provider = ImageProvider(bitmap),
+            provider = imageProvider,
             contentDescription = config.spaceName,
             contentScale = ContentScale.Crop,
             modifier = GlanceModifier
@@ -194,41 +213,5 @@ private fun SpaceIcon(config: OsWidgetSpaceShortcutEntity, size: androidx.compos
                 )
             )
         }
-    }
-}
-
-/**
- * Loads a bitmap from a local file path.
- * Returns null if file doesn't exist or can't be decoded.
- */
-private fun loadCachedBitmap(filePath: String): Bitmap? {
-    return try {
-        val file = File(filePath)
-        if (file.exists()) {
-            BitmapFactory.decodeFile(filePath)
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        null
-    }
-}
-
-/**
- * Maps space icon option to a background color.
- */
-private fun getSpaceIconColor(iconOption: Int?): androidx.compose.ui.graphics.Color {
-    return when (iconOption) {
-        1 -> OsWidgetIconGray
-        2 -> OsWidgetIconYellow
-        3 -> OsWidgetIconAmber
-        4 -> OsWidgetIconRed
-        5 -> OsWidgetIconPink
-        6 -> OsWidgetIconPurple
-        7 -> OsWidgetIconBlue
-        8 -> OsWidgetIconSky
-        9 -> OsWidgetIconTeal
-        10 -> OsWidgetIconGreen
-        else -> OsWidgetIconSky // Default space color
     }
 }

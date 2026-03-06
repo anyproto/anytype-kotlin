@@ -55,10 +55,15 @@ class OsDataViewWidget : GlanceAppWidget() {
             val config = loadWidgetConfigWithRetry {
                 dataStore.getDataViewConfig(appWidgetId)
             }
+            val strings = DataViewWidgetStrings(
+                notConfigured = appContext.getString(R.string.os_widget_not_configured),
+                noItems = appContext.getString(R.string.os_widget_no_items),
+                untitled = appContext.getString(R.string.untitled)
+            )
 
             provideContent {
                 GlanceTheme {
-                    WidgetContent(config = config)
+                    WidgetContent(config = config, strings = strings)
                 }
             }
         } catch (e: CancellationException) {
@@ -70,8 +75,14 @@ class OsDataViewWidget : GlanceAppWidget() {
 
 }
 
+private data class DataViewWidgetStrings(
+    val notConfigured: String,
+    val noItems: String,
+    val untitled: String
+)
+
 @Composable
-private fun WidgetContent(config: OsWidgetDataViewEntity?) {
+private fun WidgetContent(config: OsWidgetDataViewEntity?, strings: DataViewWidgetStrings) {
     Box(
         modifier = GlanceModifier
             .fillMaxSize()
@@ -79,15 +90,15 @@ private fun WidgetContent(config: OsWidgetDataViewEntity?) {
             .padding(8.dp)
     ) {
         if (config == null) {
-            NotConfiguredState()
+            NotConfiguredState(notConfiguredText = strings.notConfigured)
         } else {
-            DataViewContent(config = config)
+            DataViewContent(config = config, strings = strings)
         }
     }
 }
 
 @Composable
-private fun NotConfiguredState() {
+private fun NotConfiguredState(notConfiguredText: String) {
     Box(
         modifier = GlanceModifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -102,7 +113,7 @@ private fun NotConfiguredState() {
             )
             Spacer(modifier = GlanceModifier.height(12.dp))
             Text(
-                text = "Open Anytype to configure",
+                text = notConfiguredText,
                 style = TextStyle(
                     color = ColorProvider(OsWidgetTextSecondary),
                     fontSize = 14.sp
@@ -113,12 +124,12 @@ private fun NotConfiguredState() {
 }
 
 @Composable
-private fun DataViewContent(config: OsWidgetDataViewEntity) {
+private fun DataViewContent(config: OsWidgetDataViewEntity, strings: DataViewWidgetStrings) {
     Column(
         modifier = GlanceModifier.fillMaxSize()
     ) {
         // Header: "ObjectName · ViewerName"
-        HeaderRow(config = config)
+        HeaderRow(config = config, untitledFallback = strings.untitled)
         Spacer(modifier = GlanceModifier.height(4.dp))
 
         if (config.items.isEmpty()) {
@@ -127,7 +138,7 @@ private fun DataViewContent(config: OsWidgetDataViewEntity) {
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = "No items",
+                    text = strings.noItems,
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextSecondary),
                         fontSize = 13.sp
@@ -138,13 +149,17 @@ private fun DataViewContent(config: OsWidgetDataViewEntity) {
             LazyColumn(
                 modifier = GlanceModifier.fillMaxSize()
             ) {
-                items(config.items, itemId = { it.id.hashCode().toLong() }) { item ->
+                items(config.items, itemId = { stableItemId(it.id) }) { item ->
                     Column(
                         modifier = GlanceModifier
                             .fillMaxWidth()
                             .padding(bottom = 4.dp)
                     ) {
-                        ItemRow(item = item, spaceId = config.spaceId)
+                        ItemRow(
+                            item = item,
+                            spaceId = config.spaceId,
+                            untitledFallback = strings.untitled
+                        )
                     }
                 }
             }
@@ -153,9 +168,9 @@ private fun DataViewContent(config: OsWidgetDataViewEntity) {
 }
 
 @Composable
-private fun HeaderRow(config: OsWidgetDataViewEntity) {
+private fun HeaderRow(config: OsWidgetDataViewEntity, untitledFallback: String) {
     val headerText = buildString {
-        append(config.objectName.ifEmpty { "Untitled" })
+        append(config.objectName.ifEmpty { untitledFallback })
         if (config.viewerName.isNotEmpty()) {
             append(" \u00B7 ")
             append(config.viewerName)
@@ -186,7 +201,7 @@ private fun HeaderRow(config: OsWidgetDataViewEntity) {
 }
 
 @Composable
-private fun ItemRow(item: OsWidgetDataViewItemEntity, spaceId: String) {
+private fun ItemRow(item: OsWidgetDataViewItemEntity, spaceId: String, untitledFallback: String) {
     val intent = OsWidgetDeepLinks.buildDataViewItemIntent(
         objectId = item.id,
         spaceId = spaceId
@@ -223,7 +238,7 @@ private fun ItemRow(item: OsWidgetDataViewItemEntity, spaceId: String) {
             modifier = GlanceModifier.defaultWeight()
         ) {
             Text(
-                text = item.name.ifEmpty { "Untitled" },
+                text = item.name.ifEmpty { untitledFallback },
                 style = TextStyle(
                     color = ColorProvider(OsWidgetTextPrimary),
                     fontSize = 14.sp,

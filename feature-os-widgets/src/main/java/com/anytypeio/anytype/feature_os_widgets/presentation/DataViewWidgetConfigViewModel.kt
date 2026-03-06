@@ -132,7 +132,8 @@ class DataViewWidgetConfigViewModel(
                         objectView = objectView,
                         viewerId = viewer.id,
                         spaceId = spaceId,
-                        typesMap = typesMap
+                        typesMap = typesMap,
+                        subscriptionKey = appWidgetId.toString()
                     )
                 } else {
                     emptyList()

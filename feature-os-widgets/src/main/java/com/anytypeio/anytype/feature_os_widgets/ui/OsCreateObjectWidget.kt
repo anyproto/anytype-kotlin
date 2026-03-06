@@ -273,7 +273,10 @@ private fun TypeIcon(
         )
     } else if (hasCustomIcon) {
         // Custom icon type - show colored placeholder
-        val iconColor = getIconColor(config.typeIconOption)
+        val iconColor = getWidgetIconColor(
+            iconOption = config.typeIconOption,
+            defaultColor = OsWidgetIconGray
+        )
         val initial = config.typeName.firstOrNull()?.uppercaseChar()?.toString() ?: "+"
         Box(
             modifier = GlanceModifier
@@ -310,25 +313,5 @@ private fun TypeIcon(
                 )
             )
         }
-    }
-}
-
-/**
- * Maps icon option to a color for the widget.
- * Icon option values: 1=Gray, 2=Yellow, 3=Amber, 4=Red, 5=Pink, 6=Purple, 7=Blue, 8=Sky, 9=Teal, 10=Green
- */
-private fun getIconColor(iconOption: Int?): androidx.compose.ui.graphics.Color {
-    return when (iconOption) {
-        1 -> OsWidgetIconGray
-        2 -> OsWidgetIconYellow
-        3 -> OsWidgetIconAmber
-        4 -> OsWidgetIconRed
-        5 -> OsWidgetIconPink
-        6 -> OsWidgetIconPurple
-        7 -> OsWidgetIconBlue
-        8 -> OsWidgetIconSky
-        9 -> OsWidgetIconTeal
-        10 -> OsWidgetIconGreen
-        else -> OsWidgetIconGray // Default
     }
 }

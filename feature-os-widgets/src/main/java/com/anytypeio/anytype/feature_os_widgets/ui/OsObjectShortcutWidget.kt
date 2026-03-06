@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.feature_os_widgets.ui
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -39,7 +37,6 @@ import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetObjectShortc
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.CancellationException
 import timber.log.Timber
-import java.io.File
 
 private const val TAG = "OsObjectShortcutWidget"
 
@@ -66,14 +63,16 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
             val config = loadWidgetConfigWithRetry {
                 dataStore.getObjectShortcutConfig(appWidgetId)
             }
-            val objectFallback = appContext.getString(R.string.object_1)
+            val strings = ObjectShortcutWidgetStrings(
+                objectFallback = appContext.getString(R.string.object_1)
+            )
 
             provideContent {
                 GlanceTheme {
                     WidgetContent(
                         config = config,
                         size = androidx.glance.LocalSize.current,
-                        objectFallback = objectFallback
+                        strings = strings
                     )
                 }
             }
@@ -86,8 +85,16 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
 
 }
 
+private data class ObjectShortcutWidgetStrings(
+    val objectFallback: String
+)
+
 @Composable
-private fun WidgetContent(config: OsWidgetObjectShortcutEntity?, size: DpSize, objectFallback: String) {
+private fun WidgetContent(
+    config: OsWidgetObjectShortcutEntity?,
+    size: DpSize,
+    strings: ObjectShortcutWidgetStrings
+) {
     val isSmall = size.width < 100.dp
     
     Box(
@@ -99,7 +106,7 @@ private fun WidgetContent(config: OsWidgetObjectShortcutEntity?, size: DpSize, o
         if (config == null) {
             NotConfiguredState(isSmall = isSmall)
         } else {
-            ObjectShortcutCard(config = config, size = size, objectFallback = objectFallback)
+            ObjectShortcutCard(config = config, size = size, strings = strings)
         }
     }
 }
@@ -122,7 +129,7 @@ private fun NotConfiguredState(isSmall: Boolean) {
 private fun ObjectShortcutCard(
     config: OsWidgetObjectShortcutEntity,
     size: DpSize,
-    objectFallback: String
+    strings: ObjectShortcutWidgetStrings
 ) {
     val intent = OsWidgetDeepLinks.buildObjectShortcutIntent(config.objectId, config.spaceId)
     val isSmall = size.width < 100.dp
@@ -154,7 +161,7 @@ private fun ObjectShortcutCard(
                 ObjectIcon(config = config, size = iconSize)
                 Spacer(modifier = GlanceModifier.height(6.dp))
                 Text(
-                    text = config.objectName.ifEmpty { objectFallback },
+                    text = config.objectName.ifEmpty { strings.objectFallback },
                     style = TextStyle(
                         color = ColorProvider(OsWidgetTextPrimary),
                         fontSize = nameFontSize,
@@ -171,15 +178,15 @@ private fun ObjectShortcutCard(
 private fun ObjectIcon(config: OsWidgetObjectShortcutEntity, size: androidx.compose.ui.unit.Dp = 48.dp) {
     val emoji = config.objectIconEmoji
     val hasCustomIcon = !config.objectIconName.isNullOrEmpty()
-    val bitmap = config.cachedIconPath?.let { loadCachedBitmap(it) }
+    val imageProvider = config.cachedIconPath?.let(::loadCachedImageProvider)
     val fontSize = (size.value * 0.5f).coerceIn(16f, 28f).sp
     val emojiFontSize = (size.value * 0.65f).coerceIn(20f, 36f).sp
     
     when {
-        bitmap != null -> {
+        imageProvider != null -> {
             // Show cached image icon
             Image(
-                provider = ImageProvider(bitmap),
+                provider = imageProvider,
                 contentDescription = config.objectName,
                 contentScale = ContentScale.Crop,
                 modifier = GlanceModifier
@@ -198,7 +205,10 @@ private fun ObjectIcon(config: OsWidgetObjectShortcutEntity, size: androidx.comp
         }
         hasCustomIcon -> {
             // Custom icon type - show colored placeholder
-            val iconColor = getIconColor(config.objectIconOption)
+            val iconColor = getWidgetIconColor(
+                iconOption = config.objectIconOption,
+                defaultColor = OsWidgetIconGray
+            )
             val initial = config.objectName.firstOrNull()?.uppercaseChar()?.toString() ?: "O"
             Box(
                 modifier = GlanceModifier
@@ -237,41 +247,5 @@ private fun ObjectIcon(config: OsWidgetObjectShortcutEntity, size: androidx.comp
                 )
             }
         }
-    }
-}
-
-/**
- * Loads a bitmap from a local file path.
- * Returns null if file doesn't exist or can't be decoded.
- */
-private fun loadCachedBitmap(filePath: String): Bitmap? {
-    return try {
-        val file = File(filePath)
-        if (file.exists()) {
-            BitmapFactory.decodeFile(filePath)
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        null
-    }
-}
-
-/**
- * Maps icon option to a color for the widget.
- */
-private fun getIconColor(iconOption: Int?): androidx.compose.ui.graphics.Color {
-    return when (iconOption) {
-        1 -> OsWidgetIconGray
-        2 -> OsWidgetIconYellow
-        3 -> OsWidgetIconAmber
-        4 -> OsWidgetIconRed
-        5 -> OsWidgetIconPink
-        6 -> OsWidgetIconPurple
-        7 -> OsWidgetIconBlue
-        8 -> OsWidgetIconSky
-        9 -> OsWidgetIconTeal
-        10 -> OsWidgetIconGreen
-        else -> OsWidgetIconGray
     }
 }

@@ -42,7 +42,8 @@ class OsWidgetDataViewSyncImpl(
                 val items = fetcher.fetchItems(
                     spaceId = config.spaceId,
                     objectId = config.objectId,
-                    viewerId = config.viewerId
+                    viewerId = config.viewerId,
+                    subscriptionKey = config.appWidgetId.toString()
                 )
                 val updated = config.copy(items = items)
                 dataStore.saveDataViewConfig(updated)

@@ -40,7 +40,8 @@ class DataViewItemsFetcher(
     suspend fun fetchItems(
         spaceId: String,
         objectId: String,
-        viewerId: String
+        viewerId: String,
+        subscriptionKey: String? = null
     ): List<OsWidgetDataViewItemEntity> {
         val objectView = try {
             getObject.run(
@@ -56,7 +57,13 @@ class DataViewItemsFetcher(
         }
 
         val typesMap = fetchObjectTypesForSpace(searchObjects, SpaceId(spaceId))
-        return fetchDataViewItems(objectView, viewerId, spaceId, typesMap)
+        return fetchDataViewItems(
+            objectView = objectView,
+            viewerId = viewerId,
+            spaceId = spaceId,
+            typesMap = typesMap,
+            subscriptionKey = subscriptionKey
+        )
     }
 
     /**
@@ -66,16 +73,24 @@ class DataViewItemsFetcher(
         objectView: ObjectView,
         viewerId: String,
         spaceId: String,
-        typesMap: Map<Id, ObjectWrapper.Type>
+        typesMap: Map<Id, ObjectWrapper.Type>,
+        subscriptionKey: String? = null
     ): List<OsWidgetDataViewItemEntity> {
-        return fetchDataViewItems(objectView, viewerId, spaceId, typesMap)
+        return fetchDataViewItems(
+            objectView = objectView,
+            viewerId = viewerId,
+            spaceId = spaceId,
+            typesMap = typesMap,
+            subscriptionKey = subscriptionKey
+        )
     }
 
     private suspend fun fetchDataViewItems(
         objectView: ObjectView,
         viewerId: String,
         spaceId: String,
-        typesMap: Map<Id, ObjectWrapper.Type>
+        typesMap: Map<Id, ObjectWrapper.Type>,
+        subscriptionKey: String?
     ): List<OsWidgetDataViewItemEntity> {
         val dv = objectView.blocks
             .find { it.content is Block.Content.DataView }
@@ -110,7 +125,15 @@ class DataViewItemsFetcher(
         val isCollection = objectView.isCollection()
 
         val results: List<ObjectWrapper.Basic> = if (isCollection) {
-            fetchCollectionItems(objectView, spaceId, filters, sorts, keys)
+            fetchCollectionItems(
+                objectView = objectView,
+                spaceId = spaceId,
+                filters = filters,
+                sorts = sorts,
+                keys = keys,
+                viewerId = viewerId,
+                subscriptionKey = subscriptionKey
+            )
         } else {
             fetchSetItems(objectView, spaceId, filters, sorts, keys)
         }
@@ -158,9 +181,12 @@ class DataViewItemsFetcher(
         spaceId: String,
         filters: List<DVFilter>,
         sorts: List<DVSort>,
-        keys: List<String>
+        keys: List<String>,
+        viewerId: String,
+        subscriptionKey: String?
     ): List<ObjectWrapper.Basic> {
-        val subscriptionId = "os-widget-dv-${objectView.root}"
+        val uniqueKey = subscriptionKey ?: viewerId
+        val subscriptionId = "os-widget-dv-${objectView.root}-$uniqueKey"
         return try {
             val result = blockRepository.searchObjectsWithSubscription(
                 space = SpaceId(spaceId),

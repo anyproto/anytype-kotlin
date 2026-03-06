@@ -1,8 +1,6 @@
 package com.anytypeio.anytype.feature_os_widgets.ui
 
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +41,6 @@ import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.flow.first
-import java.io.File
 
 /**
  * Glance App Widget that displays a list of user's spaces.
@@ -115,7 +112,7 @@ private fun SpacesList(spaces: List<OsWidgetSpaceItem>, untitledFallback: String
     LazyColumn(
         modifier = GlanceModifier.fillMaxSize()
     ) {
-        items(spaces, itemId = { it.spaceId.hashCode().toLong() }) { space ->
+        items(spaces, itemId = { stableItemId(it.spaceId) }) { space ->
             SpaceCard(space = space, untitledFallback = untitledFallback)
         }
     }
@@ -189,12 +186,12 @@ private fun SpaceIcon(
     }
 
     // Try to load cached image, fallback to placeholder
-    val bitmap = (icon as? OsWidgetSpaceIcon.Image)?.let { loadCachedBitmap(it.url) }
+    val imageProvider = (icon as? OsWidgetSpaceIcon.Image)?.let { loadCachedImageProvider(it.url) }
 
-    if (bitmap != null) {
+    if (imageProvider != null) {
         // Show the cached image
         Image(
-            provider = ImageProvider(bitmap),
+            provider = imageProvider,
             contentDescription = name,
             contentScale = ContentScale.Crop,
             modifier = GlanceModifier
@@ -219,22 +216,5 @@ private fun SpaceIcon(
                 )
             )
         }
-    }
-}
-
-/**
- * Loads a bitmap from a local file path.
- * Returns null if file doesn't exist or can't be decoded.
- */
-private fun loadCachedBitmap(filePath: String): Bitmap? {
-    return try {
-        val file = File(filePath)
-        if (file.exists()) {
-            BitmapFactory.decodeFile(filePath)
-        } else {
-            null
-        }
-    } catch (e: Exception) {
-        null
     }
 }

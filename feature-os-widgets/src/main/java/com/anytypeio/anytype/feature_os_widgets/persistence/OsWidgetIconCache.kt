@@ -96,8 +96,7 @@ class OsWidgetIconCache(private val context: Context) {
             connection.getInputStream().use { input ->
                 val bytes = input.readBytes()
                 
-                // Check if it's an SVG file
-                val isSvg = bytes.size > 4 && String(bytes.take(100).toByteArray()).contains("<svg")
+                val isSvg = isLikelySvg(bytes)
                 
                 val bitmap = if (isSvg) {
                     decodeSvgToBitmap(bytes, ICON_SIZE)
@@ -171,6 +170,16 @@ class OsWidgetIconCache(private val context: Context) {
     /**
      * Decodes SVG bytes to a Bitmap.
      */
+    private fun isLikelySvg(bytes: ByteArray): Boolean {
+        if (bytes.isEmpty()) return false
+        val scanLength = minOf(bytes.size, SVG_SIGNATURE_SCAN_BYTES)
+        val header = String(bytes, 0, scanLength, Charsets.UTF_8).lowercase()
+        return "<svg" in header || ("<?xml" in header && "svg" in header)
+    }
+
+    /**
+     * Decodes SVG bytes to a Bitmap.
+     */
     private fun decodeSvgToBitmap(bytes: ByteArray, size: Int): Bitmap? {
         return try {
             val svg = SVG.getFromString(String(bytes))
@@ -210,6 +219,7 @@ class OsWidgetIconCache(private val context: Context) {
         private const val FILE_EXTENSION = ".png"
         private const val TIMEOUT_MS = 5000
         private const val ICON_SIZE = 128 // Size in pixels for cached icons
+        private const val SVG_SIGNATURE_SCAN_BYTES = 256
         
         const val PREFIX_SPACE = "space"
         const val PREFIX_OBJECT = "object"

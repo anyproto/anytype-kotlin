@@ -144,7 +144,11 @@ class DataViewItemsFetcher(
         }
         val params = SearchObjects.Params(
             space = SpaceId(spaceId),
-            filters = filters,
+            filters = filters + DVFilter(
+                relation = Relations.TYPE,
+                condition = DVFilterCondition.IN,
+                value = listOf(setOf)
+            ),
             sorts = sorts,
             keys = keys,
             limit = ITEMS_LIMIT

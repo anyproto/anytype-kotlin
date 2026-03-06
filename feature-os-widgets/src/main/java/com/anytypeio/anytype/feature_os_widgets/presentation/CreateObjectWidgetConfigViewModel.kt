@@ -19,6 +19,7 @@ import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import timber.log.Timber
+import java.util.UUID
 import javax.inject.Inject
 
 class CreateObjectWidgetConfigViewModel(
@@ -71,7 +72,9 @@ class CreateObjectWidgetConfigViewModel(
             typeIconEmoji = objType.iconEmoji,
             typeIconName = objType.iconName,
             typeIconOption = objType.iconOption?.toInt(),
-            spaceName = space.name.orEmpty()
+            spaceName = space.name.orEmpty(),
+            // Token is embedded into widget deeplink and validated before create flow.
+            deepLinkToken = UUID.randomUUID().toString()
         )
 
         viewModelScope.launch {

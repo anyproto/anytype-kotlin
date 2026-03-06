@@ -24,6 +24,7 @@ object OsWidgetDeepLinks {
 
     // Query params
     private const val PARAM_SPACE_ID = "spaceId"
+    private const val PARAM_TOKEN = "token"
 
     /**
      * Creates a deep link URI to open a specific space from the spaces list widget.
@@ -51,24 +52,31 @@ object OsWidgetDeepLinks {
 
     /**
      * Creates a deep link URI to create an object using a configured widget.
-     * Format: anytype://os-widget/create-object/create/{appWidgetId}
+     * Format: anytype://os-widget/create-object/create/{appWidgetId}?token={token}
+     *
+     * Security note:
+     * This deep link host is browsable, so external apps can invoke it.
+     * The token is required and later validated against persisted widget config
+     * before object creation is allowed.
      */
-    fun buildCreateObjectDeepLink(appWidgetId: Int): Uri {
+    fun buildCreateObjectDeepLink(appWidgetId: Int, token: String): Uri {
         return Uri.Builder()
             .scheme(SCHEME)
             .authority(HOST)
             .appendPath(WIDGET_CREATE_OBJECT)
             .appendPath(ACTION_CREATE)
             .appendPath(appWidgetId.toString())
+            .appendQueryParameter(PARAM_TOKEN, token)
             .build()
     }
 
     /**
      * Creates an intent to create an object via deep link.
+     * Includes the validation token generated during widget configuration.
      */
-    fun buildCreateObjectIntent(appWidgetId: Int): Intent {
+    fun buildCreateObjectIntent(appWidgetId: Int, token: String): Intent {
         return Intent(Intent.ACTION_VIEW).apply {
-            data = buildCreateObjectDeepLink(appWidgetId)
+            data = buildCreateObjectDeepLink(appWidgetId, token)
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
         }
     }

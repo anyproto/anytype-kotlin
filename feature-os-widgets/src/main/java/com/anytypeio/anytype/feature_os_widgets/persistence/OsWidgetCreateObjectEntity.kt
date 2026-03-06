@@ -47,7 +47,17 @@ data class OsWidgetCreateObjectEntity(
     /**
      * The display name of the space.
      */
-    val spaceName: String = ""
+    val spaceName: String = "",
+
+    /**
+     * Per-widget secret token used to validate create-object deep links.
+     *
+     * Why this exists:
+     * `anytype://os-widget/create-object/create/{appWidgetId}` is externally invokable
+     * because `MainActivity` handles browsable deep links. We therefore require a token
+     * embedded in the widget-generated intent and verify it before executing creation.
+     */
+    val deepLinkToken: String = ""
 )
 
 /**

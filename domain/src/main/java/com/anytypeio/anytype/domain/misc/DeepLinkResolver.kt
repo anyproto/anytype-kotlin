@@ -57,9 +57,13 @@ interface DeepLinkResolver {
 
             /**
              * Deep link to create an object using a pre-configured widget.
+             *
+             * [token] must be validated against persisted widget config before
+             * triggering creation, because this deep link can originate externally.
              */
             data class DeepLinkToCreateObject(
-                val appWidgetId: Int
+                val appWidgetId: Int,
+                val token: String
             ) : OsWidgetDeepLink()
 
             /**

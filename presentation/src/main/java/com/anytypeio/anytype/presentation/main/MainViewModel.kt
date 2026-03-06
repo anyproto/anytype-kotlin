@@ -624,7 +624,8 @@ class MainViewModel(
                 Timber.d("Processing OS widget deep link to create object: appWidgetId=${deeplink.appWidgetId}")
                 commands.emit(
                     Command.Deeplink.DeepLinkToCreateObject(
-                        appWidgetId = deeplink.appWidgetId
+                        appWidgetId = deeplink.appWidgetId,
+                        token = deeplink.token
                     )
                 )
             }
@@ -960,9 +961,12 @@ class MainViewModel(
             /**
              * Deep link from OS home screen widget to create an object.
              * MainActivity will load the widget config and call onCreateObjectFromWidget.
+             *
+             * [token] is later validated in MainActivity against persisted widget config.
              */
             data class DeepLinkToCreateObject(
-                val appWidgetId: Int
+                val appWidgetId: Int,
+                val token: String
             ) : Deeplink()
 
             /**

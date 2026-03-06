@@ -366,7 +366,10 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
                                 // Load config and delegate to ViewModel for space switch
                                 Timber.d("Command.Deeplink.DeepLinkToCreateObject received: appWidgetId=${command.appWidgetId}")
                                 lifecycleScope.launch {
-                                    proceedWithCreateObjectFromWidget(command.appWidgetId)
+                                    proceedWithCreateObjectFromWidget(
+                                        appWidgetId = command.appWidgetId,
+                                        token = command.token
+                                    )
                                 }
                             }
                             is Command.Deeplink.OpenCreateObjectFromOsWidget -> {
@@ -562,8 +565,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
     /**
      * Handles object creation from OS home screen widget.
      * Loads widget config and delegates to ViewModel for space switching and object creation.
+     *
+     * Security: validates [token] against persisted widget config to ensure that
+     * externally triggered deep links cannot execute create-object flow without
+     * originating from a configured widget intent.
      */
-    private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int) {
+    private suspend fun proceedWithCreateObjectFromWidget(appWidgetId: Int, token: String) {
         Timber.d("proceedWithCreateObjectFromWidget: appWidgetId=$appWidgetId")
         runCatching {
             val dataStore = OsWidgetsDataStore(applicationContext)
@@ -573,6 +580,12 @@ class MainActivity : AppCompatActivity(R.layout.activity_main), AppNavigation.Pr
             if (config == null) {
                 Timber.w("proceedWithCreateObjectFromWidget: config not found for appWidgetId=$appWidgetId")
                 toast("Widget not configured")
+                return
+            }
+
+            if (config.deepLinkToken.isEmpty() || config.deepLinkToken != token) {
+                Timber.w("proceedWithCreateObjectFromWidget: invalid token for appWidgetId=$appWidgetId")
+                toast("Invalid widget action")
                 return
             }
             

@@ -157,8 +157,8 @@ private fun NotConfiguredState(isSmall: Boolean) {
 
 @Composable
 private fun CreateObjectCard(config: OsWidgetCreateObjectEntity, size: DpSize) {
-    val deepLink = OsWidgetDeepLinks.buildCreateObjectDeepLink(config.appWidgetId)
-    val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId)
+    val deepLink = OsWidgetDeepLinks.buildCreateObjectDeepLink(config.appWidgetId, config.deepLinkToken)
+    val intent = OsWidgetDeepLinks.buildCreateObjectIntent(config.appWidgetId, config.deepLinkToken)
     Timber.tag(TAG).d("CreateObjectCard: appWidgetId=${config.appWidgetId}, spaceId=${config.spaceId}, typeKey=${config.typeKey}, deepLink=$deepLink")
 
     val isSmall = size.width < 100.dp

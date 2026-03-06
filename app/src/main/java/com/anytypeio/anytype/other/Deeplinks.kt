@@ -39,6 +39,7 @@ const val OS_WIDGET_DATA_VIEW = "data-view"
 const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
 const val OS_WIDGET_ACTION_OPEN = "open"
 const val OS_WIDGET_ACTION_CREATE = "create"
+const val OS_WIDGET_TOKEN_PARAM = "token"
 
 const val TYPE_PARAM = "type"
 const val OBJECT_ID_PARAM = "objectId"
@@ -213,10 +214,16 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
         Timber.d("resolveCreateObjectWidgetAction: uri=$uri, action=$action")
         return when (action) {
             OS_WIDGET_ACTION_CREATE -> {
+                // Require both widget id and token.
+                // Token is validated later in MainActivity against persisted widget config.
                 val appWidgetId = uri.pathSegments.getOrNull(2)?.toIntOrNull()
+                val token = uri.getQueryParameter(OS_WIDGET_TOKEN_PARAM)
                 Timber.d("resolveCreateObjectWidgetAction: parsed appWidgetId=$appWidgetId")
-                if (appWidgetId != null) {
-                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject(appWidgetId)
+                if (appWidgetId != null && !token.isNullOrEmpty()) {
+                    DeepLinkResolver.Action.OsWidgetDeepLink.DeepLinkToCreateObject(
+                        appWidgetId = appWidgetId,
+                        token = token
+                    )
                 } else {
                     Timber.w("resolveCreateObjectWidgetAction: failed to parse appWidgetId from uri=$uri")
                     DeepLinkResolver.Action.Unknown

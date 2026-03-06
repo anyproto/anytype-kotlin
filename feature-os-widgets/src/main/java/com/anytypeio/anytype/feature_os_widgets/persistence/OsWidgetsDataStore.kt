@@ -236,6 +236,75 @@ class OsWidgetsDataStore(private val context: Context) {
         }
     }
 
+    // ==================== Data View Widget Config ====================
+
+    /**
+     * Saves a Data View widget configuration.
+     */
+    suspend fun saveDataViewConfig(config: OsWidgetDataViewEntity) {
+        dataStore.edit { preferences ->
+            val cache = preferences[DATA_VIEW_CONFIGS_KEY]?.let { jsonString ->
+                try {
+                    osWidgetsJson.decodeFromString<OsWidgetDataViewCache>(jsonString)
+                } catch (e: Exception) {
+                    OsWidgetDataViewCache()
+                }
+            } ?: OsWidgetDataViewCache()
+
+            val updatedConfigs = cache.configs.toMutableMap().apply {
+                put(config.appWidgetId, config)
+            }
+            preferences[DATA_VIEW_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                OsWidgetDataViewCache(updatedConfigs)
+            )
+        }
+    }
+
+    /**
+     * Gets a Data View widget configuration by appWidgetId.
+     */
+    suspend fun getDataViewConfig(appWidgetId: Int): OsWidgetDataViewEntity? {
+        val jsonString = dataStore.data.first()[DATA_VIEW_CONFIGS_KEY] ?: return null
+        return try {
+            osWidgetsJson.decodeFromString<OsWidgetDataViewCache>(jsonString).configs[appWidgetId]
+        } catch (e: Exception) {
+            null
+        }
+    }
+
+    /**
+     * Gets all Data View widget configurations.
+     */
+    suspend fun getAllDataViewConfigs(): List<OsWidgetDataViewEntity> {
+        val jsonString = dataStore.data.first()[DATA_VIEW_CONFIGS_KEY] ?: return emptyList()
+        return try {
+            osWidgetsJson.decodeFromString<OsWidgetDataViewCache>(jsonString).configs.values.toList()
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    /**
+     * Deletes a Data View widget configuration.
+     */
+    suspend fun deleteDataViewConfig(appWidgetId: Int) {
+        dataStore.edit { preferences ->
+            val jsonString = preferences[DATA_VIEW_CONFIGS_KEY]
+            if (jsonString != null) {
+                try {
+                    val cache = osWidgetsJson.decodeFromString<OsWidgetDataViewCache>(jsonString)
+                    val updatedConfigs = cache.configs.toMutableMap()
+                    updatedConfigs.remove(appWidgetId)
+                    preferences[DATA_VIEW_CONFIGS_KEY] = osWidgetsJson.encodeToString(
+                        OsWidgetDataViewCache(updatedConfigs)
+                    )
+                } catch (e: Exception) {
+                    // Ignore decode errors
+                }
+            }
+        }
+    }
+
     // ==================== Object Shortcut Widget Config ====================
 
     /**
@@ -298,5 +367,6 @@ class OsWidgetsDataStore(private val context: Context) {
         private val CREATE_OBJECT_CONFIGS_KEY = stringPreferencesKey("create_object_configs")
         private val SPACE_SHORTCUT_CONFIGS_KEY = stringPreferencesKey("space_shortcut_configs")
         private val OBJECT_SHORTCUT_CONFIGS_KEY = stringPreferencesKey("object_shortcut_configs")
+        private val DATA_VIEW_CONFIGS_KEY = stringPreferencesKey("data_view_configs")
     }
 }

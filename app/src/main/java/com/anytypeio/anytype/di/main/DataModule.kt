@@ -40,7 +40,11 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
+import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewSyncImpl
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
@@ -284,6 +288,24 @@ object DataModule {
         urlBuilder: UrlBuilder
     ): OsWidgetSpacesSync = OsWidgetSpacesSyncWithUpdate(
         delegate = OsWidgetSpacesSyncImpl(context, urlBuilder),
+        context = context
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetDataViewSync(
+        context: Context,
+        getObject: GetObject,
+        searchObjects: SearchObjects,
+        blockRepository: BlockRepository
+    ): OsWidgetDataViewSync = OsWidgetDataViewSyncWithUpdate(
+        delegate = OsWidgetDataViewSyncImpl(
+            context = context,
+            getObject = getObject,
+            searchObjects = searchObjects,
+            blockRepository = blockRepository
+        ),
         context = context
     )
 

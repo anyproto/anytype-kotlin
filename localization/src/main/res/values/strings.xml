@@ -2477,5 +2477,8 @@ Please provide specific details of your needs here.</string>
     <string name="os_widget_object_shortcut_description">Open an object directly</string>
     <string name="os_widget_not_configured">Tap to configure</string>
     <string name="no_spaces_available">No spaces available</string>
+    <string name="select_view">Select view</string>
+    <string name="os_widget_data_view_title">Data View</string>
+    <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
 
 </resources>

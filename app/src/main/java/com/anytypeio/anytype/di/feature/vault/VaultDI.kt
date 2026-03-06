@@ -35,6 +35,7 @@ import com.anytypeio.anytype.domain.resources.StringResourceProvider
 import com.anytypeio.anytype.domain.search.ProfileSubscriptionManager
 import com.anytypeio.anytype.domain.spaces.CreateSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -153,4 +154,5 @@ interface VaultComponentDependencies : ComponentDependencies {
     fun deepLinkResolver(): DeepLinkResolver
     fun configStorage(): ConfigStorage
     fun osWidgetSpacesSync(): OsWidgetSpacesSync
+    fun osWidgetDataViewSync(): OsWidgetDataViewSync
 }

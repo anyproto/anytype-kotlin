@@ -44,6 +44,7 @@ import com.anytypeio.anytype.di.feature.notifications.PushContentDependencies
 import com.anytypeio.anytype.di.feature.objects.SelectObjectTypeDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingDependencies
 import com.anytypeio.anytype.di.feature.oswidgets.CreateObjectWidgetConfigDependencies
+import com.anytypeio.anytype.di.feature.oswidgets.DataViewWidgetConfigDependencies
 import com.anytypeio.anytype.di.feature.oswidgets.ObjectShortcutWidgetConfigDependencies
 import com.anytypeio.anytype.di.feature.onboarding.OnboardingStartDependencies
 import com.anytypeio.anytype.di.feature.onboarding.login.OnboardingMnemonicLoginDependencies
@@ -161,6 +162,7 @@ interface MainComponent :
     SharingDependencies,
     CreateObjectFeatureDependencies,
     CreateObjectWidgetConfigDependencies,
+    DataViewWidgetConfigDependencies,
     ObjectShortcutWidgetConfigDependencies
 {
 
@@ -478,4 +480,9 @@ abstract class ComponentDependenciesModule {
     @IntoMap
     @ComponentDependenciesKey(ObjectShortcutWidgetConfigDependencies::class)
     abstract fun provideObjectShortcutWidgetConfigDependencies(component: MainComponent): ComponentDependencies
+
+    @Binds
+    @IntoMap
+    @ComponentDependenciesKey(DataViewWidgetConfigDependencies::class)
+    abstract fun provideDataViewWidgetConfigDependencies(component: MainComponent): ComponentDependencies
 }

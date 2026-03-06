@@ -59,6 +59,7 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
@@ -123,7 +124,8 @@ class VaultViewModel(
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
     private val configStorage: ConfigStorage,
-    private val osWidgetSpacesSync: OsWidgetSpacesSync
+    private val osWidgetSpacesSync: OsWidgetSpacesSync,
+    private val osWidgetDataViewSync: OsWidgetDataViewSync
 ) : ViewModel(),
     DeepLinkToObjectDelegate by deepLinkToObjectDelegate {
 
@@ -272,6 +274,17 @@ class VaultViewModel(
                 }
             }
             .launchIn(viewModelScope)
+
+        // Sync data view widget items on app launch (debounced)
+        viewModelScope.launch {
+            delay(OS_WIDGET_SYNC_DEBOUNCE_MS)
+            try {
+                osWidgetDataViewSync.sync()
+                Timber.d("OS widget data view items synced")
+            } catch (e: Exception) {
+                Timber.w(e, "Failed to sync data view widget items")
+            }
+        }
     }
 
     fun onStart() {

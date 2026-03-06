@@ -99,6 +99,44 @@ object OsWidgetDeepLinks {
         }
     }
 
+    // ==================== Data View Widget ====================
+
+    private const val WIDGET_DATA_VIEW = "data-view"
+
+    /**
+     * Creates a deep link URI to open a data view item.
+     * Format: anytype://os-widget/data-view/open/{objectId}?spaceId={spaceId}
+     */
+    fun buildDataViewItemDeepLink(objectId: String, spaceId: String): Uri {
+        return Uri.Builder()
+            .scheme(SCHEME)
+            .authority(HOST)
+            .appendPath(WIDGET_DATA_VIEW)
+            .appendPath(ACTION_OPEN)
+            .appendPath(objectId)
+            .appendQueryParameter(PARAM_SPACE_ID, spaceId)
+            .build()
+    }
+
+    /**
+     * Creates an intent to open a data view item.
+     */
+    fun buildDataViewItemIntent(objectId: String, spaceId: String): Intent {
+        return Intent(Intent.ACTION_VIEW).apply {
+            data = buildDataViewItemDeepLink(objectId, spaceId)
+            flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TOP
+        }
+    }
+
+    /**
+     * Creates a deep link URI to open the set/collection itself (header tap).
+     * Reuses object-shortcut open format.
+     * Format: anytype://os-widget/data-view/open/{objectId}?spaceId={spaceId}
+     */
+    fun buildDataViewHeaderIntent(objectId: String, spaceId: String): Intent {
+        return buildDataViewItemIntent(objectId, spaceId)
+    }
+
     // ==================== Object Shortcut Widget ====================
 
     /**

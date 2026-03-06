@@ -35,6 +35,7 @@ const val OS_WIDGET_SPACES_LIST = "spaces-list"
 const val OS_WIDGET_CREATE_OBJECT = "create-object"
 const val OS_WIDGET_SPACE_SHORTCUT = "space-shortcut"
 const val OS_WIDGET_OBJECT_SHORTCUT = "object-shortcut"
+const val OS_WIDGET_DATA_VIEW = "data-view"
 const val OS_WIDGET_ACTION_OPEN_SPACE = "open-space"
 const val OS_WIDGET_ACTION_OPEN = "open"
 const val OS_WIDGET_ACTION_CREATE = "create"
@@ -183,6 +184,7 @@ object DefaultDeepLinkResolver : DeepLinkResolver {
             OS_WIDGET_CREATE_OBJECT -> resolveCreateObjectWidgetAction(uri, action)
             OS_WIDGET_SPACE_SHORTCUT -> resolveSpaceShortcutWidgetAction(uri, action)
             OS_WIDGET_OBJECT_SHORTCUT -> resolveObjectShortcutWidgetAction(uri, action)
+            OS_WIDGET_DATA_VIEW -> resolveObjectShortcutWidgetAction(uri, action)
             else -> DeepLinkResolver.Action.Unknown
         }
     }

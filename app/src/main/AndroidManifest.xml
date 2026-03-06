@@ -280,6 +280,29 @@
                 <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
             </intent-filter>
         </activity>
+
+        <!-- OS Widget: Data View -->
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsDataViewWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_data_view_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_data_view_widget_info" />
+        </receiver>
+
+        <!-- OS Widget: Data View Configuration Activity -->
+        <activity
+            android:name=".ui.oswidgets.DataViewWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
     </application>
 
 </manifest>

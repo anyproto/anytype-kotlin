@@ -104,6 +104,7 @@ import com.anytypeio.anytype.di.feature.templates.DaggerTemplateSelectComponent
 import com.anytypeio.anytype.di.feature.vault.DaggerVaultComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerCreateChatObjectComponent
 import com.anytypeio.anytype.di.feature.oswidgets.DaggerCreateObjectWidgetConfigComponent
+import com.anytypeio.anytype.di.feature.oswidgets.DaggerDataViewWidgetConfigComponent
 import com.anytypeio.anytype.di.feature.oswidgets.DaggerObjectShortcutWidgetConfigComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetSourceComponent
 import com.anytypeio.anytype.di.feature.widgets.DaggerSelectWidgetTypeComponent
@@ -1181,6 +1182,12 @@ class ComponentManager(
 
     val objectShortcutWidgetConfigComponent = Component {
         DaggerObjectShortcutWidgetConfigComponent
+            .factory()
+            .create(findComponentDependencies())
+    }
+
+    val dataViewWidgetConfigComponent = Component {
+        DaggerDataViewWidgetConfigComponent
             .factory()
             .create(findComponentDependencies())
     }

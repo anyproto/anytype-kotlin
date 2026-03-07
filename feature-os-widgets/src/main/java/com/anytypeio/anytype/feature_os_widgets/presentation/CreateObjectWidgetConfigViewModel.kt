@@ -37,14 +37,17 @@ class CreateObjectWidgetConfigViewModel(
     val commands: SharedFlow<Command> = _commands.asSharedFlow()
 
     init {
+        Timber.d("$TAG init: appWidgetId=$appWidgetId")
         loadSpaces()
     }
 
     private fun loadSpaces() {
         val allSpaces = spaceViews.get()
-        _spaces.value = allSpaces
+        val filtered = allSpaces
             .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+        Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
+        _spaces.value = filtered
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -55,6 +58,7 @@ class CreateObjectWidgetConfigViewModel(
     }
 
     fun onTypeSelected(objType: ObjectWrapper.Type) {
+        Timber.d("$TAG onTypeSelected: type=${objType.name}, key=${objType.uniqueKey}, appWidgetId=$appWidgetId")
         val space = _selectedSpace.value ?: run {
             viewModelScope.launch {
                 _commands.emit(Command.ShowError("No space selected"))
@@ -77,18 +81,21 @@ class CreateObjectWidgetConfigViewModel(
 
         viewModelScope.launch {
             try {
-                // Save the configuration
+                Timber.d("$TAG saving config: spaceId=${config.spaceId}, typeKey=${config.typeKey}")
                 configStore.save(config)
-
-                // Trigger widget update so it picks up the saved config
+                Timber.d("$TAG config saved, triggering widget update")
                 widgetUpdater.update(appWidgetId)
-
+                Timber.d("$TAG emitting FinishWithSuccess")
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
-                Timber.e(e, "Error saving widget config")
+                Timber.e(e, "$TAG Error saving widget config")
                 _commands.emit(Command.ShowError(e.message ?: "Unknown error"))
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "CreateObjectConfig"
     }
 
     sealed class Command {

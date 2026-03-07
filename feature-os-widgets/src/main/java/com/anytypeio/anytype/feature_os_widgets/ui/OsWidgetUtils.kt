@@ -13,12 +13,9 @@ internal fun loadCachedImageProvider(filePath: String): ImageProvider? {
         null
     } ?: return null
 
-    return try {
-        // Glance ImageProvider copies bitmap pixels into RemoteViews.
-        ImageProvider(bitmap)
-    } finally {
-        bitmap.recycle()
-    }
+    // Do NOT recycle the bitmap here — Glance needs it alive until
+    // RemoteViews are fully built (which happens asynchronously).
+    return ImageProvider(bitmap)
 }
 
 internal fun getWidgetIconColor(iconOption: Int?, defaultColor: Color): Color {

@@ -18,6 +18,15 @@ class OsCreateObjectWidgetReceiver : GlanceAppWidgetReceiver() {
 
     private val coroutineScope = MainScope()
 
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: android.appwidget.AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        timber.log.Timber.tag("OsCreateObjectReceiver").d("onUpdate called, widgetIds=${appWidgetIds.toList()}")
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
+
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)
         // Clean up widget configurations when widgets are removed

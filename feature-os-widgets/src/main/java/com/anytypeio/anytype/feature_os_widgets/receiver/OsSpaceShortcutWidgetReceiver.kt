@@ -7,6 +7,7 @@ import com.anytypeio.anytype.feature_os_widgets.ui.OsSpaceShortcutWidget
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.MainScope
 import kotlinx.coroutines.launch
+import timber.log.Timber
 
 /**
  * BroadcastReceiver for the Space Shortcut widget.
@@ -17,6 +18,15 @@ class OsSpaceShortcutWidgetReceiver : GlanceAppWidgetReceiver() {
     override val glanceAppWidget: GlanceAppWidget = OsSpaceShortcutWidget()
 
     private val coroutineScope = MainScope()
+
+    override fun onUpdate(
+        context: Context,
+        appWidgetManager: android.appwidget.AppWidgetManager,
+        appWidgetIds: IntArray
+    ) {
+        Timber.tag("OsSpaceShortcutReceiver").d("onUpdate called, widgetIds=${appWidgetIds.toList()}")
+        super.onUpdate(context, appWidgetManager, appWidgetIds)
+    }
 
     override fun onDeleted(context: Context, appWidgetIds: IntArray) {
         super.onDeleted(context, appWidgetIds)

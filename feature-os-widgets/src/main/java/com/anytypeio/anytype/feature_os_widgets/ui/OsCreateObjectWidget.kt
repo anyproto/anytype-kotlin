@@ -56,13 +56,16 @@ class OsCreateObjectWidget : GlanceAppWidget() {
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         try {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
+            Timber.tag(TAG).d("provideGlance: appWidgetId=$appWidgetId")
             val config = loadWidgetConfigWithRetry {
                 dataStore.getCreateObjectConfig(appWidgetId)
             }
+            Timber.tag(TAG).d("provideGlance: config loaded, spaceId=${config?.spaceId}, typeKey=${config?.typeKey}, typeName=${config?.typeName}")
             val strings = CreateObjectWidgetStrings(
                 notConfigured = appContext.getString(R.string.os_widget_not_configured),
                 objectFallback = appContext.getString(R.string.object_1),

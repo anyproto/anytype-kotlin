@@ -70,14 +70,17 @@ class ObjectShortcutWidgetConfigViewModel(
     private var typesMap: Map<Id, ObjectWrapper.Type> = emptyMap()
 
     init {
+        Timber.d("$TAG init: appWidgetId=$appWidgetId")
         loadSpaces()
     }
 
     private fun loadSpaces() {
         val allSpaces = spaceViews.get()
-        _spaces.value = allSpaces
+        val filtered = allSpaces
             .filter { it.isActive && it.spaceUxType != SpaceUxType.CHAT && it.spaceUxType != SpaceUxType.ONE_TO_ONE }
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+        Timber.d("$TAG loadSpaces: total=${allSpaces.size}, filtered=${filtered.size}")
+        _spaces.value = filtered
     }
 
     fun onSpaceSelected(space: ObjectWrapper.SpaceView) {
@@ -97,6 +100,7 @@ class ObjectShortcutWidgetConfigViewModel(
     }
 
     fun onObjectSelected(item: ObjectItemView) {
+        Timber.d("$TAG onObjectSelected: obj=${item.obj.name}, id=${item.obj.id}, appWidgetId=$appWidgetId")
         val space = _selectedSpace.value ?: return
         viewModelScope.launch {
             try {
@@ -120,12 +124,14 @@ class ObjectShortcutWidgetConfigViewModel(
                     cachedIconPath = cachedIconPath
                 )
 
+                Timber.d("$TAG saving config: objectId=${config.objectId}, spaceId=${config.spaceId}")
                 configStore.save(config)
+                Timber.d("$TAG config saved, triggering widget update")
                 widgetUpdater.update(appWidgetId)
-
+                Timber.d("$TAG emitting FinishWithSuccess")
                 _commands.emit(Command.FinishWithSuccess(appWidgetId))
             } catch (e: Exception) {
-                Timber.e(e, "Error saving widget config")
+                Timber.e(e, "$TAG Error saving widget config")
                 _commands.emit(Command.ShowError(e.message ?: "Unknown error"))
             }
         }
@@ -240,6 +246,10 @@ class ObjectShortcutWidgetConfigViewModel(
                 _isLoading.value = false
             }
         }
+    }
+
+    companion object {
+        private const val TAG = "ObjectShortcutConfig"
     }
 
     sealed class ScreenState {

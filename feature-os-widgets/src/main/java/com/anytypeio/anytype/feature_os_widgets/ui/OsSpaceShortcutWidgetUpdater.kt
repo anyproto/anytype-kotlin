@@ -43,18 +43,24 @@ object OsSpaceShortcutWidgetUpdater {
                 action = AppWidgetManager.ACTION_APPWIDGET_UPDATE
                 putExtra(AppWidgetManager.EXTRA_APPWIDGET_IDS, intArrayOf(appWidgetId))
             }
+            Timber.tag(TAG).d("Sending broadcast for widget $appWidgetId")
             context.sendBroadcast(intent)
+            Timber.tag(TAG).d("Broadcast sent for widget $appWidgetId")
         } catch (e: Exception) {
             Timber.tag(TAG).e(e, "Broadcast failed for widget $appWidgetId")
         }
     }
 
     private fun scheduleDelayedUpdate(context: Context, appWidgetId: Int) {
+        Timber.tag(TAG).d("Scheduling delayed update for widget $appWidgetId in ${UPDATE_DELAY_MS}ms")
         handler.postDelayed({
+            Timber.tag(TAG).d("Delayed update executing for widget $appWidgetId")
             scope.launch {
                 try {
                     val glanceId = GlanceAppWidgetManager(context).getGlanceIdBy(appWidgetId)
+                    Timber.tag(TAG).d("Delayed update: got glanceId=$glanceId for widget $appWidgetId")
                     OsSpaceShortcutWidget().update(context, glanceId)
+                    Timber.tag(TAG).d("Delayed update: update() completed for widget $appWidgetId")
                 } catch (e: Exception) {
                     Timber.tag(TAG).e(e, "Delayed update failed for widget $appWidgetId")
                 }

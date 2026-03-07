@@ -48,13 +48,16 @@ private const val TAG = "OsDataViewWidget"
  */
 class OsDataViewWidget : GlanceAppWidget() {
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         try {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
+            Timber.tag(TAG).d("provideGlance: appWidgetId=$appWidgetId")
             val config = loadWidgetConfigWithRetry {
                 dataStore.getDataViewConfig(appWidgetId)
             }
+            Timber.tag(TAG).d("provideGlance: config loaded, objectId=${config?.objectId}, objectName=${config?.objectName}, items=${config?.items?.size}")
             val strings = DataViewWidgetStrings(
                 notConfigured = appContext.getString(R.string.os_widget_not_configured),
                 noItems = appContext.getString(R.string.os_widget_no_items),

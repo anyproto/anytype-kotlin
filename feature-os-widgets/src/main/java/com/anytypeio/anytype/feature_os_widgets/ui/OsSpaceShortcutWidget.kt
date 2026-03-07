@@ -56,14 +56,18 @@ class OsSpaceShortcutWidget : GlanceAppWidget() {
     )
 
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         try {
             val appContext = context.applicationContext
             val dataStore = OsWidgetsDataStore(appContext)
             val appWidgetId = GlanceAppWidgetManager(appContext).getAppWidgetId(id)
+            Timber.tag(TAG).d("provideGlance: appWidgetId=$appWidgetId")
 
             val config = loadWidgetConfigWithRetry {
                 dataStore.getSpaceShortcutConfig(appWidgetId)
             }
+            Timber.tag(TAG).d("provideGlance: config loaded, spaceId=${config?.spaceId}, spaceName=${config?.spaceName}, iconOption=${config?.spaceIconOption}, cachedIconPath=${config?.cachedIconPath}")
+
             val strings = SpaceShortcutWidgetStrings(
                 spaceFallback = appContext.getString(R.string.space)
             )

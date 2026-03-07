@@ -67,7 +67,8 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
             }
             Timber.tag(TAG).d("provideGlance: config loaded, objectId=${config?.objectId}, objectName=${config?.objectName}, spaceId=${config?.spaceId}")
             val strings = ObjectShortcutWidgetStrings(
-                objectFallback = appContext.getString(R.string.object_1)
+                objectFallback = appContext.getString(R.string.object_1),
+                notConfigured = appContext.getString(R.string.os_widget_not_configured)
             )
 
             provideContent {
@@ -89,7 +90,8 @@ class OsObjectShortcutWidget : GlanceAppWidget() {
 }
 
 private data class ObjectShortcutWidgetStrings(
-    val objectFallback: String
+    val objectFallback: String,
+    val notConfigured: String
 )
 
 @Composable
@@ -107,7 +109,7 @@ private fun WidgetContent(
             .padding(if (isSmall) 4.dp else 8.dp)
     ) {
         if (config == null) {
-            NotConfiguredState(isSmall = isSmall)
+            NotConfiguredState(isSmall = isSmall, notConfiguredText = strings.notConfigured)
         } else {
             ObjectShortcutCard(config = config, size = size, strings = strings)
         }
@@ -115,16 +117,36 @@ private fun WidgetContent(
 }
 
 @Composable
-private fun NotConfiguredState(isSmall: Boolean) {
+private fun NotConfiguredState(isSmall: Boolean, notConfiguredText: String) {
     Box(
         modifier = GlanceModifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        Image(
-            provider = ImageProvider(R.drawable.ic_anytype_logo_widget),
-            contentDescription = null,
-            modifier = GlanceModifier.size(if (isSmall) 32.dp else 48.dp)
-        )
+        if (isSmall) {
+            Image(
+                provider = ImageProvider(R.drawable.ic_anytype_logo_widget),
+                contentDescription = null,
+                modifier = GlanceModifier.size(32.dp)
+            )
+        } else {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    provider = ImageProvider(R.drawable.ic_anytype_logo_widget),
+                    contentDescription = null,
+                    modifier = GlanceModifier.size(48.dp)
+                )
+                Spacer(modifier = GlanceModifier.height(12.dp))
+                Text(
+                    text = notConfiguredText,
+                    style = TextStyle(
+                        color = ColorProvider(OsWidgetTextSecondary),
+                        fontSize = 14.sp
+                    )
+                )
+            }
+        }
     }
 }
 

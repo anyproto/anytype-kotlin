@@ -166,8 +166,13 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
 
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
     return map { filter ->
-        val relation = storeOfRelations.getByKey(filter.relation)
-        transformFilterWithFormat(filter, relation?.format)
+        if (filter.isAdvanced()) {
+            val updatedNested = filter.nestedFilters.updateFormatForSubscription(storeOfRelations)
+            filter.copy(nestedFilters = updatedNested)
+        } else {
+            val relation = storeOfRelations.getByKey(filter.relation)
+            transformFilterWithFormat(filter, relation?.format)
+        }
     }
 }
 

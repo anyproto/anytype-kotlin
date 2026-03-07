@@ -76,6 +76,28 @@ class FilterSubscriptionSupportTest {
         assertFalse(filter.isSupportedForSubscription())
     }
 
+    @Test
+    fun `null value with DATE format and DAYS_AGO quick option is unsupported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.DAYS_AGO,
+            value = null
+        )
+        assertFalse(filter.isSupportedForSubscription())
+    }
+
+    @Test
+    fun `null value with DATE format and DAYS_AHEAD quick option is unsupported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.DAYS_AHEAD,
+            value = null
+        )
+        assertFalse(filter.isSupportedForSubscription())
+    }
+
     // endregion
 
     // region isSupportedForSubscription — String values

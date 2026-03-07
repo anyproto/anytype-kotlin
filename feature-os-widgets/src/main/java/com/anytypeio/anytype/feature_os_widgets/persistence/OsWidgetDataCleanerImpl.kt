@@ -6,8 +6,12 @@ import com.anytypeio.anytype.domain.widgets.OsWidgetDataCleaner
 class OsWidgetDataCleanerImpl(
     private val context: Context
 ) : OsWidgetDataCleaner {
+
+    private val dataStore by lazy { OsWidgetsDataStore(context) }
+    private val iconCache by lazy { OsWidgetIconCache(context) }
+
     override suspend fun clearAll() {
-        OsWidgetsDataStore(context).clear()
-        OsWidgetIconCache(context).clearAll()
+        dataStore.clear()
+        iconCache.clearAll()
     }
 }

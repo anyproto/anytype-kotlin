@@ -17,7 +17,7 @@ private const val FAST_RETRY_INITIAL_DELAY_MS = 100L
  * (which will then find the saved config).
  */
 private const val SLOW_POLL_INTERVAL_MS = 2_000L
-private const val SLOW_POLL_MAX_DURATION_MS = 60_000L
+private const val SLOW_POLL_MAX_DURATION_MS = 15_000L
 
 internal suspend fun <T> loadWidgetConfigWithRetry(
     load: suspend () -> T?

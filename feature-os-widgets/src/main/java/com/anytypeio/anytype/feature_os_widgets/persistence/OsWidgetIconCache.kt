@@ -140,7 +140,7 @@ class OsWidgetIconCache(private val context: Context) {
     /**
      * Clears all cached icons.
      */
-    fun clearAll() {
+    suspend fun clearAll() = withContext(Dispatchers.IO) {
         try {
             cacheDir.listFiles()?.forEach { it.delete() }
             File(context.filesDir, SHORTCUT_ICONS_DIR).listFiles()?.forEach { it.delete() }

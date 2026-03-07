@@ -1,0 +1,65 @@
+name: Build Android App Bundle for Google Play
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-bundle:
+    permissions:
+      contents: read
+    runs-on: ubuntu-latest
+    name: Build and Upload AAB Artifact
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - uses: nttld/setup-ndk@v1
+        with:
+          ndk-version: r23c
+          link-to-sdk: true
+
+      - uses: actions/setup-java@v3
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      - name: Setup middleware
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+          sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
+        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
+
+      - name: Decrypt secrets
+        run: ./scripts/release/decrypt-secrets.sh
+        env:
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+
+      - name: Setup keystore
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PWD: ${{ secrets.RELEASE_KEY_PWD }}
+          RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
+        run: ./scripts/release/setup-store.sh $token_secret $RELEASE_KEY_ALIAS $RELEASE_KEY_PWD $RELEASE_STORE_PWD
+
+      - name: Build release bundle
+        run: ./gradlew :app:bundleRelease
+
+      - name: List built files
+        run: ls -lh app/build/outputs/bundle/release/
+
+      - name: Upload bundle as artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: app-bundle
+          path: app/build/outputs/bundle/release/app-release.aab
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/release/clean-secrets.sh

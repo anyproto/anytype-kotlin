@@ -164,6 +164,14 @@ private fun transformFilterWithFormat(filter: DVFilter, format: RelationFormat?)
     }
 }
 
+/**
+ * Updates each filter's [DVFilter.relationFormat] using the actual format from [storeOfRelations].
+ *
+ * For advanced (grouped) filters, recurses into [DVFilter.nestedFilters] so that nested children
+ * at any depth also receive the correct format. This is critical for DATE and OBJECT filters
+ * inside filter groups — without the correct format, downstream checks like
+ * [isSupportedForSubscription] may incorrectly discard valid filters.
+ */
 suspend fun List<DVFilter>.updateFormatForSubscription(storeOfRelations: StoreOfRelations): List<DVFilter> {
     return map { filter ->
         if (filter.isAdvanced()) {

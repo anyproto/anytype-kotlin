@@ -5,10 +5,14 @@ import com.anytypeio.anytype.core_models.DVFilterOperator
 import com.anytypeio.anytype.core_models.DVFilterQuickOption
 import com.anytypeio.anytype.core_models.RelationFormat
 import com.anytypeio.anytype.core_models.StubFilter
-import org.junit.Test
+import com.anytypeio.anytype.core_models.StubRelationObject
+import com.anytypeio.anytype.domain.objects.DefaultStoreOfRelations
+import com.anytypeio.anytype.presentation.sets.updateFormatForSubscription
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
+import kotlinx.coroutines.runBlocking
+import org.junit.Test
 
 class FilterSubscriptionSupportTest {
 
@@ -65,6 +69,28 @@ class FilterSubscriptionSupportTest {
             condition = DVFilterCondition.EQUAL,
             relationFormat = RelationFormat.DATE,
             quickOption = DVFilterQuickOption.EXACT_DATE,
+            value = null
+        )
+        assertFalse(filter.isSupportedForSubscription())
+    }
+
+    @Test
+    fun `null value with DATE format and DAYS_AGO quick option is unsupported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.DAYS_AGO,
+            value = null
+        )
+        assertFalse(filter.isSupportedForSubscription())
+    }
+
+    @Test
+    fun `null value with DATE format and DAYS_AHEAD quick option is unsupported`() {
+        val filter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.DATE,
+            quickOption = DVFilterQuickOption.DAYS_AHEAD,
             value = null
         )
         assertFalse(filter.isSupportedForSubscription())
@@ -293,6 +319,148 @@ class FilterSubscriptionSupportTest {
         val innerResult = outerResult.nestedFilters.first()
         assertEquals(1, innerResult.nestedFilters.size)
         assertEquals(supportedLeaf, innerResult.nestedFilters.first())
+    }
+
+    // endregion
+
+    // region updateFormatForSubscription — advanced (nested) filters
+
+    @Test
+    fun `updateFormatForSubscription recurses into nested filters of advanced filter groups`() = runBlocking {
+        val dueDateRelationKey = "dueDate"
+
+        val storeOfRelations = DefaultStoreOfRelations()
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = dueDateRelationKey,
+                    format = com.anytypeio.anytype.core_models.Relation.Format.DATE
+                )
+            )
+        )
+
+        val nestedDateFilter = StubFilter(
+            relationKey = dueDateRelationKey,
+            relationFormat = RelationFormat.LONG_TEXT, // wrong format, should be updated to DATE
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            quickOption = DVFilterQuickOption.TODAY,
+            value = null
+        )
+        val nestedCheckboxFilter = StubFilter(
+            condition = DVFilterCondition.EQUAL,
+            value = false
+        )
+        val advancedGroup = StubFilter(
+            operator = DVFilterOperator.AND,
+            condition = DVFilterCondition.EQUAL,
+            nestedFilters = listOf(nestedDateFilter, nestedCheckboxFilter)
+        )
+
+        val result = listOf(advancedGroup).updateFormatForSubscription(storeOfRelations)
+
+        assertEquals(1, result.size)
+        val updatedGroup = result.first()
+        assertEquals(2, updatedGroup.nestedFilters.size)
+
+        val updatedDateFilter = updatedGroup.nestedFilters[0]
+        assertEquals(
+            RelationFormat.DATE,
+            updatedDateFilter.relationFormat,
+            "Nested date filter should have its relationFormat updated to DATE"
+        )
+
+        // Verify the updated nested date filter is now supported for subscription
+        assertTrue(
+            updatedDateFilter.isSupportedForSubscription(),
+            "Nested date filter with TODAY quick option and null value should be supported after format update"
+        )
+
+        // Verify the checkbox filter (with unrecognized relation key) is unchanged
+        val updatedCheckboxFilter = updatedGroup.nestedFilters[1]
+        assertEquals(
+            nestedCheckboxFilter.relationFormat,
+            updatedCheckboxFilter.relationFormat,
+            "Checkbox filter with unknown relation key should retain its original format"
+        )
+    }
+
+    @Test
+    fun `updateFormatForSubscription recurses into deeply nested advanced filter groups`() = runBlocking {
+        val dueDateRelationKey = "dueDate"
+
+        val storeOfRelations = DefaultStoreOfRelations()
+        storeOfRelations.merge(
+            listOf(
+                StubRelationObject(
+                    key = dueDateRelationKey,
+                    format = com.anytypeio.anytype.core_models.Relation.Format.DATE
+                )
+            )
+        )
+
+        val deepDateFilter = StubFilter(
+            relationKey = dueDateRelationKey,
+            relationFormat = RelationFormat.LONG_TEXT, // wrong format
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            quickOption = DVFilterQuickOption.YESTERDAY,
+            value = null
+        )
+        val innerAdvanced = StubFilter(
+            operator = DVFilterOperator.OR,
+            condition = DVFilterCondition.EQUAL,
+            nestedFilters = listOf(deepDateFilter)
+        )
+        val outerAdvanced = StubFilter(
+            operator = DVFilterOperator.AND,
+            condition = DVFilterCondition.EQUAL,
+            nestedFilters = listOf(innerAdvanced)
+        )
+
+        val result = listOf(outerAdvanced).updateFormatForSubscription(storeOfRelations)
+
+        assertEquals(1, result.size)
+        val outerResult = result.first()
+        assertEquals(1, outerResult.nestedFilters.size)
+        val innerResult = outerResult.nestedFilters.first()
+        assertEquals(1, innerResult.nestedFilters.size)
+
+        val updatedDeepFilter = innerResult.nestedFilters.first()
+        assertEquals(
+            RelationFormat.DATE,
+            updatedDeepFilter.relationFormat,
+            "Deeply nested date filter should have its relationFormat updated to DATE"
+        )
+        assertTrue(
+            updatedDeepFilter.isSupportedForSubscription(),
+            "Deeply nested date filter with YESTERDAY quick option should be supported after format update"
+        )
+    }
+
+    @Test
+    fun `updateFormatForSubscription without recursion would cause nested date filter to be removed`() = runBlocking {
+        // This test demonstrates the exact bug scenario: a filter group with a nested
+        // date filter using TODAY quick option and null value. Without the recursive
+        // updateFormatForSubscription fix, the nested filter's relationFormat stays
+        // as its default, causing isSupportedForSubscription() to return false.
+        val nestedDateFilter = StubFilter(
+            condition = DVFilterCondition.LESS_OR_EQUAL,
+            relationFormat = RelationFormat.LONG_TEXT, // simulates unpatched format
+            quickOption = DVFilterQuickOption.TODAY,
+            value = null
+        )
+
+        // Without DATE format, this filter is considered unsupported
+        assertFalse(
+            nestedDateFilter.isSupportedForSubscription(),
+            "Date filter with non-DATE relationFormat and null value should be unsupported"
+        )
+
+        // With correct DATE format, it becomes supported
+        val correctedFilter = nestedDateFilter.copy(relationFormat = RelationFormat.DATE)
+        assertTrue(
+            correctedFilter.isSupportedForSubscription(),
+            "Date filter with DATE relationFormat and TODAY quick option should be supported"
+        )
     }
 
     // endregion

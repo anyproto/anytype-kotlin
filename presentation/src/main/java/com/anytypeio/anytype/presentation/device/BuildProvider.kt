@@ -1,4 +1,4 @@
-package com.anytypeio.anytype.device
+package com.anytypeio.anytype.presentation.device
 
 import android.os.Build
 import com.anytypeio.anytype.presentation.BuildConfig

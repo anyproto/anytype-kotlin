@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="120dp"
+    android:viewportWidth="180"
+    android:viewportHeight="120">
+    <!-- Background -->
+    <path
+        android:pathData="M16,0 L164,0 Q180,0 180,16 L180,104 Q180,120 164,120 L16,120 Q0,120 0,104 L0,16 Q0,0 16,0 Z"
+        android:fillColor="#1F1E1D"/>
+    <!-- Row 1: circle bullet + line -->
+    <path
+        android:pathData="M30,30 m-6,0 a6,6 0,1 1,12 0 a6,6 0,1 1,-12 0"
+        android:fillColor="#F55522"/>
+    <path
+        android:pathData="M46,30 L150,30"
+        android:strokeColor="#5E5C59"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+    <!-- Row 2: rounded square bullet + line -->
+    <path
+        android:pathData="M26,50 L34,50 Q36,50 36,52 L36,60 Q36,62 34,62 L26,62 Q24,62 24,60 L24,52 Q24,50 26,50 Z"
+        android:fillColor="#FFB522"/>
+    <path
+        android:pathData="M46,56 L136,56"
+        android:strokeColor="#5E5C59"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+    <!-- Row 3: circle bullet + line -->
+    <path
+        android:pathData="M30,82 m-6,0 a6,6 0,1 1,12 0 a6,6 0,1 1,-12 0"
+        android:fillColor="#2AA7EE"/>
+    <path
+        android:pathData="M46,82 L144,82"
+        android:strokeColor="#5E5C59"
+        android:strokeWidth="4"
+        android:strokeLineCap="round"/>
+</vector>

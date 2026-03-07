@@ -43,5 +43,36 @@ interface DeepLinkResolver {
             val identity: Id,
             val metadataKey: String
         ) : Action()
+
+        /**
+         * Deep links triggered by OS home screen widgets.
+         */
+        sealed class OsWidgetDeepLink : Action() {
+            /**
+             * Deep link to open a specific space.
+             */
+            data class DeepLinkToSpace(
+                val space: SpaceId
+            ) : OsWidgetDeepLink()
+
+            /**
+             * Deep link to create an object using a pre-configured widget.
+             *
+             * [token] must be validated against persisted widget config before
+             * triggering creation, because this deep link can originate externally.
+             */
+            data class DeepLinkToCreateObject(
+                val appWidgetId: Int,
+                val token: String
+            ) : OsWidgetDeepLink()
+
+            /**
+             * Deep link to open a specific object from an OS widget.
+             */
+            data class DeepLinkToObject(
+                val obj: Id,
+                val space: SpaceId
+            ) : OsWidgetDeepLink()
+        }
     }
 }

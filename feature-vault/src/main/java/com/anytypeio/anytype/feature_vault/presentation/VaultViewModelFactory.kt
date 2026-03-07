@@ -31,6 +31,8 @@ import com.anytypeio.anytype.domain.vault.SetSpaceOrder
 import com.anytypeio.anytype.domain.vault.ShouldShowCreateSpaceBadge
 import com.anytypeio.anytype.domain.vault.UnpinSpace
 import com.anytypeio.anytype.domain.wallpaper.GetSpaceWallpapers
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.workspace.DeepLinkToObjectDelegate
 import com.anytypeio.anytype.domain.workspace.SpaceManager
 import javax.inject.Inject
@@ -66,7 +68,9 @@ class VaultViewModelFactory @Inject constructor(
     private val searchOneToOneChatByIdentity: SearchOneToOneChatByIdentity,
     private val createSpace: CreateSpace,
     private val deepLinkResolver: DeepLinkResolver,
-    private val configStorage: ConfigStorage
+    private val configStorage: ConfigStorage,
+    private val osWidgetSpacesSync: OsWidgetSpacesSync,
+    private val osWidgetDataViewSync: OsWidgetDataViewSync
 ) : ViewModelProvider.Factory {
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(
@@ -102,6 +106,8 @@ class VaultViewModelFactory @Inject constructor(
         searchOneToOneChatByIdentity = searchOneToOneChatByIdentity,
         createSpace = createSpace,
         deepLinkResolver = deepLinkResolver,
-        configStorage = configStorage
+        configStorage = configStorage,
+        osWidgetSpacesSync = osWidgetSpacesSync,
+        osWidgetDataViewSync = osWidgetDataViewSync
     ) as T
 }

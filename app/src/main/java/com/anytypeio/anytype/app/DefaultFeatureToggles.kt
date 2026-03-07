@@ -2,7 +2,7 @@ package com.anytypeio.anytype.app
 
 import com.anytypeio.anytype.BuildConfig
 import com.anytypeio.anytype.core_utils.tools.FeatureToggles
-import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
 import javax.inject.Inject
 
 class DefaultFeatureToggles @Inject constructor(

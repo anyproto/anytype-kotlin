@@ -21,8 +21,8 @@ import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashDataRepository
 import com.anytypeio.anytype.data.auth.repo.unsplash.UnsplashRemote
 import com.anytypeio.anytype.data.auth.types.DefaultObjectTypesProvider
 import com.anytypeio.anytype.device.AppStateService
-import com.anytypeio.anytype.device.BuildProvider
-import com.anytypeio.anytype.device.DefaultBuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.DefaultBuildProvider
 import com.anytypeio.anytype.device.DefaultPathProvider
 import com.anytypeio.anytype.domain.auth.repo.AuthRepository
 import com.anytypeio.anytype.domain.block.repo.BlockRepository
@@ -39,6 +39,15 @@ import com.anytypeio.anytype.domain.platform.InitialParamsProvider
 import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
+import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataCleaner
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
+import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
+import com.anytypeio.anytype.domain.`object`.GetObject
+import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataCleanerImpl
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewSyncImpl
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
 import com.anytypeio.anytype.middleware.UnsplashMiddleware
 import com.anytypeio.anytype.middleware.auth.AuthMiddleware
@@ -259,12 +268,21 @@ object DataModule {
     fun provideUserSettingsCache(
         @Named("default") prefs: SharedPreferences,
         context: Context,
-        appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+        appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+        osWidgetDataCleaner: OsWidgetDataCleaner
     ): UserSettingsCache = DefaultUserSettingsCache(
         prefs = prefs,
         context = context,
-        appDefaultDateFormatProvider = appDefaultDateFormatProvider
+        appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+        osWidgetDataCleaner = osWidgetDataCleaner
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetDataCleaner(
+        context: Context
+    ): OsWidgetDataCleaner = OsWidgetDataCleanerImpl(context)
 
     @JvmStatic
     @Provides
@@ -272,6 +290,35 @@ object DataModule {
     fun provideUserSettingsRepo(
         cache: UserSettingsCache
     ): UserSettingsRepository = UserSettingsDataRepository(cache)
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetSpacesSync(
+        context: Context,
+        urlBuilder: UrlBuilder
+    ): OsWidgetSpacesSync = OsWidgetSpacesSyncWithUpdate(
+        delegate = OsWidgetSpacesSyncImpl(context, urlBuilder),
+        context = context
+    )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetDataViewSync(
+        context: Context,
+        getObject: GetObject,
+        searchObjects: SearchObjects,
+        blockRepository: BlockRepository
+    ): OsWidgetDataViewSync = OsWidgetDataViewSyncWithUpdate(
+        delegate = OsWidgetDataViewSyncImpl(
+            context = context,
+            getObject = getObject,
+            searchObjects = searchObjects,
+            blockRepository = blockRepository
+        ),
+        context = context
+    )
 
     @JvmStatic
     @Provides

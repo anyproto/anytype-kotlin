@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpacesWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_spaces_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_spaces_widget_info" />
+        </receiver>
+
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsCreateObjectWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_create_object_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_create_object_widget_info" />
+        </receiver>
+
+        <activity
+            android:name="com.anytypeio.anytype.ui.oswidgets.CreateObjectWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsSpaceShortcutWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_space_shortcut_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_space_shortcut_widget_info" />
+        </receiver>
+
+        <activity
+            android:name="com.anytypeio.anytype.ui.oswidgets.SpaceShortcutWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsObjectShortcutWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_object_shortcut_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_object_shortcut_widget_info" />
+        </receiver>
+
+        <activity
+            android:name="com.anytypeio.anytype.ui.oswidgets.ObjectShortcutWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+
+        <receiver
+            android:name="com.anytypeio.anytype.feature_os_widgets.receiver.OsDataViewWidgetReceiver"
+            android:exported="true"
+            android:label="@string/os_widget_data_view_title">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+            </intent-filter>
+            <meta-data
+                android:name="android.appwidget.provider"
+                android:resource="@xml/os_data_view_widget_info" />
+        </receiver>
+
+        <activity
+            android:name="com.anytypeio.anytype.ui.oswidgets.DataViewWidgetConfigActivity"
+            android:exported="true"
+            android:theme="@style/AppTheme">
+            <intent-filter>
+                <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>

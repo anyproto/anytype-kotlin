@@ -12,7 +12,6 @@ dependencies {
     implementation project(':core-models')
     implementation project(':device')
     implementation project(':domain')
-    implementation project(':feature-os-widgets')
 
     implementation libs.kotlin
     implementation libs.coroutinesAndroid

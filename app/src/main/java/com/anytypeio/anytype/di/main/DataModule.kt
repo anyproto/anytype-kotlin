@@ -40,10 +40,12 @@ import com.anytypeio.anytype.domain.unsplash.UnsplashRepository
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStore
 import com.anytypeio.anytype.domain.invite.SpaceInviteLinkStoreImpl
 import com.anytypeio.anytype.core_models.UrlBuilder
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataCleaner
 import com.anytypeio.anytype.domain.widgets.OsWidgetDataViewSync
 import com.anytypeio.anytype.domain.widgets.OsWidgetSpacesSync
 import com.anytypeio.anytype.domain.`object`.GetObject
 import com.anytypeio.anytype.domain.search.SearchObjects
+import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataCleanerImpl
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetDataViewSyncImpl
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetSpacesSyncImpl
 import com.anytypeio.anytype.middleware.EventProxy
@@ -266,12 +268,21 @@ object DataModule {
     fun provideUserSettingsCache(
         @Named("default") prefs: SharedPreferences,
         context: Context,
-        appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+        appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+        osWidgetDataCleaner: OsWidgetDataCleaner
     ): UserSettingsCache = DefaultUserSettingsCache(
         prefs = prefs,
         context = context,
-        appDefaultDateFormatProvider = appDefaultDateFormatProvider
+        appDefaultDateFormatProvider = appDefaultDateFormatProvider,
+        osWidgetDataCleaner = osWidgetDataCleaner
     )
+
+    @JvmStatic
+    @Provides
+    @Singleton
+    fun provideOsWidgetDataCleaner(
+        context: Context
+    ): OsWidgetDataCleaner = OsWidgetDataCleanerImpl(context)
 
     @JvmStatic
     @Provides

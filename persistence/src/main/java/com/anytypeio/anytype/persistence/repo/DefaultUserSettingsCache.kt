@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataCleaner
 import com.anytypeio.anytype.persistence.AllContentSettings
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
@@ -32,8 +33,6 @@ import com.anytypeio.anytype.persistence.model.asSettings
 import com.anytypeio.anytype.persistence.model.asWallpaper
 import com.anytypeio.anytype.persistence.model.toDomain
 import com.anytypeio.anytype.persistence.model.toProto
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetIconCache
-import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import com.anytypeio.anytype.persistence.preferences.SPACE_PREFERENCE_FILENAME
 import com.anytypeio.anytype.persistence.preferences.SpacePrefSerializer
 import com.anytypeio.anytype.persistence.preferences.VAULT_PREFERENCE_FILENAME
@@ -48,7 +47,8 @@ import timber.log.Timber
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
     private val context: Context,
-    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+    private val osWidgetDataCleaner: OsWidgetDataCleaner = OsWidgetDataCleaner.NoOp
 ) : UserSettingsCache {
 
     //region Vault default settings
@@ -345,9 +345,7 @@ class DefaultUserSettingsCache(
             SpacePreferences(emptyMap())
         }
 
-        // Clearing OS widget cache (both DataStore and icon files)
-        OsWidgetsDataStore(context).clear()
-        OsWidgetIconCache(context).clearAll()
+        osWidgetDataCleaner.clearAll()
     }
 
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {

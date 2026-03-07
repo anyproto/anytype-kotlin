@@ -27,16 +27,21 @@ class OsWidgetSpacesSyncImpl(
     }
 
     override suspend fun sync(spaces: List<ObjectWrapper.SpaceView>) {
+        Timber.tag(TAG).d("sync called with ${spaces.size} total spaces")
+        spaces.forEachIndexed { i, s ->
+            Timber.tag(TAG).d("  input[$i]: name=${s.name}, targetSpaceId=${s.targetSpaceId}, isActive=${s.isActive}, spaceOrder=${s.spaceOrder}")
+        }
         val pinnedSpaces = spaces
-            // Only include active, pinned spaces (spaces with non-null/non-empty spaceOrder)
             .filter { it.isActive && !it.spaceOrder.isNullOrEmpty() }
-            // Sort pinned spaces by spaceOrder (ascending)
             .sortedWith(compareBy(nullsLast()) { it.spaceOrder })
+
+        Timber.tag(TAG).d("After filter: ${pinnedSpaces.size} pinned active spaces (from ${spaces.size} total)")
 
         val entities = mutableListOf<OsWidgetSpaceEntity>()
         for (space in pinnedSpaces) {
             entities.add(space.toWidgetEntity())
         }
+        Timber.tag(TAG).d("Saving ${entities.size} entities to DataStore")
         dataStore.saveSpaces(entities)
         
         // Note: We don't cleanup stale icons here because sync() is called

@@ -16,10 +16,13 @@ object OsSpacesListWidgetUpdater {
      */
     suspend fun updateAllWidgets(context: Context) {
         try {
+            Timber.tag(TAG).d("updateAllWidgets: triggering updateAll for OsSpacesListWidget")
             OsSpacesListWidget().updateAll(context)
-            Timber.d("OsSpacesListWidgetUpdater: updateAll completed")
+            Timber.tag(TAG).d("updateAllWidgets: updateAll completed successfully")
         } catch (e: Exception) {
-            Timber.e(e, "OsSpacesListWidgetUpdater: updateAll failed")
+            Timber.tag(TAG).e(e, "updateAllWidgets: updateAll failed")
         }
     }
+
+    private const val TAG = "SpacesListUpdater"
 }

@@ -41,6 +41,7 @@ import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceIcon
 import com.anytypeio.anytype.feature_os_widgets.model.OsWidgetSpaceItem
 import com.anytypeio.anytype.feature_os_widgets.persistence.OsWidgetsDataStore
 import kotlinx.coroutines.flow.first
+import timber.log.Timber
 
 /**
  * Glance App Widget that displays a list of user's spaces.
@@ -48,14 +49,28 @@ import kotlinx.coroutines.flow.first
  */
 class OsSpacesListWidget : GlanceAppWidget() {
 
+    companion object {
+        private const val TAG = "OsSpacesListWidget"
+    }
+
     override suspend fun provideGlance(context: Context, id: GlanceId) {
+        Timber.tag(TAG).d("provideGlance called, glanceId=$id")
         val appContext = context.applicationContext
         val dataStore = OsWidgetsDataStore(appContext)
-        val spaces = dataStore.observeSpaces().first().toDomain()
+        val entities = dataStore.observeSpaces().first()
+        val spaces = entities.toDomain()
+        Timber.tag(TAG).d("Read ${entities.size} space entities from DataStore, mapped to ${spaces.size} domain items")
+        entities.forEachIndexed { i, e ->
+            Timber.tag(TAG).d("  entity[$i]: spaceId=${e.spaceId}, name=${e.name}, icon=${e.iconImageUrl != null}")
+        }
         val strings = SpacesListWidgetStrings(
             emptyState = appContext.getString(R.string.os_widget_open_app_to_see_spaces),
             untitled = appContext.getString(R.string.untitled)
         )
+
+        if (spaces.isEmpty()) {
+            Timber.tag(TAG).w("No spaces found in DataStore — will show empty state")
+        }
 
         provideContent {
             GlanceTheme {

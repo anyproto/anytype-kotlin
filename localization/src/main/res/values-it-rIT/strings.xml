@@ -2157,5 +2157,5 @@ Please provide specific details of your needs here.</string>
     <string name="no_spaces_available">Nessuno spazio disponibile</string>
     <string name="select_view">Seleziona vista</string>
     <string name="os_widget_data_view_title">Visualizzazione dati</string>
-    <string name="os_widget_data_view_description">Display items from a Set or Collection</string>
+    <string name="os_widget_data_view_description">Visualizza gli elementi di un Insieme o di una Collezione</string>
 </resources>

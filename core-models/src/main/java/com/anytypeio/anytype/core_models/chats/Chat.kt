@@ -5,6 +5,15 @@ import com.anytypeio.anytype.core_models.Id
 import com.anytypeio.anytype.core_models.ObjectWrapper
 import com.anytypeio.anytype.core_models.primitives.SpaceId
 
+data class ChatMessageSearchResult(
+    val chatId: Id,
+    val messageId: Id,
+    val score: Long,
+    val highlight: String,
+    val highlightRanges: List<IntRange>,
+    val message: Chat.Message
+)
+
 sealed class Chat {
 
     /**

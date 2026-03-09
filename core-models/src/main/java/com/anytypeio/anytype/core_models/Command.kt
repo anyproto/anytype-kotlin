@@ -1,6 +1,7 @@
 package com.anytypeio.anytype.core_models
 
 import com.anytypeio.anytype.core_models.chats.Chat
+import com.anytypeio.anytype.core_models.chats.ChatMessageSearchResult
 import com.anytypeio.anytype.core_models.chats.NotificationState
 import com.anytypeio.anytype.core_models.membership.MembershipPaymentMethod
 import com.anytypeio.anytype.core_models.membership.NameServiceNameType
@@ -722,6 +723,16 @@ sealed class Command {
             val msg: Id,
             val emoji: String
         ) : ChatCommand()
+
+        data class SearchMessages(
+            val space: SpaceId,
+            val chat: Id,
+            val query: String,
+            val offset: Int = 0,
+            val limit: Int = 100
+        ) : ChatCommand() {
+            data class Response(val results: List<ChatMessageSearchResult>)
+        }
     }
 
     /**

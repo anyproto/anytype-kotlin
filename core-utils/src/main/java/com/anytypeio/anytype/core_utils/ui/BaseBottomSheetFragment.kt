@@ -10,6 +10,7 @@ import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.R
+import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -58,6 +59,7 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         dialog?.window?.attributes?.windowAnimations = R.style.DefaultBottomDialogAnimation
+        fixBottomSheetNavigationBarGap()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

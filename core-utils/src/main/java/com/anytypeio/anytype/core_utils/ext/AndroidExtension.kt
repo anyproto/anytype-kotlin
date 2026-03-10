@@ -51,6 +51,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.File
 import timber.log.Timber
 

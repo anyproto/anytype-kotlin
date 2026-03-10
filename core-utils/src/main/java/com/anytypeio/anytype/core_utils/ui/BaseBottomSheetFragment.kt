@@ -6,13 +6,11 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.core.graphics.Insets
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
 import androidx.fragment.app.DialogFragment
 import androidx.lifecycle.lifecycleScope
 import androidx.viewbinding.ViewBinding
 import com.anytypeio.anytype.core_utils.R
+import com.anytypeio.anytype.core_utils.ext.fixBottomSheetNavigationBarGap
 import com.anytypeio.anytype.core_utils.ext.LONG_THROTTLE_DURATION
 import com.anytypeio.anytype.core_utils.ext.throttleFirst
 import com.google.android.material.bottomsheet.BottomSheetBehavior
@@ -60,24 +58,8 @@ abstract class BaseBottomSheetFragment<T : ViewBinding>(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        dialog?.let { dlg ->
-            dlg.window?.attributes?.windowAnimations = R.style.DefaultBottomDialogAnimation
-            // Material BottomSheetDialog enables edge-to-edge, which adds bottom padding
-            // for the navigation bar on the container, creating a visible gap below the sheet.
-            // Remove that bottom padding so the sheet background extends to the screen edge.
-            dlg.findViewById<View>(com.google.android.material.R.id.container)?.let { container ->
-                ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
-                    val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-                    v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
-                    WindowInsetsCompat.Builder(insets)
-                        .setInsets(
-                            WindowInsetsCompat.Type.navigationBars(),
-                            Insets.NONE
-                        )
-                        .build()
-                }
-            }
-        }
+        dialog?.window?.attributes?.windowAnimations = R.style.DefaultBottomDialogAnimation
+        fixBottomSheetNavigationBarGap()
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {

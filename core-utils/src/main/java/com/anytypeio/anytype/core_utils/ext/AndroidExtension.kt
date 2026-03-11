@@ -36,6 +36,9 @@ import androidx.annotation.IdRes
 import androidx.annotation.StringRes
 import androidx.core.graphics.BlendModeColorFilterCompat
 import androidx.core.graphics.BlendModeCompat
+import androidx.core.graphics.Insets
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updateLayoutParams
 import androidx.fragment.app.Fragment
 import androidx.navigation.NavController
@@ -48,6 +51,7 @@ import com.anytypeio.anytype.core_utils.ui.BaseBottomSheetComposeFragment
 import com.anytypeio.anytype.presentation.util.downloader.UriFileProvider
 import com.google.android.material.bottomsheet.BottomSheetBehavior
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.google.android.material.bottomsheet.BottomSheetDialogFragment
 import java.io.File
 import timber.log.Timber
 
@@ -476,6 +480,23 @@ fun BaseBottomSheetComposeFragment.setupBottomSheetBehavior(paddingTop: Int) {
         expandedOffset = paddingTop
         state = BottomSheetBehavior.STATE_EXPANDED
         skipCollapsed = true
+    }
+}
+
+/**
+ * Material BottomSheetDialog enables edge-to-edge, which adds bottom padding
+ * for the navigation bar on the container, creating a visible gap below the sheet.
+ * This removes that bottom padding so the sheet background extends to the screen edge.
+ */
+fun BottomSheetDialogFragment.fixBottomSheetNavigationBarGap() {
+    dialog?.findViewById<View>(com.google.android.material.R.id.container)?.let { container ->
+        ViewCompat.setOnApplyWindowInsetsListener(container) { v, insets ->
+            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, 0)
+            WindowInsetsCompat.Builder(insets)
+                .setInsets(WindowInsetsCompat.Type.navigationBars(), Insets.NONE)
+                .build()
+        }
     }
 }
 

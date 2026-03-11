@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="180dp"
+    android:height="120dp"
+    android:viewportWidth="180"
+    android:viewportHeight="120">
+    <!-- Background -->
+    <path
+        android:pathData="M16,0 L164,0 Q180,0 180,16 L180,104 Q180,120 164,120 L16,120 Q0,120 0,104 L0,16 Q0,0 16,0 Z"
+        android:fillColor="#1F1E1D"/>
+    <!-- Row 1: circle, rounded square, circle (r=13, gap=52) -->
+    <path
+        android:pathData="M38,38 m-13,0 a13,13 0,1 1,26 0 a13,13 0,1 1,-26 0"
+        android:fillColor="#F55522"/>
+    <path
+        android:pathData="M79,25 L103,25 Q107,25 107,29 L107,47 Q107,51 103,51 L79,51 Q75,51 75,47 L75,29 Q75,25 79,25 Z"
+        android:fillColor="#FFB522"/>
+    <path
+        android:pathData="M142,38 m-13,0 a13,13 0,1 1,26 0 a13,13 0,1 1,-26 0"
+        android:fillColor="#2AA7EE"/>
+    <!-- Row 2: rounded square, circle, rounded square -->
+    <path
+        android:pathData="M27,69 L51,69 Q55,69 55,73 L55,91 Q55,95 51,95 L27,95 Q23,95 23,91 L23,73 Q23,69 27,69 Z"
+        android:fillColor="#5DD400"/>
+    <path
+        android:pathData="M90,82 m-13,0 a13,13 0,1 1,26 0 a13,13 0,1 1,-26 0"
+        android:fillColor="#AB50CC"/>
+    <path
+        android:pathData="M131,69 L155,69 Q159,69 159,73 L159,91 Q159,95 155,95 L131,95 Q127,95 127,91 L127,73 Q127,69 131,69 Z"
+        android:fillColor="#0FC8BA"/>
+</vector>

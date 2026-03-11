@@ -4,7 +4,7 @@ import android.content.Context
 import com.anytypeio.anytype.CrashReporter
 import com.anytypeio.anytype.SentryCrashReporter
 import com.anytypeio.anytype.core_utils.tools.AppInfo
-import com.anytypeio.anytype.device.BuildProvider
+import com.anytypeio.anytype.presentation.device.BuildProvider
 import dagger.Module
 import dagger.Provides
 import javax.inject.Singleton

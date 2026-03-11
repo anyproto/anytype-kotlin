@@ -19,6 +19,7 @@ import com.anytypeio.anytype.core_models.primitives.TypeId
 import com.anytypeio.anytype.core_models.settings.VaultSettings
 import com.anytypeio.anytype.data.auth.repo.UserSettingsCache
 import com.anytypeio.anytype.device.providers.AppDefaultDateFormatProvider
+import com.anytypeio.anytype.domain.widgets.OsWidgetDataCleaner
 import com.anytypeio.anytype.persistence.AllContentSettings
 import com.anytypeio.anytype.persistence.GlobalSearchHistoryProto
 import com.anytypeio.anytype.persistence.SpacePreference
@@ -46,7 +47,8 @@ import timber.log.Timber
 class DefaultUserSettingsCache(
     private val prefs: SharedPreferences,
     private val context: Context,
-    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider
+    private val appDefaultDateFormatProvider: AppDefaultDateFormatProvider,
+    private val osWidgetDataCleaner: OsWidgetDataCleaner = OsWidgetDataCleaner.NoOp
 ) : UserSettingsCache {
 
     //region Vault default settings
@@ -342,6 +344,8 @@ class DefaultUserSettingsCache(
         context.spacePrefsStore.updateData {
             SpacePreferences(emptyMap())
         }
+
+        osWidgetDataCleaner.clearAll()
     }
 
     override suspend fun setLastOpenedObject(id: Id, space: SpaceId) {

@@ -1,0 +1,76 @@
+name: Upload signed AAB to Google Play (Internal Testing)
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-upload:
+    runs-on: ubuntu-22.04
+    environment: google-play
+    name: Build signed AAB and upload to Internal Testing
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+
+      - uses: nttld/setup-ndk@ed92fe6cadad69be94a966a7ee3271275e62f779 # v1.6.0
+        with:
+          ndk-version: r23c
+          link-to-sdk: true
+
+      - uses: actions/setup-java@17f84c3641ba7b8f6deff6309fc4c864478f5d62 # v3.14.1
+        with:
+          distribution: 'zulu'
+          java-version: 17
+
+      - name: Cache Gradle dependencies
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
+      - name: Grant Gradle permission
+        run: chmod +x ./gradlew
+
+      - name: Setup middleware
+        env:
+          token_secret: ${{ secrets.ANYTYPE_SECRET }}
+          user_secret: ${{ secrets.ANYTYPE_USER_SECRET }}
+          amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
+          amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
+          sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
+        run: ./middleware2.sh "$token_secret" "$user_secret" "$amplitude_secret" "$amplitude_secret_debug" "$sentry_dsn_secret"
+
+      - name: Decrypt secrets
+        run: ./scripts/release/decrypt-secrets.sh
+        env:
+          ENCRYPT_KEY: ${{ secrets.ENCRYPT_KEY }}
+
+      - name: Setup keystore
+        env:
+          RELEASE_KEY_ALIAS: ${{ secrets.RELEASE_KEY_ALIAS }}
+          RELEASE_KEY_PWD: ${{ secrets.RELEASE_KEY_PWD }}
+          RELEASE_STORE_PWD: ${{ secrets.RELEASE_STORE_PWD }}
+        run: ./scripts/release/setup-store.sh "$RELEASE_KEY_ALIAS" "$RELEASE_KEY_PWD" "$RELEASE_STORE_PWD"
+
+      - name: Build release AAB
+        run: ./gradlew :app:bundleRelease
+
+      - name: Upload AAB to Google Play (Internal Testing)
+        uses: r0adkll/upload-google-play@935ef9c68bb393a8e6116b1575626a7f5be3a7fb # v1.1.3
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_SERVICE_ACCOUNT_JSON }}
+          packageName: io.anytype.app
+          releaseFiles: app/build/outputs/bundle/release/app-release.aab
+          track: internal
+          status: completed
+
+      - name: Clean secrets
+        if: always()
+        run: ./scripts/release/clean-secrets.sh

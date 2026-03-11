@@ -64,7 +64,10 @@ fun DVFilterCondition.isValueRequired(): Boolean = when (this) {
 fun DVFilter.isSupportedForSubscription(): Boolean {
     if (!condition.isValueRequired()) return true
     return when (val v = value) {
-        null -> false
+        null -> relationFormat == RelationFormat.DATE
+                && quickOption != DVFilterQuickOption.EXACT_DATE
+                && quickOption != DVFilterQuickOption.DAYS_AGO
+                && quickOption != DVFilterQuickOption.DAYS_AHEAD
         is String -> v.isNotEmpty()
         is List<*> -> v.isNotEmpty()
         is Double -> !(relationFormat == RelationFormat.DATE && quickOption == DVFilterQuickOption.EXACT_DATE && v == 0.0)

@@ -22,6 +22,7 @@ dependencies {
     implementation libs.room
     implementation libs.roomKtx
     implementation libs.dataStore
+    implementation libs.dataStorePreferences
 
     ksp libs.annotations
 

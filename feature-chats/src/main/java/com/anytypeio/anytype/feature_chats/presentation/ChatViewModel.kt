@@ -141,10 +141,12 @@ class ChatViewModel @Inject constructor(
     private val setObjectDetails: SetObjectDetails,
     private val setSpaceDetails: SetSpaceDetails,
     private val setChatNotificationMode: SetChatNotificationMode,
-    private val fieldParser: FieldParser
+    private val fieldParser: FieldParser,
+    private val chatSearchDelegate: ChatSearchDelegate
 ) : BaseViewModel(),
     ExitToVaultDelegate by exitToVaultDelegate,
-    PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate {
+    PinObjectAsWidgetDelegate by pinObjectAsWidgetDelegate,
+    ChatSearchDelegate by chatSearchDelegate {
     private val preloadingJobs = mutableListOf<Job>()
 
     private val visibleRangeUpdates = MutableSharedFlow<Pair<Id, Id>>(
@@ -191,6 +193,12 @@ class ChatViewModel @Inject constructor(
 
     init {
         Timber.d("DROID-2966 init")
+
+        chatSearchDelegate.initSearchDelegate(viewModelScope)
+        (chatSearchDelegate as? ChatSearchDelegate.Default)?.setChatParams(
+            space = vmParams.space,
+            chat = vmParams.ctx
+        )
 
         viewModelScope.launch {
             spacePermissionProvider
@@ -2106,6 +2114,29 @@ class ChatViewModel @Inject constructor(
                 )
             )
         }
+    }
+
+    fun resolveMemberName(identity: String): String {
+        val store = members.get()
+        return if (store is Store.Data) {
+            store.members.find { it.identity == identity }?.name.orEmpty()
+        } else {
+            ""
+        }
+    }
+
+    fun resolveMemberAvatar(identity: String): ChatView.Message.Avatar {
+        val store = members.get()
+        if (store is Store.Data) {
+            val member = store.members.find { it.identity == identity }
+            if (member != null && !member.iconImage.isNullOrEmpty()) {
+                return ChatView.Message.Avatar.Image(
+                    urlBuilder.thumbnail(member.iconImage!!)
+                )
+            }
+            return ChatView.Message.Avatar.Initials(member?.name.orEmpty())
+        }
+        return ChatView.Message.Avatar.Initials("")
     }
 
     fun onMemberIconClicked(member: Id?) {

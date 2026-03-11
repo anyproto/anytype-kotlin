@@ -8,7 +8,7 @@ permissions:
 
 jobs:
   build-and-upload:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-22.04
     environment: google-play
     name: Build signed AAB and upload to Internal Testing
 
@@ -26,6 +26,15 @@ jobs:
           distribution: 'zulu'
           java-version: 17
 
+      - name: Cache Gradle dependencies
+        uses: actions/cache@6f8efc29b200d32929f49075959781ed54ec270c # v3.5.0
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: gradle-${{ runner.os }}-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: gradle-${{ runner.os }}-
+
       - name: Grant Gradle permission
         run: chmod +x ./gradlew
 
@@ -36,7 +45,7 @@ jobs:
           amplitude_secret: ${{ secrets.ANYTYPE_AMPLITUDE_SECRET }}
           amplitude_secret_debug: ${{ secrets.ANYTYPE_AMPLITUDE_DEBUG_SECRET }}
           sentry_dsn_secret: ${{ secrets.ANYTYPE_SENTRY_DSN_SECRET }}
-        run: ./middleware2.sh $token_secret $user_secret $amplitude_secret $amplitude_secret_debug $sentry_dsn_secret
+        run: ./middleware2.sh "$token_secret" "$user_secret" "$amplitude_secret" "$amplitude_secret_debug" "$sentry_dsn_secret"
 
       - name: Decrypt secrets
         run: ./scripts/release/decrypt-secrets.sh

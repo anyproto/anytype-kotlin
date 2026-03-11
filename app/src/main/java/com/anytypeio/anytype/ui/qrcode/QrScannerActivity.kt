@@ -191,7 +191,12 @@ private fun CameraPreview(
 
             val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
             cameraProviderFuture.addListener({
-                val cameraProvider = cameraProviderFuture.get()
+                val cameraProvider = try {
+                    cameraProviderFuture.get()
+                } catch (e: Exception) {
+                    Timber.e(e, "Failed to get camera provider")
+                    return@addListener
+                }
 
                 val preview = Preview.Builder()
                     .build()
@@ -244,6 +249,10 @@ private fun CameraPreview(
                 val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
 
                 try {
+                    if (!cameraProvider.hasCamera(cameraSelector)) {
+                        Timber.w("No back camera available on this device")
+                        return@addListener
+                    }
                     cameraProvider.unbindAll()
                     cameraProvider.bindToLifecycle(
                         lifecycleOwner,

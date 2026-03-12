@@ -2139,4 +2139,21 @@ En concreto,
     <string name="save">Guardar</string>
     <string name="you_dont_have_any_spaces_yet">Aúyn no tienes ningún espacio</string>
     <string name="loading_channels">Cargando canales</string>
+    <!-- OS Widgets -->
+    <string name="os_widget_spaces_title">Espacios</string>
+    <string name="os_widget_spaces_description">Acceso rápido a los espacios anclados</string>
+    <string name="os_widget_create_object_title">Nuevo objeto</string>
+    <string name="os_widget_create_object_description">Crea un objeto del tipo elegido</string>
+    <string name="os_widget_space_shortcut_title">Acceso directo a espacio</string>
+    <string name="os_widget_space_shortcut_description">Abre un espacio directamente</string>
+    <string name="os_widget_object_shortcut_title">Acceso directo a objeto</string>
+    <string name="os_widget_object_shortcut_description">Abre un objeto directamente</string>
+    <string name="os_widget_not_configured">Toca para configurar</string>
+    <string name="os_widget_tap_to_create">Toca para crear</string>
+    <string name="os_widget_open_app_to_see_spaces">Aquí aparecerán los espacios que ancles</string>
+    <string name="os_widget_no_items">No hay elementos</string>
+    <string name="no_spaces_available">No hay espacios disponibles</string>
+    <string name="select_view">Seleccionar vista</string>
+    <string name="os_widget_data_view_title">Vista de datos</string>
+    <string name="os_widget_data_view_description">Muestra elementos de un conjunto o colección</string>
 </resources>

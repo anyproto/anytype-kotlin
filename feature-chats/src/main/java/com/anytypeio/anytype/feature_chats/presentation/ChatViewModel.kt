@@ -80,7 +80,6 @@ import com.anytypeio.anytype.feature_chats.ui.NotificationSetting
 import com.anytypeio.anytype.presentation.common.BaseViewModel
 import com.anytypeio.anytype.presentation.confgs.ChatConfig
 import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
-import com.anytypeio.anytype.presentation.extension.sendAnalyticsChangeMessageNotificationState
 import com.anytypeio.anytype.presentation.search.GlobalSearchItemView
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState
 import com.anytypeio.anytype.presentation.spaces.UiSpaceQrCodeState.SpaceInvite
@@ -196,13 +195,11 @@ class ChatViewModel @Inject constructor(
 
         chatSearchDelegate.initSearchDelegate(
             scope = viewModelScope,
+            space = vmParams.space,
+            chat = vmParams.ctx,
             onScrollToMessage = { messageId ->
                 chatContainer.onLoadToReply(replyMessage = messageId)
             }
-        )
-        (chatSearchDelegate as? ChatSearchDelegate.Default)?.setChatParams(
-            space = vmParams.space,
-            chat = vmParams.ctx
         )
 
         viewModelScope.launch {

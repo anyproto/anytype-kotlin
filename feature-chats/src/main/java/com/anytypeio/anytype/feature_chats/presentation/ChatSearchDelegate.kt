@@ -28,6 +28,8 @@ interface ChatSearchDelegate {
     fun onSearchDismissed()
     fun initSearchDelegate(
         scope: CoroutineScope,
+        space: SpaceId,
+        chat: Id,
         onScrollToMessage: suspend (Id) -> Unit
     )
 
@@ -47,15 +49,14 @@ interface ChatSearchDelegate {
 
         override fun initSearchDelegate(
             scope: CoroutineScope,
+            space: SpaceId,
+            chat: Id,
             onScrollToMessage: suspend (Id) -> Unit
         ) {
             this.scope = scope
-            this.onScrollToMessage = onScrollToMessage
-        }
-
-        fun setChatParams(space: SpaceId, chat: Id) {
             this.space = space
             this.chat = chat
+            this.onScrollToMessage = onScrollToMessage
         }
 
         override fun onSearchTriggered() {

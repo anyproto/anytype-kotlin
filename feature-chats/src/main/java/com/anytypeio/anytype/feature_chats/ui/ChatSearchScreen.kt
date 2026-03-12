@@ -30,7 +30,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.layout.ContentScale
@@ -53,8 +52,6 @@ import com.anytypeio.anytype.core_ui.views.PreviewTitle2Medium
 import com.anytypeio.anytype.core_ui.views.Relations2
 import com.anytypeio.anytype.feature_chats.R
 import com.anytypeio.anytype.feature_chats.presentation.ChatSearchState
-
-private val HighlightBlue = Color(0xFF105AEF)
 
 @Composable
 fun ChatSearchScreen(
@@ -318,10 +315,12 @@ private fun ChatSearchResultItem(
                 )
                 Spacer(modifier = Modifier.height(2.dp))
                 // Highlighted message preview
+                val highlightColor = colorResource(R.color.palette_system_blue)
                 Text(
                     text = buildHighlightedText(
                         text = result.highlight,
-                        ranges = result.highlightRanges
+                        ranges = result.highlightRanges,
+                        highlightColor = highlightColor
                     ),
                     style = Relations2,
                     color = colorResource(R.color.text_secondary),
@@ -350,10 +349,10 @@ private fun ChatSearchResultItem(
     }
 }
 
-@Composable
 private fun buildHighlightedText(
     text: String,
-    ranges: List<IntRange>
+    ranges: List<IntRange>,
+    highlightColor: androidx.compose.ui.graphics.Color
 ): androidx.compose.ui.text.AnnotatedString {
     return buildAnnotatedString {
         append(text)
@@ -362,7 +361,7 @@ private fun buildHighlightedText(
             val end = range.last.coerceIn(0, text.length)
             if (start < end) {
                 addStyle(
-                    style = SpanStyle(color = HighlightBlue),
+                    style = SpanStyle(color = highlightColor),
                     start = start,
                     end = end
                 )
@@ -373,7 +372,6 @@ private fun buildHighlightedText(
 
 private fun formatSearchResultDate(timestampSeconds: Long): String {
     if (timestampSeconds == 0L) return ""
-    val now = System.currentTimeMillis()
     val messageTime = timestampSeconds * 1000
     val calendar = java.util.Calendar.getInstance().apply { timeInMillis = messageTime }
     val today = java.util.Calendar.getInstance()

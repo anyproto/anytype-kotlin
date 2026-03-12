@@ -3031,7 +3031,8 @@ class Middleware @Inject constructor(
         val (response, time) = measureTimedValue { service.chatSearch(request) }
         logResponseIfDebug(response, time)
         return Command.ChatCommand.SearchMessages.Response(
-            results = response.results.map { result ->
+            results = response.results.mapNotNull { result ->
+                val message = result.message ?: return@mapNotNull null
                 ChatMessageSearchResult(
                     chatId = result.chatId,
                     messageId = result.messageId,
@@ -3040,7 +3041,7 @@ class Middleware @Inject constructor(
                     highlightRanges = result.highlightRanges.map { range ->
                         range.from..range.to
                     },
-                    message = result.message!!.core()
+                    message = message.core()
                 )
             }
         )
